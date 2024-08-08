@@ -36,76 +36,77 @@ export const NftCard = observer(() => {
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
 
-      {nfts.map((it, index) => {
-        const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
-        if (it?.data?.length > 0) {
-          return (
-            <View
-              style={{
-                paddingBottom: 16,
-              }}
-            >
-              <View style={styles.sectionHeader}>
-                <View style={styles.leftHeader}>
-                  <OWIcon
-                    type="images"
-                    resizeMode="cover"
-                    size={22}
+      {nfts &&
+        nfts.map((it, index) => {
+          const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
+          if (it?.data?.length > 0) {
+            return (
+              <View
+                style={{
+                  paddingBottom: 16,
+                }}
+              >
+                <View style={styles.sectionHeader}>
+                  <View style={styles.leftHeader}>
+                    <OWIcon
+                      type="images"
+                      resizeMode="cover"
+                      size={22}
+                      style={{
+                        borderRadius: 999,
+                        tintColor:
+                          coinDenom === "ORAI" || coinDenom === "AIRI"
+                            ? colors["neutral-text-title"]
+                            : null,
+                      }}
+                      source={{
+                        uri:
+                          it?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                          unknownToken.coinImageUrl,
+                      }}
+                    />
+                    <View>
+                      <OWText style={styles.txtTitle}>
+                        {`${it?.chainInfo?.chainName}`}
+                      </OWText>
+                      <OWText size={10}>{it?.title}</OWText>
+                    </View>
+                  </View>
+
+                  <OWText style={styles.price}>
+                    {`${maskedNumber(it?.count)} NFT${
+                      Number(it?.count) > 0 ? "s" : ""
+                    }`}{" "}
+                  </OWText>
+                </View>
+                <View style={styles.containerList}>
+                  {it?.data?.map((nft, indexNft) => (
+                    <NftItem key={indexNft} item={nft} />
+                  ))}
+                </View>
+                {Number(it?.count) > 4 && (
+                  <OWButton
                     style={{
-                      borderRadius: 999,
-                      tintColor:
-                        coinDenom === "ORAI" || coinDenom === "AIRI"
-                          ? colors["neutral-text-title"]
-                          : null,
+                      marginTop: 16,
                     }}
-                    source={{
-                      uri:
-                        it?.chainInfo?.stakeCurrency?.coinImageUrl ||
-                        unknownToken.coinImageUrl,
+                    label={"View all"}
+                    size="medium"
+                    type="secondary"
+                    onPress={() => {
+                      navigate(SCREENS.Nfts, {
+                        chainInfo: it?.chainInfo,
+                        ecosystem: it?.ecosystem,
+                        contractAddress: it?.contractAddress,
+                      });
+
+                      return;
                     }}
                   />
-                  <View>
-                    <OWText style={styles.txtTitle}>
-                      {`${it?.chainInfo?.chainName}`}
-                    </OWText>
-                    <OWText size={10}>{it?.title}</OWText>
-                  </View>
-                </View>
-
-                <OWText style={styles.price}>
-                  {`${maskedNumber(it?.count)} NFT${
-                    Number(it?.count) > 0 ? "s" : ""
-                  }`}{" "}
-                </OWText>
+                )}
               </View>
-              <View style={styles.containerList}>
-                {it?.data?.map((nft, indexNft) => (
-                  <NftItem key={indexNft} item={nft} />
-                ))}
-              </View>
-              {Number(it?.count) > 4 && (
-                <OWButton
-                  style={{
-                    marginTop: 16,
-                  }}
-                  label={"View all"}
-                  size="medium"
-                  type="secondary"
-                  onPress={() => {
-                    navigate(SCREENS.Nfts, {
-                      chainInfo: it?.chainInfo,
-                      ecosystem: it?.ecosystem,
-                      contractAddress: it?.contractAddress,
-                    });
-
-                    return;
-                  }}
-                />
-              )}
-            </View>
-          );
-        }
-      })}
+            );
+          }
+        })}
     </View>
   );
 });

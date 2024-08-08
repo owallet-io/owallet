@@ -262,7 +262,7 @@ export const useNfts = (
   };
   return isAllNetworks
     ? Object.values(allChainNfts).flat()
-    : allChainNfts[chainStore.current.chainId];
+    : allChainNfts[chainStore.current.chainId] || [];
 };
 
 export const processDataStargazeNft = (item, stakeCurrency) => {

@@ -120,11 +120,11 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
             </OWText>
           </View>
           <View style={styles.containerBox}>
-            {nft?.version ? (
+            {nft?.version || item?.version ? (
               <ItemReceivedToken
                 btnCopy={false}
                 label="Standard"
-                valueDisplay={`CW-${nft?.version}`}
+                valueDisplay={`CW-${nft?.version || item?.version}`}
               />
             ) : null}
             <ItemReceivedToken
