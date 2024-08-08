@@ -24,12 +24,15 @@ import { DataModal } from "../modals/data-modal";
 import { Button } from "../../../components/common/button";
 import cn from "classnames/bind";
 import useOnClickOutside from "../../../hooks/use-click-outside";
+import withErrorBoundary from "../hoc/withErrorBoundary";
 
 enum Tab {
   Details,
   Data,
 }
 const cx = cn.bind(style);
+
+const TronDetailsTabWithErrorBoundary = withErrorBoundary(TronDetailsTab);
 
 const SignTronContent: FunctionComponent = () => {
   const intl = useIntl();
@@ -216,7 +219,7 @@ const SignTronContent: FunctionComponent = () => {
             >
               {tab === Tab.Data && <TronDataTab data={dataSign} />}
               {tab === Tab.Details && (
-                <TronDetailsTab
+                <TronDetailsTabWithErrorBoundary
                   txInfo={txInfo}
                   addressTronBase58={addressTronBase58}
                   dataInfo={{

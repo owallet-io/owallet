@@ -14,7 +14,11 @@ function ErrorFallback({ error, ...props }) {
         width: "100%",
       }}
     >
-      <span>{JSON.stringify(props.msg, null, 2)}</span>;
+      {props.msg ? <span>{JSON.stringify(props.msg, null, 2)}</span> : null}
+      {props.msgs ? <span>{JSON.stringify(props.msgs, null, 2)}</span> : null}
+      {props.dataSign ? (
+        <span>{JSON.stringify(props.dataSign, null, 2)}</span>
+      ) : null}
     </div>
   );
 }
