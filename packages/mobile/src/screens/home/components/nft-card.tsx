@@ -29,7 +29,6 @@ export const NftCard = observer(() => {
   );
   const emptyDataCount =
     nfts && nfts.filter((item) => item.data.length === 0).length;
-  const navigation = useNavigation();
 
   return (
     <View style={styles.container}>
@@ -95,6 +94,8 @@ export const NftCard = observer(() => {
                   onPress={() => {
                     navigate(SCREENS.Nfts, {
                       chainInfo: it?.chainInfo,
+                      ecosystem: it?.ecosystem,
+                      contractAddress: it?.contractAddress,
                     });
 
                     return;
