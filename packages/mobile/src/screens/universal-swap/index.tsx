@@ -177,8 +177,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const client = useClient(accountOrai);
 
-  console.log("client", client);
-
   const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -716,6 +714,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
   };
+
+  useEffect(() => {
+    const fromChain = chainInfos.find((chain) => chain.chainId === fromNetwork);
+    console.log("fromChain", fromChain, toNetwork);
+
+    if (
+      fromChain?.networkType === "evm" &&
+      toNetwork === ChainIdEnum.Injective
+    ) {
+      setFromNetwork(ChainIdEnum.Oraichain);
+    }
+  }, [fromNetwork, toNetwork]);
 
   const handleActiveAmount = (percent) => {
     const coeff = Number(percent) / 100;
