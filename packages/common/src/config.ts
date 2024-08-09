@@ -1376,7 +1376,19 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config("orai"),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          type: "cw20",
+          coinDenom: "AIRI",
+          coinMinimalDenom:
+            "cw20:orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2:aiRight Token",
+          contractAddress: "orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2",
+          coinDecimals: 6,
+          coinGeckoId: "airight",
+          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        },
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
