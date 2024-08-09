@@ -256,23 +256,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  const useIbcWasm = isAllowIBCWasm(
+    originalFromToken,
+    originalToToken,
+    isAIRoute
+  );
+  const useAlphaSmartRouter = isAllowAlphaSmartRouter(
+    originalFromToken,
+    originalToToken,
+    isAIRoute
+  );
 
-  let useAlphaSmartRouter =
-    useIbcWasm ||
-    (isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute);
-  if (
-    [
-      originalFromToken.contractAddress,
-      originalFromToken.denom,
-      originalToToken.contractAddress,
-      originalToToken.denom,
-    ]
-      .filter(Boolean)
-      .includes(TON_ORAICHAIN_DENOM)
-  ) {
-    useAlphaSmartRouter = true;
-  }
   const {
     minimumReceive,
     isWarningSlippage,
