@@ -28,7 +28,7 @@ export class ObservableQueryErc20Balance extends ObservableEvmChainJsonRpcQuery<
     protected readonly contractAddress: string,
     protected readonly walletAddress: string
   ) {
-    super(sharedContext, chainId, chainGetter, "", [
+    super(sharedContext, chainId, chainGetter, "eth_call", [
       {
         to: contractAddress,
         data: erc20ContractInterface.encodeFunctionData("balanceOf", [
