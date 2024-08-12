@@ -704,8 +704,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: "STAKE",
         coinMinimalDenom: "ustake",
         coinDecimals: 6,
-        coinImageUrl:
-          "https://www.mintscan.io/assets/chains/_rendered/noble@3x.png",
       },
       {
         coinDenom: "USDC",
@@ -1179,24 +1177,24 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get currencies() {
       return [
         this.stakeCurrency,
-        {
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
-          coinDenom: "MILKY",
-          coinMinimalDenom:
-            "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
-          coinDecimals: 18,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-        },
+        // {
+        //   coinDenom: "KWT",
+        //   coinMinimalDenom:
+        //     "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
+        //   coinDecimals: 18,
+        //   coinGeckoId: "kawaii-islands",
+        //   coinImageUrl:
+        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+        // },
+        // {
+        //   coinDenom: "MILKY",
+        //   coinMinimalDenom:
+        //     "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
+        //   coinDecimals: 18,
+        //   coinGeckoId: "milky-token",
+        //   coinImageUrl:
+        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
+        // },
       ];
     },
     get feeCurrencies() {
@@ -1378,7 +1376,19 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config("orai"),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          type: "cw20",
+          coinDenom: "AIRI",
+          coinMinimalDenom:
+            "cw20:orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2:aiRight Token",
+          contractAddress: "orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2",
+          coinDecimals: 6,
+          coinGeckoId: "airight",
+          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        },
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];

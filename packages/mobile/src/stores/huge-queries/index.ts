@@ -19,7 +19,7 @@ import {
 } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
-import { ChainInfo, ViewChainAddress } from "@owallet/types";
+import { ChainInfo } from "@owallet/types";
 import { ChainIdHelper } from "@owallet/cosmos";
 
 interface ViewToken {
@@ -123,12 +123,19 @@ export class HugeQueriesStore {
     const keysUsed = new Map<string, boolean>();
     const prevKeyMap = new Map(this.balanceBinarySort.indexForKeyMap());
 
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
+    for (const chainInfo of this.chainStore.chainInfosInUI.filter(
+      (item) => !item.chainName.toLowerCase().includes("test")
+    )) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-
-      if (account.bech32Address === "") {
+      const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses,
+        false
+      );
+      if (!address) {
         continue;
       }
+
       const queries = this.queriesStore.get(chainInfo.chainId);
 
       const currencies = [...chainInfo.currencies];
@@ -137,9 +144,13 @@ export class HugeQueriesStore {
       }
       for (const currency of currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        const queryBalance = queries.queryBalances.getQueryBech32Address(
-          account.bech32Address
-        );
+        const isERC20 = denomHelper.type === "erc20";
+        const isMainCurrency =
+          mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
+
+        const queryBalance =
+          queries.queryBalances.getQueryBech32Address(address);
+        // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
         const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {
           if (
@@ -147,6 +158,7 @@ export class HugeQueriesStore {
             currency.coinMinimalDenom
           ) {
             const balance = queryBalance.stakable?.balance;
+
             if (!balance) {
               continue;
             }
@@ -170,12 +182,26 @@ export class HugeQueriesStore {
           } else {
             const balance = queryBalance.getBalance(currency);
             if (balance) {
-              // If the balance is zero and currency is "native", don't show it.
-              if (
-                balance.balance.toDec().equals(HugeQueriesStore.zeroDec) &&
-                new DenomHelper(currency.coinMinimalDenom).type === "native"
-              ) {
-                continue;
+              if (balance.balance.toDec().equals(HugeQueriesStore.zeroDec)) {
+                const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+                // If the balance is zero and currency is "native" or "erc20", don't show it.
+                if (
+                  denomHelper.type === "native" ||
+                  denomHelper.type === "erc20"
+                ) {
+                  // However, if currency is native currency and not ibc, and same with currencies[0],
+                  // just show it as 0 balance.
+                  if (
+                    chainInfo.currencies.length > 0 &&
+                    chainInfo.currencies[0].coinMinimalDenom ===
+                      currency.coinMinimalDenom &&
+                    !currency.coinMinimalDenom.startsWith("ibc/")
+                  ) {
+                    // 위의 if 문을 뒤집기(?) 귀찮아서 그냥 빈 if-else로 처리한다...
+                  } else {
+                    continue;
+                  }
+                }
               }
 
               keysUsed.set(key, true);
@@ -204,44 +230,13 @@ export class HugeQueriesStore {
   get allKnownBalances(): ReadonlyArray<ViewToken> {
     return this.balanceBinarySort.arr;
   }
-  @computed
-  get getAllAddrByChain(): Record<string, string> {
-    const data: Record<string, string> = {};
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
-      const account = this.accountStore.getAccount(chainInfo.chainId);
-      const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses
-      );
-      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
-      if (!mapChainNetwork) continue;
-      data[mapChainNetwork] =
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald
-          ? getOasisAddress(address)
-          : address;
-    }
-    return data;
-  }
-  @computed
-  get getAllChainMap(): Map<string, ViewChainAddress> {
-    const map = new Map<string, ViewChainAddress>();
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
-      const account = this.accountStore.getAccount(chainInfo.chainId);
-      const address = account.getAddressDisplay(
-        this.keyringStore.keyRingLedgerAddresses,
-        false
-      );
-      map.set(chainInfo.chainId, {
-        address,
-        chainInfo,
-      });
-    }
-    return map;
-  }
+
   getAllBalances = computedFn(
     (allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
       const keys: Map<string, boolean> = new Map();
-      for (const chainInfo of this.chainStore.chainInfosInUI) {
+      for (const chainInfo of this.chainStore.chainInfosInUI.filter(
+        (item) => !item.chainName.toLowerCase().includes("test")
+      )) {
         for (const currency of chainInfo.currencies) {
           const denomHelper = new DenomHelper(currency.coinMinimalDenom);
           if (
@@ -251,7 +246,7 @@ export class HugeQueriesStore {
           ) {
             continue;
           }
-
+          // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
           const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
           keys.set(key, true);
         }
@@ -289,6 +284,21 @@ export class HugeQueriesStore {
       });
     }
   );
+  filterBalanceTokensByChain = computedFn(
+    (viewTokens: ReadonlyArray<ViewToken>, chainId: string): ViewToken[] => {
+      return viewTokens.filter((viewToken) => {
+        // Hide the unknown ibc tokens.
+        if (
+          "paths" in viewToken.token.currency &&
+          !viewToken.token.currency.originCurrency
+        ) {
+          return false;
+        }
+
+        return viewToken.chainInfo.chainId === chainId;
+      });
+    }
+  );
 
   @computed
   get stakables(): ViewToken[] {
@@ -297,6 +307,7 @@ export class HugeQueriesStore {
       if (!chainInfo.stakeCurrency) {
         continue;
       }
+      // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
       const key = `${chainInfo.chainId}/${chainInfo.stakeCurrency.coinMinimalDenom}`;
       keys.set(key, true);
     }
@@ -324,7 +335,7 @@ export class HugeQueriesStore {
         ) {
           continue;
         }
-
+        // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
         const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
         keys.set(key, true);
       }
@@ -345,6 +356,7 @@ export class HugeQueriesStore {
           denomHelper.type === "native" &&
           denomHelper.denom.startsWith("ibc/")
         ) {
+          // const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId);
           const key = `${chainInfo.chainId}/${currency.coinMinimalDenom}`;
           keys.set(key, true);
         }
@@ -362,19 +374,21 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses,
+        false
+      );
+      if (!address) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
       const queryDelegation =
-        queries.cosmos.queryDelegations.getQueryBech32Address(
-          account.bech32Address
-        );
+        queries.cosmos.queryDelegations.getQueryBech32Address(address);
       if (!queryDelegation.total) {
         continue;
       }
 
-      const key = `${chainInfo.chainId}/${account.bech32Address}`;
+      const key = `${chainInfo.chainId}/${address}`;
       prevKeyMap.delete(key);
       this.delegationBinarySort.pushAndSort(key, {
         chainInfo,
@@ -401,14 +415,16 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses,
+        false
+      );
+      if (!address) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
       const queryUnbonding =
-        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-          account.bech32Address
-        );
+        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(address);
 
       for (let i = 0; i < queryUnbonding.unbondings.length; i++) {
         const unbonding = queryUnbonding.unbondings[i];
@@ -422,7 +438,7 @@ export class HugeQueriesStore {
             entry.balance
           );
 
-          const key = `${chainInfo.chainId}/${account.bech32Address}/${i}/${j}`;
+          const key = `${chainInfo.chainId}/${address}/${i}/${j}`;
           prevKeyMap.delete(key);
           this.unbondingBinarySort.pushAndSort(key, {
             viewToken: {
@@ -459,19 +475,22 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses,
+        false
+      );
+      if (!address) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
-        account.bech32Address
-      );
+      const queryRewards =
+        queries.cosmos.queryRewards.getQueryBech32Address(address);
 
       if (
         queryRewards.stakableReward &&
         queryRewards.stakableReward.toDec().gt(new Dec(0))
       ) {
-        const key = `${chainInfo.chainId}/${account.bech32Address}`;
+        const key = `${chainInfo.chainId}/${address}`;
         prevKeyMap.delete(key);
         this.claimableRewardsBinarySort.pushAndSort(key, {
           chainInfo,
@@ -487,7 +506,24 @@ export class HugeQueriesStore {
       this.claimableRewardsBinarySort.remove(removedKey);
     }
   }
-
+  @computed
+  get getAllAddrByChain(): Record<string, string> {
+    const data: Record<string, string> = {};
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.getAddressDisplay(
+        this.keyringStore.keyRingLedgerAddresses
+      );
+      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
+      if (!mapChainNetwork) continue;
+      data[mapChainNetwork] =
+        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+        chainInfo.chainId === ChainIdEnum.OasisEmerald
+          ? getOasisAddress(address)
+          : address;
+    }
+    return data;
+  }
   @computed
   get claimableRewards(): ReadonlyArray<ViewToken> {
     return this.claimableRewardsBinarySort.arr;

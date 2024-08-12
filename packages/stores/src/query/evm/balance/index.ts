@@ -22,7 +22,7 @@ import {
   ObservableQueryBalanceInner,
 } from "../../balances";
 import { ObservableChainQuery } from "../../chain-query";
-import { Balances } from "./types";
+import { Balances, BalancesRpc } from "./types";
 import { CancelToken } from "axios";
 import Web3 from "web3";
 
@@ -74,15 +74,14 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     if (!this.nativeBalances.response) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-
-    return StoreUtils.getBalanceFromCurrency(
+    return new CoinPretty(
       currency,
-      this.nativeBalances.response.data.balances
+      new Int(Web3.utils.hexToNumberString(this.response.data.result))
     );
   }
 }
 
-export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
+export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
@@ -93,7 +92,12 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "", null);
+    super(kvStore, chainId, chainGetter, "", {
+      jsonrpc: "2.0",
+      method: "eth_getBalance",
+      params: [walletAddress, "latest"],
+      id: "evm-balance",
+    });
 
     this.walletAddress = walletAddress;
 
@@ -134,65 +138,75 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       );
     }
   }
-
-  protected async fetchResponse(): Promise<QueryResponse<Balances>> {
-    try {
-      if (this._chainId === ChainIdEnum.Oasis) {
-        const oasisRs = await this.getOasisBalance();
-        console.log(oasisRs, "oasis rs");
-        const denomNative = this.chainGetter.getChain(this.chainId)
-          .stakeCurrency.coinMinimalDenom;
-        console.log(denomNative, oasisRs.available, "available kaka");
-        const balances: CoinPrimitive[] = [
-          {
-            amount: oasisRs.available,
-            denom: denomNative,
+  protected setResponse(response: Readonly<QueryResponse<BalancesRpc>>) {
+    if (this._chainId === ChainIdEnum.Oasis) {
+      this.getOasisBalance().then((oasisRs) => {
+        console.log(oasisRs, "oasisRs");
+        response.data.jsonrpc;
+        const res = {
+          ...response,
+          data: {
+            result: Web3.utils.stringToHex(oasisRs as any),
+            jsonrpc: response.data.jsonrpc,
+            id: response.data.id,
           },
-        ];
-
-        const data = {
-          balances,
         };
-        return {
-          status: 1,
-          staled: false,
-          data,
-          timestamp: Date.now(),
-        };
-      }
-      const web3 = new Web3(
-        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-      );
-      const ethBalance = await web3.eth.getBalance(this.walletAddress);
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
-        ethBalance
-      );
-      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
-        .coinMinimalDenom;
-      const balances: CoinPrimitive[] = [
-        {
-          amount: ethBalance,
-          denom: denomNative,
-        },
-      ];
+        super.setResponse(res);
+      });
+    } else {
+      super.setResponse(response);
       this.fetchAllErc20();
-      const data = {
-        balances,
-      };
-      return {
-        status: 1,
-        staled: false,
-        data,
-        timestamp: Date.now(),
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
-        error
-      );
     }
   }
+  // protected async setResponse(): Promise<QueryResponse<BalancesRpc>> {
+  //   try {
+  //     if (this._chainId === ChainIdEnum.Oasis) {
+  //       const oasisRs = await this.getOasisBalance();
+  //       return {
+  //         status: 1,
+  //         staled: false,
+  //         data: {
+  //           result: Web3.utils.stringToHex(oasisRs.available),
+  //           id: 1,
+  //           jsonrpc: "2.0",
+  //         },
+  //         timestamp: Date.now(),
+  //       };
+  //     }
+  //     return super.fetchResponse(cancelToken);
+  //     // const web3 = new Web3(
+  //     //   getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
+  //     // );
+  //     // const ethBalance = await web3.eth.getBalance(this.walletAddress);
+  //     // console.log(
+  //     //   "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
+  //     //   ethBalance
+  //     // );
+  //     // const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
+  //     //   .coinMinimalDenom;
+  //     // const balances: CoinPrimitive[] = [
+  //     //   {
+  //     //     amount: ethBalance,
+  //     //     denom: denomNative,
+  //     //   },
+  //     // ];
+  //     // this.fetchAllErc20();
+  //     // const data = {
+  //     //   balances,
+  //     // };
+  //     // return {
+  //     //   status: 1,
+  //     //   staled: false,
+  //     //   data,
+  //     //   timestamp: Date.now(),
+  //     // };
+  //   } catch (error) {
+  //     console.log(
+  //       "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
+  //       error
+  //     );
+  //   }
+  // }
   protected async fetchAllErc20() {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     // Attempt to register the denom in the returned response.
@@ -205,7 +219,7 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
     });
 
     if (!response.result) return;
-    console.log(response.result, "response.result");
+
     const allTokensAddress = response.result
       .filter(
         (token) =>
@@ -218,7 +232,6 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
           ) && MapChainIdToNetwork[chainInfo.chainId]
       )
       .map((coin) => {
-        console.log(coin, "coin");
         const str = `${
           MapChainIdToNetwork[chainInfo.chainId]
         }%2B${new URLSearchParams(coin.tokenAddress)
@@ -226,7 +239,7 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
           .replace("=", "")}`;
         return str;
       });
-    console.log(allTokensAddress, "allTokensAddress");
+
     if (allTokensAddress?.length === 0) return;
 
     const tokenInfos = await API.getMultipleTokenInfo({
@@ -256,12 +269,9 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
         };
         return infoToken;
       });
-    console.log(infoTokens, "infoTokens");
+
     //@ts-ignore
     chainInfo.addCurrencies(...infoTokens);
-  }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${this.instance.defaults.baseURL}-balance-evm-native-${this.chainId}-${this.walletAddress}`;
   }
 }
 
@@ -279,14 +289,9 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    console.log(
-      "🚀 ~ ObservableQueryEvmBalanceRegistry ~ denomHelper.type:",
-      minimalDenom,
-      denomHelper.type
-    );
-    if (denomHelper.type !== "native") {
+
+    if (denomHelper.type !== "native" || !Web3.utils.isAddress(walletAddress))
       return;
-    }
     const networkType = chainGetter.getChain(chainId).networkType;
     if (networkType !== "evm") return;
     const key = `evm-${chainId}/${walletAddress}`;

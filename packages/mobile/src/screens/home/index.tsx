@@ -2,6 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useTransition,
 } from "react";
@@ -43,6 +44,7 @@ import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
+import OWText from "@src/components/text/ow-text";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -64,17 +66,32 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
-    useMultipleAssets(
-      accountStore,
-      priceStore,
-      hugeQueriesStore,
-      chainStore.current.chainId,
-      appInitStore.getInitApp.isAllNetworks,
-      appInitStore,
-      refreshing,
-      accountOrai.bech32Address
-    );
+  // const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
+  //   useMultipleAssets(
+  //     accountStore,
+  //     priceStore,
+  //     hugeQueriesStore,
+  //     chainStore.current.chainId,
+  //     appInitStore.getInitApp.isAllNetworks,
+  //     appInitStore,
+  //     refreshing,
+  //     accountOrai.bech32Address
+  //   );
+  const allBalances = hugeQueriesStore.getAllBalances(true);
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = hugeQueriesStore.allKnownBalances;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, chainStore.current.chainId]);
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -322,33 +339,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
-  useEffect(() => {
-    if (!totalPriceBalance || !accountOrai.bech32Address) return;
-    const hashedAddress = new sha256()
-      .update(accountOrai.bech32Address)
-      .digest("hex");
+  // useEffect(() => {
+  //   if (!totalPriceBalance || !accountOrai.bech32Address) return;
+  //   const hashedAddress = new sha256()
+  //     .update(accountOrai.bech32Address)
+  //     .digest("hex");
 
-    const amount = new IntPretty(totalPriceBalance || "0")
-      .maxDecimals(2)
-      .shrink(true)
-      .trim(true)
-      .locale(false)
-      .inequalitySymbol(true);
+  //   const amount = new IntPretty(totalPriceBalance || "0")
+  //     .maxDecimals(2)
+  //     .shrink(true)
+  //     .trim(true)
+  //     .locale(false)
+  //     .inequalitySymbol(true);
 
-    const logEvent = {
-      userId: hashedAddress,
-      totalPrice: amount?.toString() || "0",
-      currency: priceStore.defaultVsCurrency,
-    };
-    if (mixpanel) {
-      mixpanel.track("OWallet - Assets Managements", logEvent);
-    }
-    return () => {};
-  }, [
-    totalPriceBalance,
-    accountOrai.bech32Address,
-    priceStore.defaultVsCurrency,
-  ]);
+  //   const logEvent = {
+  //     userId: hashedAddress,
+  //     totalPrice: amount?.toString() || "0",
+  //     currency: priceStore.defaultVsCurrency,
+  //   };
+  //   if (mixpanel) {
+  //     mixpanel.track("OWallet - Assets Managements", logEvent);
+  //   }
+  //   return () => {};
+  // }, [
+  //   totalPriceBalance,
+  //   accountOrai.bech32Address,
+  //   priceStore.defaultVsCurrency,
+  // ]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -368,18 +385,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <AccountBoxAll
-        isLoading={isLoading}
-        totalBalanceByChain={new PricePretty(
-          fiatCurrency,
-          dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
-        )?.toString()}
-        totalPriceBalance={new PricePretty(
-          fiatCurrency,
-          totalPriceBalance
-        )?.toString()}
+        isLoading={false}
+        totalBalanceByChain={availableTotalPrice?.toString()}
+        totalPriceBalance={availableTotalPrice?.toString()}
       />
       <EarningCardNew />
-      <MainTabHome dataTokens={dataTokens} />
+      {allBalances &&
+        allBalances.map((item, index) => (
+          <OWText>
+            {`${item.token.currency.coinDenom}:${
+              item.chainInfo.chainName
+            } - ${item.price?.toString()}`}
+          </OWText>
+        ))}
+      {/* <MainTabHome dataTokens={[]} /> */}
     </PageWithScrollViewInBottomTabView>
   );
 });

@@ -100,7 +100,7 @@ export class ObservableQueryBalancesInner {
           this.balanceMap.set(key, balanceInner);
         } else {
           // throw new Error(`Failed to get and parse the balance for ${key}`);
-          console.log(`Failed to get and parse the balance for ${key}`);
+          console.error(`Failed to get and parse the balance for ${key}`);
         }
       });
     }
