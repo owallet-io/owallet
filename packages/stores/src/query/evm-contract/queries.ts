@@ -9,6 +9,7 @@ import { OWallet } from "@owallet/types";
 import { QueriesWrappedEvm } from "../evm/queries";
 import { ObservableQueryGasEvmContract } from "./gas";
 import { QuerySharedContext } from "src/common/query/context";
+// import { ObservableQueryErc20BalancesRegistry } from "./erc20-balances";
 
 export interface HasEvmContractQueries {
   evmContract: EvmContractQueries;
