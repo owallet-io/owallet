@@ -3,9 +3,10 @@ import {
   PAIRS,
   USDC_CONTRACT,
   ORAIX_CONTRACT,
+  PairMapping,
 } from "@oraichain/oraidex-common";
 
-export const PAIRS_CHART = PAIRS.map((pair) => {
+export const PAIRS_CHART: PairMapping[] = PAIRS.map((pair) => {
   const assets = pair.asset_infos.map((info) => {
     if ("native_token" in info) return info.native_token.denom;
     return info.token.contract_addr;
