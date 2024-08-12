@@ -1,7 +1,7 @@
 import { delay, inject, singleton } from "tsyringe";
 import { TYPES } from "../types";
 
-import { Env } from "@owallet/router";
+import { Env, OWalletError } from "@owallet/router";
 import {
   ChainInfo,
   AppCurrency,
@@ -15,6 +15,7 @@ import {
   ERC20CurrencySchema,
   Secret20CurrencySchema,
 } from "../chains";
+import { computedFn } from "mobx-utils";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { ChainsService } from "../chains";
 import { KeyRingService } from "../keyring";
@@ -25,10 +26,19 @@ import { PermissionService } from "../permission";
 
 import { Buffer } from "buffer";
 import { SuggestTokenMsg } from "./messages";
-import { getSecret20ViewingKeyPermissionType } from "./types";
-
+import { getSecret20ViewingKeyPermissionType, TokenInfo } from "./types";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
 @singleton()
 export class TokensService {
+  @observable
+  protected tokenMap: Map<string, TokenInfo[]> = new Map();
   constructor(
     @inject(TYPES.TokensStore)
     protected readonly kvStore: KVStore,
@@ -39,38 +49,55 @@ export class TokensService {
     @inject(ChainsService)
     protected readonly chainsService: ChainsService,
     @inject(delay(() => KeyRingService))
-    protected readonly keyRingService: KeyRingService
+    public readonly keyRingService: KeyRingService
   ) {
+    this.init();
     this.chainsService.addChainRemovedHandler(this.onChainRemoved);
   }
 
   protected readonly onChainRemoved = (chainId: string) => {
     this.clearTokens(chainId);
+    const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+    runInAction(() => {
+      this.tokenMap.delete(chainIdentifier);
+    });
   };
-
   async suggestToken(
     env: Env,
     chainId: string,
     contractAddress: string,
+    // Should be hex encoded. (not bech32)
+    associatedAccountAddress: string,
     viewingKey?: string
   ) {
+    this.validateAssociatedAccountAddress(associatedAccountAddress);
     const chainInfo = await this.chainsService.getChainInfo(chainId);
+    // this.validateChainInfoFeatures(chainInfo);
 
-    const find = (await this.getTokens(chainId)).find(
-      (currency) =>
-        "contractAddress" in currency &&
-        currency.contractAddress === contractAddress
+    const existing = this.getToken(
+      chainId,
+      contractAddress,
+      associatedAccountAddress
     );
+
     // If the same currency is already registered, do nothing.
-    if (find) {
+    if (existing) {
       // If the secret20 token,
       // just try to change the viewing key.
       if (viewingKey) {
-        if ("type" in find && find.type === "secret20") {
-          await this.addToken(chainId, {
-            ...find,
-            viewingKey,
-          });
+        if (
+          "type" in existing.currency &&
+          existing.currency.type === "secret20" &&
+          existing.currency.viewingKey !== viewingKey
+        ) {
+          await this.setToken(
+            chainId,
+            {
+              ...existing.currency,
+              viewingKey,
+            },
+            associatedAccountAddress
+          );
         }
         return;
       }
@@ -80,7 +107,7 @@ export class TokensService {
     // Validate the contract address.
     Bech32Address.validate(
       contractAddress,
-      chainInfo.bech32Config.bech32PrefixAccAddr
+      chainInfo.bech32Config?.bech32PrefixAccAddr
     );
 
     const params = {
@@ -89,14 +116,76 @@ export class TokensService {
       viewingKey,
     };
 
-    // const appCurrency = await this.interactionService.waitApprove(
-    //   env,
-    //   '/setting/token/add',
-    //   SuggestTokenMsg.type(),
-    //   params
-    // );
+    const appCurrency = (await this.interactionService.waitApprove(
+      env,
+      "/add-token",
+      SuggestTokenMsg.type(),
+      params
+    )) as AppCurrency;
 
-    // await this.addToken(chainId, appCurrency as AppCurrency);
+    await this.setToken(chainId, appCurrency, associatedAccountAddress);
+  }
+  async setToken(
+    chainId: string,
+    currency: AppCurrency,
+    // Should be hex encoded. (not bech32)
+    associatedAccountAddress: string
+  ): Promise<void> {
+    this.validateAssociatedAccountAddress(associatedAccountAddress);
+    const chainInfo = await this.chainsService.getChainInfo(chainId);
+    // this.validateChainInfoFeatures(chainInfo);
+    const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+
+    if (!this.tokenMap.has(chainIdentifier)) {
+      runInAction(() => {
+        this.tokenMap.set(chainIdentifier, []);
+      });
+    }
+
+    const tokens = this.tokenMap.get(chainIdentifier)!;
+
+    currency = await TokensService.validateCurrency(chainInfo, currency);
+
+    if (
+      !("type" in currency) ||
+      (currency.type !== "cw20" && currency.type !== "secret20")
+    ) {
+      throw new Error("Unknown type of currency");
+    }
+
+    if (currency.type === "secret20" && !currency.viewingKey) {
+      throw new Error("Viewing key must be set");
+    }
+
+    const contractAddress = currency.contractAddress;
+    const needAssociateAccount = currency.type === "secret20";
+
+    const find = tokens.find((token) => {
+      if (
+        token.associatedAccountAddress &&
+        token.associatedAccountAddress !== associatedAccountAddress
+      ) {
+        return false;
+      }
+
+      if ("contractAddress" in token.currency) {
+        return token.currency.contractAddress === contractAddress;
+      }
+      return false;
+    });
+
+    runInAction(() => {
+      if (find) {
+        find.currency = currency;
+      } else {
+        tokens.push({
+          associatedAccountAddress: needAssociateAccount
+            ? associatedAccountAddress
+            : undefined,
+          currency,
+        });
+      }
+    });
   }
 
   async addToken(chainId: string, currency: AppCurrency) {
@@ -158,38 +247,103 @@ export class TokensService {
     }
   }
 
-  async removeToken(chainId: string, currency: AppCurrency) {
-    const chainInfo = await this.chainsService.getChainInfo(chainId);
+  async init(): Promise<void> {
+    const migrated = await this.kvStore.get<boolean>("migrated/v2");
+    if (!migrated) {
+      for (const chainInfo of await this.chainsService.getChainInfos()) {
+        const identifier = ChainIdHelper.parse(chainInfo.chainId).identifier;
+        const globalTokens = await this.kvStore.get<AppCurrency[]>(identifier);
+        if (globalTokens && globalTokens.length > 0) {
+          this.tokenMap.set(
+            identifier,
+            globalTokens.map((currency) => {
+              return {
+                currency,
+              };
+            })
+          );
+        }
 
-    currency = await TokensService.validateCurrency(chainInfo, currency);
-
-    const chainCurrencies = await this.getTokens(chainId);
-
-    const isTokenForAccount =
-      "type" in currency && currency.type === "secret20";
-    let isFoundCurrency = false;
-
-    for (const chainCurrency of chainCurrencies) {
-      if (currency.coinMinimalDenom === chainCurrency.coinMinimalDenom) {
-        isFoundCurrency = true;
-        break;
+        const reverseAddresses = await this.kvStore.get<string[]>(
+          `${identifier}-addresses`
+        );
+        if (reverseAddresses && reverseAddresses.length > 0) {
+          for (const reverseAddress of reverseAddresses) {
+            const currencies = await this.kvStore.get<AppCurrency[]>(
+              `${identifier}-${reverseAddress}`
+            );
+            if (currencies && currencies.length > 0) {
+              this.tokenMap.set(
+                identifier,
+                currencies.map((currency) => {
+                  return {
+                    associatedAccountAddress: reverseAddress,
+                    currency,
+                  };
+                })
+              );
+            }
+          }
+        }
       }
+
+      await this.kvStore.set<boolean>("migrated/v2", true);
     }
 
-    if (!isFoundCurrency) {
+    {
+      const saved = await this.kvStore.get<Record<string, TokenInfo[]>>(
+        "tokenMap"
+      );
+      if (saved) {
+        for (const [key, value] of Object.entries(saved)) {
+          this.tokenMap.set(key, value);
+        }
+      }
+      autorun(() => {
+        const js = toJS(this.tokenMap);
+        const obj = Object.fromEntries(js);
+        this.kvStore.set<Record<string, TokenInfo[]>>("tokenMap", obj);
+      });
+    }
+
+    this.chainsService.addChainRemovedHandler(this.onChainRemoved);
+  }
+  getAllTokenInfos = computedFn((): Record<string, TokenInfo[] | undefined> => {
+    const js = toJS(this.tokenMap);
+    return Object.fromEntries(js);
+  });
+  @action
+  removeToken(
+    chainId: string,
+    contractAddress: string,
+    // Should be hex encoded. (not bech32)
+    associatedAccountAddress: string
+  ) {
+    // 얘는 associatedAccountAddress가 empty string이더라도 허용된다.
+    // tokenInfo 안에 contract address와 associatedAccountAddress가 존재하므로
+    // 프론트에서 계정 초기화없이 token info만 보고 remove를 가능하게 하도록 하기 위함임.
+
+    const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+    const tokens = this.tokenMap.get(chainIdentifier);
+    if (!tokens) {
       return;
     }
+    const findIndex = tokens.findIndex((token) => {
+      if (
+        token.associatedAccountAddress &&
+        token.associatedAccountAddress !== associatedAccountAddress
+      ) {
+        return false;
+      }
 
-    if (!isTokenForAccount) {
-      const currencies = (await this.getTokensFromChain(chainId)).filter(
-        (cur) => cur.coinMinimalDenom !== currency.coinMinimalDenom
-      );
-      await this.saveTokensToChain(chainId, currencies);
-    } else {
-      const currencies = (
-        await this.getTokensFromChainAndAccount(chainId)
-      ).filter((cur) => cur.coinMinimalDenom !== currency.coinMinimalDenom);
-      await this.saveTokensToChainAndAccount(chainId, currencies);
+      if ("contractAddress" in token.currency) {
+        return token.currency.contractAddress === contractAddress;
+      }
+      return false;
+    });
+
+    if (findIndex >= 0) {
+      tokens.splice(findIndex, 1);
     }
   }
 
@@ -295,32 +449,70 @@ export class TokensService {
     }
   }
 
-  async getSecret20ViewingKey(
+  getSecret20ViewingKey(
     chainId: string,
-    contractAddress: string
-  ): Promise<string> {
-    const tokens = await this.getTokens(chainId);
+    contractAddress: string,
+    // Should be hex encoded. (not bech32)
+    associatedAccountAddress: string
+  ): string {
+    this.validateAssociatedAccountAddress(associatedAccountAddress);
 
-    for (const currency of tokens) {
-      if ("type" in currency && currency.type === "secret20") {
-        if (currency.contractAddress === contractAddress) {
-          return currency.viewingKey;
-        }
+    const token = this.getToken(
+      chainId,
+      contractAddress,
+      associatedAccountAddress
+    );
+
+    if (token) {
+      if ("type" in token.currency && token.currency.type === "secret20") {
+        return token.currency.viewingKey;
       }
     }
 
-    throw new Error("There is no matched secret20");
+    throw new OWalletError("token-cw20", 111, "There is no matched secret20");
   }
+  protected validateAssociatedAccountAddress(value: string) {
+    if (!value) {
+      throw new Error("Please provide the associated account address");
+    }
 
+    if (Buffer.from(value, "hex").toString("hex") !== value) {
+      throw new Error("Invalid associated account address");
+    }
+  }
+  getToken = computedFn(
+    (
+      chainId: string,
+      contractAddress: string,
+      // Should be hex encoded. (not bech32)
+      associatedAccountAddress: string
+    ): TokenInfo | undefined => {
+      const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+      const tokens = this.tokenMap.get(chainIdentifier);
+      if (!tokens) {
+        return undefined;
+      }
+      return tokens.find((token) => {
+        if (
+          token.associatedAccountAddress &&
+          token.associatedAccountAddress !== associatedAccountAddress
+        ) {
+          return false;
+        }
+
+        if ("contractAddress" in token.currency) {
+          return token.currency.contractAddress === contractAddress;
+        }
+        return false;
+      });
+    }
+  );
   async checkOrGrantSecret20ViewingKeyPermission(
     env: Env,
     chainId: string,
     contractAddress: string,
     origin: string
   ) {
-    // Ensure that the secret20 was registered.
-    await this.getSecret20ViewingKey(chainId, contractAddress);
-
     const type = getSecret20ViewingKeyPermissionType(contractAddress);
 
     if (!this.permissionService.hasPermisson(chainId, type, origin)) {

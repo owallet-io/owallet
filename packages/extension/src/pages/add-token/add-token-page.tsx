@@ -36,7 +36,7 @@ export const AddTokenPage = observer(() => {
     setIsShowNetwork(false);
   };
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
-  const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+  // const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [coingeckoId, setCoingeckoId] = useState<string>("");
   const [coingeckoImg, setCoingeckoImg] = useState<string>("");
@@ -128,7 +128,7 @@ export const AddTokenPage = observer(() => {
       if (interactionInfo.interaction && tokensStore.waitingSuggestedToken) {
         await tokensStore.approveSuggestedToken(currency);
       } else {
-        await tokensOf.addToken(currency);
+        // await tokensOf.addToken(currency);
       }
 
       toast("Add Token Success", {

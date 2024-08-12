@@ -138,93 +138,93 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, [chainStore, chainStoreIsInitializing, currentChain, currentChainId]);
 
-  useEffect(() => {
-    const appStateHandler = (state: AppStateStatus) => {
-      if (state === "active") {
-        checkAndUpdateChainInfo();
-      }
-    };
-    const subscription = AppState.addEventListener("change", appStateHandler);
-    return () => {
-      subscription.remove();
-    };
-  }, [checkAndUpdateChainInfo]);
+  // useEffect(() => {
+  //   const appStateHandler = (state: AppStateStatus) => {
+  //     if (state === "active") {
+  //       checkAndUpdateChainInfo();
+  //     }
+  //   };
+  //   const subscription = AppState.addEventListener("change", appStateHandler);
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, [checkAndUpdateChainInfo]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (
-        (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
-          !chainStoreIsInitializing) ||
-        currentChainId !== previousChainId
-      ) {
-        checkAndUpdateChainInfo();
-      }
-    }, [
-      chainStoreIsInitializing,
-      previousChainStoreIsInitializing,
-      currentChainId,
-      previousChainId,
-      checkAndUpdateChainInfo,
-    ])
-  );
-  useEffect(() => {
-    if (
-      appInitStore.getChainInfos?.length <= 0 ||
-      !appInitStore.getChainInfos
-    ) {
-      appInitStore.updateChainInfos(chainInfos);
-    }
-  }, []);
-  useEffect(() => {
-    onRefresh();
-  }, [address, chainStore.current.chainId]);
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (
+  //       (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
+  //         !chainStoreIsInitializing) ||
+  //       currentChainId !== previousChainId
+  //     ) {
+  //       checkAndUpdateChainInfo();
+  //     }
+  //   }, [
+  //     chainStoreIsInitializing,
+  //     previousChainStoreIsInitializing,
+  //     currentChainId,
+  //     previousChainId,
+  //     checkAndUpdateChainInfo,
+  //   ])
+  // );
+  // useEffect(() => {
+  //   if (
+  //     appInitStore.getChainInfos?.length <= 0 ||
+  //     !appInitStore.getChainInfos
+  //   ) {
+  //     appInitStore.updateChainInfos(chainInfos);
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   onRefresh();
+  // }, [address, chainStore.current.chainId]);
 
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const onRefresh = async () => {
-    try {
-      const queries = queriesStore.get(chainStore.current.chainId);
-      // Because the components share the states related to the queries,
-      // fetching new query responses here would make query responses on all other components also refresh.
-      if (chainStore.current.networkType === "bitcoin") {
-        await queries.bitcoin.queryBitcoinBalance
-          .getQueryBalance(account.bech32Address)
-          .waitFreshResponse();
-        return;
-      } else {
-        await Promise.all([
-          priceStore.waitFreshResponse(),
-          ...queries.queryBalances
-            .getQueryBech32Address(address)
-            .balances.map((bal) => {
-              return bal.waitFreshResponse();
-            }),
-        ]);
-      }
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
-        const currentDate = Date.now();
-        const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
-        const differenceInSeconds = differenceInMilliseconds / 1000;
-        let timeoutId: NodeJS.Timeout;
-        if (differenceInSeconds > 10) {
-          universalSwapStore.setLoaded(false);
-          onFetchAmount(customChainInfos);
-        } else {
-          console.log("The dates are 10 seconds or less apart.");
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      setRefreshing(false);
-      setRefreshDate(Date.now());
-    }
-  };
+  // const onRefresh = async () => {
+  //   try {
+  //     const queries = queriesStore.get(chainStore.current.chainId);
+  //     // Because the components share the states related to the queries,
+  //     // fetching new query responses here would make query responses on all other components also refresh.
+  //     if (chainStore.current.networkType === "bitcoin") {
+  //       await queries.bitcoin.queryBitcoinBalance
+  //         .getQueryBalance(account.bech32Address)
+  //         .waitFreshResponse();
+  //       return;
+  //     } else {
+  //       await Promise.all([
+  //         priceStore.waitFreshResponse(),
+  //         ...queries.queryBalances
+  //           .getQueryBech32Address(address)
+  //           .balances.map((bal) => {
+  //             return bal.waitFreshResponse();
+  //           }),
+  //       ]);
+  //     }
+  //     if (
+  //       accountOrai.bech32Address &&
+  //       accountEth.evmosHexAddress &&
+  //       accountTron.evmosHexAddress &&
+  //       accountKawaiiCosmos.bech32Address
+  //     ) {
+  //       const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
+  //       const currentDate = Date.now();
+  //       const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
+  //       const differenceInSeconds = differenceInMilliseconds / 1000;
+  //       let timeoutId: NodeJS.Timeout;
+  //       if (differenceInSeconds > 10) {
+  //         universalSwapStore.setLoaded(false);
+  //         onFetchAmount(customChainInfos);
+  //       } else {
+  //         console.log("The dates are 10 seconds or less apart.");
+  //       }
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //   } finally {
+  //     setRefreshing(false);
+  //     setRefreshDate(Date.now());
+  //   }
+  // };
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async (
@@ -373,7 +373,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
-            onRefresh();
+            // onRefresh();
             setTimeout(() => {
               setRefreshing(false);
             }, 500);

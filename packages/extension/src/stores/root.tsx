@@ -58,7 +58,7 @@ export class RootStore {
   public readonly accountStore: AccountStore<AccountWithAll>;
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
-  public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
+  public readonly tokensStore: TokensStore;
   public readonly hugeQueriesStore: HugeQueriesStore;
   public readonly hugeQueriesNewStore: HugeQueriesStore;
 
@@ -267,11 +267,19 @@ export class RootStore {
       "usd"
     );
 
+    // this.tokensStore = new TokensStore(
+    //   window,
+    //   this.chainStore,
+    //   new InExtensionMessageRequester(),
+    //   this.interactionStore
+    // );
     this.tokensStore = new TokensStore(
       window,
       this.chainStore,
       new InExtensionMessageRequester(),
-      this.interactionStore
+      this.interactionStore,
+      this.accountStore,
+      this.keyRingStore
     );
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(

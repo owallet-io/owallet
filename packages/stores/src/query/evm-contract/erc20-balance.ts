@@ -22,20 +22,27 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20RpcBa
     protected readonly contractAddress: string,
     protected readonly walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "", {
-      jsonrpc: "2.0",
-      method: "eth_call",
-      params: [
-        {
-          to: contractAddress,
-          data: erc20ContractInterface.encodeFunctionData("balanceOf", [
-            walletAddress,
-          ]),
-        },
-        "latest",
-      ],
-      id: "erc20-balance",
-    });
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "",
+      {
+        jsonrpc: "2.0",
+        method: "eth_call",
+        params: [
+          {
+            to: contractAddress,
+            data: erc20ContractInterface.encodeFunctionData("balanceOf", [
+              walletAddress,
+            ]),
+          },
+          "latest",
+        ],
+        id: "erc20-balance",
+      },
+      chainGetter.getChain(chainId).evmRpc || chainGetter.getChain(chainId).rpc
+    );
   }
 
   protected canFetch(): boolean {

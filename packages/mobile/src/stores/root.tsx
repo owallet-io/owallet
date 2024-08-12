@@ -55,7 +55,7 @@ export class RootStore {
   public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
-  public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
+  public readonly tokensStore: TokensStore;
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
@@ -247,6 +247,16 @@ export class RootStore {
       "usd"
     );
 
+    // this.tokensStore = new TokensStore(
+    //   {
+    //     addEventListener: (type: string, fn: () => void) => {
+    //       eventEmitter.addListener(type, fn);
+    //     },
+    //   },
+    //   this.chainStore,
+    //   new RNMessageRequesterInternal(),
+    //   this.interactionStore
+    // );
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -255,9 +265,10 @@ export class RootStore {
       },
       this.chainStore,
       new RNMessageRequesterInternal(),
-      this.interactionStore
+      this.interactionStore,
+      this.accountStore,
+      this.keyRingStore
     );
-
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
       new AsyncKVStore("store_test_ibc_currency_registrar"),
       24 * 3600 * 1000,

@@ -92,12 +92,19 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "", {
-      jsonrpc: "2.0",
-      method: "eth_getBalance",
-      params: [walletAddress, "latest"],
-      id: "evm-balance",
-    });
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "",
+      {
+        jsonrpc: "2.0",
+        method: "eth_getBalance",
+        params: [walletAddress, "latest"],
+        id: "evm-balance",
+      },
+      chainGetter.getChain(chainId).evmRpc || chainGetter.getChain(chainId).rpc
+    );
 
     this.walletAddress = walletAddress;
 
@@ -139,24 +146,24 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
     }
   }
   protected setResponse(response: Readonly<QueryResponse<BalancesRpc>>) {
-    if (this._chainId === ChainIdEnum.Oasis) {
-      this.getOasisBalance().then((oasisRs) => {
-        console.log(oasisRs, "oasisRs");
-        response.data.jsonrpc;
-        const res = {
-          ...response,
-          data: {
-            result: Web3.utils.stringToHex(oasisRs as any),
-            jsonrpc: response.data.jsonrpc,
-            id: response.data.id,
-          },
-        };
-        super.setResponse(res);
-      });
-    } else {
-      super.setResponse(response);
-      this.fetchAllErc20();
-    }
+    // if (this._chainId === ChainIdEnum.Oasis) {
+    //   this.getOasisBalance().then((oasisRs) => {
+    //     console.log(oasisRs, "oasisRs");
+    //     response.data.jsonrpc;
+    //     const res = {
+    //       ...response,
+    //       data: {
+    //         result: Web3.utils.stringToHex(oasisRs as any),
+    //         jsonrpc: response.data.jsonrpc,
+    //         id: response.data.id,
+    //       },
+    //     };
+    //     super.setResponse(res);
+    //   });
+    // } else {
+    super.setResponse(response);
+    this.fetchAllErc20();
+    // }
   }
   // protected async setResponse(): Promise<QueryResponse<BalancesRpc>> {
   //   try {

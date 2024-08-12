@@ -919,6 +919,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://api.trongrid.io",
     rest: "https://apilist.tronscanapi.com",
+    evmRpc: "https://api.trongrid.io/jsonrpc",
     // rpc: "https://nile.trongrid.io",
     // rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
