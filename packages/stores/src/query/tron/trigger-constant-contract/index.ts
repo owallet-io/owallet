@@ -24,9 +24,9 @@ export class ObservableQueryTriggerConstantContractInner extends ObservableChain
       sharedContext,
       chainId,
       chainGetter,
-      `/walletsolidity/triggerconstantcontract`,
-      data,
-      chainGetter.getChain(chainId).rpc
+      `/walletsolidity/triggerconstantcontract`
+      // data,
+      // chainGetter.getChain(chainId).rpc
     );
     makeObservable(this);
   }

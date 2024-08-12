@@ -39,8 +39,11 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
     }
     return this.response.data;
   }
-  protected async fetchResponse(): Promise<QueryResponse<number>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: number }> {
     try {
+      const { data, headers } = await super.fetchResponse(abortController);
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
 
       if (!this.paramGas.to || !this.paramGas.from) return;
@@ -54,10 +57,8 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
       );
 
       return {
-        status: 1,
-        staled: false,
+        headers,
         data: estimateGas,
-        timestamp: Date.now(),
       };
     } catch (error) {
       console.log(
@@ -66,11 +67,6 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
       );
       throw Error(error);
     }
-  }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }-gas-evm-native-${this.chainId}-${JSON.stringify(this.paramGas)}`;
   }
 }
 

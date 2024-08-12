@@ -26,6 +26,7 @@ import { Balances, BalancesRpc } from "./types";
 import { CancelToken } from "axios";
 import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
+import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -77,12 +78,12 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     }
     return new CoinPretty(
       currency,
-      new Int(Web3.utils.hexToNumberString(this.response.data.result))
+      new Int(Web3.utils.hexToNumberString(this.response.data))
     );
   }
 }
 
-export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc> {
+export class ObservableQueryEvmBalances extends ObservableEvmChainJsonRpcQuery<string> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
@@ -93,19 +94,10 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(
-      sharedContext,
-      chainId,
-      chainGetter,
-      "",
-      {
-        jsonrpc: "2.0",
-        method: "eth_getBalance",
-        params: [walletAddress, "latest"],
-        id: "evm-balance",
-      },
-      chainGetter.getChain(chainId).evmRpc || chainGetter.getChain(chainId).rpc
-    );
+    super(sharedContext, chainId, chainGetter, "eth_getBalance", [
+      walletAddress,
+      "latest",
+    ]);
 
     this.walletAddress = walletAddress;
 
@@ -146,26 +138,26 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
       );
     }
   }
-  protected setResponse(response: Readonly<QueryResponse<BalancesRpc>>) {
-    // if (this._chainId === ChainIdEnum.Oasis) {
-    //   this.getOasisBalance().then((oasisRs) => {
-    //     console.log(oasisRs, "oasisRs");
-    //     response.data.jsonrpc;
-    //     const res = {
-    //       ...response,
-    //       data: {
-    //         result: Web3.utils.stringToHex(oasisRs as any),
-    //         jsonrpc: response.data.jsonrpc,
-    //         id: response.data.id,
-    //       },
-    //     };
-    //     super.setResponse(res);
-    //   });
-    // } else {
-    super.setResponse(response);
-    // this.fetchAllErc20();
-    // }
-  }
+  // protected setResponse(response: Readonly<QueryResponse<BalancesRpc>>) {
+  //   // if (this._chainId === ChainIdEnum.Oasis) {
+  //   //   this.getOasisBalance().then((oasisRs) => {
+  //   //     console.log(oasisRs, "oasisRs");
+  //   //     response.data.jsonrpc;
+  //   //     const res = {
+  //   //       ...response,
+  //   //       data: {
+  //   //         result: Web3.utils.stringToHex(oasisRs as any),
+  //   //         jsonrpc: response.data.jsonrpc,
+  //   //         id: response.data.id,
+  //   //       },
+  //   //     };
+  //   //     super.setResponse(res);
+  //   //   });
+  //   // } else {
+  //   super.setResponse(response);
+  //   // this.fetchAllErc20();
+  //   // }
+  // }
   // protected async setResponse(): Promise<QueryResponse<BalancesRpc>> {
   //   try {
   //     if (this._chainId === ChainIdEnum.Oasis) {

@@ -106,7 +106,13 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
     }
   }
 
-  protected async fetchResponse(): Promise<QueryResponse<Balances>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{
+    data: Balances;
+    headers: any;
+  }> {
+    const { headers } = await super.fetchResponse(abortController);
     try {
       const web3 = new Web3(
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
@@ -126,10 +132,8 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
         balances,
       };
       return {
-        status: 1,
-        staled: false,
+        headers,
         data,
-        timestamp: Date.now(),
       };
     } catch (error) {
       console.log(
@@ -137,10 +141,6 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
         error
       );
     }
-  }
-
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${this.instance.defaults.baseURL}-balance-evm-native-${this.chainId}-${this.walletAddress}`;
   }
 }
 

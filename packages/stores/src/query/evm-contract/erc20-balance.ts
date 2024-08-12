@@ -1,6 +1,10 @@
 import { computed, makeObservable, override } from "mobx";
 import { DenomHelper, getRpcByChainId, KVStore } from "@owallet/common";
-import { ChainGetter, QueryResponse } from "../../common";
+import {
+  ChainGetter,
+  ObservableJsonRPCQuery,
+  QueryResponse,
+} from "../../common";
 import { CoinPretty, Int } from "@owallet/unit";
 import {
   BalanceRegistry,
@@ -14,8 +18,9 @@ import Web3 from "web3";
 import { erc20ContractInterface } from "./constant";
 import { CancelToken } from "axios";
 import { QuerySharedContext } from "src/common/query/context";
+import { ObservableEvmChainJsonRpcQuery } from "./evm-chain-json-rpc";
 
-export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20RpcBalance> {
+export class ObservableQueryErc20Balance extends ObservableEvmChainJsonRpcQuery<string> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
@@ -23,27 +28,15 @@ export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20RpcBa
     protected readonly contractAddress: string,
     protected readonly walletAddress: string
   ) {
-    super(
-      sharedContext,
-      chainId,
-      chainGetter,
-      "",
+    super(sharedContext, chainId, chainGetter, "", [
       {
-        jsonrpc: "2.0",
-        method: "eth_call",
-        params: [
-          {
-            to: contractAddress,
-            data: erc20ContractInterface.encodeFunctionData("balanceOf", [
-              walletAddress,
-            ]),
-          },
-          "latest",
-        ],
-        id: "erc20-balance",
+        to: contractAddress,
+        data: erc20ContractInterface.encodeFunctionData("balanceOf", [
+          walletAddress,
+        ]),
       },
-      chainGetter.getChain(chainId).evmRpc || chainGetter.getChain(chainId).rpc
-    );
+      "latest",
+    ]);
   }
 
   protected canFetch(): boolean {
@@ -141,7 +134,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
 
     if (
       !this.queryErc20Balance.response ||
-      !this.queryErc20Balance.response.data.result
+      !this.queryErc20Balance.response.data
     ) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
@@ -149,9 +142,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
     return new CoinPretty(
       currency,
       new Int(
-        Web3.utils.hexToNumberString(
-          this.queryErc20Balance.response.data.result
-        )
+        Web3.utils.hexToNumberString(this.queryErc20Balance.response.data)
       )
     );
   }

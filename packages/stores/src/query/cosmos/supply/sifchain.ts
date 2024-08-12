@@ -10,12 +10,16 @@ export class ObservableQuerySifchainLiquidityAPY extends ObservableQuery<Sifchai
   protected readonly chainId: string;
 
   constructor(sharedContext: QuerySharedContext, chainId: string) {
-    const instance = Axios.create({
-      baseURL: "https://data.sifchain.finance/",
-      adapter: "fetch",
-    });
+    // const instance = Axios.create({
+    //   baseURL: "https://data.sifchain.finance/",
+    //   adapter: "fetch",
+    // });
 
-    super(sharedContext, instance, `beta/validator/stakingRewards`);
+    super(
+      sharedContext,
+      "https://data.sifchain.finance/",
+      `beta/validator/stakingRewards`
+    );
 
     this.chainId = chainId;
     makeObservable(this);

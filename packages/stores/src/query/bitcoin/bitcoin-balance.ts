@@ -50,10 +50,10 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.bech32Address?.length > 0;
   }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
-    const resApi = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: Result }> {
+    const { headers, data } = await super.fetchResponse(abortController);
     const addressType = getAddressTypeByAddress(
       this.bech32Address
     ) as AddressBtcType;
@@ -64,17 +64,15 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     }) as string;
     const btcResult = processBalanceFromUtxos({
       address: this.bech32Address,
-      utxos: resApi.data,
+      utxos: data,
       path,
     });
     if (!btcResult) {
       throw new Error("Failed to get the response from bitcoin");
     }
     return {
+      headers,
       data: btcResult,
-      status: 1,
-      staled: false,
-      timestamp: Date.now(),
     };
   }
 }

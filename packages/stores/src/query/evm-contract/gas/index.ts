@@ -38,8 +38,14 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
     }
     return this.response.data;
   }
-  protected async fetchResponse(): Promise<QueryResponse<number>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{
+    headers: any;
+    data: number;
+  }> {
     try {
+      const { data, headers } = await super.fetchResponse(abortController);
       const web3 = new Web3(
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
       );
@@ -60,10 +66,8 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
         });
 
       return {
-        status: 1,
-        staled: false,
+        headers,
         data: estimateGas,
-        timestamp: Date.now(),
       };
     } catch (error) {
       console.log(
@@ -71,11 +75,6 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
         error
       );
     }
-  }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }-gas-evm-contract-native-${this.chainId}-${JSON.stringify(this.paramGas)}`;
   }
 }
 

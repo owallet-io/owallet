@@ -51,8 +51,8 @@ export class ObservableCosmwasmContractChainQuery<
     this.setUrl(
       ObservableCosmwasmContractChainQuery.getUrlFromObj(
         this.contractAddress,
-        this.obj,
-        this.beta
+        this.obj
+        // this.beta
       )
     );
   }
@@ -61,12 +61,12 @@ export class ObservableCosmwasmContractChainQuery<
     return this.contractAddress?.length !== 0;
   }
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<T>> {
-    const response = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: T }> {
+    const { data, headers } = await super.fetchResponse(abortController);
 
-    const wasmResult = response.data as unknown as
+    const wasmResult = data as unknown as
       | {
           data: any;
         }
@@ -78,9 +78,7 @@ export class ObservableCosmwasmContractChainQuery<
 
     return {
       data: wasmResult.data as T,
-      status: response.status,
-      staled: false,
-      timestamp: Date.now(),
+      headers,
     };
   }
 }

@@ -34,15 +34,17 @@ export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
 
     return new Int(this.response.data);
   }
-  protected async fetchResponse(): Promise<QueryResponse<string>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: string }> {
     try {
+      const { headers } = await super.fetchResponse(abortController);
+
       const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
       const gasPrice = await web3.eth.getGasPrice();
       return {
-        status: 1,
-        staled: false,
+        headers,
         data: gasPrice,
-        timestamp: Date.now(),
       };
     } catch (error) {
       console.log(

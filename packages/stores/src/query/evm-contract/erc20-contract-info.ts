@@ -25,9 +25,11 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
 
     return this.response?.data?.token_info_response ?? this.response?.data;
   }
-  protected async fetchResponse(): Promise<
-    QueryResponse<Erc20ContractTokenInfo>
-  > {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: Erc20ContractTokenInfo }> {
+    const { headers } = await super.fetchResponse(abortController);
+
     const web3 = new Web3(
       getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
     );
@@ -53,9 +55,7 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
 
     return {
       data: tokenInfoData,
-      status: 1,
-      staled: false,
-      timestamp: Date.now(),
+      headers,
     };
   }
 }

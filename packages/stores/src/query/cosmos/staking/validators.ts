@@ -52,14 +52,9 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   protected readonly validator: Validator;
 
   constructor(sharedContext: QuerySharedContext, validator: Validator) {
-    const instance = Axios.create({
-      baseURL: "https://keybase.io/",
-      adapter: "fetch",
-    });
-
     super(
       sharedContext,
-      instance,
+      "https://keybase.io/",
       `_/api/1.0/user/lookup.json?fields=pictures&key_suffix=${validator.description.identity}`
     );
     makeObservable(this);
@@ -71,12 +66,12 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
     return this.validator?.description?.identity !== "";
   }
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<KeybaseResult>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: KeybaseResult }> {
     return await ObservableQueryValidatorThumbnail.fetchingThumbnailQueue.add(
       () => {
-        return super.fetchResponse(cancelToken);
+        return super.fetchResponse(abortController);
       }
     );
   }

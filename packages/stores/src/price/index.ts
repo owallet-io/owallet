@@ -172,20 +172,21 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     supportedVsCurrencies: {
       [vsCurrency: string]: FiatCurrency;
     },
-    defaultVsCurrency: string
-  ) {
-    const instance = Axios.create({
-      baseURL: "https://api.coingecko.com/api/v3",
-      // baseURL: MarketAPIEndPoint,
-      adapter: "fetch",
-    });
+    defaultVsCurrency: string,
+    options: {
+      readonly baseURL?: string;
+      readonly uri?: string;
 
+      // Default is 250ms
+      readonly throttleDuration?: number;
+    } = {}
+  ) {
     super(
       new QuerySharedContext(kvStore, {
         responseDebounceMs: 0,
       }),
-      instance,
-      "/simple/price"
+      options.baseURL || "https://api.coingecko.com/api/v3",
+      options.uri || "/simple/price"
     );
 
     this._isInitialized = false;
@@ -289,19 +290,16 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       this._coinIds.values?.length > 0 && this._vsCurrencies.values?.length > 0
     );
   }
-
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<CoinGeckoSimplePrice>> {
-    const response = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: CoinGeckoSimplePrice }> {
+    const { data, headers } = await super.fetchResponse(abortController);
     // Because this store only queries the price of the tokens that have been requested from start,
     // it will remove the prior prices that have not been requested to just return the fetching result.
     // So, to prevent this problem, merge the prior response and current response with retaining the prior response's price.
     return {
-      ...response,
-      ...{
-        data: deepmerge(this.response ? this.response.data : {}, response.data),
-      },
+      headers,
+      data: deepmerge(this.response ? this.response.data : {}, data),
     };
   }
 
@@ -312,16 +310,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   //
   //   this.setUrl(url);
   // }
-
-  protected getCacheKey(): string {
-    // Because the uri of the coingecko would be changed according to the coin ids and vsCurrencies.
-    // Therefore, just using the uri as the cache key is not useful.
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }${this.instance.getUri({
-      url: "/simple/price",
-    })}`;
-  }
 
   getPrice(coinId: string, vsCurrency?: string): number | undefined {
     if (!vsCurrency) {
