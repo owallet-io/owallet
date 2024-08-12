@@ -15,14 +15,15 @@ import {
 } from "@owallet/bitcoin";
 import { processBalanceFromUtxos } from "@owallet/bitcoin";
 import { AddressBtcType } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Result> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/address/${address}/utxo`);
+    super(sharedContext, chainId, chainGetter, `/address/${address}/utxo`);
   }
 
   @computed
@@ -72,10 +73,14 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
 }
 
 export class ObservableQueryBitcoinBalance extends ObservableChainQueryMap<Result> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, (address: string) => {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, (address: string) => {
       return new ObservableQueryBitcoinBalanceInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         address

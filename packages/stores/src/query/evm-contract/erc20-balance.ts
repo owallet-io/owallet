@@ -13,17 +13,18 @@ import { ObservableChainQuery } from "../chain-query";
 import Web3 from "web3";
 import { erc20ContractInterface } from "./constant";
 import { CancelToken } from "axios";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryErc20Balance extends ObservableChainQuery<Erc20RpcBalance> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
     protected readonly walletAddress: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       "",
@@ -89,14 +90,14 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
   protected readonly queryErc20Balance: ObservableQueryErc20Balance;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly walletAddress: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url at initial.
@@ -107,7 +108,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
     makeObservable(this);
 
     this.queryErc20Balance = new ObservableQueryErc20Balance(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       denomHelper.contractAddress,
@@ -159,7 +160,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
 export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
   readonly type: BalanceRegistryType = "erc20";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -173,7 +174,7 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
       return;
 
     return new ObservableQueryErc20BalanceInner(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

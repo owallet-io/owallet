@@ -8,6 +8,7 @@ import { ObservableQueryErc20BalanceRegistry } from "./erc20-balance";
 import { OWallet } from "@owallet/types";
 import { QueriesWrappedEvm } from "../evm/queries";
 import { ObservableQueryGasEvmContract } from "./gas";
+import { QuerySharedContext } from "src/common/query/context";
 
 export interface HasEvmContractQueries {
   evmContract: EvmContractQueries;
@@ -20,16 +21,16 @@ export class QueriesWrappedEvmContract
   public evmContract: EvmContractQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter, apiGetter);
+    super(sharedContext, chainId, chainGetter, apiGetter);
 
     this.evmContract = new EvmContractQueries(
       this,
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
@@ -41,22 +42,22 @@ export class EvmContractQueries {
   public readonly queryGas: DeepReadonly<ObservableQueryGasEvmContract>;
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryErc20BalanceRegistry(kvStore)
+      new ObservableQueryErc20BalanceRegistry(sharedContext)
     );
 
     this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
 
     this.queryGas = new ObservableQueryGasEvmContract(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );

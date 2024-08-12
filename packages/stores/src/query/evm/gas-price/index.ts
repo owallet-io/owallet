@@ -9,10 +9,15 @@ import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
 import { CancelToken } from "axios";
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, ``);
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, ``);
 
     makeObservable(this);
   }
@@ -52,13 +57,13 @@ export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
 
 export class ObservableQueryGasPrice extends ObservableChainQueryMap<string> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, () => {
+    super(sharedContext, chainId, chainGetter, () => {
       return new ObservableQueryGasPriceInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter
       );

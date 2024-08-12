@@ -5,15 +5,16 @@ import { ChainGetter, QueryResponse } from "../../common";
 import { computed } from "mobx";
 import Web3 from "web3";
 import ERC20_ABI from "human-standard-token-abi";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<Erc20ContractTokenInfo> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, contractAddress);
+    super(sharedContext, chainId, chainGetter, contractAddress);
   }
 
   @computed
@@ -61,13 +62,13 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
 
 export class ObservableQueryErc20ContractInfo extends ObservableChainQueryMap<Erc20ContractTokenInfo> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (contractAddress: string) => {
+    super(sharedContext, chainId, chainGetter, (contractAddress: string) => {
       return new ObservableQueryErc20ContactInfoInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         contractAddress

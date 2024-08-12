@@ -25,17 +25,18 @@ import { ObservableChainQuery } from "../../chain-query";
 import { Balances, BalancesRpc } from "./types";
 import { CancelToken } from "axios";
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryEvmBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -87,13 +88,13 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       "",
@@ -162,7 +163,7 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<BalancesRpc
     //   });
     // } else {
     super.setResponse(response);
-    this.fetchAllErc20();
+    // this.fetchAllErc20();
     // }
   }
   // protected async setResponse(): Promise<QueryResponse<BalancesRpc>> {
@@ -287,7 +288,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
 
   readonly type: BalanceRegistryType = "evm";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -307,7 +308,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryEvmBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           walletAddress
@@ -315,7 +316,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
       );
     }
     return new ObservableQueryBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

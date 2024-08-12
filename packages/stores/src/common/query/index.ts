@@ -83,8 +83,6 @@ export abstract class ObservableQuery<T = unknown, E = unknown> {
   @observable
   protected _data: { [key: string]: any } = null;
 
-  @observable
-  protected readonly sharedContext: QuerySharedContext;
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
     "The network connection was lost.",
     "The request timed out.",
@@ -118,7 +116,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> {
   protected _instance: AxiosInstance;
 
   protected constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     instance: AxiosInstance,
     url: string,
     options: Partial<QueryOptions> = {}
@@ -131,9 +129,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> {
     this._instance = instance;
 
     makeObservable(this);
-    this.sharedContext = new QuerySharedContext(this.kvStore, {
-      responseDebounceMs: 300,
-    });
+
     onBecomeObserved(this, "_response", this.becomeObserved);
     onBecomeObserved(this, "_isFetching", this.becomeObserved);
     onBecomeObserved(this, "_error", this.becomeObserved);

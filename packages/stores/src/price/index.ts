@@ -8,6 +8,7 @@ import { PricePretty } from "@owallet/unit";
 import { DeepReadonly } from "utility-types";
 import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
+import { QuerySharedContext } from "../common/query/context";
 
 class Throttler {
   protected fns: (() => void)[] = [];
@@ -167,7 +168,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   protected _throttler: Throttler;
   constructor(
-    kvStore: KVStore,
+    protected readonly kvStore: KVStore,
     supportedVsCurrencies: {
       [vsCurrency: string]: FiatCurrency;
     },
@@ -179,7 +180,13 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       adapter: "fetch",
     });
 
-    super(kvStore, instance, "/simple/price");
+    super(
+      new QuerySharedContext(kvStore, {
+        responseDebounceMs: 0,
+      }),
+      instance,
+      "/simple/price"
+    );
 
     this._isInitialized = false;
 

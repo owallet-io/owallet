@@ -15,17 +15,18 @@ import {
 } from "../../balances";
 import { ObservableChainQuery } from "../../chain-query";
 import { Balances } from "./types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryCosmosBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -78,13 +79,13 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`
@@ -123,40 +124,40 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     // If it's already registered anyway, it's okay because the method below doesn't do anything.
     // Better to set it as an array all at once to reduce computed.
 
-    const allTokensAddress = response.data.balances
-      .filter(
-        (token) =>
-          MapChainIdToNetwork[chainInfo.chainId] &&
-          !!chainInfo.findCurrency(token.denom) === false &&
-          MapChainIdToNetwork[chainInfo.chainId]
-      )
-      .map((coin) => {
-        const str = `${
-          MapChainIdToNetwork[chainInfo.chainId]
-        }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
-        return str;
-      });
-    if (allTokensAddress?.length === 0) return;
-    API.getMultipleTokenInfo({
-      tokenAddresses: allTokensAddress.join(","),
-    }).then((tokenInfos) => {
-      const infoTokens = tokenInfos
-        .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
-        .map((tokeninfo) => {
-          const infoToken = {
-            coinImageUrl: tokeninfo.imgUrl,
-            coinDenom: tokeninfo.abbr,
-            coinGeckoId: tokeninfo.coingeckoId,
-            coinDecimals: tokeninfo.decimal,
-            coinMinimalDenom: tokeninfo.denom,
-          };
-          return infoToken;
-        });
-      //@ts-ignore
-      chainInfo.addCurrencies(...infoTokens);
-      const denoms = response.data.balances.map((coin) => coin.denom);
-      chainInfo.addUnknownCurrencies(...denoms);
-    });
+    // const allTokensAddress = response.data.balances
+    //   .filter(
+    //     (token) =>
+    //       MapChainIdToNetwork[chainInfo.chainId] &&
+    //       !!chainInfo.findCurrency(token.denom) === false &&
+    //       MapChainIdToNetwork[chainInfo.chainId]
+    //   )
+    //   .map((coin) => {
+    //     const str = `${
+    //       MapChainIdToNetwork[chainInfo.chainId]
+    //     }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
+    //     return str;
+    //   });
+    // if (allTokensAddress?.length === 0) return;
+    // API.getMultipleTokenInfo({
+    //   tokenAddresses: allTokensAddress.join(","),
+    // }).then((tokenInfos) => {
+    //   const infoTokens = tokenInfos
+    //     .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
+    //     .map((tokeninfo) => {
+    //       const infoToken = {
+    //         coinImageUrl: tokeninfo.imgUrl,
+    //         coinDenom: tokeninfo.abbr,
+    //         coinGeckoId: tokeninfo.coingeckoId,
+    //         coinDecimals: tokeninfo.decimal,
+    //         coinMinimalDenom: tokeninfo.denom,
+    //       };
+    //       return infoToken;
+    //     });
+    //   //@ts-ignore
+    //   chainInfo.addCurrencies(...infoTokens);
+    const denoms = response.data.balances.map((coin) => coin.denom);
+    chainInfo.addUnknownCurrencies(...denoms);
+    // });
   }
 }
 
@@ -166,7 +167,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
 
   readonly type: BalanceRegistryType = "cosmos";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -186,7 +187,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryCosmosBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           bech32Address
@@ -195,7 +196,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     }
 
     return new ObservableQueryBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

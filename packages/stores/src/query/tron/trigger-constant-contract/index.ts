@@ -11,16 +11,17 @@ import {
 } from "./types";
 import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryTriggerConstantContractInner extends ObservableChainQuery<ITriggerConstantContract> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly data: ITriggerConstantContractReq
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/walletsolidity/triggerconstantcontract`,
@@ -44,14 +45,14 @@ export class ObservableQueryTriggerConstantContractInner extends ObservableChain
 
 export class ObservableQueryTriggerConstantContract extends ObservableChainQueryMap<ITriggerConstantContract> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (data) => {
+    super(sharedContext, chainId, chainGetter, (data) => {
       const triggerConstantContract = JSON.parse(data);
       return new ObservableQueryTriggerConstantContractInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         triggerConstantContract

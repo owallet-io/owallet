@@ -5,6 +5,7 @@ import { override } from "mobx";
 import { ChainGetter } from "../common";
 import { HasMapStore } from "../common";
 import { AddressBtcType } from "@owallet/types";
+import { QuerySharedContext } from "../common/query/context";
 
 export class ObservableChainQuery<
   T = unknown,
@@ -16,7 +17,7 @@ export class ObservableChainQuery<
   protected readonly chainGetter: ChainGetter;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     url: string,
@@ -34,7 +35,7 @@ export class ObservableChainQuery<
       adapter: "fetch",
     });
 
-    super(kvStore, instance, url, data ? { data } : null);
+    super(sharedContext, instance, url, data ? { data } : null);
 
     this._chainId = chainId;
     this._beta = chainInfo.beta;
@@ -67,7 +68,7 @@ export class ObservableChainQueryMap<
   E = unknown
 > extends HasMapStore<ObservableChainQuery<T, E>> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     creater: (key: string) => ObservableChainQuery<T, E>

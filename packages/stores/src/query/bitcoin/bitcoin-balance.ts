@@ -21,6 +21,7 @@ import {
   ObservableQueryBalanceInner,
 } from "../balances";
 import { AddressBtcType, Currency } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected bech32Address: string;
@@ -28,12 +29,17 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/address/${bech32Address}/utxo`);
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      `/address/${bech32Address}/utxo`
+    );
 
     this.bech32Address = bech32Address;
 
@@ -74,14 +80,14 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
 }
 export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryBtcBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -139,7 +145,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryBtcBalances> = new Map();
   readonly type: BalanceRegistryType = "bitcoin";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -158,7 +164,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryBtcBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           bech32Address
@@ -167,7 +173,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
     }
 
     return new ObservableQueryBitcoinBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

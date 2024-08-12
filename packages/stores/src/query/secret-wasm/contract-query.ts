@@ -1,5 +1,5 @@
 import { ObservableChainQuery } from "../chain-query";
-import { KVStore, toGenerator } from "@owallet/common";
+import { toGenerator } from "@owallet/common";
 import { ChainGetter } from "../../common";
 import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
 import { autorun, computed, flow, makeObservable, observable } from "mobx";
@@ -8,6 +8,7 @@ import Axios, { CancelToken } from "axios";
 import { QueryResponse } from "../../common";
 
 import { Buffer } from "buffer";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableSecretContractChainQuery<
   T
@@ -21,7 +22,7 @@ export class ObservableSecretContractChainQuery<
   protected _isIniting: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
@@ -31,7 +32,7 @@ export class ObservableSecretContractChainQuery<
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {
     // Don't need to set the url initially because it can't request without encyption.
-    super(kvStore, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, ``);
     makeObservable(this);
 
     // Try to get the owallet API.

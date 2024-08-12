@@ -140,6 +140,9 @@ export class RootStore {
 
       new AsyncKVStore("store_queries_fix2"),
       this.chainStore,
+      {
+        responseDebounceMs: 75,
+      },
       async () => {
         return new OWallet(
           `${name}-${version}`,

@@ -3,10 +3,20 @@ import { StakingParams } from "./types";
 import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryStakingParams extends ObservableChainQuery<StakingParams> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, "/cosmos/staking/v1beta1/params");
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      "/cosmos/staking/v1beta1/params"
+    );
     makeObservable(this);
   }
   @computed

@@ -11,17 +11,18 @@ import {
 import { ObservableChainQuery } from "../../chain-query";
 import { Balances } from "./types";
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryTronBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -74,12 +75,12 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(sharedContext, chainId, chainGetter, "");
 
     this.walletAddress = walletAddress;
 
@@ -149,7 +150,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
 
   readonly type: BalanceRegistryType = "evm";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -170,7 +171,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryTronBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           walletAddress
@@ -178,7 +179,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
       );
     }
     return new ObservableQueryBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

@@ -5,12 +5,13 @@ import { CancelToken } from "axios";
 import { QueryResponse } from "../../common";
 
 import { Buffer } from "buffer";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableCosmwasmContractChainQuery<
   T
 > extends ObservableChainQuery<T> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
@@ -18,7 +19,7 @@ export class ObservableCosmwasmContractChainQuery<
     protected obj: object
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       ObservableCosmwasmContractChainQuery.getUrlFromObj(

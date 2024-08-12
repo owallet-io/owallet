@@ -7,6 +7,7 @@ import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
 
 type GasRequest = {
   to: string;
@@ -14,12 +15,12 @@ type GasRequest = {
 };
 export class ObservableQueryGasInner extends ObservableChainQuery<number> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly paramGas: GasRequest
   ) {
-    super(kvStore, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, ``);
     makeObservable(this);
   }
 
@@ -75,13 +76,13 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
 
 export class ObservableQueryGas extends ObservableChainQueryMap<number> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (data) => {
+    super(sharedContext, chainId, chainGetter, (data) => {
       return new ObservableQueryGasInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         JSON.parse(data)
