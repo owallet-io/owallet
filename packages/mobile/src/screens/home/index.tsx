@@ -44,7 +44,7 @@ import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
-import OWText from "@src/components/text/ow-text";
+
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -65,18 +65,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
-  // const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
-  //   useMultipleAssets(
-  //     accountStore,
-  //     priceStore,
-  //     hugeQueriesStore,
-  //     chainStore.current.chainId,
-  //     appInitStore.getInitApp.isAllNetworks,
-  //     appInitStore,
-  //     refreshing,
-  //     accountOrai.bech32Address
-  //   );
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -165,27 +153,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
 
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onRefresh = async () => {
     try {
-      // const queries = queriesStore.get(chainStore.current.chainId);
-      // Because the components share the states related to the queries,
-      // fetching new query responses here would make query responses on all other components also refresh.
-      // if (chainStore.current.networkType === "bitcoin") {
-      //   // await queries.bitcoin.queryBitcoinBalance
-      //   //   .getQueryBalance(account.bech32Address)
-      //   //   .waitFreshResponse();
-      //   // return;
-      // } else {
-      //   await Promise.all([
-      //     priceStore.waitFreshResponse(),
-      //     ...queries.queryBalances
-      //       .getQueryBech32Address(account.bech32Address)
-      //       .balances.map((bal) => {
-      //         return bal.waitFreshResponse();
-      //       }),
-      //   ]);
-      // }
+      if (chainStore.current.networkType === "bitcoin") {
+        const queries = queriesStore.get(chainStore.current.chainId);
+        await queries.bitcoin.queryBitcoinBalance
+          .getQueryBalance(account.bech32Address)
+          .waitFreshResponse();
+      }
+
       if (
         accountOrai.bech32Address &&
         accountEth.evmosHexAddress &&
@@ -325,30 +301,51 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
-  // useEffect(() => {
-  //   if (!totalPriceBalance || !accountOrai.bech32Address) return;
-  //   const hashedAddress = new sha256()
-  //     .update(accountOrai.bech32Address)
-  //     .digest("hex");
 
-  //   const amount = new IntPretty(totalPriceBalance || "0")
-  //     .maxDecimals(2)
-  //     .shrink(true)
-  //     .trim(true)
-  //     .locale(false)
-  //     .inequalitySymbol(true);
-
-  //   const logEvent = {
-  //     userId: hashedAddress,
-  //     totalPrice: amount?.toString() || "0",
-  //     currency: priceStore.defaultVsCurrency,
-  //   };
-  //   if (mixpanel) {
-  //     mixpanel.track("OWallet - Assets Managements", logEvent);
-  //   }
-  //   return () => {};
-  // }, [accountOrai.bech32Address, priceStore.defaultVsCurrency]);
   const allBalances = hugeQueriesStore.getAllBalances(true);
+  const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
+    let result: PricePretty | undefined;
+    for (const bal of hugeQueriesStore.allKnownBalances) {
+      if (bal.price) {
+        const price = priceStore.calculatePrice(bal.token, "usd");
+        if (price) {
+          if (!result) {
+            result = price;
+          } else {
+            result = result.add(price);
+          }
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, priceStore]);
+
+  useEffect(() => {
+    if (!availableTotalPriceEmbedOnlyUSD || !accountOrai.bech32Address) return;
+    const hashedAddress = new sha256()
+      .update(accountOrai.bech32Address)
+      .digest("hex");
+
+    const amount = new IntPretty(availableTotalPriceEmbedOnlyUSD || "0")
+      .maxDecimals(2)
+      .shrink(true)
+      .trim(true)
+      .locale(false)
+      .inequalitySymbol(true);
+    const logEvent = {
+      userId: hashedAddress,
+      totalPrice: amount?.toString() || "0",
+      currency: "usd",
+    };
+    if (mixpanel) {
+      mixpanel.track("OWallet - Assets Managements", logEvent);
+    }
+    return () => {};
+  }, [
+    accountOrai.bech32Address,
+    priceStore.defaultVsCurrency,
+    availableTotalPriceEmbedOnlyUSD,
+  ]);
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     let balances = hugeQueriesStore.allKnownBalances;
@@ -389,11 +386,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={() => {
-            // setRefreshing(true);
-            // // onRefresh();
-            // setTimeout(() => {
-            //   setRefreshing(false);
-            // }, 500);
+            setRefreshing(true);
+            onRefresh();
           }}
         />
       }
