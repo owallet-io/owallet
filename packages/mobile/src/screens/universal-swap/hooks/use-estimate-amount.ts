@@ -56,6 +56,8 @@ const useEstimateAmount = (
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
 
+  console.log("ratio", ratio);
+
   const {
     data: [fromTokenInfoData, toTokenInfoData],
   } = useQuery({
@@ -71,6 +73,8 @@ const useEstimateAmount = (
     setAmountLoading(true);
     if (client) {
       const routerClient = getRouterClient();
+      console.log("initAmount", initAmount);
+
       try {
         const data = await handleSimulateSwap({
           originalFromInfo: originalFromToken,
@@ -198,6 +202,11 @@ const useEstimateAmount = (
         setIsWarningSlippage(isWarningSlippage);
         setToAmountToken(data.amount);
         setSwapAmount([fromAmountToken, Number(data.displayAmount)]);
+        setRatio({
+          ...data,
+          amount: Math.floor(Number(data.amount) / fromAmountToken),
+          displayAmount: Number(data.displayAmount) / fromAmountToken,
+        });
       }
       setSimulateData(data);
       setAmountLoading(false);
