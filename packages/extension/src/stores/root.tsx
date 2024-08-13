@@ -134,6 +134,9 @@ export class RootStore {
     this.queriesStore = new QueriesStore(
       new ExtensionKVStore("store_queries"),
       this.chainStore,
+      {
+        responseDebounceMs: 75,
+      },
       getOWalletFromWindow,
       QueriesWrappedTron
     );

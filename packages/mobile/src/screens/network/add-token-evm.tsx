@@ -78,7 +78,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
     modalStore,
   } = useStore();
   const selectedChain = chainStore.current;
-  const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
+  // const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
   const [loading, setLoading] = useState(false);
   const [coingeckoId, setCoingeckoID] = useState(null);
   const [coingeckoImg, setCoingeckoImg] = useState(null);
@@ -208,7 +208,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
           type: "erc20",
         };
 
-        await tokensOf.addToken(currency);
+        await tokensStore.addToken(selectedChain.chainId, currency);
         addTokenSuccess(currency);
       }
     } catch (err) {

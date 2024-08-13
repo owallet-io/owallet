@@ -128,6 +128,7 @@ export const AddTokenPage = observer(() => {
       if (interactionInfo.interaction && tokensStore.waitingSuggestedToken) {
         await tokensStore.approveSuggestedToken(currency);
       } else {
+        await tokensStore.addToken(chainStore.current.chainId, currency);
         // await tokensOf.addToken(currency);
       }
 
