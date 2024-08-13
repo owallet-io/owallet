@@ -15,15 +15,13 @@ import {
 import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
-import { StoreUtils } from "../../../common";
+
 import {
   BalanceRegistry,
   BalanceRegistryType,
   ObservableQueryBalanceInner,
 } from "../../balances";
-import { ObservableChainQuery } from "../../chain-query";
-import { Balances, BalancesRpc } from "./types";
-import { CancelToken } from "axios";
+
 import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";

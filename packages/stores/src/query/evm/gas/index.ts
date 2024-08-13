@@ -8,19 +8,28 @@ import { computed, makeObservable } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
 import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
+import {
+  ObservableEvmChainJsonRpcQuery,
+  ObservableEvmChainJsonRpcQueryMap,
+} from "../../../query/evm-contract/evm-chain-json-rpc";
 
 type GasRequest = {
   to: string;
   from: string;
 };
-export class ObservableQueryGasInner extends ObservableChainQuery<number> {
+export class ObservableQueryGasInner extends ObservableEvmChainJsonRpcQuery<number> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly paramGas: GasRequest
   ) {
-    super(sharedContext, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, `eth_estimateGas`, [
+      {
+        to: paramGas.to,
+        from: paramGas.from,
+      },
+    ]);
     makeObservable(this);
   }
 
@@ -37,40 +46,11 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
       //TODO: default gas for eth is 21000
       return 21000;
     }
-    return this.response.data;
-  }
-  protected override async fetchResponse(
-    abortController: AbortController
-  ): Promise<{ headers: any; data: number }> {
-    try {
-      const { data, headers } = await super.fetchResponse(abortController);
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
-
-      if (!this.paramGas.to || !this.paramGas.from) return;
-      const estimateGas = await web3.eth.estimateGas({
-        to: this.paramGas.to,
-        from: this.paramGas.from,
-      });
-      console.log(
-        "🚀 ~ ObservableQueryGasInner ~ fetchResponse ~ estimateGas:",
-        estimateGas
-      );
-
-      return {
-        headers,
-        data: estimateGas,
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryGasInner ~ fetchResponse ~ error:",
-        error
-      );
-      throw Error(error);
-    }
+    return Web3.utils.hexToNumber(this.response.data);
   }
 }
 
-export class ObservableQueryGas extends ObservableChainQueryMap<number> {
+export class ObservableQueryGas extends ObservableEvmChainJsonRpcQueryMap<number> {
   constructor(
     protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,

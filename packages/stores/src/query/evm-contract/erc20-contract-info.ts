@@ -28,8 +28,6 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: Erc20ContractTokenInfo }> {
-    const { headers } = await super.fetchResponse(abortController);
-
     const web3 = new Web3(
       getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
     );
@@ -55,7 +53,7 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableChainQuery<E
 
     return {
       data: tokenInfoData,
-      headers,
+      headers: null,
     };
   }
 }

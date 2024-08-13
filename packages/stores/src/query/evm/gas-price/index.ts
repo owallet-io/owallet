@@ -10,14 +10,18 @@ import { Int } from "@owallet/unit";
 import { CancelToken } from "axios";
 import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
+import {
+  ObservableEvmChainJsonRpcQuery,
+  ObservableEvmChainJsonRpcQueryMap,
+} from "../../../query/evm-contract/evm-chain-json-rpc";
 
-export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
+export class ObservableQueryGasPriceInner extends ObservableEvmChainJsonRpcQuery<string> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
-    super(sharedContext, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, `eth_gasPrice`);
 
     makeObservable(this);
   }
@@ -32,32 +36,11 @@ export class ObservableQueryGasPriceInner extends ObservableChainQuery<string> {
       return new Int("0");
     }
 
-    return new Int(this.response.data);
-  }
-  protected override async fetchResponse(
-    abortController: AbortController
-  ): Promise<{ headers: any; data: string }> {
-    try {
-      const { headers } = await super.fetchResponse(abortController);
-
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
-      const gasPrice = await web3.eth.getGasPrice();
-      return {
-        headers,
-        data: gasPrice,
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryGasPriceInner ~ fetchResponse ~ error:",
-        error
-      );
-    }
-
-    // console.log("🚀 ~ ObservableQueryGasPriceInner ~ fetchResponse ~ gasPrice:", gasPrice)
+    return new Int(Web3.utils.hexToNumberString(this.response.data));
   }
 }
 
-export class ObservableQueryGasPrice extends ObservableChainQueryMap<string> {
+export class ObservableQueryGasPrice extends ObservableEvmChainJsonRpcQueryMap<string> {
   constructor(
     protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,

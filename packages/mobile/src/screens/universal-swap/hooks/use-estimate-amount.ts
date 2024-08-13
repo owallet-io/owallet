@@ -43,6 +43,7 @@ const useEstimateAmount = (
   handleErrorSwap: Function,
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
+    useIbcWasm?: boolean;
   },
   isAIRoute?: boolean
 ) => {
@@ -78,13 +79,19 @@ const useEstimateAmount = (
           routerClient,
           routerOption: {
             useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
+            useIbcWasm: simulateOption?.useIbcWasm,
           },
-          urlRouter: {
-            url: "https://router.oraidex.io",
+          routerConfig: {
+            url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
+            protocols: simulateOption?.useIbcWasm
+              ? ["Oraidex", "OraidexV3"]
+              : ["Oraidex", "OraidexV3", "Osmosis"],
           },
         });
         setAmountLoading(false);
+        console.log("data", data);
+
         return data;
       } catch (err) {
         console.error("Error in getSimulateSwap:", err);

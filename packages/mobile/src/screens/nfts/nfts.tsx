@@ -284,7 +284,7 @@ const NftsTalisScreen: FC<{
   const [refreshing, setRefreshing] = useState(false);
   const page = useRef(0);
   const hasMore = useRef(true);
-  const perPage = 4;
+  const perPage = 10;
   const { colors } = useTheme();
   const styles = styling(colors);
 

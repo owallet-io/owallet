@@ -45,7 +45,6 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
     data: number;
   }> {
     try {
-      const { data, headers } = await super.fetchResponse(abortController);
       const web3 = new Web3(
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
       );
@@ -64,9 +63,9 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
         .estimateGas({
           from: from,
         });
-
+      console.log(estimateGas, "estimateGas");
       return {
-        headers,
+        headers: null,
         data: estimateGas,
       };
     } catch (error) {

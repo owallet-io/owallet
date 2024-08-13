@@ -83,12 +83,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
-  // const account = accountStore.getAccount(chainStore.current.chainId);
-
-  // const address = account.getAddressDisplay(
-  //   keyRingStore.keyRingLedgerAddresses,
-  //   false
-  // );
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses,
+    false
+  );
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -161,170 +161,170 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   onRefresh();
-  // }, [address, chainStore.current.chainId]);
+  useEffect(() => {
+    onRefresh();
+  }, [address, chainStore.current.chainId]);
 
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  // const onRefresh = async () => {
-  //   try {
-  //     const queries = queriesStore.get(chainStore.current.chainId);
-  //     // Because the components share the states related to the queries,
-  //     // fetching new query responses here would make query responses on all other components also refresh.
-  //     if (chainStore.current.networkType === "bitcoin") {
-  //       // await queries.bitcoin.queryBitcoinBalance
-  //       //   .getQueryBalance(account.bech32Address)
-  //       //   .waitFreshResponse();
-  //       // return;
-  //     } else {
-  //       await Promise.all([
-  //         priceStore.waitFreshResponse(),
-  //         ...queries.queryBalances
-  //           .getQueryBech32Address(account.bech32Address)
-  //           .balances.map((bal) => {
-  //             return bal.waitFreshResponse();
-  //           }),
-  //       ]);
-  //     }
-  //     // if (
-  //     //   accountOrai.bech32Address &&
-  //     //   accountEth.evmosHexAddress &&
-  //     //   accountTron.evmosHexAddress &&
-  //     //   accountKawaiiCosmos.bech32Address
-  //     // ) {
-  //     //   const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
-  //     //   const currentDate = Date.now();
-  //     //   const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
-  //     //   const differenceInSeconds = differenceInMilliseconds / 1000;
-  //     //   let timeoutId: NodeJS.Timeout;
-  //     //   if (differenceInSeconds > 10) {
-  //     //     universalSwapStore.setLoaded(false);
-  //     //     onFetchAmount(customChainInfos);
-  //     //   } else {
-  //     //     console.log("The dates are 10 seconds or less apart.");
-  //     //   }
-  //     // }
-  //   } catch (e) {
-  //     console.log(e);
-  //   } finally {
-  //     setRefreshing(false);
-  //     setRefreshDate(Date.now());
-  //   }
-  // };
-  // const loadTokenAmounts = useLoadTokens(universalSwapStore);
+  const onRefresh = async () => {
+    try {
+      // const queries = queriesStore.get(chainStore.current.chainId);
+      // Because the components share the states related to the queries,
+      // fetching new query responses here would make query responses on all other components also refresh.
+      // if (chainStore.current.networkType === "bitcoin") {
+      //   // await queries.bitcoin.queryBitcoinBalance
+      //   //   .getQueryBalance(account.bech32Address)
+      //   //   .waitFreshResponse();
+      //   // return;
+      // } else {
+      //   await Promise.all([
+      //     priceStore.waitFreshResponse(),
+      //     ...queries.queryBalances
+      //       .getQueryBech32Address(account.bech32Address)
+      //       .balances.map((bal) => {
+      //         return bal.waitFreshResponse();
+      //       }),
+      //   ]);
+      // }
+      if (
+        accountOrai.bech32Address &&
+        accountEth.evmosHexAddress &&
+        accountTron.evmosHexAddress &&
+        accountKawaiiCosmos.bech32Address
+      ) {
+        const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
+        const currentDate = Date.now();
+        const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
+        const differenceInSeconds = differenceInMilliseconds / 1000;
+        let timeoutId: NodeJS.Timeout;
+        if (differenceInSeconds > 10) {
+          universalSwapStore.setLoaded(false);
+          onFetchAmount(customChainInfos);
+        } else {
+          console.log("The dates are 10 seconds or less apart.");
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setRefreshing(false);
+      setRefreshDate(Date.now());
+    }
+  };
+  const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
-  // const handleFetchAmounts = async (
-  //   params: { orai?: string; eth?: string; tron?: string; kwt?: string },
-  //   customChainInfos
-  // ) => {
-  //   const { orai, eth, tron, kwt } = params;
+  const handleFetchAmounts = async (
+    params: { orai?: string; eth?: string; tron?: string; kwt?: string },
+    customChainInfos
+  ) => {
+    const { orai, eth, tron, kwt } = params;
 
-  //   let loadTokenParams = {};
-  //   try {
-  //     const cwStargate = {
-  //       account: accountOrai,
-  //       chainId: ChainIdEnum.Oraichain,
-  //       rpc: oraichainNetwork.rpc,
-  //     };
+    let loadTokenParams = {};
+    try {
+      const cwStargate = {
+        account: accountOrai,
+        chainId: ChainIdEnum.Oraichain,
+        rpc: oraichainNetwork.rpc,
+      };
 
-  //     // other chains, oraichain
-  //     const otherChainTokens = flatten(
-  //       customChainInfos
-  //         .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-  //         .map(getTokensFromNetwork)
-  //     );
-  //     const oraichainTokens: TokenItemType[] =
-  //       getTokensFromNetwork(oraichainNetwork);
+      // other chains, oraichain
+      const otherChainTokens = flatten(
+        customChainInfos
+          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
+          .map(getTokensFromNetwork)
+      );
+      const oraichainTokens: TokenItemType[] =
+        getTokensFromNetwork(oraichainNetwork);
 
-  //     const tokens = [otherChainTokens, oraichainTokens];
-  //     const flattenTokens = flatten(tokens);
+      const tokens = [otherChainTokens, oraichainTokens];
+      const flattenTokens = flatten(tokens);
 
-  //     loadTokenParams = {
-  //       ...loadTokenParams,
-  //       oraiAddress: orai ?? accountOrai.bech32Address,
-  //       metamaskAddress: eth ?? null,
-  //       kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-  //       tronAddress: tron ?? null,
-  //       cwStargate,
-  //       tokenReload:
-  //         universalSwapStore?.getTokenReload?.length > 0
-  //           ? universalSwapStore.getTokenReload
-  //           : null,
-  //       customChainInfos: flattenTokens,
-  //     };
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: orai ?? accountOrai.bech32Address,
+        metamaskAddress: eth ?? null,
+        kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
+        tronAddress: tron ?? null,
+        cwStargate,
+        tokenReload:
+          universalSwapStore?.getTokenReload?.length > 0
+            ? universalSwapStore.getTokenReload
+            : null,
+        customChainInfos: flattenTokens,
+      };
 
-  //     loadTokenAmounts(loadTokenParams);
-  //     universalSwapStore.clearTokenReload();
-  //   } catch (error) {
-  //     console.log("error loadTokenAmounts", error);
-  //     showToast({
-  //       message: error?.message ?? error?.ex?.message,
-  //       type: "danger",
-  //     });
-  //   }
-  // };
-  // useEffect(() => {
-  //   universalSwapStore.setLoaded(false);
-  // }, [accountOrai.bech32Address]);
+      loadTokenAmounts(loadTokenParams);
+      universalSwapStore.clearTokenReload();
+    } catch (error) {
+      console.log("error loadTokenAmounts", error);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: "danger",
+      });
+    }
+  };
+  useEffect(() => {
+    universalSwapStore.setLoaded(false);
+  }, [accountOrai.bech32Address]);
 
-  // const onFetchAmount = (customChainInfos) => {
-  //   let timeoutId;
-  //   if (accountOrai.isNanoLedger) {
-  //     if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
-  //       timeoutId = setTimeout(() => {
-  //         handleFetchAmounts(
-  //           {
-  //             orai: accountOrai.bech32Address,
-  //             eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-  //             tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-  //             kwt: accountKawaiiCosmos.bech32Address,
-  //           },
-  //           customChainInfos
-  //         );
-  //       }, 800);
-  //     }
-  //   } else if (
-  //     accountOrai.bech32Address &&
-  //     accountEth.evmosHexAddress &&
-  //     accountTron.evmosHexAddress &&
-  //     accountKawaiiCosmos.bech32Address
-  //   ) {
-  //     timeoutId = setTimeout(() => {
-  //       handleFetchAmounts(
-  //         {
-  //           orai: accountOrai.bech32Address,
-  //           eth: accountEth.evmosHexAddress,
-  //           tron: getBase58Address(accountTron.evmosHexAddress),
-  //           kwt: accountKawaiiCosmos.bech32Address,
-  //         },
-  //         customChainInfos
-  //       );
-  //     }, 1000);
-  //   }
+  const onFetchAmount = (customChainInfos) => {
+    let timeoutId;
+    if (accountOrai.isNanoLedger) {
+      if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
+        timeoutId = setTimeout(() => {
+          handleFetchAmounts(
+            {
+              orai: accountOrai.bech32Address,
+              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
+              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
+              kwt: accountKawaiiCosmos.bech32Address,
+            },
+            customChainInfos
+          );
+        }, 800);
+      }
+    } else if (
+      accountOrai.bech32Address &&
+      accountEth.evmosHexAddress &&
+      accountTron.evmosHexAddress &&
+      accountKawaiiCosmos.bech32Address
+    ) {
+      timeoutId = setTimeout(() => {
+        handleFetchAmounts(
+          {
+            orai: accountOrai.bech32Address,
+            eth: accountEth.evmosHexAddress,
+            tron: getBase58Address(accountTron.evmosHexAddress),
+            kwt: accountKawaiiCosmos.bech32Address,
+          },
+          customChainInfos
+        );
+      }, 1000);
+    }
 
-  //   return timeoutId;
-  // };
+    return timeoutId;
+  };
 
-  // useEffect(() => {
-  //   if (appInitStore.getChainInfos) {
-  //     let timeoutId;
-  //     InteractionManager.runAfterInteractions(() => {
-  //       startTransition(() => {
-  //         timeoutId = onFetchAmount(appInitStore.getChainInfos);
-  //       });
-  //     });
-  //     // Clean up the timeout if the component unmounts or the dependency changes
-  //     return () => {
-  //       if (timeoutId) clearTimeout(timeoutId);
-  //     };
-  //   }
-  // }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
+  useEffect(() => {
+    if (appInitStore.getChainInfos) {
+      let timeoutId;
+      InteractionManager.runAfterInteractions(() => {
+        startTransition(() => {
+          timeoutId = onFetchAmount(appInitStore.getChainInfos);
+        });
+      });
+      // Clean up the timeout if the component unmounts or the dependency changes
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }
+  }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
 
-  // const { data: prices } = useCoinGeckoPrices();
+  const { data: prices } = useCoinGeckoPrices();
 
-  // useEffect(() => {
-  //   appInitStore.updatePrices(prices);
-  // }, [prices]);
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
   // useEffect(() => {
   //   if (!totalPriceBalance || !accountOrai.bech32Address) return;
   //   const hashedAddress = new sha256()
@@ -347,11 +347,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //     mixpanel.track("OWallet - Assets Managements", logEvent);
   //   }
   //   return () => {};
-  // }, [
-  //   totalPriceBalance,
-  //   accountOrai.bech32Address,
-  //   priceStore.defaultVsCurrency,
-  // ]);
+  // }, [accountOrai.bech32Address, priceStore.defaultVsCurrency]);
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;

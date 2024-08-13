@@ -9,7 +9,6 @@ import {
 import {
   ChainGetter,
   ObservableJsonGetQuery,
-  ObservableJsonRPCQuery,
   QueryResponse,
 } from "../../common";
 import { CoinPretty, Int } from "@owallet/unit";

@@ -1,22 +1,14 @@
 import { computed, makeObservable, override } from "mobx";
-import { DenomHelper, getRpcByChainId, KVStore } from "@owallet/common";
-import {
-  ChainGetter,
-  ObservableJsonRPCQuery,
-  QueryResponse,
-} from "../../common";
+import { DenomHelper } from "@owallet/common";
+import { ChainGetter } from "../../common";
 import { CoinPretty, Int } from "@owallet/unit";
 import {
   BalanceRegistry,
   BalanceRegistryType,
   ObservableQueryBalanceInner,
 } from "../balances";
-import { Erc20ContractBalance, Erc20RpcBalance } from "./types";
-import ERC20_ABI from "human-standard-token-abi";
-import { ObservableChainQuery } from "../chain-query";
 import Web3 from "web3";
 import { erc20ContractInterface } from "./constant";
-import { CancelToken } from "axios";
 import { QuerySharedContext } from "src/common/query/context";
 import { ObservableEvmChainJsonRpcQuery } from "./evm-chain-json-rpc";
 
@@ -42,41 +34,6 @@ export class ObservableQueryErc20Balance extends ObservableEvmChainJsonRpcQuery<
   protected canFetch(): boolean {
     return this.contractAddress?.length !== 0 && this.walletAddress !== "";
   }
-
-  // protected async fetchResponse(cancelToken:CancelToken): Promise<
-  //   QueryResponse<Erc20ContractBalance>
-  // > {
-
-  //   if (!Web3.utils.isAddress(this.walletAddress)) return;
-  //   try {
-  //     const web3 = new Web3(
-  //       getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-  //     );
-  //     // @ts-ignore
-  //     const contract = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
-
-  //     const balance = await contract.methods
-  //       .balanceOf(this.walletAddress)
-  //       .call();
-
-  //     if (!balance) {
-  //       throw new Error("Failed to get the response from the contract");
-  //     }
-  //     const data: Erc20ContractBalance = {
-  //       balance: balance,
-  //     };
-  //     console.log("🚀 ~ ObservableQueryErc20Balance ~ data:", data);
-
-  //     return {
-  //       data,
-  //       status: 1,
-  //       staled: false,
-  //       timestamp: Date.now(),
-  //     };
-  //   } catch (error) {
-  //     console.log("🚀 ~ ObservableQueryErc20Balance ~ error:", error);
-  //   }
-  // }
 }
 
 export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInner {
