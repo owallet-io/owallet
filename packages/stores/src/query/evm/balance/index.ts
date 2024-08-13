@@ -151,7 +151,7 @@ export class ObservableQueryEvmBalances extends ObservableEvmChainJsonRpcQuery<s
         headers: null,
       };
     }
-
+    this.fetchAllErc20();
     return await super.fetchResponse(abortController);
   }
 
