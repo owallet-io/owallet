@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../../common";
+import { ChainGetter, ObservableJsonPostQuery } from "../../../common";
 import {
   ITriggerConstantContract,
   ITriggerConstantContractReq,
@@ -13,18 +13,21 @@ import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
 import { QuerySharedContext } from "src/common/query/context";
 
-export class ObservableQueryTriggerConstantContractInner extends ObservableChainQuery<ITriggerConstantContract> {
+export class ObservableQueryTriggerConstantContractInner extends ObservableJsonPostQuery<ITriggerConstantContract> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
-    protected readonly data: ITriggerConstantContractReq
+    data: ITriggerConstantContractReq
   ) {
     super(
       sharedContext,
-      chainId,
-      chainGetter,
-      `/walletsolidity/triggerconstantcontract`
+      chainGetter.getChain(chainId).rpc,
+      `/walletsolidity/triggerconstantcontract`,
+      data
+      // chainId,
+      // chainGetter,
+
       // data,
       // chainGetter.getChain(chainId).rpc
     );
@@ -49,6 +52,7 @@ export class ObservableQueryTriggerConstantContract extends ObservableChainQuery
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
+    //@ts-ignore
     super(sharedContext, chainId, chainGetter, (data) => {
       const triggerConstantContract = JSON.parse(data);
       return new ObservableQueryTriggerConstantContractInner(
@@ -63,6 +67,7 @@ export class ObservableQueryTriggerConstantContract extends ObservableChainQuery
   queryTriggerConstantContract(
     data: ITriggerConstantContractReq
   ): ObservableQueryTriggerConstantContractInner {
+    //@ts-ignore
     return this.get(
       JSON.stringify(data)
     ) as ObservableQueryTriggerConstantContractInner;
