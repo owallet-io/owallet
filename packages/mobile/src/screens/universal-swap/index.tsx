@@ -45,6 +45,7 @@ import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
+  UniversalSwapData,
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
@@ -578,7 +579,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       useAlphaSmartRouter && simulateData && simulateData?.routes;
 
     let simulateAmount = simulateData.amount;
-
+    const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
       originalFromToken: originalFromToken,
@@ -594,7 +595,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: fromAmountToken,
       relayerFee,
       alphaSmartRoutes,
-    };
+      affiliates: [{ address: affiliateAddress, basis_points_fee: "25" }],
+    } as UniversalSwapData;
 
     const compileSwapData = sendToAddress
       ? { ...universalSwapData, recipientAddress: sendToAddress }

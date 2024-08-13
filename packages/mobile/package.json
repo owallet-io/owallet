@@ -56,7 +56,7 @@
     "react-native-pager-view": "^6.2.3",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/cw-simulate": "^2.8.76",
-    "@oraichain/oraidex-universal-swap": "1.0.97",
+    "@oraichain/oraidex-universal-swap": "^1.0.99",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/common-contracts-build": "^1.0.35",
     "ethereum-multicall": "^2.21.0",
