@@ -1,6 +1,7 @@
 import React, {
   FC,
   FunctionComponent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -13,9 +14,9 @@ import { PageWithView } from "../../components/page";
 import { useTheme } from "@src/themes/theme-provider";
 
 import { OWBox } from "@src/components/card";
-
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
 import { useStore } from "@src/stores";
-
+import { Cw721BaseQueryClient } from "@oraichain/common-contracts-sdk";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { PageHeader } from "@src/components/header/header-new";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -24,11 +25,24 @@ import { NftItem } from "./components/nft-item";
 import { API } from "@src/common/api";
 import { OWEmpty } from "@src/components/empty";
 import { urlAiRight } from "@src/common/constants";
-import { processDataOraiNft, processDataStargazeNft } from "./hooks/useNfts";
+import {
+  ECOSYSTEM_NFT_CHAIN,
+  LIMIT_TALIS_CW721,
+  processDataOraiNft,
+  processDataOraiTalisNft,
+  processDataStargazeNft,
+} from "./hooks/useNfts";
 import { SkeletonNft } from "./components/nft-skeleton";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  ChainIdEnum,
+  convertIpfsToHttp,
+  fetchRetry,
+  TALIS_NFT_CONTRACT,
+} from "@owallet/common";
 import { useQuery } from "@apollo/client";
 import { OwnedTokens } from "@src/graphql/queries";
+import { useClient } from "@owallet/hooks";
+
 export const NftsScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
@@ -36,6 +50,8 @@ export const NftsScreen: FunctionComponent = observer((props) => {
         string,
         {
           chainInfo: ChainInfo;
+          ecosystem: ECOSYSTEM_NFT_CHAIN;
+          contractAddress: string;
         }
       >,
       string
@@ -43,17 +59,29 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   >();
   const { colors } = useTheme();
   const chainInfo = route.params?.chainInfo;
+  const ecosystem = route.params?.ecosystem;
+  const contractAddress = route.params?.contractAddress;
   const styles = styling(colors);
+  const renderScreen = () => {
+    if (chainInfo.chainId === ChainIdEnum.Oraichain) {
+      if (ecosystem === ECOSYSTEM_NFT_CHAIN.AIRIGHT) {
+        return <NftsOraiScreen chainInfo={chainInfo} />;
+      } else {
+        return (
+          <NftsTalisScreen
+            chainInfo={chainInfo}
+            contractAddress={contractAddress}
+          />
+        );
+      }
+    } else {
+      return <NftsStargazeScreen chainInfo={chainInfo} />;
+    }
+  };
   return (
     <PageWithView>
       <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
-      <OWBox style={[styles.container]}>
-        {chainInfo.chainId === ChainIdEnum.Oraichain ? (
-          <NftsOraiScreen chainInfo={chainInfo} />
-        ) : (
-          <NftsStargazeScreen chainInfo={chainInfo} />
-        )}
-      </OWBox>
+      <OWBox style={[styles.container]}>{renderScreen()}</OWBox>
     </PageWithView>
   );
 });
@@ -197,6 +225,155 @@ const NftsOraiScreen: FC<{
       setAllLoading();
     }
   };
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
+  };
+  useEffect(() => {
+    if (!account.bech32Address) return;
+    page.current = 0;
+    hasMore.current = true;
+    fetchData(account.bech32Address, false);
+    return () => {
+      setData([]);
+    };
+  }, [account.bech32Address]);
+  const onEndReached = () => {
+    if (page.current !== 0 && data.length > 0) {
+      setLoadMore(true);
+      fetchData(account.bech32Address, true);
+      return;
+    }
+  };
+  const onRefresh = () => {
+    setRefreshing(true);
+    page.current = 0;
+    hasMore.current = true;
+    fetchData(account.bech32Address, false);
+  };
+  return (
+    <OWFlatList
+      containerSkeletonStyle={styles.containerSkeleton}
+      SkeletonComponent={<SkeletonNft />}
+      skeletonStyle={{}}
+      data={data}
+      onEndReached={onEndReached}
+      renderItem={renderItem}
+      columnWrapperStyle={styles.row}
+      contentContainerStyle={{
+        gap: 16,
+      }}
+      numColumns={2}
+      loadMore={loadMore}
+      loading={loading}
+      onRefresh={onRefresh}
+      ListEmptyComponent={<OWEmpty type="nft" label="NO NFTs YET" />}
+      refreshing={refreshing}
+    />
+  );
+});
+const NftsTalisScreen: FC<{
+  chainInfo: ChainInfo;
+  contractAddress: string;
+}> = observer(({ chainInfo, contractAddress }) => {
+  const { accountStore } = useStore();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadMore, setLoadMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const page = useRef(0);
+  const hasMore = useRef(true);
+  const perPage = 4;
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
+  const account = accountStore.getAccount(chainInfo.chainId);
+
+  const renderItem = ({ item, index }) => {
+    return <NftItem key={`item-${index + 1}-${index}`} item={item} />;
+  };
+  const fetchData = useCallback(
+    async (address, isLoadMore = false) => {
+      try {
+        if (!isLoadMore) setLoading(true);
+        if (!hasMore.current) throw Error("Failed");
+        let client = await cosmwasm.CosmWasmClient.connect(chainInfo.rpc);
+        const cw721 = new Cw721BaseQueryClient(client, contractAddress);
+
+        // let res = await API.getNftsOraichain(
+        //   {
+        //     offset: !isLoadMore ? 0 : page.current * perPage,
+        //     size: perPage,
+        //     address: address,
+        //   },
+        //   {
+        //     baseURL: urlAiRight,
+        //   }
+        // );
+        const maxNfts = await cw721.tokens({
+          owner: address,
+          limit: LIMIT_TALIS_CW721,
+          startAfter: "0",
+        });
+        //@ts-ignore
+        const total = maxNfts && maxNfts.ids && maxNfts.ids.length;
+
+        const nfts = await cw721.tokens({
+          owner: address,
+          limit: perPage,
+          startAfter: `${data[data.length - 1]?.tokenId || 0}`,
+        });
+        //@ts-ignore
+        const tokenIds = nfts && nfts.ids;
+        const tokensDecoded = (
+          await Promise.allSettled(
+            tokenIds.map((tokenId) =>
+              cw721.nftInfo({
+                tokenId: tokenId,
+              })
+            )
+          )
+        )
+          .filter((result) => result.status === "fulfilled")
+          .map((result) =>
+            fetchRetry(convertIpfsToHttp(result.value.token_uri))
+          );
+        const tokens = (await Promise.allSettled(tokensDecoded))
+          .filter((result) => result.status === "fulfilled")
+          .map((result, index) =>
+            processDataOraiTalisNft(
+              result.value,
+              tokenIds?.[index || 0],
+              contractAddress
+            )
+          );
+        console.log(tokens, total, "tokens");
+
+        // if (res && res.status !== 200) throw Error("Failed");
+        page.current += 1;
+
+        const totalPage = Math.ceil(total / perPage);
+        if (page.current === totalPage) {
+          hasMore.current = false;
+        }
+        if (tokens?.length < 1) {
+          hasMore.current = false;
+        }
+        // const nfts = (res?.data?.items || []).map((nft, index) =>
+        //   processDataOraiNft(nft, chainInfo.currencies)
+        // );
+        setData((prevData) => {
+          if (isLoadMore) return [...prevData, ...tokens];
+          return tokens;
+        });
+        setAllLoading();
+      } catch (error) {
+        setAllLoading();
+      }
+    },
+    [data]
+  );
   const setAllLoading = () => {
     setLoadMore(false);
     setLoading(false);
