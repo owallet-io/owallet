@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useTransition,
-} from "react";
+import React, { FunctionComponent, useCallback, useEffect, useRef, useTransition } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
   AppState,
@@ -13,7 +7,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -29,12 +23,7 @@ import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
 import { IntPretty, PricePretty } from "@owallet/unit";
-import {
-  chainInfos,
-  getTokensFromNetwork,
-  oraichainNetwork,
-  TokenItemType,
-} from "@oraichain/oraidex-common";
+import { chainInfos, getTokensFromNetwork, oraichainNetwork, TokenItemType } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { flatten } from "lodash";
 import { showToast } from "@src/utils/helper";
@@ -44,7 +33,7 @@ import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
 const mixpanel = globalThis.mixpanel as Mixpanel;
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
@@ -59,22 +48,21 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     keyRingStore,
     hugeQueriesStore,
-    universalSwapStore,
+    universalSwapStore
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
-    useMultipleAssets(
-      accountStore,
-      priceStore,
-      hugeQueriesStore,
-      chainStore.current.chainId,
-      appInitStore.getInitApp.isAllNetworks,
-      appInitStore,
-      refreshing,
-      accountOrai.bech32Address
-    );
+  const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } = useMultipleAssets(
+    accountStore,
+    priceStore,
+    hugeQueriesStore,
+    chainStore.current.chainId,
+    appInitStore.getInitApp.isAllNetworks,
+    appInitStore,
+    refreshing,
+    accountOrai.bech32Address
+  );
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -83,28 +71,22 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
 
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
-  const previousChainStoreIsInitializing = usePrevious(
-    chainStoreIsInitializing,
-    true
-  );
+  const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
 
   useEffect(() => {
     tracking("Home Screen");
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
-        .then((res) => {
+        .then(res => {
           return res.text();
         })
-        .then((res) => {
+        .then(res => {
           browserStore.update_inject(res);
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     });
   }, []);
 
@@ -136,8 +118,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useFocusEffect(
     useCallback(() => {
       if (
-        (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
-          !chainStoreIsInitializing) ||
+        (chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) ||
         currentChainId !== previousChainId
       ) {
         checkAndUpdateChainInfo();
@@ -147,14 +128,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       previousChainStoreIsInitializing,
       currentChainId,
       previousChainId,
-      checkAndUpdateChainInfo,
+      checkAndUpdateChainInfo
     ])
   );
   useEffect(() => {
-    if (
-      appInitStore.getChainInfos?.length <= 0 ||
-      !appInitStore.getChainInfos
-    ) {
+    if (appInitStore.getChainInfos?.length <= 0 || !appInitStore.getChainInfos) {
       appInitStore.updateChainInfos(chainInfos);
     }
   }, []);
@@ -169,18 +147,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       // Because the components share the states related to the queries,
       // fetching new query responses here would make query responses on all other components also refresh.
       if (chainStore.current.networkType === "bitcoin") {
-        await queries.bitcoin.queryBitcoinBalance
-          .getQueryBalance(account.bech32Address)
-          .waitFreshResponse();
+        await queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address).waitFreshResponse();
         return;
       } else {
         await Promise.all([
           priceStore.waitFreshResponse(),
-          ...queries.queryBalances
-            .getQueryBech32Address(address)
-            .balances.map((bal) => {
-              return bal.waitFreshResponse();
-            }),
+          ...queries.queryBalances.getQueryBech32Address(address).balances.map(bal => {
+            return bal.waitFreshResponse();
+          })
         ]);
       }
       if (
@@ -221,17 +195,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const cwStargate = {
         account: accountOrai,
         chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc,
+        rpc: oraichainNetwork.rpc
       };
 
       // other chains, oraichain
       const otherChainTokens = flatten(
-        customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-          .map(getTokensFromNetwork)
+        customChainInfos.filter(chainInfo => chainInfo.chainId !== "Oraichain").map(getTokensFromNetwork)
       );
-      const oraichainTokens: TokenItemType[] =
-        getTokensFromNetwork(oraichainNetwork);
+      const oraichainTokens: TokenItemType[] = getTokensFromNetwork(oraichainNetwork);
 
       const tokens = [otherChainTokens, oraichainTokens];
       const flattenTokens = flatten(tokens);
@@ -243,11 +214,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: tron ?? null,
         cwStargate,
-        tokenReload:
-          universalSwapStore?.getTokenReload?.length > 0
-            ? universalSwapStore.getTokenReload
-            : null,
-        customChainInfos: flattenTokens,
+        tokenReload: universalSwapStore?.getTokenReload?.length > 0 ? universalSwapStore.getTokenReload : null,
+        customChainInfos: flattenTokens
       };
 
       loadTokenAmounts(loadTokenParams);
@@ -256,7 +224,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       console.log("error loadTokenAmounts", error);
       showToast({
         message: error?.message ?? error?.ex?.message,
-        type: "danger",
+        type: "danger"
       });
     }
   };
@@ -264,7 +232,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     universalSwapStore.setLoaded(false);
   }, [accountOrai.bech32Address]);
 
-  const onFetchAmount = (customChainInfos) => {
+  const onFetchAmount = customChainInfos => {
     let timeoutId;
     if (accountOrai.isNanoLedger) {
       if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
@@ -274,7 +242,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
               orai: accountOrai.bech32Address,
               eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
               tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-              kwt: accountKawaiiCosmos.bech32Address,
+              kwt: accountKawaiiCosmos.bech32Address
             },
             customChainInfos
           );
@@ -292,7 +260,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             orai: accountOrai.bech32Address,
             eth: accountEth.evmosHexAddress,
             tron: getBase58Address(accountTron.evmosHexAddress),
-            kwt: accountKawaiiCosmos.bech32Address,
+            kwt: accountKawaiiCosmos.bech32Address
           },
           customChainInfos
         );
@@ -324,9 +292,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [prices]);
   useEffect(() => {
     if (!totalPriceBalance || !accountOrai.bech32Address) return;
-    const hashedAddress = new sha256()
-      .update(accountOrai.bech32Address)
-      .digest("hex");
+    const hashedAddress = new sha256().update(accountOrai.bech32Address).digest("hex");
 
     const amount = new IntPretty(totalPriceBalance || "0")
       .maxDecimals(2)
@@ -338,17 +304,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     const logEvent = {
       userId: hashedAddress,
       totalPrice: amount?.toString() || "0",
-      currency: priceStore.defaultVsCurrency,
+      currency: priceStore.defaultVsCurrency
     };
     if (mixpanel) {
       mixpanel.track("OWallet - Assets Managements", logEvent);
     }
     return () => {};
-  }, [
-    totalPriceBalance,
-    accountOrai.bech32Address,
-    priceStore.defaultVsCurrency,
-  ]);
+  }, [totalPriceBalance, accountOrai.bech32Address, priceStore.defaultVsCurrency]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -373,10 +335,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           fiatCurrency,
           dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
         )?.toString()}
-        totalPriceBalance={new PricePretty(
-          fiatCurrency,
-          totalPriceBalance
-        )?.toString()}
+        totalPriceBalance={new PricePretty(fiatCurrency, totalPriceBalance)?.toString()}
       />
       <EarningCardNew />
       <MainTabHome dataTokens={dataTokens} />
@@ -384,14 +343,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
       backgroundColor: colors["neutral-surface-bg"],
-      paddingTop: 16,
+      paddingTop: 16
     },
     containerEarnStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-    },
+      backgroundColor: colors["neutral-surface-bg2"]
+    }
   });

@@ -3,10 +3,7 @@ import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract, showToast } from "../../../utils/helper";
 import { Text } from "@src/components/text";
-import {
-  COINTYPE_NETWORK,
-  getKeyDerivationFromAddressType,
-} from "@owallet/common";
+import { COINTYPE_NETWORK, getKeyDerivationFromAddressType } from "@owallet/common";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { useBIP44Option } from "@src/screens/register/bip44";
@@ -36,15 +33,7 @@ export const NetworkModal: FC<{
     tracking("Modal Select Network Screen");
   }, []);
   const bip44Option = useBIP44Option();
-  const {
-    modalStore,
-    chainStore,
-    keyRingStore,
-    accountStore,
-    appInitStore,
-    universalSwapStore,
-    priceStore,
-  } = useStore();
+  const { modalStore, chainStore, keyRingStore, accountStore, appInitStore, priceStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
@@ -65,11 +54,9 @@ export const NetworkModal: FC<{
     Popup.hide();
 
     await keyRingStore.setKeyStoreLedgerAddress(
-      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
-        bip44Option.bip44HDPath.account
-      }'/${bip44Option.bip44HDPath.change}/${
-        bip44Option.bip44HDPath.addressIndex
-      }`,
+      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${bip44Option.bip44HDPath.account}'/${
+        bip44Option.bip44HDPath.change
+      }/${bip44Option.bip44HDPath.addressIndex}`,
       item?.chainId
     );
   };
@@ -80,7 +67,7 @@ export const NetworkModal: FC<{
     }
   }, [chainStore.current.chainName]);
 
-  const handleSwitchNetwork = useCallback(async (item) => {
+  const handleSwitchNetwork = useCallback(async item => {
     try {
       if (account.isNanoLedger) {
         modalStore.close();
@@ -93,19 +80,17 @@ export const NetworkModal: FC<{
             } network. Please confirm that you have ${
               COINTYPE_NETWORK[item.bip44.coinType]
             } App opened before switch network`,
-            buttonText: `I have switched ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App`,
+            buttonText: `I have switched ${COINTYPE_NETWORK[item.bip44.coinType]} App`,
             confirmText: "Cancel",
             okButtonStyle: {
-              backgroundColor: colors["orange-800"],
+              backgroundColor: colors["orange-800"]
             },
             callback: () => onConfirm(item),
             cancelCallback: () => {
               Popup.hide();
             },
             bounciness: 0,
-            duration: 10,
+            duration: 10
           });
           return;
         } else {
@@ -127,23 +112,20 @@ export const NetworkModal: FC<{
     } catch (error) {
       showToast({
         type: "danger",
-        message: JSON.stringify(error),
+        message: JSON.stringify(error)
       });
     }
   }, []);
-  const { totalPriceBalance, dataTokens, dataTokensByChain } =
-    appInitStore.getMultipleAssets;
+  const { totalPriceBalance, dataTokensByChain } = appInitStore.getMultipleAssets;
+
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const _renderItem = ({ item }: { item }) => {
-    let selected =
-      item?.chainId === chainStore.current.chainId &&
-      !appInitStore.getInitApp.isAllNetworks;
+    let selected = item?.chainId === chainStore.current.chainId && !appInitStore.getInitApp.isAllNetworks;
 
     if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
       selected = true;
     }
-    const oraiIcon =
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
+    const oraiIcon = "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png";
     return (
       <TouchableOpacity
         style={{
@@ -155,7 +137,7 @@ export const NetworkModal: FC<{
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
+          backgroundColor: selected ? colors["neutral-surface-bg2"] : null
         }}
         onPress={() => {
           handleSwitchNetwork(item);
@@ -165,7 +147,7 @@ export const NetworkModal: FC<{
           style={{
             flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "center"
           }}
         >
           <View
@@ -176,13 +158,13 @@ export const NetworkModal: FC<{
               height: 44,
               borderRadius: 44,
               backgroundColor: colors["neutral-icon-on-dark"],
-              marginRight: 16,
+              marginRight: 16
             }}
           >
             <OWIcon
               type="images"
               source={{
-                uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
+                uri: item?.stakeCurrency?.coinImageUrl || oraiIcon
               }}
               size={28}
             />
@@ -192,7 +174,7 @@ export const NetworkModal: FC<{
               style={{
                 fontSize: 14,
                 color: colors["neutral-text-title"],
-                fontWeight: "600",
+                fontWeight: "600"
               }}
             >
               {item?.chainName}
@@ -202,16 +184,13 @@ export const NetworkModal: FC<{
               style={{
                 fontSize: 14,
                 color: colors["sub-text"],
-                fontWeight: "400",
+                fontWeight: "400"
               }}
             >
               {!item.chainId
                 ? new PricePretty(fiatCurrency, totalPriceBalance)?.toString()
                 : (
-                    new PricePretty(
-                      fiatCurrency,
-                      dataTokensByChain?.[item.chainId]?.totalBalance
-                    ) || initPrice
+                    new PricePretty(fiatCurrency, dataTokensByChain?.[item.chainId]?.totalBalance) || initPrice
                   ).toString()}
             </Text>
           </View>
@@ -219,11 +198,7 @@ export const NetworkModal: FC<{
 
         <View>
           <RadioButton
-            color={
-              selected
-                ? colors["highlight-surface-active"]
-                : colors["neutral-text-body"]
-            }
+            color={selected ? colors["highlight-surface-active"] : colors["neutral-text-body"]}
             id={item.chainId}
             selected={selected}
             onPress={() => handleSwitchNetwork(item)}
@@ -238,35 +213,25 @@ export const NetworkModal: FC<{
       ...item._chainInfo,
       balance: new PricePretty(
         fiatCurrency,
-        appInitStore.getMultipleAssets.dataTokensByChain?.[
-          item.chainId
-        ]?.totalBalance
-      ),
+        appInitStore.getMultipleAssets.dataTokensByChain?.[item.chainId]?.totalBalance
+      )
     };
   });
-  const sortChainsByPrice = (chains) => {
-    return chains.sort(
-      (a, b) =>
-        Number(b.balance.toDec().toString()) -
-        Number(a.balance.toDec().toString())
-    );
+  const sortChainsByPrice = chains => {
+    return chains.sort((a, b) => Number(b.balance.toDec().toString()) - Number(a.balance.toDec().toString()));
   };
   const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
-    (c) =>
-      c.chainName.toLowerCase().includes("test") &&
-      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+    c => c.chainName.toLowerCase().includes("test") && c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
   const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
-    (c) =>
-      !c.chainName.toLowerCase().includes("test") &&
-      c.chainName.toLowerCase().includes(keyword.toLowerCase())
+    c => !c.chainName.toLowerCase().includes("test") && c.chainName.toLowerCase().includes(keyword.toLowerCase())
   );
   const dataChains = activeTab === "testnet" ? dataTestnet : dataMainnet;
 
   return (
     <View
       style={{
-        alignItems: "center",
+        alignItems: "center"
       }}
     >
       <Text
@@ -275,7 +240,7 @@ export const NetworkModal: FC<{
           fontWeight: "900",
           color: colors["neutral-text-title"],
           width: "100%",
-          textAlign: "center",
+          textAlign: "center"
         }}
       >
         {`choose networks`.toUpperCase()}
@@ -283,19 +248,15 @@ export const NetworkModal: FC<{
       <View style={styles.header}>
         <View style={styles.searchInput}>
           <View style={{ paddingRight: 4 }}>
-            <OWIcon
-              color={colors["neutral-icon-on-light"]}
-              name="tdesign_search"
-              size={16}
-            />
+            <OWIcon color={colors["neutral-icon-on-light"]} name="tdesign_search" size={16} />
           </View>
           <TextInput
             style={{
               fontFamily: "SpaceGrotesk-Regular",
               width: "100%",
-              color: colors["neutral-icon-on-light"],
+              color: colors["neutral-icon-on-light"]
             }}
-            onChangeText={(t) => setKeyword(t)}
+            onChangeText={t => setKeyword(t)}
             value={keyword}
             placeholderTextColor={colors["neutral-text-body"]}
             placeholder="Search by name"
@@ -309,14 +270,14 @@ export const NetworkModal: FC<{
           textStyle={{
             color: colors["primary-surface-default"],
             fontWeight: "600",
-            fontSize: 16,
+            fontSize: 16
           }}
           onPress={() => setActiveTab("mainnet")}
           style={[
             {
-              width: "50%",
+              width: "50%"
             },
-            activeTab === "mainnet" ? styles.active : null,
+            activeTab === "mainnet" ? styles.active : null
           ]}
         />
         <OWButton
@@ -326,13 +287,13 @@ export const NetworkModal: FC<{
           textStyle={{
             color: colors["primary-surface-default"],
             fontWeight: "600",
-            fontSize: 16,
+            fontSize: 16
           }}
           style={[
             {
-              width: "50%",
+              width: "50%"
             },
-            activeTab === "testnet" ? styles.active : null,
+            activeTab === "testnet" ? styles.active : null
           ]}
         />
       </View>
@@ -341,11 +302,10 @@ export const NetworkModal: FC<{
           marginTop: spacing["12"],
           width: metrics.screenWidth - 48,
           justifyContent: "space-between",
-          height: metrics.screenHeight / 2,
+          height: metrics.screenHeight / 2
         }}
       >
-        {!hideAllNetwork &&
-          _renderItem({ item: { chainName: "All networks", isAll: true } })}
+        {!hideAllNetwork && _renderItem({ item: { chainName: "All networks", isAll: true } })}
         <BottomSheetFlatList
           showsVerticalScrollIndicator={false}
           data={dataChains}
@@ -357,7 +317,7 @@ export const NetworkModal: FC<{
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors["neutral-surface-card"],
@@ -367,14 +327,14 @@ const styling = (colors) =>
       flexDirection: "row",
       marginTop: spacing["16"],
       alignItems: "center",
-      justifyContent: "space-between",
+      justifyContent: "space-between"
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       marginBottom: 16,
       alignSelf: "center",
-      marginTop: 16,
+      marginTop: 16
     },
     searchInput: {
       flexDirection: "row",
@@ -383,14 +343,14 @@ const styling = (colors) =>
       borderRadius: 999,
       width: metrics.screenWidth - 32,
       alignItems: "center",
-      paddingHorizontal: 12,
+      paddingHorizontal: 12
     },
     wrapHeaderTitle: {
       flexDirection: "row",
-      paddingBottom: 12,
+      paddingBottom: 12
     },
     active: {
       borderBottomColor: colors["primary-surface-default"],
-      borderBottomWidth: 2,
-    },
+      borderBottomWidth: 2
+    }
   });
