@@ -7,8 +7,8 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { ChainIdEnum, formatAddress, unknownToken } from "@owallet/common";
 import { HeaderModal } from "../components/header-modal";
-import { useNotification } from "../../../components/notification";
 import { useIntl } from "react-intl";
+import { toast } from "react-toastify";
 
 export const ModalCopyAddress: FC<{
   isOpen: boolean;
@@ -21,23 +21,18 @@ export const ModalCopyAddress: FC<{
   };
 
   const intl = useIntl();
-  const notification = useNotification();
 
   const copyAddress = async (address: string) => {
     if (!address) return;
     await navigator.clipboard.writeText(address);
-    notification.push({
-      placement: "top-center",
-      type: "success",
-      duration: 2,
-      content: intl.formatMessage({
+    toast(
+      intl.formatMessage({
         id: "main.address.copied",
       }),
-      canDelete: true,
-      transition: {
-        duration: 0.25,
-      },
-    });
+      {
+        type: "success",
+      }
+    );
     onRequestClose();
   };
   const btcLegacyChain = chainStore.chainInfos.find(

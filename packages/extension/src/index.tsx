@@ -28,10 +28,7 @@ import {
 import { Banner } from "./components/banner";
 import { ConfirmProvider } from "./components/confirm";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
-import {
-  NotificationProvider,
-  NotificationStoreProvider,
-} from "./components/notification";
+
 import { configure } from "mobx";
 import { observer } from "mobx-react-lite";
 import { KeyRingStatus } from "@owallet/background";
@@ -61,7 +58,8 @@ import { ErrorBoundary, useErrorBoundary } from "react-error-boundary";
 import { Text } from "components/common/text";
 import { Button } from "components/common/button";
 import colors from "theme/colors";
-
+import { ToastContainer, Zoom } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const owallet = new OWallet(
   manifest.version,
   "core",
@@ -269,94 +267,94 @@ ReactDOM.render(
     <StoreProvider>
       <AppIntlProviderWithStorage>
         <LoadingIndicatorProvider>
-          <NotificationStoreProvider>
-            <NotificationProvider>
-              <ConfirmProvider>
-                <HashRouter>
-                  <LogPageViewWrapper>
-                    <Route exact path="/" component={StateRenderer} />
-                    <Route exact path="/unlock" component={LockPage} />
-                    <Route exact path="/access" component={AccessPage} />
-                    <Route exact path="/receive" component={ReceivePage} />
-                    <Route
-                      exact
-                      path="/activities"
-                      component={ActivitiesPage}
-                    />
-                    <Route exact path="/explore" component={ExplorePage} />
-                    <Route
-                      exact
-                      path="/preferences"
-                      component={PreferencesPage}
-                    />
-                    <Route
-                      exact
-                      path="/reveal-recovery-phrase/:keystoreIndex"
-                      component={RevealRecoveryPhrasePage}
-                    />
-                    <Route
-                      exact
-                      path="/reveal-private-key/:keystoreIndex"
-                      component={RevealPrivateKeyPage}
-                    />
-                    <Route
-                      exact
-                      path="/select-account"
-                      component={SelectAccountPage}
-                    />
-                    <Route exact path="/add-token" component={AddTokenPage} />
-                    <Route
-                      exact
-                      path="/edit-account/:keystoreIndex"
-                      component={EditAccountPage}
-                    />
-                    <Route
-                      exact
-                      path="/connected-dapp"
-                      component={ConnectedDappPage}
-                    />
-                    <Route
-                      exact
-                      path="/access/viewing-key"
-                      component={Secret20ViewingKeyAccessPage}
-                    />
-                    <Route exact path="/register" component={RegisterPage} />
-                    <Route
-                      exact
-                      path="/confirm-ledger/:chain"
-                      component={ConfirmLedgerPage}
-                    />
-                    <Route exact path="/send" component={SendPage} />
-                    <Route exact path="/send-evm" component={SendEvmPage} />
-                    <Route
-                      exact
-                      path="/send-tron"
-                      component={SendTronEvmPage}
-                    />
-                    <Route exact path="/send-btc" component={SendBtcPage} />
-                    <Route
-                      exact
-                      path="/ledger-grant"
-                      component={LedgerGrantPage}
-                    />
-                    <Route
-                      exact
-                      path="/setting/address-book"
-                      component={AddressBookPage}
-                    />
-                    <Route path="/sign" component={SignPage} />
-                    <Route path="/sign-bitcoin" component={SignBtcPage} />
-                    <Route path="/sign-ethereum" component={SignEvmPage} />
-                    <Route path="/sign-tron" component={SignTronPage} />
-                    <Route
-                      path="/suggest-chain"
-                      component={ChainSuggestedPage}
-                    />
-                  </LogPageViewWrapper>
-                </HashRouter>
-              </ConfirmProvider>
-            </NotificationProvider>
-          </NotificationStoreProvider>
+          <ConfirmProvider>
+            <HashRouter>
+              <LogPageViewWrapper>
+                <Route exact path="/" component={StateRenderer} />
+                <Route exact path="/unlock" component={LockPage} />
+                <Route exact path="/access" component={AccessPage} />
+                <Route exact path="/receive" component={ReceivePage} />
+                <Route exact path="/activities" component={ActivitiesPage} />
+                <Route exact path="/explore" component={ExplorePage} />
+                <Route exact path="/preferences" component={PreferencesPage} />
+                <Route
+                  exact
+                  path="/reveal-recovery-phrase/:keystoreIndex"
+                  component={RevealRecoveryPhrasePage}
+                />
+                <Route
+                  exact
+                  path="/reveal-private-key/:keystoreIndex"
+                  component={RevealPrivateKeyPage}
+                />
+                <Route
+                  exact
+                  path="/select-account"
+                  component={SelectAccountPage}
+                />
+                <Route exact path="/add-token" component={AddTokenPage} />
+                <Route
+                  exact
+                  path="/edit-account/:keystoreIndex"
+                  component={EditAccountPage}
+                />
+                <Route
+                  exact
+                  path="/connected-dapp"
+                  component={ConnectedDappPage}
+                />
+                <Route
+                  exact
+                  path="/access/viewing-key"
+                  component={Secret20ViewingKeyAccessPage}
+                />
+                <Route exact path="/register" component={RegisterPage} />
+                <Route
+                  exact
+                  path="/confirm-ledger/:chain"
+                  component={ConfirmLedgerPage}
+                />
+                <Route exact path="/send" component={SendPage} />
+                <Route exact path="/send-evm" component={SendEvmPage} />
+                <Route exact path="/send-tron" component={SendTronEvmPage} />
+                <Route exact path="/send-btc" component={SendBtcPage} />
+                <Route exact path="/ledger-grant" component={LedgerGrantPage} />
+                <Route
+                  exact
+                  path="/setting/address-book"
+                  component={AddressBookPage}
+                />
+                <Route path="/sign" component={SignPage} />
+                <Route path="/sign-bitcoin" component={SignBtcPage} />
+                <Route path="/sign-ethereum" component={SignEvmPage} />
+                <Route path="/sign-tron" component={SignTronPage} />
+                <Route path="/suggest-chain" component={ChainSuggestedPage} />
+              </LogPageViewWrapper>
+            </HashRouter>
+          </ConfirmProvider>
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            toastStyle={{
+              borderRadius: 8,
+            }}
+            style={{
+              maxWidth: "calc(100vw - 32px)",
+              margin: 16,
+            }}
+            bodyStyle={{
+              fontSize: 14,
+            }}
+            transition={Zoom}
+          />
         </LoadingIndicatorProvider>
       </AppIntlProviderWithStorage>
     </StoreProvider>

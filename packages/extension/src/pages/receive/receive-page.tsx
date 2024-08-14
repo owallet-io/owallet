@@ -4,7 +4,7 @@ import { HeaderNew } from "../../layouts/footer-layout/components/header";
 
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useNotification } from "../../components/notification";
+
 import { useIntl } from "react-intl";
 import { ButtonCopy } from "../../components/buttons/button-copy";
 import { LayoutWithButtonBottom } from "../../layouts/button-bottom-layout/layout-with-button-bottom";

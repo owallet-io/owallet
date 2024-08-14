@@ -8,7 +8,7 @@ import {
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
 import style from "./style.module.scss";
-import { useNotification } from "components/notification";
+
 import { useIntl } from "react-intl";
 import cn from "classnames/bind";
 import { useHistory, useLocation } from "react-router";
@@ -25,6 +25,7 @@ import { ModalFee } from "pages/modals/modal-fee";
 import { Card } from "components/common/card";
 import { HeaderModal } from "pages/home/components/header-modal";
 import { HeaderNew } from "layouts/footer-layout/components/header";
+import { toast } from "react-toastify";
 const cx = cn.bind(style);
 
 export const SendPage: FunctionComponent<{
@@ -72,8 +73,6 @@ export const SendPage: FunctionComponent<{
     }
   }, [coinMinimalDenom]);
   const intl = useIntl();
-
-  const notification = useNotification();
 
   const current = chainStore.current;
   const accountInfo = accountStore.getAccount(current.chainId);
@@ -266,48 +265,31 @@ export const SendPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    notification.push({
-                      placement: "top-center",
-                      type: tx?.data ? "success" : "danger",
-                      duration: 5,
-                      content: tx?.data
+                    toast(
+                      tx?.data
                         ? `Transaction successful with tx: ${tx?.hash}`
                         : `Transaction failed with tx: ${tx?.hash}`,
-                      canDelete: true,
-                      transition: {
-                        duration: 0.25,
-                      },
-                    });
+                      {
+                        type: tx?.data ? "success" : "error",
+                      }
+                    );
                   },
                 }
               );
               if (!isDetachedPage) {
                 history.replace("/");
               }
-              notification.push({
-                placement: "top-center",
+              toast("Transaction submitted!", {
                 type: "success",
-                duration: 5,
-                content: "Transaction submitted!",
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
               });
             } catch (e: any) {
               if (!isDetachedPage) {
                 history.replace("/");
               }
               console.log(e.message, "Catch Error on send!!!");
-              notification.push({
-                type: "warning",
-                placement: "top-center",
-                duration: 5,
-                content: `Fail to send token: ${e.message}`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25,
-                },
+
+              toast(`Fail to send token: ${e.message}`, {
+                type: "error",
               });
             } finally {
               // XXX: If the page is in detached state,

@@ -15,8 +15,9 @@ import { initPrice } from "../../../hooks/use-multiple-assets";
 import { HeaderModal } from "../components/header-modal";
 import { ViewRawToken, ViewTokenData } from "@owallet/types";
 import { CoinPretty, PricePretty } from "@owallet/unit";
-import { useNotification } from "components/notification";
+
 import { useConfirm } from "components/confirm";
+import { toast } from "react-toastify";
 
 export const ModalNetwork: FC<{
   isOpen: boolean;
@@ -86,7 +87,7 @@ export const ModalNetwork: FC<{
       item?.chainName?.toLowerCase()?.includes("test") &&
       item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase())
   );
-  const notification = useNotification();
+
   const confirm = useConfirm();
   const selected = keyRingStore?.multiKeyStoreInfo?.find(
     (keyStore) => keyStore?.selected
@@ -119,20 +120,17 @@ export const ModalNetwork: FC<{
             },
           })
         ) {
-          notification.push({
-            placement: "top-center",
-            type: "warning",
-            duration: 5,
-            content: `You are switching to ${
+          toast(
+            `You are switching to ${
               COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
             } network. Please confirm that you have ${
               COINTYPE_NETWORK[chainInfo.coinType ?? chainInfo.bip44.coinType]
             } App opened before switch network`,
-            canDelete: true,
-            transition: {
-              duration: 0.25,
-            },
-          });
+            {
+              type: "warning",
+            }
+          );
+
           const { networkType } = chainStore.getChain(chainInfo?.chainId);
           const keyDerivation = (() => {
             const keyMain = getKeyDerivationFromAddressType(
