@@ -10,26 +10,26 @@ import { Network as NetworkTatum } from "@tatumio/tatum";
 export enum NetworkEnum {
   Cosmos = "cosmos",
   Evm = "evm",
-  Bitcoin = "bitcoin"
+  Bitcoin = "bitcoin",
 }
 
 export enum OasisNetwork {
   MAINNET = "oasis-mainnet",
   SAPPHIRE = "oasis-sapphire-mainnet",
-  EMERALD = "oasis-emerald-mainnet"
+  EMERALD = "oasis-emerald-mainnet",
 }
 export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
 export enum COSMOS_NETWORK {
   COSMOSHUB = "cosmoshub-4",
   OSMOSIS = "osmosis-1",
   INJECTIVE = "injective-1",
-  ORAICHAIN = "Oraichain"
+  ORAICHAIN = "Oraichain",
 }
 
 export type Network = NetworkTatum & OasisNetwork & COSMOS_NETWORK;
 export const Network = { ...NetworkTatum, ...OasisNetwork, ...COSMOS_NETWORK };
 export enum CosmosNetwork {
-  ORAICHAIN = "oraichain"
+  ORAICHAIN = "oraichain",
 }
 export enum ChainIdEnum {
   Oraichain = "Oraichain",
@@ -53,7 +53,7 @@ export enum ChainIdEnum {
   Injective = "injective-1",
   Neutaro = "Neutaro-1",
   Noble = "noble-1",
-  Stargaze = "stargaze-1"
+  Stargaze = "stargaze-1",
 }
 
 export enum KADOChainNameEnum {
@@ -69,7 +69,7 @@ export enum KADOChainNameEnum {
   "0x2b6653dc" = "TRON",
   "0x38" = "BNB",
   "noble-1" = "NOBLE",
-  "stargaze-1" = "STARGAZE"
+  "stargaze-1" = "STARGAZE",
 }
 
 export enum ChainNameEnum {
@@ -92,12 +92,12 @@ export enum ChainNameEnum {
   OasisEmerald = "Oasis Emerald",
   Neutaro = "Neutaro",
   Noble = "Noble",
-  Stargaze = "Stargaze"
+  Stargaze = "Stargaze",
 }
 
 export const restBtc = {
   [ChainIdEnum.Bitcoin]: "https://blockstream.info/api",
-  [ChainIdEnum.BitcoinTestnet]: "https://blockstream.info/testnet/api"
+  [ChainIdEnum.BitcoinTestnet]: "https://blockstream.info/testnet/api",
 };
 
 export const TRC20_LIST = [
@@ -106,9 +106,10 @@ export const TRC20_LIST = [
     tokenName: "USDC",
     coinDenom: "USDC",
     coinGeckoId: "usd-coin",
-    coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+    coinImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
     coinDecimals: 6,
-    type: "trc20"
+    type: "trc20",
   },
   {
     contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
@@ -117,7 +118,7 @@ export const TRC20_LIST = [
     coinDecimals: 6,
     coinGeckoId: "tether",
     coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
-    type: "trc20"
+    type: "trc20",
   },
   {
     contractAddress: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
@@ -125,9 +126,10 @@ export const TRC20_LIST = [
     coinDenom: "WTRX",
     coinDecimals: 6,
     coinGeckoId: "tron",
-    coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
-    type: "trc20"
-  }
+    coinImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+    type: "trc20",
+  },
   // {
   //   contractAddress: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
   //   tokenName: 'USDJ',

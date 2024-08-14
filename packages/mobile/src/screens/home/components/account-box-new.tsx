@@ -1,7 +1,18 @@
-import React, { FunctionComponent, useState, useEffect, useTransition } from "react";
+import React, {
+  FunctionComponent,
+  useState,
+  useEffect,
+  useTransition,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "@components/card";
-import { View, StyleSheet, TouchableOpacity, Image, Clipboard } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Clipboard,
+} from "react-native";
 import { Text } from "@src/components/text";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
@@ -24,7 +35,7 @@ import PieChart from "react-native-pie-chart";
 import { PricePretty } from "@owallet/unit";
 
 function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value);
+  return Object.keys(object).find((key) => object[key] === value);
 }
 
 const widthAndHeight = 100;
@@ -50,7 +61,7 @@ const colorList = [
   "#CAEB60",
   "#fbd203",
   "#A81100",
-  "#FFEDEB"
+  "#FFEDEB",
 ];
 
 const randomColors = shuffleArray(colorList);
@@ -61,7 +72,15 @@ export const AccountBoxAll: FunctionComponent<{
   isLoading: boolean;
 }> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
   const { colors } = useTheme();
-  const { accountStore, modalStore, chainStore, appInitStore, queriesStore, keyRingStore, priceStore } = useStore();
+  const {
+    accountStore,
+    modalStore,
+    chainStore,
+    appInitStore,
+    queriesStore,
+    keyRingStore,
+    priceStore,
+  } = useStore();
   const [isOpen, setModalOpen] = useState(false);
   const [chainListWithBalance, setChainListWithBalance] = useState([]);
   const [series, setSeries] = useState([]);
@@ -79,19 +98,22 @@ export const AccountBoxAll: FunctionComponent<{
     const tmpSeries = [];
     const tmpSliceColor = [];
     let otherValue = 0;
-    const minimumPrice = (Number(appInitStore.getMultipleAssets.totalPriceBalance) * 3) / 100;
-    Object.keys(dataTokensByChain).map(chainId => {
+    const minimumPrice =
+      (Number(appInitStore.getMultipleAssets.totalPriceBalance) * 3) / 100;
+    Object.keys(dataTokensByChain).map((chainId) => {
       const chainName = ChainNameEnum[getKeyByValue(ChainIdEnum, chainId)];
       if (chainId.includes("test") || chainName?.includes("test")) return;
       if (Number(dataTokensByChain[chainId].totalBalance) > minimumPrice) {
-        const colorKey = Object.values(ChainIdEnum).indexOf(chainId as ChainIdEnum);
+        const colorKey = Object.values(ChainIdEnum).indexOf(
+          chainId as ChainIdEnum
+        );
         const color = randomColors[colorKey];
         const totalBalance = Number(dataTokensByChain[chainId].totalBalance);
 
         tmpChain.push({
           color,
           totalBalance,
-          name: chainName
+          name: chainName,
         });
         tmpSeries.push(totalBalance);
         tmpSliceColor.push(color);
@@ -103,7 +125,7 @@ export const AccountBoxAll: FunctionComponent<{
     tmpChain.push({
       color: "#F5F5F7",
       totalBalance: otherValue,
-      name: "Other"
+      name: "Other",
     });
     setChainListWithBalance(tmpChain);
     setSeries([...tmpSeries, otherValue]);
@@ -114,27 +136,33 @@ export const AccountBoxAll: FunctionComponent<{
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
-  const chainAddress = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const chainAddress = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
 
   const _onPressMyWallet = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
     modalStore.setChildren(<MyWalletModal />);
   };
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const address = account.getAddressDisplay(
+    keyRingStore.keyRingLedgerAddresses
+  );
   const accountTronInfo =
-    chainStore.current.chainId === ChainIdEnum.TRON ? queries.tron.queryAccount.getQueryWalletAddress(address) : null;
+    chainStore.current.chainId === ChainIdEnum.TRON
+      ? queries.tron.queryAccount.getQueryWalletAddress(address)
+      : null;
   const renderTotalBalance = () => {
     return (
       <>
         <View
           style={{
             alignItems: "center",
-            flexDirection: "row"
+            flexDirection: "row",
           }}
         >
           <Text variant="bigText" style={styles.labelTotalAmount}>
@@ -143,7 +171,7 @@ export const AccountBoxAll: FunctionComponent<{
           {isLoading ? (
             <View
               style={{
-                maxHeight: 30
+                maxHeight: 30,
               }}
             >
               <LottieView
@@ -153,7 +181,7 @@ export const AccountBoxAll: FunctionComponent<{
                   width: 70,
                   height: 70,
                   marginLeft: -10,
-                  marginTop: -20
+                  marginTop: -20,
                 }}
                 autoPlay
                 loop
@@ -168,32 +196,34 @@ export const AccountBoxAll: FunctionComponent<{
                 marginVertical: 8,
                 paddingVertical: 8,
                 flexDirection: "row",
-                justifyContent: "space-between"
+                justifyContent: "space-between",
               }}
             >
               <View
                 style={{
                   flexDirection: "row",
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
               >
                 <View
                   style={{
                     backgroundColor: colors["neutral-icon-on-dark"],
-                    borderRadius: 16
+                    borderRadius: 16,
                   }}
                 >
                   <OWIcon
                     type="images"
                     source={{
-                      uri: chainStore.current?.stakeCurrency?.coinImageUrl || unknownToken.coinImageUrl
+                      uri:
+                        chainStore.current?.stakeCurrency?.coinImageUrl ||
+                        unknownToken.coinImageUrl,
                     }}
                     size={16}
                   />
                 </View>
                 <Text
                   style={{
-                    paddingLeft: 6
+                    paddingLeft: 6,
                   }}
                   size={16}
                   weight="600"
@@ -213,10 +243,14 @@ export const AccountBoxAll: FunctionComponent<{
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    alignItems: "center"
+                    alignItems: "center",
                   }}
                 >
-                  <OWText size={15} weight="600" color={colors["neutral-text-title"]}>
+                  <OWText
+                    size={15}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
                     My Energy:
                   </OWText>
                   <OWText
@@ -229,10 +263,14 @@ export const AccountBoxAll: FunctionComponent<{
                   style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    alignItems: "center"
+                    alignItems: "center",
                   }}
                 >
-                  <OWText size={15} weight="600" color={colors["neutral-text-title"]}>
+                  <OWText
+                    size={15}
+                    weight="600"
+                    color={colors["neutral-text-title"]}
+                  >
                     My Bandwidth:
                   </OWText>
                   <OWText
@@ -256,7 +294,7 @@ export const AccountBoxAll: FunctionComponent<{
         isOpen={isOpen}
         bottomSheetModalConfig={{
           enablePanDownToClose: false,
-          enableOverDrag: false
+          enableOverDrag: false,
         }}
       />
       <OWBox style={styles.containerOWBox}>
@@ -266,7 +304,12 @@ export const AccountBoxAll: FunctionComponent<{
             onPress={_onPressMyWallet}
             style={styles.btnAcc}
           >
-            <Image style={styles.infoIcon} source={images.default_avatar} resizeMode="contain" fadeDuration={0} />
+            <Image
+              style={styles.infoIcon}
+              source={images.default_avatar}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
             <Text style={styles.labelName}>{accountOrai?.name || ".."}</Text>
             <DownArrowIcon height={15} color={colors["primary-text"]} />
           </TouchableOpacity>
@@ -276,9 +319,15 @@ export const AccountBoxAll: FunctionComponent<{
               textStyle={{
                 fontSize: 14,
                 fontWeight: "600",
-                color: colors["neutral-text-action-on-light-bg"]
+                color: colors["neutral-text-action-on-light-bg"],
               }}
-              icon={<OWIcon size={14} name="copy" color={colors["neutral-text-action-on-light-bg"]} />}
+              icon={
+                <OWIcon
+                  size={14}
+                  name="copy"
+                  color={colors["neutral-text-action-on-light-bg"]}
+                />
+              }
               style={styles.copy}
               label="Copy address"
               onPress={() => {
@@ -293,9 +342,15 @@ export const AccountBoxAll: FunctionComponent<{
               textStyle={{
                 fontSize: 14,
                 fontWeight: "600",
-                color: colors["neutral-text-action-on-light-bg"]
+                color: colors["neutral-text-action-on-light-bg"],
               }}
-              icon={isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors["sub-text"]} />}
+              icon={
+                isTimedOut ? (
+                  <CheckIcon />
+                ) : (
+                  <CopyFillIcon color={colors["sub-text"]} />
+                )
+              }
               style={styles.copy}
               label={shortenAddress(chainAddress)}
               onPress={() => {
@@ -310,7 +365,7 @@ export const AccountBoxAll: FunctionComponent<{
           {series.length > 0 ? (
             <View
               style={{
-                padding: 16
+                padding: 16,
               }}
             >
               <PieChart
@@ -323,9 +378,15 @@ export const AccountBoxAll: FunctionComponent<{
             </View>
           ) : null}
           <View style={{ width: "60%" }}>
-            {chainListWithBalance.map(chain => {
+            {chainListWithBalance.map((chain) => {
               return (
-                <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 8,
+                  }}
+                >
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <View
                       style={{
@@ -333,7 +394,7 @@ export const AccountBoxAll: FunctionComponent<{
                         height: 8,
                         borderRadius: 2,
                         backgroundColor: chain.color,
-                        marginRight: 4
+                        marginRight: 4,
                       }}
                     />
                     <Text size={13} color={colors["neutral-text-body"]}>
@@ -344,12 +405,15 @@ export const AccountBoxAll: FunctionComponent<{
                     style={{
                       backgroundColor: colors["neutral-surface-bg2"],
                       borderRadius: 999,
-                      paddingHorizontal: 4
+                      paddingHorizontal: 4,
                     }}
                   >
                     <Text>
                       {(
-                        (Number(chain.totalBalance) / Number(appInitStore.getMultipleAssets.totalPriceBalance)) *
+                        (Number(chain.totalBalance) /
+                          Number(
+                            appInitStore.getMultipleAssets.totalPriceBalance
+                          )) *
                         100
                       ).toFixed(2)}
                       %
@@ -364,17 +428,23 @@ export const AccountBoxAll: FunctionComponent<{
         <View style={styles.btnGroup}>
           <OWButton
             style={styles.getStarted}
-            icon={<OWIcon color={colors["neutral-text-action-on-light-bg"]} name={"tdesignqrcode"} size={20} />}
+            icon={
+              <OWIcon
+                color={colors["neutral-text-action-on-light-bg"]}
+                name={"tdesignqrcode"}
+                size={20}
+              />
+            }
             type="link"
             textStyle={{
               fontSize: 15,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-light-bg"]
+              color: colors["neutral-text-action-on-light-bg"],
             }}
             label="Receive"
             onPress={() => {
               navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.QRScreen
+                screen: SCREENS.QRScreen,
               });
               return;
             }}
@@ -383,19 +453,23 @@ export const AccountBoxAll: FunctionComponent<{
             style={{
               width: 1,
               height: "100%",
-              backgroundColor: colors["neutral-border-default"]
+              backgroundColor: colors["neutral-border-default"],
             }}
           />
           <OWButton
             textStyle={{
               fontSize: 15,
               fontWeight: "600",
-              color: colors["neutral-text-action-on-light-bg"]
+              color: colors["neutral-text-action-on-light-bg"],
             }}
             icon={
               <OWIcon
                 color={colors["neutral-text-action-on-light-bg"]}
-                name={appInitStore.getInitApp.isAllNetworks ? "tdesigncreditcard" : "tdesignsend"}
+                name={
+                  appInitStore.getInitApp.isAllNetworks
+                    ? "tdesigncreditcard"
+                    : "tdesignsend"
+                }
                 size={20}
               />
             }
@@ -405,29 +479,29 @@ export const AccountBoxAll: FunctionComponent<{
             onPress={() => {
               if (appInitStore.getInitApp.isAllNetworks) {
                 navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.BuyFiat
+                  screen: SCREENS.BuyFiat,
                 });
                 return;
               }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {
                 smartNavigation.navigateSmart("SendTron", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
                 smartNavigation.navigateSmart("SendOasis", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               } else if (chainStore.current.networkType === "bitcoin") {
                 navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.SendBtc
+                  screen: SCREENS.SendBtc,
                 });
               } else if (chainStore.current.networkType === "evm") {
                 navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.SendEvm
+                  screen: SCREENS.SendEvm,
                 });
               } else {
                 smartNavigation.navigateSmart("NewSend", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               }
             }}
@@ -438,57 +512,57 @@ export const AccountBoxAll: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerOWBox: {
       marginHorizontal: 16,
       marginTop: 0,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
-      backgroundColor: colors["neutral-surface-card"]
+      backgroundColor: colors["neutral-surface-card"],
     },
     overview: {
-      marginTop: 12
+      marginTop: 12,
     },
     labelTotalAmount: {
       color: colors["neutral-text-heading"],
-      fontWeight: "500"
+      fontWeight: "500",
     },
     profit: {
       fontWeight: "400",
-      lineHeight: 20
+      lineHeight: 20,
     },
     labelName: {
       paddingLeft: spacing["6"],
       paddingRight: 10,
       fontWeight: "600",
       fontSize: 16,
-      color: colors["neutral-text-title"]
+      color: colors["neutral-text-title"],
     },
     infoIcon: {
       width: spacing["26"],
       borderRadius: spacing["26"],
-      height: spacing["26"]
+      height: spacing["26"],
     },
     btnAcc: {
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
-      paddingBottom: spacing["2"]
+      paddingBottom: spacing["2"],
     },
     containerInfoAccount: {
       flexDirection: "row",
-      justifyContent: "space-between"
+      justifyContent: "space-between",
     },
     getStarted: {
       borderRadius: 999,
       width: metrics.screenWidth / 2.45,
-      height: 32
+      height: 32,
     },
     copy: {
       borderRadius: 999,
       width: metrics.screenWidth / 2.5,
-      height: 32
+      height: 32,
     },
     btnGroup: {
       flexDirection: "row",
@@ -496,7 +570,7 @@ const styling = colors =>
       borderTopColor: colors["neutral-border-default"],
       borderTopWidth: 1,
       paddingTop: 8,
-      marginTop: 8
+      marginTop: 8,
     },
     containerLoading: {
       position: "absolute",
@@ -506,6 +580,6 @@ const styling = colors =>
       top: 30,
       justifyContent: "center",
       alignItems: "center",
-      zIndex: 1000
-    }
+      zIndex: 1000,
+    },
   });
