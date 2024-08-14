@@ -153,9 +153,10 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
         });
       //@ts-ignore
       chainInfo.addCurrencies(...infoTokens);
-      const denoms = response.data.balances.map((coin) => coin.denom);
-      chainInfo.addUnknownCurrencies(...denoms);
     });
+
+    const denoms = response.data.balances.map((coin) => coin.denom);
+    chainInfo.addUnknownCurrencies(...denoms);
   }
 }
 

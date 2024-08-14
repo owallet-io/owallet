@@ -148,7 +148,9 @@ export class TokensService {
 
     if (
       !("type" in currency) ||
-      (currency.type !== "cw20" && currency.type !== "secret20")
+      (currency.type !== "cw20" &&
+        currency.type !== "erc20" &&
+        currency.type !== "secret20")
     ) {
       throw new Error("Unknown type of currency");
     }
@@ -471,6 +473,7 @@ export class TokensService {
 
     throw new OWalletError("token-cw20", 111, "There is no matched secret20");
   }
+
   protected validateAssociatedAccountAddress(value: string) {
     if (!value) {
       throw new Error("Please provide the associated account address");
