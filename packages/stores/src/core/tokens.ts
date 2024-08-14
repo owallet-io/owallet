@@ -26,94 +26,6 @@ import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { AccountStore, AccountWithAll } from "src/account";
 import { KeyRingStore } from "./keyring";
 
-// export class TokensStoreInner {
-//   @observable.ref
-//   protected _tokens: AppCurrency[] = [];
-//   @observable.ref
-//   protected tokenMap: ReadonlyMap<string, ReadonlyArray<TokenInfo>> = new Map();
-//   // No need to be observable.
-//   protected prevTokenMap: ReadonlyMap<string, ReadonlyArray<TokenInfo>> =
-//     new Map();
-
-//   constructor(
-//     protected readonly eventListener: {
-//       addEventListener: (type: string, fn: () => unknown) => void;
-//     },
-//     protected readonly chainStore: ChainStore<any>,
-//     protected readonly chainId: string,
-//     protected readonly requester: MessageRequester
-//   ) {
-//     makeObservable(this);
-
-//     this.refreshTokens();
-
-//     // If key store in the owallet extension is unlocked, this event will be dispatched.
-//     // This is needed becuase the token such as secret20 exists according to the account.
-//     this.eventListener.addEventListener("keplr_keystoreunlock", () => {
-//       this.refreshTokens();
-//     });
-
-//     // If key store in the owallet extension is changed, this event will be dispatched.
-//     // This is needed becuase the token such as secret20 exists according to the account.
-//     this.eventListener.addEventListener("keplr_keystorechange", () => {
-//       this.refreshTokens();
-//     });
-//   }
-
-//   get tokens(): DeepReadonly<AppCurrency[]> {
-//     return this._tokens;
-//   }
-
-//   protected async refreshTokens() {
-//     const allCW20TokenInfosMsg = new GetAllTokenInfosMsg();
-//     const cw20Tokens = await this.requester.sendMessage(
-//       BACKGROUND_PORT,
-//       allCW20TokenInfosMsg
-//     );
-
-//     // const chainInfo = this.chainStore.getChain(this.chainId);
-
-//     // if (
-//     //   (chainInfo.features &&
-//     //     // Tokens service is only needed for secretwasm and cosmwasm,
-//     //     // so, there is no need to fetch the registered token if the chain doesn't support the secretwasm and cosmwasm.
-//     //     (chainInfo.features.includes("secretwasm") ||
-//     //       chainInfo.features.includes("cosmwasm"))) ||
-//     //   chainInfo.features.includes("isEvm")
-//     // ) {
-//     //   const msg = new GetTokensMsg(this.chainId);
-//     //   this._tokens = yield* toGenerator(
-//     //     this.requester.sendMessage(BACKGROUND_PORT, msg)
-//     //   );
-//     // } else {
-//     //   this._tokens = [];
-//     // }
-//     runInAction(() => {
-//       const map = new Map<string, TokenInfo[]>();
-//       for (const [key, value] of Object.entries(cw20Tokens)) {
-//         if (value) {
-//           map.set(key, value);
-//         }
-//       }
-//       this.tokenMap = map;
-//     });
-//   }
-
-//   @flow
-//   *addToken(currency: AppCurrency) {
-//     const msg = new AddTokenMsg(this.chainId, currency);
-//     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
-//     yield this.refreshTokens();
-//   }
-
-//   @flow
-//   *removeToken(currency: AppCurrency) {
-//     const msg = new RemoveTokenMsg(this.chainId, currency);
-//     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
-//     yield this.refreshTokens();
-//   }
-// }
-
 export class TokensStore {
   protected _isInitialized: boolean = false;
   protected prevTokens: Map<string, AppCurrency[]> = new Map();
@@ -133,42 +45,9 @@ export class TokensStore {
     protected readonly accountStore: AccountStore<AccountWithAll>,
     protected readonly keyRingStore: KeyRingStore
   ) {
-    // super((chainId: string) => {
-    //   return new TokensStoreInner(
-    //     this.eventListener,
-    //     this.chainStore,
-    //     chainId,
-    //     this.requester
-    //   );
-    // });
     makeObservable(this);
-
-    // this.chainStore.addSetChainInfoHandler((chainInfoInner) => {
-    //   autorun(() => {
-    //     const chainIdentifier = ChainIdHelper.parse(chainInfoInner.chainId);
-
-    //     // Tokens should be changed whenever the account changed.
-    //     // But, the added currencies are not removed automatically.
-    //     // So, we should remove the prev token currencies from the chain info.
-    //     const prevToken = this.prevTokens.get(chainIdentifier.identifier) ?? [];
-    //     chainInfoInner.removeCurrencies(
-    //       ...prevToken.map((token) => token.coinMinimalDenom)
-    //     );
-
-    //     const inner = this.getTokensOf(chainInfoInner.chainId);
-    //     chainInfoInner.addCurrencies(...inner.tokens);
-
-    //     this.prevTokens.set(
-    //       chainIdentifier.identifier,
-    //       inner.tokens as AppCurrency[]
-    //     );
-    //   });
-    // });
   }
 
-  // getTokensOf(chainId: string) {
-  //   return this.get(chainId);
-  // }
   async init(): Promise<void> {
     await this.refreshTokens();
 
@@ -251,7 +130,7 @@ export class TokensStore {
           }
         }
       }
-
+      console.log(adds, "adds");
       chainInfo.addCurrencies(...adds);
     }
 
@@ -264,23 +143,6 @@ export class TokensStore {
       allCW20TokenInfosMsg
     );
 
-    // const chainInfo = this.chainStore.getChain(this.chainId);
-
-    // if (
-    //   (chainInfo.features &&
-    //     // Tokens service is only needed for secretwasm and cosmwasm,
-    //     // so, there is no need to fetch the registered token if the chain doesn't support the secretwasm and cosmwasm.
-    //     (chainInfo.features.includes("secretwasm") ||
-    //       chainInfo.features.includes("cosmwasm"))) ||
-    //   chainInfo.features.includes("isEvm")
-    // ) {
-    //   const msg = new GetTokensMsg(this.chainId);
-    //   this._tokens = yield* toGenerator(
-    //     this.requester.sendMessage(BACKGROUND_PORT, msg)
-    //   );
-    // } else {
-    //   this._tokens = [];
-    // }
     runInAction(() => {
       const map = new Map<string, TokenInfo[]>();
       for (const [key, value] of Object.entries(cw20Tokens)) {
@@ -297,7 +159,7 @@ export class TokensStore {
       throw new Error("Account not initialized");
     }
     const chainInfo = this.chainStore.getChain(chainId);
-    // const isEvmChain = chainInfo.evm != null;
+
     const hasBech32Config = chainInfo.bech32Config != null;
     const associatedAccountAddress = hasBech32Config
       ? Buffer.from(
@@ -359,16 +221,14 @@ export class TokensStore {
     const bech32Address = this.accountStore.getAccount(chainId).bech32Address;
     const chainInfo = this.chainStore.getChain(chainId);
 
-    const hasBech32Config = chainInfo.bech32Config != null;
-    const associatedAccountAddress =
-      hasBech32Config && bech32Address
-        ? Buffer.from(
-            Bech32Address.fromBech32(
-              bech32Address,
-              chainInfo.bech32Config.bech32PrefixAccAddr
-            ).address
-          ).toString("hex")
-        : undefined;
+    const associatedAccountAddress = bech32Address
+      ? Buffer.from(
+          Bech32Address.fromBech32(
+            bech32Address,
+            chainInfo.bech32Config.bech32PrefixAccAddr
+          ).address
+        ).toString("hex")
+      : undefined;
 
     const tokens =
       this.tokenMap.get(ChainIdHelper.parse(chainId).identifier) ?? [];
@@ -407,7 +267,6 @@ export class TokensStore {
         appCurrency
       );
       this.refreshTokens();
-      // yield this.getTokensOf(data.data.chainId).refreshTokens();
     }
   }
 
