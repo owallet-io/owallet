@@ -56,6 +56,8 @@ jobs:
       - name: Build extension
         working-directory: packages/extension
         run: yarn build
+        env:
+          REACT_APP_MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
 
       - name: Publish extension for test
         env:
