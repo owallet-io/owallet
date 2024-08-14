@@ -29,6 +29,7 @@ export const HomePage = observer(() => {
     priceStore,
     accountStore,
     tokensStore,
+    keyRingStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   console.log(tokensStore.isInitialized, "isInitialized");
@@ -108,18 +109,18 @@ export const HomePage = observer(() => {
     chainStore.isAllNetwork,
     chainStore.current.chainId,
   ]);
-  const address = accountStore.getAccount(ChainIdEnum.BNBChain).evmosHexAddress;
-  const fetchAllErc20 = async () => {
-    const chainInfo = chainStore.getChain(ChainIdEnum.BNBChain);
+
+  const fetchAllErc20 = async (chainId, addressEvmHex) => {
+    const chainInfo = chainStore.getChain(chainId);
     // Attempt to register the denom in the returned response.
     // If it's already registered anyway, it's okay because the method below doesn't do anything.
     // Better to set it as an array all at once to reduce computed.
     if (!MapChainIdToNetwork[chainInfo.chainId]) return;
     const response = await API.getAllBalancesEvm({
-      address: address,
+      address: addressEvmHex,
       network: MapChainIdToNetwork[chainInfo.chainId],
     });
-    console.log(response, "response");
+
     if (!response.result) return;
 
     const allTokensAddress = response.result
@@ -147,18 +148,7 @@ export const HomePage = observer(() => {
     const tokenInfos = await API.getMultipleTokenInfo({
       tokenAddresses: allTokensAddress.join(","),
     });
-    const infoTokensFilter = tokenInfos.filter(
-      (item, index, self) =>
-        index ===
-          self.findIndex((t) => t.contractAddress === item.contractAddress) &&
-        chainInfo.currencies.findIndex(
-          (item2) =>
-            new DenomHelper(
-              item2.coinMinimalDenom
-            ).contractAddress.toLowerCase() ===
-            item.contractAddress.toLowerCase()
-        ) < 0
-    );
+
     const infoTokens = tokenInfos
       .filter(
         (item, index, self) =>
@@ -182,22 +172,27 @@ export const HomePage = observer(() => {
           contractAddress: tokeninfo.contractAddress,
           type: "erc20",
         };
-        console.log(infoTokensFilter, "infoTokensFilter");
-        // console.log(infoToken, "infoToken");
-        // tokensStore.addToken(ChainIdEnum.BNBChain, infoToken);
-        // return infoToken;
+        tokensStore.addToken(chainId, infoToken);
+        return infoToken;
       });
-    console.log(infoTokens, "infoTokens");
+    // console.log(infoTokens, "infoTokens");
     //@ts-ignore
-    // chainInfo.addCurrencies(...infoTokens);
+    chainInfo.addCurrencies(...infoTokens);
   };
+  const accountEvm = accountStore.getAccount(
+    ChainIdEnum.BNBChain
+  ).evmosHexAddress;
+
   useEffect(() => {
-    if (tokensStore.isInitialized) {
-      fetchAllErc20();
+    if (tokensStore.isInitialized && accountEvm) {
+      const evms = [ChainIdEnum.BNBChain, ChainIdEnum.Ethereum];
+      for (const chainId of evms) {
+        fetchAllErc20(chainId, accountEvm);
+      }
     }
 
     return () => {};
-  }, [address, tokensStore.isInitialized]);
+  }, [tokensStore.isInitialized, accountEvm]);
   return (
     <FooterLayout>
       <InfoAccountCard
