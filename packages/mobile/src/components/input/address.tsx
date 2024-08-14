@@ -20,8 +20,6 @@ import { TextInput } from "./input";
 import { ObservableEnsFetcher } from "@owallet/ens";
 import { LoadingSpinner } from "../spinner";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation.provider";
-import { colors } from "../../themes";
 import { NoteIcon } from "../icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
@@ -39,20 +37,18 @@ const styles = StyleSheet.create({
   "margin-top-2": {
     marginTop: 2,
   },
-  "margin-left-4": {
-    marginLeft: 4,
-  },
 });
 
 export const AddressInput: FunctionComponent<{
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
-  inputContainerStyle?: ViewStyle;
   errorLabelStyle?: TextStyle;
-
+  inputContainerStyle?: ViewStyle;
+  topInInputContainer?: React.ReactNode;
   label: string;
-
+  colors?: any;
   inputRight?: React.ReactNode;
+  inputLeft?: React.ReactNode;
 
   recipientConfig: IRecipientConfig;
   memoConfig: IMemoConfig;
@@ -65,6 +61,7 @@ export const AddressInput: FunctionComponent<{
   ({
     labelStyle,
     containerStyle,
+    inputLeft,
     inputContainerStyle,
     errorLabelStyle,
     label,
@@ -74,6 +71,8 @@ export const AddressInput: FunctionComponent<{
     placeholder,
     placeholderTextColor,
     inputRight,
+    colors,
+    topInInputContainer,
   }) => {
     const style = useStyle();
 
@@ -82,6 +81,7 @@ export const AddressInput: FunctionComponent<{
     );
 
     const error = recipientConfig.getError();
+
     const errorText: string | undefined = useMemo(() => {
       if (error) {
         switch (error.constructor) {
@@ -106,15 +106,24 @@ export const AddressInput: FunctionComponent<{
 
     return (
       <TextInput
+        // multiline
         label={label}
+        topInInputContainer={topInInputContainer}
         labelStyle={labelStyle}
-        containerStyle={containerStyle}
+        containerStyle={{
+          ...containerStyle,
+          marginBottom:
+            error && error.constructor !== EmptyAddressError ? 24 : 0,
+        }}
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.rawRecipient}
         onChangeText={(text) => {
           recipientConfig.setRawRecipient(text.replace(/\s/g, ""));
+        }}
+        style={{
+          fontSize: 16,
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
@@ -128,7 +137,6 @@ export const AddressInput: FunctionComponent<{
                     styles["height-16"],
                     styles["justify-center"],
                     styles["margin-top-2"],
-                    styles["margin-left-4"],
                   ]}
                 >
                   <LoadingSpinner size={14} color={"#83838F"} />
@@ -139,6 +147,7 @@ export const AddressInput: FunctionComponent<{
             )
           ) : undefined
         }
+        inputLeft={inputLeft}
         inputRight={
           disableAddressBook ? null : (
             <View
@@ -164,7 +173,7 @@ export const AddressInput: FunctionComponent<{
                   }}
                 >
                   <NoteIcon
-                    color={colors["primary-surface-default"]}
+                    color={colors ? colors["neutral-icon-on-light"] : "#7C00DB"}
                     height={18}
                   />
                 </TouchableOpacity>

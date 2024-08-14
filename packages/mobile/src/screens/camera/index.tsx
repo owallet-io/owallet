@@ -20,12 +20,17 @@ import { TRON_ID } from "@owallet/common";
 import { checkValidDomain } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useTheme } from "@src/themes/theme-provider";
+import { metrics } from "@src/themes";
+import { tracking } from "@src/utils/tracking";
 interface keyable {
   [key: string]: any;
 }
 
 export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore } = useStore();
+  const { colors } = useTheme();
+
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
 
@@ -36,6 +41,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
 
   useFocusEffect(
     useCallback(() => {
+      tracking(`QRCode Modal`);
       // If the other screen is pushed according to the qr code data,
       // the `isCompleted` state would remain as true because the screen in the stack is not unmounted.
       // So, we should reset the `isComplete` state whenever getting focused.
@@ -119,7 +125,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       },
                     });
                   } else {
-                    smartNavigation.pushSmart("Send", {
+                    smartNavigation.pushSmart("NewSend", {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
@@ -137,6 +143,45 @@ export const CameraScreen: FunctionComponent = observer((props) => {
             }
           }
         }}
+        containerBottom={
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              backgroundColor: "#19191A",
+              width: metrics.screenWidth,
+            }}
+          >
+            <View
+              style={{
+                paddingBottom: 20,
+                width: metrics.screenWidth,
+                alignItems: "center",
+              }}
+            >
+              <OWButton
+                label="My QR Code"
+                onPress={() => {
+                  navigate(SCREENS.STACK.Others, {
+                    screen: SCREENS.QRScreen,
+                  });
+                }}
+                style={[
+                  {
+                    width: metrics.screenWidth - 32,
+                    marginTop: 20,
+                    borderRadius: 999,
+                    backgroundColor: "#323133", //colors["neutral-surface-action3"]
+                  },
+                ]}
+                textStyle={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                }}
+              />
+            </View>
+          </View>
+        }
       />
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}

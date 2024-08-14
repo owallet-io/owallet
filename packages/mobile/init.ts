@@ -1,9 +1,9 @@
 import "./src/background/background";
 
 import { version } from "./package.json";
-import { Ethereum, Oasis, OWallet, TronWeb } from "@owallet/provider";
-import { RNMessageRequesterInternal } from "./src/router";
 import { ChainIdEnum } from "@owallet/common";
+import { Ethereum, OWallet, TronWeb } from "@owallet/provider";
+import { RNMessageRequesterInternal } from "./src/router";
 
 import { Mixpanel } from "mixpanel-react-native";
 if (process.env.MIX_PANEL_TOKEN && !__DEV__) {
@@ -20,12 +20,12 @@ if (process.env.MIX_PANEL_TOKEN && !__DEV__) {
 //@ts-ignore
 window.owallet = new OWallet(version, "core", new RNMessageRequesterInternal());
 //@ts-ignore
-window.oasis = new Oasis(
-  version,
-  "core",
-  ChainIdEnum.Oasis,
-  new RNMessageRequesterInternal()
-);
+// window.oasis = new Oasis(
+//   version,
+//   "core",
+//   ChainIdEnum.Oasis,
+//   new RNMessageRequesterInternal()
+// );
 //@ts-ignore
 window.ethereum = new Ethereum(
   version,

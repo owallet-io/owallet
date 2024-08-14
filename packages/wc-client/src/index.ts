@@ -25,7 +25,7 @@ import {
   CosmJSOfflineSigner,
   CosmJSOfflineSignerOnlyAmino,
 } from "@owallet/provider";
-import { SecretUtils } from "secretjs/types/enigmautils";
+import { SecretUtils } from "@owallet/types";
 import { payloadId } from "@walletconnect/utils";
 import deepmerge from "deepmerge";
 import { Buffer } from "buffer";

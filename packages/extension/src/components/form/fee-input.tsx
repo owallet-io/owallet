@@ -1,63 +1,55 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { FormGroup, Input, Label } from "reactstrap";
+import React, { FunctionComponent, useState } from "react";
+import { FormGroup, Label } from "reactstrap";
 import {
-  IFeeConfig,
-  IFeeEthereumConfig,
-  IGasEthereumConfig,
+  FeeConfig,
+  GasConfig,
+  InsufficientFeeError,
+  NotLoadedFeeError,
 } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
-import Big from "big.js";
-import { Input as InputEvm } from "../../components/form";
+import { useIntl } from "react-intl";
+import { Input } from "./input";
 
 export interface GasInputProps {
-  feeConfig: IFeeEthereumConfig;
-  gasConfig: IGasEthereumConfig;
-  decimals: number;
+  feeConfig: FeeConfig;
+  gasConfig: GasConfig;
 
   label?: string;
   className?: string;
   defaultValue?: number;
-  gasPrice?: number | string | Big;
 
-  denom?: string | unknown | any;
   classNameInputGroup?: string | unknown | any;
   classNameInput?: string | unknown | any;
 }
 
 // TODO: Handle the max block gas limit(?)
 export const FeeInput: FunctionComponent<GasInputProps> = observer(
-  ({
-    feeConfig,
-    label,
-    className,
-    defaultValue,
-    gasConfig,
-    gasPrice,
-    decimals,
-    denom,
-    classNameInputGroup,
-    classNameInput,
-  }) => {
+  ({ feeConfig, label, className, classNameInputGroup, classNameInput }) => {
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
       return `input-${Buffer.from(bytes).toString("hex")}`;
     });
+    const intl = useIntl();
 
-    useEffect(() => {
-      try {
-        if (gasConfig.gasRaw !== "NaN" && gasPrice != "NaN") {
-          feeConfig.setFee(
-            new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
-          );
-        } else {
-          feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
+    const error = feeConfig.getError();
+    const errorText: string | undefined = (() => {
+      if (error) {
+        switch (error.constructor) {
+          case InsufficientFeeError:
+            return intl.formatMessage({
+              id: "input.fee.error.insufficient",
+            });
+          case NotLoadedFeeError:
+            return undefined;
+          default:
+            return (
+              error.message ||
+              intl.formatMessage({ id: "input.fee.error.unknown" })
+            );
         }
-      } catch (error) {
-        feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
       }
-    }, [gasConfig.gasRaw, gasPrice]);
-
+    })();
     return (
       <FormGroup className={className}>
         {label ? (
@@ -65,20 +57,22 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
             {label}
           </Label>
         ) : null}
-        <InputEvm
-          type="number"
-          classNameInputGroup={classNameInputGroup}
-          value={parseFloat(feeConfig.feeRaw)}
-          className={classNameInput}
-          // style={{
-          //   backgroundColor: 'rgba(230, 232, 236, 0.2)'
-          // }}
-          onChange={(e) => {
-            feeConfig.setFee(e.target.value);
-            e.preventDefault();
+        <Input
+          styleInputGroup={{
+            borderWidth: 0,
+            padding: 0,
+            margin: 0,
           }}
+          placeHolder={"Enter fee in TRX"}
+          className={classNameInput}
+          defaultValue={feeConfig.fee
+            ?.shrink(true)
+            ?.trim(true)
+            ?.hideDenom(true)
+            ?.toString()}
+          error={errorText}
           id={inputId}
-          append={
+          rightIcon={
             <span
               style={{
                 padding: 10,
@@ -86,26 +80,10 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
                 textTransform: "uppercase",
               }}
             >
-              {denom?.feeCurrency?.coinDenom ?? denom ?? "ORAI"}
+              {feeConfig.feeCurrency.coinDenom}
             </span>
           }
         />
-        {/* <Input
-          id={inputId}
-          className="form-control-alternative"
-          type="number"
-          value={
-            parseFloat(feeConfig.feeRaw).toString() +
-            ' ' +
-            denom?.feeCurrency?.coinDenom
-          }
-          onChange={(e) => {
-            feeConfig.setFee(e.target.value);
-            e.preventDefault();
-          }}
-          defaultValue={defaultValue}
-          autoComplete="off"
-        /> */}
       </FormGroup>
     );
   }

@@ -1,19 +1,20 @@
 import "./polyfill/crypto";
-import { chainInfos } from "@oraichain/oraidex-common";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-// polyfill
-Tendermint37Client.detectVersion = () => {};
-Tendermint37Client.prototype.status = function () {
-  const chainInfo = chainInfos.find(
-    (chain) => chain.networkType === "cosmos" && chain.rpc === this.client.url
-  );
-  return {
-    nodeInfo: {
-      network: chainInfo.chainId,
-      version: "",
-    },
-  };
-};
+
+// import { chainInfos } from "@oraichain/oraidex-common";
+// import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+// // polyfill
+// Tendermint37Client.detectVersion = () => {};
+// Tendermint37Client.prototype.status = function () {
+//   const chainInfo = chainInfos.find(
+//     (chain) => chain.networkType === "cosmos" && chain.rpc === this.client.url
+//   );
+//   return {
+//     nodeInfo: {
+//       network: chainInfo.chainId,
+//       version: "",
+//     },
+//   };
+// };
 
 if (typeof __dirname === "undefined") global.__dirname = "/";
 if (typeof __filename === "undefined") global.__filename = "";

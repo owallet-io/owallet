@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 
-import { Button, Form } from "reactstrap";
+import { Form } from "reactstrap";
 
 import { FormattedMessage, useIntl } from "react-intl";
 import style from "../style.module.scss";
@@ -13,6 +13,7 @@ import { AdvancedBIP44Option, useBIP44Option } from "../advanced-bip44";
 
 import { Buffer } from "buffer";
 import { useStore } from "../../../stores";
+import { Button } from "../../../components/common/button";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -46,8 +47,7 @@ export const RecoverMnemonicIntro: FunctionComponent<{
 
   return (
     <Button
-      color=""
-      block
+      color="secondary"
       onClick={(e) => {
         e.preventDefault();
 
@@ -56,10 +56,10 @@ export const RecoverMnemonicIntro: FunctionComponent<{
           registerType: "seed",
         });
       }}
-      className={style.importWalletBtn}
-    >
-      <FormattedMessage id="register.intro.button.import-account.title" />
-    </Button>
+      text={
+        <FormattedMessage id="register.intro.button.import-account.title" />
+      }
+    />
   );
 });
 
@@ -72,23 +72,24 @@ export const RecoverMnemonicPage: FunctionComponent<{
 
   const { analyticsStore } = useStore();
 
-  const { register, handleSubmit, getValues, errors } = useForm<FormData>({
-    defaultValues: {
-      name: "",
-      words: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
+  const { register, handleSubmit, getValues, errors, setValue } =
+    useForm<FormData>({
+      defaultValues: {
+        name: "",
+        words: "",
+        password: "",
+        confirmPassword: "",
+      },
+    });
 
   return (
     <React.Fragment>
       <div>
-        <div className={style.title}>
+        {/* <div className={style.title}>
           {intl.formatMessage({
-            id: "register.recover.title",
+            id: "register.recover.title"
           })}
-        </div>
+        </div> */}
         <Form
           className={style.formContainer}
           onSubmit={handleSubmit(async (data: FormData) => {
@@ -125,16 +126,74 @@ export const RecoverMnemonicPage: FunctionComponent<{
             }
           })}
         >
-          <TextArea
+          {/* <TextArea
+            className={style.mnemonic}
+            placeholder={intl.formatMessage({
+              id: "register.create.textarea.mnemonic.place-holder"
+            })}
+            style={{
+              border: "1px solid rgba(8, 4, 28, 0.12)"
+            }}
+            name="words"
+            rows={3}
+            ref={register({
+              required: "Mnemonic is required",
+              validate: (value: string): string | undefined => {
+                if (!isPrivateKey(value)) {
+                  value = trimWordsStr(value);
+                  if (value.split(" ").length < 8) {
+                    return intl.formatMessage({
+                      id: "register.create.textarea.mnemonic.error.too-short"
+                    });
+                  }
+
+                  if (!bip39.validateMnemonic(value)) {
+                    return intl.formatMessage({
+                      id: "register.create.textarea.mnemonic.error.invalid"
+                    });
+                  }
+                } else {
+                  value = value.replace("0x", "");
+                  if (value.length !== 64) {
+                    return intl.formatMessage({
+                      id: "register.import.textarea.private-key.error.invalid-length"
+                    });
+                  }
+
+                  try {
+                    if (Buffer.from(value, "hex").toString("hex").toLowerCase() !== value.toLowerCase()) {
+                      return intl.formatMessage({
+                        id: "register.import.textarea.private-key.error.invalid"
+                      });
+                    }
+                  } catch {
+                    return intl.formatMessage({
+                      id: "register.import.textarea.private-key.error.invalid"
+                    });
+                  }
+                }
+              }
+            })}
+            error={errors.words && errors.words.message}
+          /> */}
+          <Input
             className={style.mnemonic}
             placeholder={intl.formatMessage({
               id: "register.create.textarea.mnemonic.place-holder",
             })}
-            style={{
-              border: "1px solid rgba(8, 4, 28, 0.12)",
-            }}
+            label={"Mnemonic / Private key"}
+            typeInput="textarea"
             name="words"
-            rows={3}
+            styleInputGroup={{
+              marginBottom: 15,
+            }}
+            rightIcon={
+              <img src={require("assets/icon/circle-del.svg")} alt="" />
+            }
+            onAction={() => {
+              setValue("words", "");
+            }}
+            type="text"
             ref={register({
               required: "Mnemonic is required",
               validate: (value: string): string | undefined => {
@@ -184,9 +243,16 @@ export const RecoverMnemonicPage: FunctionComponent<{
               id: "register.name",
             })}
             styleInputGroup={{
-              border: "1px solid rgba(8, 4, 28, 0.12)",
+              marginBottom: 15,
             }}
+            leftIcon={<img src={require("assets/icon/wallet.svg")} alt="" />}
+            rightIcon={
+              <img src={require("assets/icon/circle-del.svg")} alt="" />
+            }
             type="text"
+            onAction={() => {
+              setValue("name", "");
+            }}
             name="name"
             ref={register({
               required: intl.formatMessage({
@@ -198,9 +264,12 @@ export const RecoverMnemonicPage: FunctionComponent<{
           {registerConfig.mode === "create" ? (
             <React.Fragment>
               <PasswordInput
-                label={intl.formatMessage({
+                placeHolder={intl.formatMessage({
                   id: "register.create.input.password",
                 })}
+                styleInputGroup={{
+                  marginBottom: 15,
+                }}
                 name="password"
                 ref={register({
                   required: intl.formatMessage({
@@ -214,17 +283,14 @@ export const RecoverMnemonicPage: FunctionComponent<{
                     }
                   },
                 })}
-                styleInputGroup={{
-                  border: "1px solid rgba(8, 4, 28, 0.12)",
-                }}
                 error={errors.password && errors.password.message}
               />
               <PasswordInput
-                label={intl.formatMessage({
+                placeHolder={intl.formatMessage({
                   id: "register.create.input.confirm-password",
                 })}
                 styleInputGroup={{
-                  border: "1px solid rgba(8, 4, 28, 0.12)",
+                  marginBottom: 15,
                 }}
                 name="confirmPassword"
                 ref={register({
@@ -243,13 +309,11 @@ export const RecoverMnemonicPage: FunctionComponent<{
               />
             </React.Fragment>
           ) : null}
-          <AdvancedBIP44Option bip44Option={bip44Option} />
+          {/* <AdvancedBIP44Option bip44Option={bip44Option} /> */}
           <Button
             color="primary"
-            type="submit"
-            block
             data-loading={registerConfig.isLoading}
-            className={style.nextBtn}
+            loading={registerConfig.isLoading}
           >
             <FormattedMessage id="register.create.button.next" />
           </Button>

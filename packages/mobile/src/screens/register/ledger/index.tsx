@@ -23,6 +23,8 @@ import { SCREENS } from "@src/common/constants";
 import { KeyRingStatus } from "@owallet/background";
 import OWText from "@src/components/text/ow-text";
 
+import { tracking } from "@src/utils/tracking";
+
 interface FormData {
   name: string;
   password: string;
@@ -64,6 +66,10 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const [isCreating, setIsCreating] = useState(false);
   const [statusPass, setStatusPass] = useState(false);
   const [statusConfirmPass, setStatusConfirmPass] = useState(false);
+  useEffect(() => {
+    tracking(`Connect Ledger Screen`);
+    return () => {};
+  }, []);
 
   const submit = handleSubmit(async () => {
     setIsCreating(true);
@@ -79,10 +85,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
             bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType,
         }
       );
-      analyticsStore.setUserProperties({
-        registerType: "ledger",
-        accountType: "ledger",
-      });
+
       if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
         return false;
       }

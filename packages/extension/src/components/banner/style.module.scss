@@ -1,7 +1,18 @@
 @import "../../styles/var";
 
 .container {
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.logoGroup {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .flex-vertical {
@@ -20,16 +31,16 @@
 
 .icon {
   object-fit: contain;
-  height: 100px;
-
-  margin-bottom: 30px;
+  height: 150px;
+  width: 100%;
+  margin-bottom: 32px;
+  align-self: center;
 }
 
 .logo {
   object-fit: contain;
-  height: 32px;
-
-  margin-bottom: 4px;
+  height: 20px;
+  margin-right: 4px;
 }
 
 .subtitle {
@@ -37,4 +48,27 @@
   text-align: center;
   margin-top: 10px;
   color: $color-gray-50;
+}
+.logo-inner-container {
+  margin-top: 22px;
+  text-align: center;
+
+  .logo {
+    height: 50px;
+    max-width: 100%;
+    margin-bottom: 22px;
+  }
+  .title {
+    font-size: 28px;
+    line-height: 34px;
+    color: $neutral-text-title;
+    font-weight: 700;
+  }
+
+  .paragraph {
+    font-size: 20px;
+    line-height: 1;
+    color: $color-gray-50;
+    font-weight: 400;
+  }
 }

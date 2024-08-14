@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from "react";
-import { PageWithScrollView } from "../../../components/page";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { spacing } from "../../../themes";
 import { ValidatorDetailsCard } from "./validator-details-card";
 import { useTheme } from "@src/themes/theme-provider";
+import { tracking } from "@src/utils/tracking";
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -14,6 +14,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         {
           validatorAddress: string;
           apr: number;
+          percentageVote: number;
         }
       >,
       string
@@ -22,17 +23,19 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
-
+  const percentageVote = route.params.percentageVote;
+  tracking(`Validator Detail Screen`);
   return (
-    <PageWithScrollView backgroundColor={colors["background"]}>
+    <View>
       <ValidatorDetailsCard
         containerStyle={{
           ...styles.containerCard,
         }}
         validatorAddress={validatorAddress}
         apr={apr}
+        percentageVote={percentageVote}
       />
-    </PageWithScrollView>
+    </View>
   );
 });
 

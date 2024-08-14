@@ -8,5 +8,11 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:jv8kt.app.link</string>
+		<string>applinks:jv8kt-alternate.app.link</string>
+		<string>applinks:jv8kt.test.app.link</string>
+	</array>
 </dict>
 </plist>

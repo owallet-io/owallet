@@ -73,7 +73,7 @@ export const WalletIcon: FunctionComponent<{
 
 export const renderFlag = (
   flagName: string = "usd",
-  heightFlag: number = 32
+  heightFlag: number = 24
 ) => {
   switch (flagName.toLowerCase()) {
     case "usd":
@@ -200,7 +200,7 @@ const styling = (colors) =>
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
       borderRadius: spacing["12"],
       marginVertical: spacing["8"],
       paddingHorizontal: spacing["20"],

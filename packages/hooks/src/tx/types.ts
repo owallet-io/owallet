@@ -61,6 +61,15 @@ export interface IFeeConfig extends ITxChainSetter {
   isManual: boolean;
   getError(): Error | undefined;
 }
+export interface IFeeTronConfig extends ITxChainSetter {
+  setManualFee(fee: CoinPrimitive | undefined): void;
+  feeCurrencies: Currency[];
+  feeCurrency: Currency | undefined;
+  fee: CoinPretty | undefined;
+  getFeePrimitive(): CoinPrimitive | undefined;
+  getError(): Error | undefined;
+  toStdFee(): StdFee;
+}
 
 export interface IRecipientConfig extends ITxChainSetter {
   recipient: string;

@@ -1,12 +1,10 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
 import { useStore } from "../../stores";
-import { AmountInput, MemoInput } from "../../components/input";
 import {
   useFeeConfig,
   useGasConfig,
@@ -14,7 +12,6 @@ import {
   useSignDocAmountConfig,
   useSignDocHelper,
 } from "@owallet/hooks";
-import { Button } from "../../components/button";
 import { Msg as AminoMsg } from "@cosmjs/launchpad";
 import { observer } from "mobx-react-lite";
 import { useUnmount } from "../../hooks";
@@ -22,8 +19,15 @@ import { FeeInSign } from "./fee";
 import { renderAminoMessage } from "./amino";
 import { renderDirectMessage } from "./direct";
 import crashlytics from "@react-native-firebase/crashlytics";
-import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
+import OWText from "@src/components/text/ow-text";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
+import { useTheme } from "@src/themes/theme-provider";
+import OWButtonGroup from "@src/components/button/OWButtonGroup";
+import { metrics } from "@src/themes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -40,9 +44,6 @@ export const SignModal: FunctionComponent<{
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-    const scheme = appInitStore.getInitApp.theme;
-
-    const style = useStyle();
 
     const [signer, setSigner] = useState("");
 
@@ -104,6 +105,16 @@ export const SignModal: FunctionComponent<{
       signInteractionStore.waitingData,
     ]);
 
+    useEffect(() => {
+      if (feeConfig.feeCurrency && !feeConfig.fee) {
+        feeConfig.setFeeType("average");
+      }
+      if (appInitStore.getInitApp.feeOption) {
+        feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      }
+      return;
+    }, [feeConfig, appInitStore.getInitApp.feeOption]);
+
     const mode = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode
       : "none";
@@ -112,14 +123,17 @@ export const SignModal: FunctionComponent<{
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
+
+    console.log("msgs", msgs);
+
     const isDisable =
       signDocWapper == null ||
       signDocHelper.signDocWrapper == null ||
       memoConfig.getError() != null ||
       feeConfig.getError() != null;
+    amountConfig.getError() != null;
 
     const _onPressApprove = async () => {
-      crashlytics().log("sign - index - _onPressApprove");
       try {
         if (signDocHelper.signDocWrapper) {
           //
@@ -146,11 +160,11 @@ export const SignModal: FunctionComponent<{
     };
 
     const renderedMsgs = (() => {
+      const account = accountStore.getAccount(chainId);
+      const chainInfo = chainStore.getChain(chainId);
       if (mode === "amino") {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
-          const account = accountStore.getAccount(chainId);
-          const chainInfo = chainStore.getChain(chainId);
-          const { content, scrollViewHorizontal } = renderAminoMessage(
+          const { content, scrollViewHorizontal, title } = renderAminoMessage(
             account.msgOpts,
             msg,
             chainInfo.currencies
@@ -158,103 +172,127 @@ export const SignModal: FunctionComponent<{
 
           return (
             <View key={i.toString()}>
-              {scrollViewHorizontal ? (
-                <ScrollView horizontal={true}>
-                  <Text style={style.flatten(["body3"])}>{content}</Text>
-                </ScrollView>
-              ) : (
-                <View>{content}</View>
+              {msg.type !== account.msgOpts.withdrawRewards.type && (
+                <OWText
+                  size={16}
+                  weight={"700"}
+                  style={{
+                    textAlign: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  {`${title} confirmation`.toUpperCase()}
+                </OWText>
               )}
+              <View>{content}</View>
             </View>
           );
         });
       } else if (mode === "direct") {
         return (msgs as any[]).map((msg, i) => {
-          const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(
             msg,
             chainInfo.currencies
           );
 
-          return <View key={i.toString()}>{content}</View>;
+          return (
+            <View key={i.toString()}>
+              {msg.type !== account.msgOpts.withdrawRewards.type && (
+                <OWText
+                  size={16}
+                  weight={"700"}
+                  style={{
+                    textAlign: "center",
+                    paddingVertical: 20,
+                  }}
+                >
+                  {`${title} confirmation`.toUpperCase()}
+                </OWText>
+              )}
+              <View>{content}</View>
+            </View>
+          );
         });
       } else {
         return null;
       }
     })();
-
+    const { colors } = useTheme();
+    const { bottom } = useSafeAreaInsets();
     return (
-      <CardModal title="Confirm Transaction">
-        <View style={style.flatten(["margin-bottom-16"])}>
+      <WrapViewModal
+        disabledScrollView={false}
+        buttonBottom={
           <View
-            style={style.flatten([
-              "border-radius-8",
-              "border-color-border-white",
-              // 'overflow-hidden'
-            ])}
+            style={{
+              paddingBottom: 5 + (bottom || 0),
+            }}
           >
-            <ScrollView
-              style={style.flatten(["max-height-214"])}
-              persistentScrollbar={true}
+            <View
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+                paddingHorizontal: 16,
+                borderBottomLeftRadius: 24,
+                borderBottomRightRadius: 24,
+                marginBottom: 24,
+              }}
             >
-              {renderedMsgs}
-            </ScrollView>
+              <FeeInSign
+                feeConfig={feeConfig}
+                gasConfig={gasConfig}
+                signOptions={signInteractionStore.waitingData?.data.signOptions}
+                isInternal={isInternal}
+              />
+              {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
+              {memoConfig.memo && (
+                <ItemReceivedToken
+                  label={"Memo"}
+                  valueDisplay={memoConfig.memo}
+                  value={memoConfig.memo}
+                  btnCopy={false}
+                />
+              )}
+            </View>
+            <OWButtonGroup
+              labelApprove={"Confirm"}
+              labelClose={"Cancel"}
+              disabledApprove={isDisable}
+              disabledClose={signInteractionStore.isLoading}
+              loadingApprove={signInteractionStore.isLoading}
+              styleApprove={{
+                borderRadius: 99,
+                backgroundColor: isDisable
+                  ? colors["primary-surface-disable"]
+                  : colors["primary-surface-default"],
+              }}
+              onPressClose={_onPressReject}
+              onPressApprove={_onPressApprove}
+              styleClose={{
+                borderRadius: 99,
+                backgroundColor: colors["neutral-surface-bg"],
+              }}
+            />
           </View>
-        </View>
-        {/* <MemoInput label="To" memoConfig={memoConfig} /> */}
-        <FeeInSign
-          feeConfig={feeConfig}
-          gasConfig={gasConfig}
-          signOptions={signInteractionStore.waitingData?.data.signOptions}
-          isInternal={isInternal}
-        />
-
+        }
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          maxHeight: metrics.screenHeight - 250,
+        }}
+        containerStyle={{
+          paddingBottom: 16,
+        }}
+      >
         <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-evenly",
-          }}
+        // style={{
+        //   paddingBottom: 20
+        // }}
         >
-          <Button
-            text="Reject"
-            size="large"
-            containerStyle={{
-              width: "40%",
-            }}
-            style={{
-              backgroundColor: colors["red-500"],
-            }}
-            textStyle={{
-              color: colors["white"],
-            }}
-            underlayColor={colors["danger-400"]}
-            loading={signInteractionStore.isLoading}
-            onPress={_onPressReject}
-          />
-          <Button
-            text="Approve"
-            containerStyle={{
-              width: "40%",
-            }}
-            style={{
-              backgroundColor: isDisable
-                ? colors["gray-400"]
-                : colors["primary-surface-default"],
-            }}
-            textStyle={{
-              color: isDisable ? colors["gray-10"] : colors["white"],
-            }}
-            underlayColor={colors["purple-400"]}
-            size="large"
-            disabled={isDisable}
-            loading={signInteractionStore.isLoading}
-            onPress={_onPressApprove}
-          />
+          <View>{renderedMsgs}</View>
         </View>
-      </CardModal>
+      </WrapViewModal>
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: false,
   }
 );

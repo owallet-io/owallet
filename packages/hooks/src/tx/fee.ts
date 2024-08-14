@@ -11,7 +11,6 @@ import {
   ChainGetter,
   CoinPrimitive,
   ObservableQueryBitcoinBalance,
-  ObservableQueryEvmBalance,
 } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
@@ -28,8 +27,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
   protected queryBalances: ObservableQueryBalances;
 
-  @observable.ref
-  protected queryEvmBalances?: ObservableQueryEvmBalance;
+  // @observable.ref
+  // protected queryEvmBalances?: ObservableQueryEvmBalance;
   @observable.ref
   protected queryBtcBalances?: ObservableQueryBitcoinBalance;
 
@@ -42,8 +41,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     high: MIN_FEE_RATE,
   };
 
-  @observable
-  protected _senderEvm?: string;
+  // @observable
+  // protected _senderEvm?: string;
 
   @observable
   protected _feeType: FeeType | undefined = undefined;
@@ -72,18 +71,18 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     protected readonly amountConfig: IAmountConfig,
     protected readonly gasConfig: IGasConfig,
     additionAmountToNeedFee: boolean = true,
-    queryEvmBalances?: ObservableQueryEvmBalance,
-    senderEvm?: string,
+    // queryEvmBalances?: ObservableQueryEvmBalance,
+    // senderEvm?: string,
     queryBtcBalances?: ObservableQueryBitcoinBalance,
     protected readonly memoConfig?: IMemoConfig
   ) {
     super(chainGetter, initialChainId);
 
     this._sender = sender;
-    this._senderEvm = senderEvm;
+    // this._senderEvm = senderEvm;
 
     this.queryBalances = queryBalances;
-    this.queryEvmBalances = queryEvmBalances;
+    // this.queryEvmBalances = queryEvmBalances;
     this.additionAmountToNeedFee = additionAmountToNeedFee;
     this.queryBtcBalances = queryBtcBalances;
     if (this.chainInfo.networkType === "bitcoin") {
@@ -127,20 +126,20 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     this.queryBalances = queryBalances;
   }
 
-  @action
-  setQueryEvmBalances(queryEvmBalances: ObservableQueryEvmBalance) {
-    this.queryEvmBalances = queryEvmBalances;
-  }
+  // @action
+  // setQueryEvmBalances(queryEvmBalances: ObservableQueryEvmBalance) {
+  //   this.queryEvmBalances = queryEvmBalances;
+  // }
 
   @action
   setSender(sender: string) {
     this._sender = sender;
   }
 
-  @action
-  setSenderEvm(senderEvm: string) {
-    this._senderEvm = senderEvm;
-  }
+  // @action
+  // setSenderEvm(senderEvm: string) {
+  //   this._senderEvm = senderEvm;
+  // }
 
   @action
   setFeeType(feeType: FeeType | undefined) {
@@ -270,14 +269,15 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
     return new CoinPretty(
       feeCurrency,
-      new Int(feeTypePrimitive.amount)
+      new Int(feeTypePrimitive?.amount ?? "0")
     ).maxDecimals(feeCurrency.coinDecimals);
   });
 
   getError(): Error | undefined {
     try {
-      if (this.gasConfig.getError()) {
-        return this.gasConfig.getError();
+      const gasError = this.checkGasError();
+      if (gasError) {
+        return gasError;
       }
 
       if (this.disableBalanceCheck) {
@@ -290,88 +290,90 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       }
 
       const amount = this.amountConfig.getAmountPrimitive();
-
-      let need: Coin;
-      if (this.additionAmountToNeedFee && fee && fee.denom === amount.denom) {
-        need = new Coin(
-          fee.denom,
-          new Int(fee.amount).add(new Int(amount.amount))
-        );
-      } else {
-        need = new Coin(fee.denom, new Int(fee.amount));
-      }
+      const need = this.calculateNeed(fee, amount);
 
       if (need.amount.gt(new Int(0))) {
-        if (this.chainInfo.networkType === "evm") {
-          if (!this.queryEvmBalances) return;
-          const balance = this.queryEvmBalances.getQueryBalance(
-            this._senderEvm
-          ).balance;
-          if (!balance) return new InsufficientFeeError("insufficient fee");
-          else if (
-            balance
-              .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  balance.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .lt(need.amount)
-          )
-            return new InsufficientFeeError("insufficient fee");
-        } else if (this.chainInfo.networkType === "bitcoin") {
-          if (!this.queryBtcBalances) return;
-          const balance = this.queryBtcBalances.getQueryBalance(
-            this._sender
-          )?.balance;
-          if (!balance) return new InsufficientFeeError("insufficient fee");
-          else if (
-            balance
-              .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  balance.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .lt(need.amount)
-          ) {
-            return new InsufficientFeeError("insufficient fee");
-          }
-        } else {
-          const bal = this.queryBalances
-            .getQueryBech32Address(this._sender)
-            .balances.find((bal) => {
-              return bal.currency.coinMinimalDenom === need.denom;
-            });
-
-          if (!bal) {
-            return new InsufficientFeeError("insufficient fee");
-          } else if (!bal.response && !bal.error) {
-            // If fetching balance doesn't have the response nor error,
-            // assume it is not loaded from KVStore(cache).
-            return new NotLoadedFeeError(
-              `${bal.currency.coinDenom} is not loaded yet`
-            );
-          } else if (
-            bal.balance
-              .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  bal.currency.coinDecimals
-                )
-              )
-              .truncate()
-              .lt(need.amount)
-          ) {
-            return new InsufficientFeeError("insufficient fee");
-          }
+        const insufficientFeeError = this.checkInsufficientFee(need);
+        if (insufficientFeeError) {
+          return insufficientFeeError;
         }
       }
     } catch (error) {
       console.log("Error on get fees: ", error);
     }
+  }
+
+  private checkGasError(): Error | undefined {
+    if (this.gasConfig.getError()) {
+      return this.gasConfig.getError();
+    }
+    return undefined;
+  }
+
+  private calculateNeed(fee: CoinPrimitive, amount: CoinPrimitive): Coin {
+    if (this.additionAmountToNeedFee && fee.denom === amount.denom) {
+      return new Coin(
+        fee.denom,
+        new Int(fee.amount).add(new Int(amount.amount))
+      );
+    } else {
+      return new Coin(fee.denom, new Int(fee.amount));
+    }
+  }
+
+  private checkInsufficientFee(need: Coin): Error | undefined {
+    if (this.chainInfo.networkType === "bitcoin") {
+      return this.checkBitcoinInsufficientFee(need);
+    } else {
+      return this.checkOtherInsufficientFee(need);
+    }
+  }
+
+  private checkBitcoinInsufficientFee(need: Coin): Error | undefined {
+    const balance = this.queryBtcBalances.getQueryBalance(
+      this._sender
+    )?.balance;
+    if (!balance) {
+      return new InsufficientFeeError("insufficient fee");
+    } else if (
+      balance
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            balance.currency.coinDecimals
+          )
+        )
+        .truncate()
+        .lt(need.amount)
+    ) {
+      return new InsufficientFeeError("insufficient fee");
+    }
+    return undefined;
+  }
+
+  private checkOtherInsufficientFee(need: Coin): Error | undefined {
+    const bal = this.queryBalances
+      .getQueryBech32Address(this._sender)
+      .balances.find((bal) => bal.currency.coinMinimalDenom === need.denom);
+
+    if (!bal) {
+      return new InsufficientFeeError("insufficient fee");
+    } else if (!bal.response && !bal.error) {
+      return new NotLoadedFeeError(
+        `${bal.currency.coinDenom} is not loaded yet`
+      );
+    } else if (
+      bal.balance
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(bal.currency.coinDecimals)
+        )
+        .truncate()
+        .lt(need.amount)
+    ) {
+      return new InsufficientFeeError("insufficient fee");
+    }
+    return undefined;
   }
 
   @action
@@ -392,8 +394,8 @@ export const useFeeConfig = (
   amountConfig: IAmountConfig,
   gasConfig: IGasConfig,
   additionAmountToNeedFee: boolean = true,
-  queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string,
+  // queryEvmBalances?: ObservableQueryEvmBalance,
+  // senderEvm?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance,
   memoConfig?: IMemoConfig
 ) => {
@@ -407,8 +409,6 @@ export const useFeeConfig = (
         amountConfig,
         gasConfig,
         additionAmountToNeedFee,
-        queryEvmBalances,
-        senderEvm,
         queryBtcBalances,
         memoConfig
       )
@@ -417,8 +417,8 @@ export const useFeeConfig = (
   config.setQueryBalances(queryBalances);
   config.setSender(sender);
   config.setAdditionAmountToNeedFee(additionAmountToNeedFee);
-  config.setQueryEvmBalances(queryEvmBalances);
-  config.setSenderEvm(senderEvm);
+  // config.setQueryEvmBalances(queryEvmBalances);
+  // config.setSenderEvm(senderEvm);
 
   return config;
 };

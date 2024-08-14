@@ -38,7 +38,7 @@ export const PageWithScrollView = forwardRef<
     fixed,
     onScroll,
     disableSafeArea,
-    backgroundColor = colors["background"],
+    backgroundColor = colors["neutral-surface-bg"],
     ...restProps
   } = props;
 

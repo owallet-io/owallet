@@ -80,9 +80,9 @@ export class GasConfig extends TxChainSetter implements IGasConfig {
       return new Error("Gas is not integer");
     }
 
-    // if (this.gas <= 0) {
-    //   return new Error('Gas should be greater than 0');
-    // }
+    if (this.gas < 0) {
+      return new Error("Gas should be greater than 0");
+    }
     return;
   }
 }

@@ -22,6 +22,7 @@ import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { metrics } from "../../../themes";
 import OWText from "@src/components/text/ow-text";
+import { tracking } from "@src/utils/tracking";
 
 interface FormData {
   name: string;
@@ -41,6 +42,11 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
+  useEffect(() => {
+    tracking(`Create Wallet Screen`);
+    return () => {};
+  }, []);
+
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 

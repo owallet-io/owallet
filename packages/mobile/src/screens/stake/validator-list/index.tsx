@@ -23,9 +23,11 @@ import { useSmartNavigation } from "../../../navigation.provider";
 import { spacing, typography } from "../../../themes";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
+import { tracking } from "@src/utils/tracking";
 type Sort = "APR" | "Amount Staked" | "Name";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
+  tracking(`Stake Screen`);
   const route = useRoute<
     RouteProp<
       Record<
@@ -245,7 +247,7 @@ const ValidatorItem: FunctionComponent<{
       style={{
         ...styles.container,
         flexDirection: "row",
-        backgroundColor: colors["background-box"],
+        backgroundColor: colors["neutral-surface-bg2"],
         alignItems: "center",
         borderWidth: 0.5,
         // borderColor: uptime < 0.9 ? colors["danger"] : colors["background"],
@@ -370,7 +372,7 @@ const styling = (colors) =>
       color: colors["gray-700"],
     },
     container: {
-      backgroundColor: colors["background"],
+      backgroundColor: colors["neutral-surface-bg"],
       flexDirection: "row",
       paddingTop: spacing["8"],
       paddingBottom: spacing["8"],

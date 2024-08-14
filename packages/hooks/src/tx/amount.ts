@@ -1,10 +1,10 @@
-import { IAmountConfig, IFeeConfig } from "./types";
+import { IAmountConfig, IFeeConfig, IFeeTronConfig } from "./types";
 import { TxChainSetter } from "./chain";
 import {
   ChainGetter,
   CoinPrimitive,
   ObservableQueryBitcoinBalance,
-  ObservableQueryEvmBalance,
+  // ObservableQueryEvmBalance
 } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { ObservableQueryBalances } from "@owallet/stores";
@@ -21,20 +21,20 @@ import { useState } from "react";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @observable.ref
-  protected feeConfig?: IFeeConfig;
+  protected feeConfig?: IFeeConfig | IFeeTronConfig;
 
   @observable.ref
   protected queryBalances: ObservableQueryBalances;
 
-  @observable.ref
-  protected queryEvmBalances?: ObservableQueryEvmBalance;
+  // @observable.ref
+  // protected queryEvmBalances?: ObservableQueryEvmBalance;
   @observable.ref
   protected queryBtcBalance?: ObservableQueryBitcoinBalance;
   @observable
   protected _sender: string;
 
-  @observable
-  protected _senderEvm?: string;
+  // @observable
+  // protected _senderEvm?: string;
 
   @observable.ref
   protected _sendCurrency?: AppCurrency = undefined;
@@ -51,17 +51,15 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     sender: string,
     feeConfig: IFeeConfig | undefined,
     queryBalances: ObservableQueryBalances,
-    queryEvmBalances?: ObservableQueryEvmBalance,
-    senderEvm?: string,
     queryBtcBalance?: ObservableQueryBitcoinBalance
   ) {
     super(chainGetter, initialChainId);
 
     this._sender = sender;
-    this._senderEvm = senderEvm;
+    // this._senderEvm = senderEvm;
     this.feeConfig = feeConfig;
     this.queryBalances = queryBalances;
-    this.queryEvmBalances = queryEvmBalances;
+    // this.queryEvmBalances = queryEvmBalances;
     if (!!queryBtcBalance) {
       this.queryBtcBalance = queryBtcBalance;
     }
@@ -71,7 +69,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   }
 
   @action
-  setFeeConfig(feeConfig: IFeeConfig) {
+  setFeeConfig(feeConfig: IFeeConfig | IFeeTronConfig) {
     this.feeConfig = feeConfig;
   }
 
@@ -80,10 +78,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     this.queryBalances = queryBalances;
   }
 
-  @action
-  setQueryEvmBalances(queryEvmBalances: ObservableQueryEvmBalance) {
-    this.queryEvmBalances = queryEvmBalances;
-  }
+  // @action
+  // setQueryEvmBalances(queryEvmBalances: ObservableQueryEvmBalance) {
+  //   this.queryEvmBalances = queryEvmBalances;
+  // }
   @action
   setQueryBtcBalance(queryBtcBalance: ObservableQueryBitcoinBalance) {
     this.queryBtcBalance = queryBtcBalance;
@@ -92,11 +90,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @action
   setSender(sender: string) {
     this._sender = sender;
-  }
-
-  @action
-  setSenderEvm(senderEvm: string) {
-    this._senderEvm = senderEvm;
   }
 
   @action
@@ -150,8 +143,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       const networkType = this.chainGetter.getChain(this.chainId).networkType;
       if (networkType === "bitcoin") {
         balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
-      } else if (networkType === "evm") {
-        balance = this.queryEvmBalances.getQueryBalance(this.sender)?.balance;
       } else {
         balance = this.queryBalances
           .getQueryBech32Address(this.sender)
@@ -172,6 +163,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
         .trim(true)
         .locale(false)
         .hideDenom(true)
+        .maxDecimals(6)
         .toString();
     }
 
@@ -256,19 +248,19 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return new NegativeAmountError("Amount is negative");
     }
 
-    const balance = (() => {
-      if (this.chainInfo.networkType === "evm") {
-        if (!this.queryEvmBalances) return;
-        return;
-      } else if (this.chainInfo.networkType === "bitcoin") {
-        if (!this.queryBtcBalance) return;
-        return this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
+    if (this.chainInfo.networkType === "bitcoin") {
+      const balance = this.queryBtcBalance.getQueryBalance(
+        this.sender
+      )?.balance;
+      const balanceDec = balance.toDec();
+      if (dec.gt(balanceDec)) {
+        return new InsufficientAmountError("Insufficient amount");
       }
-      return this.queryBalances
-        .getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
-    })();
-    if (!balance) return;
+      return;
+    }
+    const balance = this.queryBalances
+      .getQueryBech32Address(this.sender)
+      .getBalanceFromCurrency(this.sendCurrency);
     const balanceDec = balance.toDec();
     if (dec.gt(balanceDec)) {
       return new InsufficientAmountError("Insufficient amount");
@@ -282,8 +274,7 @@ export const useAmountConfig = (
   chainId: string,
   sender: string,
   queryBalances: ObservableQueryBalances,
-  queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string,
+
   queryBtcBalance?: ObservableQueryBitcoinBalance
 ) => {
   const [txConfig] = useState(
@@ -294,18 +285,16 @@ export const useAmountConfig = (
         sender,
         undefined,
         queryBalances,
-        queryEvmBalances,
-        senderEvm,
         queryBtcBalance
       )
   );
   txConfig.setChain(chainId);
   txConfig.setQueryBalances(queryBalances);
-  txConfig.setQueryEvmBalances(queryEvmBalances);
+  // txConfig.setQueryEvmBalances(queryEvmBalances);
   if (!!queryBtcBalance) {
     txConfig.setQueryBtcBalance(queryBtcBalance);
   }
-  txConfig.setSenderEvm(senderEvm);
+  // txConfig.setSenderEvm(senderEvm);
   txConfig.setSender(sender);
 
   return txConfig;

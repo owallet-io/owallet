@@ -39,7 +39,7 @@ export interface HasCosmosQueries {
   cosmos: CosmosQueries;
 }
 
-export class QueriesWithCosmos
+export class QueriesWrappedCosmos
   extends QueriesSetBase
   implements HasCosmosQueries
 {

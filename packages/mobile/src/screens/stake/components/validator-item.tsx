@@ -73,7 +73,7 @@ export const ValidatorItem: FunctionComponent<ValidatorItemProps> = ({
           style={{
             ...styles.textInfo,
           }}
-        >{`${validator.amount} ${validator.denom.toUpperCase()}`}</Text>
+        >{`${validator?.amount} ${validator?.denom?.toUpperCase()}`}</Text>
       </View>
     </TouchableOpacity>
   );

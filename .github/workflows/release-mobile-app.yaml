@@ -9,6 +9,7 @@ jobs:
   # release-android-mobile:
   #   name: release-android-mobile
   #   runs-on: macos-latest #orai-self-hosted
+  #   timeout-minutes: 120 # Set the timeout to 120 minutes
   #   strategy:
   #     matrix:
   #       node-version: [18.17.0]
@@ -62,6 +63,8 @@ jobs:
   #         APP_ID: ${{ secrets.APP_ID_FIREBASE }}
   #         API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
   #         MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+  #         BYTE_BREW_SDK_KEY_ANDROID: ${{ secrets.BYTE_BREW_SDK_KEY_ANDROID }}
+  #         BYTE_BREW_ID_ANDROID: ${{ secrets.BYTE_BREW_ID_ANDROID }}
   #     - name: Setup Ruby
   #       uses: ruby/setup-ruby@v1
   #       with:
@@ -85,7 +88,7 @@ jobs:
   #         fileDir: "packages/mobile/android/fastlane"
   #     - name: Setup Fastlane android
   #       working-directory: packages/mobile/android/fastlane
-  #       run: cd .. && bundle update && fastlane release
+  #       run: cd .. && bundle update && fastlane release && fastlane android build
   #       env:
   #         JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
   #         DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
@@ -95,9 +98,22 @@ jobs:
   #         PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
   #         SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
   #         FILE_PATH: "/OWalletKeystore"
+  # #      - name: Archive artifacts
+  # #        uses: actions/upload-artifact@v4
+  # #        with:
+  # #          name: app
+  # #          path: app/build/outputs/apk/release/app-release.apk
+  # #      - name: Upload APK to Target Repo
+  # #        run: |
+  # #          curl \
+  # #            -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" \
+  # #            -H "Content-Type: $(file -b --mime-type app/build/outputs/apk/release/app-release.apk)" \
+  # #            --data-binary @app/build/outputs/apk/release/app-release.apk \
+  # #            "https://uploads.github.com/repos/oraichain/owallet-provider/releases/latest/assets?name=app-release.apk"
   release-ios-mobile:
     name: release-ios-mobile
     runs-on: macos-latest #orai-self-hosted
+    timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
         node-version: [18.17.0]
@@ -132,6 +148,9 @@ jobs:
       - name: Install mobile packages
         working-directory: packages/mobile
         run: yarn --silent
+      - name: Build mobile images
+        working-directory: packages/mobile
+        run: yarn images
       - name: restore lerna
         uses: actions/cache@v3
         with:
@@ -151,6 +170,11 @@ jobs:
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
           API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+      - name: Bundle mobile
+        working-directory: packages/mobile
+        run: yarn build:ios
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

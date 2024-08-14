@@ -1,51 +1,162 @@
-import { InteractionManager, StyleSheet, Text, View } from "react-native";
+import {
+  InteractionManager,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import {
   AddressInput,
   AmountInput,
   CurrencySelector,
-  FeeButtons,
   MemoInput,
-  TextInput,
 } from "@src/components/input";
 import { OWButton } from "@src/components/button";
-import { PageWithScrollView } from "@src/components/page";
-import {
-  createTransaction,
-  calculatorFee,
-  formatBalance,
-  BtcToSats,
-  validateAddress,
-} from "@owallet/bitcoin";
-import { OWSubTitleHeader } from "@src/components/header";
-import { OWBox } from "@src/components/card";
+import { BtcToSats, formatBalance } from "@owallet/bitcoin";
 import { useSendTxConfig } from "@owallet/hooks";
 import { useStore } from "@src/stores";
-import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { spacing } from "@src/themes";
-import { Dec, DecUtils } from "@owallet/unit";
+import { useTheme } from "@src/themes/theme-provider";
+import { metrics, spacing } from "@src/themes";
 import { observer } from "mobx-react-lite";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { showToast } from "@src/utils/helper";
+import { capitalizedText, shortenAddress, showToast } from "@src/utils/helper";
 import { RouteProp, useRoute } from "@react-navigation/native";
-import { EthereumEndpoint } from "@owallet/common";
+import {
+  EthereumEndpoint,
+  getKeyDerivationFromAddressType,
+  toAmount,
+} from "@owallet/common";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { PageHeader } from "@src/components/header/header-new";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import { NewAmountInput } from "@src/components/input/amount-input";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { DownArrowIcon } from "@src/components/icon";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { FeeModal } from "@src/modals/fee";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import OWFlatList from "@src/components/page/ow-flat-list";
+import { Text } from "@src/components/text";
+import { RadioButton } from "react-native-radio-buttons-group";
+import { AddressBtcType } from "@owallet/types";
+import { useBIP44Option } from "@src/screens/register/bip44";
+import { tracking } from "@src/utils/tracking";
 
+const dataTypeBtc = [
+  { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
+  {
+    id: AddressBtcType.Legacy,
+    name: "Bitcoin Legacy",
+  },
+];
+export const ModalBtcTypeList = observer(() => {
+  const { accountStore, chainStore, modalStore, keyRingStore, appInitStore } =
+    useStore();
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const bip44Option = useBIP44Option();
+  const { coinType, chainId, bip44 } = chainStore.current;
+  const { colors } = useTheme();
+  const handleSwitchType = (item) => {
+    accountInfo.setAddressTypeBtc(item.id);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(item.id);
+      return keyMain;
+    })();
+
+    if (accountInfo.isNanoLedger) {
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${
+        bip44Option.bip44HDPath.account
+      }'/${bip44Option.bip44HDPath.change}/${
+        bip44Option.bip44HDPath.addressIndex
+      }`;
+
+      keyRingStore.setKeyStoreLedgerAddress(path, chainId);
+    }
+    modalStore.close();
+  };
+  return (
+    <WrapViewModal title={"Choose type"} disabledScrollView={false}>
+      <OWFlatList
+        isBottomSheet={true}
+        data={dataTypeBtc}
+        renderItem={({ item, index }) => {
+          const selected = item?.id === accountInfo.addressType;
+          return (
+            <TouchableOpacity
+              style={{
+                paddingLeft: 12,
+                paddingRight: 8,
+                paddingVertical: 9.5,
+                borderRadius: 12,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                backgroundColor: selected
+                  ? colors["neutral-surface-bg2"]
+                  : null,
+              }}
+              onPress={() => {
+                handleSwitchType(item);
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      color: colors["neutral-text-title"],
+                      fontWeight: "600",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                </View>
+              </View>
+
+              <View>
+                <RadioButton
+                  color={
+                    selected
+                      ? colors["highlight-surface-active"]
+                      : colors["neutral-text-body"]
+                  }
+                  id={item.id}
+                  selected={selected}
+                  onPress={() => handleSwitchType(item)}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </WrapViewModal>
+  );
+});
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const {
     chainStore,
     accountStore,
     keyRingStore,
     queriesStore,
-    analyticsStore,
-    sendStore,
+    priceStore,
+    modalStore,
+    appInitStore,
   } = useStore();
   const route = useRoute<
     RouteProp<
@@ -64,9 +175,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     : chainStore.current.chainId;
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
+  useEffect(() => {
+    tracking(`Send BTC Screen`);
+    return () => {};
+  }, []);
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -75,8 +191,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     address,
     queries.queryBalances,
     EthereumEndpoint,
-    queriesStore.get(chainStore.current.chainId).evm.queryEvmBalance,
-    address,
+
     queries.bitcoin.queryBitcoinBalance
   );
 
@@ -105,6 +220,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       );
     }
   };
+
   useEffect(() => {
     if (address) {
       refreshBalance(address);
@@ -113,11 +229,41 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
     return () => {};
   }, [address]);
+
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
+
+  const [balance, setBalance] = useState<CoinPretty>(null);
+
+  const isReadyBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
+
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (isReadyBalance) {
+        const balance = queries.queryBalances
+          .getQueryBech32Address(address)
+          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+        setBalance(balance);
+      }
+    });
+  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} />
+    );
+  };
+
   const onSend = useCallback(async () => {
     try {
       await account.sendToken(
@@ -135,36 +281,26 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
         {
           onFulfill: async (tx) => {
-            console.log("🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:", tx);
-
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,
                 params: {
                   txHash: tx,
-                  chainId: chainId,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    from: address,
+                    to: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
+                  },
                 },
               });
             }
 
             return;
           },
-          onBroadcasted: async (txHash) => {
-            try {
-              analyticsStore.logEvent("Send Btc tx broadcasted", {
-                chainId: chainId,
-                chainName: chainStore.current.chainName,
-                feeType: sendConfigs.feeConfig.feeType,
-              });
-
-              return;
-            } catch (error) {
-              console.log(
-                "🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:",
-                error
-              );
-            }
-          },
+          onBroadcasted: async (txHash) => {},
         },
         {
           confirmedBalance: confirmedBalance,
@@ -186,7 +322,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         type: "danger",
         message: JSON.stringify(error),
       });
-      console.log("🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:", error);
     }
   }, [
     chainStore.current.networkType,
@@ -197,114 +332,230 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   ]);
 
   const styles = styling(colors);
+  useEffect(() => {
+    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+      sendConfigs.feeConfig.setFeeType("average");
+    }
+    if (appInitStore.getInitApp.feeOption) {
+      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+    }
+    return;
+  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
+  const amount = new CoinPretty(
+    sendConfigs.amountConfig.sendCurrency,
+    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
+  );
   return (
-    <PageWithScrollView backgroundColor={colors["background"]}>
-      <View style={{ marginBottom: 99 }}>
-        {/* <OWSubTitleHeader title="Send" /> */}
-        <OWBox>
-          <CurrencySelector
-            label="Select a token"
-            placeHolder="Select Token"
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            containerStyle={styles.containerStyle}
-            selectorContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <AddressInput
-            placeholder="Enter receiving address"
-            label="Send to"
-            recipientConfig={sendConfigs.recipientConfig}
-            memoConfig={sendConfigs.memoConfig}
-            labelStyle={styles.sendlabelInput}
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
-          <AmountInput
-            placeholder="ex. 1000 BTC"
-            label="Amount"
-            allowMax={true}
-            amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-          />
+    <PageWithBottom
+      bottomGroup={
+        <OWButton
+          label="Send"
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+          loading={account.isSendingMsg === "delegate"}
+          onPress={onSend}
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
+        />
+      }
+    >
+      <PageHeader title="Send" subtitle={chainStore.current.chainName} />
+      <ScrollView
+        style={{ height: metrics.screenHeight / 1.4 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <OWCard>
+            <TouchableOpacity
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+              onPress={() => {
+                modalStore.setOptions();
+                modalStore.setChildren(<ModalBtcTypeList />);
+              }}
+            >
+              <View>
+                <OWText
+                  style={{ paddingBottom: 8 }}
+                  color={colors["neutral-text-title"]}
+                >
+                  Type
+                </OWText>
+                <View
+                // style={{
+                //   flexDirection: "row",
+                // }}
+                >
+                  <OWText color={colors["neutral-text-title"]} weight="500">
+                    {
+                      dataTypeBtc.find(
+                        (item, index) => item.id === account.addressType
+                      )?.name
+                    }
+                  </OWText>
+                  <OWText color={colors["neutral-text-body"]}>
+                    {shortenAddress(account.btcAddress)}
+                  </OWText>
+                </View>
+              </View>
+              <DownArrowIcon height={15} color={colors["gray-150"]} />
+            </TouchableOpacity>
+          </OWCard>
+          <OWCard type="normal">
+            <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
-          <MemoInput
-            label="Message (Optional)"
-            placeholder="Type your message here"
-            inputContainerStyle={{
-              backgroundColor: colors["background-box"],
-            }}
-            memoConfig={sendConfigs.memoConfig}
-            labelStyle={styles.sendlabelInput}
-          />
-          {/* <View style={styles.containerToggle}>
-            <Toggle
-              on={customFee}
-              onChange={(value) => {
-                setCustomFee(value);
-                if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
-                    sendConfigs.feeConfig.setFeeType('average');
-                  }
-                }
+            <AddressInput
+              colors={colors}
+              placeholder="Enter address"
+              label=""
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
+              labelStyle={styles.sendlabelInput}
+              containerStyle={{
+                marginBottom: 12,
+              }}
+              inputContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+                borderWidth: 0,
+                paddingHorizontal: 0,
               }}
             />
-            <Text style={styles.txtFee}>Custom Fee</Text>
-          </View>
-           */}
-          <FeeButtons
-            label="Transaction Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-            labelStyle={styles.sendlabelInput}
-          />
+          </OWCard>
+          <OWCard style={{ paddingTop: 22 }} type="normal">
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View>
+                <OWText style={{ paddingTop: 8 }}>
+                  Balance :{" "}
+                  {balance
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString() || "0"}
+                </OWText>
+                <CurrencySelector
+                  chainId={chainStore.current.chainId}
+                  type="new"
+                  label="Select a token"
+                  placeHolder="Select Token"
+                  amountConfig={sendConfigs.amountConfig}
+                  labelStyle={styles.sendlabelInput}
+                  containerStyle={styles.containerStyle}
+                  selectorContainerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
+                  }}
+                />
+              </View>
+              <View
+                style={{
+                  alignItems: "flex-end",
+                }}
+              >
+                <NewAmountInput
+                  colors={colors}
+                  inputContainerStyle={{
+                    borderWidth: 0,
+                    width: metrics.screenWidth / 2.3,
+                  }}
+                  amountConfig={sendConfigs.amountConfig}
+                  placeholder={"0.0"}
+                  // maxBalance={balance.split(" ")[0]}
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                alignSelf: "flex-end",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <OWIcon name="tdesign_swap" size={16} />
+              <OWText
+                style={{ paddingLeft: 4 }}
+                color={colors["neutral-text-body"]}
+                size={14}
+              >
+                {priceStore.calculatePrice(amount).toString()}
+              </OWText>
+            </View>
+          </OWCard>
+          <OWCard type="normal">
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderBottomColor: colors["neutral-border-default"],
+                borderBottomWidth: 1,
+                paddingVertical: 16,
+                marginBottom: 8,
+              }}
+            >
+              <OWText
+                color={colors["neutral-text-title"]}
+                weight="600"
+                size={16}
+              >
+                Transaction fee
+              </OWText>
+              <TouchableOpacity
+                style={{ flexDirection: "row" }}
+                onPress={_onPressFee}
+              >
+                <OWText
+                  color={colors["primary-text-action"]}
+                  weight="600"
+                  size={16}
+                >
+                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                  {priceStore
+                    .calculatePrice(sendConfigs.feeConfig.fee)
+                    ?.toString()}{" "}
+                </OWText>
+                <DownArrowIcon
+                  height={11}
+                  color={colors["primary-text-action"]}
+                />
+              </TouchableOpacity>
+            </View>
 
-          {/* <TextInput
-            label="Fee"
-            inputContainerStyle={{
-              backgroundColor: colors['background-box']
-            }}
-            placeholder="Type your Fee here"
-            keyboardType={'numeric'}
-            labelStyle={styles.sendlabelInput}
-            editable={false}
-            selectTextOnFocus={false}
-            value={totalFee.feeDisplay || '0'}
-          /> */}
-          <OWButton
-            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-            label="Send"
-            onPress={onSend}
-          />
-        </OWBox>
-      </View>
-    </PageWithScrollView>
+            <OWText color={colors["neutral-text-title"]}>Memo</OWText>
+
+            <MemoInput
+              label=""
+              placeholder="Required if send to CEX"
+              inputContainerStyle={{
+                backgroundColor: colors["neutral-surface-card"],
+                borderWidth: 0,
+                paddingHorizontal: 0,
+              }}
+              memoConfig={sendConfigs.memoConfig}
+              labelStyle={styles.sendlabelInput}
+            />
+          </OWCard>
+        </View>
+      </ScrollView>
+    </PageWithBottom>
   );
 });
 
-const styling = (colors: TypeTheme["colors"]) =>
+const styling = (colors) =>
   StyleSheet.create({
-    txtFee: {
-      fontWeight: "700",
-      fontSize: 16,
-      lineHeight: 34,
-      paddingHorizontal: 8,
-      color: colors["primary-text"],
-    },
-    containerToggle: {
-      flexDirection: "row",
-      paddingBottom: 24,
-      alignItems: "center",
-    },
     sendInputRoot: {
       paddingHorizontal: spacing["20"],
       paddingVertical: spacing["24"],
@@ -312,13 +563,17 @@ const styling = (colors: TypeTheme["colors"]) =>
       borderRadius: 24,
     },
     sendlabelInput: {
-      fontSize: 16,
-      fontWeight: "700",
-      lineHeight: 22,
-      color: colors["sub-primary-text"],
-      marginBottom: spacing["8"],
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-text-body"],
     },
     containerStyle: {
-      backgroundColor: colors["background-box"],
+      backgroundColor: colors["neutral-surface-bg2"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
     },
   });

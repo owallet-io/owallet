@@ -172,7 +172,12 @@ export class ChainUpdaterService {
       };
     }>("/status");
 
-    const resultChainId = get(result, ['data', 'result', 'node_info', 'network']);
+    const resultChainId = get(result, [
+      "data",
+      "result",
+      "node_info",
+      "network",
+    ]);
 
     const version = ChainIdHelper.parse(chainId);
     const fetchedVersion = ChainIdHelper.parse(resultChainId);

@@ -53,9 +53,7 @@ export const MainTabNavigation: FC = observer(() => {
             }
             return (
               <OWIcon
-                name={`${ICONS_TITLE[route.name]}-${
-                  focused ? "bold" : "outline"
-                }`}
+                name={`${ICONS_TITLE[route.name]}`}
                 size={22}
                 color={color}
               />
@@ -63,9 +61,8 @@ export const MainTabNavigation: FC = observer(() => {
           },
           headerShown: false,
           tabBarLabel: `${SCREENS_OPTIONS[route.name].title}`,
-
           tabBarStyle: {
-            backgroundColor: colors["background-box"],
+            backgroundColor: colors["neutral-surface-bg2"],
             borderTopWidth: 0.5,
             borderTopColor: colors["border-bottom-tab"],
             paddingLeft: 10,
@@ -106,9 +103,17 @@ export const MainTabNavigation: FC = observer(() => {
           ),
         };
       }}
-      tabBar={(props) =>
-        checkTabbarVisible && !loading ? <BottomTabBar {...props} /> : null
-      }
+      tabBar={(props) => {
+        if (
+          props.state.routeNames[props.state.index] ===
+          SCREENS.TABS.SendNavigation
+        )
+          return null;
+
+        return checkTabbarVisible && !loading ? (
+          <BottomTabBar {...props} />
+        ) : null;
+      }}
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />

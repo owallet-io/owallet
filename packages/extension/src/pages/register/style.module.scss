@@ -1,10 +1,10 @@
-@import '../../styles/var';
+@import "../../styles/var";
 
 $container-width: 420px;
 
-:global(body)[data-centered='true'] {
+:global(body)[data-centered="true"] {
   // margin: auto;
-  background-color: $background-color;
+  background-color: $neutral-surface-card;
   height: 100%;
   overflow: visible !important;
 
@@ -47,6 +47,14 @@ $container-width: 420px;
     margin-right: 0;
   }
 
+  .titleGroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0px;
+  }
+
   .logo-container {
     margin-top: 40px;
     margin-bottom: 40px;
@@ -56,7 +64,7 @@ $container-width: 420px;
     justify-content: center;
 
     .icon {
-      width: 120px;
+      max-width: 100%;
       height: 120px;
     }
 
@@ -68,6 +76,12 @@ $container-width: 420px;
         height: 50px;
         max-width: 100%;
         margin-bottom: 22px;
+      }
+      .title {
+        font-size: 28px;
+        line-height: 1;
+        color: $neutral-text-title;
+        font-weight: 700;
       }
 
       .paragraph {
@@ -88,12 +102,13 @@ $container-width: 420px;
   }
 
   .mnemonic {
-    font-family: 'Courier Prime', serif;
+    font-family: "Courier Prime", serif;
     font-size: 16px;
     letter-spacing: -0.36px;
 
     padding: 20px 30px;
     text-align: center;
+    margin-bottom: 22px;
 
     &:read-only {
       background-color: $background-color-lighter;
@@ -123,6 +138,7 @@ $container-width: 420px;
 .form-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .buttons {
@@ -138,6 +154,10 @@ $container-width: 420px;
     margin-bottom: 8px;
     margin-left: 0 !important;
   }
+}
+
+.backButton {
+  flex-direction: row;
 }
 
 .new-wallet-btn,

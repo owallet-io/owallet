@@ -1,5 +1,5 @@
-const config = require("../../.eslintrc");
+// const config = require("../../.eslintrc");
 
-module.exports = {
-  ...config,
-};
+// module.exports = {
+//   ...config,
+// };

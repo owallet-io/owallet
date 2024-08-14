@@ -1,9 +1,25 @@
 import images from "@src/assets/images";
+import { Platform } from "react-native";
+import { ChainIdEnum, isMilliseconds } from "@owallet/common";
 
+const fetchWrap = require("fetch-retry")(global.fetch);
+
+export const fetchRetry = async (url, config?: any) => {
+  const response = await fetchWrap(url, {
+    retries: 3,
+    retryDelay: 1000,
+    ...config,
+  });
+  if (response.status !== 200) return;
+  const jsonRes = await response.json();
+  return jsonRes;
+};
 export const HEADER_KEY = {
   notShowHeader: "NOT_SHOW_HEADER",
   showNetworkHeader: "SHOW_NETWORK_HEADER",
 };
+export const isAndroid = Platform.OS === "android";
+export const isIos = Platform.OS === "ios";
 export const defaultAll = { label: "All", value: "All", image: images.crypto };
 export const SCREENS = {
   Home: "Home",
@@ -11,7 +27,6 @@ export const SCREENS = {
   BackupMnemonic: "BackupMnemonic",
   RecoveryPhrase: "RecoveryPhrase",
   RegisterMain: "RegisterMain",
-  BtcFaucet: "BtcFaucet",
   BuyFiat: "BuyFiat",
   RegisterVerifyMnemonicMain: "RegisterVerifyMnemonicMain",
   RegisterEnd: "Register.End",
@@ -21,9 +36,9 @@ export const SCREENS = {
   RegisterNewLedgerMain: "RegisterNewLedgerMain",
   Tokens: "Tokens",
   Nfts: "Nfts",
-  TokenDetail: "Tokens.Detail",
   NftsDetail: "Nfts.Detail",
-  TransferTokensScreen: "TransferTokensScreen",
+  HistoryDetail: "History.Detail",
+  TokenDetails: "Token.Details",
   UniversalSwapScreen: "UniversalSwapScreen",
   RegisterIntro: "Register.Intro",
   RegisterNewUser: "Register.NewUser",
@@ -34,12 +49,15 @@ export const SCREENS = {
   RegisterRecoverMnemonic: "Register.RecoverMnemonic",
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
+  PincodeScreen: "PincodeScreen",
   Send: "Send",
+  SendEvm: "SendEvm",
   SendOasis: "SendOasis",
   TransferNFT: "TransferNFT",
   Transactions: "Transactions",
   Dashboard: "Dashboard",
   Camera: "Camera",
+  QRScreen: "QRScreen",
   Governance: "Governance",
   GovernanceDetails: "Governance.Details",
   NetworkSelect: "Network.select",
@@ -54,6 +72,7 @@ export const SCREENS = {
   SettingViewPrivateData: "Setting.ViewPrivateData",
   SettingBackupMnemonic: "Setting.BackupMnemonic",
   SettingVersion: "Setting.Version",
+  DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
@@ -62,6 +81,7 @@ export const SCREENS = {
   WebDApp: "Web.dApp",
   Invest: "Invest",
   Delegate: "Delegate",
+  NewSend: "NewSend",
   SendTron: "SendTron",
   SendBtc: "SendBtc",
   Notifications: "Notifications",
@@ -88,10 +108,10 @@ export const SCREENS = {
   },
 };
 export const ICONS_TITLE = {
-  [SCREENS.TABS.Invest]: "trending",
-  [SCREENS.TABS.Main]: "pie",
-  [SCREENS.TABS.Browser]: "internet",
-  [SCREENS.TABS.Settings]: "setting",
+  [SCREENS.TABS.Invest]: "tdesigntrending-up",
+  [SCREENS.TABS.Main]: "tdesignchart-pie",
+  [SCREENS.TABS.Browser]: "tdesigninternet",
+  [SCREENS.TABS.Settings]: "tdesignsetting-1",
   [SCREENS.TABS.SendNavigation]: "",
 };
 
@@ -103,7 +123,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Assets",
   },
   [SCREENS.TABS.Browser]: {
-    title: "Browser",
+    title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.TABS.Settings]: {
     title: "Settings",
@@ -115,8 +135,12 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
     showTabBar: true,
   },
+  [SCREENS.Invest]: {
+    title: HEADER_KEY.showNetworkHeader,
+    showTabBar: true,
+  },
   [SCREENS.TransactionDetail]: {
-    title: "Transaction Detail",
+    title: "Transaction Details",
   },
   [SCREENS.BackupMnemonic]: {
     showTabBar: false,
@@ -133,6 +157,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.RegisterDone]: {
     title: HEADER_KEY.notShowHeader,
   },
+  [SCREENS.DetailsBrowser]: {
+    title: HEADER_KEY.notShowHeader,
+  },
   [SCREENS.RegisterRecoverMnemonicMain]: {
     title: HEADER_KEY.notShowHeader,
   },
@@ -143,21 +170,14 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Nfts]: {
-    title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.TokenDetail]: {
-    title: "Token Detail",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.NftsDetail]: {
-    title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.TransferTokensScreen]: {
-    title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.UniversalSwapScreen]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
+    // title: HEADER_KEY.notShowHeader,
+    title: "Universal Swap",
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader,
@@ -198,6 +218,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.Camera]: {
     title: HEADER_KEY.notShowHeader,
   },
+  [SCREENS.QRScreen]: {
+    title: HEADER_KEY.notShowHeader,
+  },
   [SCREENS.Governance]: {
     title: HEADER_KEY.showNetworkHeader,
   },
@@ -207,11 +230,19 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.Dashboard]: {
     title: HEADER_KEY.showNetworkHeader,
   },
+  [SCREENS.NewSend]: {
+    title: HEADER_KEY.notShowHeader,
+  },
   [SCREENS.SendTron]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.PincodeScreen]: {
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendOasis]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Notifications]: {
     title: HEADER_KEY.showNetworkHeader,
@@ -220,10 +251,11 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.NetworkToken]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.ValidatorDetails]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.ValidatorList]: {
     title: HEADER_KEY.showNetworkHeader,
@@ -242,31 +274,36 @@ export const SCREENS_OPTIONS: IScreenOption = {
     showTabBar: true,
   },
   [SCREENS.SettingSelectAccount]: {
-    title: "Select Account",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",
   },
-  [SCREENS.BtcFaucet]: {
-    title: "Bitcoin Faucet",
+  [SCREENS.HistoryDetail]: {
+    title: "Transaction details",
   },
   [SCREENS.BuyFiat]: {
-    title: "Buy",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SettingVersion]: {
-    title: "About",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendBtc]: {
-    title: "Send",
+    // title: "Send",
+    title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.SendEvm]: {
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddressBook]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.AddAddressBook]: {
-    title: "Add new contract",
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Browser]: {
     title: "Browser",
+    showTabBar: true,
   },
   [SCREENS.BookMarks]: {
     title: "Bookmarks",
@@ -277,21 +314,20 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.WebDApp]: {
     title: "",
   },
-  [SCREENS.Invest]: {
-    title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
-  },
   [SCREENS.Delegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.DelegateDetail]: {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Redelegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.Undelegate]: {
-    title: HEADER_KEY.showNetworkHeader,
+    // title: HEADER_KEY.showNetworkHeader,
+    title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.STACK.Unlock]: {
     title: "",
@@ -344,4 +380,15 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 };
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
+};
+export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
+export const urlAiRight = "https://developers.airight.io";
+// export const urlTxHistory = "http://10.10.20.115:8000/";
+// export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
+export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
 };

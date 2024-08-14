@@ -42,7 +42,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
 
   protected canFetch(): boolean {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address.length > 0;
+    return this.bech32Address?.length > 0;
   }
   protected async fetchResponse(
     cancelToken: CancelToken
@@ -123,8 +123,9 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
 
     if (
       !this.nativeBalances.response?.data ||
-      !this.nativeBalances.response?.data?.balance ||
-      currency.coinDenom !== "BTC"
+      !this.nativeBalances.response?.data?.balance
+      // ||
+      // currency.coinDenom !== "BTC"
     ) {
       return new CoinPretty(currency, new Int(new MyBigInt(0)?.toString()));
     }

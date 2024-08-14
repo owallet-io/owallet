@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { BondStatus, Validators, Validator } from "./types";
-import { KVStore, fetchAdapter } from "@owallet/common";
+import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
 import {
   autorun,
@@ -53,7 +53,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   constructor(kvStore: KVStore, validator: Validator) {
     const instance = Axios.create({
       baseURL: "https://keybase.io/",
-      adapter: fetchAdapter,
+      adapter: "fetch",
     });
 
     super(
@@ -67,7 +67,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
   }
 
   protected canFetch(): boolean {
-    return this.validator.description.identity !== "";
+    return this.validator?.description?.identity !== "";
   }
 
   protected async fetchResponse(
@@ -82,12 +82,15 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
 
   @computed
   get thumbnail(): string {
-    if (this.response?.data.status.code === 0) {
-      if (this.response.data.them && this.response.data.them.length > 0) {
-        return this.response.data.them[0].pictures?.primary?.url ?? "";
-      }
+    if (
+      !this.response?.data?.status?.code ||
+      this.response?.data?.status?.code !== 0 ||
+      !this.response?.data?.them
+    )
+      return "";
+    if (this.response.data.them && this.response.data.them.length > 0) {
+      return this.response.data.them[0].pictures?.primary?.url ?? "";
     }
-
     return "";
   }
 }

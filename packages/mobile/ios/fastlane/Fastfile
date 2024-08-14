@@ -38,44 +38,44 @@ platform :ios do
       increment_version_number_in_xcodeproj(
         version_number: version_testflight # Set a specific version number
       )
-      discord_notifier(
-          webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
-          title: "IOS 1 trong FASTLANE - #{version_testflight} (#{build_number_testflight+1})",
-          description: "
-          Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-          success: true
-      )
+      # discord_notifier(
+      #     webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      #     title: "IOS 1 trong FASTLANE - #{version_testflight} (#{build_number_testflight+1})",
+      #     description: "
+      #     Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      #     success: true
+      # )
     elsif Gem::Version.new(version_xcodeproj) == Gem::Version.new(version_testflight) && build_number_xcodeproj.to_i <= build_number_testflight
       increment_build_number_in_xcodeproj(xcodeproj: "mobile.xcodeproj", build_number: "#{build_number_testflight + 1}")
-      discord_notifier(
-        webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
-        title: "IOS 2 trong FASTLANE - #{version_xcodeproj} (#{build_number_testflight + 1})",
-        description: "
-        Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-        success: true
-      )
+      # discord_notifier(
+      #   webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      #   title: "IOS 2 trong FASTLANE - #{version_xcodeproj} (#{build_number_testflight + 1})",
+      #   description: "
+      #   Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      #   success: true
+      # )
     elsif Gem::Version.new(version_xcodeproj) > Gem::Version.new(version_testflight)
       increment_version_number_in_xcodeproj(
         version_number: version_xcodeproj # Set a specific version number
       )
       increment_build_number_in_xcodeproj(xcodeproj: "mobile.xcodeproj", build_number: "#{build_number_xcodeproj}")
-      discord_notifier(
-        webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
-        title: "IOS 3 FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
-        description: "
-        Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-        success: true
-      )
+      # discord_notifier(
+      #   webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      #   title: "IOS 3 FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
+      #   description: "
+      #   Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      #   success: true
+      # )
     end
     build_number_xcodeproj = get_build_number_from_xcodeproj(xcodeproj: "mobile.xcodeproj")
     version_xcodeproj = get_version_number_from_xcodeproj(xcodeproj: "mobile.xcodeproj")
-    discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
-      title: "IOS final FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
-      description: "
-      Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-      success: true
-    )
+    # discord_notifier(
+    #   webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+    #   title: "IOS final FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
+    #   description: "
+    #   Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+    #   success: true
+    # )
   end
 end
 
@@ -157,12 +157,5 @@ platform :ios do
     )
     build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
     pilot(api_key: api_key)
-    discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-      title: "IOS FASTLANE - #{version_xcodeproj} (#{build_number_xcodeproj})",
-      description: "
-      Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
-      success: true
-    )
   end
 end

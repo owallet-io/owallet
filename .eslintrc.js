@@ -33,10 +33,20 @@ module.exports = {
         devDependencies: ["**/*.spec.ts", "**/*.spec.js", "**/webpack.config.js"]
       }
     ],
-    "import/no-default-export": "error",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
-  },
+      "import/no-default-export": "error",
+    "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_"
+        }
+      ]
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
+    },
   settings: {
     react: {
       version: "detect"

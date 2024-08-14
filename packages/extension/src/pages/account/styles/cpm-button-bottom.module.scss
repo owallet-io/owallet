@@ -1,0 +1,35 @@
+@import '../../../styles/var';
+
+.container-btn-bottom {
+  background-color: $neutral-surface-card;
+  padding: 16px;
+  border-top: 1px solid $neutral-border-default;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  cursor: pointer;
+
+  .button-primary:hover {
+    background-color: $primary-surface-subtle;
+  }
+
+  .button-primary {
+    background-color: $primary-surface-default;
+    border-radius: 999px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .txt-btn {
+      color: $neutral-text-action-on-dark-bg;
+      text-align: center;
+      /* Body small/14px/semibold */
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 600;
+      line-height: 20px; /* 142.857% */
+    }
+  }
+}

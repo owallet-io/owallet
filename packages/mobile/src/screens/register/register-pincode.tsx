@@ -32,6 +32,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { LoadingWalletScreen } from "./loading-wallet";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
+import { tracking } from "@src/utils/tracking";
 
 interface FormData {
   name: string;
@@ -89,7 +90,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
         walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
 
       const mnemonic = trimWordsStr(words ?? newMnemonicConfig.mnemonic);
-      console.log("words", words);
 
       if (!isPrivateKey(mnemonic)) {
         await registerConfig.createMnemonic(
@@ -293,8 +293,13 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   };
 
   const styles = useStyles();
+  useEffect(() => {
+    tracking(`Login Wallet Screen`);
+    return () => {};
+  }, []);
 
   return mode === "add" ? (
+    // @ts-ignore
     <LoadingWalletScreen mode={mode} />
   ) : (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
@@ -365,7 +370,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["hightlight-surface-active"],
+                      backgroundColor: colors["highlight-surface-active"],
                     }}
                   />
                 }
@@ -507,7 +512,7 @@ const useStyles = () => {
     },
 
     container: {
-      paddingTop: metrics.screenHeight / 14,
+      paddingTop: metrics.screenHeight / 19,
       justifyContent: "space-between",
       height: "100%",
       backgroundColor: colors["neutral-surface-card"],

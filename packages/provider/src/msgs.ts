@@ -156,30 +156,6 @@ export class RequestSignOasisMsg extends Message<object> {
   }
 }
 
-export class GetDefaultAddressOasisMsg extends Message<{}> {
-  public static type() {
-    return "get-default-address-oasis";
-  }
-
-  constructor(public readonly chainId: string) {
-    super();
-  }
-
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error("chain id not set");
-    }
-  }
-
-  route(): string {
-    return "keyring";
-  }
-
-  type(): string {
-    return GetDefaultAddressOasisMsg.type();
-  }
-}
-
 // request sign tron
 export class RequestSignTronMsg extends Message<object> {
   public static type() {

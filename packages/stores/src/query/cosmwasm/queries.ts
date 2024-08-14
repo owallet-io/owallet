@@ -4,15 +4,15 @@ import { KVStore } from "@owallet/common";
 import { ObservableQueryCw20ContractInfo } from "./cw20-contract-info";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryCw20BalanceRegistry } from "./cw20-balance";
-import { QueriesWithCosmosAndSecret } from "../secret-wasm";
+import { QueriesWrappedSecret } from "../secret-wasm";
 import { OWallet } from "@owallet/types";
 
 export interface HasCosmwasmQueries {
   cosmwasm: CosmwasmQueries;
 }
 
-export class QueriesWithCosmosAndSecretAndCosmwasm
-  extends QueriesWithCosmosAndSecret
+export class QueriesWrappedCosmwasm
+  extends QueriesWrappedSecret
   implements HasCosmwasmQueries
 {
   public cosmwasm: CosmwasmQueries;

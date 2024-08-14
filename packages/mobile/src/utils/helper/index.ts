@@ -2,24 +2,23 @@ import { navigate } from "../../router/root";
 import isValidDomain from "is-valid-domain";
 import { find } from "lodash";
 import moment from "moment";
-import { tokensIcon } from "@owallet/common";
 import { AppCurrency } from "@owallet/types";
 import get from "lodash/get";
 import { TxsHelper } from "@src/stores/txs/helpers/txs-helper";
 import { showMessage, MessageOptions } from "react-native-flash-message";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
-import { Linking, Platform } from "react-native";
+import { Linking } from "react-native";
 import {
   flattenTokens,
   getSubAmountDetails,
   toAmount,
   toDisplay,
   toSumDisplay,
+  tokensIcon,
 } from "@oraichain/oraidex-common";
-import {
-  formatBaseUnitsAsRose,
-  formatWeiAsWrose,
-} from "@owallet/background/build/utils/oasis-helper";
+import { ChainIdEnum } from "@owallet/common";
+import { Dec } from "@owallet/unit";
+
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
 export const ORAICHAIN_ID = "Oraichain";
@@ -63,46 +62,6 @@ export const TRC20_LIST = [
     coinImageUrl:
       "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
   },
-  // {
-  //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
-  //   tokenName: 'USDD',
-  //   coinDenom: 'USDD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdd',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/19891.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
-  //   tokenName: 'USDJ',
-  //   coinDenom: 'USDJ',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdj',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5446.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3',
-  //   tokenName: 'JST',
-  //   coinDenom: 'JST',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'just',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5488.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TWrZRHY9aKQZcyjpovdH6qeCEyYZrRQDZt',
-  //   tokenName: 'SUNOLD',
-  //   coinDenom: 'SUNOLD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'sun',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/6990.png',
-  //   type: 'trc20'
-  // }
 ];
 export const handleError = (error, url, method) => {
   if (__DEV__) {
@@ -121,6 +80,42 @@ export const showToast = ({ ...params }: MessageOptions) => {
   });
   return;
 };
+
+export function splitAndSortChains(data) {
+  // Initialize arrays for test and non-test chains
+  const testChains = [];
+  const mainChains = [];
+
+  // Iterate through each key in the data object
+  for (const chainId in data) {
+    const chain = data[chainId];
+    const chainName = chain.chainInfo.chainName;
+    const chainImage = chain.chainInfo.chainImage;
+    const totalBalance = Number(chain.totalBalance || 0);
+
+    // Create an object for easy sorting and storing
+    const chainData = {
+      chainId: chainId,
+      chainName: chainName,
+      chainImage: chainImage,
+      totalBalance: totalBalance,
+    };
+
+    // Check if chainName contains "test" and push to respective array
+    if (chainName.toLowerCase().includes("test")) {
+      testChains.push(chainData);
+    } else {
+      mainChains.push(chainData);
+    }
+  }
+
+  // Sort arrays by totalBalance in descending order
+  testChains.sort((a, b) => b.totalBalance - a.totalBalance);
+  mainChains.sort((a, b) => b.totalBalance - a.totalBalance);
+
+  return { testChains, mainChains };
+}
+
 export const handleDeepLink = async ({ url }) => {
   if (url) {
     const path = url.replace(SCHEME_ANDROID, "").replace(SCHEME_IOS, "");
@@ -141,7 +136,7 @@ export const checkValidDomain = (url: string) => {
   // try with URL
   try {
     const { origin } = new URL(url);
-    return origin.length > 0;
+    return origin?.length > 0;
   } catch {
     return false;
   }
@@ -155,15 +150,40 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 
   return `${fristLetter}...${lastLetter}`;
 };
+export const convertArrToObject = (arr, label = `Validator`) => {
+  if (!arr?.length) return;
+  let rv = {};
+  for (let i = 0; i < arr?.length; ++i) rv[`${label}${i + 1}`] = arr[i];
+  return rv;
+};
+export const removeDataInParentheses = (inputString: string): string => {
+  if (!inputString) return;
+  return inputString.replace(/\([^)]*\)/g, "");
+};
+export const extractDataInParentheses = (
+  inputString: string
+): string | null => {
+  if (!inputString) return;
+  const startIndex = inputString.indexOf("(");
+  const endIndex = inputString.indexOf(")");
+  if (startIndex !== -1 && endIndex !== -1) {
+    return inputString.substring(startIndex + 1, endIndex);
+  } else {
+    return null;
+  }
+};
+
 export function limitString(str, limit) {
-  if (str && str.length > limit) {
+  if (str && str?.length > limit) {
     return str.slice(0, limit) + "...";
   } else {
     return str;
   }
 }
+
 // capital first letter of string
 export const capitalizedText = (text: string) => {
+  if (!text) return;
   return text.slice(0, 1).toUpperCase() + text.slice(1, text.length);
 };
 
@@ -188,7 +208,6 @@ export const getValueFromDataEvents = (arr) => {
       result.push(item);
     }
   }
-  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
   if (result.length === 0) {
@@ -218,6 +237,21 @@ export const getDataFromDataEvent = (itemEvents) => {
         },
       };
 };
+
+export const maskedNumber = (
+  number: number | string,
+  digits: number = 4,
+  minDigits: number = 0,
+  locales: string = "en-US"
+) => {
+  return number
+    ? Number(number).toLocaleString(locales, {
+        maximumFractionDigits: digits,
+        minimumFractionDigits: minDigits,
+      })
+    : "0";
+};
+
 const countAmountValue = (array) => {
   let count = 0;
   if (array && array?.length > 0) {
@@ -261,9 +295,6 @@ const configBrowser = {
 };
 export const openLink = async (url) => {
   try {
-    if (!url) {
-      console.log("url: ", url);
-    }
     if (await InAppBrowser.isAvailable()) {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
@@ -272,6 +303,7 @@ export const openLink = async (url) => {
     // Alert.alert(error.message);
   }
 };
+
 export function parseObjectToQueryString(obj) {
   let params = new URLSearchParams();
   for (let key in obj) {
@@ -285,21 +317,17 @@ export function parseObjectToQueryString(obj) {
   }
   return "?" + params.toString();
 }
+
 export function removeEmptyElements(array) {
   return array.filter((element) => !!element);
 }
 
-function convertVarToWord(str) {
-  const words = str && str.split("_");
-  const capitalizedWords =
-    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-  return capitalizedWords && capitalizedWords.join(" ");
+export function formarPriceWithDigits(amount, numOfDigits = 2) {
+  return Number(amount).toFixed(numOfDigits);
 }
+
 export function removeSpecialChars(str) {
   return str.replace(/[^\w\s]/gi, "");
-}
-function addSpacesToString(str) {
-  return str.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
 export const getTransactionValue = ({ data, address, logs }) => {
@@ -444,6 +472,7 @@ export const getDomainFromUrl = (url) => {
 export const parseIbcMsgRecvPacket = (denom) => {
   return denom?.slice(0, 1) === "u" ? denom?.slice(1, denom?.length) : denom;
 };
+
 export function addTimeProperty(array1, array2) {
   // Create a new object with heightId as the key and time as the value
   const timeMap = {};
@@ -458,6 +487,7 @@ export function addTimeProperty(array1, array2) {
 
   return array2;
 }
+
 export const getTxTypeNew = (type, rawLog = "[]", result = "") => {
   if (type) {
     const typeArr = type.split(".");
@@ -530,7 +560,7 @@ export function nFormatter(num, digits: 1) {
     { value: 1e18, symbol: "E" },
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var item = lookup
+  const item = lookup
     .slice()
     .reverse()
     .find(function (item) {
@@ -543,6 +573,7 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: "" };
 }
+
 export const getAddressFromLedgerWhenChangeNetwork = (
   address,
   ledgerAddress
@@ -648,23 +679,32 @@ export const getCurrencyByMinimalDenom = (
     coinMinimalDenom: minimalDenom,
   };
 };
-export function numberWithCommas(x) {
-  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "";
-}
+
+export const isNegative = (number) => number <= 0;
 
 export function createTxsHelper() {
   return new TxsHelper();
 }
 
-export const LRRedactProps = (redactionTag = "lr-hide") =>
-  Platform.OS === "ios"
-    ? {
-        testID: redactionTag,
-        accessible: false,
-      }
-    : { testID: redactionTag };
+export function shortenAddress(address, digits = 6): string {
+  if (address) {
+    const firstDigits = address.substring(0, digits);
+    const lastDigits = address.substring(address.length - digits);
+    return firstDigits + "..." + lastDigits;
+  }
+
+  return "";
+}
 
 export { get };
+
+export enum HISTORY_STATUS {
+  SWAP = "SWAP",
+  SEND = "SEND",
+  STAKE = "STAKE",
+  CLAIM = "CLAIM",
+  UNSTAKE = "UN_STAKE",
+}
 
 export function isPrivateKey(str: string): boolean {
   if (str?.startsWith("0x") || str?.startsWith("zs")) {
@@ -689,4 +729,78 @@ export function trimWordsStr(str: string): string {
     .map((word) => word.trim())
     .filter((word) => word.trim().length > 0);
   return words.join(" ");
+}
+
+export const delay = (delayInms) => {
+  return new Promise((resolve) => setTimeout(resolve, delayInms));
+};
+
+export function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+const sortByVoting = (data, sortType) => {
+  switch (sortType) {
+    case "Voting Power":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
+      });
+    case "Voting Power Increase":
+      return data.sort((val1, val2) => {
+        return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? 1 : -1;
+      });
+  }
+};
+
+export function groupAndShuffle(array, groupSize = 5, chainId, sortType) {
+  if (chainId !== ChainIdEnum.Oraichain) {
+    return sortByVoting(array, sortType);
+  }
+  const sortedArray = array
+    .map((e) => {
+      return { ...e, votingPowerMixUpTime: e.voting_power * e.uptime };
+    })
+    .sort((a, b) => b.votingPowerMixUpTime - a.votingPowerMixUpTime);
+  const groups = [];
+  for (let i = 0; i < sortedArray.length; i += groupSize) {
+    groups.push(sortedArray.slice(i, i + groupSize));
+  }
+  const shuffledGroups = groups.map((group) => shuffleArray(group));
+  return shuffledGroups;
+}
+
+export const formatPercentage = (
+  value,
+  numberOfDigitsAfterDecimalPoint = 1
+) => {
+  return parseFloat(
+    (parseFloat(value) * 100).toFixed(numberOfDigitsAfterDecimalPoint)
+  );
+};
+
+export const computeTotalVotingPower = (data) => {
+  if (!data || !Array.isArray(data)) {
+    return 0;
+  }
+
+  let total = 0;
+  for (let item of data) {
+    total += parseFloat(item?.voting_power ?? 0) || 0;
+  }
+  return total;
+};
+
+export function numberWithCommas(number) {
+  // Convert the number to a string and split it into integer and decimal parts
+  const [intPart, decPart] = number.toString().split(".");
+
+  // Insert commas into the integer part
+  const formattedNumber = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  // Combine the formatted integer part and the decimal part
+  return formattedNumber + "." + decPart;
 }

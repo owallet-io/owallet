@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { PageWithScrollView } from "../../../components/page";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
@@ -31,7 +31,7 @@ import { LoadingSpinner } from "../../../components/spinner";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { SCREENS } from "@src/common/constants";
-import { LRRedact } from "@logrocket/react-native";
+import { tracking } from "@src/utils/tracking";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
@@ -79,6 +79,10 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
+  useEffect(() => {
+    tracking(`Import Wallet Screen`);
+    return () => {};
+  }, []);
 
   const { analyticsStore } = useStore();
 
@@ -347,73 +351,71 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.container}
       backgroundColor={colors["plain-background"]}
     >
-      <LRRedact>
-        <View style={styles.headerView}>
-          <Text style={styles.titleHeader}>Import wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
+      <View style={styles.headerView}>
+        <Text style={styles.titleHeader}>Import wallet</Text>
+        <View>
+          <OWalletLogo size={72} />
         </View>
-        <Controller
-          control={control}
-          rules={{
-            required: "Mnemonic is required",
-            validate: validateMnemonic,
-          }}
-          render={renderMnemonic}
-          name="mnemonic"
-          defaultValue=""
-        />
-        <Controller
-          control={control}
-          rules={{
-            required: "Name is required",
-          }}
-          render={renderName}
-          name="name"
-          defaultValue=""
-        />
+      </View>
+      <Controller
+        control={control}
+        rules={{
+          required: "Mnemonic is required",
+          validate: validateMnemonic,
+        }}
+        render={renderMnemonic}
+        name="mnemonic"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: "Name is required",
+        }}
+        render={renderName}
+        name="name"
+        defaultValue=""
+      />
 
-        {mode === "create" ? (
-          <React.Fragment>
-            <Controller
-              control={control}
-              rules={{
-                required: "Password is required",
-                validate: validatePass,
-              }}
-              render={renderPass}
-              name="password"
-              defaultValue=""
-            />
-            <Controller
-              control={control}
-              rules={{
-                required: "Confirm password is required",
-                validate: validateConfirmPass,
-              }}
-              render={renderConfirmPass}
-              name="confirmPassword"
-              defaultValue=""
-            />
-          </React.Fragment>
-        ) : null}
+      {mode === "create" ? (
+        <React.Fragment>
+          <Controller
+            control={control}
+            rules={{
+              required: "Password is required",
+              validate: validatePass,
+            }}
+            render={renderPass}
+            name="password"
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            rules={{
+              required: "Confirm password is required",
+              validate: validateConfirmPass,
+            }}
+            render={renderConfirmPass}
+            name="confirmPassword"
+            defaultValue=""
+          />
+        </React.Fragment>
+      ) : null}
 
-        <BIP44AdvancedButton bip44Option={bip44Option} />
-        <OWButton
-          loading={isCreating}
-          disabled={isCreating}
-          onPress={submit}
-          label={"Next"}
-        />
-        <OWButton type="link" onPress={onGoBack} label={"Go back"} />
-        {/* Mock element for bottom padding */}
-        <View
-          style={{
-            height: 20,
-          }}
-        />
-      </LRRedact>
+      <BIP44AdvancedButton bip44Option={bip44Option} />
+      <OWButton
+        loading={isCreating}
+        disabled={isCreating}
+        onPress={submit}
+        label={"Next"}
+      />
+      <OWButton type="link" onPress={onGoBack} label={"Go back"} />
+      {/* Mock element for bottom padding */}
+      <View
+        style={{
+          height: 20,
+        }}
+      />
     </PageWithScrollView>
   );
 });
