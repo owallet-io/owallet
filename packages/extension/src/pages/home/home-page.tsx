@@ -179,6 +179,7 @@ export const HomePage = observer(() => {
     //@ts-ignore
     chainInfo.addCurrencies(...infoTokens);
   };
+
   const accountEvm = accountStore.getAccount(
     ChainIdEnum.BNBChain
   ).evmosHexAddress;
