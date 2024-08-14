@@ -122,8 +122,6 @@ export class OasisTransaction {
       amount: oasis.quantity.fromBigInt(amount),
     });
 
-    console.log("tw", tw);
-
     const gas = await tw.estimateGas(nic, signer.public());
     tw.setFeeGas(gas);
 

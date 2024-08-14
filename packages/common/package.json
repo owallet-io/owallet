@@ -23,7 +23,7 @@
     "@owallet/types": "^0.9.12",
     "buffer": "^6.0.3",
     "delay": "^4.4.0",
-    "axios": "^0.27.2"
+    "axios": "^1.7.2"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0"

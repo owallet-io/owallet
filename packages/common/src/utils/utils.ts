@@ -8,11 +8,20 @@ import {
 } from "@owallet/types";
 import bech32, { fromWords } from "bech32";
 import { ETH } from "@hanchon/ethermint-address-converter";
-import { NetworkType } from "@owallet/types";
-import { ChainIdEnum, TRON_ID } from "./constants";
+import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
+import { ethers } from "ethers";
+import Web3 from "web3";
+import TronWeb from "tronweb";
+import "dotenv/config";
+export const getFavicon = (url) => {
+  const serviceGG =
+    "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
+  if (!url) return serviceGG + "https://orai.io";
+  return serviceGG + url;
+};
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -21,13 +30,125 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+const timeoutLimit = 3900;
+export const timeoutBtc = 20000;
+export const withTimeout = (promise, ms = timeoutLimit) => {
+  const timeout = new Promise((_, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(new Error("Promise timed out"));
+    }, ms);
+  });
 
-export const getEvmAddress = (base58Address) => {
-  return base58Address
-    ? "0x" +
-        Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString("hex")
-    : "-";
+  return Promise.race([promise, timeout]);
 };
+export const convertObjChainAddressToString = (txsAllNetwork) => {
+  const data = Object.entries(txsAllNetwork)
+    .map(([key, value]) => `${key}%2B${value}`)
+    .join(",");
+  return data;
+};
+export const getDomainFromUrl = (url) => {
+  if (!url) {
+    return "";
+  }
+  return `${url?.match?.(
+    // eslint-disable-next-line no-useless-escape
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
+  )}`;
+};
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  if (!address) return "...";
+  const fristLetter = address?.slice(0, limitFirst) ?? "";
+  const lastLetter = address?.slice(-5) ?? "";
+
+  return `${fristLetter}...${lastLetter}`;
+};
+export const getTimeMilliSeconds = (timeStamp) => {
+  if (isMilliseconds(timeStamp)) {
+    return timeStamp;
+  }
+  return timeStamp * 1000;
+};
+export const removeDataInParentheses = (inputString: string): string => {
+  if (!inputString) return;
+  return inputString.replace(/\([^)]*\)/g, "");
+};
+export const extractDataInParentheses = (
+  inputString: string
+): string | null => {
+  if (!inputString) return;
+  const startIndex = inputString.indexOf("(");
+  const endIndex = inputString.indexOf(")");
+  if (startIndex !== -1 && endIndex !== -1) {
+    return inputString.substring(startIndex + 1, endIndex);
+  } else {
+    return null;
+  }
+};
+
+export const MapChainIdToNetwork = {
+  [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+  [ChainIdEnum.Bitcoin]: Network.BITCOIN,
+  [ChainIdEnum.Oasis]: Network.MAINNET,
+  [ChainIdEnum.OasisEmerald]: Network.EMERALD,
+  [ChainIdEnum.OasisSapphire]: Network.SAPPHIRE,
+  [ChainIdEnum.TRON]: Network.TRON,
+  [ChainIdEnum.Oraichain]: Network.ORAICHAIN,
+  [ChainIdEnum.Osmosis]: Network.OSMOSIS,
+  [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
+  [ChainIdEnum.Injective]: Network.INJECTIVE,
+};
+export const MapNetworkToChainId = {
+  [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
+  [Network.ETHEREUM]: ChainIdEnum.Ethereum,
+  [Network.BITCOIN]: ChainIdEnum.Bitcoin,
+  [Network.MAINNET]: ChainIdEnum.Oasis,
+  [Network.EMERALD]: ChainIdEnum.OasisEmerald,
+  [Network.SAPPHIRE]: ChainIdEnum.OasisSapphire,
+  [Network.TRON]: ChainIdEnum.TRON,
+  [Network.ORAICHAIN]: ChainIdEnum.Oraichain,
+  [Network.OSMOSIS]: ChainIdEnum.Osmosis,
+  [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
+  [Network.INJECTIVE]: ChainIdEnum.Injective,
+};
+export const getRpcByChainId = (
+  chainInfo: ChainInfo,
+  chainId: string
+): string => {
+  if (!chainInfo || !chainId) return;
+  if (chainId === ChainIdEnum.TRON) {
+    return `${chainInfo.rpc}/jsonrpc`;
+  }
+  return chainInfo.rpc;
+};
+export const getEvmAddress = (base58Address) => {
+  return isBase58Address(base58Address)
+    ? base58Address
+      ? "0x" +
+        Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString("hex")
+      : "-"
+    : null;
+};
+
+function isBase58Address(address) {
+  try {
+    // Attempt to decode the address
+    const decoded = bs58.decode(address);
+
+    // Check for invalid characters in the decoded result
+    for (const byte of decoded) {
+      if (byte < 0 || byte > 255) {
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export const getBase58Address = (address) => {
   if (!address) return null;
@@ -42,11 +163,99 @@ export const getAddressFromBech32 = (bech32address) => {
   return ETH.encoder(address);
 };
 
+// It is recommended to use ethers4.0.47 version
+// var ethers = require('ethers')
+
+const AbiCoder = ethers.utils.AbiCoder;
+const ADDRESS_PREFIX_REGEX = /^(41)/;
+const ADDRESS_PREFIX = "41";
+
+//types:Parameter type list, if the function has multiple return values, the order of the types in the list should conform to the defined order
+//output: Data before decoding
+//ignoreMethodHash：Decode the function return value, fill falseMethodHash with false, if decode the data field in the gettransactionbyid result, fill ignoreMethodHash with true
+
+export const decodeParams = async (types, output, ignoreMethodHash) => {
+  if (!output || typeof output === "boolean") {
+    ignoreMethodHash = output;
+    output = types;
+  }
+
+  if (ignoreMethodHash && output.replace(/^0x/, "").length % 64 === 8)
+    output = "0x" + output.replace(/^0x/, "").substring(8);
+
+  const abiCoder = new AbiCoder();
+
+  if (output.replace(/^0x/, "").length % 64)
+    throw new Error(
+      "The encoded string is not valid. Its length must be a multiple of 64."
+    );
+  return abiCoder.decode(types, output).reduce((obj, arg, index) => {
+    if (types[index] == "address")
+      arg = ADDRESS_PREFIX + arg.substr(2).toLowerCase();
+    obj.push(arg);
+    return obj;
+  }, []);
+};
+
+export const encodeParams = async (inputs) => {
+  const typesValues = inputs;
+  let parameters = "";
+
+  if (typesValues.length == 0) return parameters;
+  const abiCoder = new AbiCoder();
+  const types = [];
+  const values = [];
+
+  for (let i = 0; i < typesValues.length; i++) {
+    let { type, value } = typesValues[i];
+    if (type == "address") value = value.replace(ADDRESS_PREFIX_REGEX, "0x");
+    else if (type == "address[]")
+      value = value.map((v) =>
+        Web3.utils.toHex(v).replace(ADDRESS_PREFIX_REGEX, "0x")
+      );
+    types.push(type);
+    values.push(value);
+  }
+  try {
+    parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
+  } catch (ex) {
+    console.log(ex);
+  }
+  return parameters;
+};
+export const estimateBandwidthTron = (signedTxn) => {
+  const DATA_HEX_PROTOBUF_EXTRA = 3;
+  const MAX_RESULT_SIZE_IN_TX = 64;
+  const A_SIGNATURE = 67;
+  let len =
+    signedTxn.raw_data_hex.length / 2 +
+    DATA_HEX_PROTOBUF_EXTRA +
+    MAX_RESULT_SIZE_IN_TX;
+  const signatureListSize = signedTxn.signature.length;
+
+  for (let i = 0; i < signatureListSize; i++) {
+    len += A_SIGNATURE;
+  }
+  return len;
+};
 export const DEFAULT_BLOCK_TIMEOUT_HEIGHT = 90;
 export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
 export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =
   DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
 
+export const TronWebProvider = (rpc: string = "https://api.trongrid.io") => {
+  try {
+    if (!rpc) return;
+    const tronWeb = new TronWeb({
+      fullHost: rpc,
+      // TODO: This is key free for test tron
+      headers: { "TRON-PRO-API-KEY": "adb28290-fa79-4542-a6ee-910628cae6f1" },
+    });
+    return tronWeb;
+  } catch (e) {
+    console.log(e, "ee");
+  }
+};
 export const getCoinTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
@@ -120,6 +329,7 @@ export function splitPath(path: string): BIP44HDPath {
 
   return result;
 }
+
 export function splitPathStringToHDPath(path: string): HDPath {
   if (!path) throw Error("path is not empty");
   const bip44HDPathOrder = [
@@ -139,6 +349,7 @@ export function splitPathStringToHDPath(path: string): HDPath {
   });
   return result;
 }
+
 export const isWeb = typeof document !== "undefined";
 export const isReactNative = (): boolean => {
   if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
@@ -146,6 +357,7 @@ export const isReactNative = (): boolean => {
   }
   return false;
 };
+
 export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:
@@ -161,6 +373,7 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
       return "cosmos";
   }
 }
+
 export const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export const typeBtcLedgerByAddress = (
@@ -183,6 +396,13 @@ export const typeBtcLedgerByAddress = (
     }
   }
 };
+export function limitString(str, limit) {
+  if (str && str.length > limit) {
+    return str.slice(0, limit) + "...";
+  } else {
+    return str;
+  }
+}
 export function findLedgerAddress(
   AddressesLedger,
   chainInfo: ChainInfoWithoutEndpoints,
@@ -203,6 +423,7 @@ export function findLedgerAddress(
     }
   }
 }
+
 export const getKeyDerivationFromAddressType = (
   type: AddressBtcType
 ): "84" | "44" => {
@@ -241,3 +462,8 @@ export const formatAddress = (address: string, limitFirst = 10) => {
 };
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+export const isMilliseconds = (timestamp: number | string): boolean => {
+  if (!timestamp) return;
+  const timestampString = timestamp.toString();
+  return timestampString.length === 13;
+};
