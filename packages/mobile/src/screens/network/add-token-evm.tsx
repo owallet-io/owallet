@@ -200,7 +200,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
 
         const currency: AppCurrency = {
           contractAddress: data?.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
+          coinMinimalDenom: `erc20:${data?.contractAddress}:${tokenInfo.name}`,
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
           coinGeckoId: coingeckoId,

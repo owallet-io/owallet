@@ -22,7 +22,12 @@ import { usePrevious } from "../../hooks";
 import { useTheme } from "@src/themes/theme-provider";
 import { useFocusEffect } from "@react-navigation/native";
 import { ChainUpdaterService } from "@owallet/background";
-import { ChainIdEnum, getBase58Address } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomHelper,
+  getBase58Address,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { TokensCardAll } from "./components/tokens-card-all";
 import { AccountBoxAll } from "./components/account-box-new";
 
@@ -44,6 +49,7 @@ import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
+import { API } from "@src/common/api";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -62,6 +68,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     keyRingStore,
     hugeQueriesStore,
     universalSwapStore,
+    tokensStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -152,6 +159,93 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
+  useEffect(() => {
+    if (tokensStore.isInitialized) {
+      fetchAllErc20();
+    }
+    return () => {};
+  }, [tokensStore.isInitialized, address]);
+
+  const fetchAllErc20 = async () => {
+    const chainInfo = chainStore.getChain(ChainIdEnum.BNBChain);
+    // Attempt to register the denom in the returned response.
+    // If it's already registered anyway, it's okay because the method below doesn't do anything.
+    // Better to set it as an array all at once to reduce computed.
+    if (!MapChainIdToNetwork[chainInfo.chainId]) return;
+    const response = await API.getAllBalancesEvm({
+      address: address,
+      network: MapChainIdToNetwork[chainInfo.chainId],
+    });
+
+    if (!response.result) return;
+
+    const allTokensAddress = response.result
+      .filter(
+        (token) =>
+          !!chainInfo.currencies.find(
+            (coin) =>
+              new DenomHelper(
+                coin.coinMinimalDenom
+              ).contractAddress?.toLowerCase() !==
+              token.tokenAddress?.toLowerCase()
+          ) && MapChainIdToNetwork[chainInfo.chainId]
+      )
+      .map((coin) => {
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(coin.tokenAddress)
+          .toString()
+          .replace("=", "")}`;
+        return str;
+      });
+
+    if (allTokensAddress?.length === 0) return;
+
+    const tokenInfos = await API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    });
+    const infoTokensFilter = tokenInfos.filter(
+      (item, index, self) =>
+        index ===
+          self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+        chainInfo.currencies.findIndex(
+          (item2) =>
+            new DenomHelper(
+              item2.coinMinimalDenom
+            ).contractAddress.toLowerCase() ===
+            item.contractAddress.toLowerCase()
+        ) < 0
+    );
+    const infoTokens = tokenInfos
+      .filter(
+        (item, index, self) =>
+          index ===
+            self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+          chainInfo.currencies.findIndex(
+            (item2) =>
+              new DenomHelper(
+                item2.coinMinimalDenom
+              ).contractAddress.toLowerCase() ===
+              item.contractAddress.toLowerCase()
+          ) < 0
+      )
+      .map((tokeninfo) => {
+        const infoToken = {
+          coinImageUrl: tokeninfo.imgUrl,
+          coinDenom: tokeninfo.abbr,
+          coinGeckoId: tokeninfo.coingeckoId,
+          coinDecimals: tokeninfo.decimal,
+          coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
+          contractAddress: tokeninfo.contractAddress,
+          type: "erc20",
+        };
+        // tokensStore.addToken(ChainIdEnum.BNBChain, infoToken);
+        return infoToken;
+      });
+    console.log(infoTokensFilter, "infoTokensFilter");
+    //@ts-ignore
+    // chainInfo.addCurrencies(...infoTokens);
+  };
 
   const onRefresh = async () => {
     try {

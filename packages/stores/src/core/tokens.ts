@@ -46,11 +46,11 @@ export class TokensStore {
     protected readonly keyRingStore: KeyRingStore
   ) {
     makeObservable(this);
+    this.init();
   }
 
   async init(): Promise<void> {
     await this.refreshTokens();
-
     // If key store in the keplr extension is changed, this event will be dispatched.
     // This is needed becuase the token such as secret20 exists according to the account.
     this.eventListener.addEventListener("keplr_keystorechange", () => {
@@ -130,7 +130,7 @@ export class TokensStore {
           }
         }
       }
-      console.log(adds, "adds");
+
       chainInfo.addCurrencies(...adds);
     }
 

@@ -216,7 +216,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         const currency: CW20Currency = {
           type: selectedType,
           contractAddress: data.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
+          coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
           coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,

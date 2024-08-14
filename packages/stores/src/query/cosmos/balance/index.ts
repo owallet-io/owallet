@@ -122,38 +122,38 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    const allTokensAddress = response.data.balances
-      .filter(
-        (token) =>
-          MapChainIdToNetwork[chainInfo.chainId] &&
-          !!chainInfo.findCurrency(token.denom) === false &&
-          MapChainIdToNetwork[chainInfo.chainId]
-      )
-      .map((coin) => {
-        const str = `${
-          MapChainIdToNetwork[chainInfo.chainId]
-        }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
-        return str;
-      });
-    if (allTokensAddress?.length === 0) return;
-    API.getMultipleTokenInfo({
-      tokenAddresses: allTokensAddress.join(","),
-    }).then((tokenInfos) => {
-      const infoTokens = tokenInfos
-        .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
-        .map((tokeninfo) => {
-          const infoToken = {
-            coinImageUrl: tokeninfo.imgUrl,
-            coinDenom: tokeninfo.abbr,
-            coinGeckoId: tokeninfo.coingeckoId,
-            coinDecimals: tokeninfo.decimal,
-            coinMinimalDenom: tokeninfo.denom,
-          };
-          return infoToken;
-        });
-      //@ts-ignore
-      chainInfo.addCurrencies(...infoTokens);
-    });
+    // const allTokensAddress = response.data.balances
+    //   .filter(
+    //     (token) =>
+    //       MapChainIdToNetwork[chainInfo.chainId] &&
+    //       !!chainInfo.findCurrency(token.denom) === false &&
+    //       MapChainIdToNetwork[chainInfo.chainId]
+    //   )
+    //   .map((coin) => {
+    //     const str = `${
+    //       MapChainIdToNetwork[chainInfo.chainId]
+    //     }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
+    //     return str;
+    //   });
+    // if (allTokensAddress?.length === 0) return;
+    // API.getMultipleTokenInfo({
+    //   tokenAddresses: allTokensAddress.join(","),
+    // }).then((tokenInfos) => {
+    //   const infoTokens = tokenInfos
+    //     .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
+    //     .map((tokeninfo) => {
+    //       const infoToken = {
+    //         coinImageUrl: tokeninfo.imgUrl,
+    //         coinDenom: tokeninfo.abbr,
+    //         coinGeckoId: tokeninfo.coingeckoId,
+    //         coinDecimals: tokeninfo.decimal,
+    //         coinMinimalDenom: tokeninfo.denom,
+    //       };
+    //       return infoToken;
+    //     });
+    //   //@ts-ignore
+    //   chainInfo.addCurrencies(...infoTokens);
+    // });
 
     const denoms = response.data.balances.map((coin) => coin.denom);
     chainInfo.addUnknownCurrencies(...denoms);

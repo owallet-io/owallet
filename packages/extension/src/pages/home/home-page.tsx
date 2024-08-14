@@ -10,20 +10,34 @@ import { Dec, IntPretty, PricePretty } from "@owallet/unit";
 // var Mixpanel = require('mixpanel');
 import Mixpanel from "mixpanel";
 import { sha256 } from "sha.js";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  API,
+  ChainIdEnum,
+  DenomHelper,
+  MapChainIdToNetwork,
+  unknownToken,
+} from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
 var mixpanel = process.env.REACT_APP_MIX_PANEL_TOKEN
   ? Mixpanel.init(process.env.REACT_APP_MIX_PANEL_TOKEN)
   : null;
 export const HomePage = observer(() => {
-  const { chainStore, hugeQueriesStore, priceStore, accountStore } = useStore();
+  const {
+    chainStore,
+    hugeQueriesStore,
+    priceStore,
+    accountStore,
+    tokensStore,
+  } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  console.log(tokensStore.isInitialized, "isInitialized");
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
     allBalances,
     chainStore.current.chainId
   );
+
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
@@ -94,7 +108,96 @@ export const HomePage = observer(() => {
     chainStore.isAllNetwork,
     chainStore.current.chainId,
   ]);
+  const address = accountStore.getAccount(ChainIdEnum.BNBChain).evmosHexAddress;
+  const fetchAllErc20 = async () => {
+    const chainInfo = chainStore.getChain(ChainIdEnum.BNBChain);
+    // Attempt to register the denom in the returned response.
+    // If it's already registered anyway, it's okay because the method below doesn't do anything.
+    // Better to set it as an array all at once to reduce computed.
+    if (!MapChainIdToNetwork[chainInfo.chainId]) return;
+    const response = await API.getAllBalancesEvm({
+      address: address,
+      network: MapChainIdToNetwork[chainInfo.chainId],
+    });
+    console.log(response, "response");
+    if (!response.result) return;
 
+    const allTokensAddress = response.result
+      .filter(
+        (token) =>
+          !!chainInfo.currencies.find(
+            (coin) =>
+              new DenomHelper(
+                coin.coinMinimalDenom
+              ).contractAddress?.toLowerCase() !==
+              token.tokenAddress?.toLowerCase()
+          ) && MapChainIdToNetwork[chainInfo.chainId]
+      )
+      .map((coin) => {
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(coin.tokenAddress)
+          .toString()
+          .replace("=", "")}`;
+        return str;
+      });
+
+    if (allTokensAddress?.length === 0) return;
+
+    const tokenInfos = await API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    });
+    const infoTokensFilter = tokenInfos.filter(
+      (item, index, self) =>
+        index ===
+          self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+        chainInfo.currencies.findIndex(
+          (item2) =>
+            new DenomHelper(
+              item2.coinMinimalDenom
+            ).contractAddress.toLowerCase() ===
+            item.contractAddress.toLowerCase()
+        ) < 0
+    );
+    const infoTokens = tokenInfos
+      .filter(
+        (item, index, self) =>
+          index ===
+            self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+          chainInfo.currencies.findIndex(
+            (item2) =>
+              new DenomHelper(
+                item2.coinMinimalDenom
+              ).contractAddress.toLowerCase() ===
+              item.contractAddress.toLowerCase()
+          ) < 0
+      )
+      .map((tokeninfo) => {
+        const infoToken = {
+          coinImageUrl: tokeninfo.imgUrl || unknownToken.coinImageUrl,
+          coinDenom: tokeninfo.abbr,
+          coinGeckoId: tokeninfo.coingeckoId || unknownToken.coinGeckoId,
+          coinDecimals: tokeninfo.decimal,
+          coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
+          contractAddress: tokeninfo.contractAddress,
+          type: "erc20",
+        };
+        console.log(infoTokensFilter, "infoTokensFilter");
+        // console.log(infoToken, "infoToken");
+        // tokensStore.addToken(ChainIdEnum.BNBChain, infoToken);
+        // return infoToken;
+      });
+    console.log(infoTokens, "infoTokens");
+    //@ts-ignore
+    // chainInfo.addCurrencies(...infoTokens);
+  };
+  useEffect(() => {
+    if (tokensStore.isInitialized) {
+      fetchAllErc20();
+    }
+
+    return () => {};
+  }, [address, tokensStore.isInitialized]);
   return (
     <FooterLayout>
       <InfoAccountCard
