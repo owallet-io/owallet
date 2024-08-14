@@ -43,6 +43,7 @@ import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
+import { StakeCardAll } from "./components/stake-card-all";
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -378,6 +379,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           totalPriceBalance
         )?.toString()}
       />
+      {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <EarningCardNew />
       <MainTabHome dataTokens={dataTokens} />
     </PageWithScrollViewInBottomTabView>

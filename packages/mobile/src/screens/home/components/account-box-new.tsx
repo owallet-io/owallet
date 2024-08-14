@@ -287,6 +287,74 @@ export const AccountBoxAll: FunctionComponent<{
     );
   };
 
+  const renderPieChartPortfolio = () => {
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {series.length > 0 ? (
+          <View
+            style={{
+              padding: 16,
+            }}
+          >
+            <PieChart
+              widthAndHeight={widthAndHeight}
+              series={series}
+              sliceColor={sliceColor}
+              coverRadius={0.75}
+              coverFill={colors["neutral-surface-card"]}
+            />
+          </View>
+        ) : null}
+        <View style={{ width: "60%" }}>
+          {chainListWithBalance.map((chain) => {
+            return (
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: 2,
+                      backgroundColor: chain.color,
+                      marginRight: 4,
+                    }}
+                  />
+                  <Text size={13} color={colors["neutral-text-body"]}>
+                    {chain.name}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: colors["neutral-surface-bg2"],
+                    borderRadius: 999,
+                    paddingHorizontal: 4,
+                  }}
+                >
+                  <Text>
+                    {(
+                      (Number(chain.totalBalance) /
+                        Number(
+                          appInitStore.getMultipleAssets.totalPriceBalance
+                        )) *
+                      100
+                    ).toFixed(2)}
+                    %
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View>
       <CopyAddressModal
@@ -361,70 +429,43 @@ export const AccountBoxAll: FunctionComponent<{
           )}
         </View>
         <View style={styles.overview}>{renderTotalBalance()}</View>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {series.length > 0 ? (
+        <View style={{ marginVertical: 16 }}>
+          <View
+            style={{
+              width: "100%",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
+          >
+            <Text color={colors["neutral-text-body"]}>Available/Staked</Text>
+            <Text color={colors["neutral-text-body"]}>
+              {totalPriceBalance}/<Text>$5,313.04</Text>
+            </Text>
+          </View>
+          <View style={{ width: "100%", flexDirection: "row" }}>
             <View
               style={{
-                padding: 16,
+                backgroundColor: colors["primary-surface-default"],
+                width: "70%",
+                height: 12,
+                borderTopLeftRadius: 8,
+                borderBottomLeftRadius: 8,
+                marginRight: 2,
               }}
-            >
-              <PieChart
-                widthAndHeight={widthAndHeight}
-                series={series}
-                sliceColor={sliceColor}
-                coverRadius={0.75}
-                coverFill={colors["neutral-surface-card"]}
-              />
-            </View>
-          ) : null}
-          <View style={{ width: "60%" }}>
-            {chainListWithBalance.map((chain) => {
-              return (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginBottom: 8,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 2,
-                        backgroundColor: chain.color,
-                        marginRight: 4,
-                      }}
-                    />
-                    <Text size={13} color={colors["neutral-text-body"]}>
-                      {chain.name}
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: colors["neutral-surface-bg2"],
-                      borderRadius: 999,
-                      paddingHorizontal: 4,
-                    }}
-                  >
-                    <Text>
-                      {(
-                        (Number(chain.totalBalance) /
-                          Number(
-                            appInitStore.getMultipleAssets.totalPriceBalance
-                          )) *
-                        100
-                      ).toFixed(2)}
-                      %
-                    </Text>
-                  </View>
-                </View>
-              );
-            })}
+            />
+            <View
+              style={{
+                backgroundColor: colors["highlight-surface-active"],
+                width: "30%",
+                height: 12,
+                borderTopRightRadius: 8,
+                borderBottomRightRadius: 8,
+              }}
+            />
           </View>
         </View>
-
+        {renderPieChartPortfolio()}
         <View style={styles.btnGroup}>
           <OWButton
             style={styles.getStarted}
