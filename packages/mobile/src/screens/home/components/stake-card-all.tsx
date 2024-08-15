@@ -163,19 +163,6 @@ export const StakeCardAll = observer(({}) => {
         continue;
       }
 
-      const chainInfo = chainStore.getChain(chainId);
-      const queries = queriesStore.get(chainId);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
-        account.bech32Address
-      );
-
-      const validatorAddresses =
-        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
-
-      if (validatorAddresses.length === 0) {
-        continue;
-      }
-
       const state = getClaimAllEachState(chainId);
 
       state.setIsLoading(true);
@@ -187,21 +174,7 @@ export const StakeCardAll = observer(({}) => {
           {},
           {},
           {
-            onBroadcasted: (txHash) => {
-              const validatorObject = convertArrToObject(
-                token.queryRewards.pendingRewardValidatorAddresses
-              );
-              smartNavigation.pushSmart("TxPendingResult", {
-                txHash: Buffer.from(txHash).toString("hex"),
-                title: "Withdraw rewards",
-                data: {
-                  ...validatorObject,
-                  amount: token.token?.toCoin(),
-                  currency: chainStore.current.stakeCurrency,
-                  type: "claim",
-                },
-              });
-            },
+            onBroadcasted: (txHash) => {},
           },
           token.token?.currency.coinMinimalDenom
         );
@@ -232,6 +205,80 @@ export const StakeCardAll = observer(({}) => {
     }
     return false;
   })();
+
+  const _onPressCompound = async (queryReward, chainId) => {
+    try {
+      const queries = queriesStore.get(chainId);
+      const account = accountStore.getAccount(chainId);
+
+      const validatorRewars = [];
+      queryReward
+        .getDescendingPendingRewardValidatorAddresses(10)
+        .map((validatorAddress) => {
+          const rewards = queries.cosmos.queryRewards
+            .getQueryBech32Address(account.bech32Address)
+            .getStakableRewardOf(validatorAddress);
+          validatorRewars.push({ validatorAddress, rewards });
+        });
+
+      if (queryReward) {
+        tracking(`${chainStore.current.chainName} Compound`);
+        await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
+          queryReward.getDescendingPendingRewardValidatorAddresses(10),
+          validatorRewars,
+          "",
+          {},
+          {},
+          {
+            onBroadcasted: (txHash) => {},
+          },
+          queryReward.stakableReward.currency.coinMinimalDenom
+        );
+      } else {
+        showToast({
+          message: "There is no reward!",
+          type: "danger",
+        });
+      }
+    } catch (e) {
+      console.error({ errorClaim: e });
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
+    }
+  };
+
+  const _onPressClaim = async (queryReward, chainId) => {
+    try {
+      const account = accountStore.getAccount(chainId);
+      tracking(`${chainStore.current.chainName} Claim`);
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        queryReward.getDescendingPendingRewardValidatorAddresses(10),
+        "",
+        {},
+        {},
+        {
+          onBroadcasted: (txHash) => {},
+        },
+        queryReward.stakableReward.currency.coinMinimalDenom
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        showToast({
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
+        });
+        return;
+      }
+    }
+  };
 
   useEffect(() => {
     if (viewTokens.length > 0) {
@@ -300,10 +347,18 @@ export const StakeCardAll = observer(({}) => {
           </View>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              _onPressClaim(token.queryRewards, token.chainInfo.chainId);
+            }}
+          >
             <Text style={styles.outlineButton}>Claim</Text>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              _onPressCompound(token.queryRewards, token.chainInfo.chainId);
+            }}
+          >
             <Text style={styles.outlineButton}>Compound</Text>
           </TouchableOpacity>
         </View>
