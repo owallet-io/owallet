@@ -167,18 +167,16 @@ export const StakeCardAll = observer(({}) => {
 
       state.setIsLoading(true);
 
-      viewTokens.map(async (token) => {
-        await account.cosmos.sendWithdrawDelegationRewardMsgs(
-          token.queryRewards.getDescendingPendingRewardValidatorAddresses(10),
-          "",
-          {},
-          {},
-          {
-            onBroadcasted: (txHash) => {},
-          },
-          token.token?.currency.coinMinimalDenom
-        );
-      });
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        viewToken.queryRewards.getDescendingPendingRewardValidatorAddresses(10),
+        "",
+        {},
+        {},
+        {
+          onBroadcasted: (txHash) => {},
+        },
+        viewToken.token?.currency.coinMinimalDenom
+      );
     }
   };
 
