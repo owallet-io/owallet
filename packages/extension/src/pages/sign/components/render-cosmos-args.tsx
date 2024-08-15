@@ -24,7 +24,7 @@ const TokenRenderer: FunctionComponent<{ token: any }> = ({ token }) => (
         src={token?.imgUrl ?? token?.coinImageUrl}
       />
     ) : null}
-    <Text weight="600">{token?.abbr ?? token?.coinDenom ?? token.denom}</Text>
+    <Text weight="600">{token?.abbr ?? token?.coinDenom ?? token?.denom}</Text>
   </div>
 );
 
@@ -147,13 +147,14 @@ export const CosmosRenderArgs: FunctionComponent<{
 }> = observer(({ msg, chain, i }) => {
   const { chainStore } = useStore();
   const [isMore, setIsMore] = useState(true);
-
-  const txInfo = { ...msg };
-  const decodeMsg = msg.unpacked?.msg
+  const txInfo = msg ? { ...msg } : {};
+  const decodeMsg = msg?.unpacked?.msg
     ? JSON.parse(Buffer.from(msg.unpacked.msg).toString())
-    : msg.unpacked;
+    : msg?.unpacked;
+
   txInfo.decode = decodeMsg;
-  const extraInfo = decodeMsg?.send?.msg ? atob(decodeMsg.send?.msg) : null;
+
+  const extraInfo = decodeMsg?.send?.msg ? atob(decodeMsg.send.msg) : null;
   txInfo.extraInfo = extraInfo ? JSON.parse(extraInfo) : null;
 
   let minimum_receive;
@@ -161,10 +162,12 @@ export const CosmosRenderArgs: FunctionComponent<{
   const execute_swap_operations =
     txInfo.extraInfo?.execute_swap_operations ||
     txInfo.decode?.execute_swap_operations;
+
   if (execute_swap_operations) {
-    const lastDes = execute_swap_operations.operations.pop();
-    const ask_asset = lastDes.orai_swap?.ask_asset_info?.token?.contract_addr;
+    const lastDes = execute_swap_operations.operations?.pop();
+    const ask_asset = lastDes?.orai_swap?.ask_asset_info?.token?.contract_addr;
     minimum_receive = execute_swap_operations.minimum_receive;
+
     if (ask_asset) {
       EmbedChainInfos.forEach((c) => {
         if (c.chainId === chain?.chainId) {
@@ -194,45 +197,52 @@ export const CosmosRenderArgs: FunctionComponent<{
   }
 
   if (txInfo.unpacked?.token) {
-    const coin = new Coin(
-      txInfo.unpacked.token.denom,
-      txInfo.unpacked.token?.amount
-    );
-    const parsed = CoinUtils.parseDecAndDenomFromCoin(
-      chainStore.current.currencies,
-      coin
-    );
-    receiveToken = {
-      amount: clearDecimals(parsed?.amount),
-      denom: parsed.denom,
-    };
-    tokenOut = parsed.currency || {
-      amount: clearDecimals(parsed?.amount),
-      denom: parsed.denom,
-    };
-  }
-
-  if (txInfo.unpacked?.funds) {
-    txInfo.unpacked.funds.forEach((coinPrimitive) => {
-      const coin = new Coin(coinPrimitive.denom, coinPrimitive?.amount);
+    const { denom, amount } = txInfo.unpacked.token;
+    if (denom && amount) {
+      const coin = new Coin(denom, amount);
       const parsed = CoinUtils.parseDecAndDenomFromCoin(
         chainStore.current.currencies,
         coin
       );
-      tokensIn.push(
-        parsed.currency || {
-          amount: clearDecimals(parsed?.amount),
+      if (parsed) {
+        receiveToken = {
+          amount: clearDecimals(parsed.amount),
           denom: parsed.denom,
+        };
+        tokenOut = parsed.currency || {
+          amount: clearDecimals(parsed.amount),
+          denom: parsed.denom,
+        };
+      }
+    }
+  }
+
+  if (txInfo.unpacked?.funds) {
+    txInfo.unpacked.funds.forEach((coinPrimitive) => {
+      const { denom, amount } = coinPrimitive;
+      if (denom && amount) {
+        const coin = new Coin(denom, amount);
+        const parsed = CoinUtils.parseDecAndDenomFromCoin(
+          chainStore.current.currencies,
+          coin
+        );
+        if (parsed) {
+          tokensIn.push(
+            parsed.currency || {
+              amount: clearDecimals(parsed.amount),
+              denom: parsed.denom,
+            }
+          );
         }
-      );
+      }
     });
   }
 
   return (
     <div>
-      {i === 0 && (
+      {i === 0 && chain?.chainName && (
         <InfoRenderer
-          condition={chain?.chainName}
+          condition={chain.chainName}
           label="Network"
           leftContent={
             <div
@@ -250,26 +260,27 @@ export const CosmosRenderArgs: FunctionComponent<{
                   marginRight: 4,
                 }}
                 src={
-                  chain?.chainSymbolImageUrl ??
-                  chain?.stakeCurrency.coinImageUrl
+                  chain.chainSymbolImageUrl ?? chain.stakeCurrency?.coinImageUrl
                 }
               />
-              <Text weight="600">{chain?.chainName}</Text>
+              <Text weight="600">{chain.chainName}</Text>
             </div>
           }
         />
       )}
-      <InfoRenderer
-        condition={txInfo.unpacked?.sender}
-        label="Sender"
-        leftContent={
-          <Text color={colors["neutral-text-body"]}>
-            {txInfo.unpacked.sender}
-          </Text>
-        }
-      />
-      {tokensIn.length > 0 ? (
-        tokensIn?.map((token, index) => (
+      {txInfo?.unpacked?.sender && (
+        <InfoRenderer
+          condition={txInfo.unpacked.sender}
+          label="Sender"
+          leftContent={
+            <Text color={colors["neutral-text-body"]}>
+              {txInfo.unpacked.sender}
+            </Text>
+          }
+        />
+      )}
+      {tokensIn?.length > 0 ? (
+        tokensIn.map((token, index) => (
           <PathRenderer key={index} inToken={token} />
         ))
       ) : (
@@ -277,59 +288,67 @@ export const CosmosRenderArgs: FunctionComponent<{
       )}
       {!isMore && (
         <>
-          {txInfo.unpacked?.funds?.map((fund, index) => (
+          {txInfo?.unpacked?.funds?.map((fund, index) => (
             <InfoRenderer
               key={index}
               condition={fund}
               label="Fund"
               leftContent={
                 <Text color={colors["neutral-text-body"]}>
-                  {fund?.amount} {fund.denom}
+                  {fund?.amount} {fund?.denom}
                 </Text>
               }
             />
           ))}
-          <InfoRenderer
-            condition={contractInfo}
-            label="Amount"
-            leftContent={
-              <Text color={colors["neutral-text-body"]}>
-                {toDisplay(
-                  txInfo.decode?.send?.amount,
-                  contractInfo?.coinDecimals
-                )}{" "}
-                {contractInfo?.coinDenom}
-              </Text>
-            }
-          />
-          <InfoRenderer
-            condition={ask_asset_info && minimum_receive}
-            label="Min. Receive"
-            leftContent={
-              <Text color={colors["neutral-text-body"]}>
-                {toDisplay(minimum_receive, ask_asset_info?.coinDecimals)}{" "}
-                {ask_asset_info?.coinDenom}
-              </Text>
-            }
-          />
-          <InfoRenderer
-            condition={txInfo.unpacked?.receiver}
-            label="Receiver"
-            leftContent={
-              <Text color={colors["neutral-text-body"]}>
-                {txInfo.unpacked.receiver}
-              </Text>
-            }
-          />
-          <InfoRenderer
-            condition={receiveToken}
-            label="Transfer"
-            leftContent={
-              <Text color={colors["neutral-text-body"]}>
-                {receiveToken?.amount} {receiveToken.denom}
-              </Text>
-            }
-          />
+          {contractInfo && (
+            <InfoRenderer
+              condition={contractInfo}
+              label="Amount"
+              leftContent={
+                <Text color={colors["neutral-text-body"]}>
+                  {toDisplay(
+                    txInfo?.decode?.send?.amount,
+                    contractInfo.coinDecimals
+                  )}{" "}
+                  {contractInfo.coinDenom}
+                </Text>
+              }
+            />
+          )}
+          {ask_asset_info && minimum_receive && (
+            <InfoRenderer
+              condition={ask_asset_info && minimum_receive}
+              label="Min. Receive"
+              leftContent={
+                <Text color={colors["neutral-text-body"]}>
+                  {toDisplay(minimum_receive, ask_asset_info.coinDecimals)}{" "}
+                  {ask_asset_info.coinDenom}
+                </Text>
+              }
+            />
+          )}
+          {txInfo?.unpacked?.receiver && (
+            <InfoRenderer
+              condition={txInfo.unpacked.receiver}
+              label="Receiver"
+              leftContent={
+                <Text color={colors["neutral-text-body"]}>
+                  {txInfo.unpacked.receiver}
+                </Text>
+              }
+            />
+          )}
+          {receiveToken && (
+            <InfoRenderer
+              condition={receiveToken}
+              label="Transfer"
+              leftContent={
+                <Text color={colors["neutral-text-body"]}>
+                  {receiveToken.amount} {receiveToken.denom}
+                </Text>
+              }
+            />
+          )}
         </>
       )}
       <div

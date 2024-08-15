@@ -17,7 +17,6 @@ import { EmbedChainInfos, toDisplay } from "@owallet/common";
 import { Text } from "../../../components/common/text";
 import colors from "../../../theme/colors";
 import { Address } from "../../../components/address";
-import { isEmpty } from "lodash";
 
 export const EVMRenderArgs: FunctionComponent<{
   msgs: any;
@@ -65,8 +64,6 @@ export const EVMRenderArgs: FunctionComponent<{
     const inToken = fromToken || tokenIn;
     const outToken = desToken || tokenOut || toToken;
 
-    console.log(inToken, "inToken");
-
     return (
       <div
         style={{
@@ -83,11 +80,7 @@ export const EVMRenderArgs: FunctionComponent<{
             marginBottom: 14,
           }}
         >
-          <div
-            style={{
-              maxWidth: "50%",
-            }}
-          >
+          <div style={{ maxWidth: "50%" }}>
             <div
               style={{
                 flexDirection: "column",
@@ -99,11 +92,10 @@ export const EVMRenderArgs: FunctionComponent<{
               {inToken ? (
                 <>
                   {renderToken(inToken)}
-
                   <Address
                     maxCharacters={6}
                     lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
+                    textDecor="underline"
                     textColor={colors["neutral-text-body"]}
                   >
                     {inToken.contractAddress}
@@ -118,7 +110,7 @@ export const EVMRenderArgs: FunctionComponent<{
                   {numberWithCommas(
                     toDisplay(
                       amountIn.toString(),
-                      inToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                      inToken?.decimal ?? chain?.stakeCurrency?.coinDecimals
                     )
                   )}{" "}
                 </Text>
@@ -126,27 +118,23 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {fromContract ? (
+              {fromContract && (
                 <Address
                   maxCharacters={6}
                   lineBreakBeforePrefix={false}
-                  textDecor={"underline"}
+                  textDecor="underline"
                   textColor={colors["neutral-text-body"]}
                 >
                   {fromContract}
                 </Address>
-              ) : null}
+              )}
             </div>
           </div>
           <img
             style={{ paddingRight: 4 }}
             src={require("assets/icon/tdesign_arrow-right.svg")}
           />
-          <div
-            style={{
-              maxWidth: "50%",
-            }}
-          >
+          <div style={{ maxWidth: "50%" }}>
             <div
               style={{
                 flexDirection: "column",
@@ -158,11 +146,10 @@ export const EVMRenderArgs: FunctionComponent<{
               {outToken ? (
                 <>
                   {renderToken(outToken)}
-
                   <Address
                     maxCharacters={8}
                     lineBreakBeforePrefix={false}
-                    textDecor={"underline"}
+                    textDecor="underline"
                     textColor={colors["neutral-text-body"]}
                   >
                     {outToken.contractAddress}
@@ -177,7 +164,7 @@ export const EVMRenderArgs: FunctionComponent<{
                   {numberWithCommas(
                     toDisplay(
                       amountOut.toString(),
-                      outToken?.decimal ?? chain.stakeCurrency.coinDecimals
+                      outToken?.decimal ?? chain?.stakeCurrency?.coinDecimals
                     )
                   )}{" "}
                 </Text>
@@ -185,16 +172,16 @@ export const EVMRenderArgs: FunctionComponent<{
                 <Text color={colors["neutral-text-body"]}>-</Text>
               )}
 
-              {toContract ? (
+              {toContract && (
                 <Address
                   maxCharacters={8}
                   lineBreakBeforePrefix={false}
-                  textDecor={"underline"}
+                  textDecor="underline"
                   textColor={colors["neutral-text-body"]}
                 >
                   {toContract}
                 </Address>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
@@ -212,10 +199,10 @@ export const EVMRenderArgs: FunctionComponent<{
   const renderArgPath = () => {
     if (args?.path?.length >= 2 && path.length > 0) {
       const fromToken = path.find((p) => {
-        return p.contractAddress.toUpperCase() === args.path[0].toUpperCase();
+        return p?.contractAddress?.toUpperCase() === args.path[0].toUpperCase();
       });
       const toToken = path.find((p) => {
-        return p.contractAddress.toUpperCase() === args.path[1].toUpperCase();
+        return p?.contractAddress?.toUpperCase() === args.path[1].toUpperCase();
       });
 
       return renderPath(fromToken, toToken);
@@ -254,76 +241,68 @@ export const EVMRenderArgs: FunctionComponent<{
   }, [chain?.chainId, args]);
 
   const getInfoFromDecodedData = (decodedData) => {
-    if (decodedData) {
-      // Regular expression pattern to split the input string
-      const pattern = /[\x00-\x1F]+/;
+    if (!decodedData) return;
 
-      const addressPattern = /[a-zA-Z0-9]+/g;
+    const pattern = /[\x00-\x1F]+/;
+    const addressPattern = /[a-zA-Z0-9]+/g;
 
-      // Split the input string using the pattern
-      const array = decodedData.split(pattern).filter(Boolean);
-      if (array.length < 1) {
-        array.push(decodedData);
-      }
-      const des = array.shift();
-      const token = array.pop();
+    const array = decodedData.split(pattern).filter(Boolean);
+    if (array.length < 1) {
+      array.push(decodedData);
+    }
+    const des = array.shift();
+    const token = array.pop();
 
-      let tokenInfo;
-      if (token) {
-        EmbedChainInfos.find((chain) => {
-          if (
-            chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern)?.join("")
-          ) {
-            tokenInfo = chain.stakeCurrency;
-            return;
-          }
-          if (
-            chain.stakeCurrency.coinMinimalDenom ===
-            token.match(addressPattern)?.join("")
-          ) {
-            tokenInfo = chain.stakeCurrency;
-            return;
-          }
-          const foundCurrency = chain.currencies.find(
-            (cr) =>
-              cr.coinMinimalDenom === token.match(addressPattern)?.join("") ||
-              //@ts-ignore
-              cr.contractAddress === token.match(addressPattern)?.join("") ||
-              calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
-          );
+    let tokenInfo;
+    if (token) {
+      const matchedToken = token.match(addressPattern)?.join("");
 
-          if (foundCurrency) {
-            tokenInfo = foundCurrency;
-            return;
-          }
-        });
+      for (const chain of EmbedChainInfos) {
+        if (
+          chain.stakeCurrency.coinMinimalDenom === matchedToken ||
+          chain.stakeCurrency.coinMinimalDenom === matchedToken
+        ) {
+          tokenInfo = chain.stakeCurrency;
+          break;
+        }
+
+        const foundCurrency = chain.currencies.find(
+          (cr) =>
+            cr.coinMinimalDenom === matchedToken ||
+            //@ts-ignore
+            cr.contractAddress === matchedToken ||
+            calculateJaccardIndex(cr.coinMinimalDenom, token) > 0.85
+        );
+
+        if (foundCurrency) {
+          tokenInfo = foundCurrency;
+          break;
+        }
       }
 
-      if (!tokenInfo && token) {
+      if (!tokenInfo) {
         const key = findKeyBySimilarValue(
           LIST_ORAICHAIN_CONTRACT,
-          token.match(addressPattern)?.join("")
+          matchedToken
         )?.split("_")?.[0];
-
-        if (key)
+        if (key) {
           tokenInfo = {
             coinDenom: key,
-            contractAddress: token.match(addressPattern)?.join(""),
+            contractAddress: matchedToken,
           };
+        }
       }
-
-      setToAddress(des.match(addressPattern)?.join(""));
-      setToToken(tokenInfo);
     }
+
+    setToAddress(des.match(addressPattern)?.join(""));
+    setToToken(tokenInfo);
   };
 
   useEffect(() => {
     if (args?._destination) {
-      const encodedData = args?._destination.split(":")?.[1];
+      const encodedData = args._destination.split(":")?.[1];
       if (encodedData) {
         const decodedData = decodeBase64(encodedData);
-        console.log("decodedData", decodedData);
         getInfoFromDecodedData(decodedData);
       }
     }
@@ -339,16 +318,16 @@ export const EVMRenderArgs: FunctionComponent<{
             ? numberWithCommas(
                 toDisplay(
                   (args?._value).toString(),
-                  chain.stakeCurrency.coinDecimals
+                  chain?.stakeCurrency?.coinDecimals
                 )
               )
             : null}
         </Text>
       )}
 
-      {isEmpty(path) ? renderPath() : null}
+      {path?.length === 0 ? renderPath() : null}
       {path?.length > 0 ? renderArgPath() : null}
-      {isMore ? null : (
+      {!isMore && (
         <>
           {renderInfo(
             msgs?.to,
@@ -356,7 +335,7 @@ export const EVMRenderArgs: FunctionComponent<{
             <Address
               maxCharacters={6}
               lineBreakBeforePrefix={false}
-              textDecor={"underline"}
+              textDecor="underline"
               textColor={colors["neutral-text-body"]}
             >
               {msgs?.to ?? "-"}
@@ -366,17 +345,16 @@ export const EVMRenderArgs: FunctionComponent<{
             args?._destination,
             "Bridge channel",
             <Text>
-              {args?._destination ? args?._destination.split(":")?.[0] : null}
+              {args?._destination ? args?._destination.split(":")[0] : null}
             </Text>
           )}
-
           {renderInfo(
             toAddress,
             "To Address",
             <Address
               maxCharacters={6}
               lineBreakBeforePrefix={false}
-              textDecor={"underline"}
+              textDecor="underline"
               textColor={colors["neutral-text-body"]}
             >
               {toAddress ?? null}
@@ -394,28 +372,16 @@ export const EVMRenderArgs: FunctionComponent<{
           width: "100%",
           marginTop: 8,
         }}
+        onClick={() => setIsMore((prev) => !prev)}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            setIsMore((prevState) => {
-              return prevState ? false : true;
-            });
-          }}
-        >
-          <Text size={14} weight="500">
-            {`View ${isMore ? "more" : "less"}`}
-          </Text>
-          {isMore ? (
-            <img src={require("assets/icon/tdesign_chevron-down.svg")} />
-          ) : (
-            <img src={require("assets/icon/tdesign_chevron-up.svg")} />
-          )}
-        </div>
+        <Text size={14} weight="500">
+          {`View ${isMore ? "more" : "less"}`}
+        </Text>
+        <img
+          src={require(`assets/icon/tdesign_chevron-${
+            isMore ? "down" : "up"
+          }.svg`)}
+        />
       </div>
     </div>
   );
