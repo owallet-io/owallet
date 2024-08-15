@@ -872,7 +872,7 @@ export class KeyRing {
         const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
 
         const coinTypeModified = coinType ?? bip44HDPath.coinType;
-        console.log(coinTypeModified, "get PubKey");
+
         const keyDelivery = (() => {
           if (coinType === 1 || coinType === 0) {
             return 84;
@@ -883,7 +883,7 @@ export class KeyRing {
         const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
           this.keyStore
         )}-${path}`;
-        console.log(pubKeyIdentity, "pubKeyIdentity");
+
         const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
         if (pubKeyGet) {
           const decodedPublicKey = Uint8Array.from(
@@ -1011,8 +1011,6 @@ export class KeyRing {
     // and here
     if (this.type === "mnemonic") {
       const coinTypeModified = coinType ?? bip44HDPath.coinType;
-
-      console.log(coinTypeModified, "coinTypeModified loadPrivKey");
       const keyDelivery = (() => {
         if (coinType === 1 || coinType === 0) {
           return 84;
@@ -1271,7 +1269,7 @@ export class KeyRing {
     const nic = await getOasisNic(chainInfo.grpc);
     const signer = signerFromPrivateKey(bytes);
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-    console.log("bigIntAmount", bigIntAmount);
+
     const chainContext = await nic.consensusGetChainContext();
 
     const tw = await OasisTransaction.buildTransfer(
