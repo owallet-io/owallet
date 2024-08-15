@@ -1,4 +1,4 @@
-import { Dec } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import {
   RouteProp,
   StackActions,
@@ -13,13 +13,47 @@ import { checkRouter } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
+import { ViewToken } from "@owallet/types";
+import { action, makeObservable, observable } from "mobx";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { unknownToken } from "@owallet/common";
+import { DefaultGasPriceStep } from "@owallet/hooks";
+import { ObservableQueryRewardsInner } from "@owallet/stores";
+
+interface StakeViewToken extends ViewToken {
+  queryRewards: ObservableQueryRewardsInner;
+}
+
+class ClaimAllEachState {
+  @observable
+  isLoading: boolean = false;
+
+  @observable
+  failedReason: Error | undefined = undefined;
+
+  constructor() {
+    makeObservable(this);
+  }
+
+  @action
+  setIsLoading(value: boolean): void {
+    this.isLoading = value;
+  }
+
+  @action
+  setFailedReason(value: Error | undefined): void {
+    this.isLoading = false;
+    this.failedReason = value;
+  }
+}
+const zeroDec = new Dec(0);
 
 export const StakeCardAll = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
@@ -29,148 +63,254 @@ export const StakeCardAll = observer(({}) => {
     accountStore,
     queriesStore,
     priceStore,
-    analyticsStore,
+    keyRingStore,
     appInitStore,
   } = useStore();
 
   const navigation = useNavigation();
 
+  const [totalStakingReward, setTotalStakingReward] = useState(`0`);
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
   const styles = styling(colors);
-  const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
-  const stakingReward = queryReward.stakableReward;
-  const totalStakingReward = priceStore.calculatePrice(stakingReward);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-  const delegated = queryDelegated.total;
-  const totalPrice = priceStore.calculatePrice(delegated);
 
-  const _onPressStake = () => {
-    if (checkRouter(route?.name, SCREENS.Invest)) {
-      return;
+  const statesRef = useRef(new Map<string, ClaimAllEachState>());
+  const getClaimAllEachState = (chainId: string): ClaimAllEachState => {
+    const chainIdentifier = ChainIdHelper.parse(chainId);
+
+    let state = statesRef.current.get(chainIdentifier.identifier);
+    if (!state) {
+      state = new ClaimAllEachState();
+      statesRef.current.set(chainIdentifier.identifier, state);
     }
-    navigation.dispatch(
-      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-    );
+
+    return state;
   };
 
-  const _onPressCompound = async () => {
-    try {
-      const validatorRewars = [];
-      queryReward
-        .getDescendingPendingRewardValidatorAddresses(10)
-        .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
-          validatorRewars.push({ validatorAddress, rewards });
-        });
+  const viewTokens: StakeViewToken[] = (() => {
+    const res: StakeViewToken[] = [];
+    for (const chainInfo of chainStore.chainInfosInUI) {
+      const chainId = chainInfo.chainId;
+      const accountAddress = accountStore.getAccount(chainId).bech32Address;
+      const queries = queriesStore.get(chainId);
+      const queryRewards =
+        queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
 
-      if (queryReward) {
-        tracking(`${chainStore.current.chainName} Compound`);
-        await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-          queryReward.getDescendingPendingRewardValidatorAddresses(10),
-          validatorRewars,
+      const targetDenom = (() => {
+        return chainInfo.stakeCurrency?.coinMinimalDenom;
+      })();
+
+      if (targetDenom) {
+        const currency = chainInfo.findCurrency(targetDenom);
+        if (currency) {
+          const reward = queryRewards.rewards.find(
+            (r) => r.currency.coinMinimalDenom === targetDenom
+          );
+          if (reward) {
+            res.push({
+              queryRewards,
+              token: reward,
+              chainInfo,
+              isFetching: queryRewards.isFetching,
+              error: queryRewards.error,
+              price: priceStore.calculatePrice(reward),
+            });
+          }
+        }
+      }
+    }
+
+    return res
+      .filter((viewToken) => viewToken.token.toDec().gt(zeroDec))
+      .sort((a, b) => {
+        const aPrice = a.price?.toDec() ?? zeroDec;
+        const bPrice = b.price?.toDec() ?? zeroDec;
+
+        if (aPrice.equals(bPrice)) {
+          return 0;
+        }
+        return aPrice.gt(bPrice) ? -1 : 1;
+      })
+      .sort((a, b) => {
+        const aHasError =
+          getClaimAllEachState(a.chainInfo.chainId).failedReason != null;
+        const bHasError =
+          getClaimAllEachState(b.chainInfo.chainId).failedReason != null;
+
+        if (aHasError || bHasError) {
+          if (aHasError && bHasError) {
+            return 0;
+          } else if (aHasError) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+
+        return 0;
+      });
+  })();
+
+  const claimAll = async () => {
+    for (const viewToken of viewTokens) {
+      const chainId = viewToken.chainInfo.chainId;
+      const account = accountStore.getAccount(chainId);
+
+      if (!account.bech32Address) {
+        continue;
+      }
+
+      const chainInfo = chainStore.getChain(chainId);
+      const queries = queriesStore.get(chainId);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
+
+      const validatorAddresses =
+        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+
+      if (validatorAddresses.length === 0) {
+        continue;
+      }
+
+      const state = getClaimAllEachState(chainId);
+
+      state.setIsLoading(true);
+
+      viewTokens.map(async (token) => {
+        await account.cosmos.sendWithdrawDelegationRewardMsgs(
+          token.queryRewards.getDescendingPendingRewardValidatorAddresses(10),
           "",
           {},
           {},
           {
             onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("Compound reward tx broadcasted", {
-                chainId: chainId,
-                chainName: chainStore.current.chainName,
-              });
-
               const validatorObject = convertArrToObject(
-                queryReward.pendingRewardValidatorAddresses
+                token.queryRewards.pendingRewardValidatorAddresses
               );
               smartNavigation.pushSmart("TxPendingResult", {
                 txHash: Buffer.from(txHash).toString("hex"),
-                title: "Compound",
+                title: "Withdraw rewards",
                 data: {
                   ...validatorObject,
-                  amount: stakingReward?.toCoin(),
+                  amount: token.token?.toCoin(),
                   currency: chainStore.current.stakeCurrency,
                   type: "claim",
                 },
               });
             },
           },
-          stakingReward.currency.coinMinimalDenom
+          token.token?.currency.coinMinimalDenom
         );
-      } else {
-        showToast({
-          message: "There is no reward!",
-          type: "danger",
-        });
-      }
-    } catch (e) {
-      console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
-        showToast({
-          message:
-            e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger",
-        });
-        return;
-      }
+      });
     }
   };
 
-  const _onPressClaim = async () => {
-    try {
-      tracking(`${chainStore.current.chainName} Claim`);
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        queryReward.getDescendingPendingRewardValidatorAddresses(10),
-        "",
-        {},
-        {},
-        {
-          onBroadcasted: (txHash) => {
-            analyticsStore.logEvent("Claim reward tx broadcasted", {
-              chainId: chainId,
-              chainName: chainStore.current.chainName,
-            });
+  const claimAllDisabled = (() => {
+    if (viewTokens.length === 0) {
+      return true;
+    }
 
-            const validatorObject = convertArrToObject(
-              queryReward.pendingRewardValidatorAddresses
-            );
-            smartNavigation.pushSmart("TxPendingResult", {
-              txHash: Buffer.from(txHash).toString("hex"),
-              title: "Withdraw rewards",
-              data: {
-                ...validatorObject,
-                amount: stakingReward?.toCoin(),
-                currency: chainStore.current.stakeCurrency,
-                type: "claim",
-              },
-            });
-          },
-        },
-        stakingReward.currency.coinMinimalDenom
-      );
-    } catch (e) {
-      console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
-        showToast({
-          message:
-            e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger",
-        });
-        return;
+    for (const viewToken of viewTokens) {
+      if (viewToken.token.toDec().gt(new Dec(0))) {
+        return false;
       }
     }
-  };
-  const isDisableClaim =
-    !account.isReadyToSendMsgs ||
-    stakingReward.toDec().equals(new Dec(0)) ||
-    queryReward.pendingRewardValidatorAddresses.length === 0;
+
+    return true;
+  })();
+
+  const claimAllIsLoading = (() => {
+    for (const chainInfo of chainStore.chainInfosInUI) {
+      const state = getClaimAllEachState(chainInfo.chainId);
+      if (state.isLoading) {
+        return true;
+      }
+    }
+    return false;
+  })();
+
+  useEffect(() => {
+    if (viewTokens.length > 0) {
+      let tmpRewards = 0;
+      viewTokens.map((token) => {
+        tmpRewards += Number(token.price.toDec().toString());
+      });
+      setTotalStakingReward(tmpRewards.toFixed(4));
+    }
+  }, [viewTokens]);
+
+  const renderToken = useCallback((token) => {
+    if (!token) return;
+
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 32,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: colors["neutral-icon-on-dark"],
+              marginRight: 8,
+            }}
+          >
+            <OWIcon
+              type="images"
+              source={{
+                uri:
+                  token?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                  unknownToken.coinImageUrl,
+              }}
+              size={22}
+            />
+          </View>
+          <View>
+            <Text
+              style={[
+                {
+                  ...styles["text-amount"],
+                },
+              ]}
+            >
+              +{token.price ? token.price?.toString() : "$0"}
+            </Text>
+            <Text style={[styles["amount"]]}>
+              {token.token.toDec().gt(new Dec(0.001))
+                ? token.token
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()
+                : `< 0.001 ${token.token.toCoin().denom.toUpperCase()}`}
+            </Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity>
+            <Text style={styles.outlineButton}>Claim</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.outlineButton}>Compound</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }, []);
+
   return (
     <OWBox
       style={{
@@ -203,82 +343,33 @@ export const StakeCardAll = observer(({}) => {
                 <Text size={16} style={[{ ...styles["text-earn"] }]}>
                   +
                   {totalStakingReward
-                    ? totalStakingReward.toString()
-                    : stakingReward.shrink(true).maxDecimals(6).toString()}
+                    ? `${fiatCurrency.symbol}` + totalStakingReward
+                    : `${fiatCurrency.symbol}0`}
                 </Text>
               </View>
               <OWButton
                 style={[
                   styles["btn-claim"],
                   {
-                    backgroundColor: isDisableClaim
-                      ? colors["neutral-surface-disable"]
-                      : colors["primary-surface-default"],
+                    backgroundColor: colors["primary-surface-default"],
                   },
                 ]}
                 textStyle={{
                   fontSize: 15,
                   fontWeight: "600",
-                  color: isDisableClaim
-                    ? colors["neutral-text-disable"]
-                    : colors["neutral-text-action-on-dark-bg"],
+                  color: colors["neutral-text-action-on-dark-bg"],
                 }}
                 label="Claim all"
-                onPress={_onPressCompound}
+                onPress={() => {
+                  claimAll();
+                }}
                 loading={account.isSendingMsg === "withdrawRewards"}
-                disabled={isDisableClaim}
               />
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 32,
-                    backgroundColor: "#fff",
-                    marginRight: 8,
-                  }}
-                />
-                <View>
-                  <Text
-                    style={[
-                      {
-                        ...styles["text-amount"],
-                      },
-                    ]}
-                  >
-                    +
-                    {totalStakingReward
-                      ? totalStakingReward.toString()
-                      : stakingReward.shrink(true).maxDecimals(6).toString()}
-                  </Text>
-                  <Text style={[styles["amount"]]}>
-                    {stakingReward.toDec().gt(new Dec(0.001))
-                      ? stakingReward
-                          .shrink(true)
-                          .maxDecimals(6)
-                          .trim(true)
-                          .upperCase(true)
-                          .toString()
-                      : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
-                  </Text>
-                </View>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity>
-                  <Text style={styles.outlineButton}>Claim</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Text style={styles.outlineButton}>Compound</Text>
-                </TouchableOpacity>
-              </View>
+            <View>
+              {viewTokens.map((token) => {
+                return renderToken(token);
+              })}
             </View>
           </View>
         </View>
