@@ -285,6 +285,8 @@ export const StakeCardAll = observer(({}) => {
         tmpRewards += Number(token.price.toDec().toString());
       });
       setTotalStakingReward(tmpRewards.toFixed(4));
+    } else {
+      setTotalStakingReward(0);
     }
   }, [viewTokens]);
 
