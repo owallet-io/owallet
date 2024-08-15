@@ -82,6 +82,7 @@ export enum ChainNameEnum {
   Osmosis = "Osmosis",
   Juno = "Juno",
   BNBChain = "BNB Chain",
+  BNBChainTestNet = "BNB Chain Testnet",
   TRON = "Tron Network",
   Bitcoin = "Bitcoin",
   BitcoinLegacy = "Bitcoin(Legacy)",

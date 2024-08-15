@@ -102,7 +102,12 @@ export const AccountBoxAll: FunctionComponent<{
       (Number(appInitStore.getMultipleAssets.totalPriceBalance) * 3) / 100;
     Object.keys(dataTokensByChain).map((chainId) => {
       const chainName = ChainNameEnum[getKeyByValue(ChainIdEnum, chainId)];
-      if (chainId.includes("test") || chainName?.includes("test")) return;
+      if (
+        chainId.includes("test") ||
+        chainName?.includes("test") ||
+        chainName?.includes("Test")
+      )
+        return;
       if (Number(dataTokensByChain[chainId].totalBalance) > minimumPrice) {
         const colorKey = Object.values(ChainIdEnum).indexOf(
           chainId as ChainIdEnum
