@@ -787,7 +787,35 @@ export class KeyRing {
 
     // Make sure that password is valid.
     await Crypto.decrypt(this.crypto, keyStore, password);
-
+    const chainInfos = await this.chainsService.getChainInfos();
+    const uniqueCointypes = chainInfos
+      .filter((chain, index, self) => {
+        const coinType = chain.coinType || chain.bip44?.coinType;
+        return (
+          coinType !== undefined &&
+          index ===
+            self.findIndex(
+              (c) => (c.coinType || c.bip44?.coinType) === coinType
+            )
+        );
+      })
+      .map((item) => item.bip44.coinType);
+    const deleteAllCachePublicKey = uniqueCointypes.map((coinType) => {
+      const bip44HDPath = KeyRing.getKeyStoreBIP44Path(keyStore);
+      const coinTypeModified = coinType ?? bip44HDPath.coinType;
+      const keyDelivery = (() => {
+        if (coinType === 1 || coinType === 0) {
+          return 84;
+        }
+        return 44;
+      })();
+      const path = `m/${keyDelivery}'/${coinTypeModified}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+      const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+        keyStore
+      )}-${path}`;
+      return this.kvStore.set(pubKeyIdentity, null);
+    });
+    await Promise.all(deleteAllCachePublicKey);
     let keyStoreChanged = false;
     if (this.keyStore) {
       // If key store is currently selected key store
@@ -924,7 +952,8 @@ export class KeyRing {
     })();
 
     if (coinType === 474) {
-      const path = `m/44'/474'/${0}'/${0}/${0}`;
+      const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
+      const path = `m/44'/474'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
       const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
         this.keyStore
       )}-${path}`;
