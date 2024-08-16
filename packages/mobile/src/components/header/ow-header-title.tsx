@@ -1,9 +1,4 @@
-import {
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableWithoutFeedbackProps,
-  View,
-} from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, TouchableWithoutFeedbackProps, View } from "react-native";
 import React from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "../text";
@@ -13,6 +8,7 @@ import { NetworkModal } from "@src/screens/home/components";
 import { HEADER_KEY } from "@src/common/constants";
 import { DownArrowIcon } from "../icon";
 import { useNavigation } from "@react-navigation/native";
+import OWIcon from "../ow-icon/ow-icon";
 
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
@@ -20,16 +16,17 @@ interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   const { chainStore, modalStore, appInitStore } = useStore();
   const { colors } = useTheme();
-  const navigation = useNavigation();
-  const currentTab =
-    navigation.getState().routeNames[navigation.getState().index];
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
+
+  // const navigation = useNavigation();
+  // const currentTab = navigation.getState().routeNames[navigation.getState().index];
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
+        enableOverDrag: false
+      }
     });
     modalStore.setChildren(<NetworkModal />);
   };
@@ -37,23 +34,37 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     return (
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
-          <Text color={colors["neutral-text-title"]} weight="700" size={16}>
+          {/* <Text color={colors["neutral-text-title"]} weight="700" size={16}>
             {currentTab.toUpperCase() ?? "ASSETS"}
-          </Text>
+          </Text> */}
           <View
             style={{
               flexDirection: "row",
-              alignItems: "center",
+              alignItems: "center"
             }}
           >
-            <Text
-              style={{ paddingRight: 6 }}
-              color={colors["neutral-text-title"]}
-              size={13}
-            >
-              {appInitStore.getInitApp.isAllNetworks
-                ? "All networks"
-                : chainStore.current.chainName}
+            {appInitStore.getInitApp.isAllNetworks ? (
+              <OWIcon name={"tdesignblockchain"} size={20} color={colors["neutral-text-title"]} />
+            ) : (
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 32,
+                  backgroundColor: colors["neutral-icon-on-dark"]
+                }}
+              >
+                <OWIcon
+                  type="images"
+                  source={{
+                    uri: chainInfo?.stakeCurrency?.coinImageUrl
+                  }}
+                  size={20}
+                />
+              </View>
+            )}
+            <Text style={{ marginHorizontal: 6 }} color={colors["neutral-text-title"]} size={16} weight="600">
+              {appInitStore.getInitApp.isAllNetworks ? "All networks" : chainStore.current.chainName}
             </Text>
             <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
           </View>
@@ -69,7 +80,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
           fontWeight: "700",
           lineHeight: 24,
           color: colors["neutral-text-title"],
-          textTransform: "uppercase",
+          textTransform: "uppercase"
         }}
       >
         {title}
@@ -81,11 +92,11 @@ export default OWHeaderTitle;
 
 const styles = StyleSheet.create({
   textHeader: {
-    marginHorizontal: 8,
+    marginHorizontal: 8
   },
   containerTitle: {
     // flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-  },
+    justifyContent: "center"
+  }
 });

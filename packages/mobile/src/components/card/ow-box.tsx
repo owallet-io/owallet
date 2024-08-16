@@ -17,20 +17,20 @@ const useStyleType = ({ type }) => {
           shadowColor: colors["gray-150"],
           shadowOffset: {
             width: 0,
-            height: 3,
+            height: 3
           },
           shadowOpacity: 0.26,
           shadowRadius: 2.62,
           borderRadius: spacing["12"],
           elevation: 4,
           width: "100%",
-          backgroundColor: colors["neutral-surface-bg2-shadow"],
+          backgroundColor: colors["neutral-surface-bg2-shadow"]
         };
       } else {
         styles = {
           borderRadius: spacing["12"],
           width: "100%",
-          backgroundColor: colors["neutral-surface-bg2-shadow"],
+          backgroundColor: colors["neutral-surface-bg2-shadow"]
         };
       }
 
@@ -41,7 +41,7 @@ const useStyleType = ({ type }) => {
         width: "100%",
         paddingHorizontal: spacing["20"],
         paddingVertical: spacing["24"],
-        borderRadius: spacing["12"],
+        borderRadius: spacing["12"]
       };
       break;
     case "normal":
@@ -50,7 +50,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["horizontal-pad"],
         borderRadius: spacing["horizontal-pad"],
-        backgroundColor: colors["neutral-surface-bg2"],
+        backgroundColor: colors["neutral-surface-bg2"]
       };
       break;
     default:
@@ -59,7 +59,7 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["24"],
         borderRadius: spacing["24"],
-        backgroundColor: colors["neutral-surface-bg2"],
+        backgroundColor: colors["neutral-surface-bg2"]
       };
       break;
   }
@@ -68,7 +68,7 @@ const useStyleType = ({ type }) => {
 const OWBox = ({ children, style, type = "normal", ...props }: IOWBoxProps) => {
   const ContainerElement = type == "gradient" ? OWLinearGradientBox : View;
   const stylesType = useStyleType({
-    type,
+    type
   });
   return (
     <ContainerElement style={[stylesType, style]} {...props}>

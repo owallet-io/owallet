@@ -7,41 +7,39 @@ interface IOWHeaderRightProps {
   onAddWallet: () => void;
   onScan: () => void;
 }
-const OWHeaderRight = observer(
-  ({ onAddWallet, onScan }: IOWHeaderRightProps) => {
-    const { colors } = useTheme();
-    return (
-      <View style={styles.btnContainer}>
-        <OWButtonIcon
-          style={[
-            styles.btnScan,
-            {
-              backgroundColor: colors["neutral-surface-card"],
-            },
-          ]}
-          colorIcon={colors["neutral-text-title"]}
-          sizeIcon={20}
-          fullWidth={false}
-          onPress={onScan}
-          name="tdesignscan"
-        />
-        <OWButtonIcon
-          style={[
-            styles.btnHistory,
-            {
-              backgroundColor: colors["neutral-surface-card"],
-            },
-          ]}
-          colorIcon={colors["neutral-text-title"]}
-          sizeIcon={20}
-          onPress={onAddWallet}
-          name={"tdesigncreditcard-add"}
-          fullWidth={false}
-        />
-      </View>
-    );
-  }
-);
+const OWHeaderRight = observer(({ onAddWallet, onScan }: IOWHeaderRightProps) => {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.btnContainer}>
+      <OWButtonIcon
+        style={[
+          styles.btnScan,
+          {
+            backgroundColor: colors["neutral-surface-card"]
+          }
+        ]}
+        colorIcon={colors["neutral-text-title"]}
+        sizeIcon={20}
+        fullWidth={false}
+        onPress={onScan}
+        name="tdesignscan"
+      />
+      <OWButtonIcon
+        style={[
+          styles.btnHistory,
+          {
+            backgroundColor: colors["neutral-surface-card"]
+          }
+        ]}
+        colorIcon={colors["neutral-text-title"]}
+        sizeIcon={20}
+        onPress={onAddWallet}
+        name={"tdesigncreditcard-add"}
+        fullWidth={false}
+      />
+    </View>
+  );
+});
 
 export default OWHeaderRight;
 
@@ -52,16 +50,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap",
     gap: 8,
-    marginRight: 16,
+    marginRight: 16
   },
   btnHistory: {
     height: 40,
     width: 40,
-    borderRadius: 999,
+    borderRadius: 999
   },
   btnScan: {
     height: 40,
     width: 40,
-    borderRadius: 999,
-  },
+    borderRadius: 999
+  }
 });
