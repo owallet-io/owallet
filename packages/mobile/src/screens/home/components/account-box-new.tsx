@@ -314,50 +314,54 @@ export const AccountBoxAll: FunctionComponent<{
           </View>
         ) : null}
         <View style={{ width: "60%" }}>
-          {chainListWithBalance.map((chain) => {
-            return (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: 8,
-                }}
-              >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: 2,
-                      backgroundColor: chain.color,
-                      marginRight: 4,
-                    }}
-                  />
-                  <Text size={13} color={colors["neutral-text-body"]}>
-                    {chain.name}
-                  </Text>
-                </View>
+          {chainListWithBalance
+            .sort((a, b) => {
+              return Number(b.totalBalance) - Number(a.totalBalance);
+            })
+            .map((chain) => {
+              return (
                 <View
                   style={{
-                    backgroundColor: colors["neutral-surface-bg2"],
-                    borderRadius: 999,
-                    paddingHorizontal: 4,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 8,
                   }}
                 >
-                  <Text>
-                    {(
-                      (Number(chain.totalBalance) /
-                        Number(
-                          appInitStore.getMultipleAssets.totalPriceBalance
-                        )) *
-                      100
-                    ).toFixed(2)}
-                    %
-                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <View
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: 2,
+                        backgroundColor: chain.color,
+                        marginRight: 4,
+                      }}
+                    />
+                    <Text size={13} color={colors["neutral-text-body"]}>
+                      {chain.name}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: colors["neutral-surface-bg2"],
+                      borderRadius: 999,
+                      paddingHorizontal: 4,
+                    }}
+                  >
+                    <Text>
+                      {(
+                        (Number(chain.totalBalance) /
+                          Number(
+                            appInitStore.getMultipleAssets.totalPriceBalance
+                          )) *
+                        100
+                      ).toFixed(2)}
+                      %
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })}
         </View>
       </View>
     );
