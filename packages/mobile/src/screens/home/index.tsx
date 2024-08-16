@@ -370,14 +370,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     >
       <AccountBoxAll
         isLoading={isLoading}
-        totalBalanceByChain={new PricePretty(
-          fiatCurrency,
-          dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
-        )?.toString()}
-        totalPriceBalance={new PricePretty(
-          fiatCurrency,
-          totalPriceBalance
-        )?.toString()}
+        totalBalanceByChain={
+          new PricePretty(
+            fiatCurrency,
+            dataTokensByChain?.[chainStore.current.chainId]?.totalBalance
+          )
+        }
+        totalPriceBalance={new PricePretty(fiatCurrency, totalPriceBalance)}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <EarningCardNew />

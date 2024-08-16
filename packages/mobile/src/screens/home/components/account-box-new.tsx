@@ -67,8 +67,8 @@ const colorList = [
 const randomColors = shuffleArray(colorList);
 
 export const AccountBoxAll: FunctionComponent<{
-  totalPriceBalance: string;
-  totalBalanceByChain: string;
+  totalPriceBalance: PricePretty;
+  totalBalanceByChain: PricePretty;
   isLoading: boolean;
 }> = observer(({ totalPriceBalance, totalBalanceByChain, isLoading }) => {
   const { colors } = useTheme();
@@ -88,8 +88,10 @@ export const AccountBoxAll: FunctionComponent<{
   const [sliceColor, setSliceColor] = useState([]);
   const [isPending, startTransition] = useTransition();
   const smartNavigation = useSmartNavigation();
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const queries = queriesStore.get(chainStore.current.chainId);
+
   const styles = styling(colors);
 
   const { dataTokensByChain } = appInitStore.getMultipleAssets;
@@ -172,7 +174,7 @@ export const AccountBoxAll: FunctionComponent<{
           }}
         >
           <Text variant="bigText" style={styles.labelTotalAmount}>
-            {totalPriceBalance}
+            {totalPriceBalance?.toString()}
           </Text>
           {isLoading ? (
             <View
@@ -240,7 +242,7 @@ export const AccountBoxAll: FunctionComponent<{
               </View>
 
               <Text size={16} weight="600" color={colors["neutral-text-title"]}>
-                {totalBalanceByChain}
+                {totalBalanceByChain?.toString()}
               </Text>
             </View>
             {chainStore.current.chainId === ChainIdEnum.TRON && (
@@ -361,6 +363,98 @@ export const AccountBoxAll: FunctionComponent<{
     );
   };
 
+  const renderAvailableperStaked = () => {
+    let availabelPercent = 0;
+    let stakedPercent = 0;
+    let staked = "0";
+    let totalAllChainStaked = 0;
+    let availabel = appInitStore.getInitApp.isAllNetworks
+      ? totalPriceBalance?.toString()
+      : totalBalanceByChain?.toString();
+    const queryDelegated =
+      queries.cosmos.queryDelegations.getQueryBech32Address(
+        account.bech32Address
+      );
+    const delegated = queryDelegated.total;
+    if (!appInitStore.getInitApp.isAllNetworks) {
+      staked = priceStore.calculatePrice(delegated)?.toString();
+    } else {
+      let tmpStaked = 0;
+      for (const chainInfo of chainStore.chainInfosInUI) {
+        const chainId = chainInfo.chainId;
+        const accountAddress = accountStore.getAccount(chainId).bech32Address;
+        const queries = queriesStore.get(chainId);
+        const queryDelegated =
+          queries.cosmos.queryDelegations.getQueryBech32Address(accountAddress);
+        const delegated = queryDelegated.total;
+
+        tmpStaked += priceStore.calculatePrice(delegated)?.toDec().toString()
+          ? Number(priceStore.calculatePrice(delegated)?.toDec().toString())
+          : 0;
+      }
+
+      staked = `${fiatCurrency.symbol}` + tmpStaked.toFixed(2);
+      totalAllChainStaked = tmpStaked;
+    }
+
+    if (!appInitStore.getInitApp.isAllNetworks) {
+      const total =
+        Number(priceStore.calculatePrice(delegated)?.toDec().toString()) +
+        Number(totalBalanceByChain?.toDec().toString());
+
+      availabelPercent =
+        (Number(totalBalanceByChain?.toDec().toString()) / total) * 100;
+      stakedPercent = 100 - availabelPercent;
+    } else {
+      const total =
+        Number(totalAllChainStaked) +
+        Number(totalPriceBalance?.toDec().toString());
+
+      availabelPercent =
+        (Number(totalPriceBalance?.toDec().toString()) / total) * 100;
+      stakedPercent = 100 - availabelPercent;
+    }
+
+    return (
+      <View style={{ marginVertical: 16 }}>
+        <View
+          style={{
+            width: "100%",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 8,
+          }}
+        >
+          <Text color={colors["neutral-text-body"]}>Available/Staked</Text>
+          <Text color={colors["neutral-text-body"]}>
+            {availabel} / <Text>{staked}</Text>
+          </Text>
+        </View>
+        <View style={{ width: "100%", flexDirection: "row" }}>
+          <View
+            style={{
+              backgroundColor: colors["primary-surface-default"],
+              width: `${availabelPercent}%`,
+              height: 12,
+              borderTopLeftRadius: 8,
+              borderBottomLeftRadius: 8,
+              marginRight: 2,
+            }}
+          />
+          <View
+            style={{
+              backgroundColor: colors["highlight-surface-active"],
+              width: `${stakedPercent}%`,
+              height: 12,
+              borderTopRightRadius: 8,
+              borderBottomRightRadius: 8,
+            }}
+          />
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View>
       <CopyAddressModal
@@ -443,42 +537,7 @@ export const AccountBoxAll: FunctionComponent<{
           )}
         </View>
         <View style={styles.overview}>{renderTotalBalance()}</View>
-        <View style={{ marginVertical: 16 }}>
-          <View
-            style={{
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 8,
-            }}
-          >
-            <Text color={colors["neutral-text-body"]}>Available/Staked</Text>
-            <Text color={colors["neutral-text-body"]}>
-              {totalPriceBalance}/<Text>$5,313.04</Text>
-            </Text>
-          </View>
-          <View style={{ width: "100%", flexDirection: "row" }}>
-            <View
-              style={{
-                backgroundColor: colors["primary-surface-default"],
-                width: "70%",
-                height: 12,
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8,
-                marginRight: 2,
-              }}
-            />
-            <View
-              style={{
-                backgroundColor: colors["highlight-surface-active"],
-                width: "30%",
-                height: 12,
-                borderTopRightRadius: 8,
-                borderBottomRightRadius: 8,
-              }}
-            />
-          </View>
-        </View>
+        {renderAvailableperStaked()}
         {appInitStore.getInitApp.isAllNetworks && showChart
           ? renderPieChartPortfolio()
           : null}
