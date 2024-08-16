@@ -438,6 +438,8 @@ export const AccountBoxAll: FunctionComponent<{
               height: 12,
               borderTopLeftRadius: 8,
               borderBottomLeftRadius: 8,
+              borderTopRightRadius: stakedPercent <= 0.1 ? 8 : 0,
+              borderBottomRightRadius: stakedPercent <= 0.1 ? 8 : 0,
               marginRight: 2,
             }}
           />
@@ -446,6 +448,8 @@ export const AccountBoxAll: FunctionComponent<{
               backgroundColor: colors["highlight-surface-active"],
               width: `${stakedPercent}%`,
               height: 12,
+              borderTopLeftRadius: availabelPercent <= 0.1 ? 8 : 0,
+              borderBottomLeftRadius: availabelPercent <= 0.1 ? 8 : 0,
               borderTopRightRadius: 8,
               borderBottomRightRadius: 8,
             }}
@@ -479,7 +483,10 @@ export const AccountBoxAll: FunctionComponent<{
               fadeDuration={0}
             />
             <Text style={styles.labelName}>{accountOrai?.name || ".."}</Text>
-            <DownArrowIcon height={15} color={colors["primary-text"]} />
+            <DownArrowIcon
+              height={15}
+              color={colors["neutral-icon-on-light"]}
+            />
           </TouchableOpacity>
           {appInitStore.getInitApp.isAllNetworks ? (
             <View style={{ flexDirection: "row" }}>

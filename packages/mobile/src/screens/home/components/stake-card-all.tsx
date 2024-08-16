@@ -16,6 +16,7 @@ import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { unknownToken } from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
+import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
@@ -49,6 +50,7 @@ export const StakeCardAll = observer(({}) => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const [totalStakingReward, setTotalStakingReward] = useState(`0`);
+  const [viewMore, setViewMore] = useState(true);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const { colors } = useTheme();
@@ -368,7 +370,10 @@ export const StakeCardAll = observer(({}) => {
                 alignItems: "center",
               }}
             >
-              <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                onPress={() => setViewMore(!viewMore)}
+                style={{ flexDirection: "row", alignItems: "center" }}
+              >
                 <View style={styles["claim-title"]}>
                   <OWIcon
                     name={"trending-outline"}
@@ -382,7 +387,20 @@ export const StakeCardAll = observer(({}) => {
                     ? `${fiatCurrency.symbol}` + totalStakingReward
                     : `${fiatCurrency.symbol}0`}
                 </Text>
-              </View>
+                {!viewMore ? (
+                  <OWIcon
+                    name={"tdesignchevron-down"}
+                    size={16}
+                    color={colors["neutral-icon-on-light"]}
+                  />
+                ) : (
+                  <OWIcon
+                    name={"tdesignchevron-up"}
+                    size={16}
+                    color={colors["neutral-icon-on-light"]}
+                  />
+                )}
+              </TouchableOpacity>
               <OWButton
                 style={[
                   styles["btn-claim"],
@@ -404,7 +422,8 @@ export const StakeCardAll = observer(({}) => {
               />
             </View>
             <View>
-              {viewTokens.map((token) => {
+              {viewTokens.map((token, index) => {
+                if (!viewMore && index > 0) return null;
                 return renderToken(token);
               })}
             </View>
@@ -428,6 +447,7 @@ const styling = (colors) =>
       fontWeight: "600",
       lineHeight: 24,
       color: colors["success-text-body"],
+      paddingRight: 2,
     },
     "text-amount": {
       fontWeight: "500",
