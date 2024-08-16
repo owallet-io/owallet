@@ -75,7 +75,8 @@ export const StakeCardAll = observer(({}) => {
       const chainId = chainInfo.chainId;
       const accountAddress = accountStore.getAccount(chainId).bech32Address;
       const queries = queriesStore.get(chainId);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
+      const queryRewards =
+        queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
 
       const targetDenom = (() => {
         return chainInfo.stakeCurrency?.coinMinimalDenom;
@@ -84,7 +85,9 @@ export const StakeCardAll = observer(({}) => {
       if (targetDenom) {
         const currency = chainInfo.findCurrency(targetDenom);
         if (currency) {
-          const reward = queryRewards.rewards.find(r => r.currency.coinMinimalDenom === targetDenom);
+          const reward = queryRewards.rewards.find(
+            (r) => r.currency.coinMinimalDenom === targetDenom
+          );
           if (reward) {
             res.push({
               queryRewards,
@@ -92,7 +95,7 @@ export const StakeCardAll = observer(({}) => {
               chainInfo,
               isFetching: queryRewards.isFetching,
               error: queryRewards.error,
-              price: priceStore.calculatePrice(reward)
+              price: priceStore.calculatePrice(reward),
             });
           }
         }
@@ -100,7 +103,7 @@ export const StakeCardAll = observer(({}) => {
     }
 
     return res
-      .filter(viewToken => viewToken.token.toDec().gt(zeroDec))
+      .filter((viewToken) => viewToken.token.toDec().gt(zeroDec))
       .sort((a, b) => {
         const aPrice = a.price?.toDec() ?? zeroDec;
         const bPrice = b.price?.toDec() ?? zeroDec;
@@ -111,8 +114,10 @@ export const StakeCardAll = observer(({}) => {
         return aPrice.gt(bPrice) ? -1 : 1;
       })
       .sort((a, b) => {
-        const aHasError = getClaimAllEachState(a.chainInfo.chainId).failedReason != null;
-        const bHasError = getClaimAllEachState(b.chainInfo.chainId).failedReason != null;
+        const aHasError =
+          getClaimAllEachState(a.chainInfo.chainId).failedReason != null;
+        const bHasError =
+          getClaimAllEachState(b.chainInfo.chainId).failedReason != null;
 
         if (aHasError || bHasError) {
           if (aHasError && bHasError) {
@@ -147,7 +152,7 @@ export const StakeCardAll = observer(({}) => {
         {},
         {},
         {
-          onBroadcasted: txHash => {}
+          onBroadcasted: (txHash) => {},
         },
         viewToken.token?.currency.coinMinimalDenom
       );
@@ -184,12 +189,14 @@ export const StakeCardAll = observer(({}) => {
       const account = accountStore.getAccount(chainId);
 
       const validatorRewars = [];
-      queryReward.getDescendingPendingRewardValidatorAddresses(10).map(validatorAddress => {
-        const rewards = queries.cosmos.queryRewards
-          .getQueryBech32Address(account.bech32Address)
-          .getStakableRewardOf(validatorAddress);
-        validatorRewars.push({ validatorAddress, rewards });
-      });
+      queryReward
+        .getDescendingPendingRewardValidatorAddresses(10)
+        .map((validatorAddress) => {
+          const rewards = queries.cosmos.queryRewards
+            .getQueryBech32Address(account.bech32Address)
+            .getStakableRewardOf(validatorAddress);
+          validatorRewars.push({ validatorAddress, rewards });
+        });
 
       if (queryReward) {
         tracking(`${chainStore.current.chainName} Compound`);
@@ -200,22 +207,23 @@ export const StakeCardAll = observer(({}) => {
           {},
           {},
           {
-            onBroadcasted: txHash => {}
+            onBroadcasted: (txHash) => {},
           },
           queryReward.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({
           message: "There is no reward!",
-          type: "danger"
+          type: "danger",
         });
       }
     } catch (e) {
       console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
-          message: e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger"
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
         });
         return;
       }
@@ -232,7 +240,7 @@ export const StakeCardAll = observer(({}) => {
         {},
         {},
         {
-          onBroadcasted: txHash => {}
+          onBroadcasted: (txHash) => {},
         },
         queryReward.stakableReward.currency.coinMinimalDenom
       );
@@ -240,8 +248,9 @@ export const StakeCardAll = observer(({}) => {
       console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
-          message: e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger"
+          message:
+            e?.message ?? "Something went wrong! Please try again later.",
+          type: "danger",
         });
         return;
       }
@@ -251,7 +260,7 @@ export const StakeCardAll = observer(({}) => {
   useEffect(() => {
     if (viewTokens.length > 0) {
       let tmpRewards = 0;
-      viewTokens.map(token => {
+      viewTokens.map((token) => {
         tmpRewards += Number(token.price.toDec().toString());
       });
       setTotalStakingReward(tmpRewards.toFixed(4));
@@ -260,7 +269,7 @@ export const StakeCardAll = observer(({}) => {
     }
   }, [viewTokens]);
 
-  const renderToken = useCallback(token => {
+  const renderToken = useCallback((token) => {
     if (!token) return;
 
     return (
@@ -269,7 +278,7 @@ export const StakeCardAll = observer(({}) => {
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: 8
+          marginBottom: 8,
         }}
       >
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -281,13 +290,15 @@ export const StakeCardAll = observer(({}) => {
               alignItems: "center",
               justifyContent: "center",
               backgroundColor: colors["neutral-icon-on-dark"],
-              marginRight: 8
+              marginRight: 8,
             }}
           >
             <OWIcon
               type="images"
               source={{
-                uri: token?.chainInfo?.stakeCurrency?.coinImageUrl || unknownToken.coinImageUrl
+                uri:
+                  token?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                  unknownToken.coinImageUrl,
               }}
               size={22}
             />
@@ -296,15 +307,20 @@ export const StakeCardAll = observer(({}) => {
             <Text
               style={[
                 {
-                  ...styles["text-amount"]
-                }
+                  ...styles["text-amount"],
+                },
               ]}
             >
               +{token.price ? token.price?.toString() : "$0"}
             </Text>
             <Text style={[styles["amount"]]}>
               {token.token.toDec().gt(new Dec(0.001))
-                ? token.token.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+                ? token.token
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()
                 : `< 0.001 ${token.token.toCoin().denom.toUpperCase()}`}
             </Text>
           </View>
@@ -338,7 +354,7 @@ export const StakeCardAll = observer(({}) => {
         backgroundColor: colors["neutral-surface-card"],
         padding: spacing["16"],
         borderTopLeftRadius: 8,
-        borderTopRightRadius: 8
+        borderTopRightRadius: 8,
       }}
     >
       <View>
@@ -349,28 +365,35 @@ export const StakeCardAll = observer(({}) => {
                 flexDirection: "row",
                 paddingBottom: 6,
                 justifyContent: "space-between",
-                alignItems: "center"
+                alignItems: "center",
               }}
             >
               <View style={{ flexDirection: "row" }}>
                 <View style={styles["claim-title"]}>
-                  <OWIcon name={"trending-outline"} size={14} color={colors["neutral-text-title"]} />
+                  <OWIcon
+                    name={"trending-outline"}
+                    size={14}
+                    color={colors["neutral-text-title"]}
+                  />
                 </View>
                 <Text size={16} style={[{ ...styles["text-earn"] }]}>
-                  +{totalStakingReward ? `${fiatCurrency.symbol}` + totalStakingReward : `${fiatCurrency.symbol}0`}
+                  +
+                  {totalStakingReward
+                    ? `${fiatCurrency.symbol}` + totalStakingReward
+                    : `${fiatCurrency.symbol}0`}
                 </Text>
               </View>
               <OWButton
                 style={[
                   styles["btn-claim"],
                   {
-                    backgroundColor: colors["primary-surface-default"]
-                  }
+                    backgroundColor: colors["primary-surface-default"],
+                  },
                 ]}
                 textStyle={{
                   fontSize: 15,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-dark-bg"]
+                  color: colors["neutral-text-action-on-dark-bg"],
                 }}
                 label="Claim all"
                 onPress={() => {
@@ -381,7 +404,7 @@ export const StakeCardAll = observer(({}) => {
               />
             </View>
             <View>
-              {viewTokens.map(token => {
+              {viewTokens.map((token) => {
                 return renderToken(token);
               })}
             </View>
@@ -392,37 +415,37 @@ export const StakeCardAll = observer(({}) => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     cardBody: {},
     "flex-center": {
       display: "flex",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
 
     "text-earn": {
       fontWeight: "600",
       lineHeight: 24,
-      color: colors["success-text-body"]
+      color: colors["success-text-body"],
     },
     "text-amount": {
       fontWeight: "500",
       fontSize: 14,
-      color: colors["success-text-body"]
+      color: colors["success-text-body"],
     },
 
     amount: {
       fontWeight: "400",
       fontSize: 13,
       lineHeight: 20,
-      color: colors["neutral-text-body"]
+      color: colors["neutral-text-body"],
     },
     "btn-claim": {
       backgroundColor: colors["primary-surface-default"],
       borderRadius: 999,
       width: metrics.screenWidth / 4,
-      height: 32
+      height: 32,
     },
     "claim-title": {
       width: 24,
@@ -431,12 +454,12 @@ const styling = colors =>
       backgroundColor: colors["neutral-surface-action"],
       marginRight: 5,
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
     },
     getStarted: {
       borderRadius: 999,
       width: metrics.screenWidth / 2.45,
-      height: 32
+      height: 32,
     },
 
     btnGroup: {
@@ -445,10 +468,10 @@ const styling = colors =>
       marginTop: 16,
       borderTopColor: colors["neutral-border-default"],
       borderTopWidth: 1,
-      paddingTop: 8
+      paddingTop: 8,
     },
     outlineButton: {
       padding: 8,
-      fontWeight: "600"
-    }
+      fontWeight: "600",
+    },
   });

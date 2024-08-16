@@ -1,4 +1,9 @@
-import { StyleSheet, TouchableWithoutFeedback, TouchableWithoutFeedbackProps, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TouchableWithoutFeedbackProps,
+  View,
+} from "react-native";
 import React from "react";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "../text";
@@ -25,8 +30,8 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
     modalStore.setChildren(<NetworkModal />);
   };
@@ -40,31 +45,42 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
           <View
             style={{
               flexDirection: "row",
-              alignItems: "center"
+              alignItems: "center",
             }}
           >
             {appInitStore.getInitApp.isAllNetworks ? (
-              <OWIcon name={"tdesignblockchain"} size={20} color={colors["neutral-text-title"]} />
+              <OWIcon
+                name={"tdesignblockchain"}
+                size={20}
+                color={colors["neutral-text-title"]}
+              />
             ) : (
               <View
                 style={{
                   width: 20,
                   height: 20,
                   borderRadius: 32,
-                  backgroundColor: colors["neutral-icon-on-dark"]
+                  backgroundColor: colors["neutral-icon-on-dark"],
                 }}
               >
                 <OWIcon
                   type="images"
                   source={{
-                    uri: chainInfo?.stakeCurrency?.coinImageUrl
+                    uri: chainInfo?.stakeCurrency?.coinImageUrl,
                   }}
                   size={20}
                 />
               </View>
             )}
-            <Text style={{ marginHorizontal: 6 }} color={colors["neutral-text-title"]} size={16} weight="600">
-              {appInitStore.getInitApp.isAllNetworks ? "All networks" : chainStore.current.chainName}
+            <Text
+              style={{ marginHorizontal: 6 }}
+              color={colors["neutral-text-title"]}
+              size={16}
+              weight="600"
+            >
+              {appInitStore.getInitApp.isAllNetworks
+                ? "All networks"
+                : chainStore.current.chainName}
             </Text>
             <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
           </View>
@@ -80,7 +96,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
           fontWeight: "700",
           lineHeight: 24,
           color: colors["neutral-text-title"],
-          textTransform: "uppercase"
+          textTransform: "uppercase",
         }}
       >
         {title}
@@ -92,11 +108,11 @@ export default OWHeaderTitle;
 
 const styles = StyleSheet.create({
   textHeader: {
-    marginHorizontal: 8
+    marginHorizontal: 8,
   },
   containerTitle: {
     // flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });

@@ -20,13 +20,20 @@ export const UndelegationsCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const unbondings = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-    account.bech32Address
-  ).unbondingBalances;
+  const unbondings =
+    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+      account.bech32Address
+    ).unbondingBalances;
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding);
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded);
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Bonded
+  );
+  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Unbonding
+  );
+  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+    BondStatus.Unbonded
+  );
   const stakingParams = queries.cosmos.queryStakingParams;
 
   const intl = useIntl();
@@ -44,7 +51,7 @@ export const UndelegationsCard: FunctionComponent<{
           borderRadius: 24,
           paddingHorizontal: 12,
           paddingVertical: 8,
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         <OWText weight="500" color={colors["neutral-text-action-on-light-bg"]}>
@@ -52,9 +59,16 @@ export const UndelegationsCard: FunctionComponent<{
         </OWText>
 
         {collapse ? (
-          <OWIcon name="chevron_right" color={colors["neutral-text-action-on-light-bg"]} size={16} />
+          <OWIcon
+            name="chevron_right"
+            color={colors["neutral-text-action-on-light-bg"]}
+            size={16}
+          />
         ) : (
-          <DownArrowIcon height={12} color={colors["neutral-text-action-on-light-bg"]} />
+          <DownArrowIcon
+            height={12}
+            color={colors["neutral-text-action-on-light-bg"]}
+          />
         )}
       </TouchableOpacity>
 
@@ -64,10 +78,13 @@ export const UndelegationsCard: FunctionComponent<{
             const validator = bondedValidators.validators
               .concat(unbondingValidators.validators)
               .concat(unbondedValidators.validators)
-              .find(val => val.operator_address === unbonding.validatorAddress);
+              .find(
+                (val) => val.operator_address === unbonding.validatorAddress
+              );
 
             const entries = unbonding.entries;
-            const isLastUnbondingIndex = unbondingIndex === unbondings.length - 1;
+            const isLastUnbondingIndex =
+              unbondingIndex === unbondings.length - 1;
 
             return (
               <View
@@ -79,12 +96,16 @@ export const UndelegationsCard: FunctionComponent<{
                   borderRadius: 16,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
-                  alignItems: "center"
+                  alignItems: "center",
                 }}
                 key={unbondingIndex}
               >
                 <View key={unbonding.validatorAddress}>
-                  <OWText style={{ marginBottom: 8 }} weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+                  <OWText
+                    style={{ marginBottom: 8 }}
+                    weight="500"
+                    color={colors["neutral-text-action-on-light-bg"]}
+                  >
                     Unstaking: {validator?.description.moniker ?? "..."}
                   </OWText>
 
@@ -92,15 +113,21 @@ export const UndelegationsCard: FunctionComponent<{
                     const remainingText = (() => {
                       const current = new Date().getTime();
 
-                      const relativeEndTime = (new Date(entry.completionTime).getTime() - current) / 1000;
-                      const relativeEndTimeDays = Math.floor(relativeEndTime / (3600 * 24));
-                      const relativeEndTimeHours = Math.ceil(relativeEndTime / 3600);
+                      const relativeEndTime =
+                        (new Date(entry.completionTime).getTime() - current) /
+                        1000;
+                      const relativeEndTimeDays = Math.floor(
+                        relativeEndTime / (3600 * 24)
+                      );
+                      const relativeEndTimeHours = Math.ceil(
+                        relativeEndTime / 3600
+                      );
 
                       if (relativeEndTimeDays) {
                         return (
                           intl
                             .formatRelativeTime(relativeEndTimeDays, "days", {
-                              numeric: "always"
+                              numeric: "always",
                             })
                             .replace("in ", "") + " left"
                         );
@@ -108,7 +135,7 @@ export const UndelegationsCard: FunctionComponent<{
                         return (
                           intl
                             .formatRelativeTime(relativeEndTimeHours, "hours", {
-                              numeric: "always"
+                              numeric: "always",
                             })
                             .replace("in ", "") + " left"
                         );
@@ -119,8 +146,12 @@ export const UndelegationsCard: FunctionComponent<{
                     const progress = (() => {
                       const currentTime = new Date().getTime();
                       const endTime = new Date(entry.completionTime).getTime();
-                      const remainingTime = Math.floor((endTime - currentTime) / 1000);
-                      const unbondingTime = stakingParams ? stakingParams.unbondingTimeSec : 3600 * 24 * 21;
+                      const remainingTime = Math.floor(
+                        (endTime - currentTime) / 1000
+                      );
+                      const unbondingTime = stakingParams
+                        ? stakingParams.unbondingTimeSec
+                        : 3600 * 24 * 21;
 
                       return 100 - (remainingTime / unbondingTime) * 100;
                     })();
@@ -129,7 +160,7 @@ export const UndelegationsCard: FunctionComponent<{
                       <View
                         style={{
                           marginBottom: 8,
-                          width: metrics.screenWidth / 1.3
+                          width: metrics.screenWidth / 1.3,
                         }}
                         key={i.toString()}
                       >
@@ -137,13 +168,23 @@ export const UndelegationsCard: FunctionComponent<{
                           style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            marginBottom: 8
+                            marginBottom: 8,
                           }}
                         >
-                          <OWText weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-                            {entry.balance.shrink(true).trim(true).maxDecimals(6).toString()}
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
+                            {entry.balance
+                              .shrink(true)
+                              .trim(true)
+                              .maxDecimals(6)
+                              .toString()}
                           </OWText>
-                          <OWText weight="500" color={colors["neutral-text-action-on-light-bg"]}>
+                          <OWText
+                            weight="500"
+                            color={colors["neutral-text-action-on-light-bg"]}
+                          >
                             {remainingText}
                           </OWText>
                         </View>
@@ -158,8 +199,8 @@ export const UndelegationsCard: FunctionComponent<{
                   <View
                     style={[
                       {
-                        backgroundColor: colors["border-input-login"]
-                      }
+                        backgroundColor: colors["border-input-login"],
+                      },
                     ]}
                   />
                 )}
