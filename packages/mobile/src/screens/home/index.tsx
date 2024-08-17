@@ -41,7 +41,10 @@ import { AccountBoxAll } from "./components/account-box-new";
 
 import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import { useMultipleAssets } from "@src/screens/home/hooks/use-multiple-assets";
+import {
+  initPrice,
+  useMultipleAssets,
+} from "@src/screens/home/hooks/use-multiple-assets";
 import {
   CoinPretty,
   Dec,
@@ -370,7 +373,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   return () => {};
   // }, [totalPriceBalance, accountOrai.bech32Address, priceStore.defaultVsCurrency]);
   let pendingUpdates: ViewToken[] = [];
-
+  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   // Debounced function to apply pending updates
   const applyPendingUpdates = useCallback(
     debounce(() => {
@@ -378,8 +381,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         setDataBalances((prev) => [...prev, ...pendingUpdates]);
         pendingUpdates = [];
       }
-    }, 75),
-    []
+    }, 50),
+    [accountOrai.bech32Address]
   ); // Adjust the delay as needed
 
   // Function to add new balances to the pending updates
@@ -387,7 +390,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     pendingUpdates = [...pendingUpdates, ...newBalances];
     applyPendingUpdates();
   };
-  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
+
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of dataBalances) {
@@ -404,43 +407,48 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     setDataBalances([]);
     pendingUpdates = [];
-    setTimeout(() => {
-      const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
-      for (const { address, chainInfo } of allChain) {
-        if (!address) continue;
-
-        switch (chainInfo.networkType) {
-          case "cosmos":
-            if (chainInfo.chainId === ChainIdEnum.Oraichain) {
-              getBalanceCW20Oraichain(address, chainInfo);
-            }
-            getBalanceNativeCosmos(address, chainInfo);
-            break;
-          case "evm":
-            getBalanceNativeEvm(address, chainInfo);
-            if (
-              chainInfo.chainId === ChainIdEnum.BNBChain ||
-              chainInfo.chainId === ChainIdEnum.Ethereum
-            ) {
-              getBalancesErc20(address, chainInfo);
-            } else if (chainInfo.chainId === ChainIdEnum.TRON) {
-              getBalancessTrc20(address, chainInfo);
-            }
-            break;
-          case "bitcoin":
-            const legacyAddress = accountStore.getAccount(
-              ChainIdEnum.Bitcoin
-            ).legacyAddress;
-            getBalanceBtc(address, chainInfo);
-            if (!legacyAddress) break;
-            getBalanceBtc(legacyAddress, chainInfo);
-            break;
-          default:
-            break;
-        }
-        console.log(address, "chain");
+    // setTimeout(() => {
+    // const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
+    for (const chainInfo of chainStore.chainInfosInUI.filter(
+      (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
+    )) {
+      const address = accountStore
+        .getAccount(chainInfo.chainId)
+        .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+      if (!address) {
+        console.log(address);
+        continue;
       }
-    }, 500);
+
+      switch (chainInfo.networkType) {
+        case "cosmos":
+          if (chainInfo.chainId === ChainIdEnum.Oraichain) {
+            getBalanceCW20Oraichain(address, chainInfo);
+          }
+          getBalanceNativeCosmos(address, chainInfo);
+          break;
+        case "evm":
+          getBalanceNativeEvm(address, chainInfo);
+          if (
+            chainInfo.chainId === ChainIdEnum.BNBChain ||
+            chainInfo.chainId === ChainIdEnum.Ethereum
+          ) {
+            getBalancesErc20(address, chainInfo);
+          } else if (chainInfo.chainId === ChainIdEnum.TRON) {
+            getBalancessTrc20(address, chainInfo);
+          }
+          break;
+        case "bitcoin":
+          const legacyAddress = accountStore.getAccount(
+            ChainIdEnum.Bitcoin
+          ).legacyAddress;
+          getBalanceBtc(address, chainInfo);
+          if (!legacyAddress) break;
+          getBalanceBtc(legacyAddress, chainInfo);
+          break;
+      }
+    }
+    // }, 500);
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
@@ -546,7 +554,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         })
         .filter(Boolean);
       updateDataBalances(newDataBalances);
-
+      console.log(newDataBalances, "newDataBalances");
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
       }
@@ -644,9 +652,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           contractAddress: tokenInfo.contractAddress,
         }));
 
-      if (newCurrencies.length === 0) return;
+      if (newCurrencies.length > 0) {
+        chainInfo.addCurrencies(...newCurrencies);
+      }
       // console.log(newCurrencies, "newCurrencies");
-      chainInfo.addCurrencies(...newCurrencies);
 
       const newDataBalances = chainInfo.currencies
         .map((item) => {
@@ -833,7 +842,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <AccountBoxAll
         isLoading={false}
         totalBalanceByChain={"0"}
-        totalPriceBalance={availableTotalPrice?.toString()}
+        totalPriceBalance={(availableTotalPrice || initPrice)?.toString()}
       />
       {/* <EarningCardNew /> */}
       <MainTabHome dataTokens={dataBalances} />
