@@ -174,8 +174,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      baseURL: "https://api.coingecko.com/api/v3",
-      // baseURL: MarketAPIEndPoint,
+      // baseURL: "https://api.coingecko.com/api/v3",
+      baseURL: MarketAPIEndPoint,
       adapter: "fetch",
     });
 
