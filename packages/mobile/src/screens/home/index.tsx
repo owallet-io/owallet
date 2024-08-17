@@ -384,12 +384,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
           // Add existing balances to the map
           prev.forEach((item) => {
-            balanceMap.set(item.token.currency.coinMinimalDenom, item);
+            balanceMap.set(
+              `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+              item
+            );
           });
 
           // Add new balances to the map (overwriting duplicates)
           pendingUpdates.forEach((item) => {
-            balanceMap.set(item.token.currency.coinMinimalDenom, item);
+            balanceMap.set(
+              `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+              item
+            );
           });
 
           // Convert the map values back to an array for the state
@@ -635,23 +641,28 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   ) => {
     try {
       const network = MapChainIdToNetwork[chainInfo.chainId];
+      const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
       const res = await API.getAllBalancesEvm({ address, network });
-
-      const balances = res?.result || [];
+      console.log(res, "res");
+      //Filter err res weth from tatumjs// NOT support weth on Ethereum
+      const balances =
+        res?.result?.filter(
+          (item) => item.tokenAddress?.toLowerCase() !== contractWeth
+        ) || [];
       if (balances.length === 0) return;
 
       const tokenAddresses = balances
         .map(({ tokenAddress }) => `${network}%2B${tokenAddress}`)
         .join(",");
       const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
-
+      console.log(tokenInfos, "tokenInfos");
       const existingCurrencies = new Set(
         chainInfo.currencies.map((currency) =>
           currency.coinDenom?.toUpperCase()
         )
       );
-      const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
       const newCurrencies = tokenInfos
         .filter(
           (tokenInfo, index) =>
@@ -667,13 +678,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           coinDecimals: tokenInfo.decimal,
           coinMinimalDenom: `erc20:${tokenInfo.contractAddress}:${tokenInfo.name}`,
           contractAddress: tokenInfo.contractAddress,
-        }))
-        //Filter err res weth from tatumjs// NOT support weth on Ethereum
-        .filter(
-          (tokenInfo) =>
-            tokenInfo.contractAddress !== contractWeth &&
-            chainInfo.chainId === ChainIdEnum.Ethereum
-        );
+        }));
 
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
