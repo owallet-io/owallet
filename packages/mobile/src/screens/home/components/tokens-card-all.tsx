@@ -51,9 +51,9 @@ export const TokensCardAll: FunctionComponent<{
   const { colors } = useTheme();
   const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
     ? dataTokens.filter((item, index) => {
-        const balance = new CoinPretty(item.token.currency, item.token.amount);
-        const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
+        // const balance = new CoinPretty(item.token.currency, item.token.amount);
+        // const price = priceStore.calculatePrice(item.price, "usd");
+        return item?.price?.toDec()?.gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
 

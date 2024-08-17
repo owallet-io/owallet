@@ -378,7 +378,24 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const applyPendingUpdates = useCallback(
     debounce(() => {
       if (pendingUpdates.length > 0) {
-        setDataBalances((prev) => [...prev, ...pendingUpdates]);
+        setDataBalances((prev) => {
+          // Create a Map to hold unique balances by coinMinimalDenom
+          const balanceMap = new Map<string, ViewToken>();
+
+          // Add existing balances to the map
+          prev.forEach((item) => {
+            balanceMap.set(item.token.currency.coinMinimalDenom, item);
+          });
+
+          // Add new balances to the map (overwriting duplicates)
+          pendingUpdates.forEach((item) => {
+            balanceMap.set(item.token.currency.coinMinimalDenom, item);
+          });
+
+          // Convert the map values back to an array for the state
+          return Array.from(balanceMap.values());
+        });
+        // setDataBalances((prev) => [...prev, ...pendingUpdates]);
         pendingUpdates = [];
       }
     }, 50),
@@ -554,7 +571,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         })
         .filter(Boolean);
       updateDataBalances(newDataBalances);
-      console.log(newDataBalances, "newDataBalances");
+
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
       }
@@ -634,7 +651,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           currency.coinDenom?.toUpperCase()
         )
       );
-
+      const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
       const newCurrencies = tokenInfos
         .filter(
           (tokenInfo, index) =>
@@ -650,7 +667,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           coinDecimals: tokenInfo.decimal,
           coinMinimalDenom: `erc20:${tokenInfo.contractAddress}:${tokenInfo.name}`,
           contractAddress: tokenInfo.contractAddress,
-        }));
+        }))
+        //Filter err res weth from tatumjs// NOT support weth on Ethereum
+        .filter(
+          (tokenInfo) =>
+            tokenInfo.contractAddress !== contractWeth &&
+            chainInfo.chainId === ChainIdEnum.Ethereum
+        );
 
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
@@ -821,6 +844,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ]);
     }
   };
+
+  const sortByPrice = (a: ViewToken, b: ViewToken) => {
+    const aPrice = priceStore.calculatePrice(a.token)?.toDec() ?? new Dec(0);
+    const bPrice = priceStore.calculatePrice(b.token)?.toDec() ?? new Dec(0);
+
+    if (aPrice.equals(bPrice)) {
+      return 0;
+    } else if (aPrice.gt(bPrice)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+  const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -845,7 +882,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         totalPriceBalance={(availableTotalPrice || initPrice)?.toString()}
       />
       {/* <EarningCardNew /> */}
-      <MainTabHome dataTokens={dataBalances} />
+      <MainTabHome dataTokens={allBalancesSorted} />
     </PageWithScrollViewInBottomTabView>
   );
 });
