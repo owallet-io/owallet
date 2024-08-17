@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
@@ -33,6 +33,7 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { network } from "@oraichain/oraidex-common";
 import Web3 from "web3";
+import { debounce } from "lodash";
 export const HomePage = observer(() => {
   // const [refreshing, setRefreshing] = React.useState(false);
   const {
@@ -51,6 +52,39 @@ export const HomePage = observer(() => {
   const address = accountStore
     .getAccount(chainStore.current.chainId)
     .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  // const debouncedSetDataBalances = useCallback(
+  //   debounce((updateFunction) => {
+  //     setDataBalances((prev) => updateFunction(prev));
+  //     const updateDataBalances = (newBalances: ViewToken[]) => {
+  //       pendingUpdates = [...pendingUpdates, ...newBalances];
+  //       applyPendingUpdates();
+  //     };
+
+  //   }, 300), // 300ms debounce delay
+  //   []
+  // );
+  // Initialize an array to hold pending updates
+  let pendingUpdates: ViewToken[] = [];
+
+  // Debounced function to apply pending updates
+  const applyPendingUpdates = useCallback(
+    debounce(() => {
+      if (pendingUpdates.length > 0) {
+        setDataBalances((prev) => [...prev, ...pendingUpdates]);
+        pendingUpdates = [];
+      }
+    }, 75),
+    []
+  ); // Adjust the delay as needed
+
+  // Function to add new balances to the pending updates
+  const updateDataBalances = (newBalances: ViewToken[]) => {
+    pendingUpdates = [...pendingUpdates, ...newBalances];
+    applyPendingUpdates();
+  };
+  // const updateDataBalances = (newBalances) => {
+  //   debouncedSetDataBalances((prev) => [...prev, ...newBalances]);
+  // };
   // const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } = useMultipleAssets(
   //   accountStore,
   //   priceStore,
@@ -116,8 +150,6 @@ export const HomePage = observer(() => {
               getBalancesErc20(address, chainInfo);
             } else if (chainInfo.chainId === ChainIdEnum.TRON) {
               getBalancessTrc20(address, chainInfo);
-            } else if (chainInfo.chainId === ChainIdEnum.Oasis) {
-              getBalanceOasis(address, chainInfo);
             }
             break;
           case "bitcoin":
@@ -150,8 +182,7 @@ export const HomePage = observer(() => {
       // pushTokenQueue(chainInfo.stakeCurrency, totalBtc, chainInfo, type);
       if (totalBtc) {
         const token = new CoinPretty(chainInfo.stakeCurrency, totalBtc);
-        setDataBalances((prev) => [
-          ...prev,
+        updateDataBalances([
           {
             token,
             price: priceStore.calculatePrice(token),
@@ -199,8 +230,7 @@ export const HomePage = observer(() => {
         allTokensAddress.push(str);
       }
     });
-
-    setDataBalances((prev) => [...prev, ...newDataBalances]);
+    updateDataBalances(newDataBalances);
 
     if (allTokensAddress.length > 0) {
       const tokenInfos = await API.getMultipleTokenInfo({
@@ -240,8 +270,7 @@ export const HomePage = observer(() => {
           return null;
         })
         .filter(Boolean);
-
-      setDataBalances((prev) => [...prev, ...newDataBalances]);
+      updateDataBalances(newDataBalances);
 
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
@@ -295,8 +324,7 @@ export const HomePage = observer(() => {
         },
         []
       );
-
-      setDataBalances((prev) => [...prev, ...newDataBalances]);
+      updateDataBalances(newDataBalances);
     } catch (error) {
       console.error("Error fetching CW20 balance:", error);
     }
@@ -373,7 +401,7 @@ export const HomePage = observer(() => {
         .filter((balance) => balance !== undefined);
 
       if (newDataBalances.length > 0) {
-        setDataBalances((prev) => [...prev, ...newDataBalances]);
+        updateDataBalances(newDataBalances);
       }
     } catch (error) {
       console.error("Error fetching ERC-20 balances:", error);
@@ -383,19 +411,28 @@ export const HomePage = observer(() => {
     address: string,
     chainInfo: ChainInfoInner<ChainInfoWithEmbed>
   ) => {
-    const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
-    const ethBalance = await web3.eth.getBalance(address);
-    const token = new CoinPretty(chainInfo.stakeCurrency, ethBalance);
-    setDataBalances((prev) => [
-      ...prev,
-      {
-        token,
-        price: priceStore.calculatePrice(token),
-        chainInfo,
-        isFetching: false,
-        error: null,
-      },
-    ]);
+    try {
+      if (chainInfo.chainId === ChainIdEnum.Oasis) {
+        getBalanceOasis(address, chainInfo);
+        return;
+      } else if (chainInfo.chainId === ChainIdEnum.KawaiiEvm) {
+        return;
+      }
+      const web3 = new Web3(getRpcByChainId(chainInfo, chainInfo.chainId));
+      const ethBalance = await web3.eth.getBalance(address);
+      const token = new CoinPretty(chainInfo.stakeCurrency, ethBalance);
+      updateDataBalances([
+        {
+          token,
+          price: priceStore.calculatePrice(token),
+          chainInfo,
+          isFetching: false,
+          error: null,
+        },
+      ]);
+    } catch (error) {
+      console.log(error, chainInfo.chainName, "error native evm");
+    }
   };
   const getBalancessTrc20 = async (
     address: string,
@@ -470,7 +507,7 @@ export const HomePage = observer(() => {
         .filter((balance) => balance !== undefined);
 
       if (newDataBalances.length > 0) {
-        setDataBalances((prev) => [...prev, ...newDataBalances]);
+        updateDataBalances(newDataBalances);
       }
     } catch (e) {
       console.log(e, "err get Trc20 balances");
@@ -489,8 +526,7 @@ export const HomePage = observer(() => {
         chainInfo.stakeCurrency,
         grpcBalance.available
       );
-      setDataBalances((prev) => [
-        ...prev,
+      updateDataBalances([
         {
           token,
           price: priceStore.calculatePrice(token),
