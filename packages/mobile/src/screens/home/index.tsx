@@ -863,6 +863,45 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
+  const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
+    let result: PricePretty | undefined;
+    for (const bal of dataBalances) {
+      if (bal.price) {
+        const price = priceStore.calculatePrice(bal.token, "usd");
+        if (price) {
+          if (!result) {
+            result = price;
+          } else {
+            result = result.add(price);
+          }
+        }
+      }
+    }
+    return result;
+  }, [dataBalances, priceStore]);
+
+  useEffect(() => {
+    if (!availableTotalPriceEmbedOnlyUSD || !accountOrai.bech32Address) return;
+    const hashedAddress = new sha256()
+      .update(accountOrai.bech32Address)
+      .digest("hex");
+
+    const amount = new IntPretty(availableTotalPriceEmbedOnlyUSD || "0")
+      .maxDecimals(2)
+      .shrink(true)
+      .trim(true)
+      .locale(false)
+      .inequalitySymbol(true);
+    const logEvent = {
+      userId: hashedAddress,
+      totalPrice: amount?.toString() || "0",
+      currency: "usd",
+    };
+    if (mixpanel) {
+      mixpanel.track("OWallet - Assets Managements", logEvent);
+    }
+    return () => {};
+  }, [accountOrai.bech32Address, availableTotalPriceEmbedOnlyUSD]);
   // const legacyAddress = accountStore.getAccount(ChainIdEnum.Bitcoin).legacyAddress;
   // useEffect(() => {
   //   fetchDataTest(legacyAddress);
