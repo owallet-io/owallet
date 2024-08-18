@@ -902,6 +902,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return () => {};
   }, [accountOrai.bech32Address, availableTotalPriceEmbedOnlyUSD]);
+  const availableTotalPriceByChain = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = dataBalances.filter(
+      (token) => token.chainInfo.chainId === chainStore.current.chainId
+    );
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [dataBalances, chainStore.current.chainId]);
+  const balancesByChain = allBalancesSorted.filter(
+    (item) => item.chainInfo.chainId === chainStore.current.chainId
+  );
   // const legacyAddress = accountStore.getAccount(ChainIdEnum.Bitcoin).legacyAddress;
   // useEffect(() => {
   //   fetchDataTest(legacyAddress);
@@ -940,11 +959,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     >
       <AccountBoxAll
         isLoading={false}
-        totalBalanceByChain={"0"}
+        totalBalanceByChain={(
+          availableTotalPriceByChain || initPrice
+        )?.toString()}
         totalPriceBalance={(availableTotalPrice || initPrice)?.toString()}
       />
-      {/* <EarningCardNew /> */}
-      <MainTabHome dataTokens={allBalancesSorted} />
+      <EarningCardNew />
+      <MainTabHome
+        dataTokens={
+          appInitStore.getInitApp.isAllNetworks
+            ? allBalancesSorted
+            : balancesByChain
+        }
+      />
     </PageWithScrollViewInBottomTabView>
   );
 });
