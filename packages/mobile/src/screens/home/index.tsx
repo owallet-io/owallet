@@ -61,7 +61,7 @@ import {
 } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { debounce, flatten } from "lodash";
-import { showToast } from "@src/utils/helper";
+import { fetchWithCache, showToast } from "@src/utils/helper";
 
 import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
@@ -72,6 +72,7 @@ import Web3 from "web3";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
+
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -375,38 +376,35 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   let pendingUpdates: ViewToken[] = [];
   const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   // Debounced function to apply pending updates
-  const applyPendingUpdates = useCallback(
-    debounce(() => {
-      if (pendingUpdates.length > 0) {
-        setDataBalances((prev) => {
-          // Create a Map to hold unique balances by coinMinimalDenom
-          const balanceMap = new Map<string, ViewToken>();
+  const applyPendingUpdates = debounce(() => {
+    if (pendingUpdates.length > 0) {
+      setDataBalances((prev) => {
+        // Create a Map to hold unique balances by coinMinimalDenom
+        const balanceMap = new Map<string, ViewToken>();
 
-          // Add existing balances to the map
-          prev.forEach((item) => {
-            balanceMap.set(
-              `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
-              item
-            );
-          });
-
-          // Add new balances to the map (overwriting duplicates)
-          pendingUpdates.forEach((item) => {
-            balanceMap.set(
-              `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
-              item
-            );
-          });
-
-          // Convert the map values back to an array for the state
-          return Array.from(balanceMap.values());
+        // Add existing balances to the map
+        prev.forEach((item) => {
+          balanceMap.set(
+            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+            item
+          );
         });
-        // setDataBalances((prev) => [...prev, ...pendingUpdates]);
-        pendingUpdates = [];
-      }
-    }, 50),
-    [accountOrai.bech32Address]
-  ); // Adjust the delay as needed
+
+        // Add new balances to the map (overwriting duplicates)
+        pendingUpdates.forEach((item) => {
+          balanceMap.set(
+            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+            item
+          );
+        });
+
+        // Convert the map values back to an array for the state
+        return Array.from(balanceMap.values());
+      });
+      // setDataBalances((prev) => [...prev, ...pendingUpdates]);
+      pendingUpdates = [];
+    }
+  }, 50);
 
   // Function to add new balances to the pending updates
   const updateDataBalances = (newBalances: ViewToken[]) => {
@@ -427,11 +425,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return result;
   }, [dataBalances]);
-  useEffect(() => {
+
+  const fetchAllBalances = () => {
     setDataBalances([]);
     pendingUpdates = [];
-    // setTimeout(() => {
-    // const allChain = Array.from(hugeQueriesStore.getAllChainMap.values());
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
     )) {
@@ -465,13 +462,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           const legacyAddress = accountStore.getAccount(
             ChainIdEnum.Bitcoin
           ).legacyAddress;
+          console.log(legacyAddress, "legacyAddress");
           getBalanceBtc(address, chainInfo);
           if (!legacyAddress) break;
           getBalanceBtc(legacyAddress, chainInfo);
           break;
       }
     }
-    // }, 500);
+  };
+  useEffect(() => {
+    fetchAllBalances();
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
@@ -863,6 +863,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
+  // const legacyAddress = accountStore.getAccount(ChainIdEnum.Bitcoin).legacyAddress;
+  // useEffect(() => {
+  //   fetchDataTest(legacyAddress);
+  // }, [legacyAddress]);
+  // // const fetchDataTest = async (legacyAddress) => {
+  // //   try {
+  // //     const start = Date.now();
+  // //     const res = await fetchWithCache(
+  // //       `https://tx-history-backend.oraidex.io/v1/token-info/by-addresses?tokenAddresses=bsc-mainnet%2B0xd5da8318ce7ca005e8f5285db0e750ca9256586e,bsc-mainnet%2B0x55d398326f99059ff775485246999027b3197955,bsc-mainnet%2B0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0,bsc-mainnet%2B0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d,bsc-mainnet%2B0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c,bsc-mainnet%2B0x00d7c7b0326b3f0c7ba225036eec29ff9eda353d,bsc-mainnet%2B0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82,bsc-mainnet%2B0x111111111117dc0aa78b770fa6a738034120c302,bsc-mainnet%2B0xaec945e04baf28b135fa7c640f624f8d90f1c3a6,bsc-mainnet%2B0x3ae45a25f4f73d0157a0c0e3e47f8e7ffa16e99e,bsc-mainnet%2B0x25d887ce7a35172c62febfd67a1856f20faebb00,bsc-mainnet%2B0x6fe3d0f096fc932a905accd1eb1783f6e4cec717,bsc-mainnet%2B0xcd6a51559254030ca30c2fb2cbdf5c492e8caf9c,bsc-mainnet%2B0xe8e8d862589ad17948abdc6eb99779c6ece9cfdd,bsc-mainnet%2B0x6d989357b4ab8684ff5eca0aeeae797b4f10ebf9,bsc-mainnet%2B0x02472aed8bc2f5a92a415f26d7de2bac9da81f82,bsc-mainnet%2B0x7c2dfffb9927f448e64a2d2f0216ad199c5ef128,bsc-mainnet%2B0x5f7a1a4dafd0718caee1184caa4862543f75edb1,bsc-mainnet%2B0x71753d0586ea6b979dfccbb492a45e611e0e0ad6`
+  // //     );
+  // //     console.log(res, "Res Btc");
+  // //     const end = Date.now() - start;
+  // //     console.log(end, "timer taker");
+  // //   } catch (error) {
+  // //     console.error("Failed to load data:", error);
+  // //   } finally {
+  // //   }
+  // // };
+
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -871,9 +890,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           onRefresh={() => {
             setRefreshing(true);
             onRefresh();
-            setTimeout(() => {
-              setRefreshing(false);
-            }, 500);
+            fetchAllBalances();
+            // fetchDataTest(legacyAddress);
           }}
         />
       }
