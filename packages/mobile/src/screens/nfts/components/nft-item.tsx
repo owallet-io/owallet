@@ -25,7 +25,10 @@ export const NftItem = ({ item }: { item: IItemNft }) => {
 
   const styles = styling(colors);
 
-  const balance = new CoinPretty(item.tokenInfo, item?.floorPrice || "0");
+  const balance = new CoinPretty(
+    item?.tokenInfo || unknownToken,
+    item?.floorPrice || "0"
+  );
   const smartNavigation = useSmartNavigation();
   const coinDenom = item?.tokenInfo?.coinDenom || "";
   return (

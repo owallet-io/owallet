@@ -44,16 +44,16 @@ import images from "@src/assets/images";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  dataTokens: ViewRawToken[];
+  dataTokens: ViewToken[];
 }> = observer(({ containerStyle, dataTokens }) => {
   const { priceStore, appInitStore } = useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
   const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
     ? dataTokens.filter((item, index) => {
-        const balance = new CoinPretty(item.token.currency, item.token.amount);
-        const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
+        // const balance = new CoinPretty(item.token.currency, item.token.amount);
+        // const price = priceStore.calculatePrice(item.price, "usd");
+        return item?.price?.toDec()?.gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
 
@@ -188,7 +188,7 @@ export const TokensCardAll: FunctionComponent<{
 });
 
 const TokenItem: FC<{
-  item: ViewRawToken;
+  item: ViewToken;
 }> = observer(({ item }) => {
   const { colors } = useTheme();
   const { priceStore } = useStore();
@@ -238,7 +238,9 @@ const TokenItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: item?.chainInfo?.chainImage || unknownToken.coinImageUrl,
+                uri:
+                  item?.chainInfo.stakeCurrency.coinImageUrl ||
+                  unknownToken.coinImageUrl,
               }}
               size={16}
             />
@@ -263,17 +265,13 @@ const TokenItem: FC<{
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
             </Text>
-            {item.type && (
+            {/* {item.type && (
               <View style={styles.type}>
-                <Text
-                  weight="400"
-                  size={12}
-                  color={colors["neutral-text-body-2"]}
-                >
+                <Text weight="400" size={12} color={colors["neutral-text-body-2"]}>
                   {item.type}
                 </Text>
               </View>
-            )}
+            )} */}
           </View>
         </View>
         <View style={styles.rightBoxItem}>
@@ -285,27 +283,27 @@ const TokenItem: FC<{
                 weight="500"
                 color={colors["neutral-text-heading"]}
               >
-                {item?.token?.currency && item?.token?.amount
+                {/* {item?.token?.currency && item?.token?.amount
                   ? maskedNumber(
-                      new CoinPretty(
-                        item?.token?.currency || unknownToken,
-                        item?.token?.amount || "0"
-                      )
+                      new CoinPretty(item?.token?.currency || unknownToken, item?.token?.amount || "0")
                         .trim(true)
                         .hideDenom(true)
                         ?.toString()
                     )
-                  : "0"}
+                  : "0"} */}
+                {item?.token
+                  .trim(true)
+                  .hideDenom(true)
+                  .maxDecimals(6)
+                  .toString()}
               </Text>
               <Text
                 size={14}
                 style={{ lineHeight: 24 }}
                 color={colors["neutral-text-body"]}
               >
-                {(item.price
-                  ? new PricePretty(fiatCurrency, item.price)
-                  : initPrice
-                )?.toString()}
+                {/* {(item.price ? new PricePretty(fiatCurrency, item.price) : initPrice)?.toString()} */}
+                {(item.price || initPrice)?.toString()}
               </Text>
             </View>
           </View>

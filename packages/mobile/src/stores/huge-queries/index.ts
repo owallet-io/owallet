@@ -179,7 +179,21 @@ export class HugeQueriesStore {
       }
     }
   }
+  filterBalanceTokensByChain = computedFn(
+    (viewTokens: ReadonlyArray<ViewToken>, chainId: string): ViewToken[] => {
+      return viewTokens.filter((viewToken) => {
+        // Hide the unknown ibc tokens.
+        if (
+          "paths" in viewToken.token.currency &&
+          !viewToken.token.currency.originCurrency
+        ) {
+          return false;
+        }
 
+        return viewToken.chainInfo.chainId === chainId;
+      });
+    }
+  );
   @computed
   get allKnownBalances(): ViewToken[] {
     return Array.from(this.allKnownBalancesMap.values());

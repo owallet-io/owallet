@@ -12,7 +12,13 @@ export enum NetworkEnum {
   Evm = "evm",
   Bitcoin = "bitcoin",
 }
-
+export const TALIS_NFT_CONTRACT = {
+  Honorais: "orai1smslhry0hujrdg668nyuvslx2du0pdjhwme5f2sr27zl2gfntf7s5xxaes",
+  LastSamorais:
+    "orai1typah5jrtcu8c3mj8jamxfpa6p7jh8vs9s2c0r7d9uw9quyzrhvs9ws55w",
+  OraiWachines:
+    "orai19kd6unf2caepuerl3y73rj8dfknstyafy7g609l4y0kegvtsclxsqvu0l9",
+};
 export enum OasisNetwork {
   MAINNET = "oasis-mainnet",
   SAPPHIRE = "oasis-sapphire-mainnet",

@@ -18,6 +18,7 @@ import {
 } from "@oraichain/oraidex-common";
 import { ChainIdEnum } from "@owallet/common";
 import { Dec } from "@owallet/unit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
@@ -115,6 +116,130 @@ export function splitAndSortChains(data) {
 
   return { testChains, mainChains };
 }
+// Function to get data with caching based on ETag or Last-Modified
+// export const fetchWithCache = async (url) => {
+//   try {
+//     const cacheKey = `cache_v1_${url}`;
+//     // Check for cached data
+//     const cachedData = await AsyncStorage.getItem(cacheKey);
+//     let headers = {};
+
+//     if (cachedData) {
+//       const { data, etag, lastModified } = JSON.parse(cachedData);
+
+//       // Use ETag or Last-Modified for conditional requests
+//       if (etag) headers["If-None-Match"] = etag;
+//       if (lastModified) headers["If-Modified-Since"] = lastModified;
+
+//       // Perform a conditional request
+//       const response = await fetch(url, { headers });
+//       console.log(response.status, "response.status");
+//       if (response.status === 304) {
+//         // If data has not changed, return cached data
+//         return data;
+//       } else {
+//         // If data has changed, update the cache
+//         const newData = await response.json();
+//         await AsyncStorage.setItem(
+//           cacheKey,
+//           JSON.stringify({
+//             data: newData,
+//             etag: response.headers.get("ETag"),
+//             lastModified: response.headers.get("Last-Modified")
+//           })
+//         );
+//         return newData;
+//       }
+//     } else {
+//       // If no cache exists, fetch data normally
+//       const response = await fetch(url);
+//       const data = await response.json();
+
+//       // Cache the new data with ETag or Last-Modified if available
+//       await AsyncStorage.setItem(
+//         cacheKey,
+//         JSON.stringify({
+//           data,
+//           etag: response.headers.get("ETag"),
+//           lastModified: response.headers.get("Last-Modified")
+//         })
+//       );
+
+//       return data;
+//     }
+//   } catch (error) {
+//     console.error("Failed to fetch or cache data", error);
+//     throw error;
+//   }
+// };
+export const fetchWithCache = async (url, cacheDuration = 36000) => {
+  try {
+    const cacheKey = `cache_v1_${url}`;
+    // Check for cached data
+    const cachedData = await AsyncStorage.getItem(cacheKey);
+    if (cachedData) {
+      const { data, timestamp } = JSON.parse(cachedData);
+
+      // Check if cached data is still valid
+      if (Date.now() - timestamp < cacheDuration * 1000) {
+        return data;
+      }
+    }
+
+    // If no valid cache, fetch new data from the API
+    const response = await fetch(url);
+    const data = await response.json();
+
+    // Cache the new data
+    await AsyncStorage.setItem(
+      cacheKey,
+      JSON.stringify({ data, timestamp: Date.now() })
+    );
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch or cache data", error);
+    throw error;
+  }
+};
+
+// export const fetchWithCache = async (url) => {
+//   const cacheKey = `cache_${url}`;
+//   const etagKey = `etag_${url}`;
+
+//   // Retrieve cached data and ETag from localStorage
+//   const cachedResponse = await AsyncStorage.getItem(cacheKey);
+//   const cachedEtag = await AsyncStorage.getItem(etagKey);
+
+//   // Set up the headers for a conditional request
+//   const headers = new Headers();
+//   if (cachedEtag) {
+//     headers.append("If-None-Match", cachedEtag);
+//   }
+
+//   // Make the fetch request
+//   const response = await fetch(url, { headers });
+
+//   // Check if the server responds with 304 (Not Modified)
+//   if (response.status === 304 && cachedResponse) {
+//     // Return the cached response if data has not changed
+//     return JSON.parse(cachedResponse);
+//   } else if (response.ok) {
+//     // Parse and cache the new data if it has changed
+//     const data = await response.json();
+
+//     // Cache the new response and ETag
+//     await AsyncStorage.setItem(cacheKey, JSON.stringify(data));
+//     const newEtag = response.headers.get("ETag");
+//     if (newEtag) {
+//       await AsyncStorage.setItem(etagKey, newEtag);
+//     }
+
+//     return data;
+//   } else {
+//     throw new Error("Failed to fetch data");
+//   }
+// };
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {

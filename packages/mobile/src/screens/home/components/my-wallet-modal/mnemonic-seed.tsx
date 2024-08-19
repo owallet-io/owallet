@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, View } from "react-native";
 import { Text } from "@src/components/text";
 import { RectButton } from "../../../../components/rect-button";
@@ -11,13 +11,18 @@ import { useStyleMyWallet } from "./styles";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
-import { PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ViewToken } from "@src/stores/huge-queries";
+import { initPrice } from "../../hooks/use-multiple-assets";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
     keyRingStore,
     analyticsStore,
+    chainStore,
     modalStore,
     universalSwapStore,
     appInitStore,
@@ -25,7 +30,7 @@ const MnemonicSeed = () => {
     accountStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
+  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
@@ -51,10 +56,58 @@ const MnemonicSeed = () => {
     if (index >= 0) {
       universalSwapStore.setLoaded(false);
       await keyRingStore.changeKeyRing(index);
+      await waitAccountInit(chainStore, accountStore, keyRingStore);
     }
   }, []);
   const { totalPriceBalance } = appInitStore.getMultipleAssets;
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const loadCachedData = async (cacheKey: string) => {
+    // InteractionManager.runAfterInteractions(async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `cachedDataBalances-${cacheKey}`
+      );
+      if (cachedData) {
+        const dataBalances: any[] = JSON.parse(cachedData);
+        const balances = dataBalances.map((item) => {
+          const token = new CoinPretty(
+            item.token.currency,
+            new Dec(item.token.balance)
+          );
+          return {
+            chainInfo: chainStore.getChain(item.chainId),
+            isFetching: false,
+            error: null,
+            token,
+            price: priceStore.calculatePrice(token),
+          };
+        });
+        setDataBalances(balances);
+      }
+    } catch (e) {
+      console.error("Failed to load data from cache", e);
+    }
+    // });
+  };
+  useEffect(() => {
+    loadCachedData(accountOrai.bech32Address);
+
+    return () => {};
+  }, [accountOrai.bech32Address]);
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = dataBalances;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [dataBalances]);
   const renderItem = ({ item }) => {
     return (
       <>
@@ -67,9 +120,9 @@ const MnemonicSeed = () => {
           }}
           onPress={async () => {
             setIsLoading(true);
-            await modalStore.close();
             analyticsStore.logEvent("Account changed");
             await selectKeyStore(item);
+            await modalStore.close();
             universalSwapStore.clearAmounts();
             setIsLoading(false);
           }}
@@ -99,7 +152,7 @@ const MnemonicSeed = () => {
               </Text>
               {item.selected ? (
                 <Text color={colors["neutral-text-title"]} numberOfLines={1}>
-                  {new PricePretty(fiatCurrency, totalPriceBalance)?.toString()}
+                  {(availableTotalPrice || initPrice)?.toString()}
                 </Text>
               ) : null}
             </View>

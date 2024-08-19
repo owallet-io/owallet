@@ -1,5 +1,11 @@
 import { OwnedTokens } from "./../../../graphql/queries/OwnerTokens";
-import { ChainIdEnum, unknownToken } from "@owallet/common";
+import {
+  ChainIdEnum,
+  convertIpfsToHttp,
+  fetchRetry,
+  TALIS_NFT_CONTRACT,
+  unknownToken,
+} from "@owallet/common";
 import { IItemNft } from "../types/nft.types";
 import { useQuery } from "@apollo/client";
 import { useQuery as useFetchQuery } from "@tanstack/react-query";
@@ -8,6 +14,43 @@ import { urlAiRight } from "@src/common/constants";
 import { ChainInfo } from "@owallet/types";
 import { AccountStore } from "@owallet/stores";
 import { ChainStore } from "@src/stores/chain";
+// import { useClient } from "@owallet/hooks";
+import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
+import {
+  Cw721BaseQueryClient,
+  MulticallQueryClient,
+} from "@oraichain/common-contracts-sdk";
+import { useEffect, useState } from "react";
+export enum TALIS_COLLECTIONS {
+  HONORAIS = "HONORAIS",
+  LAST_SAMORAIS = "LAST_SAMORAIS",
+  ORAI_WACHINES = "ORAI_WACHINES",
+}
+export enum ECOSYSTEM_NFT_CHAIN {
+  TALIS = "TALIS",
+  AIRIGHT = "AIRIGHT",
+  STARGAZE = "STARGAZE",
+}
+export const LIMIT_TALIS_CW721 = 1000;
+export interface ITalisCW721 {
+  title: string;
+  description: string;
+  background: string;
+  accessories: string;
+  weapon: string;
+  body: string;
+  clothes: string;
+  energy_core: string;
+  mouth: string;
+  eyes: string;
+  head: string;
+  str: string;
+  dex: string;
+  int: string;
+  luck: string;
+  media: string;
+  tags: any[];
+}
 interface Nfts {
   chainInfo: ChainInfo;
   data: IItemNft[];
@@ -24,6 +67,7 @@ export const useNfts = (
 ): Nfts[] => {
   const chainInfoOrai = chainStore.getChain(ChainIdEnum.Oraichain);
   const chainInfoStargaze = chainStore.getChain(ChainIdEnum.Stargaze);
+
   const handleNftsForOraichain = (): DataHandle => {
     const { currencies } = chainInfoOrai;
     const account = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -60,6 +104,66 @@ export const useNfts = (
     };
   };
 
+  const handleNftsForTalis = (contractAddress): DataHandle => {
+    const account = accountStore.getAccount(ChainIdEnum.Oraichain);
+    const address = account.bech32Address;
+
+    const [data, setData] = useState<IItemNft[]>();
+    const [totalNfts, setTotalNfts] = useState<number>(0);
+
+    useEffect(() => {
+      if (!address) return;
+      fetchData();
+      return () => {};
+    }, [address]);
+    const fetchData = async () => {
+      let client = await cosmwasm.CosmWasmClient.connect(chainInfoOrai.rpc);
+      const cw721 = new Cw721BaseQueryClient(client, contractAddress);
+      const nfts = await cw721.tokens({
+        owner: address,
+        limit: 4,
+        startAfter: "0",
+      });
+      const maxNfts = await cw721.tokens({
+        owner: address,
+        limit: LIMIT_TALIS_CW721,
+        startAfter: "0",
+      });
+      //@ts-ignore
+      const total = maxNfts && maxNfts.ids && maxNfts.ids.length;
+      setTotalNfts(total);
+      //@ts-ignore
+      const tokenIds = nfts && nfts.ids;
+      const tokensDecoded = (
+        await Promise.allSettled(
+          tokenIds.map((tokenId) =>
+            cw721.nftInfo({
+              tokenId: tokenId,
+            })
+          )
+        )
+      )
+        .filter((result) => result.status === "fulfilled")
+        .map((result) => fetchRetry(convertIpfsToHttp(result.value.token_uri)));
+      const tokens = (await Promise.allSettled(tokensDecoded))
+        .filter((result) => result.status === "fulfilled")
+        .map((result, index) =>
+          processDataOraiTalisNft(
+            result.value,
+            tokenIds?.[index || 0],
+            contractAddress
+          )
+        );
+      console.log(tokens, "tokens");
+      setData(tokens);
+    };
+
+    return {
+      total: totalNfts || 0,
+      data: data,
+    };
+  };
+
   const handleNftsForStargaze = (): DataHandle => {
     const { chainId, stakeCurrency } = chainInfoStargaze;
     const account = accountStore.getAccount(ChainIdEnum.Stargaze);
@@ -91,30 +195,74 @@ export const useNfts = (
       data: nfts || [],
     };
   };
+
   const nfts = {
-    [ChainIdEnum.Oraichain]: handleNftsForOraichain(),
-    [ChainIdEnum.Stargaze]: handleNftsForStargaze(),
+    [TALIS_COLLECTIONS.HONORAIS]: handleNftsForTalis(
+      TALIS_NFT_CONTRACT.Honorais
+    ),
+    [TALIS_COLLECTIONS.LAST_SAMORAIS]: handleNftsForTalis(
+      TALIS_NFT_CONTRACT.LastSamorais
+    ),
+    [TALIS_COLLECTIONS.ORAI_WACHINES]: handleNftsForTalis(
+      TALIS_NFT_CONTRACT.OraiWachines
+    ),
+    [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: handleNftsForOraichain(),
+    [ECOSYSTEM_NFT_CHAIN.STARGAZE]: handleNftsForStargaze(),
+  };
+  const mapTitle = {
+    [ECOSYSTEM_NFT_CHAIN.TALIS]: "Talis",
+    [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: "Airight",
+    [ECOSYSTEM_NFT_CHAIN.STARGAZE]: "Stargaze",
+  };
+  const allChainNfts = {
+    [ChainIdEnum.Oraichain]: [
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.TALIS],
+        data: nfts[TALIS_COLLECTIONS.HONORAIS]?.data || [],
+        count: nfts[TALIS_COLLECTIONS.HONORAIS]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
+        contractAddress: TALIS_NFT_CONTRACT.Honorais,
+      },
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.TALIS],
+        data: nfts[TALIS_COLLECTIONS.LAST_SAMORAIS]?.data || [],
+        count: nfts[TALIS_COLLECTIONS.LAST_SAMORAIS]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
+        contractAddress: TALIS_NFT_CONTRACT.LastSamorais,
+      },
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.TALIS],
+        data: nfts[TALIS_COLLECTIONS.ORAI_WACHINES]?.data || [],
+        count: nfts[TALIS_COLLECTIONS.ORAI_WACHINES]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
+        contractAddress: TALIS_NFT_CONTRACT.OraiWachines,
+      },
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.AIRIGHT],
+        data: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.data || [],
+        count: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.AIRIGHT,
+        contractAddress: "",
+      },
+    ],
+    [ChainIdEnum.Stargaze]: [
+      {
+        chainInfo: chainInfoStargaze,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.STARGAZE],
+        data: nfts[ECOSYSTEM_NFT_CHAIN.STARGAZE]?.data || [],
+        count: nfts[ECOSYSTEM_NFT_CHAIN.STARGAZE]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.STARGAZE,
+        contractAddress: "",
+      },
+    ],
   };
   return isAllNetworks
-    ? [
-        {
-          chainInfo: chainInfoOrai,
-          data: nfts[ChainIdEnum.Oraichain]?.data || [],
-          count: nfts[ChainIdEnum.Oraichain]?.total,
-        },
-        {
-          chainInfo: chainInfoStargaze,
-          data: nfts[ChainIdEnum.Stargaze]?.data || [],
-          count: nfts[ChainIdEnum.Stargaze]?.total,
-        },
-      ]
-    : [
-        {
-          chainInfo: chainStore.current,
-          data: nfts[chainStore.current.chainId]?.data || [],
-          count: nfts[chainStore.current.chainId]?.total,
-        },
-      ];
+    ? Object.values(allChainNfts).flat()
+    : allChainNfts[chainStore.current.chainId];
 };
 
 export const processDataStargazeNft = (item, stakeCurrency) => {
@@ -133,9 +281,31 @@ export const processDataStargazeNft = (item, stakeCurrency) => {
     version: null,
     description: item?.description || "",
     explorer: `${url}/${item?.collection?.contractAddress}/${item?.tokenId}`,
+    ecosystem: "stargaze",
   } as IItemNft;
 };
-
+export const processDataOraiTalisNft = (
+  nft: ITalisCW721,
+  tokenId,
+  contractAddress
+) => {
+  if (!nft) return;
+  // const url = "https://airight.io/artwork";
+  return {
+    floorPrice: "0",
+    name: `${nft?.title || ""}`,
+    tokenId: tokenId || "",
+    url: convertIpfsToHttp(nft?.media),
+    tokenInfo: unknownToken,
+    contractAddress: contractAddress,
+    network: ChainIdEnum.Oraichain,
+    creatorImage: convertIpfsToHttp(nft?.media),
+    version: "721",
+    description: nft?.description,
+    explorer: "https://orai.talis.art",
+    ecosystem: "talis",
+  } as IItemNft;
+};
 export const processDataOraiNft = (nft, currencies) => {
   if (!nft) return;
   const tokenInfo = nft?.offer
@@ -157,5 +327,6 @@ export const processDataOraiNft = (nft, currencies) => {
     version: nft?.version === 2 ? "1155" : "721",
     description: nft?.description,
     explorer: `${url}/${nft?.id}`,
+    ecosystem: "airight",
   } as IItemNft;
 };
