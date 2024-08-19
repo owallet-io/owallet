@@ -17,7 +17,7 @@ const Stack = createStackNavigator();
 export const InvestNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
-    // appInitStore.updateVisibleTabBar(route?.name);
+    appInitStore.updateVisibleTabBar(route?.name);
 
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name].title },
