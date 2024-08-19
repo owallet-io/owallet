@@ -1,9 +1,10 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract, showToast } from "../../../utils/helper";
 import { Text } from "@src/components/text";
 import {
+  ChainIdEnum,
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
 } from "@owallet/common";
@@ -19,9 +20,11 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import { PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 
 import { tracking } from "@src/utils/tracking";
+import { ViewToken } from "@src/stores/huge-queries";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
   balance: PricePretty;
@@ -44,11 +47,45 @@ export const NetworkModal: FC<{
     appInitStore,
     universalSwapStore,
     priceStore,
+    hugeQueriesStore,
   } = useStore();
-
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
+  const loadCachedData = async (cacheKey: string) => {
+    // InteractionManager.runAfterInteractions(async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `cachedDataBalances-${cacheKey}`
+      );
+      if (cachedData) {
+        const dataBalances: any[] = JSON.parse(cachedData);
+        const balances = dataBalances.map((item) => {
+          const token = new CoinPretty(
+            item.token.currency,
+            new Dec(item.token.balance)
+          );
+          return {
+            chainInfo: chainStore.getChain(item.chainId),
+            isFetching: false,
+            error: null,
+            token,
+            price: priceStore.calculatePrice(token),
+          };
+        });
+        setDataBalances(balances);
+      }
+    } catch (e) {
+      console.error("Failed to load data from cache", e);
+    }
+    // });
+  };
+  useEffect(() => {
+    loadCachedData(accountOrai.bech32Address);
 
+    return () => {};
+  }, [accountOrai.bech32Address]);
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
     const keyDerivation = (() => {
@@ -131,9 +168,20 @@ export const NetworkModal: FC<{
       });
     }
   }, []);
-  const { totalPriceBalance, dataTokens, dataTokensByChain } =
-    appInitStore.getMultipleAssets;
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = dataBalances;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [dataBalances]);
   const _renderItem = ({ item }: { item }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
@@ -206,13 +254,8 @@ export const NetworkModal: FC<{
               }}
             >
               {!item.chainId
-                ? new PricePretty(fiatCurrency, totalPriceBalance)?.toString()
-                : (
-                    new PricePretty(
-                      fiatCurrency,
-                      dataTokensByChain?.[item.chainId]?.totalBalance
-                    ) || initPrice
-                  ).toString()}
+                ? (availableTotalPrice || initPrice)?.toString()
+                : (item.balance || initPrice)?.toString()}
             </Text>
           </View>
         </View>
@@ -233,16 +276,23 @@ export const NetworkModal: FC<{
     );
   };
 
-  const chainsInfoWithBalance = chainStore.chainInfosInUI.map((item, index) => {
-    return {
-      ...item._chainInfo,
-      balance: new PricePretty(
-        fiatCurrency,
-        appInitStore.getMultipleAssets.dataTokensByChain?.[
-          item.chainId
-        ]?.totalBalance
-      ),
-    };
+  const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
+    let balances = dataBalances.filter(
+      (token) => token.chainInfo.chainId === item.chainId
+    );
+    let result: PricePretty | undefined;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    //@ts-ignore
+    item.balance = result || initPrice;
+    return item;
   });
   const sortChainsByPrice = (chains) => {
     return chains.sort(

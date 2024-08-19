@@ -441,19 +441,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    for (const bal of dataBalances) {
-      const tokenPrice = priceStore.calculatePrice(bal.token);
-      if (!tokenPrice) continue;
-      if (bal.token) {
+    let balances = dataBalances;
+    for (const bal of balances) {
+      if (bal.price) {
         if (!result) {
-          result = tokenPrice;
+          result = bal.price;
         } else {
-          result = result.add(tokenPrice);
+          result = result.add(bal.price);
         }
       }
     }
     return result;
-  }, [dataBalances, priceStore]);
+  }, [dataBalances]);
   const sortByPrice = (a: ViewToken, b: ViewToken) => {
     const aPrice = priceStore.calculatePrice(a.token)?.toDec() ?? new Dec(0);
     const bPrice = priceStore.calculatePrice(b.token)?.toDec() ?? new Dec(0);
