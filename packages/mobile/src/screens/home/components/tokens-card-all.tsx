@@ -303,7 +303,7 @@ const TokenItem: FC<{
                 color={colors["neutral-text-body"]}
               >
                 {/* {(item.price ? new PricePretty(fiatCurrency, item.price) : initPrice)?.toString()} */}
-                {item.price?.toString()}
+                {(item.price || initPrice)?.toString()}
               </Text>
             </View>
           </View>
