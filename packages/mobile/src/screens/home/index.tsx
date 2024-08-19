@@ -848,14 +848,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }
     }
     return result;
-  }, [dataBalances, chainStore.current.chainId]);
-  const balancesByChain = useMemo(
-    () =>
-      dataBalances.filter(
-        (item) => item.chainInfo.chainId === chainStore.current.chainId
-      ),
-    [chainStore.current.chainId]
-  );
+  }, [dataBalances]);
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -882,7 +875,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <EarningCardNew />
       <MainTabHome
         dataTokens={
-          appInitStore.getInitApp.isAllNetworks ? dataBalances : balancesByChain
+          appInitStore.getInitApp.isAllNetworks
+            ? dataBalances
+            : dataBalances.filter(
+                (item) => item.chainInfo.chainId === chainStore.current.chainId
+              )
         }
       />
     </PageWithScrollViewInBottomTabView>
