@@ -377,9 +377,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             item
           );
         });
+        const balancesUpdated = Array.from(balanceMap.values());
 
         // Convert the map values back to an array for the state
-        return Array.from(balanceMap.values());
+        return balancesUpdated;
       });
       // setDataBalances((prev) => [...prev, ...pendingUpdates]);
       pendingUpdates = [];
@@ -395,19 +396,60 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of dataBalances) {
-      if (bal.price) {
+      const tokenPrice = priceStore.calculatePrice(bal.token);
+      if (!tokenPrice) continue;
+      if (bal.token) {
         if (!result) {
-          result = bal.price;
+          result = tokenPrice;
         } else {
-          result = result.add(bal.price);
+          result = result.add(tokenPrice);
         }
       }
     }
     return result;
-  }, [dataBalances]);
+  }, [dataBalances, priceStore]);
+  const sortByPrice = (a: ViewToken, b: ViewToken) => {
+    const aPrice = priceStore.calculatePrice(a.token)?.toDec() ?? new Dec(0);
+    const bPrice = priceStore.calculatePrice(b.token)?.toDec() ?? new Dec(0);
 
-  const fetchAllBalances = () => {
-    setDataBalances([]);
+    if (aPrice.equals(bPrice)) {
+      return 0;
+    } else if (aPrice.gt(bPrice)) {
+      return -1;
+    } else {
+      return 1;
+    }
+  };
+  const fetchAllBalances = async () => {
+    setDataBalances([]); // Clear existing balances
+
+    // Track the number of ongoing operations
+    let pendingOperations = 0;
+
+    // Function to handle balance fetches
+    const handleFetch = async (fetchFunction, address, chainInfo) => {
+      pendingOperations++;
+      try {
+        await fetchFunction(address, chainInfo);
+      } catch (error) {
+        console.error(
+          `Error fetching balance for ${chainInfo.chainId}:`,
+          error
+        );
+      } finally {
+        pendingOperations--;
+        if (pendingOperations === 0 || pendingOperations === 1) {
+          setRefreshing(false);
+          // Update state or perform actions when all fetches are complete
+          console.log("All balance fetches are complete.");
+          // For example: setDataBalances(fetchedBalances);
+
+          setDataBalances((prev) => prev.sort(sortByPrice));
+          // const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
+          // updateDataBalances(allBalancesSorted);
+        }
+      }
+    };
 
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
@@ -423,19 +465,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       switch (chainInfo.networkType) {
         case "cosmos":
           if (chainInfo.chainId === ChainIdEnum.Oraichain) {
-            getBalanceCW20Oraichain(address, chainInfo);
+            handleFetch(getBalanceCW20Oraichain, address, chainInfo);
           }
-          getBalanceNativeCosmos(address, chainInfo);
+          handleFetch(getBalanceNativeCosmos, address, chainInfo);
           break;
         case "evm":
-          getBalanceNativeEvm(address, chainInfo);
+          handleFetch(getBalanceNativeEvm, address, chainInfo);
           if (
             chainInfo.chainId === ChainIdEnum.BNBChain ||
             chainInfo.chainId === ChainIdEnum.Ethereum
           ) {
-            getBalancesErc20(address, chainInfo);
+            handleFetch(getBalancesErc20, address, chainInfo);
           } else if (chainInfo.chainId === ChainIdEnum.TRON) {
-            getBalancessTrc20(address, chainInfo);
+            handleFetch(getBalancessTrc20, address, chainInfo);
           }
           break;
         case "bitcoin":
@@ -443,9 +485,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             ChainIdEnum.Bitcoin
           ).legacyAddress;
           console.log(legacyAddress, "legacyAddress");
-          getBalanceBtc(address, chainInfo);
-          if (!legacyAddress) break;
-          getBalanceBtc(legacyAddress, chainInfo);
+          handleFetch(getBalanceBtc, address, chainInfo);
+          if (legacyAddress) {
+            handleFetch(getBalanceBtc, legacyAddress, chainInfo);
+          }
           break;
       }
     }
@@ -830,19 +873,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
 
-  const sortByPrice = (a: ViewToken, b: ViewToken) => {
-    const aPrice = priceStore.calculatePrice(a.token)?.toDec() ?? new Dec(0);
-    const bPrice = priceStore.calculatePrice(b.token)?.toDec() ?? new Dec(0);
-
-    if (aPrice.equals(bPrice)) {
-      return 0;
-    } else if (aPrice.gt(bPrice)) {
-      return -1;
-    } else {
-      return 1;
-    }
-  };
-  const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of dataBalances) {
@@ -898,27 +928,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return result;
   }, [dataBalances, chainStore.current.chainId]);
-  const balancesByChain = allBalancesSorted.filter(
-    (item) => item.chainInfo.chainId === chainStore.current.chainId
+  const balancesByChain = useMemo(
+    () =>
+      dataBalances.filter(
+        (item) => item.chainInfo.chainId === chainStore.current.chainId
+      ),
+    [chainStore.current.chainId]
   );
-  // const legacyAddress = accountStore.getAccount(ChainIdEnum.Bitcoin).legacyAddress;
-  // useEffect(() => {
-  //   fetchDataTest(legacyAddress);
-  // }, [legacyAddress]);
-  // // const fetchDataTest = async (legacyAddress) => {
-  // //   try {
-  // //     const start = Date.now();
-  // //     const res = await fetchWithCache(
-  // //       `https://tx-history-backend.oraidex.io/v1/token-info/by-addresses?tokenAddresses=bsc-mainnet%2B0xd5da8318ce7ca005e8f5285db0e750ca9256586e,bsc-mainnet%2B0x55d398326f99059ff775485246999027b3197955,bsc-mainnet%2B0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0,bsc-mainnet%2B0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d,bsc-mainnet%2B0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c,bsc-mainnet%2B0x00d7c7b0326b3f0c7ba225036eec29ff9eda353d,bsc-mainnet%2B0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82,bsc-mainnet%2B0x111111111117dc0aa78b770fa6a738034120c302,bsc-mainnet%2B0xaec945e04baf28b135fa7c640f624f8d90f1c3a6,bsc-mainnet%2B0x3ae45a25f4f73d0157a0c0e3e47f8e7ffa16e99e,bsc-mainnet%2B0x25d887ce7a35172c62febfd67a1856f20faebb00,bsc-mainnet%2B0x6fe3d0f096fc932a905accd1eb1783f6e4cec717,bsc-mainnet%2B0xcd6a51559254030ca30c2fb2cbdf5c492e8caf9c,bsc-mainnet%2B0xe8e8d862589ad17948abdc6eb99779c6ece9cfdd,bsc-mainnet%2B0x6d989357b4ab8684ff5eca0aeeae797b4f10ebf9,bsc-mainnet%2B0x02472aed8bc2f5a92a415f26d7de2bac9da81f82,bsc-mainnet%2B0x7c2dfffb9927f448e64a2d2f0216ad199c5ef128,bsc-mainnet%2B0x5f7a1a4dafd0718caee1184caa4862543f75edb1,bsc-mainnet%2B0x71753d0586ea6b979dfccbb492a45e611e0e0ad6`
-  // //     );
-  // //     console.log(res, "Res Btc");
-  // //     const end = Date.now() - start;
-  // //     console.log(end, "timer taker");
-  // //   } catch (error) {
-  // //     console.error("Failed to load data:", error);
-  // //   } finally {
-  // //   }
-  // // };
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -929,7 +945,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             setRefreshing(true);
             onRefresh();
             fetchAllBalances();
-            // fetchDataTest(legacyAddress);
           }}
         />
       }
@@ -947,9 +962,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <EarningCardNew />
       <MainTabHome
         dataTokens={
-          appInitStore.getInitApp.isAllNetworks
-            ? allBalancesSorted
-            : balancesByChain
+          appInitStore.getInitApp.isAllNetworks ? dataBalances : balancesByChain
         }
       />
     </PageWithScrollViewInBottomTabView>
