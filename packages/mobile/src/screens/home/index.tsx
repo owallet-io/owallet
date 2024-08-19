@@ -352,27 +352,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
-  // useEffect(() => {
-  //   if (!totalPriceBalance || !accountOrai.bech32Address) return;
-  //   const hashedAddress = new sha256().update(accountOrai.bech32Address).digest("hex");
 
-  //   const amount = new IntPretty(totalPriceBalance || "0")
-  //     .maxDecimals(2)
-  //     .shrink(true)
-  //     .trim(true)
-  //     .locale(false)
-  //     .inequalitySymbol(true);
-
-  //   const logEvent = {
-  //     userId: hashedAddress,
-  //     totalPrice: amount?.toString() || "0",
-  //     currency: priceStore.defaultVsCurrency
-  //   };
-  //   if (mixpanel) {
-  //     mixpanel.track("OWallet - Assets Managements", logEvent);
-  //   }
-  //   return () => {};
-  // }, [totalPriceBalance, accountOrai.bech32Address, priceStore.defaultVsCurrency]);
   let pendingUpdates: ViewToken[] = [];
   const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   // Debounced function to apply pending updates
@@ -428,7 +408,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const fetchAllBalances = () => {
     setDataBalances([]);
-    pendingUpdates = [];
+
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
     )) {
