@@ -12,12 +12,14 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { PricePretty } from "@owallet/unit";
+import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
     keyRingStore,
     analyticsStore,
+    chainStore,
     modalStore,
     universalSwapStore,
     appInitStore,
@@ -51,6 +53,7 @@ const MnemonicSeed = () => {
     if (index >= 0) {
       universalSwapStore.setLoaded(false);
       await keyRingStore.changeKeyRing(index);
+      await waitAccountInit(chainStore, accountStore, keyRingStore);
     }
   }, []);
   const { totalPriceBalance } = appInitStore.getMultipleAssets;
@@ -67,9 +70,9 @@ const MnemonicSeed = () => {
           }}
           onPress={async () => {
             setIsLoading(true);
-            await modalStore.close();
             analyticsStore.logEvent("Account changed");
             await selectKeyStore(item);
+            await modalStore.close();
             universalSwapStore.clearAmounts();
             setIsLoading(false);
           }}
