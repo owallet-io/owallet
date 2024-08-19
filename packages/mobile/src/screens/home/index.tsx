@@ -72,6 +72,7 @@ import Web3 from "web3";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -377,15 +378,60 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             item
           );
         });
-        const balancesUpdated = Array.from(balanceMap.values());
-
+        const updatedBalances = Array.from(balanceMap.values());
+        cacheDataAsync(accountOrai.bech32Address, updatedBalances);
         // Convert the map values back to an array for the state
-        return balancesUpdated;
+        return updatedBalances;
       });
       // setDataBalances((prev) => [...prev, ...pendingUpdates]);
       pendingUpdates = [];
     }
   }, 50);
+  const cacheDataAsync = async (cacheKey: string, data: ViewToken[]) => {
+    try {
+      const dataHandled = data.map((item) => ({
+        token: {
+          currency: item.token.currency,
+          balance: item.token.toCoin().amount,
+        },
+        chainId: item.chainInfo.chainId,
+      }));
+      await AsyncStorage.setItem(
+        `cachedDataBalances-${cacheKey}`,
+        JSON.stringify(dataHandled)
+      );
+    } catch (e) {
+      console.error("Failed to save data to cache", e);
+    }
+  };
+  const loadCachedData = async (cacheKey: string) => {
+    // InteractionManager.runAfterInteractions(async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `cachedDataBalances-${cacheKey}`
+      );
+      if (cachedData) {
+        const dataBalances: any[] = JSON.parse(cachedData);
+        const balances = dataBalances.map((item) => {
+          const token = new CoinPretty(
+            item.token.currency,
+            new Dec(item.token.balance)
+          );
+          return {
+            chainInfo: chainStore.getChain(item.chainId),
+            isFetching: false,
+            error: null,
+            token,
+            price: priceStore.calculatePrice(token),
+          };
+        });
+        setDataBalances(balances);
+      }
+    } catch (e) {
+      console.error("Failed to load data from cache", e);
+    }
+    // });
+  };
 
   // Function to add new balances to the pending updates
   const updateDataBalances = (newBalances: ViewToken[]) => {
@@ -494,6 +540,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   useEffect(() => {
+    loadCachedData(accountOrai.bech32Address);
     fetchAllBalances();
     return () => {};
   }, [accountOrai.bech32Address]);
