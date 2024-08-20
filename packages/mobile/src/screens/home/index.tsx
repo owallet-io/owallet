@@ -444,6 +444,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           };
         });
         setDataBalances(balances);
+        await delay(800);
       }
     } catch (e) {
       console.error("Failed to load data from cache", e);
