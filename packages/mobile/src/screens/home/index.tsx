@@ -379,11 +379,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           );
         });
         const updatedBalances = Array.from(balanceMap.values());
-        cacheDataAsync(accountOrai.bech32Address, updatedBalances);
+
         // Convert the map values back to an array for the state
         return updatedBalances;
       });
-      // setDataBalances((prev) => [...prev, ...pendingUpdates]);
+
       pendingUpdates = [];
     }
   }, 50);
@@ -485,13 +485,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         pendingOperations--;
         if (pendingOperations === 0 || pendingOperations === 1) {
           setRefreshing(false);
-          // Update state or perform actions when all fetches are complete
-          console.log("All balance fetches are complete.");
-          // For example: setDataBalances(fetchedBalances);
-
-          setDataBalances((prev) => prev.sort(sortByPrice));
-          // const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
-          // updateDataBalances(allBalancesSorted);
+          setDataBalances((prev) => {
+            const dataSorted = prev.sort(sortByPrice);
+            cacheDataAsync(accountOrai.bech32Address, dataSorted);
+            return dataSorted;
+          });
         }
       }
     };
