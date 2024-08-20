@@ -393,15 +393,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         pendingUpdates.forEach(insertAndSort);
 
         // Cache the sorted balances
-        //
 
+        cacheDataAsync(accountOrai.bech32Address, sortedArray);
         // Return the sorted array for state update
         return sortedArray;
       });
 
       pendingUpdates = [];
     }
-  }, 150);
+  }, 100);
   const cacheDataAsync = async (cacheKey: string, data: ViewToken[]) => {
     try {
       const dataHandled = data.map((item) => ({
@@ -551,28 +551,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         if (pendingOperations === 1) {
           setRefreshing(false);
         } else if (pendingOperations === 0) {
-          cacheDataAsync(accountOrai.bech32Address, dataBalances);
-          let availableTotalPriceEmbedOnlyUSD: PricePretty | undefined;
-          for (const bal of dataBalances) {
-            if (bal.price) {
-              const price = priceStore.calculatePrice(bal.token, "usd");
-              if (price) {
-                if (!availableTotalPriceEmbedOnlyUSD) {
-                  availableTotalPriceEmbedOnlyUSD = price;
-                } else {
-                  availableTotalPriceEmbedOnlyUSD =
-                    availableTotalPriceEmbedOnlyUSD.add(price);
-                }
-              }
-            }
-          }
-          if (!availableTotalPriceEmbedOnlyUSD || !accountOrai.bech32Address)
-            return;
+          // let availableTotalPriceEmbedOnlyUSD: PricePretty | undefined;
+          // for (const bal of dataBalances) {
+          //   if (bal.price) {
+          //     const price = priceStore.calculatePrice(bal.token, "usd");
+          //     if (price) {
+          //       if (!availableTotalPriceEmbedOnlyUSD) {
+          //         availableTotalPriceEmbedOnlyUSD = price;
+          //       } else {
+          //         availableTotalPriceEmbedOnlyUSD = availableTotalPriceEmbedOnlyUSD.add(price);
+          //       }
+          //     }
+          //   }
+          // }
+          if (!availableTotalPrice || !accountOrai.bech32Address) return;
           const hashedAddress = new sha256()
             .update(accountOrai.bech32Address)
             .digest("hex");
 
-          const amount = new IntPretty(availableTotalPriceEmbedOnlyUSD || "0")
+          const amount = new IntPretty(availableTotalPrice || "0")
             .maxDecimals(2)
             .shrink(true)
             .trim(true)
@@ -581,7 +578,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           const logEvent = {
             userId: hashedAddress,
             totalPrice: amount?.toString() || "0",
-            currency: "usd",
+            currency: priceStore.defaultVsCurrency,
           };
 
           if (mixpanel) {
@@ -590,7 +587,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         }
       }
     },
-    [dataBalances]
+    [dataBalances, accountOrai.bech32Address]
   );
   const fetchAllBalances = async () => {
     setDataBalances([]); // Clear existing balances
@@ -603,7 +600,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         .getAccount(chainInfo.chainId)
         .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
       if (!address) {
-        console.log(address);
         continue;
       }
 
@@ -629,7 +625,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           const legacyAddress = accountStore.getAccount(
             ChainIdEnum.Bitcoin
           ).legacyAddress;
-          console.log(legacyAddress, "legacyAddress");
+
           handleFetch(getBalanceBtc, address, chainInfo, AddressBtcType.Bech32);
           if (legacyAddress) {
             handleFetch(
@@ -651,7 +647,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   useEffect(() => {
-    loadCachedData(accountOrai.bech32Address);
+    // loadCachedData(accountOrai.bech32Address);
 
     fetchAllBalances();
     return () => {};
