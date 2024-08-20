@@ -73,6 +73,7 @@ import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AddressBtcType } from "@owallet/types";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -366,7 +367,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         // Add existing balances to the map
         prev.forEach((item) => {
           balanceMap.set(
-            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+            `${item.chainInfo.chainId}-${
+              item.token.currency.coinMinimalDenom
+            }-${item.typeAddress || ""}`,
             item
           );
         });
@@ -374,7 +377,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         // Add new balances to the map (overwriting duplicates)
         pendingUpdates.forEach((item) => {
           balanceMap.set(
-            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
+            `${item.chainInfo.chainId}-${
+              item.token.currency.coinMinimalDenom
+            }-${item.typeAddress || ""}`,
             item
           );
         });
@@ -472,10 +477,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     let pendingOperations = 0;
 
     // Function to handle balance fetches
-    const handleFetch = async (fetchFunction, address, chainInfo) => {
+    const handleFetch = async (
+      fetchFunction,
+      address: string,
+      chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
+      typeAddress?: AddressBtcType
+    ) => {
       pendingOperations++;
       try {
-        await fetchFunction(address, chainInfo);
+        if (chainInfo.chainId === ChainIdEnum.Bitcoin) {
+          await fetchFunction(address, chainInfo, typeAddress);
+        } else {
+          await fetchFunction(address, chainInfo);
+        }
       } catch (error) {
         console.error(
           `Error fetching balance for ${chainInfo.chainId}:`,
@@ -528,9 +542,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             ChainIdEnum.Bitcoin
           ).legacyAddress;
           console.log(legacyAddress, "legacyAddress");
-          handleFetch(getBalanceBtc, address, chainInfo);
+          handleFetch(getBalanceBtc, address, chainInfo, AddressBtcType.Bech32);
           if (legacyAddress) {
-            handleFetch(getBalanceBtc, legacyAddress, chainInfo);
+            handleFetch(
+              getBalanceBtc,
+              legacyAddress,
+              chainInfo,
+              AddressBtcType.Legacy
+            );
           }
           break;
       }
@@ -551,8 +570,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
     address,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-    // type: AddressBtcType
+    chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
+    type: AddressBtcType
   ) => {
     const data = await API.getBtcBalance({
       address,
@@ -570,6 +589,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             chainInfo,
             isFetching: false,
             error: null,
+            typeAddress: type,
           },
         ]);
       }
