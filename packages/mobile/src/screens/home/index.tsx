@@ -412,9 +412,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           break;
       }
     }
+    const isFirst = await AsyncStorage.getItem("isFirst");
+    if (!isFirst) {
+      await AsyncStorage.setItem("isFirst", "true");
+      setTimeout(() => {
+        fetchAllBalances();
+      }, 3000);
+    }
   };
   useEffect(() => {
     loadCachedData(accountOrai.bech32Address);
+
     fetchAllBalances();
     return () => {};
   }, [accountOrai.bech32Address]);
@@ -588,7 +596,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
       const res = await API.getAllBalancesEvm({ address, network });
-      console.log(res, "res");
+
       //Filter err res weth from tatumjs// NOT support weth on Ethereum
       const balances =
         res?.result?.filter(
@@ -600,7 +608,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         .map(({ tokenAddress }) => `${network}%2B${tokenAddress}`)
         .join(",");
       const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
-      console.log(tokenInfos, "tokenInfos");
+
       const existingCurrencies = new Set(
         chainInfo.currencies.map((currency) =>
           currency.coinDenom?.toUpperCase()
