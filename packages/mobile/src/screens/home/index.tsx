@@ -400,6 +400,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           balance: item.token.toCoin().amount,
         },
         chainId: item.chainInfo.chainId,
+        typeAddress: item.typeAddress || "",
       }));
       await AsyncStorage.setItem(
         `cachedDataBalances-${cacheKey}`,
@@ -428,6 +429,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             error: null,
             token,
             price: priceStore.calculatePrice(token),
+            typeAddress: item.typeAddress || "",
           };
         });
         setDataBalances(balances);
