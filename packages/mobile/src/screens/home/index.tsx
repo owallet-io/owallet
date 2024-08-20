@@ -74,6 +74,7 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
+import delay from "delay";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -421,33 +422,35 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   const loadCachedData = async (cacheKey: string) => {
-    InteractionManager.runAfterInteractions(async () => {
-      try {
-        const cachedData = await AsyncStorage.getItem(
-          `cachedDataBalances-${cacheKey}`
-        );
-        if (cachedData) {
-          const dataBalances: any[] = JSON.parse(cachedData);
-          const balances = dataBalances.map((item) => {
-            const token = new CoinPretty(
-              item.token.currency,
-              new Dec(item.token.balance)
-            );
-            return {
-              chainInfo: chainStore.getChain(item.chainId),
-              isFetching: false,
-              error: null,
-              token,
-              price: priceStore.calculatePrice(token),
-              typeAddress: item.typeAddress || "",
-            };
-          });
-          setDataBalances(balances);
-        }
-      } catch (e) {
-        console.error("Failed to load data from cache", e);
+    // InteractionManager.runAfterInteractions(async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `cachedDataBalances-${cacheKey}`
+      );
+      if (cachedData) {
+        const dataBalances: any[] = JSON.parse(cachedData);
+        const balances = dataBalances.map((item) => {
+          const token = new CoinPretty(
+            item.token.currency,
+            new Dec(item.token.balance)
+          );
+          return {
+            chainInfo: chainStore.getChain(item.chainId),
+            isFetching: false,
+            error: null,
+            token,
+            price: priceStore.calculatePrice(token),
+            typeAddress: item.typeAddress || "",
+          };
+        });
+        setDataBalances(balances);
       }
-    });
+    } catch (e) {
+      console.error("Failed to load data from cache", e);
+    } finally {
+      return true;
+    }
+    // });
   };
 
   // Function to add new balances to the pending updates
@@ -590,9 +593,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     [dataBalances, accountOrai.bech32Address]
   );
   const fetchAllBalances = async () => {
-    setDataBalances([]); // Clear existing balances
-    processedItemsTotalPrice.clear();
-    processedItemsTotalPriceByChain.clear();
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
     )) {
@@ -647,9 +647,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   useEffect(() => {
-    // loadCachedData(accountOrai.bech32Address);
-
-    fetchAllBalances();
+    (async () => {
+      setDataBalances([]); // Clear existing balances
+      processedItemsTotalPrice.clear();
+      processedItemsTotalPriceByChain.clear();
+      const dataCached = await loadCachedData(accountOrai.bech32Address);
+      if (dataCached) {
+        fetchAllBalances();
+      }
+    })();
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
@@ -1036,6 +1042,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
+            setDataBalances([]); // Clear existing balances
+            processedItemsTotalPrice.clear();
+            processedItemsTotalPriceByChain.clear();
             onRefresh();
             fetchAllBalances();
           }}
