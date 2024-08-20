@@ -368,8 +368,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         prev.forEach((item) => {
           balanceMap.set(
             `${item.chainInfo.chainId}-${
-              item.token.currency.coinMinimalDenom
-            }-${item.typeAddress || ""}`,
+              item.typeAddress || item.token.currency.coinMinimalDenom
+            }`,
             item
           );
         });
@@ -378,8 +378,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         pendingUpdates.forEach((item) => {
           balanceMap.set(
             `${item.chainInfo.chainId}-${
-              item.token.currency.coinMinimalDenom
-            }-${item.typeAddress || ""}`,
+              item.typeAddress || item.token.currency.coinMinimalDenom
+            }`,
             item
           );
         });
