@@ -36,7 +36,7 @@ import {
   MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
-import { TokensCardAll } from "./components/tokens-card-all";
+
 import { AccountBoxAll } from "./components/account-box-new";
 
 import { EarningCardNew } from "./components/earning-card-new";
@@ -61,7 +61,7 @@ import {
 } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { debounce, flatten } from "lodash";
-import { fetchWithCache, showToast } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 
 import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
@@ -96,17 +96,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  // const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
-  //   useMultipleAssets(
-  //     accountStore,
-  //     priceStore,
-  //     hugeQueriesStore,
-  //     chainStore.current.chainId,
-  //     appInitStore.getInitApp.isAllNetworks,
-  //     appInitStore,
-  //     refreshing,
-  //     accountOrai.bech32Address
-  //   );
+
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
