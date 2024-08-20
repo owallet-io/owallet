@@ -374,7 +374,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           );
         });
         const updatedBalances = Array.from(balanceMap.values());
-
+        cacheDataAsync(accountOrai.bech32Address, updatedBalances);
         // Convert the map values back to an array for the state
         return updatedBalances;
       });
@@ -493,7 +493,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           setRefreshing(false);
           setDataBalances((prev) => {
             const dataSorted = prev.sort(sortByPrice);
-            cacheDataAsync(accountOrai.bech32Address, dataSorted);
+
             return dataSorted;
           });
         }
