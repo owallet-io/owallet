@@ -24,7 +24,8 @@
       "**/@bugsnag/**",
       "**/@gorhom/**",
       "**/@shopify/**",
-      "**/@freakycoder/**"
+      "**/@freakycoder/**",
+      "**/@walletconnect/**"
     ]
   },
   "scripts": {

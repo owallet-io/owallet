@@ -33,6 +33,9 @@
   },
   "dependencies": {
     "react-native-popup-confirm-toast":"2.3.2",
+    "@walletconnect/react-native-compat":"2.15.1",
+    "react-native-get-random-values":"1.11.0",
+    "@walletconnect/sign-client":"2.15.1",
     "react-native-bytebrew-sdk": "^0.1.5",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/launchpad": "^0.27.1",
@@ -121,7 +124,7 @@
     "react-native-camera": "4.2.1",
     "react-native-chart-kit": "6.12.0",
     "react-native-check-box": "2.1.7",
-    "react-native-code-push": "^8.3.0",
+    "react-native-code-push": "8.3.1",
     "react-native-collapsible": "^1.6.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "10.7.0",

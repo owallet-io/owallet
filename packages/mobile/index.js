@@ -1,8 +1,5 @@
 import "./shim";
 
-import "text-encoding";
-
-import "react-native-url-polyfill/auto";
 import * as Sentry from "@sentry/react-native";
 import { NativeModules, Platform } from "react-native";
 
@@ -26,7 +23,7 @@ if (!__DEV__) {
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     console.log("remoteMessage background", remoteMessage);
   });
-  const { BYTE_BREW_ID_ANDROID, BYTE_BREW_SDK_KEY_ANDROID,BYTE_BREW_ID_IOS,BYTE_BREW_SDK_KEY_IOS } = process.env;
+  const { BYTE_BREW_ID_ANDROID, BYTE_BREW_SDK_KEY_ANDROID, BYTE_BREW_ID_IOS, BYTE_BREW_SDK_KEY_IOS } = process.env;
   // Initialize the ByteBrew SDK
   if (Platform.OS == "android" && BYTE_BREW_ID_ANDROID && BYTE_BREW_SDK_KEY_ANDROID) {
     ByteBrew.Initialize(BYTE_BREW_ID_ANDROID, BYTE_BREW_SDK_KEY_ANDROID);

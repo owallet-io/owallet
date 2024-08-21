@@ -23,7 +23,7 @@ PODS:
   - BVLinearGradient (2.7.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
-  - CodePush (8.3.0):
+  - CodePush (8.3.1):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.12)
     - React-Core
@@ -593,6 +593,11 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
+  - react-native-compat (2.15.1):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
+  - react-native-get-random-values (1.11.0):
+    - React-Core
   - react-native-netinfo (9.4.1):
     - React-Core
   - react-native-pager-view (6.3.3):
@@ -857,6 +862,8 @@ DEPENDENCIES:
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-bytebrew-sdk (from `../node_modules/react-native-bytebrew-sdk`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -1016,6 +1023,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-bytebrew-sdk"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-compat:
+    :path: "../node_modules/@walletconnect/react-native-compat"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -1118,7 +1129,7 @@ SPEC CHECKSUMS:
   BranchSDK: 28bec34fb99c53ab8e86b7bf69cc55a4505fe0b3
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  CodePush: 922cc9532f9c184a795fc1474524443737ee74e9
+  CodePush: 438921642a5fb9fc3a491da4bc923027f4077442
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 25cbffbaec517695d376ab4bc428948cd0f08088
   FBReactNativeSpec: e03b22fbf7017a6f76641ea4472e73c915dcdda7
@@ -1178,6 +1189,8 @@ SPEC CHECKSUMS:
   react-native-branch: 1a3a65b8902fcb988c110a60b0dcb56595db7077
   react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
+  react-native-compat: 1990fd875b148f268cf762ce6edf96cb273036bb
+  react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-pager-view: ea67d9ca8e0e83118b46996ddec3c818ee032f26
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
