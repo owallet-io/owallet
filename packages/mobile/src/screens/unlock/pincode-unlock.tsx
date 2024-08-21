@@ -294,6 +294,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     const chainId = chainStore.current.chainId;
     const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
+      AsyncStorage.removeItem("isFirst");
       if (
         !!accountStore.getAccount(chainId).bech32Address === false &&
         chainId?.startsWith("inj") &&

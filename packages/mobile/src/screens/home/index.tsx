@@ -583,9 +583,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     [dataBalances, accountOrai.bech32Address]
   );
   const fetchAllBalances = async () => {
-    setDataBalances([]); // Clear existing balances
-    processedItemsTotalPrice.clear();
-    processedItemsTotalPriceByChain.clear();
     setIsLoading(true);
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
@@ -644,9 +641,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     (async () => {
       // const dataCached = await loadCachedData(accountOrai.bech32Address);
       // if (dataCached) {
-      fetchAllBalances();
       // }
     })();
+    setDataBalances([]); // Clear existing balances
+    processedItemsTotalPrice.clear();
+    processedItemsTotalPriceByChain.clear();
+    fetchAllBalances();
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
@@ -1033,6 +1033,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
+            setDataBalances([]); // Clear existing balances
+            processedItemsTotalPrice.clear();
+            processedItemsTotalPriceByChain.clear();
             onRefresh();
             fetchAllBalances();
           }}
