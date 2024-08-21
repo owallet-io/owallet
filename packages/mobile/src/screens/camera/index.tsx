@@ -28,7 +28,7 @@ interface keyable {
 }
 
 export const CameraScreen: FunctionComponent = observer((props) => {
-  const { chainStore, keyRingStore } = useStore();
+  const { chainStore, keyRingStore, walletConnectStore } = useStore();
   const { colors } = useTheme();
 
   const navigation = useNavigation();
@@ -71,7 +71,13 @@ export const CameraScreen: FunctionComponent = observer((props) => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
+            if (data.startsWith("wc:")) {
+              if (data.includes("@2")) {
+                await walletConnectStore.pair(data);
+              }
 
+              // navigation.reset({routes: [{name: 'Home'}]});
+            }
             if (chainStore.current.chainId === TRON_ID && data) {
               smartNavigation.pushSmart("SendTron", {
                 recipient: data,

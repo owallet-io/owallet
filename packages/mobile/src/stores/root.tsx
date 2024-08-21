@@ -40,6 +40,7 @@ import { ChainInfo } from "@owallet/types";
 import { TxsStore } from "./txs";
 import { universalSwapStore, UniversalSwapStore } from "./universal_swap";
 import { HugeQueriesStore } from "@src/stores/huge-queries";
+import { WalletConnectStore } from "./wallet-connect";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -55,7 +56,8 @@ export class RootStore {
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
-
+  public readonly walletConnectStore: WalletConnectStore;
+  public readonly deepLinkStore: DeepLinkStore;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
   public readonly keychainStore: KeychainStore;
@@ -315,6 +317,20 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.keyRingStore
+    );
+    this.walletConnectStore = new WalletConnectStore(
+      new AsyncKVStore("store_wallet_connect_v2"),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      this.keyRingStore,
+      this.permissionStore
     );
     this.notificationStore = notification;
     this.sendStore = new SendStore();
