@@ -24,6 +24,7 @@ import {
   GAS_ESTIMATION_SWAP_DEFAULT,
   toDisplay,
   getBase58Address,
+  toAmount,
 } from "@owallet/common";
 import {
   oraichainNetwork,
@@ -70,7 +71,9 @@ import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
 import { useTokenFee } from "./hooks/use-token-fee";
 import { useFilterToken } from "./hooks/use-filter-token";
-import useEstimateAmount from "./hooks/use-estimate-amount";
+import useEstimateAmount, {
+  SIMULATE_INIT_AMOUNT,
+} from "./hooks/use-estimate-amount";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { Toggle } from "@src/components/toggle";
@@ -575,10 +578,30 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       relayerDecimals: RELAYER_DECIMAL,
     };
 
-    const alphaSmartRoutes =
-      useAlphaSmartRouter && simulateData && simulateData?.routes;
-
+    const isInjectiveProtocol =
+      originalToToken.chainId === "injective-1" &&
+      originalToToken.coinGeckoId === "injective-protocol";
+    const isKawaiiChain = originalToToken.chainId === "kawaii_6886-1";
+    const isDifferentChainAndNotCosmosBased =
+      originalFromToken.chainId !== originalToToken.chainId &&
+      !originalFromToken.cosmosBased &&
+      !originalToToken.cosmosBased;
     let simulateAmount = simulateData.amount;
+    if (
+      isInjectiveProtocol ||
+      isKawaiiChain ||
+      isDifferentChainAndNotCosmosBased
+    ) {
+      simulateAmount = toAmount(
+        simulateData.displayAmount,
+        originalToToken.decimals
+      ).toString();
+    }
+
+    const alphaSmartRoutes = useAlphaSmartRouter
+      ? simulateData?.routes
+      : undefined;
+
     const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
@@ -598,9 +621,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       affiliates: [{ address: affiliateAddress, basis_points_fee: "25" }],
     } as UniversalSwapData;
 
-    const compileSwapData = sendToAddress
+    let compileSwapData = sendToAddress
       ? { ...universalSwapData, recipientAddress: sendToAddress }
       : universalSwapData;
+
+    compileSwapData = {
+      ...compileSwapData,
+      simulatePrice:
+        ratio?.amount &&
+        new BigDecimal(ratio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
+    };
 
     const universalSwapHandler = new UniversalSwapHandler(compileSwapData, {
       cosmosWallet,
@@ -719,7 +749,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     const fromChain = chainInfos.find((chain) => chain.chainId === fromNetwork);
-    console.log("fromChain", fromChain, toNetwork);
 
     if (
       fromChain?.networkType === "evm" &&

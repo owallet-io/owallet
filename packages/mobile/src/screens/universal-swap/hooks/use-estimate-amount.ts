@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { getRemoteDenom } from "../helpers";
 import { useRelayerFeeToken, useTokenFee } from "./use-relayer-fees";
 
+export const SIMULATE_INIT_AMOUNT = 1;
+
 /**
  * Simulate token fee between fromToken & toToken
  * @param originalFromToken
@@ -56,7 +58,39 @@ const useEstimateAmount = (
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
 
-  console.log("ratio", ratio);
+  const [isAvgSimulate, setIsAvgSimulate] = useState({
+    tokenFrom: originalFromToken.coinGeckoId,
+    tokenTo: originalToToken.coinGeckoId,
+    status: false,
+  });
+
+  useEffect(() => {
+    const {
+      tokenFrom: currentFrom,
+      tokenTo: currentTo,
+      status: currentStatus,
+    } = isAvgSimulate;
+    const { coinGeckoId: fromTokenId } = originalFromToken;
+    const { coinGeckoId: toTokenId } = originalToToken;
+
+    const shouldUpdate = currentFrom !== fromTokenId || currentTo !== toTokenId;
+
+    if (shouldUpdate) {
+      setIsAvgSimulate({
+        tokenFrom: fromTokenId,
+        tokenTo: toTokenId,
+        status: false,
+      });
+    }
+
+    if (currentStatus || !ratio?.amount) return;
+
+    setIsAvgSimulate({
+      tokenFrom: fromTokenId,
+      tokenTo: toTokenId,
+      status: true,
+    });
+  }, [ratio, originalFromToken, originalToToken]);
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -73,7 +107,6 @@ const useEstimateAmount = (
     setAmountLoading(true);
     if (client) {
       const routerClient = getRouterClient();
-      console.log("initAmount", initAmount);
 
       try {
         const data = await handleSimulateSwap({
@@ -94,7 +127,6 @@ const useEstimateAmount = (
           },
         });
         setAmountLoading(false);
-        console.log("data", data);
 
         return data;
       } catch (err) {
@@ -241,7 +273,7 @@ const useEstimateAmount = (
 
   useEffect(() => {
     setMininumReceive(0);
-    if (fromAmountToken > 0) {
+    if (fromAmountToken > 0 && isAvgSimulate.status) {
       setSwapAmount([fromAmountToken, 0]);
       estimateSwapAmount();
     } else {
