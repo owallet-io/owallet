@@ -80,6 +80,7 @@ const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
+  const [isLoading, setIsLoading] = React.useState(false);
   const { colors } = useTheme();
 
   const styles = styling(colors);
@@ -554,20 +555,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         pendingOperations--;
         if (pendingOperations === 1) {
           setRefreshing(false);
+          setIsLoading(false);
         } else if (pendingOperations === 0) {
-          // let availableTotalPriceEmbedOnlyUSD: PricePretty | undefined;
-          // for (const bal of dataBalances) {
-          //   if (bal.price) {
-          //     const price = priceStore.calculatePrice(bal.token, "usd");
-          //     if (price) {
-          //       if (!availableTotalPriceEmbedOnlyUSD) {
-          //         availableTotalPriceEmbedOnlyUSD = price;
-          //       } else {
-          //         availableTotalPriceEmbedOnlyUSD = availableTotalPriceEmbedOnlyUSD.add(price);
-          //       }
-          //     }
-          //   }
-          // }
           if (!availableTotalPrice || !accountOrai.bech32Address) return;
           const hashedAddress = new sha256()
             .update(accountOrai.bech32Address)
@@ -597,6 +586,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     setDataBalances([]); // Clear existing balances
     processedItemsTotalPrice.clear();
     processedItemsTotalPriceByChain.clear();
+    setIsLoading(true);
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
     )) {
@@ -1053,7 +1043,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <AccountBoxAll
-        isLoading={false}
+        isLoading={isLoading}
         totalBalanceByChain={(
           availableTotalPriceByChain || initPrice
         )?.toString()}
