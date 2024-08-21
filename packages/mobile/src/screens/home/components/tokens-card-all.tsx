@@ -19,7 +19,11 @@ import {
 } from "react-native";
 import { OWBox } from "@components/card";
 import { useStore } from "@src/stores";
-import { maskedNumber, removeDataInParentheses } from "@utils/helper";
+import {
+  capitalizedText,
+  maskedNumber,
+  removeDataInParentheses,
+} from "@utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
@@ -51,9 +55,12 @@ export const TokensCardAll: FunctionComponent<{
   const { colors } = useTheme();
   const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
     ? dataTokens.filter((item, index) => {
-        // const balance = new CoinPretty(item.token.currency, item.token.amount);
-        // const price = priceStore.calculatePrice(item.price, "usd");
-        return item?.price?.toDec()?.gte(new Dec("0.1")) ?? false;
+        const balance = new CoinPretty(
+          item.token.currency,
+          item.token.toCoin().amount
+        );
+        const price = priceStore.calculatePrice(balance, "usd");
+        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
       })
     : dataTokens;
 
@@ -265,13 +272,17 @@ const TokenItem: FC<{
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
             </Text>
-            {/* {item.type && (
+            {item.typeAddress && (
               <View style={styles.type}>
-                <Text weight="400" size={12} color={colors["neutral-text-body-2"]}>
-                  {item.type}
+                <Text
+                  weight="400"
+                  size={12}
+                  color={colors["neutral-text-body-2"]}
+                >
+                  {capitalizedText(item.typeAddress)}
                 </Text>
               </View>
-            )} */}
+            )}
           </View>
         </View>
         <View style={styles.rightBoxItem}>
@@ -283,28 +294,20 @@ const TokenItem: FC<{
                 weight="500"
                 color={colors["neutral-text-heading"]}
               >
-                {/* {item?.token?.currency && item?.token?.amount
-                  ? maskedNumber(
-                      new CoinPretty(item?.token?.currency || unknownToken, item?.token?.amount || "0")
-                        .trim(true)
-                        .hideDenom(true)
-                        ?.toString()
-                    )
-                  : "0"} */}
                 {item?.token
-                  .trim(true)
-                  .hideDenom(true)
-                  .maxDecimals(6)
-                  .toString()}
+                  ? maskedNumber(
+                      item?.token.trim(true).hideDenom(true).toString(),
+                      6
+                    )
+                  : "0"}
               </Text>
               <Text
                 size={14}
                 style={{ lineHeight: 24 }}
                 color={colors["neutral-text-body"]}
               >
-                {/* {(item.price ? new PricePretty(fiatCurrency, item.price) : initPrice)?.toString()} */}
                 {(
-                  priceStore.calculatePrice(item.token) || initPrice
+                  priceStore.calculatePrice(item?.token) || initPrice
                 )?.toString()}
               </Text>
             </View>

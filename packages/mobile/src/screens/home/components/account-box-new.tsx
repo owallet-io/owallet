@@ -176,10 +176,10 @@ export const AccountBoxAll: FunctionComponent<{
           <Text variant="bigText" style={styles.labelTotalAmount}>
             {totalPriceBalance?.toString()}
           </Text>
-          {isLoading ? (
+          {/* {isLoading ? (
             <View
               style={{
-                maxHeight: 30,
+                maxHeight: 30
               }}
             >
               <LottieView
@@ -189,13 +189,13 @@ export const AccountBoxAll: FunctionComponent<{
                   width: 70,
                   height: 70,
                   marginLeft: -10,
-                  marginTop: -20,
+                  marginTop: -20
                 }}
                 autoPlay
                 loop
               />
             </View>
-          ) : null}
+          ) : null} */}
         </View>
         {appInitStore.getInitApp.isAllNetworks ? null : (
           <>
@@ -476,9 +476,14 @@ export const AccountBoxAll: FunctionComponent<{
       <OWBox style={styles.containerOWBox}>
         <View style={styles.containerInfoAccount}>
           <TouchableOpacity
-            // disabled={!universalSwapStore.getLoadStatus.isLoad}
+            disabled={isLoading}
             onPress={_onPressMyWallet}
-            style={styles.btnAcc}
+            style={[
+              styles.btnAcc,
+              {
+                opacity: isLoading ? 0.5 : 1,
+              },
+            ]}
           >
             <Image
               style={styles.infoIcon}

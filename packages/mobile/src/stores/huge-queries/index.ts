@@ -19,7 +19,7 @@ import {
 } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { AppCurrency, ChainInfo } from "@owallet/types";
+import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { BinarySortArray } from "./sort";
 
@@ -30,6 +30,7 @@ export interface ViewToken {
   price: PricePretty | undefined;
   isFetching: boolean;
   error: QueryError<any> | undefined;
+  typeAddress?: AddressBtcType;
 }
 
 export interface RawToken {
