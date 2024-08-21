@@ -638,15 +638,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   useEffect(() => {
-    (async () => {
-      // const dataCached = await loadCachedData(accountOrai.bech32Address);
-      // if (dataCached) {
-      // }
-    })();
     setDataBalances([]); // Clear existing balances
     processedItemsTotalPrice.clear();
     processedItemsTotalPriceByChain.clear();
-    fetchAllBalances();
+    setTimeout(() => {
+      fetchAllBalances();
+    }, 300);
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (

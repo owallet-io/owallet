@@ -294,7 +294,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     const chainId = chainStore.current.chainId;
     const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
-      AsyncStorage.removeItem("isFirst");
       if (
         !!accountStore.getAccount(chainId).bech32Address === false &&
         chainId?.startsWith("inj") &&
@@ -303,9 +302,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
         await waitAccountInit(chainStore, accountStore, keyRingStore);
-        // setTimeout(() => {
         navigation.dispatch(StackActions.replace("MainTab"));
-        // }, 1500);
       }
     }
     navigateToHomeOnce.current = true;
