@@ -54,17 +54,17 @@ if (!global.atob || !global.btoa) {
   global.btoa = base64.btoa;
 }
 
-const TextEncodingPolyfill = require("text-encoding");
-Object.assign(global, {
-  TextEncoder: TextEncodingPolyfill.TextEncoder,
-  TextDecoder: TextEncodingPolyfill.TextDecoder
-});
+// const TextEncodingPolyfill = require("text-encoding");
+// Object.assign(global, {
+//   TextEncoder: TextEncodingPolyfill.TextEncoder,
+//   TextDecoder: TextEncodingPolyfill.TextDecoder
+// });
 
 // import {polyfillWebCrypto} from 'expo-standard-web-crypto';
 
 // polyfillWebCrypto();
 // crypto is now globally defined
-
+import "text-encoding";
 import "react-native-url-polyfill/auto";
 
 import EventEmitter from "eventemitter3";
