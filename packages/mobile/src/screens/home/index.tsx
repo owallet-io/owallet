@@ -36,7 +36,7 @@ import {
   MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
-import { TokensCardAll } from "./components/tokens-card-all";
+
 import { AccountBoxAll } from "./components/account-box-new";
 
 import { EarningCardNew } from "./components/earning-card-new";
@@ -61,7 +61,7 @@ import {
 } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
 import { debounce, flatten } from "lodash";
-import { fetchWithCache, showToast } from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 
 import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
@@ -73,11 +73,14 @@ import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
 import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AddressBtcType } from "@owallet/types";
+import delay from "delay";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
+  const [isLoading, setIsLoading] = React.useState(false);
   const { colors } = useTheme();
 
   const styles = styling(colors);
@@ -95,17 +98,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  // const { totalPriceBalance, dataTokens, dataTokensByChain, isLoading } =
-  //   useMultipleAssets(
-  //     accountStore,
-  //     priceStore,
-  //     hugeQueriesStore,
-  //     chainStore.current.chainId,
-  //     appInitStore.getInitApp.isAllNetworks,
-  //     appInitStore,
-  //     refreshing,
-  //     accountOrai.bech32Address
-  //   );
+
   const [isPending, startTransition] = useTransition();
   const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -362,31 +355,55 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setDataBalances((prev) => {
         // Create a Map to hold unique balances by coinMinimalDenom
         const balanceMap = new Map<string, ViewToken>();
+        const sortedArray = [];
 
-        // Add existing balances to the map
-        prev.forEach((item) => {
-          balanceMap.set(
-            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
-            item
-          );
-        });
+        // Function to insert an item into the sorted array and map
+        function insertAndSort(item) {
+          const key = `${item.chainInfo.chainId}-${
+            item.typeAddress || item.token.currency.coinMinimalDenom
+          }`;
 
-        // Add new balances to the map (overwriting duplicates)
-        pendingUpdates.forEach((item) => {
-          balanceMap.set(
-            `${item.chainInfo.chainId}-${item.token.currency.coinMinimalDenom}`,
-            item
-          );
-        });
-        const updatedBalances = Array.from(balanceMap.values());
-        cacheDataAsync(accountOrai.bech32Address, updatedBalances);
-        // Convert the map values back to an array for the state
-        return updatedBalances;
+          // If the item already exists, remove it from the sorted array
+          if (balanceMap.has(key)) {
+            const existingIndex = sortedArray.findIndex(
+              (v) => v === balanceMap.get(key)
+            );
+            sortedArray.splice(existingIndex, 1);
+          }
+
+          // Insert the new item in the sorted order
+          let low = 0;
+          let high = sortedArray.length;
+
+          while (low < high) {
+            const mid = Math.floor((low + high) / 2);
+            if (sortByPrice(sortedArray[mid], item) < 0) {
+              low = mid + 1;
+            } else {
+              high = mid;
+            }
+          }
+
+          sortedArray.splice(low, 0, item); // Insert item at the correct position
+          balanceMap.set(key, item); // Update the map with the new item
+        }
+
+        // Insert existing balances into the map and sorted array
+        prev.forEach(insertAndSort);
+
+        // Insert new pending updates into the map and sorted array
+        pendingUpdates.forEach(insertAndSort);
+
+        // Cache the sorted balances
+
+        cacheDataAsync(accountOrai.bech32Address, sortedArray);
+        // Return the sorted array for state update
+        return sortedArray;
       });
-      // setDataBalances((prev) => [...prev, ...pendingUpdates]);
+
       pendingUpdates = [];
     }
-  }, 50);
+  }, 100);
   const cacheDataAsync = async (cacheKey: string, data: ViewToken[]) => {
     try {
       const dataHandled = data.map((item) => ({
@@ -395,6 +412,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           balance: item.token.toCoin().amount,
         },
         chainId: item.chainInfo.chainId,
+        typeAddress: item.typeAddress || "",
       }));
       await AsyncStorage.setItem(
         `cachedDataBalances-${cacheKey}`,
@@ -404,34 +422,38 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       console.error("Failed to save data to cache", e);
     }
   };
-  const loadCachedData = async (cacheKey: string) => {
-    // InteractionManager.runAfterInteractions(async () => {
-    try {
-      const cachedData = await AsyncStorage.getItem(
-        `cachedDataBalances-${cacheKey}`
-      );
-      if (cachedData) {
-        const dataBalances: any[] = JSON.parse(cachedData);
-        const balances = dataBalances.map((item) => {
-          const token = new CoinPretty(
-            item.token.currency,
-            new Dec(item.token.balance)
-          );
-          return {
-            chainInfo: chainStore.getChain(item.chainId),
-            isFetching: false,
-            error: null,
-            token,
-            price: priceStore.calculatePrice(token),
-          };
-        });
-        setDataBalances(balances);
-      }
-    } catch (e) {
-      console.error("Failed to load data from cache", e);
-    }
-    // });
-  };
+  // const loadCachedData = async (cacheKey: string) => {
+  //   // InteractionManager.runAfterInteractions(async () => {
+  //   try {
+  //     const cachedData = await AsyncStorage.getItem(
+  //       `cachedDataBalances-${cacheKey}`
+  //     );
+  //     if (cachedData) {
+  //       const dataBalances: any[] = JSON.parse(cachedData);
+  //       const balances = dataBalances.map((item) => {
+  //         const token = new CoinPretty(
+  //           item.token.currency,
+  //           new Dec(item.token.balance)
+  //         );
+  //         return {
+  //           chainInfo: chainStore.getChain(item.chainId),
+  //           isFetching: false,
+  //           error: null,
+  //           token,
+  //           price: priceStore.calculatePrice(token),
+  //           typeAddress: item.typeAddress || "",
+  //         };
+  //       });
+  //       setDataBalances(balances);
+  //       await delay(800);
+  //     }
+  //   } catch (e) {
+  //     console.error("Failed to load data from cache", e);
+  //   } finally {
+  //     return true;
+  //   }
+  //   // });
+  // };
 
   // Function to add new balances to the pending updates
   const updateDataBalances = (newBalances: ViewToken[]) => {
@@ -439,23 +461,66 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     applyPendingUpdates();
   };
 
+  const processedItemsTotalPrice = new Map<string, string>();
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    let balances = dataBalances;
-    for (const bal of balances) {
-      if (bal.price) {
+
+    for (const bal of dataBalances) {
+      const key = `${bal.chainInfo.chainId}-${
+        bal.typeAddress || bal.token.currency.coinMinimalDenom
+      }`;
+      const priceString = bal.price?.toDec()?.toString();
+
+      if (
+        bal.price &&
+        (!processedItemsTotalPrice.has(key) ||
+          processedItemsTotalPrice.get(key) !== priceString)
+      ) {
         if (!result) {
           result = bal.price;
         } else {
           result = result.add(bal.price);
         }
+        processedItemsTotalPrice.set(key, priceString); // Mark item as processed
       }
     }
+
     return result;
   }, [dataBalances]);
+  const processedItemsTotalPriceByChain = new Map<string, string>();
+  const availableTotalPriceByChain = useMemo(() => {
+    let result: PricePretty | undefined;
+
+    for (const bal of dataBalances.filter(
+      (token) => token.chainInfo.chainId === chainStore.current.chainId
+    )) {
+      const key = `${bal.chainInfo.chainId}-${
+        bal.typeAddress || bal.token.currency.coinMinimalDenom
+      }`;
+      const priceString = bal.price?.toDec()?.toString();
+
+      if (
+        bal.price &&
+        (!processedItemsTotalPriceByChain.has(key) ||
+          processedItemsTotalPriceByChain.get(key) !== priceString)
+      ) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+        processedItemsTotalPriceByChain.set(key, priceString); // Mark item as processed
+      }
+    }
+
+    return result;
+  }, [dataBalances, chainStore.current.chainId]);
+
+  // Track the number of ongoing operations
+  let pendingOperations = 0;
   const sortByPrice = (a: ViewToken, b: ViewToken) => {
-    const aPrice = priceStore.calculatePrice(a.token)?.toDec() ?? new Dec(0);
-    const bPrice = priceStore.calculatePrice(b.token)?.toDec() ?? new Dec(0);
+    const aPrice = a.price?.toDec() ?? new Dec(0);
+    const bPrice = b.price?.toDec() ?? new Dec(0);
 
     if (aPrice.equals(bPrice)) {
       return 0;
@@ -465,17 +530,22 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       return 1;
     }
   };
-  const fetchAllBalances = async () => {
-    setDataBalances([]); // Clear existing balances
 
-    // Track the number of ongoing operations
-    let pendingOperations = 0;
-
-    // Function to handle balance fetches
-    const handleFetch = async (fetchFunction, address, chainInfo) => {
+  // Function to handle balance fetches
+  const handleFetch = useCallback(
+    async (
+      fetchFunction,
+      address: string,
+      chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
+      typeAddress?: AddressBtcType
+    ) => {
       pendingOperations++;
       try {
-        await fetchFunction(address, chainInfo);
+        if (chainInfo.chainId === ChainIdEnum.Bitcoin) {
+          await fetchFunction(address, chainInfo, typeAddress);
+        } else {
+          await fetchFunction(address, chainInfo);
+        }
       } catch (error) {
         console.error(
           `Error fetching balance for ${chainInfo.chainId}:`,
@@ -483,19 +553,37 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         );
       } finally {
         pendingOperations--;
-        if (pendingOperations === 0 || pendingOperations === 1) {
+        if (pendingOperations === 1) {
           setRefreshing(false);
-          // Update state or perform actions when all fetches are complete
-          console.log("All balance fetches are complete.");
-          // For example: setDataBalances(fetchedBalances);
+          setIsLoading(false);
+        } else if (pendingOperations === 0) {
+          if (!availableTotalPrice || !accountOrai.bech32Address) return;
+          const hashedAddress = new sha256()
+            .update(accountOrai.bech32Address)
+            .digest("hex");
 
-          setDataBalances((prev) => prev.sort(sortByPrice));
-          // const allBalancesSorted = dataBalances && dataBalances.sort(sortByPrice);
-          // updateDataBalances(allBalancesSorted);
+          const amount = new IntPretty(availableTotalPrice || "0")
+            .maxDecimals(2)
+            .shrink(true)
+            .trim(true)
+            .locale(false)
+            .inequalitySymbol(true);
+          const logEvent = {
+            userId: hashedAddress,
+            totalPrice: amount?.toString() || "0",
+            currency: priceStore.defaultVsCurrency,
+          };
+
+          if (mixpanel) {
+            mixpanel.track("OWallet - Assets Managements", logEvent);
+          }
         }
       }
-    };
-
+    },
+    [dataBalances, accountOrai.bech32Address]
+  );
+  const fetchAllBalances = async () => {
+    setIsLoading(true);
     for (const chainInfo of chainStore.chainInfosInUI.filter(
       (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
     )) {
@@ -503,7 +591,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         .getAccount(chainInfo.chainId)
         .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
       if (!address) {
-        console.log(address);
         continue;
       }
 
@@ -529,10 +616,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           const legacyAddress = accountStore.getAccount(
             ChainIdEnum.Bitcoin
           ).legacyAddress;
-          console.log(legacyAddress, "legacyAddress");
-          handleFetch(getBalanceBtc, address, chainInfo);
+
+          handleFetch(getBalanceBtc, address, chainInfo, AddressBtcType.Bech32);
           if (legacyAddress) {
-            handleFetch(getBalanceBtc, legacyAddress, chainInfo);
+            handleFetch(
+              getBalanceBtc,
+              legacyAddress,
+              chainInfo,
+              AddressBtcType.Legacy
+            );
           }
           break;
       }
@@ -546,15 +638,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   useEffect(() => {
-    loadCachedData(accountOrai.bech32Address);
-
-    fetchAllBalances();
+    setDataBalances([]); // Clear existing balances
+    processedItemsTotalPrice.clear();
+    processedItemsTotalPriceByChain.clear();
+    setTimeout(() => {
+      fetchAllBalances();
+    }, 300);
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
     address,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-    // type: AddressBtcType
+    chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
+    type: AddressBtcType
   ) => {
     const data = await API.getBtcBalance({
       address,
@@ -572,6 +667,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             chainInfo,
             isFetching: false,
             error: null,
+            typeAddress: type,
           },
         ]);
       }
@@ -927,62 +1023,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
 
-  const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
-    let result: PricePretty | undefined;
-    for (const bal of dataBalances) {
-      if (bal.price) {
-        const price = priceStore.calculatePrice(bal.token, "usd");
-        if (price) {
-          if (!result) {
-            result = price;
-          } else {
-            result = result.add(price);
-          }
-        }
-      }
-    }
-    return result;
-  }, [dataBalances, priceStore]);
-
-  useEffect(() => {
-    if (!availableTotalPriceEmbedOnlyUSD || !accountOrai.bech32Address) return;
-    const hashedAddress = new sha256()
-      .update(accountOrai.bech32Address)
-      .digest("hex");
-
-    const amount = new IntPretty(availableTotalPriceEmbedOnlyUSD || "0")
-      .maxDecimals(2)
-      .shrink(true)
-      .trim(true)
-      .locale(false)
-      .inequalitySymbol(true);
-    const logEvent = {
-      userId: hashedAddress,
-      totalPrice: amount?.toString() || "0",
-      currency: "usd",
-    };
-    if (mixpanel) {
-      mixpanel.track("OWallet - Assets Managements", logEvent);
-    }
-    return () => {};
-  }, [accountOrai.bech32Address, availableTotalPriceEmbedOnlyUSD]);
-  const availableTotalPriceByChain = useMemo(() => {
-    let result: PricePretty | undefined;
-    let balances = dataBalances.filter(
-      (token) => token.chainInfo.chainId === chainStore.current.chainId
-    );
-    for (const bal of balances) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
-      }
-    }
-    return result;
-  }, [dataBalances]);
-
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -990,6 +1030,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           refreshing={refreshing}
           onRefresh={() => {
             setRefreshing(true);
+            setDataBalances([]); // Clear existing balances
+            processedItemsTotalPrice.clear();
+            processedItemsTotalPriceByChain.clear();
             onRefresh();
             fetchAllBalances();
           }}
@@ -1000,7 +1043,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <AccountBoxAll
-        isLoading={false}
+        isLoading={isLoading}
         totalBalanceByChain={(
           availableTotalPriceByChain || initPrice
         )?.toString()}
@@ -1012,7 +1055,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           appInitStore.getInitApp.isAllNetworks
             ? dataBalances
             : dataBalances.filter(
-                (item) => item.chainInfo.chainId === chainStore.current.chainId
+                (token) =>
+                  token.chainInfo.chainId === chainStore.current.chainId
               )
         }
       />

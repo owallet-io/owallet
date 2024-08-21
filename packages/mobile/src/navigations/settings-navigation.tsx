@@ -28,11 +28,7 @@ export const SettingStackScreen: FC = () => {
   const { colors } = useTheme();
   const { analyticsStore, appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
-    console.log(route?.name, "route?.name");
-    // if (route?.name !== "Setting") {
     appInitStore.updateVisibleTabBar(route?.name);
-    // }
-
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name]?.title },
       navigation
@@ -44,9 +40,6 @@ export const SettingStackScreen: FC = () => {
       <Stack.Screen
         options={{
           headerShown: false,
-          // title: "Settings",
-          // ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(style.get("color-setting-screen-background").color),
-          // headerTitleStyle: style.flatten(["h3", "color-text-black-high"])
         }}
         name={SCREENS.Setting}
         // component={SettingScreen}
@@ -70,12 +63,6 @@ export const SettingStackScreen: FC = () => {
               <HeaderAddIcon />
             </HeaderRightButton>
           ),
-          //   ...BlurredHeaderScreenOptionsPreset,
-          //   headerStyle: {
-          //     backgroundColor: colors['primary'],
-          //     shadowColor: 'transparent', // this covers iOS
-          //     elevation: 0 // this covers Android
-          //   }
         }}
         component={SettingSelectAccountScreen}
       />

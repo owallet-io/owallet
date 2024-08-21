@@ -29,8 +29,6 @@ const MnemonicSeed = () => {
     priceStore,
     accountStore,
   } = useStore();
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
@@ -59,55 +57,7 @@ const MnemonicSeed = () => {
       await waitAccountInit(chainStore, accountStore, keyRingStore);
     }
   }, []);
-  const { totalPriceBalance } = appInitStore.getMultipleAssets;
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const loadCachedData = async (cacheKey: string) => {
-    // InteractionManager.runAfterInteractions(async () => {
-    try {
-      const cachedData = await AsyncStorage.getItem(
-        `cachedDataBalances-${cacheKey}`
-      );
-      if (cachedData) {
-        const dataBalances: any[] = JSON.parse(cachedData);
-        const balances = dataBalances.map((item) => {
-          const token = new CoinPretty(
-            item.token.currency,
-            new Dec(item.token.balance)
-          );
-          return {
-            chainInfo: chainStore.getChain(item.chainId),
-            isFetching: false,
-            error: null,
-            token,
-            price: priceStore.calculatePrice(token),
-          };
-        });
-        setDataBalances(balances);
-      }
-    } catch (e) {
-      console.error("Failed to load data from cache", e);
-    }
-    // });
-  };
-  useEffect(() => {
-    loadCachedData(accountOrai.bech32Address);
 
-    return () => {};
-  }, [accountOrai.bech32Address]);
-  const availableTotalPrice = useMemo(() => {
-    let result: PricePretty | undefined;
-    let balances = dataBalances;
-    for (const bal of balances) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
-      }
-    }
-    return result;
-  }, [dataBalances]);
   const renderItem = ({ item }) => {
     return (
       <>
@@ -150,11 +100,6 @@ const MnemonicSeed = () => {
               <Text weight="600" size={16} numberOfLines={1}>
                 {item.meta?.name}
               </Text>
-              {item.selected ? (
-                <Text color={colors["neutral-text-title"]} numberOfLines={1}>
-                  {(availableTotalPrice || initPrice)?.toString()}
-                </Text>
-              ) : null}
             </View>
           </View>
 

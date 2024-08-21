@@ -39,6 +39,7 @@ import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
 import { tracking } from "@src/utils/tracking";
 import { RouteProp, useRoute } from "@react-navigation/native";
+import { AddressBtcType } from "@owallet/types";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -216,8 +217,8 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               }
               style={styles.copy}
               label={
-                item?.type
-                  ? item?.type?.includes("Legacy")
+                item?.typeAddress
+                  ? item?.typeAddress === AddressBtcType.Legacy
                     ? shortenAddress(account.legacyAddress)
                     : shortenAddress(address)
                   : shortenAddress(address)
