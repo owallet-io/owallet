@@ -19,7 +19,8 @@
     "**/jetifier",
     "**/@bugsnag/**",
     "**/@gorhom/**",
-    "**/@shopify/**"
+    "**/@shopify/**",
+    "@walletconnect/react-native-compat"
   ],
   "useNx": true
 }

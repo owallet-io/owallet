@@ -1,0 +1,27 @@
+{
+  "name": "@owallet/wc-client-example",
+  "version": "0.9.16",
+  "author": "oraichain labs",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "serve": "parcel ./src/index.html"
+  },
+  "dependencies": {
+    "@owallet/common": "*",
+    "@owallet/cosmos": "*",
+    "@owallet/stores": "*",
+    "@owallet/types": "*",
+    "@owallet/wc-client": "*",
+    "@owallet/wc-qrcode-modal": "*",
+    "buffer": "^6.0.3"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  },
+  "peerDependencies": {
+    "mobx-react-lite": "^3",
+    "react": "^16.8.0 || ^17 || ^18",
+    "react-dom": "^16.8.0 || ^17 || ^18"
+  }
+}
