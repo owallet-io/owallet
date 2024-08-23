@@ -17,8 +17,9 @@ import { APP_PORT } from "@owallet/router";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
 import { ChainStore } from "./chain";
-import { DeepLinkStore, BrowserStore, browserStore } from "./browser";
+import { BrowserStore, browserStore } from "./browser";
 import { AppInit, appInit } from "./app_init";
+import { DeepLinkStore } from "./deep-link";
 import { Notification, notification } from "./notification";
 import EventEmitter from "eventemitter3";
 import { OWallet, Ethereum, Bitcoin, TronWeb } from "@owallet/provider";
@@ -306,7 +307,7 @@ export class RootStore {
         },
       }
     );
-    this.deepLinkUriStore = new DeepLinkStore();
+    // this.deepLinkUriStore = new DeepLinkStore();
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
@@ -332,6 +333,8 @@ export class RootStore {
       this.keyRingStore,
       this.permissionStore
     );
+    this.deepLinkStore = new DeepLinkStore(this.walletConnectStore);
+
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>
