@@ -3,6 +3,7 @@ import SignClient from "@walletconnect/sign-client";
 import { OWalletQRCodeModalV2 } from "@owallet/wc-qrcode-modal";
 import { OWalletWalletConnectV2 } from "@owallet/wc-client";
 import { EmbedChainInfos } from "./config";
+import { fetchRetry } from "@owallet/common";
 // import { simpleFetch } from "@owallet/simple-fetch";
 
 let owallet: OWallet | undefined = undefined;
@@ -16,11 +17,7 @@ type sendResponse = {
   };
 };
 
-async function sendTx(
-  chainId: string,
-  tx: Uint8Array,
-  mode: BroadcastMode
-): Promise<Uint8Array> {
+async function sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
   const params = {
     tx_bytes: Buffer.from(tx as any).toString("base64"),
     mode: (() => {
@@ -34,29 +31,23 @@ async function sendTx(
         default:
           return "BROADCAST_MODE_UNSPECIFIED";
       }
-    })(),
+    })()
   };
-  const baseUrl = EmbedChainInfos.find(
-    (chainInfo) => chainInfo.chainId === chainId
-  )?.rest;
-
-  const response: any = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs`, {
+  const baseUrl = EmbedChainInfos.find((chainInfo) => chainInfo.chainId === chainId)?.rest;
+  const response: any = await fetchRetry(`${baseUrl}/cosmos/tx/v1beta1/txs`, {
     method: "POST",
-    body: JSON.stringify(params),
+    body: JSON.stringify(params)
   });
-
-  if (
-    response.data.tx_response.code != null &&
-    response.data.tx_response.code !== 0
-  ) {
-    throw new Error(response.data.tx_response["raw_log"]);
+  console.log(response, "response");
+  if (response.tx_response.code != null && response.tx_response.code !== 0) {
+    throw new Error(response.tx_response["raw_log"]);
   }
 
-  if (response.data.tx_response.txhash == null) {
+  if (response.tx_response.txhash == null) {
     throw new Error("Invalid response");
   }
 
-  return Buffer.from(response.data.tx_response.txhash, "hex");
+  return Buffer.from(response.tx_response.txhash, "hex");
 }
 
 export function getWCOWallet(): Promise<OWallet> {
@@ -67,15 +58,15 @@ export function getWCOWallet(): Promise<OWallet> {
   const fn = async () => {
     const signClient = await SignClient.init({
       // If do you have your own project id, you can set it.
-      projectId: "8d611785b5b4298436793509ca6198df",
+      projectId: "20eea4b9e4c6e7b1f1030b26c844ed2c",
       metadata: {
         name: "WC Test Dapp",
         description: "WC Test Dapp",
         url: "http://localhost:1234/",
         icons: [
-          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/logo-256.png",
-        ],
-      },
+          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/logo-256.png"
+        ]
+      }
     });
 
     if (signClient.session.getAll().length <= 0) {
@@ -86,11 +77,11 @@ export function getWCOWallet(): Promise<OWallet> {
 
       owallet = new OWalletWalletConnectV2(signClient, {
         sendTx,
-        sessionProperties,
+        sessionProperties
       });
     } else {
       owallet = new OWalletWalletConnectV2(signClient, {
-        sendTx,
+        sendTx
       });
     }
 

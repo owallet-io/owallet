@@ -1,9 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import "regenerator-runtime/runtime";
-
+import React from "react";
 import ReactDOM from "react-dom";
 import { StoreProvider } from "./stores";
-import React from "react";
+
 import { App } from "./app";
 
 ReactDOM.render(

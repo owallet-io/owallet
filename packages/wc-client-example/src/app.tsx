@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores";
-import { EthSignType } from "@keplr-wallet/types";
+// import { EthSignType } from "@keplr-wallet/types";
 
 const IBCChannel = "channel-141";
 const CounterpartyIBCChannel = "channel-0";
@@ -11,9 +11,7 @@ export const App: FunctionComponent = observer(() => {
 
   return (
     <div>
-      <p>
-        Name: {accountStore.getAccount(chainStore.chainInfos[0].chainId).name}
-      </p>
+      <p>Name: {accountStore.getAccount(chainStore.chainInfos[0].chainId).name}</p>
       {chainStore.chainInfos.map((chainInfo) => {
         const account = accountStore.getAccount(chainInfo.chainId);
         const queries = queriesStore.get(chainInfo.chainId);
@@ -34,17 +32,16 @@ export const App: FunctionComponent = observer(() => {
         onClick={() => {
           const chainInfo = chainStore.chainInfos[0];
           const account = accountStore.getAccount(chainInfo.chainId);
-          const counterpartyAccount = accountStore.getAccount(
-            chainStore.chainInfos[1].chainId
-          );
+          console.log(chainInfo.chainId, "chainInfo.chainId");
+          const counterpartyAccount = accountStore.getAccount(chainStore.chainInfos[1].chainId);
 
           account.cosmos.sendIBCTransferMsg(
             {
               portId: "transfer",
               channelId: IBCChannel,
-              counterpartyChainId: chainStore.chainInfos[1].chainId,
+              counterpartyChainId: chainStore.chainInfos[1].chainId
             },
-            "1",
+            "0.0001",
             chainInfo.currencies[0],
             counterpartyAccount.bech32Address
           );
@@ -56,17 +53,15 @@ export const App: FunctionComponent = observer(() => {
         onClick={() => {
           const chainInfo = chainStore.chainInfos[1];
           const account = accountStore.getAccount(chainInfo.chainId);
-          const counterpartyAccount = accountStore.getAccount(
-            chainStore.chainInfos[0].chainId
-          );
+          const counterpartyAccount = accountStore.getAccount(chainStore.chainInfos[0].chainId);
 
           account.cosmos.sendIBCTransferMsg(
             {
               portId: "transfer",
               channelId: CounterpartyIBCChannel,
-              counterpartyChainId: chainStore.chainInfos[0].chainId,
+              counterpartyChainId: chainStore.chainInfos[0].chainId
             },
-            "1",
+            "0.00012",
             chainInfo.currencies[0],
             counterpartyAccount.bech32Address
           );
@@ -75,74 +70,38 @@ export const App: FunctionComponent = observer(() => {
         Test IBC 2
       </button>
 
-      <button
+      {/* <button
         onClick={() => {
           const chainInfo = chainStore.chainInfos[0];
           const account = accountStore.getAccount(chainInfo.chainId);
 
-          const data =
-            "NDk2NDAxNmVkMWM4MDI1NjAxZWUzMDA5NjU2MGI3YzI4NTRmMGFjNjdiODA4ZjNm";
+          const data = "NDk2NDAxNmVkMWM4MDI1NjAxZWUzMDA5NjU2MGI3YzI4NTRmMGFjNjdiODA4ZjNm";
 
-          account.getKeplr().then((keplr) => {
-            keplr?.signArbitrary(
-              chainInfo.chainId,
-              account.bech32Address,
-              data
-            );
+          account.getOWallet().then((keplr) => {
+            keplr?.signArbitrary(chainInfo.chainId, account.bech32Address, data);
           });
         }}
       >
         Sign Abitrary
       </button>
-      <button
-        onClick={() => {
-          const evmosChainInfo = chainStore.getChain("evmos_9001-2");
-          const account = accountStore.getAccount(evmosChainInfo.chainId);
-
-          const ethereumTx = {
-            type: 2,
-            chainId: 9001,
-            nonce: 95,
-            gasLimit: "0xae3f",
-            maxFeePerGas: "0x5efeb1f00",
-            maxPriorityFeePerGas: "0x59682f00",
-            to: "0xD4949664cD82660AaE99bEdc034a0deA8A0bd517",
-            value: "0x0",
-            data: "0xa9059cbb0000000000000000000000007f7ec812297f74c80fc8bcaf11ac881dc88eb216000000000000000000000000000000000000000000000000002386f26fc10000",
-          };
-
-          account.getKeplr().then((keplr) => {
-            keplr
-              ?.signEthereum(
-                evmosChainInfo.chainId,
-                account.ethereumHexAddress,
-                JSON.stringify(ethereumTx),
-                EthSignType.TRANSACTION
-              )
-              .then((signature) => {
-                console.log("signature", signature);
-              });
-          });
-        }}
-      >
-        Sign Ethereum
-      </button>
+     */}
 
       <button
         onClick={() => {
           accountStore
             .getAccount(chainStore.chainInfos[0].chainId)
-            .getKeplr()
-            .then((keplr) => {
-              keplr?.experimentalSuggestChain({
+            .getOWallet()
+            .then((owallet) => {
+              owallet?.experimentalSuggestChain({
                 rpc: "https://rpc.testnet.osmosis.zone",
                 rest: "https://lcd.testnet.osmosis.zone",
                 chainId: "osmo-test-5",
                 chainName: "Osmosis Testnet",
-                chainSymbolImageUrl:
-                  "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/chain.png",
+                networkType: "cosmos",
+                // chainSymbolImageUrl:
+                //   "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/chain.png",
                 bip44: {
-                  coinType: 118,
+                  coinType: 118
                 },
                 bech32Config: {
                   bech32PrefixAccAddr: "osmo",
@@ -150,14 +109,14 @@ export const App: FunctionComponent = observer(() => {
                   bech32PrefixValAddr: "osmovaloper",
                   bech32PrefixValPub: "osmovaloperpub",
                   bech32PrefixConsAddr: "osmovalcons",
-                  bech32PrefixConsPub: "osmovalconspub",
+                  bech32PrefixConsPub: "osmovalconspub"
                 },
                 stakeCurrency: {
                   coinDenom: "OSMO",
                   coinMinimalDenom: "uosmo",
                   coinDecimals: 6,
                   coinImageUrl:
-                    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png",
+                    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png"
                 },
                 currencies: [
                   {
@@ -165,15 +124,15 @@ export const App: FunctionComponent = observer(() => {
                     coinMinimalDenom: "uosmo",
                     coinDecimals: 6,
                     coinImageUrl:
-                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png",
+                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png"
                   },
                   {
                     coinDenom: "ION",
                     coinMinimalDenom: "uion",
                     coinDecimals: 6,
                     coinImageUrl:
-                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uion.png",
-                  },
+                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uion.png"
+                  }
                 ],
                 feeCurrencies: [
                   {
@@ -185,11 +144,11 @@ export const App: FunctionComponent = observer(() => {
                     gasPriceStep: {
                       low: 0.0025,
                       average: 0.025,
-                      high: 0.04,
-                    },
-                  },
+                      high: 0.04
+                    }
+                  }
                 ],
-                features: [],
+                features: []
               });
             });
         }}
@@ -197,21 +156,18 @@ export const App: FunctionComponent = observer(() => {
         Suggest Chain
       </button>
 
-      <button
+      {/* <button
         onClick={() => {
           accountStore
             .getAccount(chainStore.chainInfos[0].chainId)
-            .getKeplr()
+            .getOWallet()
             .then((keplr) => {
-              keplr?.suggestToken(
-                "juno-1",
-                "juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux"
-              );
+              keplr?.suggestToken("juno-1", "juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux");
             });
         }}
       >
         Suggest Token
-      </button>
+      </button> */}
     </div>
   );
 });

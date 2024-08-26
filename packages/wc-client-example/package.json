@@ -5,7 +5,8 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "serve": "parcel ./src/index.html"
+    "serve": "parcel ./src/index.html",
+    "clean": "parcel clean"
   },
   "dependencies": {
     "@owallet/common": "*",
@@ -14,14 +15,19 @@
     "@owallet/types": "*",
     "@owallet/wc-client": "*",
     "@owallet/wc-qrcode-modal": "*",
+    "@walletconnect/sign-client": "2.15.1",
+    "@walletconnect/types": "2.15.1",
     "buffer": "^6.0.3"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.5"
+    "@parcel/config-default": "2.12.0",
+    "@parcel/transformer-typescript-tsc": "2.12.0",
+    "parcel": "^2.12.0"
   },
   "peerDependencies": {
-    "mobx-react-lite": "^3",
-    "react": "^16.8.0 || ^17 || ^18",
-    "react-dom": "^16.8.0 || ^17 || ^18"
-  }
+    "mobx-react-lite": "^4",
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead"
 }
