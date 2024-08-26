@@ -125,9 +125,7 @@ export const FullScreenCameraView: FunctionComponent<
             >
               <View
                 style={{
-                  paddingLeft: 32,
-                  paddingRight: 48,
-                  paddingBottom: 31,
+                  padding: 30,
                   borderRadius: 8,
                   alignItems: "center",
                   backgroundColor: colors["camera-loading-background"],
@@ -140,7 +138,7 @@ export const FullScreenCameraView: FunctionComponent<
                 <Text
                   style={{
                     ...typography["subtitle1"],
-                    marginTop: 34,
+                    marginTop: 14,
                     color: colors["primary-surface-default"],
                   }}
                 >
