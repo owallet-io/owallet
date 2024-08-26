@@ -97,8 +97,8 @@ export const App: FunctionComponent = observer(() => {
           accountStore
             .getAccount(chainStore.chainInfos[0].chainId)
             .getOWallet()
-            .then((owallet) => {
-              owallet?.experimentalSuggestChain({
+            .then(async (owallet) => {
+              await owallet?.experimentalSuggestChain({
                 rpc: "https://rpc.testnet.osmosis.zone",
                 rest: "https://lcd.testnet.osmosis.zone",
                 chainId: "osmo-test-5",
@@ -156,24 +156,12 @@ export const App: FunctionComponent = observer(() => {
                 ],
                 features: [],
               });
+              await owallet.enable("osmo-test-5");
             });
         }}
       >
-        Suggest Chain
+        Suggest Chain testnet osmosis
       </button>
-
-      {/* <button
-        onClick={() => {
-          accountStore
-            .getAccount(chainStore.chainInfos[0].chainId)
-            .getOWallet()
-            .then((keplr) => {
-              keplr?.suggestToken("juno-1", "juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux");
-            });
-        }}
-      >
-        Suggest Token
-      </button> */}
     </div>
   );
 });
