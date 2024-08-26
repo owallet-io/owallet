@@ -329,75 +329,77 @@ export const AccountBoxAll: FunctionComponent<{
     };
 
     const renderPieChartPortfolio = () => {
-      return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          {series.length > 0 && series[0] > 0 ? (
-            <View
-              style={{
-                padding: 16,
-              }}
-            >
-              <PieChart
-                widthAndHeight={widthAndHeight}
-                series={series}
-                sliceColor={sliceColor}
-                coverRadius={0.75}
-                coverFill={colors["neutral-surface-card"]}
-              />
-            </View>
-          ) : null}
-          <View style={{ width: "60%" }}>
-            {chainListWithBalance
-              .sort((a, b) => {
-                return Number(b.totalBalance) - Number(a.totalBalance);
-              })
-              .map((chain) => {
-                return (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      marginBottom: 8,
-                    }}
-                  >
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <View
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: 2,
-                          backgroundColor: chain.color,
-                          marginRight: 4,
-                        }}
-                      />
-                      <Text size={13} color={colors["neutral-text-body"]}>
-                        {chain.name}
-                      </Text>
-                    </View>
+      if (series.length > 0 && series[0] > 0) {
+        return (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {series.length > 0 && series[0] > 0 ? (
+              <View
+                style={{
+                  padding: 16,
+                }}
+              >
+                <PieChart
+                  widthAndHeight={widthAndHeight}
+                  series={series}
+                  sliceColor={sliceColor}
+                  coverRadius={0.75}
+                  coverFill={colors["neutral-surface-card"]}
+                />
+              </View>
+            ) : null}
+            <View style={{ width: "60%" }}>
+              {chainListWithBalance
+                .sort((a, b) => {
+                  return Number(b.totalBalance) - Number(a.totalBalance);
+                })
+                .map((chain) => {
+                  return (
                     <View
                       style={{
-                        backgroundColor: colors["neutral-surface-bg2"],
-                        borderRadius: 999,
-                        paddingHorizontal: 4,
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginBottom: 8,
                       }}
                     >
-                      <Text>
-                        {(
-                          (Number(chain.totalBalance) /
-                            Number(totalPriceBalance.toDec().toString())) *
-                          100
-                        ).toFixed(2)}
-                        %
-                      </Text>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 2,
+                            backgroundColor: chain.color,
+                            marginRight: 4,
+                          }}
+                        />
+                        <Text size={13} color={colors["neutral-text-body"]}>
+                          {chain.name}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          backgroundColor: colors["neutral-surface-bg2"],
+                          borderRadius: 999,
+                          paddingHorizontal: 4,
+                        }}
+                      >
+                        <Text>
+                          {(
+                            (Number(chain.totalBalance) /
+                              Number(totalPriceBalance.toDec().toString())) *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                );
-              })}
+                  );
+                })}
+            </View>
           </View>
-        </View>
-      );
+        );
+      }
     };
 
     const renderAvailableperStaked = () => {
