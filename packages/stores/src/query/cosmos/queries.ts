@@ -3,28 +3,17 @@ import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../common";
 import { ObservableQueryBlock } from "./block";
 import { ObservableQueryAccount } from "./account";
-import {
-  ObservableQueryInflation,
-  ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal,
-} from "./supply";
+import { ObservableQueryInflation, ObservableQueryMintingInfation, ObservableQuerySupplyTotal } from "./supply";
 import {
   ObservableQueryDelegations,
   ObservableQueryRewards,
   ObservableQueryStakingParams,
   ObservableQueryStakingPool,
   ObservableQueryUnbondingDelegations,
-  ObservableQueryValidators,
+  ObservableQueryValidators
 } from "./staking";
-import {
-  ObservableQueryGovernance,
-  ObservableQueryProposalVote,
-} from "./governance";
-import {
-  ObservableQueryDenomTrace,
-  ObservableQueryIBCChannel,
-  ObservableQueryIBCClientState,
-} from "./ibc";
+import { ObservableQueryGovernance, ObservableQueryProposalVote } from "./governance";
+import { ObservableQueryDenomTrace, ObservableQueryIBCChannel, ObservableQueryIBCClientState } from "./ibc";
 import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
 import { ObservableQueryCosmosBalanceRegistry } from "./balance";
 import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
@@ -32,17 +21,15 @@ import { DeepReadonly } from "utility-types";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
-  ObservableQueryOsmosisMintParmas,
+  ObservableQueryOsmosisMintParmas
 } from "./supply/osmosis";
+import { ObservableQueryRPCStatus } from "./status";
 
 export interface HasCosmosQueries {
   cosmos: CosmosQueries;
 }
 
-export class QueriesWrappedCosmos
-  extends QueriesSetBase
-  implements HasCosmosQueries
-{
+export class QueriesWrappedCosmos extends QueriesSetBase implements HasCosmosQueries {
   public cosmos: CosmosQueries;
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
@@ -54,6 +41,7 @@ export class QueriesWrappedCosmos
 
 export class CosmosQueries {
   public readonly queryBlock: DeepReadonly<ObservableQueryBlock>;
+  public readonly queryRPCStatus: DeepReadonly<ObservableQueryRPCStatus>;
   public readonly queryAccount: DeepReadonly<ObservableQueryAccount>;
   public readonly queryMint: DeepReadonly<ObservableQueryMintingInfation>;
   public readonly queryPool: DeepReadonly<ObservableQueryStakingPool>;
@@ -73,53 +61,19 @@ export class CosmosQueries {
 
   public readonly querySifchainAPY: DeepReadonly<ObservableQuerySifchainLiquidityAPY>;
 
-  constructor(
-    base: QueriesSetBase,
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter
-  ) {
-    this.querySifchainAPY = new ObservableQuerySifchainLiquidityAPY(
-      kvStore,
-      chainId
-    );
-
-    base.queryBalances.addBalanceRegistry(
-      new ObservableQueryCosmosBalanceRegistry(kvStore)
-    );
+  constructor(base: QueriesSetBase, kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+    this.querySifchainAPY = new ObservableQuerySifchainLiquidityAPY(kvStore, chainId);
+    this.queryRPCStatus = new ObservableQueryRPCStatus(kvStore, chainId, chainGetter);
+    base.queryBalances.addBalanceRegistry(new ObservableQueryCosmosBalanceRegistry(kvStore));
 
     this.queryBlock = new ObservableQueryBlock(kvStore, chainId, chainGetter);
-    this.queryAccount = new ObservableQueryAccount(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryMint = new ObservableQueryMintingInfation(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryPool = new ObservableQueryStakingPool(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryStakingParams = new ObservableQueryStakingParams(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.querySupplyTotal = new ObservableQuerySupplyTotal(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryAccount = new ObservableQueryAccount(kvStore, chainId, chainGetter);
+    this.queryMint = new ObservableQueryMintingInfation(kvStore, chainId, chainGetter);
+    this.queryPool = new ObservableQueryStakingPool(kvStore, chainId, chainGetter);
+    this.queryStakingParams = new ObservableQueryStakingParams(kvStore, chainId, chainGetter);
+    this.querySupplyTotal = new ObservableQuerySupplyTotal(kvStore, chainId, chainGetter);
 
-    const osmosisMintParams = new ObservableQueryOsmosisMintParmas(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    const osmosisMintParams = new ObservableQueryOsmosisMintParmas(kvStore, chainId, chainGetter);
 
     this.queryInflation = new ObservableQueryInflation(
       chainId,
@@ -130,60 +84,18 @@ export class CosmosQueries {
       new ObservableQueryIrisMintingInfation(kvStore, chainId, chainGetter),
       this.querySifchainAPY,
       new ObservableQueryOsmosisEpochs(kvStore, chainId, chainGetter),
-      new ObservableQueryOsmosisEpochProvisions(
-        kvStore,
-        chainId,
-        chainGetter,
-        osmosisMintParams
-      ),
+      new ObservableQueryOsmosisEpochProvisions(kvStore, chainId, chainGetter, osmosisMintParams),
       osmosisMintParams
     );
-    this.queryRewards = new ObservableQueryRewards(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryDelegations = new ObservableQueryDelegations(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryUnbondingDelegations = new ObservableQueryUnbondingDelegations(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryValidators = new ObservableQueryValidators(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryGovernance = new ObservableQueryGovernance(
-      kvStore,
-      chainId,
-      chainGetter,
-      this.queryPool
-    );
-    this.queryProposalVote = new ObservableQueryProposalVote(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryRewards = new ObservableQueryRewards(kvStore, chainId, chainGetter);
+    this.queryDelegations = new ObservableQueryDelegations(kvStore, chainId, chainGetter);
+    this.queryUnbondingDelegations = new ObservableQueryUnbondingDelegations(kvStore, chainId, chainGetter);
+    this.queryValidators = new ObservableQueryValidators(kvStore, chainId, chainGetter);
+    this.queryGovernance = new ObservableQueryGovernance(kvStore, chainId, chainGetter, this.queryPool);
+    this.queryProposalVote = new ObservableQueryProposalVote(kvStore, chainId, chainGetter);
 
-    this.queryIBCClientState = new ObservableQueryIBCClientState(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryIBCChannel = new ObservableQueryIBCChannel(
-      kvStore,
-      chainId,
-      chainGetter
-    );
-    this.queryIBCDenomTrace = new ObservableQueryDenomTrace(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryIBCClientState = new ObservableQueryIBCClientState(kvStore, chainId, chainGetter);
+    this.queryIBCChannel = new ObservableQueryIBCChannel(kvStore, chainId, chainGetter);
+    this.queryIBCDenomTrace = new ObservableQueryDenomTrace(kvStore, chainId, chainGetter);
   }
 }
