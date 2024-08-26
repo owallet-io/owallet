@@ -19,7 +19,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum, ChainNameEnum, unknownToken } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
@@ -33,16 +33,11 @@ import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
-import LottieView from "lottie-react-native";
 import images from "@src/assets/images";
 import PieChart from "react-native-pie-chart";
 import { PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import { initPrice } from "../hooks/use-multiple-assets";
-
-function getKeyByValue(object, value) {
-  return Object.keys(object).find((key) => object[key] === value);
-}
 
 const widthAndHeight = 100;
 const colorList = [

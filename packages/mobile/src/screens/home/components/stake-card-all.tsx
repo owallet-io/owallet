@@ -425,7 +425,7 @@ export const StakeCardAll = observer(({}) => {
             </View>
             <View>
               {viewTokens.map((token, index) => {
-                if (!viewMore && index > 0) return null;
+                if (!viewMore && index >= 0) return null;
                 return renderToken(token);
               })}
             </View>
