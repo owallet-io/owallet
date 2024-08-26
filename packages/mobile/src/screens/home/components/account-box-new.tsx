@@ -38,6 +38,7 @@ import PieChart from "react-native-pie-chart";
 import { Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import { initPrice } from "../hooks/use-multiple-assets";
+import MoreModal from "./more-modal";
 
 const widthAndHeight = 100;
 const colorList = [
@@ -88,6 +89,7 @@ export const AccountBoxAll: FunctionComponent<{
     const styles = styling(colors);
 
     const [isOpen, setModalOpen] = useState(false);
+    const [isMoreOpen, setMoreModalOpen] = useState(false);
     const [showChart, setShowChart] = useState(true);
     const [chainListWithBalance, setChainListWithBalance] = useState([]);
     const [series, setSeries] = useState([]);
@@ -97,6 +99,8 @@ export const AccountBoxAll: FunctionComponent<{
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
+
+    const queries = queriesStore.get(chainStore.current.chainId);
 
     const account = accountStore.getAccount(chainStore.current.chainId);
     const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -108,7 +112,6 @@ export const AccountBoxAll: FunctionComponent<{
         ? queries.tron.queryAccount.getQueryWalletAddress(address)
         : null;
 
-    const queries = queriesStore.get(chainStore.current.chainId);
     const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
       account.bech32Address
     );
@@ -575,6 +578,14 @@ export const AccountBoxAll: FunctionComponent<{
             enableOverDrag: false,
           }}
         />
+        <MoreModal
+          close={() => setMoreModalOpen(false)}
+          isOpen={isMoreOpen}
+          bottomSheetModalConfig={{
+            enablePanDownToClose: false,
+            enableOverDrag: false,
+          }}
+        />
         <OWBox style={styles.containerOWBox}>
           <View style={styles.containerInfoAccount}>
             <TouchableOpacity
@@ -786,36 +797,7 @@ export const AccountBoxAll: FunctionComponent<{
                 style={styles.getStarted}
                 label={"More"}
                 onPress={() => {
-                  if (appInitStore.getInitApp.isAllNetworks) {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.BuyFiat,
-                    });
-                    return;
-                  }
-                  if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                    smartNavigation.navigateSmart("SendTron", {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
-                  } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                    smartNavigation.navigateSmart("SendOasis", {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
-                  } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendBtc,
-                    });
-                  } else if (chainStore.current.networkType === "evm") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendEvm,
-                    });
-                  } else {
-                    smartNavigation.navigateSmart("NewSend", {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
-                  }
+                  setMoreModalOpen(true);
                 }}
               />
             </View>
