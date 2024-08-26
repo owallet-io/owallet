@@ -16,10 +16,10 @@ import {
 import { Text } from "@src/components/text";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { CheckIcon, CopyFillIcon, DownArrowIcon } from "@src/components/icon";
+import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum, unknownToken } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
@@ -35,7 +35,7 @@ import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import images from "@src/assets/images";
 import PieChart from "react-native-pie-chart";
-import { PricePretty } from "@owallet/unit";
+import { Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import { initPrice } from "../hooks/use-multiple-assets";
 
@@ -74,7 +74,6 @@ export const AccountBoxAll: FunctionComponent<{
   isLoading: boolean;
 }> = observer(
   ({ totalPriceBalance, totalBalanceByChain, isLoading, dataBalances }) => {
-    const { colors } = useTheme();
     const {
       accountStore,
       modalStore,
@@ -84,6 +83,10 @@ export const AccountBoxAll: FunctionComponent<{
       keyRingStore,
       priceStore,
     } = useStore();
+
+    const { colors } = useTheme();
+    const styles = styling(colors);
+
     const [isOpen, setModalOpen] = useState(false);
     const [showChart, setShowChart] = useState(true);
     const [chainListWithBalance, setChainListWithBalance] = useState([]);
@@ -95,12 +98,29 @@ export const AccountBoxAll: FunctionComponent<{
       priceStore.defaultVsCurrency
     );
 
-    const queries = queriesStore.get(chainStore.current.chainId);
-
-    const styles = styling(colors);
-
     const account = accountStore.getAccount(chainStore.current.chainId);
     const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+    const address = account.getAddressDisplay(
+      keyRingStore.keyRingLedgerAddresses
+    );
+    const accountTronInfo =
+      chainStore.current.chainId === ChainIdEnum.TRON
+        ? queries.tron.queryAccount.getQueryWalletAddress(address)
+        : null;
+
+    const queries = queriesStore.get(chainStore.current.chainId);
+    const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+      account.bech32Address
+    );
+    const stakingReward = queryReward.stakableReward;
+    const totalStakingReward = priceStore.calculatePrice(stakingReward);
+    const queryDelegated =
+      queries.cosmos.queryDelegations.getQueryBech32Address(
+        account.bech32Address
+      );
+    const delegated = queryDelegated.total;
+    const totalPrice = priceStore.calculatePrice(delegated);
+
     useEffect(() => {
       const tmpChain = [];
       const tmpSeries = [];
@@ -181,13 +201,7 @@ export const AccountBoxAll: FunctionComponent<{
       });
       modalStore.setChildren(<MyWalletModal />);
     };
-    const address = account.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-    const accountTronInfo =
-      chainStore.current.chainId === ChainIdEnum.TRON
-        ? queries.tron.queryAccount.getQueryWalletAddress(address)
-        : null;
+
     const renderTotalBalance = () => {
       return (
         <>
@@ -195,10 +209,13 @@ export const AccountBoxAll: FunctionComponent<{
             style={{
               alignItems: "center",
               flexDirection: "row",
+              paddingBottom: 16,
             }}
           >
             <Text variant="bigText" style={styles.labelTotalAmount}>
-              {totalPriceBalance?.toString()}
+              {appInitStore.getInitApp.isAllNetworks
+                ? totalPriceBalance?.toString()
+                : totalBalanceByChain?.toString()}
             </Text>
             {/* {isLoading ? (
             <View
@@ -221,104 +238,6 @@ export const AccountBoxAll: FunctionComponent<{
             </View>
           ) : null} */}
           </View>
-          {appInitStore.getInitApp.isAllNetworks ? null : (
-            <>
-              <View
-                style={{
-                  marginVertical: 8,
-                  paddingVertical: 8,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: colors["neutral-icon-on-dark"],
-                      borderRadius: 16,
-                    }}
-                  >
-                    <OWIcon
-                      type="images"
-                      source={{
-                        uri:
-                          chainStore.current?.stakeCurrency?.coinImageUrl ||
-                          unknownToken.coinImageUrl,
-                      }}
-                      size={16}
-                    />
-                  </View>
-                  <Text
-                    style={{
-                      paddingLeft: 6,
-                    }}
-                    size={16}
-                    weight="600"
-                    color={colors["neutral-text-title"]}
-                  >
-                    {chainStore.current?.chainName || unknownToken.coinDenom}
-                  </Text>
-                </View>
-
-                <Text
-                  size={16}
-                  weight="600"
-                  color={colors["neutral-text-title"]}
-                >
-                  {totalBalanceByChain?.toString()}
-                </Text>
-              </View>
-              {chainStore.current.chainId === ChainIdEnum.TRON && (
-                <View style={{ paddingBottom: 8 }}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <OWText
-                      size={15}
-                      weight="600"
-                      color={colors["neutral-text-title"]}
-                    >
-                      My Energy:
-                    </OWText>
-                    <OWText
-                      size={14}
-                      weight="600"
-                      color={colors["neutral-text-body"]}
-                    >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <OWText
-                      size={15}
-                      weight="600"
-                      color={colors["neutral-text-title"]}
-                    >
-                      My Bandwidth:
-                    </OWText>
-                    <OWText
-                      size={14}
-                      weight="600"
-                      color={colors["neutral-text-body"]}
-                    >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
-                  </View>
-                </View>
-              )}
-            </>
-          )}
         </>
       );
     };
@@ -402,7 +321,7 @@ export const AccountBoxAll: FunctionComponent<{
       let stakedPercent = 0;
       let staked = "0";
       let totalAllChainStaked = 0;
-      let availabel = appInitStore.getInitApp.isAllNetworks
+      const availabel = appInitStore.getInitApp.isAllNetworks
         ? totalPriceBalance?.toString()
         : totalBalanceByChain?.toString();
       const queryDelegated =
@@ -495,6 +414,157 @@ export const AccountBoxAll: FunctionComponent<{
       );
     };
 
+    const renderAssetsByChain = () => {
+      if (
+        (chainStore.current.networkType !== "cosmos" &&
+          !appInitStore.getInitApp.isAllNetworks) ||
+        appInitStore.getInitApp.isAllNetworks
+      )
+        return;
+      const availabel = appInitStore.getInitApp.isAllNetworks
+        ? totalPriceBalance?.toString()
+        : totalBalanceByChain?.toString();
+
+      return (
+        <View
+          style={{
+            paddingTop: 12,
+            paddingBottom: 6,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <OWText color={colors["neutral-text-body"]}>
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 2,
+                  backgroundColor: colors["primary-surface-default"],
+                }}
+              />
+              {"  "}
+              Available
+            </OWText>
+            <OWText size={14} weight="500">{`${availabel}`}</OWText>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 8,
+            }}
+          >
+            <OWText color={colors["neutral-text-body"]}>
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: 2,
+                  backgroundColor: colors["highlight-surface-active"],
+                }}
+              />
+              {"  "}
+              Staked:{" "}
+              {delegated
+                .shrink(true)
+                .maxDecimals(4)
+                .trim(true)
+                .upperCase(true)
+                .toString()}
+            </OWText>
+            <OWText size={14} weight="500">
+              {totalPrice
+                ? totalPrice.toString()
+                : delegated.shrink(true).maxDecimals(6).toString()}
+            </OWText>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginTop: 8,
+            }}
+          >
+            <OWText color={colors["neutral-text-body"]}>
+              <OWIcon
+                name={"trending-outline"}
+                size={14}
+                color={colors["neutral-text-title"]}
+              />
+              {"  "}
+              Rewards:{" "}
+              {stakingReward.toDec().gt(new Dec(0.001))
+                ? stakingReward
+                    .shrink(true)
+                    .maxDecimals(4)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()
+                : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+            </OWText>
+            <OWText size={14} weight="500" color={colors["success-text-body"]}>
+              {" "}
+              {totalStakingReward
+                ? totalStakingReward.toString()
+                : stakingReward.shrink(true).maxDecimals(6).toString()}
+            </OWText>
+          </View>
+          {chainStore.current.chainId === ChainIdEnum.TRON && (
+            <View style={{ paddingBottom: 8 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <OWText
+                  size={15}
+                  weight="600"
+                  color={colors["neutral-text-title"]}
+                >
+                  My Energy:
+                </OWText>
+                <OWText
+                  size={14}
+                  weight="600"
+                  color={colors["neutral-text-body"]}
+                >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <OWText
+                  size={15}
+                  weight="600"
+                  color={colors["neutral-text-title"]}
+                >
+                  My Bandwidth:
+                </OWText>
+                <OWText
+                  size={14}
+                  weight="600"
+                  color={colors["neutral-text-body"]}
+                >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
+              </View>
+            </View>
+          )}
+        </View>
+      );
+    };
+
     return (
       <View>
         <CopyAddressModal
@@ -568,11 +638,15 @@ export const AccountBoxAll: FunctionComponent<{
                   fontWeight: "600",
                   color: colors["neutral-text-action-on-light-bg"],
                 }}
-                icon={
+                iconRight={
                   isTimedOut ? (
                     <CheckIcon />
                   ) : (
-                    <CopyFillIcon color={colors["sub-text"]} />
+                    <OWIcon
+                      size={18}
+                      name="tdesigncopy"
+                      color={colors["neutral-text-action-on-light-bg"]}
+                    />
                   )
                 }
                 style={styles.copy}
@@ -585,12 +659,86 @@ export const AccountBoxAll: FunctionComponent<{
             )}
           </View>
           <View style={styles.overview}>{renderTotalBalance()}</View>
-          {renderAvailableperStaked()}
+          {(chainStore.current.networkType === "cosmos" &&
+            !appInitStore.getInitApp.isAllNetworks) ||
+          appInitStore.getInitApp.isAllNetworks ? (
+            <View
+              style={{
+                height: 1,
+                width: "100%",
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
+          ) : null}
+          {appInitStore.getInitApp.isAllNetworks
+            ? renderAvailableperStaked()
+            : renderAssetsByChain()}
+
           {appInitStore.getInitApp.isAllNetworks && showChart
             ? renderPieChartPortfolio()
             : null}
           {!appInitStore.getInitApp.isAllNetworks ? (
             <View style={styles.btnGroup}>
+              <OWButton
+                textStyle={{
+                  fontSize: 15,
+                  fontWeight: "600",
+                  color: colors["neutral-text-action-on-light-bg"],
+                }}
+                icon={
+                  <OWIcon
+                    color={colors["neutral-text-action-on-light-bg"]}
+                    name={
+                      appInitStore.getInitApp.isAllNetworks
+                        ? "tdesigncreditcard"
+                        : "tdesignsend"
+                    }
+                    size={20}
+                  />
+                }
+                type="link"
+                style={styles.getStarted}
+                label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
+                onPress={() => {
+                  if (appInitStore.getInitApp.isAllNetworks) {
+                    navigate(SCREENS.STACK.Others, {
+                      screen: SCREENS.BuyFiat,
+                    });
+                    return;
+                  }
+                  if (chainStore.current.chainId === ChainIdEnum.TRON) {
+                    smartNavigation.navigateSmart("SendTron", {
+                      currency:
+                        chainStore.current.stakeCurrency.coinMinimalDenom,
+                    });
+                  } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+                    smartNavigation.navigateSmart("SendOasis", {
+                      currency:
+                        chainStore.current.stakeCurrency.coinMinimalDenom,
+                    });
+                  } else if (chainStore.current.networkType === "bitcoin") {
+                    navigate(SCREENS.STACK.Others, {
+                      screen: SCREENS.SendBtc,
+                    });
+                  } else if (chainStore.current.networkType === "evm") {
+                    navigate(SCREENS.STACK.Others, {
+                      screen: SCREENS.SendEvm,
+                    });
+                  } else {
+                    smartNavigation.navigateSmart("NewSend", {
+                      currency:
+                        chainStore.current.stakeCurrency.coinMinimalDenom,
+                    });
+                  }
+                }}
+              />
+              <View
+                style={{
+                  width: 1,
+                  height: "100%",
+                  backgroundColor: colors["neutral-border-default"],
+                }}
+              />
               <OWButton
                 style={styles.getStarted}
                 icon={
@@ -630,17 +778,13 @@ export const AccountBoxAll: FunctionComponent<{
                 icon={
                   <OWIcon
                     color={colors["neutral-text-action-on-light-bg"]}
-                    name={
-                      appInitStore.getInitApp.isAllNetworks
-                        ? "tdesigncreditcard"
-                        : "tdesignsend"
-                    }
+                    name={"tdesignellipsis"}
                     size={20}
                   />
                 }
                 type="link"
                 style={styles.getStarted}
-                label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
+                label={"More"}
                 onPress={() => {
                   if (appInitStore.getInitApp.isAllNetworks) {
                     navigate(SCREENS.STACK.Others, {
@@ -728,7 +872,7 @@ const styling = (colors) =>
     },
     getStarted: {
       borderRadius: 999,
-      width: metrics.screenWidth / 2.45,
+      width: metrics.screenWidth / 4.45,
       height: 32,
     },
     copy: {

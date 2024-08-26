@@ -81,7 +81,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
               typo={textTypo}
               style={[
                 styles.textBtn,
-                !!icon && styles.iconInBtn,
+                styles.iconInBtn,
                 styleMapped.text,
                 textStyle,
               ]}
@@ -102,7 +102,7 @@ const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     paddingHaveIconAndNotFullwidth: { paddingHorizontal: 8 },
-    iconInBtn: { paddingLeft: 6 },
+    iconInBtn: { paddingHorizontal: 6 },
     dashed: {
       borderWidth: 1,
       borderStyle: "dashed",
