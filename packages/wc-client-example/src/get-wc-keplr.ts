@@ -17,7 +17,11 @@ type sendResponse = {
   };
 };
 
-async function sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
+async function sendTx(
+  chainId: string,
+  tx: Uint8Array,
+  mode: BroadcastMode
+): Promise<Uint8Array> {
   const params = {
     tx_bytes: Buffer.from(tx as any).toString("base64"),
     mode: (() => {
@@ -31,12 +35,14 @@ async function sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode): Pro
         default:
           return "BROADCAST_MODE_UNSPECIFIED";
       }
-    })()
+    })(),
   };
-  const baseUrl = EmbedChainInfos.find((chainInfo) => chainInfo.chainId === chainId)?.rest;
+  const baseUrl = EmbedChainInfos.find(
+    (chainInfo) => chainInfo.chainId === chainId
+  )?.rest;
   const response: any = await fetchRetry(`${baseUrl}/cosmos/tx/v1beta1/txs`, {
     method: "POST",
-    body: JSON.stringify(params)
+    body: JSON.stringify(params),
   });
   console.log(response, "response");
   if (response.tx_response.code != null && response.tx_response.code !== 0) {
@@ -64,9 +70,9 @@ export function getWCOWallet(): Promise<OWallet> {
         description: "WC Test Dapp",
         url: "http://localhost:1234/",
         icons: [
-          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/logo-256.png"
-        ]
-      }
+          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/logo-256.png",
+        ],
+      },
     });
 
     if (signClient.session.getAll().length <= 0) {
@@ -77,11 +83,11 @@ export function getWCOWallet(): Promise<OWallet> {
 
       owallet = new OWalletWalletConnectV2(signClient, {
         sendTx,
-        sessionProperties
+        sessionProperties,
       });
     } else {
       owallet = new OWalletWalletConnectV2(signClient, {
-        sendTx
+        sendTx,
       });
     }
 

@@ -11,7 +11,9 @@ export const App: FunctionComponent = observer(() => {
 
   return (
     <div>
-      <p>Name: {accountStore.getAccount(chainStore.chainInfos[0].chainId).name}</p>
+      <p>
+        Name: {accountStore.getAccount(chainStore.chainInfos[0].chainId).name}
+      </p>
       {chainStore.chainInfos.map((chainInfo) => {
         const account = accountStore.getAccount(chainInfo.chainId);
         const queries = queriesStore.get(chainInfo.chainId);
@@ -33,13 +35,15 @@ export const App: FunctionComponent = observer(() => {
           const chainInfo = chainStore.chainInfos[0];
           const account = accountStore.getAccount(chainInfo.chainId);
           console.log(chainInfo.chainId, "chainInfo.chainId");
-          const counterpartyAccount = accountStore.getAccount(chainStore.chainInfos[1].chainId);
+          const counterpartyAccount = accountStore.getAccount(
+            chainStore.chainInfos[1].chainId
+          );
 
           account.cosmos.sendIBCTransferMsg(
             {
               portId: "transfer",
               channelId: IBCChannel,
-              counterpartyChainId: chainStore.chainInfos[1].chainId
+              counterpartyChainId: chainStore.chainInfos[1].chainId,
             },
             "0.0001",
             chainInfo.currencies[0],
@@ -53,13 +57,15 @@ export const App: FunctionComponent = observer(() => {
         onClick={() => {
           const chainInfo = chainStore.chainInfos[1];
           const account = accountStore.getAccount(chainInfo.chainId);
-          const counterpartyAccount = accountStore.getAccount(chainStore.chainInfos[0].chainId);
+          const counterpartyAccount = accountStore.getAccount(
+            chainStore.chainInfos[0].chainId
+          );
 
           account.cosmos.sendIBCTransferMsg(
             {
               portId: "transfer",
               channelId: CounterpartyIBCChannel,
-              counterpartyChainId: chainStore.chainInfos[0].chainId
+              counterpartyChainId: chainStore.chainInfos[0].chainId,
             },
             "0.00012",
             chainInfo.currencies[0],
@@ -101,7 +107,7 @@ export const App: FunctionComponent = observer(() => {
                 // chainSymbolImageUrl:
                 //   "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/chain.png",
                 bip44: {
-                  coinType: 118
+                  coinType: 118,
                 },
                 bech32Config: {
                   bech32PrefixAccAddr: "osmo",
@@ -109,14 +115,14 @@ export const App: FunctionComponent = observer(() => {
                   bech32PrefixValAddr: "osmovaloper",
                   bech32PrefixValPub: "osmovaloperpub",
                   bech32PrefixConsAddr: "osmovalcons",
-                  bech32PrefixConsPub: "osmovalconspub"
+                  bech32PrefixConsPub: "osmovalconspub",
                 },
                 stakeCurrency: {
                   coinDenom: "OSMO",
                   coinMinimalDenom: "uosmo",
                   coinDecimals: 6,
                   coinImageUrl:
-                    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png"
+                    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png",
                 },
                 currencies: [
                   {
@@ -124,15 +130,15 @@ export const App: FunctionComponent = observer(() => {
                     coinMinimalDenom: "uosmo",
                     coinDecimals: 6,
                     coinImageUrl:
-                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png"
+                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uosmo.png",
                   },
                   {
                     coinDenom: "ION",
                     coinMinimalDenom: "uion",
                     coinDecimals: 6,
                     coinImageUrl:
-                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uion.png"
-                  }
+                      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/uion.png",
+                  },
                 ],
                 feeCurrencies: [
                   {
@@ -144,11 +150,11 @@ export const App: FunctionComponent = observer(() => {
                     gasPriceStep: {
                       low: 0.0025,
                       average: 0.025,
-                      high: 0.04
-                    }
-                  }
+                      high: 0.04,
+                    },
+                  },
                 ],
-                features: []
+                features: [],
               });
             });
         }}

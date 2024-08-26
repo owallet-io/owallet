@@ -5,7 +5,7 @@ import {
   CosmosAccount,
   CosmosQueries,
   QueriesWrappedTron,
-  AccountWithAll
+  AccountWithAll,
 } from "@owallet/stores";
 import { ExtensionKVStore, IndexedDBKVStore } from "@owallet/common";
 import { ChainInfo } from "@keplr-wallet/types";
@@ -34,13 +34,13 @@ export class RootStore {
           msgOpts: {
             send: {
               native: {
-                gas: 0
+                gas: 0,
               },
               erc20: {
-                gas: 21000
-              }
-            }
-          }
+                gas: 21000,
+              },
+            },
+          },
         };
       }
       // In evm network, default gas for sending
@@ -50,13 +50,13 @@ export class RootStore {
           msgOpts: {
             send: {
               native: {
-                gas: 21000
+                gas: 21000,
               },
               erc20: {
-                gas: 21000
-              }
-            }
-          }
+                gas: 21000,
+              },
+            },
+          },
         };
       }
       // In osmosis, increase the default gas for sending
@@ -66,13 +66,13 @@ export class RootStore {
           msgOpts: {
             send: {
               native: {
-                gas: 400000
+                gas: 400000,
               },
               withdrawRewards: {
-                gas: 400000
-              }
-            }
-          }
+                gas: 400000,
+              },
+            },
+          },
         };
       }
 
@@ -82,36 +82,42 @@ export class RootStore {
           msgOpts: {
             send: {
               native: {
-                gas: 140000
-              }
+                gas: 140000,
+              },
             },
             withdrawRewards: {
-              gas: 200000
-            }
-          }
+              gas: 200000,
+            },
+          },
         };
       }
 
       return { chainId: chainInfo.chainId };
     });
 
-    this.accountStore = new AccountStore(window, AccountWithAll, this.chainStore, this.queriesStore, {
-      //@ts-ignore
-      defaultOpts: {
-        // When the unlock request sent from external webpage,
-        // it will open the extension popup below the uri "/unlock".
-        // But, in this case, if the prefetching option is true, it will redirect
-        // the page to the "/unlock" with **interactionInternal=true**
-        // because prefetching will request the unlock from the internal.
-        // To prevent this problem, just check the first uri is "#/unlcok" and
-        // if it is "#/unlock", don't use the prefetching option.
-        prefetching: !window.location.href.includes("#/unlock"),
-        suggestChain: false,
-        autoInit: true,
-        getOWallet: getWCOWallet
-      },
-      chainOpts
-    });
+    this.accountStore = new AccountStore(
+      window,
+      AccountWithAll,
+      this.chainStore,
+      this.queriesStore,
+      {
+        //@ts-ignore
+        defaultOpts: {
+          // When the unlock request sent from external webpage,
+          // it will open the extension popup below the uri "/unlock".
+          // But, in this case, if the prefetching option is true, it will redirect
+          // the page to the "/unlock" with **interactionInternal=true**
+          // because prefetching will request the unlock from the internal.
+          // To prevent this problem, just check the first uri is "#/unlcok" and
+          // if it is "#/unlock", don't use the prefetching option.
+          prefetching: !window.location.href.includes("#/unlock"),
+          suggestChain: false,
+          autoInit: true,
+          getOWallet: getWCOWallet,
+        },
+        chainOpts,
+      }
+    );
   }
 }
 
