@@ -347,6 +347,8 @@ export const StakeCardAll = observer(({}) => {
     );
   }, []);
 
+  if (Number(totalStakingReward) <= 0) return;
+
   return (
     <OWBox
       style={{

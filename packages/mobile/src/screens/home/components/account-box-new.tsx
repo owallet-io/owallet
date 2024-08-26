@@ -140,7 +140,6 @@ export const AccountBoxAll: FunctionComponent<{
       );
 
       dataMainnet.map((data) => {
-        // Should get percent by chain here
         const chainName = data._chainInfo.chainName;
         const chainId = data._chainInfo.chainId;
         const chainBalance = Number(data.balance?.toDec().toString());
@@ -385,7 +384,6 @@ export const AccountBoxAll: FunctionComponent<{
                       }}
                     >
                       <Text>
-                        {/* Things went wrong here(totalBalance is wrong) */}
                         {(
                           (Number(chain.totalBalance) /
                             Number(totalPriceBalance.toDec().toString())) *
