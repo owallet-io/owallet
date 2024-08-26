@@ -15,6 +15,7 @@ build/*
 packages/extension/src/config.ui.var.tsx
 
 .cache
+.parcel-cache
 
 coverage
 
