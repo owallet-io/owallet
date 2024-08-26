@@ -501,13 +501,12 @@ export class WalletConnectStore {
     const id = await this.getRandomIdByTopic(topic);
 
     if (id) {
-      // for (const chainInfo of this.chainStore.chainInfos) {
-      // await this.permissionStore.rejectAll() .removePermission(
-      //   WCMessageRequester.getVirtualURL(id),
-      //   chainInfo.chainId,
-      //   getBasicAccessPermissionType()
-      // );
-      // }
+      for (const chainInfo of this.chainStore.chainInfos) {
+        const basicAccessInfo = this.permissionStore.getBasicAccessInfo(
+          chainInfo.chainId
+        );
+        basicAccessInfo.removeOrigin(WCMessageRequester.getVirtualURL(id));
+      }
     }
 
     await this.clearTopic(topic);

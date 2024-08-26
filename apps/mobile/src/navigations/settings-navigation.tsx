@@ -20,6 +20,7 @@ import { HeaderAddIcon } from "@src/components/header/icon";
 import useHeaderOptions from "@src/hooks/use-header";
 import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnemonic";
 import { NewSettingScreen } from "@src/screens/setting/setting";
+import { ManageWalletConnectScreen } from "@src/screens/setting/screens/manage-walletconnect/ManageWalletConnectScreen";
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
@@ -66,11 +67,15 @@ export const SettingStackScreen: FC = () => {
         }}
         component={SettingSelectAccountScreen}
       />
-
       <Stack.Screen
         name={SCREENS.SettingViewPrivateData}
         component={ViewPrivateDataScreen}
       />
+      <Stack.Screen
+        name={SCREENS.ManageWalletConnect}
+        component={ManageWalletConnectScreen}
+      />
+
       <Stack.Screen
         name={SCREENS.SettingBackupMnemonic}
         component={BackupMnemonicScreen}

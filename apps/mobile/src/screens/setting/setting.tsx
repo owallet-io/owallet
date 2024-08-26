@@ -27,6 +27,8 @@ import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import Rate, { AndroidMarket } from "react-native-rate";
+import { SCREENS } from "@src/common/constants";
+import { navigate } from "@src/router/root";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -251,6 +253,13 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             paragraph="Address book"
             onPress={() => {
               smartNavigation.navigateSmart("AddressBook", {});
+            }}
+          />
+          <BasicSettingItem
+            icon="tdesign_book"
+            paragraph="Manage Wallet Connect"
+            onPress={() => {
+              navigate(SCREENS.ManageWalletConnect);
             }}
           />
         </OWCard>

@@ -14,7 +14,7 @@ const OWIcon = ({
   ...props
 }: IOWIconProps) => {
   const [imageDefault, setImageDefault] = useState(
-    "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://orai.io&size=32"
+    "https://assets.coingecko.com/coins/images/12931/standard/orai.png?1696512718"
   );
   const [isErrorLoad, setIsErrorLoad] = useState(false);
   useEffect(() => {

@@ -70,6 +70,7 @@ export const SCREENS = {
   Setting: "Setting",
   SettingSelectAccount: "SettingSelectAccount",
   SettingViewPrivateData: "Setting.ViewPrivateData",
+  ManageWalletConnect: "Setting.ManageWalletConnect",
   SettingBackupMnemonic: "Setting.BackupMnemonic",
   SettingVersion: "Setting.Version",
   DetailsBrowser: "Detail.Browser",
@@ -165,6 +166,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.RegisterNewLedgerMain]: {
     title: HEADER_KEY.notShowHeader,
+  },
+  [SCREENS.ManageWalletConnect]: {
+    title: "Manage Wallet Connect",
   },
   [SCREENS.Tokens]: {
     title: HEADER_KEY.showNetworkHeader,
