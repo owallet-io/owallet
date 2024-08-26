@@ -1,14 +1,14 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "prettier.singleQuote": false,
-  "prettier.jsxSingleQuote": false,
-  "prettier.trailingComma": "none",
+  // "prettier.singleQuote": false,
+  // "prettier.jsxSingleQuote": false,
+  // "prettier.trailingComma": "none",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnPaste": false,
-  "prettier.useEditorConfig": false,
-  "prettier.useTabs": false,
-  "prettier.tabWidth": 2,
-  "prettier.printWidth": 120,
-  "prettier.semi": true,
+  "editor.formatOnPaste": true,
+  // "prettier.useEditorConfig": false,
+  // "prettier.useTabs": false,
+  // "prettier.tabWidth": 2,
+  // "prettier.printWidth": 120,
+  // "prettier.semi": true,
   "js/ts.implicitProjectConfig.experimentalDecorators": true
 }
