@@ -4,13 +4,12 @@
   "main": "build/index.js",
   "author": "oraichain labs",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
-    "rebuild":"rimraf build && yarn build",
+    "rebuild": "rimraf build && yarn build",
     "build": "tsc --project tsconfig.build.json",
     "dev": "tsc -w --project tsconfig.build.json",
     "test": "jest --passWithNoTests",
