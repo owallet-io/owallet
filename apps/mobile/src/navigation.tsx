@@ -76,6 +76,7 @@ import {
   AddressBookScreen,
 } from "./screens/setting/screens/address-book";
 import useHeaderOptions from "./hooks/use-header";
+import { ManageWalletConnectScreen } from "@screens/setting/screens/manage-walletconnect/ManageWalletConnectScreen";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -88,25 +89,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
     );
     return headerOptions;
   };
-  useEffect(() => {
-    Linking.getInitialURL()
-      .then((url) => {
-        if (url) {
-          const SCHEME_IOS = "owallet://open_url?url=";
-          const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";
-          deepLinkUriStore.updateDeepLink(
-            url.replace(SCHEME_ANDROID, "").replace(SCHEME_IOS, "")
-          );
-        }
-      })
-      .catch((err) => {
-        console.warn("Deeplinking error", err);
-      });
-    Linking.addEventListener("url", handleDeepLink);
-    return () => {
-      // Linking.removeEventListener('url', handleDeepLink);
-    };
-  }, []);
 
   return (
     <PageScrollPositionProvider>
@@ -156,6 +138,11 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterNewPincode}
               component={NewPincodeScreen}
             />
+            <Stack.Screen
+              name={SCREENS.ManageWalletConnect}
+              component={ManageWalletConnectScreen}
+            />
+
             <Stack.Screen
               name={SCREENS.SettingSelectAccount}
               options={{
