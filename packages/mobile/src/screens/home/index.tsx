@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useRef,
   useState,
-  useTransition,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
@@ -15,7 +14,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -36,15 +34,10 @@ import {
   MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
-
 import { AccountBoxAll } from "./components/account-box-new";
-
 import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import {
-  initPrice,
-  useMultipleAssets,
-} from "@src/screens/home/hooks/use-multiple-assets";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import {
   CoinPretty,
   Dec,
@@ -52,17 +45,9 @@ import {
   IntPretty,
   PricePretty,
 } from "@owallet/unit";
-import {
-  chainInfos,
-  getTokensFromNetwork,
-  network,
-  oraichainNetwork,
-  TokenItemType,
-} from "@oraichain/oraidex-common";
-import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
-import { debounce, flatten } from "lodash";
-import { showToast } from "@src/utils/helper";
-
+import { chainInfos, network } from "@oraichain/oraidex-common";
+import { useCoinGeckoPrices } from "@owallet/hooks";
+import { debounce } from "lodash";
 import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
@@ -75,7 +60,6 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
-import delay from "delay";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -93,17 +77,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     keyRingStore,
-    hugeQueriesStore,
-    universalSwapStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const [isPending, startTransition] = useTransition();
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -187,7 +165,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
 
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onRefresh = async () => {
     try {
       const queries = queriesStore.get(chainStore.current.chainId);
@@ -921,6 +898,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         isLoading={isLoading}
         totalBalanceByChain={availableTotalPriceByChain || initPrice}
         totalPriceBalance={availableTotalPrice || initPrice}
+        dataBalances={dataBalances}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <EarningCardNew />

@@ -1,7 +1,11 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import { _keyExtract, showToast } from "../../../utils/helper";
+import {
+  _keyExtract,
+  showToast,
+  sortChainsByPrice,
+} from "../../../utils/helper";
 import { Text } from "@src/components/text";
 import {
   ChainIdEnum,
@@ -293,13 +297,7 @@ export const NetworkModal: FC<{
     item.balance = result || initPrice;
     return item;
   });
-  const sortChainsByPrice = (chains) => {
-    return chains.sort(
-      (a, b) =>
-        Number(b.balance.toDec().toString()) -
-        Number(a.balance.toDec().toString())
-    );
-  };
+
   const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
     (c) =>
       c.chainName.toLowerCase().includes("test") &&
