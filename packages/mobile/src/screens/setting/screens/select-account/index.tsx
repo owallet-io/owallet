@@ -20,7 +20,7 @@ import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { useNavigation } from "@react-navigation/native";
-
+import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
     ? keyStore.bip44HDPath
@@ -61,7 +61,13 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 };
 
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore, universalSwapStore } = useStore();
+  const {
+    keyRingStore,
+    chainStore,
+    analyticsStore,
+    universalSwapStore,
+    accountStore,
+  } = useStore();
 
   const { colors } = useTheme();
 
@@ -94,6 +100,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
     if (index >= 0) {
       await keyRingStore.changeKeyRing(index);
+      await waitAccountInit(chainStore, accountStore, keyRingStore);
       smartNavigation.navigateSmart("Home", {});
     }
   };
@@ -103,6 +110,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     universalSwapStore.clearAmounts();
     analyticsStore.logEvent("Account changed");
     await selectKeyStore(keyStore);
+
     loadingScreen.setIsLoading(false);
     universalSwapStore.setLoaded(true);
   }, []);
@@ -222,15 +230,5 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         </View>
       </ScrollView>
     </PageWithBottom>
-  );
-
-  return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors["background"]}>
-      {renderKeyStores("mnemonic seed", mnemonicKeyStores)}
-      {renderKeyStores("hardware wallet", ledgerKeyStores)}
-      {renderKeyStores("private key", privateKeyStores)}
-      {/* Margin bottom for last */}
-      <View style={{ height: 16 }} />
-    </PageWithScrollViewInBottomTabView>
   );
 });

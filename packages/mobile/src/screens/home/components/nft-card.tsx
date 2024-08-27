@@ -80,9 +80,10 @@ export const NftCard = observer(() => {
                   </OWText>
                 </View>
                 <View style={styles.containerList}>
-                  {it?.data?.map((nft, indexNft) => (
-                    <NftItem key={indexNft} item={nft} />
-                  ))}
+                  {it?.data?.length > 0 &&
+                    it?.data?.map((nft, indexNft) => (
+                      <NftItem key={indexNft} item={nft} />
+                    ))}
                 </View>
                 {Number(it?.count) > 4 && (
                   <OWButton

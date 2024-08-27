@@ -302,9 +302,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         navigation.dispatch(StackActions.replace("MainTab"));
       } else {
         await waitAccountInit(chainStore, accountStore, keyRingStore);
-        setTimeout(() => {
-          navigation.dispatch(StackActions.replace("MainTab"));
-        }, 1500);
+        navigation.dispatch(StackActions.replace("MainTab"));
       }
     }
     navigateToHomeOnce.current = true;
