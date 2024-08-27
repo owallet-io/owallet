@@ -141,31 +141,42 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const renderNetworkItem = useCallback(() => {
-    return (
-      <View style={styles.networkItem}>
-        <View style={[styles.row, styles.aic]}>
+  const renderNetworkItem = useCallback((chain) => {
+    if (chain) {
+      return (
+        <View style={styles.networkItem}>
           <View style={[styles.row, styles.aic]}>
-            <View style={styles.chainIcon}>
-              <Image
-                style={styles.icon}
-                source={require("../../../assets/logo/osmosis.png")}
-              />
+            <View style={[styles.row, styles.aic]}>
+              <View style={styles.chainIcon}>
+                <Image
+                  style={styles.icon}
+                  source={{ uri: chain.stakeCurrency.coinImageUrl }}
+                />
+              </View>
+              <OWText size={16} weight="600">
+                {chain.chainName}
+              </OWText>
             </View>
-            <OWText size={16} weight="600">
-              Osmosis
+            <OWText size={16} weight="500" color={colors["success-text-body"]}>
+              17.56%
             </OWText>
           </View>
-          <OWText size={16} weight="500" color={colors["success-text-body"]}>
-            17.56%
-          </OWText>
+          <View style={styles.borderBottom} />
         </View>
-        <View style={styles.borderBottom} />
-      </View>
-    );
+      );
+    }
   }, []);
 
   const renderNetworks = () => {
+    const stakeableChainsInfo = chainStore.chainInfos.filter((chain) => {
+      if (
+        chain.networkType === "cosmos" &&
+        !chain.chainName.toLowerCase().includes("test") &&
+        !chain.chainName.toLowerCase().includes("bridge")
+      )
+        return chain;
+    });
+
     return (
       <View>
         <View style={styles.container}>
@@ -226,8 +237,9 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
             </TouchableOpacity>
           </View>
           <View style={{ marginTop: 22 }}>
-            {renderNetworkItem()}
-            {renderNetworkItem()}
+            {stakeableChainsInfo.map((chain) => {
+              return renderNetworkItem(chain);
+            })}
           </View>
         </View>
       </View>
