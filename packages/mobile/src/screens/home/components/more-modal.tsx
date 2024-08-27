@@ -12,11 +12,10 @@ import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
 
 const MoreModal: FunctionComponent<{
-  onPress?: Function;
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
-}> = registerModal(({ onPress, close }) => {
+}> = registerModal(({ close }) => {
   const { colors } = useTheme();
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
