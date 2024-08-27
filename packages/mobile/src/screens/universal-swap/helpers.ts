@@ -12,6 +12,7 @@ import {
   ORAIX_CONTRACT,
   TokenItemType,
   BigDecimal,
+  TON_ORAICHAIN_DENOM,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
@@ -59,14 +60,36 @@ export const handleErrorSwap = (message: string) => {
   });
 };
 
-// smart router osmosis
-export const isAllowAlphaSmartRouter = (fromToken, toToken) => {
-  if (fromToken.chainId === "Noble-1" || toToken.chainId === "Noble-1")
-    return false;
+export const isAllowAlphaSmartRouter = (fromToken, toToken, isAIRoute) => {
+  const isOraichain = fromToken.chainId === "Oraichain";
+  // const notAllowChainId = ['Neutaro-1'];
+  const allowTokenTon = [
+    fromToken.contractAddress,
+    fromToken.denom,
+    toToken.contractAddress,
+    toToken.denom,
+  ]
+    .filter(Boolean)
+    .includes(TON_ORAICHAIN_DENOM);
+
+  if (allowTokenTon) return true;
+  // if (notAllowChainId.includes(fromToken.chainId) || notAllowChainId.includes(toToken.chainId)) return false;
+  if (isOraichain && !toToken.cosmosBased) return false;
+  if (isOraichain) return isAIRoute;
+
   if (fromToken.cosmosBased && toToken.cosmosBased) return true;
+  if (fromToken.cosmosBased && !toToken.cosmosBased) return true;
+  if (!fromToken.cosmosBased) return true;
   return false;
 };
 
+export const isAllowIBCWasm = (fromToken, toToken, isAIRoute) => {
+  if (fromToken.cosmosBased && toToken.cosmosBased) return !isAIRoute;
+  if (fromToken.cosmosBased && !toToken.cosmosBased) return true;
+
+  if (!fromToken.cosmosBased) return true;
+  return false;
+};
 export const getTransactionUrl = (
   chainId: NetworkChainId | string,
   transactionHash: string

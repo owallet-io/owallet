@@ -92,6 +92,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           currency?: string;
           recipient?: string;
           contractAddress?: string;
+          denom?: string;
         }
       >,
       string
@@ -117,7 +118,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-
+  console.log(route?.params, "route?.params?.contractAddress");
   useEffect(() => {
     tracking(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {
@@ -126,7 +127,10 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           if (
             cur?.coinMinimalDenom
               ?.toLowerCase()
-              ?.includes(route?.params?.contractAddress?.toLowerCase())
+              ?.includes(
+                route?.params?.contractAddress?.toLowerCase() ||
+                  route?.params?.denom?.toLowerCase()
+              )
           )
             return true;
           if (

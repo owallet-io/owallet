@@ -156,6 +156,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
     }
 
     try {
+      // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
       navigate(SCREENS.STACK.Others, {
         screen: SCREENS.NewSend,
         params: {
@@ -163,6 +164,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
           contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
             .contractAddress,
           coinGeckoId: item.token.currency.coinGeckoId,
+          denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
         },
       });
     } catch (err) {}

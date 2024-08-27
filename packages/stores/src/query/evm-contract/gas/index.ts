@@ -6,7 +6,7 @@ import { getRpcByChainId, KVStore } from "@owallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import Web3 from "web3";
-
+import { utils } from "ethers";
 import ERC20_ABI from "human-standard-token-abi";
 type GasEvmRequest = {
   to: string;
@@ -43,21 +43,20 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
       );
       const { from, to, contract_address, amount } = this.paramGas;
+      console.log(contract_address, "contract_address");
       if (!to || !from || !amount || !contract_address) return;
       const tokenInfo = new web3.eth.Contract(
         // @ts-ignore
         ERC20_ABI,
         contract_address
       );
+      const tokenDecimal = await tokenInfo.methods.decimals().call();
+      if (!tokenDecimal) return;
       const estimateGas = await tokenInfo.methods
-        .transfer(to, Web3.utils.toWei(amount))
+        .transfer(to, utils.parseUnits(amount, tokenDecimal))
         .estimateGas({
           from: from,
         });
-      console.log(
-        "🚀 ~ ObservableQueryGasEvmContractInner ~ fetchResponse ~ estimateGas:",
-        estimateGas
-      );
 
       return {
         status: 1,

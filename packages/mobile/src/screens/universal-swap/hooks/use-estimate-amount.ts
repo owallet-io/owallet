@@ -43,6 +43,7 @@ const useEstimateAmount = (
   handleErrorSwap: Function,
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
+    useIbcWasm?: boolean;
   },
   isAIRoute?: boolean
 ) => {
@@ -54,6 +55,8 @@ const useEstimateAmount = (
   const [routersSwapData, setRoutersSwapData] = useState(null);
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
+
+  console.log("ratio", ratio);
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -70,6 +73,8 @@ const useEstimateAmount = (
     setAmountLoading(true);
     if (client) {
       const routerClient = getRouterClient();
+      console.log("initAmount", initAmount);
+
       try {
         const data = await handleSimulateSwap({
           originalFromInfo: originalFromToken,
@@ -78,13 +83,19 @@ const useEstimateAmount = (
           routerClient,
           routerOption: {
             useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
+            useIbcWasm: simulateOption?.useIbcWasm,
           },
-          urlRouter: {
-            url: "https://router.oraidex.io",
+          routerConfig: {
+            url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
+            protocols: simulateOption?.useIbcWasm
+              ? ["Oraidex", "OraidexV3"]
+              : ["Oraidex", "OraidexV3", "Osmosis"],
           },
         });
         setAmountLoading(false);
+        console.log("data", data);
+
         return data;
       } catch (err) {
         console.error("Error in getSimulateSwap:", err);
@@ -191,6 +202,11 @@ const useEstimateAmount = (
         setIsWarningSlippage(isWarningSlippage);
         setToAmountToken(data.amount);
         setSwapAmount([fromAmountToken, Number(data.displayAmount)]);
+        setRatio({
+          ...data,
+          amount: Math.floor(Number(data.amount) / fromAmountToken),
+          displayAmount: Number(data.displayAmount) / fromAmountToken,
+        });
       }
       setSimulateData(data);
       setAmountLoading(false);

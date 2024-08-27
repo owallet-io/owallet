@@ -4459,6 +4459,20 @@
   resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.31.tgz#595f93b168438d69d64896909b37855c9afc92fb"
   integrity sha512-s8H20RXy5gCnu3DnM7L5ClQyj2mdQpbSBpZrXCpIAX9qY0LKsDdZG3sYaDQ8+VN333jz9Pp/qGWdFSYD+6PBsg==
 
+"@oraichain/common@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@oraichain/common/-/common-1.0.3.tgz#c6746473deed39622a1368a8f8f733a13f628a7e"
+  integrity sha512-4Rwwl8DF3bMNh5XSlP44LjUIKCOglDc/R1bUCeVFifZlrTGaz6Zo7Fdw6xwych7b4doxcuQBBh2gr7AZE6jQyQ==
+  dependencies:
+    "@cosmjs/cosmwasm-stargate" "0.31.3"
+    "@cosmjs/tendermint-rpc" "^0.31.3"
+    axios "0.21.4"
+    axios-extensions "3.1.6"
+    bech32 "^1.1.4"
+    cosmjs-types "^0.8.0"
+    ethers "^5.5.1"
+    lodash "^4.17.21"
+
 "@oraichain/cosmwasm-vm-js@^0.2.86":
   version "0.2.86"
   resolved "https://registry.yarnpkg.com/@oraichain/cosmwasm-vm-js/-/cosmwasm-vm-js-0.2.86.tgz#a09e4583cb30ce67da53345be15fa5fa27688cb4"
@@ -4502,10 +4516,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.91", "@oraichain/oraidex-common@^1.0.97":
-  version "1.0.97"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.97.tgz#fb90c0efd116f504f183b19d161cdbe4c815c43a"
-  integrity sha512-18gxs7kaSgXXwEp80c1KLadcPJmQ4PBe6/hspTDjj12MjZWCp5Npy2+/C0BnyJbQoNt/uUKxyuVlZ0mEzCMQrA==
+"@oraichain/oraidex-common@^1.0.91", "@oraichain/oraidex-common@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.3.tgz#10e458f7eb7713910dc250e1587dff5cfa949e06"
+  integrity sha512-pVXKNDofnUp3iYl9153lrCVYPxz9H3gLPCWXZN5OEMFCmjIZU+4WMJgvgoe6OV9Fmw4z+DUus2cfhknP7hQw5A==
   dependencies:
     "@cosmjs/amino" "0.31.3"
     "@cosmjs/cosmwasm-stargate" "0.31.3"
@@ -4534,18 +4548,24 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.35.tgz#d8231d3af62172bd488d364c7ced238393f26695"
   integrity sha512-c4qyt6CUEdI4+NgX4vWmVVctcQqEle0S6ExKp+d94C5UsRBELxvmJWkCZczvtTtLEvSsydv+7PKwrPoROgV2BA==
 
-"@oraichain/oraidex-contracts-sdk@^1.0.43", "@oraichain/oraidex-contracts-sdk@latest":
+"@oraichain/oraidex-contracts-sdk@^1.0.49":
+  version "1.0.49"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.49.tgz#093221564552e92901c73f6043ce4dc72208d857"
+  integrity sha512-J15JR0+wueYMLMFjz/Omg5ADSKOmmTvsBstVf76NQjrvYpekzdlIGvoTIUCGjyf+DOdzu8MevOk5HDAnOrj3Fw==
+
+"@oraichain/oraidex-contracts-sdk@latest":
   version "1.0.45"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@^1.0.93":
-  version "1.0.93"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.93.tgz#943f26f3971d7aa2d1a7d726c2361faf1476d9c0"
-  integrity sha512-BUWBi9uVceWRmJY/kvgbsggLThKMG8eCMKDDrP4EAmJ/IhKSRJd5MWYtny/OeFN6w0dHgBv78DPJuMALDE+xpA==
+"@oraichain/oraidex-universal-swap@1.0.99", "@oraichain/oraidex-universal-swap@^1.1.0":
+  version "1.0.99"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.99.tgz#858a528fce8e5341514a4a0b3d1d95bf307fd584"
+  integrity sha512-EFsSgy2V2FSPKqDo5ICfJDGFiXRZhS38Krql0lEQEfCYu7h4SZ6WC8+euaBd9qhK8gdQz/NrCronvxHMRoahNQ==
   dependencies:
+    "@oraichain/common" "^1.0.3"
     "@oraichain/oraidex-common" "^1.0.91"
-    "@oraichain/oraidex-contracts-sdk" "^1.0.43"
+    "@oraichain/oraidex-contracts-sdk" "^1.0.49"
     bech32 "1.1.4"
     ethers "^5.0.15"
     tronweb "5.3.2"
@@ -7362,7 +7382,7 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.13.0.tgz#d9b802e9bb9c248d7be5f7f5ef178dc3684e9dcc"
   integrity sha512-3AungXC4I8kKsS9PuS4JH2nc+0bVY/mjgrephHTIi8fpEeGsTHBUJeosp0Wc1myYMElmD0B3Oc4XL/HVJ4PV2g==
 
-axios-extensions@3.1.7:
+axios-extensions@3.1.6, axios-extensions@3.1.7:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/axios-extensions/-/axios-extensions-3.1.7.tgz#0c3965dcb5b0d4969cb4df0170d111a811715541"
   integrity sha512-Won5Qde6djRtiLle5w1Vae9xTREmAW8T7ZUN+OuMMax6R6YVoGTRKRygonLPV7qaNUfw2P1yAxesyFj1DheRjA==
@@ -7371,7 +7391,7 @@ axios-extensions@3.1.7:
     tslib "^2.1.0"
     util "^0.12.3"
 
-axios@*, axios@1.7.2, axios@^0.21.2, axios@^0.27.2, axios@^1.0.0, axios@^1.6.2, axios@^1.6.4, axios@^1.7.2:
+axios@*, axios@0.21.4, axios@1.7.2, axios@^0.21.2, axios@^0.27.2, axios@^1.0.0, axios@^1.6.2, axios@^1.6.4, axios@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.2.tgz#b625db8a7051fbea61c35a3cbb3a1daa7b9c7621"
   integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
@@ -11368,7 +11388,7 @@ ethereumjs-util@^6.0.0, ethereumjs-util@^6.2.1:
     ethjs-util "0.1.6"
     rlp "^2.2.3"
 
-ethers@5.7.2, ethers@^5.0.15, ethers@^5.7.2:
+ethers@5.7.2, ethers@^5.0.15, ethers@^5.5.1, ethers@^5.7.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
