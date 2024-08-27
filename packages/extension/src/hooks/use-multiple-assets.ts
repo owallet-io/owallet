@@ -260,7 +260,6 @@ export const useMultipleAssets = (
               contractAddress: tokeninfo.contractAddress,
             },
           ];
-          setDataBalances((prev) => [...prev, ...infoToken]);
           chainInfo.addCurrencies(...infoToken);
         }
       });

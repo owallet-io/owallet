@@ -16,6 +16,7 @@ export class AppInit {
     isAllNetworks: boolean;
     date_updated: null | number;
     theme: "dark" | "light";
+    hideTestnet: boolean;
     hideTokensWithoutBalance: boolean;
     visibleTabBar?: string;
     feeOption?: "low" | "average" | "high";
@@ -39,6 +40,7 @@ export class AppInit {
       passcodeType: "alphabet",
       date_updated: null,
       theme: "light",
+      hideTestnet: false,
       hideTokensWithoutBalance: true,
       feeOption: "average",
       isAllNetworks: false,
@@ -106,6 +108,11 @@ export class AppInit {
   @action
   updateTheme(theme) {
     this.initApp = { ...this.initApp, theme };
+  }
+
+  @action
+  updateHideTestnet(isHide) {
+    this.initApp = { ...this.initApp, hideTestnet: isHide };
   }
 
   @action
