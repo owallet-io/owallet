@@ -1,34 +1,23 @@
-import OWCard from "@src/components/card/ow-card";
-import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
-import { EarningCardNew } from "@src/screens/home/components/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { FunctionComponent, useCallback, useState } from "react";
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useStore } from "../../../stores";
-import { ValidatorList } from "../validator-list/new-list";
-import { metrics } from "@src/themes";
+import { metrics, spacing } from "@src/themes";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const StakingInfraScreen: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    modalStore,
-    appInitStore,
-  } = useStore();
-
+  const { chainStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-  const delegated = queryDelegated.total;
+  const [search, setSearch] = useState("");
 
   const renderOWalletValidators = () => {
     return (
@@ -152,12 +141,95 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const renderNetworkds = () => {
+  const renderNetworkItem = useCallback(() => {
+    return (
+      <View style={styles.networkItem}>
+        <View style={[styles.row, styles.aic]}>
+          <View style={[styles.row, styles.aic]}>
+            <View style={styles.chainIcon}>
+              <Image
+                style={styles.icon}
+                source={require("../../../assets/logo/osmosis.png")}
+              />
+            </View>
+            <OWText size={16} weight="600">
+              Osmosis
+            </OWText>
+          </View>
+          <OWText size={16} weight="500" color={colors["success-text-body"]}>
+            17.56%
+          </OWText>
+        </View>
+        <View style={styles.borderBottom} />
+      </View>
+    );
+  }, []);
+
+  const renderNetworks = () => {
     return (
       <View>
-        <OWText>
-          <ValidatorList />
-        </OWText>
+        <View style={styles.container}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: colors["neutral-surface-action"],
+                height: 40,
+                borderRadius: 999,
+                width: metrics.screenWidth - 32,
+                alignItems: "center",
+                paddingHorizontal: 12,
+              }}
+            >
+              <View style={{ paddingRight: 4 }}>
+                <OWIcon
+                  color={colors["neutral-icon-on-light"]}
+                  name="tdesign_search"
+                  size={16}
+                />
+              </View>
+              <TextInput
+                style={{
+                  fontFamily: "SpaceGrotesk-Regular",
+                  width: "100%",
+                  color: colors["neutral-text-body"],
+                }}
+                value={search}
+                placeholderTextColor={colors["neutral-text-body"]}
+                placeholder="Search for a chain"
+                onChangeText={(t) => setSearch(t)}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              width: "100%",
+              marginTop: 16,
+            }}
+          >
+            <TouchableOpacity onPress={() => {}}>
+              <OWText color={colors["neutral-text-body3"]} weight="600">
+                {"Network"}
+              </OWText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {}}>
+              <OWText color={colors["neutral-text-body3"]} weight="600">
+                {"Max APR"}
+              </OWText>
+            </TouchableOpacity>
+          </View>
+          <View style={{ marginTop: 22 }}>
+            {renderNetworkItem()}
+            {renderNetworkItem()}
+          </View>
+        </View>
       </View>
     );
   };
@@ -180,43 +252,44 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         />
       </View>
       {renderOWalletValidators()}
-      {renderNetworkds()}
+      {renderNetworks()}
     </View>
   );
 });
 
 const styling = (colors) =>
   StyleSheet.create({
-    containerEarnStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-      margin: 0,
-    },
-    "text-earn": {
-      fontWeight: "600",
-      fontSize: 16,
-      lineHeight: 24,
-      color: colors["neutral-text-title"],
-    },
-    "claim-title": {
-      width: 24,
-      height: 24,
-      borderRadius: 24,
-      backgroundColor: colors["neutral-surface-action"],
-      marginRight: 5,
-      alignItems: "center",
+    container: {
+      backgroundColor: colors["neutral-surface-card"],
+      marginTop: spacing["16"],
+      borderRadius: 16,
+      padding: 16,
       justifyContent: "center",
     },
-
-    "text-amount": {
-      fontWeight: "500",
-      fontSize: 28,
-      lineHeight: 34,
+    row: {
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
-
-    amount: {
-      fontWeight: "400",
-      fontSize: 14,
-      lineHeight: 20,
-      color: colors["neutral-text-title"],
+    aic: {
+      alignItems: "center",
+    },
+    networkItem: {
+      marginBottom: 16,
+    },
+    chainIcon: {
+      padding: 8,
+      borderRadius: 999,
+      backgroundColor: colors["neutral-surface-action"],
+      marginRight: 16,
+    },
+    icon: {
+      width: 28,
+      height: 28,
+    },
+    borderBottom: {
+      backgroundColor: colors["neutral-border-default"],
+      width: "100%",
+      height: 1,
+      marginTop: 16,
     },
   });
