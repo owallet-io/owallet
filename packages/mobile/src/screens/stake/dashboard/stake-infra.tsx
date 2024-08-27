@@ -5,13 +5,10 @@ import { EarningCardNew } from "@src/screens/home/components/earning-card-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useStore } from "../../../stores";
 import { ValidatorList } from "../validator-list/new-list";
 import { metrics } from "@src/themes";
-import { OWButton } from "@src/components/button";
-import { UndelegationsCard } from "./undelegations-card";
-import { NetworkModal } from "@src/screens/home/components";
 
 export const StakingInfraScreen: FunctionComponent = observer(() => {
   const {
@@ -33,14 +30,136 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   );
   const delegated = queryDelegated.total;
 
-  const _onPressNetworkModal = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(<NetworkModal />);
+  const renderOWalletValidators = () => {
+    return (
+      <View
+        style={{
+          justifyContent: "center",
+          padding: 16,
+        }}
+      >
+        <View>
+          <OWText size={15} weight={"600"}>
+            {`Native Staking`}
+          </OWText>
+          <View
+            style={{
+              paddingTop: 16,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors["neutral-surface-card-brutal"],
+                borderRadius: 16,
+                borderWidth: 2,
+                borderColor: colors["neutral-border-brutal"],
+                width: metrics.screenWidth / 2.25,
+              }}
+            >
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  backgroundColor: colors["primary-surface-default"],
+                  paddingHorizontal: 15,
+                  paddingVertical: 5,
+                  borderTopRightRadius: 16,
+                  borderBottomLeftRadius: 16,
+                }}
+              >
+                <OWText
+                  color={colors["neutral-text-action-on-dark-bg"]}
+                  size={10}
+                  weight={"500"}
+                >
+                  {`Recommended`.toUpperCase()}
+                </OWText>
+              </View>
+              <View style={{ padding: 16 }}>
+                <Image
+                  style={{
+                    width: 32,
+                    height: 32,
+                  }}
+                  source={require("../../../assets/logo/owallet_logo.png")}
+                />
+                <OWText
+                  style={{ marginTop: 12, marginBottom: 4 }}
+                  weight={"500"}
+                >
+                  Stake ORAI
+                </OWText>
+                <OWText
+                  style={{ marginBottom: 24 }}
+                  color={colors["neutral-text-body"]}
+                  size={12}
+                >
+                  OWALLET on Oraichain
+                </OWText>
+                <OWText
+                  color={colors["success-text-body"]}
+                  size={16}
+                  weight="500"
+                >
+                  APR: 25.56%
+                </OWText>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: colors["neutral-surface-card-brutal"],
+                borderRadius: 16,
+                borderWidth: 2,
+                borderColor: colors["neutral-border-brutal"],
+                width: metrics.screenWidth / 2.25,
+              }}
+            >
+              <View style={{ padding: 16 }}>
+                <Image
+                  style={{
+                    width: 32,
+                    height: 32,
+                  }}
+                  source={require("../../../assets/logo/osmosis.png")}
+                />
+                <OWText
+                  style={{ marginTop: 12, marginBottom: 4 }}
+                  weight={"500"}
+                >
+                  Stake OSMO
+                </OWText>
+                <OWText
+                  style={{ marginBottom: 24 }}
+                  color={colors["neutral-text-body"]}
+                  size={12}
+                >
+                  OWALLET on Osmosis
+                </OWText>
+                <OWText
+                  color={colors["success-text-body"]}
+                  size={16}
+                  weight="500"
+                >
+                  APR: 10.16%
+                </OWText>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderNetworkds = () => {
+    return (
+      <View>
+        <OWText>
+          <ValidatorList />
+        </OWText>
+      </View>
+    );
   };
 
   return (
@@ -59,60 +178,9 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
           }}
           source={require("../../../assets/image/img-bg.png")}
         />
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            width: metrics.screenWidth,
-            height: metrics.screenHeight / 1.4,
-          }}
-        >
-          <Image
-            style={{
-              width: 140,
-              height: 140,
-            }}
-            source={require("../../../assets/image/img_search.png")}
-            resizeMode="contain"
-            fadeDuration={0}
-          />
-          <View style={{ alignItems: "center", margin: 24, marginBottom: 32 }}>
-            <OWText size={22} weight={"700"}>
-              {`Stake Infra`}
-            </OWText>
-            <OWText
-              size={14}
-              color={colors["neutral-text-body"]}
-              weight={"500"}
-              style={{
-                textAlign: "center",
-                paddingTop: 4,
-              }}
-            >{`${
-              appInitStore.getInitApp.isAllNetworks
-                ? "Please choose a network."
-                : "Please try switching networks or exploring other functions."
-            }`}</OWText>
-          </View>
-
-          <OWButton
-            textStyle={{
-              color: colors["neutral-text-action-on-dark-bg"],
-              fontSize: 14,
-              fontWeight: "500",
-            }}
-            style={{
-              width: metrics.screenWidth / 2.5,
-              borderRadius: 999,
-              padding: 8,
-            }}
-            label="Choose network"
-            onPress={() => {
-              _onPressNetworkModal();
-            }}
-          />
-        </View>
       </View>
+      {renderOWalletValidators()}
+      {renderNetworkds()}
     </View>
   );
 });
