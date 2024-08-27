@@ -8,9 +8,13 @@ import { limitString, showToast } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { tracking } from "@src/utils/tracking";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
   const { browserStore } = useStore();
+  const { colors } = useTheme();
+
   const { inject } = browserStore;
   const sourceCode = inject;
   const onToBrowser = (url) => {
@@ -28,6 +32,23 @@ export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
     });
     return;
   };
+
+  const renderItemSkeleton = () => {
+    return (
+      <SkeletonPlaceholder
+        highlightColor={colors["skeleton"]}
+        backgroundColor={colors["neutral-surface-action"]}
+        borderRadius={12}
+      >
+        <SkeletonPlaceholder.Item
+          width={"100%"}
+          marginVertical={8}
+          height={65}
+        ></SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+    );
+  };
+
   return (
     <View
       style={{
@@ -35,46 +56,53 @@ export const ItemBanner: FC<{ item: any }> = observer(({ item }) => {
         padding: 4,
       }}
     >
-      <TouchableOpacity onPress={() => onToBrowser(item.url)}>
-        <ImageBackground
-          style={{
-            width: "100%",
-            height: 160,
-          }}
-          imageStyle={{ borderRadius: 12 }}
-          resizeMode={"cover"}
-          source={item.images}
+      {!inject ? (
+        renderItemSkeleton()
+      ) : (
+        <TouchableOpacity
+          disabled={!inject}
+          onPress={() => onToBrowser(item.url)}
         >
-          <View
+          <ImageBackground
             style={{
-              paddingHorizontal: 16,
-              justifyContent: "center",
-              flex: 1,
+              width: "100%",
+              height: 160,
             }}
+            imageStyle={{ borderRadius: 12 }}
+            resizeMode={"cover"}
+            source={item.images}
           >
-            <OWIcon type={"images"} source={item.logo} size={32} />
-            <OWText
-              size={16}
-              weight={"600"}
+            <View
               style={{
-                color: "#EBEDF2",
-                paddingTop: 8,
+                paddingHorizontal: 16,
+                justifyContent: "center",
+                flex: 1,
               }}
             >
-              {item.title}
-            </OWText>
-            <OWText
-              size={13}
-              weight={"400"}
-              style={{
-                color: "#909298",
-              }}
-            >
-              {limitString(item.subTitle, 60)}
-            </OWText>
-          </View>
-        </ImageBackground>
-      </TouchableOpacity>
+              <OWIcon type={"images"} source={item.logo} size={32} />
+              <OWText
+                size={16}
+                weight={"600"}
+                style={{
+                  color: "#EBEDF2",
+                  paddingTop: 8,
+                }}
+              >
+                {item.title}
+              </OWText>
+              <OWText
+                size={13}
+                weight={"400"}
+                style={{
+                  color: "#909298",
+                }}
+              >
+                {limitString(item.subTitle, 60)}
+              </OWText>
+            </View>
+          </ImageBackground>
+        </TouchableOpacity>
+      )}
     </View>
   );
 });
