@@ -978,13 +978,6 @@ export class KeyRing {
         isNanoLedger: this.keyStore.type === "ledger",
       };
     }
-    // const secp256k1 = new ec("secp256k1");
-
-    // const key = secp256k1.keyFromPrivate(this.privKey);
-
-    // return new PubKeySecp256k1(
-    //   new Uint8Array(key.getPublic().encodeCompressed("array"))
-    // );
 
     const pubKey = await this.getPubKey(coinType);
 

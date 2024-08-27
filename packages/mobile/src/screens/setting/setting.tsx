@@ -27,6 +27,7 @@ import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import Rate, { AndroidMarket } from "react-native-rate";
+import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -220,6 +221,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         <OWCard style={{ marginBottom: 16 }} type="normal">
+          <SettingSwitchHideTestnet />
           <SettingSwitchModeItem />
 
           <BasicSettingItem

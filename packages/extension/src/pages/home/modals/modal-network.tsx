@@ -223,7 +223,7 @@ export const ModalNetwork: FC<{
           onChange={onChangeInput}
           placeholder={"Search for a chain"}
         />
-        <div className={styles.containerTypeNetwork}>
+        {/* <div className={styles.containerTypeNetwork}>
           {typeNetwork.map((item, index) => (
             <div
               onClick={() => activeTab(item)}
@@ -247,7 +247,7 @@ export const ModalNetwork: FC<{
               </span>
             </div>
           ))}
-        </div>
+        </div> */}
         <div className={styles.containerListChain}>
           {chains?.length > 0 &&
             [...allNetworkData, ...sortChainsByPrice(chains)].map(
