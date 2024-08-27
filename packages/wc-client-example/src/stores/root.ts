@@ -7,7 +7,7 @@ import {
   QueriesWrappedTron,
   AccountWithAll,
 } from "@owallet/stores";
-import { ExtensionKVStore, IndexedDBKVStore } from "@owallet/common";
+import { IndexedDBKVStore } from "@owallet/common";
 import { ChainInfo } from "@keplr-wallet/types";
 import { EmbedChainInfos } from "../config";
 import { getWCOWallet } from "../get-wc-keplr";
