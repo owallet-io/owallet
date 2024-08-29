@@ -1,41 +1,27 @@
 import { Platform, StyleSheet, View } from "react-native";
-import React, { FC, useEffect, useMemo, useState } from "react";
-import { useStore } from "@src/stores";
+import React, { FC } from "react";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { ICONS_TITLE, SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
-import {
-  BottomTabBar,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MainNavigation } from "./main-navigation";
 import { WebNavigation } from "./web-navigation";
 import { SendNavigation } from "./send-navigation";
 import { InvestNavigation } from "./invest-navigation";
-import { SettingStackScreen } from "./settings-navigation";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { observer } from "mobx-react-lite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import imagesGlobal from "@src/assets/images";
 import { BlurView } from "@react-native-community/blur";
-import { HomeScreen } from "@src/screens/home";
-import { StakingDashboardScreen } from "@src/screens/stake";
-import { UniversalSwapScreen } from "@src/screens/universal-swap";
-import { BrowserScreen } from "@src/screens/web/browser-screen";
 import { NewSettingScreen } from "@src/screens/setting/setting";
-import useHeaderOptions from "@src/hooks/use-header";
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { colors, dark } = useTheme();
 
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
-  const handleScreenOptions = ({ route, navigation }) => {
-    const headerOptions = useHeaderOptions(
-      { title: SCREENS_OPTIONS[route?.name].title },
-      navigation
-    );
-    return headerOptions;
-  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -50,6 +36,7 @@ export const MainTabNavigation: FC = observer(() => {
             }
             return (
               <OWIcon
+                //@ts-ignore
                 name={`${ICONS_TITLE[route.name]}`}
                 size={22}
                 color={color}
@@ -101,11 +88,7 @@ export const MainTabNavigation: FC = observer(() => {
         };
       }}
     >
-      <Tab.Screen
-        name={SCREENS.TABS.Main}
-        // options={handleScreenOptions}
-        component={MainNavigation}
-      />
+      <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
         options={{}}

@@ -2,23 +2,13 @@ import React, { FC } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import useHeaderOptions from "@src/hooks/use-header";
 import { SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
-import {
-  DelegateScreen,
-  StakingDashboardScreen,
-  ValidatorDetailsScreen,
-  ValidatorListScreen,
-} from "@src/screens/stake";
-import { DelegateDetailScreen } from "@src/screens/stake/delegate/delegate-detail";
-import { RedelegateScreen } from "@src/screens/stake/redelegate";
-import { UndelegateScreen } from "@src/screens/stake/undelegate";
+import { StakingDashboardScreen } from "@src/screens/stake";
+
 import { useStore } from "@src/stores";
 import { observer } from "mobx-react-lite";
 const Stack = createStackNavigator();
 export const InvestNavigation: FC = observer(() => {
-  const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
-    // appInitStore.updateVisibleTabBar(route?.name);
-
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name].title },
       navigation
