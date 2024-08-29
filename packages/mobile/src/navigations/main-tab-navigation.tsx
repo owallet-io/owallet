@@ -22,13 +22,20 @@ import { StakingDashboardScreen } from "@src/screens/stake";
 import { UniversalSwapScreen } from "@src/screens/universal-swap";
 import { BrowserScreen } from "@src/screens/web/browser-screen";
 import { NewSettingScreen } from "@src/screens/setting/setting";
+import useHeaderOptions from "@src/hooks/use-header";
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { colors, dark } = useTheme();
 
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
-
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      { title: SCREENS_OPTIONS[route?.name].title },
+      navigation
+    );
+    return headerOptions;
+  };
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -93,51 +100,19 @@ export const MainTabNavigation: FC = observer(() => {
           ),
         };
       }}
-      // tabBar={(props) => {
-      //   if (
-      //     props.state.routeNames[props.state.index] ===
-      //     SCREENS.TABS.SendNavigation
-      //   )
-      //     return null;
-
-      //   return checkTabbarVisible && !loading ? (
-      //     <BottomTabBar {...props} />
-      //   ) : null;
-      // }}
     >
-      {/* <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
+      <Tab.Screen
+        name={SCREENS.TABS.Main}
+        // options={handleScreenOptions}
+        component={MainNavigation}
+      />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
+        options={{}}
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
-        initialParams={{
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          chainId: chainStore.current.chainId,
-        }}
       />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
-      <Tab.Screen
-        name={SCREENS.TABS.Settings}
-        component={SettingStackScreen}
-        options={{
-          unmountOnBlur: true,
-        }}
-      />
-       */}
-      <Tab.Screen
-        // options={{ headerShown: false }}
-        name={SCREENS.TABS.Main}
-        component={HomeScreen}
-      />
-      <Tab.Screen
-        name={SCREENS.TABS.Invest}
-        component={StakingDashboardScreen}
-      />
-      <Tab.Screen
-        name={SCREENS.TABS.SendNavigation}
-        component={UniversalSwapScreen}
-      />
-      <Tab.Screen name={SCREENS.TABS.Browser} component={BrowserScreen} />
       <Tab.Screen name={SCREENS.TABS.Settings} component={NewSettingScreen} />
     </Tab.Navigator>
   );

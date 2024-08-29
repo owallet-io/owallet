@@ -84,11 +84,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
     }
   });
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, "RegisterMain")) {
-      goBack();
-    } else {
-      navigate(SCREENS.RegisterIntro);
-    }
+    goBack();
   };
 
   const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {

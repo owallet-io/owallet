@@ -128,11 +128,12 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, SCREENS.RegisterRecoverMnemonicMain)) {
-      goBack();
-    } else {
-      navigate(SCREENS.RegisterIntro);
-    }
+    // if (checkRouter(route?.name, SCREENS.RegisterRecoverMnemonicMain)) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
   const validateMnemonic = (value: string) => {
     value = trimWordsStr(value);

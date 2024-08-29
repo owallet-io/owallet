@@ -155,11 +155,12 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, "RegisterRecoverMnemonicMain")) {
-      goBack();
-    } else {
-      navigate(SCREENS.RegisterIntro);
-    }
+    // if (checkRouter(props?.route?.name, "RegisterRecoverMnemonicMain")) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
   const validateMnemonic = (value: string) => {
     value = trimWordsStr(value);

@@ -17,7 +17,7 @@ const Stack = createStackNavigator();
 export const InvestNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
-    appInitStore.updateVisibleTabBar(route?.name);
+    // appInitStore.updateVisibleTabBar(route?.name);
 
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name].title },
@@ -37,21 +37,6 @@ export const InvestNavigation: FC = observer(() => {
         name={SCREENS.Invest}
         component={StakingDashboardScreen}
       />
-      <Stack.Screen
-        name={SCREENS.ValidatorList}
-        component={ValidatorListScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.ValidatorDetails}
-        component={ValidatorDetailsScreen}
-      />
-      <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />
-      <Stack.Screen
-        name={SCREENS.DelegateDetail}
-        component={DelegateDetailScreen}
-      />
-      <Stack.Screen name={SCREENS.Redelegate} component={RedelegateScreen} />
-      <Stack.Screen name={SCREENS.Undelegate} component={UndelegateScreen} />
     </Stack.Navigator>
   );
 });

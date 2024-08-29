@@ -28,7 +28,7 @@ export const SettingStackScreen: FC = () => {
   const { colors } = useTheme();
   const { analyticsStore, appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
-    appInitStore.updateVisibleTabBar(route?.name);
+    // appInitStore.updateVisibleTabBar(route?.name);
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name]?.title },
       navigation

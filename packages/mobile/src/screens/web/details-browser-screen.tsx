@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-
+import { PageWithViewInBottomTabView } from "@src/components/page";
 import { TextInput } from "@src/components/input";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -36,8 +36,7 @@ import LottieView from "lottie-react-native";
 import { LoadingBar } from "@src/screens/web/components/loadingBar";
 import get from "lodash/get";
 import { tracking } from "@src/utils/tracking";
-import { navigate } from "@src/router/root";
-import { PageWithView } from "@src/components/page";
+import { navigate, popTo, popToTop } from "@src/router/root";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -259,7 +258,7 @@ export const DetailsBrowserScreen = observer((props) => {
   }, [canGoBack, navigation]);
 
   const onHomeBrowser = () => {
-    navigate(SCREENS.Browser);
+    popToTop();
     return;
   };
   const onReload = () => {
@@ -344,7 +343,7 @@ export const DetailsBrowserScreen = observer((props) => {
     }));
   };
   return (
-    <PageWithView
+    <PageWithViewInBottomTabView
       style={{
         paddingTop: top,
         backgroundColor: colors["neutral-surface-card"],
@@ -490,7 +489,7 @@ export const DetailsBrowserScreen = observer((props) => {
           )}
         </View>
       </View>
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });
 

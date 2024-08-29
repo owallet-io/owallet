@@ -223,11 +223,12 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, SCREENS.RegisterNewLedgerMain)) {
-      goBack();
-    } else {
-      navigate(SCREENS.RegisterIntro, {});
-    }
+    // if (checkRouter(route?.name, SCREENS.RegisterNewLedgerMain)) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro, {});
+    // }
+    goBack();
   };
 
   const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {

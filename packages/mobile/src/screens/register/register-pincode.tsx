@@ -122,11 +122,12 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   } = useForm<FormData>();
 
   const onGoBack = () => {
-    if (checkRouter(route?.name, SCREENS.RegisterMain)) {
-      goBack();
-    } else {
-      navigate(SCREENS.RegisterIntro);
-    }
+    // if (checkRouter(route?.name, SCREENS.RegisterMain)) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
 
   useEffect(() => {

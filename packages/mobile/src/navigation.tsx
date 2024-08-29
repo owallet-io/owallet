@@ -16,7 +16,7 @@ import analytics from "@react-native-firebase/analytics";
 import { navigate, navigationRef } from "./router/root";
 import { handleDeepLink } from "./utils/helper";
 
-import { SCREENS } from "./common/constants";
+import { SCREENS, SCREENS_OPTIONS } from "./common/constants";
 import {
   AddressBookStackScreen,
   MainTabNavigation,
@@ -80,11 +80,19 @@ import {
   AddAddressBookScreen,
   AddressBookScreen,
 } from "./screens/setting/screens/address-book";
+import useHeaderOptions from "./hooks/use-header";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore, appInitStore } = useStore();
   const { colors } = useTheme();
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      { title: SCREENS_OPTIONS[route?.name]?.title },
+      navigation
+    );
+    return headerOptions;
+  };
   useEffect(() => {
     Linking.getInitialURL()
       .then((url) => {
@@ -130,10 +138,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
                 ? SCREENS.STACK.PincodeUnlock
                 : SCREENS.STACK.MainTab
             }
-            screenOptions={{
-              headerShown: false,
-              ...TransitionPresets.SlideFromRightIOS,
-            }}
+            screenOptions={handleScreenOptions}
           >
             <Stack.Screen
               name={SCREENS.STACK.PincodeUnlock}

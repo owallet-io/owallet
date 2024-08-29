@@ -34,12 +34,12 @@ export const WebNavigation: FC = observer(() => {
         name={SCREENS.DetailsBrowser}
         component={DetailsBrowserScreen}
       />
-      <Stack.Screen name={SCREENS.BookMarks} component={BookmarksScreen} />
-      <Stack.Screen
+      {/* <Stack.Screen name={SCREENS.BookMarks} component={BookmarksScreen} /> */}
+      {/* <Stack.Screen
         options={{ headerShown: false }}
         name={SCREENS.WebIntro}
         component={WebScreen}
-      />
+      /> */}
     </Stack.Navigator>
   );
 });

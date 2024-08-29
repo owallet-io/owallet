@@ -47,47 +47,6 @@ export const MainNavigation: FC = observer(() => {
         name={SCREENS.Home}
         component={HomeScreen}
       />
-
-      <Stack.Screen
-        name={SCREENS.BackupMnemonic}
-        component={BackupMnemonicScreen}
-      />
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-        name={SCREENS.RegisterMain}
-        component={NewMnemonicScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterVerifyMnemonicMain}
-        component={VerifyMnemonicScreen}
-      />
-      <Stack.Screen name={SCREENS.RegisterEnd} component={RegisterEndScreen} />
-      <Stack.Screen
-        name={SCREENS.RegisterDone}
-        component={RegisterDoneScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterRecoverMnemonicMain}
-        component={RecoverMnemonicScreen}
-      />
-
-      <Stack.Screen
-        name={SCREENS.RegisterRecoverPhraseMain}
-        component={RecoverPhraseScreen}
-      />
-      <Stack.Screen
-        name={SCREENS.RegisterNewLedgerMain}
-        component={NewLedgerScreen}
-      />
-      <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />
-      <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
-      <Stack.Screen name={SCREENS.NftsDetail} component={NftDetailScreen} />
-      <Stack.Screen
-        name={SCREENS.TokenDetails}
-        component={TokenDetailsScreen}
-      />
     </Stack.Navigator>
   );
 });
