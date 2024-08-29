@@ -241,7 +241,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 
       return apr;
     } catch (err) {
-      console.log("error getOWalletOraichain", err);
+      console.log("error calculateAPRByChain", err);
       return 0;
     }
   };
@@ -269,8 +269,34 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       console.error(
-        "Error fetching validator getParamsFromLcd:",
+        "Error fgetOWalletOsmosisAPR:",
         `https://www.datalenses.zone/numia/osmosis/lenses/apr?start_date=${pastDate.format(
+          "YYYY-MM-DD"
+        )}&end_date=${moment().format("YYYY-MM-DD")}`,
+        error
+      );
+    }
+  };
+
+  const getCosmosAPR = async () => {
+    const currentDate = moment();
+    // Subtract 10 days from the current date
+    const pastDate = currentDate.subtract(10, "days");
+
+    try {
+      const params = await axios.get(
+        `https://www.datalenses.zone/numia/cosmos/lenses/apr?start_date=${pastDate.format(
+          "YYYY-MM-DD"
+        )}&end_date=${moment().format("YYYY-MM-DD")}`
+      );
+
+      if (params?.data?.length > 0) {
+        setOwalletOsmosis(params.data[0].ATOM?.toFixed(2));
+      }
+    } catch (error) {
+      console.error(
+        "Error getCosmosAPR:",
+        `https://www.datalenses.zone/numia/cosmos/lenses/apr?start_date=${pastDate.format(
           "YYYY-MM-DD"
         )}&end_date=${moment().format("YYYY-MM-DD")}`,
         error
