@@ -8,7 +8,7 @@ import { View, StyleSheet, Clipboard, TouchableOpacity } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import { useNewMnemonicConfig } from "./hook";
 import { CheckIcon } from "../../../components/icon";
 import { BackupWordChip } from "../../../components/mnemonic";
@@ -24,6 +24,7 @@ import { metrics } from "../../../themes";
 import OWText from "@src/components/text/ow-text";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
+import { useStore } from "@src/stores";
 
 interface FormData {
   name: string;
@@ -49,8 +50,9 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   }, []);
 
   const { colors } = useTheme();
-
-  const registerConfig: RegisterConfig = route.params.registerConfig;
+  const { keyRingStore } = useStore();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
@@ -67,7 +69,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
 
   const submit = handleSubmit(() => {
     if (checkRouter(props?.route?.name, "RegisterMain")) {
-      navigate("RegisterVerifyMnemonicMain", {
+      navigate(SCREENS.RegisterVerifyMnemonic, {
         registerConfig,
         newMnemonicConfig,
         bip44HDPath: bip44Option.bip44HDPath,

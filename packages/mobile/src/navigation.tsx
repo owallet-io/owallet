@@ -76,6 +76,10 @@ import { OWalletVersionScreen } from "./screens/setting/screens/version";
 import { DetailsBrowserScreen } from "./screens/web/details-browser-screen";
 import { BookmarksScreen } from "./screens/web/bookmarks-screen";
 import { WebScreen } from "./screens/web";
+import {
+  AddAddressBookScreen,
+  AddressBookScreen,
+} from "./screens/setting/screens/address-book";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -140,6 +144,68 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={RecoverPhraseScreen}
             />
             <Stack.Screen
+              name={SCREENS.RegisterIntro}
+              component={
+                appInitStore.getInitApp.status
+                  ? OnboardingIntroScreen
+                  : RegisterIntroScreen
+              }
+            />
+
+            <Stack.Screen
+              name={SCREENS.RegisterNewPincode}
+              component={NewPincodeScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.SettingSelectAccount}
+              options={{
+                headerRight: () => (
+                  <HeaderRightButton
+                    onPress={() => {
+                      // analyticsStore.logEvent("Add additional account started");
+                      navigate(SCREENS.RegisterIntro, {
+                        canBeBack: true,
+                      });
+                    }}
+                  >
+                    <HeaderAddIcon />
+                  </HeaderRightButton>
+                ),
+              }}
+              component={SettingSelectAccountScreen}
+            />
+
+            <Stack.Screen
+              name={SCREENS.SettingViewPrivateData}
+              component={ViewPrivateDataScreen}
+            />
+
+            <Stack.Screen
+              name={SCREENS.SettingVersion}
+              component={OWalletVersionScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.DetailsBrowser}
+              component={DetailsBrowserScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.BookMarks}
+              component={BookmarksScreen}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name={SCREENS.WebIntro}
+              component={WebScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.AddressBook}
+              component={AddressBookScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.AddAddressBook}
+              component={AddAddressBookScreen}
+            />
+            <Stack.Screen
               name={SCREENS.STACK.MainTab}
               component={MainTabNavigation}
             />
@@ -174,10 +240,17 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterRecoverMnemonicMain}
               component={RecoverMnemonicScreen}
             />
-
+            <Stack.Screen
+              name={SCREENS.RegisterNewMnemonic}
+              component={NewMnemonicScreen}
+            />
             <Stack.Screen
               name={SCREENS.RegisterRecoverPhraseMain}
               component={RecoverPhraseScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.RegisterNewLedger}
+              component={NewLedgerScreen}
             />
             <Stack.Screen
               name={SCREENS.RegisterNewLedgerMain}
@@ -216,6 +289,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={PincodeScreen}
             />
 
+            <Stack.Screen
+              name={SCREENS.SettingBackupMnemonic}
+              component={BackupMnemonicScreen}
+            />
             {/*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
             <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
             <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />
@@ -281,57 +358,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={TxFailedResultScreen}
             />
           </Stack.Navigator>
-          <Stack.Screen
-            name={SCREENS.RegisterIntro}
-            component={
-              appInitStore.getInitApp.status
-                ? OnboardingIntroScreen
-                : RegisterIntroScreen
-            }
-          />
-
-          <Stack.Screen
-            name={SCREENS.RegisterNewPincode}
-            component={NewPincodeScreen}
-          />
-          <Stack.Screen
-            name={SCREENS.SettingSelectAccount}
-            options={{
-              headerRight: () => (
-                <HeaderRightButton
-                  onPress={() => {
-                    // analyticsStore.logEvent("Add additional account started");
-                    navigate(SCREENS.RegisterIntro, {
-                      canBeBack: true,
-                    });
-                  }}
-                >
-                  <HeaderAddIcon />
-                </HeaderRightButton>
-              ),
-            }}
-            component={SettingSelectAccountScreen}
-          />
-
-          <Stack.Screen
-            name={SCREENS.SettingViewPrivateData}
-            component={ViewPrivateDataScreen}
-          />
-
-          <Stack.Screen
-            name={SCREENS.SettingVersion}
-            component={OWalletVersionScreen}
-          />
-          <Stack.Screen
-            name={SCREENS.DetailsBrowser}
-            component={DetailsBrowserScreen}
-          />
-          <Stack.Screen name={SCREENS.BookMarks} component={BookmarksScreen} />
-          <Stack.Screen
-            options={{ headerShown: false }}
-            name={SCREENS.WebIntro}
-            component={WebScreen}
-          />
         </NavigationContainer>
       </FocusedScreenProvider>
     </PageScrollPositionProvider>

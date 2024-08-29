@@ -15,7 +15,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
@@ -55,11 +55,11 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
-  const { appInitStore } = useStore();
+  const { appInitStore, keyRingStore } = useStore();
 
   const { colors } = useTheme();
 
-  const registerConfig: RegisterConfig = route.params.registerConfig;
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const words: string = route.params?.words;
   const walletName: string = route.params?.walletName;
   const bip44Option = useBIP44Option();

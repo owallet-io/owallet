@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  PageWithView,
-  PageWithViewInBottomTabView,
-} from "@src/components/page";
+import { PageWithView } from "@src/components/page";
 import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
@@ -128,7 +125,7 @@ export const BookmarksScreen = observer(() => {
   };
   const { top } = useSafeAreaInsets();
   return (
-    <PageWithViewInBottomTabView
+    <PageWithView
       style={{
         // backgroundColor: colors["neutral-surface-action"],
         paddingTop: top,
@@ -159,6 +156,6 @@ export const BookmarksScreen = observer(() => {
           }}
         />
       </View>
-    </PageWithViewInBottomTabView>
+    </PageWithView>
   );
 });

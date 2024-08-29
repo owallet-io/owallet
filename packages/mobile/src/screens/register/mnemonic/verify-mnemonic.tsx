@@ -16,7 +16,7 @@ import { BackupWordChip } from "../../../components/mnemonic";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { NewMnemonicConfig } from "./hook";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@owallet/types";
@@ -27,6 +27,7 @@ import { SCREENS } from "@src/common/constants";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { showToast } from "@src/utils/helper";
+import { useStore } from "@src/stores";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -46,7 +47,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
 
-  const registerConfig = route.params.registerConfig;
+  // const registerConfig = route.params.registerConfig;
+  const { keyRingStore } = useStore();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const walletName = route.params.walletName;
   const newMnemonicConfig = route.params.newMnemonicConfig;
 

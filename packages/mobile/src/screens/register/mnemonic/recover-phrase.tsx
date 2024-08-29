@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
@@ -45,10 +45,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     >
   >();
 
-  const { analyticsStore, universalSwapStore } = useStore();
+  const { analyticsStore, universalSwapStore, keyRingStore } = useStore();
 
-  const registerConfig: RegisterConfig = route.params.registerConfig;
-
+  // const registerConfig: RegisterConfig = route.params.registerConfig;
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 

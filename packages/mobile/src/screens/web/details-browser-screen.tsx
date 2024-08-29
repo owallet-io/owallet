@@ -5,7 +5,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { PageWithViewInBottomTabView } from "@src/components/page";
+
 import { TextInput } from "@src/components/input";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -37,6 +37,7 @@ import { LoadingBar } from "@src/screens/web/components/loadingBar";
 import get from "lodash/get";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
+import { PageWithView } from "@src/components/page";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -343,7 +344,7 @@ export const DetailsBrowserScreen = observer((props) => {
     }));
   };
   return (
-    <PageWithViewInBottomTabView
+    <PageWithView
       style={{
         paddingTop: top,
         backgroundColor: colors["neutral-surface-card"],
@@ -489,7 +490,7 @@ export const DetailsBrowserScreen = observer((props) => {
           )}
         </View>
       </View>
-    </PageWithViewInBottomTabView>
+    </PageWithView>
   );
 });
 

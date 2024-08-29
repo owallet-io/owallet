@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PageWithViewInBottomTabView } from "@src/components/page";
+
 import { TextInput } from "@src/components/input";
 import { RightArrowIcon, SearchIcon } from "@src/components/icon";
 import { OWButton } from "@src/components/button";
@@ -25,6 +25,10 @@ import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { tracking } from "@src/utils/tracking";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();

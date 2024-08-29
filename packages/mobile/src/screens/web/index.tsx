@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useRef, useState } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
+// import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Image, ImageSourcePropType, StyleSheet, View } from "react-native";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
@@ -10,6 +10,7 @@ import Svg, { Path, G, Defs, ClipPath } from "react-native-svg";
 import { DAppInfos } from "./config";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { PageWithScrollView } from "@src/components/page";
 
 export const WebScreen: FunctionComponent = () => {
   const style = useStyle();
@@ -17,7 +18,7 @@ export const WebScreen: FunctionComponent = () => {
   const safeAreaInsets = useSafeAreaInsets();
 
   return (
-    <PageWithScrollViewInBottomTabView
+    <PageWithScrollView
       contentContainerStyle={style.get("flex-grow-1")}
       style={StyleSheet.flatten([
         style.flatten(["padding-x-20"]),
@@ -47,7 +48,7 @@ export const WebScreen: FunctionComponent = () => {
           }}
         />
       ))}
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 };
 

@@ -25,29 +25,23 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
 
   const route = useRoute();
 
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
     analyticsStore.logEvent("Import account started", {
       registerType: "seed",
     });
 
-    navigate(SCREENS.RegisterRecoverPhrase, {
-      registerConfig,
-    });
+    navigate(SCREENS.RegisterRecoverPhrase);
   };
   const handleImportLedgerNanoX = () => {
-    navigate(SCREENS.RegisterNewLedger, {
-      registerConfig,
-    });
+    navigate(SCREENS.RegisterNewLedger);
   };
   const handleCreateANewWallet = () => {
     analyticsStore.logEvent("Create account started", {
       registerType: "seed",
     });
 
-    navigate(SCREENS.RegisterNewMnemonic, {
-      registerConfig,
-    });
+    navigate(SCREENS.RegisterNewMnemonic);
   };
   const styles = useStyles();
 
