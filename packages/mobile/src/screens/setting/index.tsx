@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { renderFlag, SettingItem, SettingSectionTitle } from "./components";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { OWBox } from "@src/components/card";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -23,6 +23,8 @@ import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
@@ -41,7 +43,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
     (keyStore) => keyStore.selected
   );
 
-  const smartNavigation = useSmartNavigation();
   const _onPressCountryModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -83,9 +84,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           }}
         >
           <TouchableOpacity
-            onPress={() =>
-              smartNavigation.navigateSmart("SettingSelectAccount", {})
-            }
+            onPress={() => navigate(SCREENS.SettingSelectAccount, {})}
             style={{
               flexDirection: "row",
               alignContent: "center",
@@ -133,7 +132,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
         <SettingItem
           label="Address book"
           onPress={() => {
-            smartNavigation.navigateSmart("AddressBook", {});
+            navigate(SCREENS.AddressBook, {});
           }}
         />
 
@@ -147,7 +146,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
         <SettingItem
           label="About OWallet"
           onPress={() => {
-            smartNavigation.navigateSmart("Setting.Version", {});
+            navigate(SCREENS.SettingVersion, {});
           }}
         />
         <SettingRemoveAccountItem />

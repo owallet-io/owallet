@@ -4,7 +4,7 @@ import { metrics } from "../../themes";
 import { Text } from "@src/components/text";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../components/input";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
 import { AppCurrency } from "@owallet/types";
@@ -23,6 +23,8 @@ import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
 import { unknownToken } from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const mockToken = {
   coinDenom: "USDC",
@@ -66,7 +68,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
     getValues,
     formState: { errors },
   } = useForm<FormData>();
-  const smartNavigation = useSmartNavigation();
+
   const { colors } = useTheme();
 
   const {
@@ -180,14 +182,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
     // );
     setLoading(false);
     // appInitStore.updateChainInfos(newChainInfos);
-    smartNavigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "MainTab",
-        },
-      ],
-    });
+    resetTo(SCREENS.STACK.MainTab);
     showToast({
       message: "Token added",
     });
@@ -213,7 +208,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
       }
     } catch (err) {
       setLoading(false);
-      smartNavigation.navigateSmart("Home", {});
+      navigate(SCREENS.Home, {});
       showToast({
         message: JSON.stringify(err.message),
         type: "danger",

@@ -9,9 +9,11 @@ import { StyleSheet, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { RightArrowIcon } from "../../../components/icon";
 import { TokenSymbol } from "../../../components/token-symbol";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { spacing, typography } from "../../../themes";
 import { formatBalance } from "@owallet/bitcoin";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
@@ -32,7 +34,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   priceBalance,
 }) => {
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
@@ -77,7 +78,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart("Tokens.Detail", {
+        navigate(SCREENS.TokenDetails, {
           balanceCoinDenom,
           amountBalance,
           balanceCurrency: balance?.currency,

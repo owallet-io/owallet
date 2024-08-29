@@ -43,6 +43,8 @@ import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
 import { ChainStore } from "@src/stores/chain";
 import { tracking } from "@src/utils/tracking";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const waitAccountInit = async (
   chainStore: ChainStore,
@@ -299,10 +301,11 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         chainId?.startsWith("inj") &&
         isLedger
       ) {
-        navigation.dispatch(StackActions.replace("MainTab"));
+        resetTo(SCREENS.STACK.MainTab);
       } else {
         await waitAccountInit(chainStore, accountStore, keyRingStore);
-        navigation.dispatch(StackActions.replace("MainTab"));
+
+        resetTo(SCREENS.STACK.MainTab);
       }
     }
     navigateToHomeOnce.current = true;

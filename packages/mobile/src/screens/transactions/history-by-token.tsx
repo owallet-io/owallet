@@ -7,14 +7,15 @@ import {
   ChainIdEnum,
   getOasisAddress,
   MapChainIdToNetwork,
+  urlTxHistory,
 } from "@owallet/common";
 import { AllNetworkItemTx } from "@owallet/types";
 import { metrics } from "@src/themes";
 import { useGetHeightHeader } from "@src/hooks";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+// import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { API } from "@src/common/api";
-import { SCREENS, urlTxHistory } from "@src/common/constants";
+import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import { navigate } from "@src/router/root";
 
@@ -25,9 +26,9 @@ export const HistoryByToken: FunctionComponent<{
   const { keyRingStore, accountStore } = useStore();
   if (!tokenAddr || !chainId) return;
   const heightHeader = useGetHeightHeader();
-  const heightBottom = useBottomTabBarHeight();
+  // const heightBottom = useBottomTabBarHeight();
   const containerStyle = {
-    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
+    minHeight: (metrics.screenHeight - (heightHeader + 100)) / 2,
   };
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);

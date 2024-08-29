@@ -22,9 +22,10 @@ import {
   MemoInput,
   TextInput,
 } from "../../../../components/input";
-import { useSmartNavigation } from "../../../../navigation.provider";
+
 import { useStore } from "../../../../stores";
 import { metrics, spacing } from "../../../../themes";
+import { goBack, navigate } from "@src/router/root";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -83,7 +84,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
-  const smartNavigation = useSmartNavigation();
   const addressBookConfig = route.params.addressBookConfig;
 
   const [name, setName] = useState("");
@@ -121,15 +121,13 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                   address: recipientConfig.rawRecipient,
                   memo: memoConfig.memo,
                 });
-                smartNavigation.goBack();
+                goBack();
               } else {
                 showToast({
                   message: "Something went wrong! Plase try again.",
                   type: "danger",
                 });
               }
-
-              // smartNavigation.navigateSmart('AddressBook', {});
             }
           }}
           style={[
@@ -201,7 +199,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             inputRight={
               <TouchableOpacity
                 onPress={() => {
-                  smartNavigation.navigateSmart("Camera", {
+                  navigate("Camera", {
                     screenCurrent: "addressbook",
                     name,
                   });

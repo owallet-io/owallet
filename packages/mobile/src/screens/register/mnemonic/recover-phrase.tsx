@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { RegisterConfig } from "@owallet/hooks";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
 import {
@@ -16,7 +16,7 @@ import {
 import { useStore } from "../../../stores";
 import { useBIP44Option } from "../bip44";
 import { Buffer } from "buffer";
-import { checkRouter, navigate } from "../../../router/root";
+import { checkRouter, goBack, navigate, resetTo } from "../../../router/root";
 import { metrics, typography } from "../../../themes";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
@@ -46,8 +46,6 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
   >();
 
   const { analyticsStore, universalSwapStore } = useStore();
-
-  const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
 
@@ -102,18 +100,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
         walletName: walletName,
       });
     } else {
-      smartNavigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: SCREENS.RegisterDone,
-            params: {
-              password: getValues("password"),
-              type: "recover",
-              walletName: walletName,
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterDone, {
+        password: getValues("password"),
+        type: "recover",
+        walletName: walletName,
       });
     }
   });
@@ -122,8 +112,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     // check if the mode is create or add
     // create - do the flowing process below
     const mnemonic = trimWordsStr(getValues("mnemonic"));
-
-    smartNavigation.navigateSmart("Register.NewPincode", {
+    navigate(SCREENS.RegisterNewPincode, {
       registerConfig,
       words: mnemonic,
       walletName: getValues("name"),
@@ -139,10 +128,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterRecoverMnemonicMain")) {
-      smartNavigation.goBack();
+    if (checkRouter(route?.name, SCREENS.RegisterRecoverMnemonicMain)) {
+      goBack();
     } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro);
     }
   };
   const validateMnemonic = (value: string) => {

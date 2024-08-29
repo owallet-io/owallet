@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { BasicSettingItem, renderFlag } from "./components";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
@@ -28,6 +28,8 @@ import { Bech32Address } from "@owallet/cosmos";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import Rate, { AndroidMarket } from "react-native-rate";
 import { SettingSwitchHideTestnet } from "./items/hide-testnet";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -48,8 +50,6 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   const selected = keyRingStore.multiKeyStoreInfo.find(
     (keyStore) => keyStore.selected
   );
-
-  const smartNavigation = useSmartNavigation();
 
   const _onPressCountryModal = () => {
     modalStore.setOptions({
@@ -206,9 +206,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               accountOrai.bech32Address,
               24
             )}
-            onPress={() =>
-              smartNavigation.navigateSmart("SettingSelectAccount", {})
-            }
+            onPress={() => navigate(SCREENS.SettingSelectAccount)}
           />
           <View style={styles.border} />
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
@@ -252,7 +250,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             icon="tdesign_book"
             paragraph="Address book"
             onPress={() => {
-              smartNavigation.navigateSmart("AddressBook", {});
+              navigate(SCREENS.AddressBook, {});
             }}
           />
         </OWCard>
@@ -273,7 +271,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           icon="owallet"
           paragraph="About OWallet"
           onPress={() => {
-            smartNavigation.navigateSmart("Setting.Version", {});
+            navigate(SCREENS.SettingVersion, {});
           }}
         />
       </View>

@@ -21,11 +21,11 @@ import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
 import NumericPad from "react-native-numeric-pad";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { useBIP44Option } from "./bip44";
 import { useNewMnemonicConfig } from "./mnemonic";
 import { Controller, useForm } from "react-hook-form";
-import { checkRouter } from "@src/router/root";
+import { checkRouter, goBack, navigate, resetTo } from "@src/router/root";
 import { TextInput } from "@src/components/input";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -33,6 +33,7 @@ import { LoadingWalletScreen } from "./loading-wallet";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
+import { SCREENS } from "@src/common/constants";
 
 interface FormData {
   name: string;
@@ -57,7 +58,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const { appInitStore } = useStore();
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const words: string = route.params?.words;
@@ -109,19 +109,10 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
           newMnemonicConfig.password
         );
       }
-
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.Done",
-            params: {
-              password: newMnemonicConfig.password,
-              type: "new",
-              walletName,
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterDone, {
+        password: newMnemonicConfig.password,
+        type: "new",
+        walletName,
       });
     } catch (err) {
       console.log("errrr,", err);
@@ -133,10 +124,10 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   } = useForm<FormData>();
 
   const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
+    if (checkRouter(route?.name, SCREENS.RegisterMain)) {
+      goBack();
     } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro);
     }
   };
 

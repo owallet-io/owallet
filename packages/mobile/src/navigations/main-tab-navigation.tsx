@@ -17,27 +17,17 @@ import { observer } from "mobx-react-lite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import imagesGlobal from "@src/assets/images";
 import { BlurView } from "@react-native-community/blur";
+import { HomeScreen } from "@src/screens/home";
+import { StakingDashboardScreen } from "@src/screens/stake";
+import { UniversalSwapScreen } from "@src/screens/universal-swap";
+import { BrowserScreen } from "@src/screens/web/browser-screen";
+import { NewSettingScreen } from "@src/screens/setting/setting";
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
-  const { chainStore, appInitStore } = useStore();
   const { colors, dark } = useTheme();
-  const { visibleTabBar } = appInitStore.getInitApp;
-  const [loading, setLoading] = useState(true);
+
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
-  const checkTabbarVisible = useMemo(() => {
-    return visibleTabBar
-      ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false
-      : false;
-  }, [visibleTabBar]);
-
-  const waitToLoad = async () => {
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    waitToLoad();
-  }, []);
 
   return (
     <Tab.Navigator
@@ -103,19 +93,19 @@ export const MainTabNavigation: FC = observer(() => {
           ),
         };
       }}
-      tabBar={(props) => {
-        if (
-          props.state.routeNames[props.state.index] ===
-          SCREENS.TABS.SendNavigation
-        )
-          return null;
+      // tabBar={(props) => {
+      //   if (
+      //     props.state.routeNames[props.state.index] ===
+      //     SCREENS.TABS.SendNavigation
+      //   )
+      //     return null;
 
-        return checkTabbarVisible && !loading ? (
-          <BottomTabBar {...props} />
-        ) : null;
-      }}
+      //   return checkTabbarVisible && !loading ? (
+      //     <BottomTabBar {...props} />
+      //   ) : null;
+      // }}
     >
-      <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
+      {/* <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
         name={SCREENS.TABS.SendNavigation}
@@ -133,6 +123,19 @@ export const MainTabNavigation: FC = observer(() => {
           unmountOnBlur: true,
         }}
       />
+       */}
+      <Tab.Screen
+        // options={{ headerShown: false }}
+        name={SCREENS.TABS.Home}
+        component={HomeScreen}
+      />
+      <Tab.Screen
+        name={SCREENS.TABS.Invest}
+        component={StakingDashboardScreen}
+      />
+      <Tab.Screen name={SCREENS.TABS.Main} component={UniversalSwapScreen} />
+      <Tab.Screen name={SCREENS.TABS.Browser} component={BrowserScreen} />
+      <Tab.Screen name={SCREENS.TABS.Settings} component={NewSettingScreen} />
     </Tab.Navigator>
   );
 });

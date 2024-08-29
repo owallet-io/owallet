@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { RegisterConfig } from "@owallet/hooks";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
 import {
@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useStore } from "../../../stores";
 import { useBIP44Option } from "../bip44";
-import { checkRouter, navigate } from "../../../router/root";
+import { checkRouter, goBack, navigate, resetTo } from "../../../router/root";
 import { metrics } from "../../../themes";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
@@ -48,8 +48,6 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const styles = useStyles();
 
   const { analyticsStore, chainStore, keyRingStore } = useStore();
-
-  const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
@@ -95,17 +93,9 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
           walletName: getValues("name"),
         });
       } else {
-        smartNavigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: SCREENS.RegisterDone,
-              params: {
-                password: getValues("password"),
-                walletName: getValues("name"),
-              },
-            },
-          ],
+        resetTo(SCREENS.RegisterDone, {
+          password: getValues("password"),
+          walletName: getValues("name"),
         });
       }
     } catch (e) {
@@ -232,10 +222,10 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterNewLedgerMain")) {
-      smartNavigation.goBack();
+    if (checkRouter(route?.name, SCREENS.RegisterNewLedgerMain)) {
+      goBack();
     } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro, {});
     }
   };
 

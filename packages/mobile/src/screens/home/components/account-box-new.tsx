@@ -24,7 +24,7 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
 import { shortenAddress } from "@src/utils/helper";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import OWText from "@src/components/text/ow-text";
@@ -49,7 +49,6 @@ export const AccountBoxAll: FunctionComponent<{
   } = useStore();
   const [isOpen, setModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const smartNavigation = useSmartNavigation();
 
   const queries = queriesStore.get(chainStore.current.chainId);
   const styles = styling(colors);
@@ -347,25 +346,19 @@ export const AccountBoxAll: FunctionComponent<{
                 return;
               }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                smartNavigation.navigateSmart("SendTron", {
+                navigate(SCREENS.SendTron, {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                smartNavigation.navigateSmart("SendOasis", {
+                navigate(SCREENS.SendOasis, {
                   currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               } else if (chainStore.current.networkType === "bitcoin") {
-                navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.SendBtc,
-                });
+                navigate(SCREENS.SendBtc);
               } else if (chainStore.current.networkType === "evm") {
-                navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.SendEvm,
-                });
+                navigate(SCREENS.SendEvm);
               } else {
-                smartNavigation.navigateSmart("NewSend", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-                });
+                navigate(SCREENS.NewSend);
               }
             }}
           />

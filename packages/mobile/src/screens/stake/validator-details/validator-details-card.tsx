@@ -21,7 +21,7 @@ import {
   ValidatorVotingIcon,
 } from "../../../components/icon";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { metrics, spacing } from "../../../themes";
 import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
@@ -29,6 +29,8 @@ import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const renderIconValidator = (
   label: string,
@@ -120,7 +122,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress,
   ]);
-  const smartNavigation = useSmartNavigation();
+
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
@@ -175,30 +177,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
-      // await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-      //   [validatorAddress],
-      //   "oraivaloper1u2344d8jwtsx5as7u5jw7vel28puh34q7d3y64",
-      //   "0.1",
-      //   "",
-      //   {},
-      //   {},
-      //   {
-      //     onBroadcasted: (txHash) => {
-      //       const validatorObject = convertArrToObject([validatorAddress]);
-      //       tracking(`Claim ${rewards.currency.coinDenom}`);
-      //       smartNavigation.pushSmart("TxPendingResult", {
-      //         txHash: Buffer.from(txHash).toString("hex"),
-      //         data: {
-      //           ...validatorObject,
-      //           type: "claim",
-      //           amount: rewards?.toCoin(),
-      //           currency: rewards.currency,
-      //         },
-      //       });
-      //     },
-      //   },
-      //   rewards.currency.coinMinimalDenom
-      // );
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         [validatorAddress],
         "",
@@ -208,7 +186,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
           onBroadcasted: (txHash) => {
             const validatorObject = convertArrToObject([validatorAddress]);
             tracking(`Claim ${rewards.currency.coinDenom}`);
-            smartNavigation.pushSmart("TxPendingResult", {
+            navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
                 ...validatorObject,
@@ -244,7 +222,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               label="Switch Validator"
               type="secondary"
               onPress={() => {
-                smartNavigation.navigateSmart("Redelegate", {
+                navigate(SCREENS.Redelegate, {
                   validatorAddress,
                 });
               }}
@@ -257,7 +235,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <OWButton
               label="Stake"
               onPress={() => {
-                smartNavigation.navigateSmart("Delegate", {
+                navigate(SCREENS.Delegate, {
                   validatorAddress,
                 });
               }}
@@ -272,7 +250,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
           <OWButton
             label="Stake"
             onPress={() => {
-              smartNavigation.navigateSmart("Delegate", {
+              navigate(SCREENS.Delegate, {
                 validatorAddress,
               });
             }}
@@ -303,7 +281,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
             isStakedValidator ? (
               <TouchableOpacity
                 onPress={() => {
-                  smartNavigation.navigateSmart("Undelegate", {
+                  navigate(SCREENS.Undelegate, {
                     validatorAddress,
                   });
                 }}

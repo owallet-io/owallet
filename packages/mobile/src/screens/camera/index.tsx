@@ -3,7 +3,7 @@ import { RNCamera } from "react-native-camera";
 import { PageWithView } from "../../components/page";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Button, OWButton } from "../../components/button";
 import { Share, StyleSheet, View } from "react-native";
 import { ChainSelectorModal } from "../../components/chain-selector";
@@ -18,7 +18,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { TRON_ID } from "@owallet/common";
 import { checkValidDomain } from "@src/utils/helper";
-import { navigate } from "@src/router/root";
+import { navigate, NavigationAction } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
@@ -32,7 +32,6 @@ export const CameraScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const navigation = useNavigation();
-  const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
   // To prevent the reading while changing to other screen after processing the result.
@@ -73,15 +72,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
             setIsLoading(true);
 
             if (chainStore.current.chainId === TRON_ID && data) {
-              smartNavigation.pushSmart("SendTron", {
+              navigate(SCREENS.SendTron, {
                 recipient: data,
               });
             }
 
             try {
               if (checkValidDomain(data.toLowerCase())) {
-                navigation.navigate("Browser", { url: data.toLowerCase() });
-
+                navigate(SCREENS.Browser, { url: data.toLowerCase() });
                 return;
               }
 
@@ -104,12 +102,12 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                 );
                 if (chainInfo) {
                   const routersParam: keyable =
-                    smartNavigation?.getState()?.routes;
+                    NavigationAction?.getState()?.routes;
                   const isParamAddressBook = routersParam.find(
                     (route) => route?.params?.screenCurrent === "addressbook"
                   );
                   if (isParamAddressBook) {
-                    smartNavigation.navigateSmart("AddAddressBook", {
+                    navigate(SCREENS.AddAddressBook, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                       addressBookObj: {
@@ -125,13 +123,13 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       },
                     });
                   } else {
-                    smartNavigation.pushSmart("NewSend", {
+                    navigate(SCREENS.NewSend, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
                   }
                 } else {
-                  smartNavigation.navigateSmart("Home", {});
+                  navigate(SCREENS.Home, {});
                 }
               }
 

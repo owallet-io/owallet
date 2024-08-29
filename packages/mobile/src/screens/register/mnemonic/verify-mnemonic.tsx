@@ -46,7 +46,6 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
 
-  // const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const registerConfig = route.params.registerConfig;
   const walletName = route.params.walletName;

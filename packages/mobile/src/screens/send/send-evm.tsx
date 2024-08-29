@@ -24,7 +24,7 @@ import {
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { PageHeader } from "@src/components/header/header-new";

@@ -26,7 +26,7 @@ export const MainNavigation: FC = observer(() => {
   const { appInitStore } = useStore();
 
   const handleScreenOptions = ({ route, navigation }) => {
-    appInitStore.updateVisibleTabBar(route?.name);
+    // appInitStore.updateVisibleTabBar(route?.name);
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name]?.title },
       navigation
@@ -37,7 +37,6 @@ export const MainNavigation: FC = observer(() => {
     <Stack.Navigator
       screenOptions={handleScreenOptions}
       initialRouteName={SCREENS.Home}
-      // initialRouteName={SCREENS.BackupMnemonic}
     >
       <Stack.Screen
         options={() => {

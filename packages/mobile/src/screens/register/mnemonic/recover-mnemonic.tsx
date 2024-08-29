@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { RegisterConfig } from "@owallet/hooks";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
 import {
@@ -23,7 +23,9 @@ import { Buffer } from "buffer";
 import {
   checkRouter,
   checkRouterPaddingBottomBar,
+  goBack,
   navigate,
+  resetTo,
 } from "../../../router/root";
 import { OWalletLogo } from "../owallet-logo";
 import { spacing, typography } from "../../../themes";
@@ -86,8 +88,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
 
   const { analyticsStore } = useStore();
 
-  const smartNavigation = useSmartNavigation();
-
   const registerConfig: RegisterConfig = route.params.registerConfig;
 
   const bip44Option = useBIP44Option();
@@ -140,17 +140,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
         type: "recover",
       });
     } else {
-      smartNavigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.End",
-            params: {
-              password: getValues("password"),
-              type: "recover",
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterEnd, {
+        password: getValues("password"),
+        type: "recover",
       });
     }
   });
@@ -165,9 +157,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
   };
   const onGoBack = () => {
     if (checkRouter(props?.route?.name, "RegisterRecoverMnemonicMain")) {
-      smartNavigation.goBack();
+      goBack();
     } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro);
     }
   };
   const validateMnemonic = (value: string) => {

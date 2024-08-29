@@ -24,7 +24,7 @@ import {
   TextInput,
 } from "../../../components/input";
 import { OWButton } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { metrics, spacing } from "../../../themes";
 import { ChainIdEnum, toAmount, ValidatorThumbnails } from "@owallet/common";
 import ValidatorsList from "./validators-list";
@@ -47,6 +47,8 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { API } from "@src/common/api";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -63,7 +65,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   tracking(`Switch Validator Screen`);
   const validatorAddress = route.params.validatorAddress;
 
-  const smartNavigation = useSmartNavigation();
   const [validatorDetail, setValidatorDetail] = useState();
   const [validators, setValidators] = useState([]);
   const { colors } = useTheme();
@@ -261,7 +262,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 `Switch Validator`,
                 `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
               );
-              smartNavigation.pushSmart("TxPendingResult", {
+              navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   type: "redelegate",

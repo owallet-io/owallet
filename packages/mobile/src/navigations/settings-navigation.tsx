@@ -20,6 +20,7 @@ import { HeaderAddIcon } from "@src/components/header/icon";
 import useHeaderOptions from "@src/hooks/use-header";
 import { BackupMnemonicScreen } from "@src/screens/register/mnemonic/backup-mnemonic";
 import { NewSettingScreen } from "@src/screens/setting/setting";
+import { navigate } from "@src/router/root";
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
@@ -52,11 +53,8 @@ export const SettingStackScreen: FC = () => {
             <HeaderRightButton
               onPress={() => {
                 analyticsStore.logEvent("Add additional account started");
-                navigation.navigate("Register", {
-                  screen: "Register.Intro",
-                  params: {
-                    canBeBack: true,
-                  },
+                navigate(SCREENS.RegisterIntro, {
+                  canBeBack: true,
                 });
               }}
             >

@@ -14,15 +14,16 @@ import { CheckIcon } from "../../../components/icon";
 import { BackupWordChip } from "../../../components/mnemonic";
 import { TextInput } from "../../../components/input";
 import { Controller, useForm } from "react-hook-form";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useSimpleTimer } from "../../../hooks";
 import { useBIP44Option } from "../bip44";
-import { navigate, checkRouter } from "../../../router/root";
+import { navigate, checkRouter, goBack } from "../../../router/root";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { metrics } from "../../../themes";
 import OWText from "@src/components/text/ow-text";
 import { tracking } from "@src/utils/tracking";
+import { SCREENS } from "@src/common/constants";
 
 interface FormData {
   name: string;
@@ -48,7 +49,6 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   }, []);
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
@@ -73,7 +73,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         bip44HDPath: bip44Option.bip44HDPath,
       });
     } else {
-      smartNavigation.navigateSmart("Register.VerifyMnemonic", {
+      navigate(SCREENS.RegisterVerifyMnemonic, {
         registerConfig,
         newMnemonicConfig,
         bip44HDPath: bip44Option.bip44HDPath,
@@ -83,9 +83,9 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   });
   const onGoBack = () => {
     if (checkRouter(props?.route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
+      goBack();
     } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro);
     }
   };
 

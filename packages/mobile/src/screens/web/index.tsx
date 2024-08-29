@@ -3,16 +3,16 @@ import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { Image, ImageSourcePropType, StyleSheet, View } from "react-native";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RectButton } from "../../components/rect-button";
 import Svg, { Path, G, Defs, ClipPath } from "react-native-svg";
 import { DAppInfos } from "./config";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const WebScreen: FunctionComponent = () => {
   const style = useStyle();
-
-  const smartNavigation = useSmartNavigation();
 
   const safeAreaInsets = useSafeAreaInsets();
 
@@ -43,7 +43,7 @@ export const WebScreen: FunctionComponent = () => {
           source={logo}
           logo={logo}
           onPress={() => {
-            smartNavigation.pushSmart("Web.dApp", { name, uri });
+            navigate(SCREENS.WebDApp, { name, uri });
           }}
         />
       ))}

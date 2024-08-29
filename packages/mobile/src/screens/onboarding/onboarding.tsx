@@ -6,10 +6,12 @@ import AppIntroSlider from "react-native-app-intro-slider";
 import { View, StyleSheet } from "react-native";
 import { colors, metrics } from "../../themes";
 import { useStore } from "@src/stores";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { useSimpleTimer } from "@src/hooks";
 import { OWButton } from "@src/components/button";
 import { ProgressBar } from "@src/components/progress-bar";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const slides = [
   {
@@ -51,12 +53,12 @@ const styling = () => {
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
   const { appInitStore } = useStore();
   const [slide, setSlide] = useState(0);
-  const smartNavigation = useSmartNavigation();
+
   const { isTimedOut, setTimer } = useSimpleTimer();
   const onGetStarted = async () => {
     await appInitStore.updateInitApp();
     setTimer(1000);
-    smartNavigation.navigateSmart("Register.Intro", {});
+    navigate(SCREENS.RegisterIntro);
   };
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;

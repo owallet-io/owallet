@@ -35,7 +35,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { fromBase64 } from "@cosmjs/encoding";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
@@ -66,6 +66,8 @@ import {
 import { TxBody } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { Any } from "@owallet/proto-types/google/protobuf/any";
 import { TendermintTxTracer } from "@owallet/cosmos";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -102,8 +104,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
-
-  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -281,7 +281,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       });
       if (result?.code == 0) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             memo: sendConfigs.memoConfig.memo,
@@ -343,7 +343,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   networkType: "cosmos",
                 },
               ]);
-              smartNavigation.pushSmart("TxPendingResult", {
+              navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   memo: sendConfigs.memoConfig.memo,
@@ -362,12 +362,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-
-        // if (smartNavigation.canGoBack) {
-        //   smartNavigation.goBack();
-        // } else {
-        //   smartNavigation.navigateSmart("Home", {});
-        // }
       }
     }
   };
