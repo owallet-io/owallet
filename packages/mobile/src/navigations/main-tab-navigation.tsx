@@ -91,7 +91,7 @@ export const MainTabNavigation: FC = observer(() => {
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
-        options={{}}
+        options={{ tabBarStyle: { display: "none" } }}
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
       />
