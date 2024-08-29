@@ -137,11 +137,9 @@ export const SettingScreen: FunctionComponent = observer(() => {
         />
 
         {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
-          <SettingBiometricLockItem
-          // topBorder={!canShowPrivateData(keyRingStore.keyRingType)}
-          />
+          <SettingBiometricLockItem />
         ) : null}
-        {/* <SettingSectionTitle title="Others" /> */}
+
         <SettingSwitchModeItem />
         <SettingItem
           label="About OWallet"

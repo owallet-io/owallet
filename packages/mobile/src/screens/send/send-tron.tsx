@@ -223,35 +223,27 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 {
                   onFulfill: async (tx) => {
                     if (tx?.code === 0) {
-                      navigate("Others", {
-                        screen: SCREENS.TxSuccessResult,
-                        params: {
-                          txHash: tx.txid,
-                          data: {
-                            memo: sendConfigs.memoConfig.memo,
-                            toAddress: sendConfigs.recipientConfig.recipient,
-                            amount:
-                              sendConfigs.amountConfig.getAmountPrimitive(),
-                            fromAddress: address,
-                            fee: sendConfigs.feeConfig.toStdFee(),
-                            currency: sendConfigs.amountConfig.sendCurrency,
-                          },
+                      navigate(SCREENS.TxSuccessResult, {
+                        txHash: tx.txid,
+                        data: {
+                          memo: sendConfigs.memoConfig.memo,
+                          toAddress: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fromAddress: address,
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
                     } else {
-                      navigate("Others", {
-                        screen: SCREENS.TxFailedResult,
-                        params: {
-                          txHash: tx.txid,
-                          data: {
-                            memo: sendConfigs.memoConfig.memo,
-                            from: address,
-                            to: sendConfigs.recipientConfig.recipient,
-                            amount:
-                              sendConfigs.amountConfig.getAmountPrimitive(),
-                            fee: sendConfigs.feeConfig.toStdFee(),
-                            currency: sendConfigs.amountConfig.sendCurrency,
-                          },
+                      navigate(SCREENS.TxFailedResult, {
+                        txHash: tx.txid,
+                        data: {
+                          memo: sendConfigs.memoConfig.memo,
+                          from: address,
+                          to: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
                     }

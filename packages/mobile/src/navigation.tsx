@@ -120,48 +120,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             });
           }}
         >
-          {/* <Stack.Navigator
-              initialRouteName={
-                // SCREENS.STACK.PincodeUnlock
-                keyRingStore.status !== KeyRingStatus.UNLOCKED
-                  ? SCREENS.STACK.PincodeUnlock
-                  : SCREENS.STACK.MainTab
-              }
-              screenOptions={{
-                headerShown: false,
-                ...TransitionPresets.SlideFromRightIOS,
-              }}
-              // headerMode="screen"
-            >
-              <Stack.Screen
-                name={SCREENS.STACK.PincodeUnlock}
-                component={PincodeUnlockScreen}
-              />
-              <Stack.Screen
-                name={SCREENS.STACK.Unlock}
-                component={UnlockScreen}
-              />
-              <Stack.Screen
-                name={SCREENS.STACK.MainTab}
-                component={MainTabNavigation}
-              />
-              <Stack.Screen
-                name={SCREENS.RegisterRecoverPhrase}
-                component={RecoverPhraseScreen}
-              />
-              <Stack.Screen
-                name={SCREENS.STACK.Register}
-                component={RegisterNavigation}
-              />
-              <Stack.Screen
-                name={SCREENS.STACK.Others}
-                component={OtherNavigation}
-              />
-              <Stack.Screen
-                name={SCREENS.STACK.AddressBooks}
-                component={AddressBookStackScreen}
-              />
-            </Stack.Navigator> */}
           <Stack.Navigator
             initialRouteName={
               keyRingStore.status !== KeyRingStatus.UNLOCKED

@@ -49,12 +49,9 @@ export const TxOraichainItem: FC<{
 
   const currency = getCurrency(item, chainStore);
   const onTransactionDetail = (item, currency) => {
-    navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.HistoryDetail,
-      params: {
-        item,
-        currency,
-      },
+    navigate(SCREENS.HistoryDetail, {
+      item,
+      currency,
     });
 
     return;

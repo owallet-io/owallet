@@ -102,13 +102,10 @@ export const HistoryByToken: FunctionComponent<{
           size="medium"
           type="secondary"
           onPress={() => {
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.Transactions,
-              params: {
-                network: mapChainNetwork,
-                userAddress: allArr,
-                tokenAddr,
-              },
+            navigate(SCREENS.Transactions, {
+              network: mapChainNetwork,
+              userAddress: allArr,
+              tokenAddr,
             });
             return;
           }}

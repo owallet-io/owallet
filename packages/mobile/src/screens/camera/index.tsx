@@ -115,12 +115,9 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       },
                     });
                   } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendBtc,
-                      params: {
-                        chainId: chainInfo.chainId,
-                        recipient: data,
-                      },
+                    navigate(SCREENS.SendBtc, {
+                      chainId: chainInfo.chainId,
+                      recipient: data,
                     });
                   } else {
                     navigate(SCREENS.NewSend, {
@@ -160,9 +157,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
               <OWButton
                 label="My QR Code"
                 onPress={() => {
-                  navigate(SCREENS.STACK.Others, {
-                    screen: SCREENS.QRScreen,
-                  });
+                  navigate(SCREENS.QRScreen);
                 }}
                 style={[
                   {

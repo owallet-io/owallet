@@ -109,9 +109,7 @@ export const TronTxCard: FunctionComponent<{
           type="secondary"
           onPress={() => {
             // setMore(!more);
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.Transactions,
-            });
+            navigate(SCREENS.Transactions);
             return;
           }}
         />

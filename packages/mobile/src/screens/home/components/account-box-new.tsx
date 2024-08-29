@@ -305,9 +305,7 @@ export const AccountBoxAll: FunctionComponent<{
             }}
             label="Receive"
             onPress={() => {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.QRScreen,
-              });
+              navigate(SCREENS.QRScreen);
               return;
             }}
           />
@@ -340,9 +338,7 @@ export const AccountBoxAll: FunctionComponent<{
             label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
             onPress={() => {
               if (appInitStore.getInitApp.isAllNetworks) {
-                navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.BuyFiat,
-                });
+                navigate(SCREENS.BuyFiat);
                 return;
               }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {

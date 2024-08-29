@@ -111,9 +111,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
     await chainStore.saveLastViewChainId();
 
     if (chainStore.current.networkType === "bitcoin") {
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.SendBtc,
-      });
+      navigate(SCREENS.SendBtc);
       return;
     }
     if (chainStore.current.networkType === "evm") {
@@ -122,51 +120,38 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
           return t.coinGeckoId === item.token.currency.coinGeckoId;
         });
 
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendTron,
-          params: {
-            item: itemTron,
-            currency: item.token.currency.coinDenom,
-            contractAddress: new DenomHelper(
-              item.token.currency.coinMinimalDenom
-            ).contractAddress,
-          },
+        navigate(SCREENS.SendTron, {
+          item: itemTron,
+          currency: item.token.currency.coinDenom,
+          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+            .contractAddress,
         });
 
         return;
       }
       if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendOasis,
-          params: {
-            currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          },
+        navigate(SCREENS.SendOasis, {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
         });
         return;
       }
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.SendEvm,
-        params: {
-          currency: item.token.currency.coinDenom,
-          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-            .contractAddress,
-          coinGeckoId: item.token.currency.coinGeckoId,
-        },
+      navigate(SCREENS.SendEvm, {
+        currency: item.token.currency.coinDenom,
+        contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+          .contractAddress,
+        coinGeckoId: item.token.currency.coinGeckoId,
       });
       return;
     }
 
     try {
       // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
-      navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.NewSend,
-        params: {
-          currency: item.token.currency.coinDenom,
-          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-            .contractAddress,
-          coinGeckoId: item.token.currency.coinGeckoId,
-          denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
-        },
+      navigate(SCREENS.NewSend, {
+        currency: item.token.currency.coinDenom,
+        contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+          .contractAddress,
+        coinGeckoId: item.token.currency.coinGeckoId,
+        denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
       });
     } catch (err) {}
   };
@@ -253,11 +238,8 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               }}
               label="Receive"
               onPress={() => {
-                navigate(SCREENS.STACK.Others, {
-                  screen: SCREENS.QRScreen,
-                  params: {
-                    chainId: item.chainInfo.chainId,
-                  },
+                navigate(SCREENS.QRScreen, {
+                  chainId: item.chainInfo.chainId,
                 });
                 return;
               }}
