@@ -151,7 +151,36 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   const [search, setSearch] = useState("");
   const [owalletOraichain, setOwalletOraichain] = useState("0");
   const [owalletOsmosis, setOwalletOsmosis] = useState("0");
-  const [listAprByChain, setListApr] = useState([]);
+  const [listAprByChain, setListApr] = useState([
+    {
+      chainId: ChainIdEnum.CosmosHub,
+      apr: 15.13,
+    },
+    {
+      chainId: ChainIdEnum.Injective,
+      apr: 13.53,
+    },
+    {
+      chainId: ChainIdEnum.Stargaze,
+      apr: 13.44,
+    },
+    {
+      chainId: ChainIdEnum.Noble,
+      apr: 0,
+    },
+    {
+      chainId: ChainIdEnum.KawaiiCosmos,
+      apr: 0,
+    },
+    {
+      chainId: ChainIdEnum.Juno,
+      apr: 17.77,
+    },
+    {
+      chainId: ChainIdEnum.Neutaro,
+      apr: 0,
+    },
+  ]);
   const smartNavigation = useSmartNavigation();
 
   const bip44Option = useBIP44Option();
@@ -272,7 +301,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
               firstValidator.operator_address
             );
             return {
-              chainId: chain.chainId,
+              chainId: chain.chainId as ChainIdEnum,
               apr: apr,
             };
           }
@@ -505,6 +534,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       if (chain) {
         let chainAPR;
 
+        chainAPR =
+          listAprByChain.find((item) => item.chainId === chain.chainId)?.apr ??
+          0;
+
         if (chain.chainId === ChainIdEnum.Oraichain)
           chainAPR = owalletOraichain;
         if (chain.chainId === ChainIdEnum.Osmosis) chainAPR = owalletOsmosis;
@@ -533,7 +566,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 weight="500"
                 color={colors["success-text-body"]}
               >
-                {/* {chainAPR && Number(chainAPR) > 0 ? chainAPR + "%" : ""} */}
+                {chainAPR + "%"}
               </OWText>
             </View>
             <View style={styles.borderBottom} />
@@ -595,12 +628,12 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
               />
             </View>
           </View>
-          {/* <View
+          <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
               width: "100%",
-              marginTop: 16
+              marginTop: 16,
             }}
           >
             <TouchableOpacity onPress={() => {}}>
@@ -610,10 +643,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => {}}>
               <OWText color={colors["neutral-text-body3"]} weight="600">
-                {"Max APR"}
+                {"Est. APR"}
               </OWText>
             </TouchableOpacity>
-          </View> */}
+          </View>
           <View style={{ marginTop: 22 }}>
             {stakeableChainsInfo.map((chain) => {
               return renderNetworkItem(chain);
