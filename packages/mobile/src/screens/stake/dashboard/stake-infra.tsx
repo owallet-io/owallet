@@ -151,10 +151,15 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   const [search, setSearch] = useState("");
   const [owalletOraichain, setOwalletOraichain] = useState("0");
   const [owalletOsmosis, setOwalletOsmosis] = useState("0");
+  const [cosmosApr, setCosmosApr] = useState("0");
   const [listAprByChain, setListApr] = useState([
     {
       chainId: ChainIdEnum.CosmosHub,
       apr: 15.13,
+    },
+    {
+      chainId: ChainIdEnum.Osmosis,
+      apr: 11.33,
     },
     {
       chainId: ChainIdEnum.Injective,
@@ -291,7 +296,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       );
 
       if (params?.data?.length > 0) {
-        setOwalletOsmosis(params.data[0].ATOM?.toFixed(2));
+        setCosmosApr(params.data[0].ATOM?.toFixed(2));
       }
     } catch (error) {
       console.error(
@@ -346,6 +351,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getOWalletOraichainAPR();
     getOWalletOsmosisAPR();
+    getCosmosAPR();
     // getListAPR();
   }, []);
 
@@ -564,9 +570,15 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
           listAprByChain.find((item) => item.chainId === chain.chainId)?.apr ??
           0;
 
-        if (chain.chainId === ChainIdEnum.Oraichain)
+        if (
+          chain.chainId === ChainIdEnum.Oraichain &&
+          Number(owalletOraichain) > 0
+        )
           chainAPR = owalletOraichain;
-        if (chain.chainId === ChainIdEnum.Osmosis) chainAPR = owalletOsmosis;
+        if (chain.chainId === ChainIdEnum.Osmosis && Number(owalletOsmosis) > 0)
+          chainAPR = owalletOsmosis;
+        if (chain.chainId === ChainIdEnum.CosmosHub && Number(cosmosApr) > 0)
+          chainAPR = cosmosApr;
 
         return (
           <TouchableOpacity
