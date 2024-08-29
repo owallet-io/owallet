@@ -208,7 +208,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       const delegatorsRewardPerDay = delegatorsRewardPerBlock * numBlocksPerDay;
       const apr = (delegatorsRewardPerDay * daysInYears) / totalDelegatedTokens;
 
-      //   console.log("apr", chainInfo.chainName, apr);
+      // console.log("apr", chainInfo.chainName, apr);
 
       return apr;
     } catch (err) {
@@ -350,6 +350,8 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                   style={{
                     width: 32,
                     height: 32,
+                    backgroundColor: colors["neutral-surface-action"],
+                    borderRadius: 999,
                   }}
                   source={require("../../../assets/logo/oraichain.png")}
                 />

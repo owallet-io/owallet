@@ -901,7 +901,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         dataBalances={dataBalances}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
-      {/* <EarningCardNew /> */}
       <MainTabHome
         dataTokens={
           appInitStore.getInitApp.isAllNetworks

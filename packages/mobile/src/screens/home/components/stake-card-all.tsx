@@ -50,7 +50,7 @@ export const StakeCardAll = observer(({}) => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const [totalStakingReward, setTotalStakingReward] = useState(`0`);
-  const [viewMore, setViewMore] = useState(true);
+  const [viewMore, setViewMore] = useState(false);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const { colors } = useTheme();

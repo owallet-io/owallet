@@ -19,7 +19,6 @@ import { OWBox } from "../../../components/card";
 import { useSmartNavigation } from "../../../navigation.provider";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
-import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { tracking } from "@src/utils/tracking";
 
 export const EarningCardNew = observer(({}) => {
@@ -40,8 +39,7 @@ export const EarningCardNew = observer(({}) => {
   )
     return;
   const navigation = useNavigation();
-  //This is default chain when network is all network
-  const defaultChain = ChainIdEnum.Oraichain;
+
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
   const styles = styling(colors);

@@ -129,8 +129,9 @@ export const AccountBoxAll: FunctionComponent<{
       const tmpSeries = [];
       const tmpSliceColor = [];
       let otherValue = 0;
+
       const minimumPrice =
-        (Number(appInitStore.getMultipleAssets.totalPriceBalance) * 3) / 100;
+        (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
 
       const chainsInfoWithBalance = chainStore.chainInfos.map((item) => {
         let balances = dataBalances.filter(
