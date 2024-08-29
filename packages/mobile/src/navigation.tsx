@@ -15,7 +15,7 @@ import { UnlockScreen } from "./screens/unlock";
 import analytics from "@react-native-firebase/analytics";
 import { navigate, navigationRef } from "./router/root";
 import { handleDeepLink } from "./utils/helper";
-// import { SmartNavigatorProvider } from "./navigation.provider";
+
 import { SCREENS } from "./common/constants";
 import {
   AddressBookStackScreen,
@@ -104,7 +104,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
   return (
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
-        {/* <SmartNavigatorProvider> */}
         <NavigationContainer
           theme={
             {
@@ -376,7 +375,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             component={WebScreen}
           />
         </NavigationContainer>
-        {/* </SmartNavigatorProvider> */}
       </FocusedScreenProvider>
     </PageScrollPositionProvider>
   );
