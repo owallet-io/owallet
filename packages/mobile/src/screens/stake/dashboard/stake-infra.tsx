@@ -574,7 +574,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         );
       }
     },
-    [handleSwitchNetwork]
+    [handleSwitchNetwork, owalletOsmosis, owalletOraichain]
   );
 
   const renderNetworks = () => {
