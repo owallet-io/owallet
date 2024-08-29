@@ -62,9 +62,7 @@ export const EarningCardNew = observer(({}) => {
     if (checkRouter(route?.name, SCREENS.Invest)) {
       return;
     }
-    navigation.dispatch(
-      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-    );
+    navigate(SCREENS.TABS.Invest);
   };
 
   const _onPressCompound = async () => {

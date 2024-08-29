@@ -126,14 +126,17 @@ export const MainTabNavigation: FC = observer(() => {
        */}
       <Tab.Screen
         // options={{ headerShown: false }}
-        name={SCREENS.TABS.Home}
+        name={SCREENS.TABS.Main}
         component={HomeScreen}
       />
       <Tab.Screen
         name={SCREENS.TABS.Invest}
         component={StakingDashboardScreen}
       />
-      <Tab.Screen name={SCREENS.TABS.Main} component={UniversalSwapScreen} />
+      <Tab.Screen
+        name={SCREENS.TABS.SendNavigation}
+        component={UniversalSwapScreen}
+      />
       <Tab.Screen name={SCREENS.TABS.Browser} component={BrowserScreen} />
       <Tab.Screen name={SCREENS.TABS.Settings} component={NewSettingScreen} />
     </Tab.Navigator>

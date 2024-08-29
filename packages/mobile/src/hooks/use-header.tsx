@@ -40,7 +40,7 @@ const useHeaderOptions = (
   };
 
   const onScan = () => {
-    navigation.navigate(SCREENS.Camera);
+    navigate(SCREENS.Camera);
     return;
   };
 

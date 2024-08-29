@@ -11,7 +11,7 @@ import { registerModal } from "../../modals/base";
 import { CardModal } from "../../modals/card";
 import { AddressCopyable } from "../../components/address-copyable";
 import QRCode from "react-native-qrcode-svg";
-import { useNavigation } from "@react-navigation/native";
+
 import { Bech32Address } from "@owallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
 import { useFocusEffect } from "@react-navigation/native";
@@ -30,8 +30,6 @@ interface keyable {
 export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore } = useStore();
   const { colors } = useTheme();
-
-  const navigation = useNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
   // To prevent the reading while changing to other screen after processing the result.

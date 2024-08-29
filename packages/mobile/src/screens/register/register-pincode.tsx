@@ -78,8 +78,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
 
-  const navigation = useNavigation();
-
   const [isCreating, setIsCreating] = useState(false);
 
   const onVerifyMnemonic = useCallback(async () => {

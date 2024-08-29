@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import React, { FC } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useNavigation } from "@react-navigation/native";
+
 import { useStyle } from "@src/styles";
 import { useTheme } from "@src/themes/theme-provider";
 import { useStore } from "@src/stores";
@@ -25,7 +25,6 @@ const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
   const style = useStyle();
 
-  const navigation = useNavigation();
   const { colors } = useTheme();
   const { analyticsStore, appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {

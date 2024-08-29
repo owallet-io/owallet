@@ -37,6 +37,8 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import images from "@src/assets/images";
+import { resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 async function waitAccountLoad(
   accountStore: AccountStore<any, any, any, any>,
@@ -107,10 +109,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         chainId?.startsWith("inj") &&
         isLedger
       ) {
-        navigation.dispatch(StackActions.replace("MainTab"));
+        resetTo(SCREENS.STACK.MainTab);
       } else {
         await waitAccountLoad(accountStore, chainId);
-        navigation.dispatch(StackActions.replace("MainTab"));
+        resetTo(SCREENS.STACK.MainTab);
       }
     }
     navigateToHomeOnce.current = true;

@@ -13,14 +13,14 @@ import {
 } from "react-native";
 import { Text } from "@src/components/text";
 import { BackupWordChip } from "../../../components/mnemonic";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { NewMnemonicConfig } from "./hook";
 import { RegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@owallet/types";
-import { navigate } from "../../../router/root";
+import { goBack, navigate } from "../../../router/root";
 import { metrics, spacing, typography } from "../../../themes";
 import OWButton from "@src/components/button/OWButton";
 import { SCREENS } from "@src/common/constants";
@@ -46,7 +46,6 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
 
-  const navigation = useNavigation();
   const registerConfig = route.params.registerConfig;
   const walletName = route.params.walletName;
   const newMnemonicConfig = route.params.newMnemonicConfig;
@@ -104,10 +103,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.goBack}
-        >
+        <TouchableOpacity onPress={goBack} style={styles.goBack}>
           <OWIcon
             size={16}
             color={colors["neutral-icon-on-light"]}

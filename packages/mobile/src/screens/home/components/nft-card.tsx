@@ -17,7 +17,7 @@ import { unknownToken } from "@owallet/common";
 import { maskedNumber } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { useNavigation } from "@react-navigation/native";
+
 export const NftCard = observer(() => {
   const { chainStore, accountStore, keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
