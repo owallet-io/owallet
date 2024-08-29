@@ -20,7 +20,6 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  const { colors } = useTheme();
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
   const percentageVote = route.params.percentageVote;

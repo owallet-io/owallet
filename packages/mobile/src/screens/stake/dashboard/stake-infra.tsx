@@ -29,6 +29,7 @@ import { Popup } from "react-native-popup-confirm-toast";
 import { tracking } from "@src/utils/tracking";
 import { showToast } from "@src/utils/helper";
 import { useBIP44Option } from "@src/screens/register/bip44";
+import { useSmartNavigation } from "@src/navigation.provider";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
@@ -151,6 +152,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   const [owalletOraichain, setOwalletOraichain] = useState("0");
   const [owalletOsmosis, setOwalletOsmosis] = useState("0");
   const [listAprByChain, setListApr] = useState([]);
+  const smartNavigation = useSmartNavigation();
 
   const bip44Option = useBIP44Option();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -312,6 +314,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
             }}
           >
             <TouchableOpacity
+              onPress={() => {
+                const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
+                handlePressStake(chainInfo, owalletOraichainAddress);
+              }}
               style={{
                 backgroundColor: colors["neutral-surface-card-brutal"],
                 borderRadius: 16,
@@ -364,6 +370,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
+              onPress={() => {
+                const chainInfo = chainStore.getChain(ChainIdEnum.Osmosis);
+                handlePressStake(chainInfo, owalletOsmosisAddress);
+              }}
               style={{
                 backgroundColor: colors["neutral-surface-card-brutal"],
                 borderRadius: 16,
@@ -477,6 +487,16 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       });
     }
   }, []);
+
+  const handlePressStake = useCallback(
+    (chain, validatorAddress) => {
+      handleSwitchNetwork(chain);
+      smartNavigation.navigateSmart("Delegate", {
+        validatorAddress,
+      });
+    },
+    [handleSwitchNetwork]
+  );
 
   const renderNetworkItem = useCallback(
     (chain) => {
@@ -601,8 +621,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       </View>
     );
   };
-
-  console.log("search", typeof search, search);
 
   return (
     <View>
