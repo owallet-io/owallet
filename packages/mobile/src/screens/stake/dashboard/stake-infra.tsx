@@ -18,9 +18,17 @@ import { useStore } from "../../../stores";
 import { metrics, spacing } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { API } from "@src/common/api";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  ChainIdEnum,
+  COINTYPE_NETWORK,
+  getKeyDerivationFromAddressType,
+} from "@owallet/common";
 import axios from "axios";
 import moment from "moment";
+import { Popup } from "react-native-popup-confirm-toast";
+import { tracking } from "@src/utils/tracking";
+import { showToast } from "@src/utils/helper";
+import { useBIP44Option } from "@src/screens/register/bip44";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
@@ -135,13 +143,17 @@ async function getInflationRate(lcdEndpoint) {
 }
 
 export const StakingInfraScreen: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
+  const { chainStore, keyRingStore, appInitStore, modalStore, accountStore } =
+    useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [search, setSearch] = useState("");
   const [owalletOraichain, setOwalletOraichain] = useState("0");
   const [owalletOsmosis, setOwalletOsmosis] = useState("0");
   const [listAprByChain, setListApr] = useState([]);
+
+  const bip44Option = useBIP44Option();
+  const account = accountStore.getAccount(chainStore.current.chainId);
 
   const calculateAPRByChain = async (chainInfo, validatorAddress) => {
     try {
@@ -277,7 +289,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getOWalletOraichainAPR();
     getOWalletOsmosisAPR();
-    getListAPR();
+    // getListAPR();
   }, []);
 
   const renderOWalletValidators = () => {
@@ -390,6 +402,82 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const onConfirm = async (item: any) => {
+    const { networkType } = chainStore.getChain(item?.chainId);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(account.addressType);
+      if (networkType === "bitcoin") {
+        return keyMain;
+      }
+      return "44";
+    })();
+    chainStore.selectChain(item?.chainId);
+    await chainStore.saveLastViewChainId();
+    appInitStore.selectAllNetworks(false);
+    modalStore.close();
+    Popup.hide();
+
+    await keyRingStore.setKeyStoreLedgerAddress(
+      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
+        bip44Option.bip44HDPath.account
+      }'/${bip44Option.bip44HDPath.change}/${
+        bip44Option.bip44HDPath.addressIndex
+      }`,
+      item?.chainId
+    );
+  };
+
+  const handleSwitchNetwork = useCallback(async (item) => {
+    try {
+      if (account.isNanoLedger) {
+        if (!item.isAll) {
+          Popup.show({
+            type: "confirm",
+            title: "Switch network!",
+            textBody: `You are switching to ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } network. Please confirm that you have ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } App opened before switch network`,
+            buttonText: `I have switched ${
+              COINTYPE_NETWORK[item.bip44.coinType]
+            } App`,
+            confirmText: "Cancel",
+            okButtonStyle: {
+              backgroundColor: colors["orange-800"],
+            },
+            callback: () => onConfirm(item),
+            cancelCallback: () => {
+              Popup.hide();
+            },
+            bounciness: 0,
+            duration: 10,
+          });
+          return;
+        } else {
+          appInitStore.selectAllNetworks(true);
+        }
+      } else {
+        modalStore.close();
+        if (!item.isAll) {
+          tracking(`Select ${item?.chainName} Network`);
+          chainStore.selectChain(item?.chainId);
+          await chainStore.saveLastViewChainId();
+          appInitStore.selectAllNetworks(false);
+          modalStore.close();
+        } else {
+          tracking("Select All Network");
+          appInitStore.selectAllNetworks(true);
+        }
+      }
+    } catch (error) {
+      showToast({
+        type: "danger",
+        message: JSON.stringify(error),
+      });
+    }
+  }, []);
+
   const renderNetworkItem = useCallback(
     (chain) => {
       if (chain) {
@@ -400,7 +488,12 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         if (chain.chainId === ChainIdEnum.Osmosis) chainAPR = owalletOsmosis;
 
         return (
-          <TouchableOpacity style={styles.networkItem}>
+          <TouchableOpacity
+            onPress={() => {
+              handleSwitchNetwork(chain);
+            }}
+            style={styles.networkItem}
+          >
             <View style={[styles.row, styles.aic]}>
               <View style={[styles.row, styles.aic]}>
                 <View style={styles.chainIcon}>
@@ -426,7 +519,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         );
       }
     },
-    [listAprByChain]
+    [handleSwitchNetwork]
   );
 
   const renderNetworks = () => {
