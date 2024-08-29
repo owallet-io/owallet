@@ -37,7 +37,7 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
-import { useAutoBiomtric } from "./index";
+
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
@@ -45,6 +45,22 @@ import { ChainStore } from "@src/stores/chain";
 import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { KeychainStore } from "@src/stores/keychain";
+export const useAutoBiomtric = (
+  keychainStore: KeychainStore,
+  tryEnabled: boolean
+) => {
+  const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
+  // const tryBiometricAutoOnce = useRef(false);
+
+  useEffect(() => {
+    if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
+      setStatus(AutoBiomtricStatus.NEED);
+    }
+  }, [keychainStore.isBiometryOn, status]);
+
+  return status;
+};
 
 export const waitAccountInit = async (
   chainStore: ChainStore,
@@ -83,19 +99,6 @@ enum AutoBiomtricStatus {
   FAILED,
   SUCCESS,
 }
-
-// const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
-//   const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
-//   // const tryBiometricAutoOnce = useRef(false);
-
-//   useEffect(() => {
-//     if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
-//       setStatus(AutoBiomtricStatus.NEED);
-//     }
-//   }, [keychainStore.isBiometryOn, status]);
-
-//   return status;
-// };
 
 function DownloadCodepush({
   isLoading,
@@ -431,11 +434,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     ) {
       (() => {
         routeToRegisterOnce.current = true;
-        navigation.dispatch(
-          StackActions.replace("Register", {
-            screen: "Register.Intro",
-          })
-        );
+        navigation.dispatch(StackActions.replace(SCREENS.RegisterIntro));
       })();
     }
   }, [keyRingStore.status, navigation]);

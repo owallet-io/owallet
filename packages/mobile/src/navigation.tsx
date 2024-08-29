@@ -11,18 +11,13 @@ import {
 } from "@react-navigation/stack";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import { FocusedScreenProvider } from "./providers/focused-screen";
-import { UnlockScreen } from "./screens/unlock";
+
 import analytics from "@react-native-firebase/analytics";
 import { navigate, navigationRef } from "./router/root";
 import { handleDeepLink } from "./utils/helper";
 
 import { SCREENS, SCREENS_OPTIONS } from "./common/constants";
-import {
-  AddressBookStackScreen,
-  MainTabNavigation,
-  OtherNavigation,
-  RegisterNavigation,
-} from "./navigations";
+import { MainTabNavigation } from "./navigations";
 import { useTheme } from "./themes/theme-provider";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
 import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";

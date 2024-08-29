@@ -5,6 +5,7 @@ import { metrics } from "../../../../themes";
 import { navigate } from "../../../../router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { OWButton } from "@src/components/button";
+import { SCREENS } from "@src/common/constants";
 
 const WalletBtnList = () => {
   const { modalStore } = useStore();
@@ -17,11 +18,9 @@ const WalletBtnList = () => {
           label="+ Add wallets"
           onPress={() => {
             modalStore.close();
-            navigate("Register", {
-              screen: "Register.Intro",
-              params: {
-                canBeBack: true,
-              },
+
+            navigate(SCREENS.RegisterIntro, {
+              canBeBack: true,
             });
           }}
           style={{
