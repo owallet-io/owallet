@@ -110,8 +110,6 @@ const useFee = ({
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
   useEffect(() => {
-    console.log("get here");
-
     const bridgeTokenFee =
       simulateDisplayAmount && (fromTokenFee || toTokenFee)
         ? new BigDecimal(
@@ -133,7 +131,7 @@ const useFee = ({
         .add(estSwapFee)
         .toNumber() || 0;
     setTotalFee(totalFeeEst);
-  }, [simulateDisplayAmount, fromTokenFee, toTokenFee]);
+  }, [simulateDisplayAmount, fromTokenFee, toTokenFee, fee, relayerFeeAmount]);
 
   return {
     usdPriceShowFrom,
