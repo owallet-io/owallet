@@ -215,7 +215,8 @@ const useEstimateAmount = (
       const defaultRouterSwap = { amount: "0", displayAmount: 0, routes: [] };
       const routersSwapData =
         fromAmountToken && data
-          ? { ...data, routes: data?.routes?.routes ?? [] }
+          ? //@ts-ignore
+            { ...data, routes: data?.routes?.routes ?? [] }
           : defaultRouterSwap;
 
       const usdPriceShowFrom = (
