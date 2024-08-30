@@ -140,18 +140,6 @@ const useEstimateAmount = (
     }
   };
 
-  // const calculateImpactWarning = (data, fromAmountToken, ratio) => {
-  //   if (fromAmountToken && data?.displayAmount && ratio?.amount) {
-  //     const calculateImpactPrice = new BigDecimal(data.displayAmount)
-  //       .div(fromAmountToken)
-  //       .div(ratio.displayAmount)
-  //       .mul(100)
-  //       .toNumber();
-  //     return 100 - calculateImpactPrice;
-  //   }
-  //   return 0;
-  // };
-
   function caculateImpactWarning(data, fromAmountToken, ratio, tokenInfos) {
     const { usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
     let impactWarning = 0;
@@ -185,9 +173,6 @@ const useEstimateAmount = (
     }
     return impactWarning;
   }
-
-  const waringImpactBiggerTen = impactWarning > 10;
-  const waringImpactBiggerFive = impactWarning > 5;
 
   const calculateMinimumReceive = (
     data,

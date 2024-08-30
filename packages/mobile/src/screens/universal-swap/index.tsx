@@ -38,14 +38,11 @@ import {
   TokenItemType,
   getTokensFromNetwork,
   calcMaxAmount,
-  TON_ORAICHAIN_DENOM,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { ChainIdEnum } from "@owallet/common";
 import {
-  isEvmNetworkNativeSwapSupported,
-  isEvmSwappable,
-  isSupportedNoPoolSwapEvm,
+  UniversalSwapHelper,
   UniversalSwapData,
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
@@ -220,7 +217,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([finalAmount, toAmountToken]);
   };
 
-  const isEvmSwap = isEvmSwappable({
+  const isEvmSwap = UniversalSwapHelper.isEvmSwappable({
     fromChainId: originalFromToken.chainId,
     toChainId: originalToToken.chainId,
     fromContractAddr: originalFromToken.contractAddress,
@@ -736,8 +733,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleReverseDirection = () => {
     if (
-      isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
-      !isEvmNetworkNativeSwapSupported(toToken.chainId)
+      UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
+      !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
     )
       return;
     setFromNetwork(toNetwork);
