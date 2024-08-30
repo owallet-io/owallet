@@ -283,6 +283,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromToken,
     toToken,
     fromAmountToken,
+    prices,
     userSlippage,
     client,
     setSwapAmount,

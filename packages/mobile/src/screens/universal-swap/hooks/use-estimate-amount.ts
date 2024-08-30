@@ -2,6 +2,7 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import {
   BigDecimal,
   calculateMinReceive,
+  CoinGeckoPrices,
   CW20_DECIMALS,
   network,
   toAmount,
@@ -10,6 +11,7 @@ import {
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
 import { UniversalSwapHelper } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos } from "@owallet/common";
+import { isNegative } from "@src/utils/helper";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getRemoteDenom } from "../helpers";
@@ -25,6 +27,7 @@ export const SIMULATE_INIT_AMOUNT = 1;
  * @param toToken
  * @param toToken
  * @param fromAmountToken
+ * @param prices
  * @param userSlippage
  * @param setSwapAmount
  * @param handleErrorSwap
@@ -39,6 +42,7 @@ const useEstimateAmount = (
   fromToken: TokenItemType,
   toToken: TokenItemType,
   fromAmountToken: number,
+  prices: CoinGeckoPrices<string>,
   userSlippage: number,
   client: SigningCosmWasmClient,
   setSwapAmount: Function,
@@ -136,17 +140,54 @@ const useEstimateAmount = (
     }
   };
 
-  const calculateImpactWarning = (data, fromAmountToken, ratio) => {
-    if (fromAmountToken && data?.displayAmount && ratio?.amount) {
-      const calculateImpactPrice = new BigDecimal(data.displayAmount)
-        .div(fromAmountToken)
-        .div(ratio.displayAmount)
+  // const calculateImpactWarning = (data, fromAmountToken, ratio) => {
+  //   if (fromAmountToken && data?.displayAmount && ratio?.amount) {
+  //     const calculateImpactPrice = new BigDecimal(data.displayAmount)
+  //       .div(fromAmountToken)
+  //       .div(ratio.displayAmount)
+  //       .mul(100)
+  //       .toNumber();
+  //     return 100 - calculateImpactPrice;
+  //   }
+  //   return 0;
+  // };
+
+  function caculateImpactWarning(data, fromAmountToken, ratio, tokenInfos) {
+    const { usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
+    let impactWarning = 0;
+    if (Number(usdPriceShowFrom) && Number(usdPriceShowTo)) {
+      const calculateImpactPrice = new BigDecimal(usdPriceShowFrom)
+        .sub(usdPriceShowTo)
+        .toNumber();
+      if (isNegative(calculateImpactPrice)) return impactWarning;
+      return new BigDecimal(calculateImpactPrice)
+        .div(usdPriceShowFrom)
         .mul(100)
         .toNumber();
-      return 100 - calculateImpactPrice;
     }
-    return 0;
-  };
+
+    const isValidValue = (value) => value && value !== "";
+    const isImpactPrice =
+      isValidValue(fromAmountToken) &&
+      isValidValue(data?.displayAmount) &&
+      isValidValue(ratio?.amount) &&
+      isValidValue(simulateData?.displayAmount) &&
+      isValidValue(ratio?.displayAmount);
+
+    if (isImpactPrice) {
+      const calculateImpactPrice = new BigDecimal(data.displayAmount)
+        .div(fromAmountToken)
+        .div(data.displayAmount)
+        .mul(100)
+        .toNumber();
+
+      if (calculateImpactPrice) impactWarning = 100 - calculateImpactPrice;
+    }
+    return impactWarning;
+  }
+
+  const waringImpactBiggerTen = impactWarning > 10;
+  const waringImpactBiggerFive = impactWarning > 5;
 
   const calculateMinimumReceive = (
     data,
@@ -192,10 +233,18 @@ const useEstimateAmount = (
           ? { ...data, routes: data?.routes?.routes ?? [] }
           : defaultRouterSwap;
 
-      const impactWarning = calculateImpactWarning(
+      const usdPriceShowFrom = (
+        prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
+      ).toFixed(6);
+      const usdPriceShowTo = (
+        prices?.[originalToToken?.coinGeckoId] * data?.displayAmount
+      ).toFixed(6);
+
+      const impactWarning = caculateImpactWarning(
         data,
         fromAmountToken,
-        ratio
+        ratio,
+        { usdPriceShowFrom, usdPriceShowTo }
       );
       setImpactWarning(impactWarning);
       setRoutersSwapData(routersSwapData);
