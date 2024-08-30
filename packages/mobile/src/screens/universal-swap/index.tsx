@@ -414,6 +414,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  useEffect(() => {
+    onFetchAmount();
+  }, []);
+
   const handleSubmit = async (retryCount = 0) => {
     setSwapLoading(true);
     if (fromAmountToken <= 0) {
@@ -818,6 +822,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
+    return null;
     // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
     return (
       <>
@@ -883,6 +888,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     // }
   };
+
+  console.log("impactWarning", impactWarning);
 
   const renderModals = () => {
     return (
@@ -1184,6 +1191,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
+              impactWarning={impactWarning}
             />
 
             <TouchableOpacity

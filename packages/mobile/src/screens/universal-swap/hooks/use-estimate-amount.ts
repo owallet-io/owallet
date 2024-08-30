@@ -147,6 +147,7 @@ const useEstimateAmount = (
       const calculateImpactPrice = new BigDecimal(usdPriceShowFrom)
         .sub(usdPriceShowTo)
         .toNumber();
+
       if (isNegative(calculateImpactPrice)) return impactWarning;
       return new BigDecimal(calculateImpactPrice)
         .div(usdPriceShowFrom)

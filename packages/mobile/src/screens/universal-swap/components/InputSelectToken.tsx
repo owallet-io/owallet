@@ -30,6 +30,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   onOpenTokenModal,
   editable,
   loading,
+  impactWarning,
 }) => {
   const { colors } = useTheme();
   const { appInitStore } = useStore();
@@ -144,6 +145,17 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             <View style={{ alignSelf: "flex-end" }}>
               <BalanceText color={colors["neutral-text-body3"]} weight="500">
                 ≈ ${maskedNumber(currencyValue) || 0}
+                {impactWarning ? (
+                  <Text
+                    color={
+                      impactWarning > 10
+                        ? colors["error-text-body"]
+                        : impactWarning > 5
+                        ? colors["warning-text-body"]
+                        : colors["neutral-text-body3"]
+                    }
+                  >{`(-${impactWarning}%)`}</Text>
+                ) : null}
               </BalanceText>
             </View>
           </>
