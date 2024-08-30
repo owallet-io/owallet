@@ -131,7 +131,7 @@ const useEstimateAmount = (
           },
         });
         setAmountLoading(false);
-
+        setImpactWarning(0);
         return data;
       } catch (err) {
         console.error("Error in getSimulateSwap:", err);

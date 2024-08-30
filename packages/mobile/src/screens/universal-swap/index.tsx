@@ -96,6 +96,10 @@ const useFee = ({
   fee,
   relayerFeeAmount,
 }) => {
+  const [swapFee, setSwapFee] = useState(0);
+  const [totalFee, setTotalFee] = useState(0);
+  const [bridgeFee, setBidgeFee] = useState(0);
+
   const usdPriceShowFrom = (
     prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
   ).toFixed(6);
@@ -105,30 +109,38 @@ const useFee = ({
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
-  const bridgeTokenFee =
-    simulateDisplayAmount && (fromTokenFee || toTokenFee)
-      ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
-          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
-          .div(100)
-          .toNumber()
-      : 0;
+  useEffect(() => {
+    console.log("get here");
 
-  const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
-    .mul(fee || 0)
-    .toNumber();
+    const bridgeTokenFee =
+      simulateDisplayAmount && (fromTokenFee || toTokenFee)
+        ? new BigDecimal(
+            new BigDecimal(simulateDisplayAmount).mul(fromTokenFee)
+          )
+            .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
+            .div(100)
+            .toNumber()
+        : 0;
+    setBidgeFee(bridgeTokenFee);
 
-  const totalFeeEst =
-    new BigDecimal(bridgeTokenFee || 0)
-      .add(relayerFeeAmount || 0)
-      .add(estSwapFee)
-      .toNumber() || 0;
+    const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
+      .mul(fee || 0)
+      .toNumber();
+    setSwapFee(estSwapFee);
+    const totalFeeEst =
+      new BigDecimal(bridgeTokenFee || 0)
+        .add(relayerFeeAmount || 0)
+        .add(estSwapFee)
+        .toNumber() || 0;
+    setTotalFee(totalFeeEst);
+  }, [simulateDisplayAmount, fromTokenFee, toTokenFee]);
 
   return {
     usdPriceShowFrom,
     usdPriceShowTo,
-    bridgeTokenFee,
-    estSwapFee,
-    totalFeeEst,
+    estSwapFee: swapFee,
+    totalFeeEst: totalFee,
+    bridgeTokenFee: bridgeFee,
   };
 };
 
@@ -888,8 +900,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     // }
   };
-
-  console.log("impactWarning", impactWarning);
 
   const renderModals = () => {
     return (
