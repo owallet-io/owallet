@@ -144,9 +144,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             />
             <View style={{ alignSelf: "flex-end" }}>
               <BalanceText color={colors["neutral-text-body3"]} weight="500">
-                ≈ ${maskedNumber(currencyValue) || 0}
+                ≈ ${maskedNumber(currencyValue) || 0}{" "}
                 {impactWarning ? (
                   <Text
+                    weight="500"
                     color={
                       impactWarning > 10
                         ? colors["error-text-body"]
@@ -154,7 +155,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
                         ? colors["warning-text-body"]
                         : colors["neutral-text-body3"]
                     }
-                  >{`(-${impactWarning}%)`}</Text>
+                  >{`(-${impactWarning.toFixed(2)}%)`}</Text>
                 ) : null}
               </BalanceText>
             </View>
