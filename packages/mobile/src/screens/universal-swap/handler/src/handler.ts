@@ -167,7 +167,7 @@ export class UniversalSwapHandler {
     return getEncodedExecuteContractMsgs(sender, msgSwap);
   }
 
-  private async getIbcReceiveAddr(toChainId: string): Promise<string> {
+  private async getIbcReceiveAddr(toChainId: NetworkChainId): Promise<string> {
     if (this.swapData.recipientAddress) {
       const isValidRecipient = checkValidateAddressWithNetwork(
         this.swapData.recipientAddress,
@@ -184,7 +184,7 @@ export class UniversalSwapHandler {
     return ibcReceiveAddr;
   }
 
-  private getToTokenOnOraichain(toCoinGeckoId: string, toChainId: string) {
+  private getToTokenOnOraichain(toCoinGeckoId: CoinGeckoId, toChainId: string) {
     let toTokenInOrai = getTokenOnOraichain(toCoinGeckoId);
     if (this.isSpecialChain(toChainId, toCoinGeckoId)) {
       const IBC_DECIMALS = 18;
@@ -241,7 +241,7 @@ export class UniversalSwapHandler {
 
   private handleSpecialChainCase(
     fromCoinGeckoId: string,
-    toCoinGeckoId: string,
+    toCoinGeckoId: CoinGeckoId,
     toTokenInOrai: any,
     sender: string
   ): EncodeObject[] {

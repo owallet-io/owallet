@@ -66,6 +66,7 @@ import {
   getSpecialCoingecko,
   isAllowAlphaSmartRouter,
   isAllowIBCWasm,
+  getProtocolsSmartRoute,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -258,17 +259,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useIbcWasm = isAllowIBCWasm(
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  const useAlphaSmartRouter = isAllowAlphaSmartRouter();
+  const protocols = getProtocolsSmartRoute(
     originalFromToken,
     originalToToken,
-    isAIRoute
+    useIbcWasm
   );
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter(
-    originalFromToken,
-    originalToToken,
-    isAIRoute
-  );
-
   const {
     minimumReceive,
     isWarningSlippage,
@@ -293,6 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     {
       useAlphaSmartRoute: useAlphaSmartRouter,
       useIbcWasm: useIbcWasm,
+      protocols,
     },
     isAIRoute
   );

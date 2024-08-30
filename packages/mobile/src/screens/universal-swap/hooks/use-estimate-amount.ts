@@ -8,7 +8,7 @@ import {
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
-import { handleSimulateSwap } from "@oraichain/oraidex-universal-swap";
+import { UniversalSwapHelper } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos } from "@owallet/common";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -46,6 +46,7 @@ const useEstimateAmount = (
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
     useIbcWasm?: boolean;
+    protocols?: string[];
   },
   isAIRoute?: boolean
 ) => {
@@ -109,7 +110,7 @@ const useEstimateAmount = (
       const routerClient = getRouterClient();
 
       try {
-        const data = await handleSimulateSwap({
+        const data = await UniversalSwapHelper.handleSimulateSwap({
           originalFromInfo: originalFromToken,
           originalToInfo: originalToToken,
           originalAmount: initAmount,
@@ -121,9 +122,8 @@ const useEstimateAmount = (
           routerConfig: {
             url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
-            protocols: simulateOption?.useIbcWasm
-              ? ["Oraidex", "OraidexV3"]
-              : ["Oraidex", "OraidexV3", "Osmosis"],
+            protocols: simulateOption?.protocols ?? ["Oraidex", "OraidexV3"],
+            dontAllowSwapAfter: ["Oraidex", "OraidexV3"],
           },
         });
         setAmountLoading(false);
