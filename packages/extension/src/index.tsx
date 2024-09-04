@@ -1,5 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import "./styles/global.scss";
+import "react-sliding-pane/dist/react-sliding-pane.css";
+import "react-toastify/dist/ReactToastify.css";
 import { HashRouter } from "react-router-dom";
 import { configure } from "mobx";
 import { ErrorBoundary } from "react-error-boundary";
@@ -16,9 +19,8 @@ import { initializeWalletProviders } from "./setup/walletProviders";
 import { setupModalStyles } from "./setup/modalStyles";
 import { initializeSentry } from "./setup/sentry";
 
-import "./styles/global.scss";
-import "react-sliding-pane/dist/react-sliding-pane.css";
-import "react-toastify/dist/ReactToastify.css";
+// import "./styles/global.scss";
+
 import { isProdMode } from "helpers/helper";
 
 // Initialize wallet providers
