@@ -4,13 +4,7 @@ import { spacing } from "../../themes";
 import { _keyExtract } from "../../utils/helper";
 import { navigate } from "../../router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  StyleSheet,
-  View,
-  Image,
-  InteractionManager,
-  Clipboard,
-} from "react-native";
+import { StyleSheet, View, InteractionManager, Clipboard } from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
@@ -32,25 +26,28 @@ import {
   removeDataInParentheses,
   shortenAddress,
 } from "@src/utils/helper";
-import { CheckIcon, CopyFillIcon } from "@src/components/icon";
+import { CheckIcon } from "@src/components/icon";
 import { TokenChart } from "@src/screens/home/components/token-chart";
 import { ViewRawToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
 import { tracking } from "@src/utils/tracking";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { AddressBtcType } from "@owallet/types";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
+import MoreModal from "../home/components/more-modal";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
+  const navigation = useNavigation();
 
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+
+  const [isMoreOpen, setMoreModalOpen] = useState(false);
 
   const route = useRoute<
     RouteProp<
@@ -177,6 +174,14 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
   return (
     <>
+      <MoreModal
+        close={() => setMoreModalOpen(false)}
+        isOpen={isMoreOpen}
+        bottomSheetModalConfig={{
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        }}
+      />
       <View
         style={{
           zIndex: 1000,
@@ -345,7 +350,9 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               type="link"
               style={styles.getStarted}
               label={"More"}
-              onPress={() => {}}
+              onPress={() => {
+                setMoreModalOpen(true);
+              }}
             />
           </View>
         </OWBox>
@@ -393,7 +400,13 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       >
         <OWButton
           label="Swap"
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate("SendNavigation", {
+              params: {
+                chain: item.chainInfo.chainId,
+              },
+            });
+          }}
           icon={
             <View style={{ transform: [{ rotate: "130deg" }] }}>
               <OWIcon
