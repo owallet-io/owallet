@@ -30,6 +30,7 @@ import { tracking } from "@src/utils/tracking";
 import { showToast } from "@src/utils/helper";
 import { useBIP44Option } from "@src/screens/register/bip44";
 import { useSmartNavigation } from "@src/navigation.provider";
+import { OWBox } from "@src/components/card";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
@@ -628,7 +629,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 
     return (
       <View>
-        <View style={styles.container}>
+        <OWBox style={styles.container}>
           <View
             style={{
               flexDirection: "row",
@@ -690,7 +691,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
               return renderNetworkItem(chain);
             })}
           </View>
-        </View>
+        </OWBox>
       </View>
     );
   };
@@ -721,7 +722,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 const styling = (colors) =>
   StyleSheet.create({
     container: {
-      backgroundColor: colors["neutral-surface-card"],
       marginTop: spacing["16"],
       borderRadius: 16,
       padding: 16,

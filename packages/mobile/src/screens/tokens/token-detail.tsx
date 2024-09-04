@@ -40,6 +40,7 @@ import { PageWithScrollView } from "@src/components/page";
 import { tracking } from "@src/utils/tracking";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { AddressBtcType } from "@owallet/types";
+import { OWBox } from "@src/components/card";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -190,7 +191,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       </View>
 
       <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>
-        <View style={styles.containerOWBox}>
+        <OWBox style={styles.containerOWBox}>
           <View style={styles.containerInfoAccount}>
             <View style={styles.btnAcc}>
               <Image
@@ -273,11 +274,13 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               onPress={onPressToken}
             />
           </View>
-        </View>
-        <TokenChart coinGeckoId={item.token.currency.coinGeckoId} />
-        <View
+        </OWBox>
+        <TokenChart
+          denom={removeDataInParentheses(item.token.currency.coinDenom)}
+          coinGeckoId={item.token.currency.coinGeckoId}
+        />
+        <OWBox
           style={{
-            backgroundColor: colors["neutral-surface-card"],
             width: metrics.screenWidth,
             paddingHorizontal: 16,
             borderTopRightRadius: 24,
@@ -305,7 +308,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
             tokenAddr={denomHelper.contractAddress || denomHelper.denom}
             chainId={item.chainInfo.chainId}
           />
-        </View>
+        </OWBox>
       </PageWithScrollView>
     </>
   );
@@ -314,10 +317,10 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
 const useStyles = (colors) => {
   return StyleSheet.create({
     containerOWBox: {
+      marginTop: 0,
       marginHorizontal: 16,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
-      backgroundColor: colors["neutral-surface-card"],
       borderRadius: 24,
     },
     overview: {

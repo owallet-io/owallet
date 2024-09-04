@@ -1,14 +1,7 @@
 import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-// @ts-ignore
-import React, {
-  FC,
-  FunctionComponent,
-  useEffect,
-  useState,
-  useTransition,
-} from "react";
+import React, { FC, FunctionComponent, useEffect, useState } from "react";
 import {
   Platform,
   StyleSheet,
@@ -17,7 +10,6 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { OWBox } from "@components/card";
 import { useStore } from "@src/stores";
 import {
   capitalizedText,
@@ -29,20 +21,12 @@ import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { unknownToken } from "@owallet/common";
-
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
-import { HistoryCard } from "@src/screens/transactions";
-import {
-  RawChainInfo,
-  RawToken,
-  ViewRawToken,
-  ViewToken,
-} from "@src/stores/huge-queries";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { ViewToken } from "@src/stores/huge-queries";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import { AppCurrency } from "@owallet/types";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
 

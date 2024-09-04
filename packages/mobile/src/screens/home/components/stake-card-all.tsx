@@ -16,7 +16,6 @@ import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { unknownToken } from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
-import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
