@@ -583,7 +583,7 @@ export const AccountBoxAll: FunctionComponent<{
             enableOverDrag: false,
           }}
         />
-        <OWBox style={styles.containerOWBox}>
+        <OWBox style={[styles.containerOWBox]}>
           <View style={styles.containerInfoAccount}>
             <TouchableOpacity
               disabled={isLoading}
@@ -812,7 +812,6 @@ const styling = (colors) =>
       marginTop: 0,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
-      backgroundColor: colors["neutral-surface-card"],
       borderBottomLeftRadius: 6,
       borderBottomRightRadius: 6,
     },
