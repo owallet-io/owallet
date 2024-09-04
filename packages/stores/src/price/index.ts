@@ -312,7 +312,9 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
       const url = `${this._optionUri}?ids=${this._coinIds.values.join(
         ","
-      )}&vs_currencies=${this._vsCurrencies.values.join(",")}`;
+      )}&vs_currencies=${this._vsCurrencies.values.join(
+        ","
+      )}&include_24hr_change=true`;
 
       if (!this._isInitialized) {
         this.setUrl(url);
