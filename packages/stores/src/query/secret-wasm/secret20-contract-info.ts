@@ -6,12 +6,13 @@ import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
 import { computed, makeObservable } from "mobx";
 import { ObservableSecretContractChainQuery } from "./contract-query";
 import { OWallet } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQuerySecret20ContactInfoInner extends ObservableSecretContractChainQuery<Secret20ContractTokenInfo> {
   protected nonce?: Uint8Array;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
@@ -20,7 +21,7 @@ export class ObservableQuerySecret20ContactInfoInner extends ObservableSecretCon
   ) {
     // Don't need to set the url initially because it can't request without encyption.
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       apiGetter,
@@ -51,15 +52,15 @@ export class ObservableQuerySecret20ContactInfoInner extends ObservableSecretCon
 
 export class ObservableQuerySecret20ContractInfo extends ObservableChainQueryMap<Secret20ContractTokenInfo> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {
-    super(kvStore, chainId, chainGetter, (contractAddress: string) => {
+    super(sharedContext, chainId, chainGetter, (contractAddress: string) => {
       return new ObservableQuerySecret20ContactInfoInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         this.apiGetter,

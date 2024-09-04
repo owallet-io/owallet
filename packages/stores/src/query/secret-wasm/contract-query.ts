@@ -1,5 +1,5 @@
 import { ObservableChainQuery } from "../chain-query";
-import { KVStore, toGenerator } from "@owallet/common";
+import { toGenerator } from "@owallet/common";
 import { ChainGetter } from "../../common";
 import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
 import { autorun, computed, flow, makeObservable, observable } from "mobx";
@@ -8,6 +8,7 @@ import Axios, { CancelToken } from "axios";
 import { QueryResponse } from "../../common";
 
 import { Buffer } from "buffer";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableSecretContractChainQuery<
   T
@@ -21,7 +22,7 @@ export class ObservableSecretContractChainQuery<
   protected _isIniting: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
@@ -31,7 +32,7 @@ export class ObservableSecretContractChainQuery<
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {
     // Don't need to set the url initially because it can't request without encyption.
-    super(kvStore, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, ``);
     makeObservable(this);
 
     // Try to get the owallet API.
@@ -101,14 +102,17 @@ export class ObservableSecretContractChainQuery<
     this._isIniting = false;
   }
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<T>> {
-    let response: QueryResponse<T>;
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: T }> {
+    let data: T;
+    let headers: any;
     try {
-      response = await super.fetchResponse(cancelToken);
+      const fetched = await super.fetchResponse(abortController);
+      data = fetched.data;
+      headers = fetched.headers;
     } catch (e) {
-      if (!Axios.isCancel(e) && e.response?.data?.error) {
+      if (e.response?.data?.error) {
         const encryptedError = e.response.data.error;
 
         const errorMessageRgx =
@@ -134,12 +138,9 @@ export class ObservableSecretContractChainQuery<
       throw e;
     }
 
-    const encResult = response.data as unknown as
+    const encResult = data as unknown as
       | {
-          height: string;
-          result: {
-            smart: string;
-          };
+          data: string;
         }
       | undefined;
 
@@ -157,7 +158,7 @@ export class ObservableSecretContractChainQuery<
 
     const decrypted = await this.owallet
       .getEnigmaUtils(this.chainId)
-      .decrypt(Buffer.from(encResult.result.smart, "base64"), this.nonce);
+      .decrypt(Buffer.from(encResult.data, "base64"), this.nonce);
 
     const message = Buffer.from(
       Buffer.from(decrypted).toString(),
@@ -166,24 +167,13 @@ export class ObservableSecretContractChainQuery<
 
     const obj = JSON.parse(message);
     return {
+      headers,
       data: obj as T,
-      status: response.status,
-      staled: false,
-      timestamp: Date.now(),
     };
   }
 
   // Actually, the url of fetching the secret20 balance will be changed every time.
   // So, we should save it with deterministic key.
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }${this.instance.getUri({
-      url: `/wasm/contract/${this.contractAddress}/query/${JSON.stringify(
-        this.obj
-      )}?encoding=json`,
-    })}`;
-  }
 
   @computed
   get contractCodeHash(): string | undefined {

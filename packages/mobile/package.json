@@ -26,8 +26,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 3.1.6 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 3.1.6 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 3.1.5 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 3.1.5 --output-dir build",
     "images": "node ./src/scripts/generate-images.js",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest ios"
   },
@@ -50,13 +50,13 @@
     "react-native-graph": "^1.1.0",
     "@shopify/react-native-skia": "^1.3.0",
     "@oraichain/common-contracts-sdk": "^1.0.31",
-    "@oraichain/oraidex-common": "^1.0.97",
+    "@oraichain/oraidex-common": "^1.1.3",
     "react-native-branch":"^6.2.2",
     "react-native-fresh-refresh": "^2.1.1",
     "react-native-pager-view": "^6.2.3",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/cw-simulate": "^2.8.76",
-    "@oraichain/oraidex-universal-swap": "^1.0.93",
+    "@oraichain/oraidex-universal-swap": "^1.0.99",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/common-contracts-build": "^1.0.35",
     "ethereum-multicall": "^2.21.0",
@@ -121,7 +121,6 @@
     "react-native-camera": "4.2.1",
     "react-native-chart-kit": "6.12.0",
     "react-native-check-box": "2.1.7",
-    "react-native-code-push": "^8.3.0",
     "react-native-collapsible": "^1.6.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "10.7.0",
@@ -146,7 +145,7 @@
     "react-native-svg": "^12.1.1",
     "react-native-url-polyfill": "^1.3.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-webview": "^13.3.1",
+    "react-native-webview": "^13.10.5",
     "react-native-error-boundary": "^1.2.4",
     "secretjs": "^1.12.5",
     "sha.js": "^2.4.11",
@@ -156,12 +155,14 @@
     "utility-types": "^3.10.0",
     "@gorhom/bottom-sheet": "4.4.7",
     "web3": "1.10.0",
+    "react-native-code-push": "^8.3.1",
     "mobx-react-lite": "^4.0.7"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-decorators": "^7.24.7",
     "@babel/plugin-proposal-export-default-from": "^7.24.7",
+    "@babel/plugin-transform-export-namespace-from":"^7.24.7",
     "@babel/plugin-transform-flow-strip-types": "^7.24.7",
     "babel-plugin-module-resolver": "^5.0.2",
     "@babel/core": "^7.20.0",
@@ -193,6 +194,7 @@
     "webpack-cli": "5.1.4",
     "ts-jest": "29.1.1"
   },
+  
   "engines": {
     "node": ">=16"
   }

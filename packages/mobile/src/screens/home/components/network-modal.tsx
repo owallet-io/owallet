@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract, showToast } from "../../../utils/helper";
@@ -44,6 +44,7 @@ export const NetworkModal: FC<{
     appInitStore,
     universalSwapStore,
     priceStore,
+    hugeQueriesStore,
   } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -131,9 +132,20 @@ export const NetworkModal: FC<{
       });
     }
   }, []);
-  const { totalPriceBalance, dataTokens, dataTokensByChain } =
-    appInitStore.getMultipleAssets;
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    let balances = hugeQueriesStore.allKnownBalances;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances]);
   const _renderItem = ({ item }: { item }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
@@ -206,13 +218,8 @@ export const NetworkModal: FC<{
               }}
             >
               {!item.chainId
-                ? new PricePretty(fiatCurrency, totalPriceBalance)?.toString()
-                : (
-                    new PricePretty(
-                      fiatCurrency,
-                      dataTokensByChain?.[item.chainId]?.totalBalance
-                    ) || initPrice
-                  ).toString()}
+                ? (availableTotalPrice || initPrice)?.toString()
+                : (item.balance || initPrice)?.toString()}
             </Text>
           </View>
         </View>
@@ -233,16 +240,23 @@ export const NetworkModal: FC<{
     );
   };
 
-  const chainsInfoWithBalance = chainStore.chainInfosInUI.map((item, index) => {
-    return {
-      ...item._chainInfo,
-      balance: new PricePretty(
-        fiatCurrency,
-        appInitStore.getMultipleAssets.dataTokensByChain?.[
-          item.chainId
-        ]?.totalBalance
-      ),
-    };
+  const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
+    let balances = hugeQueriesStore.allKnownBalances.filter(
+      (token) => token.chainInfo.chainId === item.chainId
+    );
+    let result: PricePretty | undefined;
+    for (const bal of balances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    //@ts-ignore
+    item.balance = result || initPrice;
+    return item;
   });
   const sortChainsByPrice = (chains) => {
     return chains.sort(

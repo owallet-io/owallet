@@ -8,6 +8,7 @@ import { QueriesWrappedBitcoin } from "../bitcoin";
 import { ObservableQueryAccountTron } from "./account";
 import { ObservableQueryChainParameterTron } from "./chain-parameters";
 import { ObservableQueryTriggerConstantContract } from "./trigger-constant-contract";
+import { QuerySharedContext } from "src/common/query/context";
 // import { ObservableQueryGasPrice } from "./gas-price";
 // import { ObservableQueryGas } from "./gas";
 
@@ -22,14 +23,14 @@ export class QueriesWrappedTron
   public tron: TronQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter, apiGetter);
+    super(sharedContext, chainId, chainGetter, apiGetter);
 
-    this.tron = new TronQueries(this, kvStore, chainId, chainGetter);
+    this.tron = new TronQueries(this, sharedContext, chainId, chainGetter);
   }
 }
 
@@ -41,25 +42,29 @@ export class TronQueries {
   // public readonly queryGas: DeepReadonly<ObservableQueryGas>;
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryTronBalanceRegistry(kvStore)
+      new ObservableQueryTronBalanceRegistry(sharedContext)
     );
     this.queryAccount = new ObservableQueryAccountTron(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
     this.queryChainParameter = new ObservableQueryChainParameterTron(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
     this.queryTriggerConstantContract =
-      new ObservableQueryTriggerConstantContract(kvStore, chainId, chainGetter);
-    // this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
+      new ObservableQueryTriggerConstantContract(
+        sharedContext,
+        chainId,
+        chainGetter
+      );
+    // this.queryGas = new ObservableQueryGas(sharedContext, chainId, chainGetter);
   }
 }

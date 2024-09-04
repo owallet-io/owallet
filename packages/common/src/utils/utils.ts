@@ -30,6 +30,22 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+export const convertIpfsToHttp = (ipfsUrl: string) => {
+  // Ensure the URL starts with "ipfs://"
+  if (!ipfsUrl.startsWith("ipfs://")) {
+    throw new Error("Invalid IPFS URL");
+  }
+
+  // Remove the "ipfs://" prefix
+  const ipfsPath = ipfsUrl.slice(7);
+
+  // Replace the fragment identifier '#' with '%23' for URL encoding
+  const encodedPath = ipfsPath.replace(/#/g, "%23");
+
+  // Construct the HTTP URL using the IPFS gateway
+  return `https://gateway.ipfs.airight.io/ipfs/${encodedPath}`;
+};
+
 const timeoutLimit = 5000;
 export const timeoutBtc = 60000;
 export const withTimeout = (promise, ms = timeoutLimit) => {

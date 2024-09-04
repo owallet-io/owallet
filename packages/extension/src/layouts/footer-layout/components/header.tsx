@@ -54,7 +54,8 @@ export const HeaderNew: FC<{
     useEffect(() => {
       // see the note below on how to choose currentWindow or lastFocusedWindow
       chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
-        const url = tabs[0].url;
+        const url = tabs?.length > 0 && tabs[0].url;
+        if (!url) return;
         setTabActive(url);
         // use `url` here inside the callback because it's asynchronous!
       });

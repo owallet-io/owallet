@@ -15,6 +15,7 @@ import {
   BitcoinMode,
   ChainInfoWithoutEndpoints,
   DefaultMode,
+  SettledResponses,
 } from "@owallet/types";
 import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
 import {
@@ -46,6 +47,7 @@ import {
   RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg,
   RequestSignEIP712CosmosTxMsg_v0,
+  GetKeySettledMsg,
 } from "@owallet/background";
 import { SecretUtils } from "@owallet/types";
 
@@ -106,7 +108,10 @@ export class OWallet implements IOWallet {
     const msg = new GetKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
-
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    const msg = new GetKeySettledMsg(chainIds);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,

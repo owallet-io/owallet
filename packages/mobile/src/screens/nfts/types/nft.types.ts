@@ -13,4 +13,5 @@ export interface IItemNft {
   version: "721" | "1155";
   description: string;
   explorer: string;
+  ecosystem: "airight" | "talis" | "stargaze";
 }

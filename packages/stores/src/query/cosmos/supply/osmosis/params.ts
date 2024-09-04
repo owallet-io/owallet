@@ -4,10 +4,15 @@ import { MintParmas } from "./types";
 import { KVStore } from "@owallet/common";
 import { computed, makeObservable } from "mobx";
 import { Dec } from "@owallet/unit";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintParmas> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, `/osmosis/mint/v1beta1/params`);
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, `/osmosis/mint/v1beta1/params`);
 
     makeObservable(this);
   }

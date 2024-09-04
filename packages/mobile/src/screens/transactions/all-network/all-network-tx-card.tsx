@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, ViewStyle } from "react-native";
 import { API } from "@src/common/api";
-import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
+import { listSkeleton, SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { OWButton } from "@src/components/button";
 import { TxSkeleton } from "@src/components/page";
@@ -15,6 +15,7 @@ import {
   ChainIdEnum,
   getOasisAddress,
   MapChainIdToNetwork,
+  urlTxHistory,
 } from "@owallet/common";
 
 export const AllNetworkTxCard: FunctionComponent<{

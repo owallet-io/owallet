@@ -3,7 +3,7 @@ import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
 import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
-import { ViewRawToken } from "@owallet/types";
+import { ViewRawToken, ViewToken } from "@owallet/types";
 import {
   ChainIdEnum,
   removeDataInParentheses,
@@ -17,35 +17,46 @@ import colors from "../../../theme/colors";
 import { OwEmpty } from "components/empty/ow-empty";
 
 export const TokensCard: FC<{
-  dataTokens: ViewRawToken[];
+  dataTokens: readonly ViewToken[];
   onSelectToken?: (token) => void;
 }> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
-  const { priceStore, chainStore } = useStore();
+  const { priceStore, chainStore, hugeQueriesStore } = useStore();
   const onChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
   const onHideDust = () => {
     chainStore.setIsHideDust(!chainStore.isHideDust);
   };
-  const dataTokensHandled =
-    dataTokens.filter((item, index) => {
-      const balance = new CoinPretty(item.token.currency, item.token.amount);
-      const price = priceStore.calculatePrice(balance, "usd");
-      const searchKeyword = item?.token?.currency?.coinDenom
-        ?.toLowerCase()
-        ?.includes(keyword?.toLowerCase());
-      if (chainStore.isHideDust) {
-        return price?.toDec().gte(new Dec("0.1")) && searchKeyword;
-      }
-      return searchKeyword;
-    }) || [];
+  const trimSearch = keyword.trim();
+
+  const _allBalancesSearchFiltered = useMemo(() => {
+    return dataTokens.filter((token) => {
+      return (
+        token.chainInfo.chainName
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase()) ||
+        token.token.currency.coinDenom
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase())
+      );
+    });
+  }, [dataTokens, trimSearch]);
+  const hasLowBalanceTokens =
+    hugeQueriesStore.filterLowBalanceTokens(dataTokens).length > 0;
+  const lowBalanceFilteredAllBalancesSearchFiltered =
+    hugeQueriesStore.filterLowBalanceTokens(_allBalancesSearchFiltered);
+  const allBalancesSearchFiltered =
+    chainStore.isHideDust && hasLowBalanceTokens
+      ? lowBalanceFilteredAllBalancesSearchFiltered
+      : _allBalancesSearchFiltered;
+
   return (
     <div className={styles.containerTokenCard}>
       <div className={styles.wrapTopBlock}>
         <SearchInput
           onChange={onChangeKeyword}
-          placeholder={"Search by token name"}
+          placeholder={"Search by token"}
         />
 
         <div className={styles.wrapHideToken}>
@@ -62,8 +73,8 @@ export const TokensCard: FC<{
         </div>
       </div>
       <div className={styles.listTokens}>
-        {dataTokensHandled?.length > 0 ? (
-          dataTokensHandled.map((item, index) => (
+        {allBalancesSearchFiltered?.length > 0 ? (
+          allBalancesSearchFiltered.map((item, index) => (
             <TokenItem onSelectToken={onSelectToken} key={index} item={item} />
           ))
         ) : (
@@ -75,20 +86,16 @@ export const TokensCard: FC<{
 });
 
 const TokenItem: FC<{
-  item: ViewRawToken;
+  item: ViewToken;
   onSelectToken?: (token) => void;
 }> = observer(({ item, onSelectToken }) => {
   const { priceStore, chainStore } = useStore();
   const history = useHistory();
 
-  const balance = useMemo(
-    () =>
-      new CoinPretty(
-        item?.token?.currency || unknownToken,
-        item?.token?.amount || new Dec(0)
-      ),
-    [item?.token?.currency, item?.token?.amount]
-  );
+  // const balance = useMemo(
+  //   () => new CoinPretty(item?.token?.currency || unknownToken, item?.token?.amount || new Dec(0)),
+  //   [item?.token?.currency, item?.token?.amount]
+  // );
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const price24h = priceStore.getPrice24hChange(
     item?.token?.currency?.coinGeckoId
@@ -164,7 +171,7 @@ const TokenItem: FC<{
               <img
                 className={styles.chain}
                 src={
-                  item?.chainInfo?.chainImage ||
+                  item?.chainInfo?.currencies[0]?.coinImageUrl ||
                   (unknownToken.coinImageUrl as string)
                 }
               />
@@ -190,14 +197,14 @@ const TokenItem: FC<{
             )}%`}</span>
           </span>
 
-          <span className={styles.subTitle}>{`${item.chainInfo.chainName} ${
-            item?.type || ""
-          }`}</span>
+          <span
+            className={styles.subTitle}
+          >{`${item.chainInfo.chainName} `}</span>
         </div>
       </div>
       <div className={styles.rightBlock}>
         <span className={styles.title}>
-          {balance?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
+          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
         </span>
         <span className={styles.subTitle}>
           {new PricePretty(fiatCurrency, item.price || "0").toString()}

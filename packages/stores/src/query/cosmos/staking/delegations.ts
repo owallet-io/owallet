@@ -8,6 +8,7 @@ import { ChainGetter } from "../../../common";
 import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryDelegationsInner extends ObservableChainQuery<
   Delegations | DelegationsStargate
@@ -15,13 +16,13 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
   protected bech32Address: string;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/cosmos/staking/v1beta1/delegations/${bech32Address}?pagination.limit=1000`
@@ -146,13 +147,13 @@ export class ObservableQueryDelegations extends ObservableChainQueryMap<
   Delegations | DelegationsStargate
 > {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (bech32Address: string) => {
+    super(sharedContext, chainId, chainGetter, (bech32Address: string) => {
       return new ObservableQueryDelegationsInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         bech32Address

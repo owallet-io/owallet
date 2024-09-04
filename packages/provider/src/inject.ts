@@ -17,6 +17,7 @@ import {
   Bitcoin as IBitcoin,
   // Oasis as IOasis,
   BitcoinMode,
+  SettledResponses,
 } from "@owallet/types";
 import { Result, JSONUint8Array } from "@owallet/router";
 import {
@@ -302,7 +303,9 @@ export class InjectedOWallet implements IOWallet {
   async getKey(chainId: string): Promise<Key> {
     return await this.requestMethod("getKey", [chainId]);
   }
-
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this.requestMethod("getKeysSettled", [chainIds]);
+  }
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,

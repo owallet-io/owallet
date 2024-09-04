@@ -37,6 +37,7 @@ import {
   TokenItemType,
   getTokensFromNetwork,
   calcMaxAmount,
+  TON_ORAICHAIN_DENOM,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { ChainIdEnum } from "@owallet/common";
@@ -44,6 +45,7 @@ import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
+  UniversalSwapData,
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
 import { SwapCosmosWallet, SwapEvmWallet } from "./wallet";
@@ -62,6 +64,7 @@ import {
   handleSaveTokenInfos,
   getSpecialCoingecko,
   isAllowAlphaSmartRouter,
+  isAllowIBCWasm,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -175,8 +178,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const client = useClient(accountOrai);
 
-  console.log("client", client);
-
   const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -254,8 +255,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useAlphaSmartRouter =
-    isAllowAlphaSmartRouter(originalFromToken, originalToToken) && isAIRoute;
+  const useIbcWasm = isAllowIBCWasm(
+    originalFromToken,
+    originalToToken,
+    isAIRoute
+  );
+  const useAlphaSmartRouter = isAllowAlphaSmartRouter(
+    originalFromToken,
+    originalToToken,
+    isAIRoute
+  );
 
   const {
     minimumReceive,
@@ -280,6 +289,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleErrorSwap,
     {
       useAlphaSmartRoute: useAlphaSmartRouter,
+      useIbcWasm: useIbcWasm,
     },
     isAIRoute
   );
@@ -565,12 +575,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       relayerDecimals: RELAYER_DECIMAL,
     };
 
-    const isCustomRecipient = sendToAddress && sendToAddress !== "";
     const alphaSmartRoutes =
       useAlphaSmartRouter && simulateData && simulateData?.routes;
 
     let simulateAmount = simulateData.amount;
-
+    const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
       originalFromToken: originalFromToken,
@@ -586,7 +595,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: fromAmountToken,
       relayerFee,
       alphaSmartRoutes,
-    };
+      affiliates: [{ address: affiliateAddress, basis_points_fee: "25" }],
+    } as UniversalSwapData;
 
     const compileSwapData = sendToAddress
       ? { ...universalSwapData, recipientAddress: sendToAddress }
@@ -596,7 +606,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       cosmosWallet,
       //@ts-ignore
       evmWallet,
-      swapOptions: { isAlphaSmartRouter: useAlphaSmartRouter },
+      swapOptions: {
+        isAlphaSmartRouter: useAlphaSmartRouter,
+        isIbcWasm: useIbcWasm,
+      },
     });
 
     return await universalSwapHandler.processUniversalSwap();
@@ -703,6 +716,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
   };
+
+  useEffect(() => {
+    const fromChain = chainInfos.find((chain) => chain.chainId === fromNetwork);
+    console.log("fromChain", fromChain, toNetwork);
+
+    if (
+      fromChain?.networkType === "evm" &&
+      toNetwork === ChainIdEnum.Injective
+    ) {
+      setFromNetwork(ChainIdEnum.Oraichain);
+    }
+  }, [fromNetwork, toNetwork]);
 
   const handleActiveAmount = (percent) => {
     const coeff = Number(percent) / 100;

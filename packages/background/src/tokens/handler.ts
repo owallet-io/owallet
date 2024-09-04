@@ -6,11 +6,17 @@ import {
   GetTokensMsg,
   RemoveTokenMsg,
   SuggestTokenMsg,
+  GetAllTokenInfosMsg,
 } from "./messages";
 
 export const getHandler: (service: TokensService) => Handler = (service) => {
   return (env: Env, msg: Message<unknown>) => {
     switch (msg.constructor) {
+      case GetAllTokenInfosMsg:
+        return handleGetAllTokenInfosMsg(service)(
+          env,
+          msg as GetAllTokenInfosMsg
+        );
       case GetTokensMsg:
         return handleGetTokensMsg(service)(env, msg as GetTokensMsg);
       case SuggestTokenMsg:
@@ -61,7 +67,12 @@ const handleAddTokenMsg: (
   service: TokensService
 ) => InternalHandler<AddTokenMsg> = (service) => {
   return async (_, msg) => {
-    await service.addToken(msg.chainId, msg.currency);
+    await service.setToken(
+      msg.chainId,
+      msg.currency,
+      msg.associatedAccountAddress
+    );
+    return service.getAllTokenInfos();
   };
 };
 
@@ -69,7 +80,13 @@ const handleRemoveTokenMsg: (
   service: TokensService
 ) => InternalHandler<RemoveTokenMsg> = (service) => {
   return async (_, msg) => {
-    await service.removeToken(msg.chainId, msg.currency);
+    service.removeToken(
+      msg.chainId,
+      msg.contractAddress,
+      msg.associatedAccountAddress
+    );
+    return service.getAllTokenInfos();
+    // await service.removeToken(msg.chainId, msg.currency);
   };
 };
 
@@ -91,10 +108,20 @@ const handleGetSecret20ViewingKey: (
       msg.origin
     );
      */
+    const key = await service.keyRingService.getKey(msg.chainId);
+    const associatedAccountAddress = Buffer.from(key.address).toString("hex");
 
-    return await service.getSecret20ViewingKey(
+    return service.getSecret20ViewingKey(
       msg.chainId,
-      msg.contractAddress
+      msg.contractAddress,
+      associatedAccountAddress
     );
+  };
+};
+const handleGetAllTokenInfosMsg: (
+  service: TokensService
+) => InternalHandler<GetAllTokenInfosMsg> = (service) => {
+  return () => {
+    return service.getAllTokenInfos();
   };
 };
