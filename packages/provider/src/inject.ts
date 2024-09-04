@@ -66,7 +66,7 @@ export interface ProxyRequestResponse {
  * So, to request some methods of the extension, this will proxy the request to the content script that is injected to webpage on the extension level.
  * This will use `window.postMessage` to interact with the content script.
  */
-const isOsmosis = window.location.origin.includes("app.osmosis.zone");
+const isOsmosis = window?.location?.origin?.includes("app.osmosis.zone");
 export class InjectedOWallet implements IOWallet {
   static startProxy(
     owallet: IOWallet,
