@@ -25,6 +25,7 @@ import {
   DenomHelper,
   getBase58Address,
   TRC20_LIST,
+  unknownToken,
 } from "@owallet/common";
 import {
   maskedNumber,
@@ -41,6 +42,7 @@ import { tracking } from "@src/utils/tracking";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { AddressBtcType } from "@owallet/types";
 import { OWBox } from "@src/components/card";
+import OWIcon from "@src/components/ow-icon/ow-icon";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -193,15 +195,6 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>
         <OWBox style={styles.containerOWBox}>
           <View style={styles.containerInfoAccount}>
-            <View style={styles.btnAcc}>
-              <Image
-                style={styles.infoIcon}
-                source={require("../../assets/images/default-avatar.png")}
-                resizeMode="contain"
-                fadeDuration={0}
-              />
-              <OWText style={styles.labelName}>{account?.name || "..."}</OWText>
-            </View>
             <OWButton
               type="secondary"
               textStyle={{
@@ -209,21 +202,19 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
                 fontWeight: "600",
                 color: colors["neutral-text-action-on-light-bg"],
               }}
-              icon={
+              iconRight={
                 isTimedOut ? (
                   <CheckIcon />
                 ) : (
-                  <CopyFillIcon color={colors["sub-text"]} />
+                  <OWIcon
+                    size={18}
+                    name="tdesigncopy"
+                    color={colors["neutral-text-action-on-light-bg"]}
+                  />
                 )
               }
               style={styles.copy}
-              label={
-                item?.typeAddress
-                  ? item?.typeAddress === AddressBtcType.Legacy
-                    ? shortenAddress(account.legacyAddress)
-                    : shortenAddress(address)
-                  : shortenAddress(address)
-              }
+              label={shortenAddress(address)}
               onPress={() => {
                 Clipboard.setString(address);
                 setTimer(2000);
@@ -231,26 +222,94 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
             />
           </View>
           <View style={styles.overview}>
-            <OWText variant="bigText" style={styles.labelTotalAmount}>
-              {maskedNumber(
-                new CoinPretty(item.token.currency, item.token.amount)
-                  .hideDenom(true)
-                  .trim(true)
-                  .toString()
-              )}{" "}
-              {removeDataInParentheses(item.token.currency.coinDenom)}
-            </OWText>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <View style={styles.iconWrap}>
+                <OWIcon
+                  style={{ borderRadius: 999 }}
+                  type="images"
+                  source={{
+                    uri:
+                      item.token?.currency?.coinImageUrl?.includes(
+                        "missing.png"
+                      ) || !item.token?.currency?.coinImageUrl
+                        ? unknownToken.coinImageUrl
+                        : item.token?.currency?.coinImageUrl,
+                  }}
+                  size={32}
+                />
+              </View>
+
+              <OWText variant="bigText" style={styles.labelTotalAmount}>
+                {" "}
+                {maskedNumber(
+                  new CoinPretty(item.token.currency, item.token.amount)
+                    .hideDenom(true)
+                    .trim(true)
+                    .toString()
+                )}{" "}
+                {removeDataInParentheses(item.token.currency.coinDenom)}
+              </OWText>
+            </View>
+
             <OWText style={styles.profit} color={colors["neutral-text-body"]}>
               {new PricePretty(fiatCurrency, item.price)?.toString()}
             </OWText>
           </View>
+
+          <View
+            style={{
+              height: 1,
+              width: "100%",
+              backgroundColor: colors["neutral-border-default"],
+              marginBottom: 8,
+            }}
+          />
+
           <View style={styles.btnGroup}>
             <OWButton
-              style={styles.getStarted}
               textStyle={{
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: "600",
-                color: colors["neutral-text-action-on-dark-bg"],
+                color: colors["neutral-text-action-on-light-bg"],
+              }}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignsend"}
+                  size={20}
+                />
+              }
+              type="link"
+              style={styles.getStarted}
+              label={"Send"}
+              onPress={onPressToken}
+            />
+            <View
+              style={{
+                width: 1,
+                height: "100%",
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
+            <OWButton
+              style={styles.getStarted}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignqrcode"}
+                  size={20}
+                />
+              }
+              type="link"
+              textStyle={{
+                fontSize: 15,
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
               }}
               label="Receive"
               onPress={() => {
@@ -263,15 +322,30 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
                 return;
               }}
             />
+            <View
+              style={{
+                width: 1,
+                height: "100%",
+                backgroundColor: colors["neutral-border-default"],
+              }}
+            />
             <OWButton
               textStyle={{
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: "600",
-                color: colors["neutral-text-action-on-dark-bg"],
+                color: colors["neutral-text-action-on-light-bg"],
               }}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignellipsis"}
+                  size={20}
+                />
+              }
+              type="link"
               style={styles.getStarted}
-              label={"Send"}
-              onPress={onPressToken}
+              label={"More"}
+              onPress={() => {}}
             />
           </View>
         </OWBox>
@@ -310,6 +384,34 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
           />
         </OWBox>
       </PageWithScrollView>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 50,
+          alignSelf: "center",
+        }}
+      >
+        <OWButton
+          label="Swap"
+          onPress={() => {}}
+          icon={
+            <View style={{ transform: [{ rotate: "130deg" }] }}>
+              <OWIcon
+                color={colors["neutral-text-action-on-dark-bg"]}
+                name={"tdesign_swap"}
+                size={20}
+              />
+            </View>
+          }
+          style={[
+            styles.bottomBtn,
+            {
+              width: metrics.screenWidth - 32,
+            },
+          ]}
+          textStyle={styles.txtBtnSend}
+        />
+      </View>
     </>
   );
 });
@@ -326,6 +428,7 @@ const useStyles = (colors) => {
     overview: {
       marginTop: 12,
       marginBottom: 16,
+      alignItems: "center",
     },
     labelTotalAmount: {
       color: colors["neutral-text-heading"],
@@ -356,10 +459,11 @@ const useStyles = (colors) => {
     containerInfoAccount: {
       flexDirection: "row",
       justifyContent: "space-between",
+      alignSelf: "center",
     },
     getStarted: {
       borderRadius: 999,
-      width: metrics.screenWidth / 2.45,
+      width: metrics.screenWidth / 4.45,
       height: 32,
     },
     copy: {
@@ -382,5 +486,24 @@ const useStyles = (colors) => {
       zIndex: 1000,
     },
     container: {},
+    iconWrap: {
+      width: 24,
+      height: 24,
+      borderRadius: 999,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
   });
 };

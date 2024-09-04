@@ -28,6 +28,7 @@ export const HistoryByToken: FunctionComponent<{
   const heightBottom = useBottomTabBarHeight();
   const containerStyle = {
     minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
+    marginBottom: 40,
   };
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
