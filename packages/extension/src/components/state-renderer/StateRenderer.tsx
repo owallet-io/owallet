@@ -17,7 +17,7 @@ export const StateRenderer: React.FC = observer(() => {
       const timer = setTimeout(() => {
         setIsLoading(false);
         hasLoadedOnce = true;
-      }, 100);
+      }, 50);
       return () => clearTimeout(timer);
     }
   }, []);
