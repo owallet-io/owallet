@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Image, View } from "react-native";
 import { Text } from "@src/components/text";
 import { RectButton } from "../../../../components/rect-button";
@@ -11,21 +11,24 @@ import { useStyleMyWallet } from "./styles";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
-import { PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ViewToken } from "@src/stores/huge-queries";
+import { initPrice } from "../../hooks/use-multiple-assets";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
   const {
     keyRingStore,
     analyticsStore,
+    chainStore,
     modalStore,
     universalSwapStore,
     appInitStore,
     priceStore,
     accountStore,
   } = useStore();
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
@@ -51,10 +54,10 @@ const MnemonicSeed = () => {
     if (index >= 0) {
       universalSwapStore.setLoaded(false);
       await keyRingStore.changeKeyRing(index);
+      await waitAccountInit(chainStore, accountStore, keyRingStore);
     }
   }, []);
-  const { totalPriceBalance } = appInitStore.getMultipleAssets;
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
   const renderItem = ({ item }) => {
     return (
       <>
@@ -67,9 +70,9 @@ const MnemonicSeed = () => {
           }}
           onPress={async () => {
             setIsLoading(true);
-            await modalStore.close();
             analyticsStore.logEvent("Account changed");
             await selectKeyStore(item);
+            await modalStore.close();
             universalSwapStore.clearAmounts();
             setIsLoading(false);
           }}
@@ -97,11 +100,6 @@ const MnemonicSeed = () => {
               <Text weight="600" size={16} numberOfLines={1}>
                 {item.meta?.name}
               </Text>
-              {item.selected ? (
-                <Text color={colors["neutral-text-title"]} numberOfLines={1}>
-                  {new PricePretty(fiatCurrency, totalPriceBalance)?.toString()}
-                </Text>
-              ) : null}
             </View>
           </View>
 

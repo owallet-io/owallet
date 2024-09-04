@@ -262,7 +262,7 @@ export const useNfts = (
   };
   return isAllNetworks
     ? Object.values(allChainNfts).flat()
-    : allChainNfts[chainStore.current.chainId] || [];
+    : allChainNfts[chainStore.current.chainId];
 };
 
 export const processDataStargazeNft = (item, stakeCurrency) => {
@@ -319,7 +319,7 @@ export const processDataOraiNft = (nft, currencies) => {
     floorPrice: nft?.offer?.amount || "0",
     name: `${nft?.name || ""} #${nft?.id}`,
     tokenId: nft?.id,
-    url: nft?.url,
+    url: nft?.picture || nft?.url,
     tokenInfo,
     contractAddress: nft?.tokenContract,
     network: ChainIdEnum.Oraichain,

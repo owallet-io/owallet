@@ -89,6 +89,7 @@ import {
 import { CoinPretty, Int } from "@owallet/unit";
 import { ISimulateSignTron } from "@owallet/types";
 import { getOasisNic } from "../utils/helper";
+import { ec } from "elliptic";
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
 
@@ -98,7 +99,10 @@ export enum KeyRingStatus {
   LOCKED,
   UNLOCKED,
 }
-
+interface ISensitive {
+  masterKey: string;
+  mnemonic: string;
+}
 export interface Key {
   algo: string;
   pubKey: Uint8Array;
@@ -139,6 +143,7 @@ export class KeyRing {
    */
   private _privateKey?: Uint8Array;
   private _mnemonic?: string;
+  private _masterKey?: string;
   private _ledgerPublicKey?: Uint8Array;
   private keyStore: KeyStore | null;
 
@@ -214,6 +219,7 @@ export class KeyRing {
     return (
       this.privateKey == null &&
       this.mnemonic == null &&
+      this.masterKey == null &&
       this.ledgerPublicKey == null
     );
   }
@@ -225,6 +231,7 @@ export class KeyRing {
   private set privateKey(privateKey: Uint8Array | undefined) {
     this._privateKey = privateKey;
     this._mnemonic = undefined;
+    this._masterKey = undefined;
     this._ledgerPublicKey = undefined;
     this.cached = new Map();
   }
@@ -232,9 +239,18 @@ export class KeyRing {
   private get mnemonic(): string | undefined {
     return this._mnemonic;
   }
+  private get masterKey(): string | undefined {
+    return this._masterKey;
+  }
 
   private set mnemonic(mnemonic: string | undefined) {
     this._mnemonic = mnemonic;
+    this._privateKey = undefined;
+    this._ledgerPublicKey = undefined;
+    this.cached = new Map();
+  }
+  private set masterKey(masterKey: string | undefined) {
+    this._masterKey = masterKey;
     this._privateKey = undefined;
     this._ledgerPublicKey = undefined;
     this.cached = new Map();
@@ -246,6 +262,7 @@ export class KeyRing {
 
   private set ledgerPublicKey(publicKey: Uint8Array | undefined) {
     this._mnemonic = undefined;
+    this._masterKey = undefined;
     this._privateKey = undefined;
     this._ledgerPublicKey = publicKey;
     this.cached = new Map();
@@ -327,8 +344,10 @@ export class KeyRing {
     // if (this.status !== KeyRingStatus.EMPTY) {
     //   throw new Error('Key ring is not loaded or not empty');
     // }
-
+    const masterSeed = Mnemonic.generateMasterSeedFromMnemonic(mnemonic);
+    const masterSeedText = Buffer.from(masterSeed).toString("hex");
     this.mnemonic = mnemonic;
+    this.masterKey = masterSeedText;
     this.keyStore = await KeyRing.CreateMnemonicKeyStore(
       this.rng,
       this.crypto,
@@ -437,6 +456,7 @@ export class KeyRing {
 
     this.mnemonic = undefined;
     this.privateKey = undefined;
+    this.masterKey = undefined;
     this.ledgerPublicKey = undefined;
     this.password = "";
     await this.kvStore.set("passcode", null);
@@ -451,6 +471,9 @@ export class KeyRing {
       this.mnemonic = Buffer.from(
         await Crypto.decrypt(this.crypto, this.keyStore, password)
       ).toString();
+      const masterSeed = Mnemonic.generateMasterSeedFromMnemonic(this.mnemonic);
+      const masterSeedText = Buffer.from(masterSeed).toString("hex");
+      this.masterKey = masterSeedText;
     } else if (this.type === "privateKey") {
       // If password is invalid, error will be thrown.
       this.privateKey = Buffer.from(
@@ -765,7 +788,35 @@ export class KeyRing {
 
     // Make sure that password is valid.
     await Crypto.decrypt(this.crypto, keyStore, password);
-
+    const chainInfos = await this.chainsService.getChainInfos();
+    const uniqueCointypes = chainInfos
+      .filter((chain, index, self) => {
+        const coinType = chain.coinType || chain.bip44?.coinType;
+        return (
+          coinType !== undefined &&
+          index ===
+            self.findIndex(
+              (c) => (c.coinType || c.bip44?.coinType) === coinType
+            )
+        );
+      })
+      .map((item) => item.bip44.coinType);
+    const deleteAllCachePublicKey = uniqueCointypes.map((coinType) => {
+      const bip44HDPath = KeyRing.getKeyStoreBIP44Path(keyStore);
+      const coinTypeModified = coinType ?? bip44HDPath.coinType;
+      const keyDelivery = (() => {
+        if (coinType === 1 || coinType === 0) {
+          return 84;
+        }
+        return 44;
+      })();
+      const path = `m/${keyDelivery}'/${coinTypeModified}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+      const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+        keyStore
+      )}-${path}`;
+      return this.kvStore.set(pubKeyIdentity, null);
+    });
+    await Promise.all(deleteAllCachePublicKey);
     let keyStoreChanged = false;
     if (this.keyStore) {
       // If key store is currently selected key store
@@ -784,6 +835,7 @@ export class KeyRing {
           // Else clear keyring.
           this.keyStore = null;
           this.mnemonic = undefined;
+          this.masterKey = undefined;
           this.privateKey = undefined;
           await this.kvStore.set("passcode", null);
         }
@@ -828,7 +880,7 @@ export class KeyRing {
     return this.getMultiKeyStoreInfo();
   }
 
-  private getPubKey(coinType): PubKeySecp256k1 {
+  private async getPubKey(coinType): Promise<PubKeySecp256k1> {
     if (this.keyStore.type === "ledger") {
       const appName = getNetworkTypeByBip44HDPath({
         coinType: coinType,
@@ -845,8 +897,35 @@ export class KeyRing {
       }
       return new PubKeySecp256k1(this.ledgerPublicKey);
     } else {
-      const privKey = this.loadPrivKey(coinType);
-      return privKey.getPubKey();
+      try {
+        const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
+
+        const coinTypeModified = coinType ?? bip44HDPath.coinType;
+
+        const keyDelivery = (() => {
+          if (coinType === 1 || coinType === 0) {
+            return 84;
+          }
+          return 44;
+        })();
+        const path = `m/${keyDelivery}'/${coinTypeModified}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+        const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+          this.keyStore
+        )}-${path}`;
+
+        const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
+        if (pubKeyGet) {
+          const decodedPublicKey = Uint8Array.from(
+            Buffer.from(pubKeyGet, "base64")
+          );
+          return new PubKeySecp256k1(decodedPublicKey);
+        }
+        const privKey = await this.loadPrivKey(coinType);
+
+        return privKey.getPubKey();
+      } catch (error) {
+        console.log(error, "error");
+      }
     }
   }
 
@@ -874,7 +953,22 @@ export class KeyRing {
     })();
 
     if (coinType === 474) {
-      const signerPublicKey = await this.loadPublicKeyOasis();
+      const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
+      const path = `m/44'/474'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+      const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+        this.keyStore
+      )}-${path}`;
+
+      const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
+      let signerPublicKey: Uint8Array;
+      if (pubKeyGet) {
+        signerPublicKey = Uint8Array.from(Buffer.from(pubKeyGet, "base64"));
+      } else {
+        signerPublicKey = await this.loadPublicKeyOasis();
+        var encodePublicKey = Buffer.from(signerPublicKey).toString("base64");
+        await this.kvStore.set(pubKeyIdentity, encodePublicKey);
+      }
+
       const addressUint8Array = await oasis.staking.addressFromPublicKey(
         signerPublicKey
       );
@@ -885,7 +979,8 @@ export class KeyRing {
         isNanoLedger: this.keyStore.type === "ledger",
       };
     }
-    const pubKey = this.getPubKey(coinType);
+
+    const pubKey = await this.getPubKey(coinType);
 
     const address = (() => {
       if (isEthermint) {
@@ -902,7 +997,11 @@ export class KeyRing {
         const networkType = getNetworkTypeByChainId(chainId);
         if (networkType === "bitcoin") {
           if (this.keyStore.type !== "ledger") {
-            const keyPair = this.getKeyPairBtc(chainId as string, "44");
+            const keyPair = this.getKeyPairBtc(
+              chainId as string,
+              "44",
+              this.masterKey
+            );
             const address = getAddress(keyPair, chainId, "legacy");
             return address;
           } else {
@@ -923,7 +1022,7 @@ export class KeyRing {
     };
   }
 
-  private loadPrivKey(coinType: number): PrivKeySecp256k1 {
+  private async loadPrivKey(coinType: number): Promise<PrivKeySecp256k1> {
     if (
       this.status !== KeyRingStatus.UNLOCKED ||
       this.type === "none" ||
@@ -934,8 +1033,7 @@ export class KeyRing {
     const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
     // and here
     if (this.type === "mnemonic") {
-      const coinTypeModified = bip44HDPath.coinType ?? coinType;
-
+      const coinTypeModified = coinType ?? bip44HDPath.coinType;
       const keyDelivery = (() => {
         if (coinType === 1 || coinType === 0) {
           return 84;
@@ -955,9 +1053,29 @@ export class KeyRing {
           "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
         );
       }
-      const privKey = Mnemonic.generateWalletFromMnemonic(this.mnemonic, path);
 
+      if (!this.masterKey) {
+        throw new Error("masterSeedText is null");
+      }
+
+      const masterSeed = Buffer.from(this.masterKey, "hex");
+      // const privKey = Mnemonic.generateWalletFromMnemonic(this.mnemonic, path);
+      const privKey = Mnemonic.generatePrivateKeyFromMasterSeed(
+        masterSeed,
+        path
+      );
       this.cached.set(path, privKey);
+
+      const secp256k1 = new ec("secp256k1");
+      const key = secp256k1.keyFromPrivate(privKey);
+      const publicKeyData = new Uint8Array(
+        key.getPublic().encodeCompressed("array")
+      );
+      var encodePublicKey = Buffer.from(publicKeyData).toString("base64");
+      const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+        this.keyStore
+      )}-${path}`;
+      await this.kvStore.set(pubKeyIdentity, encodePublicKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {
       // If key store type is private key, path will be ignored.
@@ -987,7 +1105,7 @@ export class KeyRing {
 
   async simulateSignTron(transaction: any) {
     try {
-      const privKey = this.loadPrivKey(195);
+      const privKey = await this.loadPrivKey(195);
       const signedTxn = TronWeb.utils.crypto.signTransaction(
         privKey.toBytes(),
         transaction
@@ -1070,7 +1188,7 @@ export class KeyRing {
       );
     } else {
       // Sign with Evmos/Ethereum
-      const privKey = this.loadPrivKey(coinType);
+      const privKey = await this.loadPrivKey(coinType);
 
       // Check cointype = 60 in the case that network is evmos(still cosmos but need to sign with ethereum)
       const chainInfo = await this.chainsService.getChainInfo(chainId);
@@ -1127,7 +1245,7 @@ export class KeyRing {
     rpc: string,
     message: object
   ): Promise<string> {
-    const privKey = this.loadPrivKey(coinType);
+    const privKey = await this.loadPrivKey(coinType);
     const hexAddress = KeyringHelper.getHexAddressEvm(privKey);
     const nonce = await request(rpc, "eth_getTransactionCount", hexAddress);
     const rawTxHex = KeyringHelper.getRawTxEvm(
@@ -1174,7 +1292,7 @@ export class KeyRing {
     const nic = await getOasisNic(chainInfo.grpc);
     const signer = signerFromPrivateKey(bytes);
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-    console.log("bigIntAmount", bigIntAmount);
+
     const chainContext = await nic.consensusGetChainContext();
 
     const tw = await OasisTransaction.buildTransfer(
@@ -1241,11 +1359,20 @@ export class KeyRing {
     }
   }
 
-  protected getKeyPairBtc(chainId: string, keyDerivation: string = "84") {
+  protected getKeyPairBtc(
+    chainId: string,
+    keyDerivation: string = "84",
+    masterSeedText
+  ) {
+    if (!masterSeedText) {
+      throw new Error("masterSeedText is null");
+    }
+
+    const masterSeed = Buffer.from(masterSeedText, "hex");
     let keyPair;
     if (!!this.mnemonic) {
       keyPair = getKeyPairByMnemonic({
-        mnemonic: this.mnemonic,
+        seed: masterSeed,
         selectedCrypto: chainId as string,
         keyDerivationPath: keyDerivation,
       });
@@ -1305,7 +1432,12 @@ export class KeyRing {
         message.msgs.changeAddress
       ) as AddressBtcType;
       const keyDerivation = getKeyDerivationFromAddressType(addressType);
-      const keyPair = this.getKeyPairBtc(chainId, keyDerivation);
+
+      const keyPair = this.getKeyPairBtc(
+        chainId,
+        keyDerivation,
+        this.masterKey
+      );
 
       const res = (await createTransaction({
         selectedCrypto: chainId,
@@ -1362,7 +1494,7 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
+    const privKey = await this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
     //TODO: This is comment for security proxy-recrypt-js lib
     // const decryptedData = PRE.decryptData(privKeyHex, message[0]);
@@ -1384,7 +1516,7 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
 
-    const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
+    const privKey = await this.loadPrivKey(getCoinTypeByChainId(chainId));
     const privKeyHex = Buffer.from(privKey.toBytes()).toString("hex");
     //TODO: This is comment for security proxy-recrypt-js lib
     // const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
@@ -1408,7 +1540,7 @@ export class KeyRing {
     }
 
     try {
-      const privKey = this.loadPrivKey(60);
+      const privKey = await this.loadPrivKey(60);
       const privKeyBuffer = Buffer.from(privKey.toBytes());
 
       const response = await Promise.all(
@@ -1452,7 +1584,7 @@ export class KeyRing {
       throw new Error("Key Store is empty");
     }
     try {
-      const privKey = this.loadPrivKey(60);
+      const privKey = await this.loadPrivKey(60);
       const privKeyBuffer = Buffer.from(privKey.toBytes());
       const response = await Promise.all(
         message[0].map(async (data) => {
@@ -1519,7 +1651,7 @@ export class KeyRing {
       return pubKey;
     }
 
-    const privKey = this.loadPrivKey(getCoinTypeByChainId(chainId));
+    const privKey = await this.loadPrivKey(getCoinTypeByChainId(chainId));
 
     // And Oasis here
     const pubKeyHex =
@@ -1555,7 +1687,7 @@ export class KeyRing {
         );
       }
 
-      const privateKey = this.loadPrivKey(defaultCoinType).toBytes();
+      const privateKey = (await this.loadPrivKey(defaultCoinType)).toBytes();
 
       const typedMessageParsed = JSON.parse(typedMessage);
 
@@ -1883,7 +2015,7 @@ export class KeyRing {
     ).toString();
 
     if (keyStore.type === "mnemonic" && isShowPrivKey) {
-      const privKeyBytes = this.loadPrivKey(coinType).toBytes();
+      const privKeyBytes = (await this.loadPrivKey(coinType)).toBytes();
       const privKey = Buffer.from(privKeyBytes).toString("hex");
       return privKey;
     }

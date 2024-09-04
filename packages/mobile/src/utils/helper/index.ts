@@ -18,6 +18,7 @@ import {
 } from "@oraichain/oraidex-common";
 import { ChainIdEnum } from "@owallet/common";
 import { Dec } from "@owallet/unit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SCHEME_IOS = "owallet://open_url?url=";
 const SCHEME_ANDROID = "app.owallet.oauth://google/open_url?url=";

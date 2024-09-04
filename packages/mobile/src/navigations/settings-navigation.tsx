@@ -36,15 +36,10 @@ export const SettingStackScreen: FC = () => {
     return headerOptions;
   };
   return (
-    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
+    <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen
         options={{
           headerShown: false,
-          title: "Settings",
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get("color-setting-screen-background").color
-          ),
-          headerTitleStyle: style.flatten(["h3", "color-text-black-high"]),
         }}
         name={SCREENS.Setting}
         // component={SettingScreen}
@@ -68,12 +63,6 @@ export const SettingStackScreen: FC = () => {
               <HeaderAddIcon />
             </HeaderRightButton>
           ),
-          //   ...BlurredHeaderScreenOptionsPreset,
-          //   headerStyle: {
-          //     backgroundColor: colors['primary'],
-          //     shadowColor: 'transparent', // this covers iOS
-          //     elevation: 0 // this covers Android
-          //   }
         }}
         component={SettingSelectAccountScreen}
       />
