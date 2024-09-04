@@ -42,28 +42,24 @@ import MoreModal from "./more-modal";
 
 const widthAndHeight = 100;
 const colorList = [
-  "#ff6c00",
-  "#ff3c00",
-  "#945EF8",
-  "#C170FF",
-  "#00AD26",
-  "#ECFEEE",
-  "#ffb300",
-  "#ff9100",
-  "#8B1BFB",
-  "#FF5947",
-  "#39DD47",
-  "#D3FDD7",
-  "#FFE1AD",
-  "#B87500",
-  "#F29900",
+  "#81ACEB",
+  "#FFEA28",
+  "#9ED275",
+  "#9AB66B",
+  "#F07895",
   "#9D81EB",
-  "#7A4D00",
-  "#E01600",
-  "#CAEB60",
-  "#fbd203",
-  "#A81100",
-  "#FFEDEB",
+  "#F7931A",
+  "#627EEA",
+  "#E9B6E6",
+  "#494949",
+  "#CFE389",
+  "#93C067",
+  "#3E7C55",
+  "#29575D",
+  "#649A57",
+  "#CF72B9",
+  "#854EAF",
+  "#5D30A5",
 ];
 
 const randomColors = shuffleArray(colorList);
@@ -129,8 +125,9 @@ export const AccountBoxAll: FunctionComponent<{
       const tmpSeries = [];
       const tmpSliceColor = [];
       let otherValue = 0;
+
       const minimumPrice =
-        (Number(appInitStore.getMultipleAssets.totalPriceBalance) * 3) / 100;
+        (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
 
       const chainsInfoWithBalance = chainStore.chainInfos.map((item) => {
         let balances = dataBalances.filter(
@@ -181,13 +178,13 @@ export const AccountBoxAll: FunctionComponent<{
       });
 
       tmpChain.push({
-        color: "#F5F5F7",
+        color: "#494949",
         totalBalance: otherValue,
         name: "Other",
       });
       setChainListWithBalance(tmpChain);
       setSeries([...tmpSeries, otherValue]);
-      setSliceColor([...tmpSliceColor, "#F5F5F7"]);
+      setSliceColor([...tmpSliceColor, "#494949"]);
     }, [dataBalances, accountOrai.bech32Address]);
 
     const { isTimedOut, setTimer } = useSimpleTimer();
@@ -586,7 +583,7 @@ export const AccountBoxAll: FunctionComponent<{
             enableOverDrag: false,
           }}
         />
-        <OWBox style={styles.containerOWBox}>
+        <OWBox style={[styles.containerOWBox]}>
           <View style={styles.containerInfoAccount}>
             <TouchableOpacity
               disabled={isLoading}
@@ -815,7 +812,6 @@ const styling = (colors) =>
       marginTop: 0,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
-      backgroundColor: colors["neutral-surface-card"],
       borderBottomLeftRadius: 6,
       borderBottomRightRadius: 6,
     },
