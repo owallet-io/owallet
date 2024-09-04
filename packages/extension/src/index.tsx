@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "./styles/global.scss";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -27,7 +27,10 @@ import {
 } from "./pages/send";
 import { Banner } from "./components/banner";
 import { ConfirmProvider } from "./components/confirm";
-import { LoadingIndicatorProvider } from "./components/loading-indicator";
+import {
+  LoadingIndicatorProvider,
+  useLoadingIndicator,
+} from "./components/loading-indicator";
 
 import { configure } from "mobx";
 import { observer } from "mobx-react-lite";
@@ -194,8 +197,26 @@ function ErrorFallback({ error }) {
     </div>
   );
 }
+let hasLoadedOnce = false;
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
+  const [isLoading, setIsLoading] = useState(!hasLoadedOnce ? true : false);
+  useEffect(() => {
+    if (!hasLoadedOnce) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        hasLoadedOnce = true;
+      }, 100);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, []);
+
+  if (isLoading) {
+    return;
+  }
+
   if (
     keyRingStore.persistent ||
     keyRingStore.status === KeyRingStatus.UNLOCKED
