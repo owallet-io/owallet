@@ -38,14 +38,11 @@ import {
   TokenItemType,
   getTokensFromNetwork,
   calcMaxAmount,
-  TON_ORAICHAIN_DENOM,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
 import { ChainIdEnum } from "@owallet/common";
 import {
-  isEvmNetworkNativeSwapSupported,
-  isEvmSwappable,
-  isSupportedNoPoolSwapEvm,
+  UniversalSwapHelper,
   UniversalSwapData,
   UniversalSwapHandler,
 } from "@oraichain/oraidex-universal-swap";
@@ -66,6 +63,7 @@ import {
   getSpecialCoingecko,
   isAllowAlphaSmartRouter,
   isAllowIBCWasm,
+  getProtocolsSmartRoute,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -98,6 +96,10 @@ const useFee = ({
   fee,
   relayerFeeAmount,
 }) => {
+  const [swapFee, setSwapFee] = useState(0);
+  const [totalFee, setTotalFee] = useState(0);
+  const [bridgeFee, setBidgeFee] = useState(0);
+
   const usdPriceShowFrom = (
     prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
   ).toFixed(6);
@@ -107,30 +109,36 @@ const useFee = ({
   const simulateDisplayAmount =
     simulateData && simulateData.displayAmount ? simulateData.displayAmount : 0;
 
-  const bridgeTokenFee =
-    simulateDisplayAmount && (fromTokenFee || toTokenFee)
-      ? new BigDecimal(new BigDecimal(simulateDisplayAmount).mul(fromTokenFee))
-          .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
-          .div(100)
-          .toNumber()
-      : 0;
+  useEffect(() => {
+    const bridgeTokenFee =
+      simulateDisplayAmount && (fromTokenFee || toTokenFee)
+        ? new BigDecimal(
+            new BigDecimal(simulateDisplayAmount).mul(fromTokenFee)
+          )
+            .add(new BigDecimal(simulateDisplayAmount).mul(toTokenFee))
+            .div(100)
+            .toNumber()
+        : 0;
+    setBidgeFee(bridgeTokenFee);
 
-  const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
-    .mul(fee || 0)
-    .toNumber();
-
-  const totalFeeEst =
-    new BigDecimal(bridgeTokenFee || 0)
-      .add(relayerFeeAmount || 0)
-      .add(estSwapFee)
-      .toNumber() || 0;
+    const estSwapFee = new BigDecimal(simulateDisplayAmount || 0)
+      .mul(fee || 0)
+      .toNumber();
+    setSwapFee(estSwapFee);
+    const totalFeeEst =
+      new BigDecimal(bridgeTokenFee || 0)
+        .add(relayerFeeAmount || 0)
+        .add(estSwapFee)
+        .toNumber() || 0;
+    setTotalFee(totalFeeEst);
+  }, [simulateDisplayAmount, fromTokenFee, toTokenFee, fee, relayerFeeAmount]);
 
   return {
     usdPriceShowFrom,
     usdPriceShowTo,
-    bridgeTokenFee,
-    estSwapFee,
-    totalFeeEst,
+    estSwapFee: swapFee,
+    totalFeeEst: totalFee,
+    bridgeTokenFee: bridgeFee,
   };
 };
 
@@ -219,7 +227,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([finalAmount, toAmountToken]);
   };
 
-  const isEvmSwap = isEvmSwappable({
+  const isEvmSwap = UniversalSwapHelper.isEvmSwappable({
     fromChainId: originalFromToken.chainId,
     toChainId: originalToToken.chainId,
     fromContractAddr: originalFromToken.contractAddress,
@@ -258,17 +266,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useIbcWasm = isAllowIBCWasm(
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  const useAlphaSmartRouter = isAllowAlphaSmartRouter();
+  const protocols = getProtocolsSmartRoute(
     originalFromToken,
     originalToToken,
-    isAIRoute
+    useIbcWasm
   );
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter(
-    originalFromToken,
-    originalToToken,
-    isAIRoute
-  );
-
   const {
     minimumReceive,
     isWarningSlippage,
@@ -286,6 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromToken,
     toToken,
     fromAmountToken,
+    prices,
     userSlippage,
     client,
     setSwapAmount,
@@ -293,6 +298,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     {
       useAlphaSmartRoute: useAlphaSmartRouter,
       useIbcWasm: useIbcWasm,
+      protocols,
     },
     isAIRoute
   );
@@ -417,6 +423,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }, 1000);
     }
   };
+
+  useEffect(() => {
+    onFetchAmount();
+  }, []);
 
   const handleSubmit = async (retryCount = 0) => {
     setSwapLoading(true);
@@ -737,8 +747,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleReverseDirection = () => {
     if (
-      isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
-      !isEvmNetworkNativeSwapSupported(toToken.chainId)
+      UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
+      !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
     )
       return;
     setFromNetwork(toNetwork);
@@ -822,7 +832,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [sendToAddress, sendToModal]);
 
   const renderSmartRoutes = () => {
-    // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
+    return null;
     return (
       <>
         <View
@@ -885,7 +895,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
       </>
     );
-    // }
   };
 
   const renderModals = () => {
@@ -1188,6 +1197,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={"to"}
+              impactWarning={impactWarning}
             />
 
             <TouchableOpacity

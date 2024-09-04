@@ -16,7 +16,6 @@ import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { unknownToken } from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
-import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
@@ -50,7 +49,7 @@ export const StakeCardAll = observer(({}) => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const [totalStakingReward, setTotalStakingReward] = useState(`0`);
-  const [viewMore, setViewMore] = useState(true);
+  const [viewMore, setViewMore] = useState(false);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const { colors } = useTheme();

@@ -21,18 +21,12 @@ import { Popup } from "react-native-popup-confirm-toast";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
-import { ChainInfoWithEmbed } from "@owallet/background";
-import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
-
 import { tracking } from "@src/utils/tracking";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
-  balance: PricePretty;
-}
 export const NetworkModal: FC<{
   hideAllNetwork?: boolean;
 }> = ({ hideAllNetwork }) => {
@@ -50,7 +44,6 @@ export const NetworkModal: FC<{
     accountStore,
     appInitStore,
     priceStore,
-    hugeQueriesStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
