@@ -6,7 +6,6 @@ import React, {
   FC,
   FunctionComponent,
   useEffect,
-  useMemo,
   useState,
   useTransition,
 } from "react";
@@ -20,7 +19,11 @@ import {
 } from "react-native";
 import { OWBox } from "@components/card";
 import { useStore } from "@src/stores";
-import { maskedNumber, removeDataInParentheses } from "@utils/helper";
+import {
+  capitalizedText,
+  maskedNumber,
+  removeDataInParentheses,
+} from "@utils/helper";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
@@ -31,42 +34,44 @@ import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { HistoryCard } from "@src/screens/transactions";
-import { ViewToken } from "@src/stores/huge-queries";
-
+import {
+  RawChainInfo,
+  RawToken,
+  ViewRawToken,
+  ViewToken,
+} from "@src/stores/huge-queries";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
-
+import { AppCurrency } from "@owallet/types";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
 
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  dataTokens: readonly ViewToken[];
+  dataTokens: ViewToken[];
 }> = observer(({ containerStyle, dataTokens }) => {
-  const { priceStore, appInitStore, hugeQueriesStore } = useStore();
+  const { priceStore, appInitStore } = useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const trimSearch = keyword.trim();
+  const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
+    ? dataTokens.filter((item, index) => {
+        const balance = new CoinPretty(
+          item.token.currency,
+          item.token.toCoin().amount
+        );
+        const price = priceStore.calculatePrice(balance, "usd");
+        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
+      })
+    : dataTokens;
 
-  const _allBalancesSearchFiltered = useMemo(() => {
-    return dataTokens.filter((token) => {
-      return (
-        token.chainInfo.chainName
-          .toLowerCase()
-          .includes(trimSearch.toLowerCase()) ||
-        token.token.currency.coinDenom
-          .toLowerCase()
-          .includes(trimSearch.toLowerCase())
-      );
-    });
-  }, [dataTokens, trimSearch]);
-  const hasLowBalanceTokens =
-    hugeQueriesStore.filterLowBalanceTokens(dataTokens).length > 0;
-  const lowBalanceFilteredAllBalancesSearchFiltered =
-    hugeQueriesStore.filterLowBalanceTokens(_allBalancesSearchFiltered);
-  const allBalancesSearchFiltered =
-    appInitStore.getInitApp.hideTokensWithoutBalance && hasLowBalanceTokens
-      ? lowBalanceFilteredAllBalancesSearchFiltered
-      : _allBalancesSearchFiltered;
+  const tokensAll =
+    tokens &&
+    tokens.filter((item, index) =>
+      item?.token?.currency?.coinDenom
+        ?.toLowerCase()
+        ?.includes(keyword.toLowerCase())
+    );
+
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.hideTokensWithoutBalance
   );
@@ -121,8 +126,8 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
       </View>
-      {allBalancesSearchFiltered?.length > 0 ? (
-        allBalancesSearchFiltered.map((item, index) => (
+      {tokensAll?.length > 0 ? (
+        tokensAll.map((item, index) => (
           <TokenItem key={index.toString()} item={item} />
         ))
       ) : (
@@ -242,7 +247,7 @@ const TokenItem: FC<{
               type="images"
               source={{
                 uri:
-                  item?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                  item?.chainInfo.stakeCurrency.coinImageUrl ||
                   unknownToken.coinImageUrl,
               }}
               size={16}
@@ -268,17 +273,17 @@ const TokenItem: FC<{
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
             </Text>
-            {/* {item.type && (
+            {item.typeAddress && (
               <View style={styles.type}>
                 <Text
                   weight="400"
                   size={12}
                   color={colors["neutral-text-body-2"]}
                 >
-                  {item.type}
+                  {capitalizedText(item.typeAddress)}
                 </Text>
               </View>
-            )} */}
+            )}
           </View>
         </View>
         <View style={styles.rightBoxItem}>
@@ -290,9 +295,10 @@ const TokenItem: FC<{
                 weight="500"
                 color={colors["neutral-text-heading"]}
               >
-                {item?.token?.currency && item?.token
+                {item?.token
                   ? maskedNumber(
-                      item.token.trim(true).hideDenom(true)?.toString()
+                      item?.token.trim(true).hideDenom(true).toString(),
+                      6
                     )
                   : "0"}
               </Text>
@@ -301,7 +307,9 @@ const TokenItem: FC<{
                 style={{ lineHeight: 24 }}
                 color={colors["neutral-text-body"]}
               >
-                {(item.price ? item.price?.toString() : initPrice)?.toString()}
+                {(
+                  priceStore.calculatePrice(item?.token) || initPrice
+                )?.toString()}
               </Text>
             </View>
           </View>

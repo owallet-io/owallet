@@ -7,6 +7,8 @@ const bip32 = require("bip32");
 const moment = require("moment");
 const bip21 = require("bip21");
 const Url = require("url-parse");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bs58check = require("bs58check");
 const {
   networks,
   availableCoins,
@@ -747,14 +749,13 @@ const getKeyPairByMnemonic = ({
   selectedCrypto = "bitcoin",
   keyDerivationPath = "84",
   addressIndex = 0,
-  mnemonic,
+  seed,
 }) => {
   const coinTypePath = defaultWalletShape.coinTypePath[selectedCrypto];
   const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
-
-  const root = bip32.fromSeed(bip39.mnemonicToSeedSync(mnemonic), network);
+  const masterSeed = bip32.fromBase58(bs58check.encode(seed), network);
   const addressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/0/${addressIndex}`;
-  const keyPair = root.derivePath(addressPath);
+  const keyPair = masterSeed.derivePath(addressPath);
   return keyPair;
 };
 

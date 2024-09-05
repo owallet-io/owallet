@@ -36,7 +36,7 @@ export const NftCard = observer(() => {
         <OWEmpty type="nft" label="NO NFTs YET" />
       )}
 
-      {nfts &&
+      {nfts?.length > 0 &&
         nfts.map((it, index) => {
           const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
           if (it?.data?.length > 0) {
@@ -66,9 +66,9 @@ export const NftCard = observer(() => {
                       }}
                     />
                     <View>
-                      <OWText style={styles.txtTitle}>
-                        {`${it?.chainInfo?.chainName}`}
-                      </OWText>
+                      <OWText
+                        style={styles.txtTitle}
+                      >{`${it?.chainInfo?.chainName}`}</OWText>
                       <OWText size={10}>{it?.title}</OWText>
                     </View>
                   </View>
@@ -80,9 +80,10 @@ export const NftCard = observer(() => {
                   </OWText>
                 </View>
                 <View style={styles.containerList}>
-                  {it?.data?.map((nft, indexNft) => (
-                    <NftItem key={indexNft} item={nft} />
-                  ))}
+                  {it?.data?.length > 0 &&
+                    it?.data?.map((nft, indexNft) => (
+                      <NftItem key={indexNft} item={nft} />
+                    ))}
                 </View>
                 {Number(it?.count) > 4 && (
                   <OWButton

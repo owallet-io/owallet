@@ -4,6 +4,7 @@ import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract, showToast } from "../../../utils/helper";
 import { Text } from "@src/components/text";
 import {
+  ChainIdEnum,
   COINTYPE_NETWORK,
   getKeyDerivationFromAddressType,
 } from "@owallet/common";
@@ -19,9 +20,11 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { ChainInfoInner } from "@owallet/stores";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import { PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 
 import { tracking } from "@src/utils/tracking";
+import { ViewToken } from "@src/stores/huge-queries";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ChainInfoItem extends ChainInfoInner<ChainInfoWithEmbed> {
   balance: PricePretty;
@@ -42,14 +45,46 @@ export const NetworkModal: FC<{
     keyRingStore,
     accountStore,
     appInitStore,
-    universalSwapStore,
     priceStore,
     hugeQueriesStore,
   } = useStore();
-
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
+  const loadCachedData = async (cacheKey: string) => {
+    // InteractionManager.runAfterInteractions(async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem(
+        `cachedDataBalances-${cacheKey}`
+      );
+      if (cachedData) {
+        const dataBalances: any[] = JSON.parse(cachedData);
+        const balances = dataBalances.map((item) => {
+          const token = new CoinPretty(
+            item.token.currency,
+            new Dec(item.token.balance)
+          );
+          return {
+            chainInfo: chainStore.getChain(item.chainId),
+            isFetching: false,
+            error: null,
+            token,
+            price: priceStore.calculatePrice(token),
+          };
+        });
+        setDataBalances(balances);
+      }
+    } catch (e) {
+      console.error("Failed to load data from cache", e);
+    }
+    // });
+  };
+  useEffect(() => {
+    loadCachedData(accountOrai.bech32Address);
 
+    return () => {};
+  }, [accountOrai.bech32Address]);
   const onConfirm = async (item: any) => {
     const { networkType } = chainStore.getChain(item?.chainId);
     const keyDerivation = (() => {
@@ -80,6 +115,12 @@ export const NetworkModal: FC<{
       setActiveTab("testnet");
     }
   }, [chainStore.current.chainName]);
+
+  useEffect(() => {
+    if (appInitStore.getInitApp.hideTestnet) {
+      setActiveTab("mainnet");
+    }
+  }, [appInitStore.getInitApp.hideTestnet]);
 
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
@@ -134,7 +175,7 @@ export const NetworkModal: FC<{
   }, []);
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    let balances = hugeQueriesStore.allKnownBalances;
+    let balances = dataBalances;
     for (const bal of balances) {
       if (bal.price) {
         if (!result) {
@@ -145,7 +186,7 @@ export const NetworkModal: FC<{
       }
     }
     return result;
-  }, [hugeQueriesStore.allKnownBalances]);
+  }, [dataBalances]);
   const _renderItem = ({ item }: { item }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
@@ -241,7 +282,7 @@ export const NetworkModal: FC<{
   };
 
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
-    let balances = hugeQueriesStore.allKnownBalances.filter(
+    let balances = dataBalances.filter(
       (token) => token.chainInfo.chainId === item.chainId
     );
     let result: PricePretty | undefined;
@@ -316,40 +357,42 @@ export const NetworkModal: FC<{
           />
         </View>
       </View>
-      <View style={styles.wrapHeaderTitle}>
-        <OWButton
-          type="link"
-          label={"Mainnet"}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          onPress={() => setActiveTab("mainnet")}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "mainnet" ? styles.active : null,
-          ]}
-        />
-        <OWButton
-          type="link"
-          label={"Testnet"}
-          onPress={() => setActiveTab("testnet")}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "testnet" ? styles.active : null,
-          ]}
-        />
-      </View>
+      {!appInitStore.getInitApp.hideTestnet ? (
+        <View style={styles.wrapHeaderTitle}>
+          <OWButton
+            type="link"
+            label={"Mainnet"}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            onPress={() => setActiveTab("mainnet")}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "mainnet" ? styles.active : null,
+            ]}
+          />
+          <OWButton
+            type="link"
+            label={"Testnet"}
+            onPress={() => setActiveTab("testnet")}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "testnet" ? styles.active : null,
+            ]}
+          />
+        </View>
+      ) : null}
       <View
         style={{
           marginTop: spacing["12"],

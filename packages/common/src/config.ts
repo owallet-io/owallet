@@ -519,6 +519,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       },
       {
+        coinDenom: "TON",
+        coinMinimalDenom:
+          "ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98",
+        coinDecimals: 9,
+        coinGeckoId: "the-open-network",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
+      },
+      {
         coinDenom: "ION",
         coinMinimalDenom: "uion",
         coinDecimals: 6,

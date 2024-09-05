@@ -256,7 +256,7 @@ const TokenItem: FC<{
       </div>
       <div className={styles.rightBlock}>
         <span className={styles.title}>
-          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
+          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(6)?.toString()}
         </span>
         <span className={styles.subTitle}>
           {new PricePretty(fiatCurrency, item.price || "0").toString()}
