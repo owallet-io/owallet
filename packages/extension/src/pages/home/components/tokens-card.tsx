@@ -21,6 +21,7 @@ export const TokensCard: FC<{
   onSelectToken?: (token) => void;
 }> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
+  const [openSide, setOpenSide] = useState(false);
   const { priceStore, chainStore, hugeQueriesStore } = useStore();
   const onChangeKeyword = (e) => {
     setKeyword(e.target.value);
@@ -59,7 +60,27 @@ export const TokensCard: FC<{
           placeholder={"Search by token"}
         />
 
-        <div className={styles.wrapHideToken}>
+        {/* <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <OWText color={colors['neutral-text-body']}>{`Side panel`}</OWText>
+          <Switch
+            onValueChange={async value => {
+             
+            }}
+            style={{
+              transform: [{ scaleX: 0.7 }, { scaleY: 0.7 }],
+              marginRight: -5
+            }}
+            value={toggle}
+          />
+        </View> */}
+
+        {/* <div className={styles.wrapHideToken}>
           <span className={styles.label}>Hide dust</span>
           <Switch
             onColor={colors["highlight-surface-active"]}
@@ -68,6 +89,37 @@ export const TokensCard: FC<{
             height={20}
             width={35}
             onChange={onHideDust}
+            checked={chainStore.isHideDust}
+          />
+        </div>
+      </div> */}
+        <div className={styles.wrapHideToken}>
+          <span className={styles.label}>Side panel</span>
+          <Switch
+            onColor={colors["highlight-surface-active"]}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            height={20}
+            width={35}
+            onChange={async (value) => {
+              console.log("value", value);
+
+              const activeTabs = await browser.tabs.query({
+                active: true,
+                currentWindow: true,
+              });
+              setOpenSide(value);
+              // if (value) {
+              if (activeTabs.length > 0) {
+                const id = activeTabs[0].id;
+                if (id != null) {
+                  await chrome.sidePanel.open({
+                    tabId: id,
+                  });
+                }
+              }
+              // }
+            }}
             checked={chainStore.isHideDust}
           />
         </div>

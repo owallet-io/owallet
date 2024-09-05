@@ -70,6 +70,7 @@ export const TokensCardAll: FunctionComponent<{
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.hideTokensWithoutBalance
   );
+  const [openSide, setOpenSide] = useState(false);
   useEffect(() => {
     appInitStore.updateHideTokensWithoutBalance(toggle);
   }, [toggle]);

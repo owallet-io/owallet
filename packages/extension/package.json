@@ -84,7 +84,7 @@
   "devDependencies": {
     "@types/amplitude-js": "^8.0.1",
     "node-polyfill-webpack-plugin": "^3.0.0",
-    "@types/chrome": "0.0.88",
+    "@types/chrome": "0.0.268",
     "@types/classnames": "^2.2.9",
     "@types/firefox-webext-browser": "^70.0.1",
     "@types/js-yaml": "^4.0.0",
