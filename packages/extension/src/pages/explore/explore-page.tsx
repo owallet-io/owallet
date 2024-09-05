@@ -62,7 +62,7 @@ export const defiData = [
     logo: images.dapps_dex_logo,
     title: "OraiDEX",
     subTitle: "Universal swap, Bridge and earn tokens",
-    url: "https://oraidex.io/" + ref,
+    url: "https://app.oraidex.io/" + ref,
   },
   {
     images: images.img_homebase,
