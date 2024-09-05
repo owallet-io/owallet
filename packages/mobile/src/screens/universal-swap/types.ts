@@ -45,7 +45,7 @@ const HALF = "50";
 const THREE_QUARTERS = "75";
 export const MAX = "100";
 export const interpolateURL = "https://static.orai.io/interpolate.html";
-export const oraidexURL = "https://oraidex.io";
+export const oraidexURL = "https://app.oraidex.io";
 
 export const balances: BalanceType[] = [
   {
