@@ -220,7 +220,7 @@ export class InjectedOWallet implements IOWallet {
       this.mode === "extension" && !isOsmosis
         ? `${NAMESPACE}-proxy-request`
         : "proxy-request";
-    console.log("args", args);
+    console.log("args", method, args);
 
     const proxyMessage: ProxyRequest = {
       type: typeProxy,
@@ -256,6 +256,8 @@ export class InjectedOWallet implements IOWallet {
           reject(new Error(result.error));
           return;
         }
+
+        console.log("result", result);
 
         resolve(result.return);
       };
@@ -626,6 +628,8 @@ export class InjectedEthereum implements Ethereum {
             }
             break;
           default:
+            console.log("message", message.method, message.args);
+
             result = await ethereum.request({
               method: message.method as string,
               params: message.args[0],
