@@ -173,16 +173,36 @@ export class StyleBuilder<
     definitions: K[],
     conditionalDefinitions: (ConditionalK | null | undefined | boolean)[] = []
   ): UnionToIntersection<D[K]> & Partial<UnionToIntersection<D[ConditionalK]>> {
-    const styles: any[] = [];
+    const allDefinitions = [
+      ...(definitions || []),
+      ...(conditionalDefinitions || []),
+    ].filter((definition) => typeof definition === "string");
+    const sortedDefinitions = allDefinitions.sort();
+    // Since definitions are sorted, the order of input doesn't matter now -> same styles will have the same keys
+    const keyStyle = sortedDefinitions.reduce(
+      (prevStyle, currStyle) => `${prevStyle}${currStyle}`,
+      ""
+    );
+    let styles = this.cached.get(keyStyle);
+    if (styles) return styles;
+
     for (const definition of definitions) {
-      styles.push(this.get<D, K>(definition));
+      styles = {
+        ...(styles || {}),
+        ...(this.get<D, K>(definition) || {}),
+      };
     }
     for (const definition of conditionalDefinitions) {
       if (definition && definition !== true) {
-        styles.push(this.get<D, K>(definition as unknown as K));
+        styles = {
+          ...(styles || {}),
+          ...(this.get<D, K>(definition as unknown as K) || {}),
+        };
       }
     }
-    return StyleSheet.flatten(styles);
+
+    this.cached.set(keyStyle, styles);
+    return styles;
   }
 
   get<
