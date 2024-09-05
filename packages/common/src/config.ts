@@ -1496,10 +1496,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "neutron-1",
     chainName: "Neutron",
     stakeCurrency: {
-      coinDenom: "NTRN",
-      coinMinimalDenom: "untrn",
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
       coinDecimals: 6,
-      coinGeckoId: "neutron-3",
       coinImageUrl:
         "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
     },
@@ -1515,6 +1514,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
       bech32PrefixConsPub: "neutronvalconspub",
     },
     currencies: [
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
+      },
       {
         coinDenom: "NTRN",
         coinMinimalDenom: "untrn",
