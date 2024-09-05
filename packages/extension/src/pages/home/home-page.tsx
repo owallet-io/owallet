@@ -1,13 +1,12 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
 import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
 import { TokensCard } from "./components/tokens-card";
 import { useStore } from "../../stores";
-
-import { LinkStakeView, StakeView } from "./stake";
-import { Dec, IntPretty, PricePretty } from "@owallet/unit";
-// var Mixpanel = require('mixpanel');
+import Switch from "react-switch";
+import { StakeView } from "./stake";
+import { IntPretty, PricePretty } from "@owallet/unit";
 import Mixpanel from "mixpanel";
 import { sha256 } from "sha.js";
 import {
@@ -19,6 +18,7 @@ import {
 } from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
+import colors from "theme/colors";
 var mixpanel = process.env.REACT_APP_MIX_PANEL_TOKEN
   ? Mixpanel.init(process.env.REACT_APP_MIX_PANEL_TOKEN)
   : null;
@@ -32,12 +32,13 @@ export const HomePage = observer(() => {
     keyRingStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  console.log(tokensStore.isInitialized, "isInitialized");
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
     allBalances,
     chainStore.current.chainId
   );
+
+  const [isOpen, setOpen] = useState(false);
 
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
@@ -207,6 +208,89 @@ export const HomePage = observer(() => {
       chainStore.current.networkType !== "cosmos" ? null : (
         <StakeView />
       )}
+      <div>
+        <span>Side panel</span>
+        <Switch
+          onColor={colors["highlight-surface-active"]}
+          uncheckedIcon={false}
+          checkedIcon={false}
+          height={20}
+          width={35}
+          onChange={async () => {
+            if (true) {
+              if (
+                typeof chrome !== "undefined" &&
+                typeof chrome.sidePanel !== "undefined"
+              ) {
+                (async () => {
+                  const selfCloseId = Math.random() * 100000;
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  window.__self_id_for_closing_view_side_panel = selfCloseId;
+                  // side panel을 열고 나서 기존의 popup view를 모두 지워야한다
+                  const viewsBefore = browser.extension.getViews();
+
+                  try {
+                    const activeTabs = await browser.tabs.query({
+                      active: true,
+                      currentWindow: true,
+                    });
+                    if (activeTabs.length > 0) {
+                      const id = activeTabs[0].id;
+                      if (id != null) {
+                        await chrome.sidePanel.open({
+                          tabId: id,
+                        });
+                      }
+                    }
+                  } catch (e) {
+                    console.log(e);
+                  } finally {
+                    for (const view of viewsBefore) {
+                      if (
+                        // 자기 자신은 제외해야한다.
+                        // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        window.__self_id_for_closing_view_side_panel !==
+                        selfCloseId
+                      ) {
+                        view.window.close();
+                      }
+                    }
+
+                    window.close();
+                  }
+                })();
+              } else {
+                window.close();
+              }
+            } else {
+              const selfCloseId = Math.random() * 100000;
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              window.__self_id_for_closing_view_side_panel = selfCloseId;
+              // side panel을 모두 닫아야한다.
+              const views = browser.extension.getViews();
+
+              for (const view of views) {
+                if (
+                  // 자기 자신은 제외해야한다.
+                  // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                  // @ts-ignore
+                  window.__self_id_for_closing_view_side_panel !== selfCloseId
+                ) {
+                  view.window.close();
+                }
+              }
+
+              window.close();
+            }
+          }}
+          checked={chainStore.isHideDust}
+        />
+      </div>
       <TokensCard
         dataTokens={chainStore.isAllNetwork ? allBalances : balancesByChain}
       />
