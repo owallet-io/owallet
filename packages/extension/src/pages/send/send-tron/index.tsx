@@ -237,7 +237,7 @@ export const SendTronEvmPage: FunctionComponent<{
                 containerStyle={{
                   backgroundColor: colors["neutral-surface-card"],
                   padding: 16,
-                  borderRadius: 24,
+                  borderRadius: 12,
                 }}
               >
                 <FeeInput
