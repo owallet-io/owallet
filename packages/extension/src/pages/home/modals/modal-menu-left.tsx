@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
@@ -6,6 +6,8 @@ import { useStore } from "../../../stores";
 import { useHistory } from "react-router";
 import { ChainIdEnum } from "@owallet/common";
 import { toast } from "react-toastify";
+import Switch from "react-switch";
+import colors from "theme/colors";
 
 export const ModalMenuLeft: FC<{
   isOpen: boolean;
@@ -13,6 +15,8 @@ export const ModalMenuLeft: FC<{
 }> = observer(({ isOpen, onRequestClose }) => {
   const { keyRingStore, chainStore } = useStore();
   const history = useHistory();
+
+  const [isOpenSide, setOpenSide] = useState(chainStore.isSidePanel);
 
   const lock = async () => {
     await keyRingStore.lock();
@@ -98,6 +102,94 @@ export const ModalMenuLeft: FC<{
               <span className={styles.nameMenu}>{item.name}</span>
             </div>
             {item.value && <span className={styles.version}>{item.value}</span>}
+            {item.type === "switch" && (
+              <Switch
+                onColor={colors["highlight-surface-active"]}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={20}
+                width={35}
+                onChange={async (value) => {
+                  setOpenSide(value);
+                  console.log("value", value);
+
+                  chainStore.setIsSidePanel(value);
+                  if (value) {
+                    if (
+                      typeof chrome !== "undefined" &&
+                      typeof chrome.sidePanel !== "undefined"
+                    ) {
+                      (async () => {
+                        const selfCloseId = Math.random() * 100000;
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        window.__self_id_for_closing_view_side_panel =
+                          selfCloseId;
+                        const viewsBefore = browser.extension.getViews();
+
+                        try {
+                          const activeTabs = await browser.tabs.query({
+                            active: true,
+                            currentWindow: true,
+                          });
+                          if (activeTabs.length > 0) {
+                            const id = activeTabs[0].id;
+                            if (id != null) {
+                              await chrome.sidePanel.open({
+                                tabId: id,
+                              });
+
+                              await chrome.sidePanel.setPanelBehavior({
+                                openPanelOnActionClick: true,
+                              });
+                            }
+                          }
+                        } catch (e) {
+                          console.log(e);
+                        } finally {
+                          for (const view of viewsBefore) {
+                            if (
+                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                              // @ts-ignore
+                              window.__self_id_for_closing_view_side_panel !==
+                              selfCloseId
+                            ) {
+                              view.window.close();
+                            }
+                          }
+
+                          window.close();
+                        }
+                      })();
+                    } else {
+                      window.close();
+                    }
+                  } else {
+                    const selfCloseId = Math.random() * 100000;
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                    window.__self_id_for_closing_view_side_panel = selfCloseId;
+                    const views = browser.extension.getViews();
+
+                    for (const view of views) {
+                      if (
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        window.__self_id_for_closing_view_side_panel !==
+                        selfCloseId
+                      ) {
+                        view.window.close();
+                      }
+                    }
+                    window.close();
+                    await chrome.sidePanel.setPanelBehavior({
+                      openPanelOnActionClick: false,
+                    });
+                  }
+                }}
+                checked={isOpenSide}
+              />
+            )}
           </div>
         ))}
       </div>
@@ -114,6 +206,7 @@ enum MenuEnum {
   LOCK = 6,
   ABOUT_USER = 7,
   FEEDBACK = 8,
+  SIDEPANEL = 9,
 }
 
 const dataItem = [
@@ -161,5 +254,12 @@ const dataItem = [
     icon: require("assets/svg/tdesign_info_circle.svg"),
     id: MenuEnum.FEEDBACK,
     link: `https://defi.featurebase.app/?b=66b096ba4e5763c7884f0f77`,
+    isBorderBottom: true,
+  },
+  {
+    name: "Side panel",
+    icon: require("assets/svg/tdesign_fullscreen.svg"),
+    id: MenuEnum.SIDEPANEL,
+    type: "switch",
   },
 ];

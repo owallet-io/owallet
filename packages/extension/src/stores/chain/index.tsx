@@ -25,6 +25,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _isAllNetwork: boolean = false;
   @observable
+  protected _isSidePanel: boolean = false;
+  @observable
   protected _hideDust: boolean = true;
 
   @observable
@@ -65,6 +67,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
         "_multipleAssets",
         "_hideDust",
         "_selectedFee",
+        "_isSidePanel",
       ],
       storage: window.localStorage,
     }).then(action((persistStore) => {}));
@@ -77,6 +80,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   get isAllNetwork(): boolean {
     return this._isAllNetwork;
+  }
+  get isSidePanel(): boolean {
+    return this._isSidePanel;
   }
   get selectedFee(): string {
     return this._selectedFee;
@@ -107,6 +113,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   setIsHideDust(isHide: boolean) {
     this._hideDust = isHide;
+  }
+  @action
+  setIsSidePanel(isOpen: boolean) {
+    this._isSidePanel = isOpen;
   }
   @action
   setMultipleAsset(data: IMultipleAsset) {
