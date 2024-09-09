@@ -20,6 +20,7 @@ import { setupModalStyles } from "./setup/modalStyles";
 import { initializeSentry } from "./setup/sentry";
 
 // import "./styles/global.scss";
+//test gpg
 
 import { isProdMode } from "helpers/helper";
 
