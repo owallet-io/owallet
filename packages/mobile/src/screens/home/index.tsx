@@ -5,7 +5,6 @@ import React, {
   useMemo,
   useRef,
   useState,
-  useTransition,
 } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
@@ -15,7 +14,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -36,15 +34,10 @@ import {
   MapChainIdToNetwork,
   parseRpcBalance,
 } from "@owallet/common";
-
 import { AccountBoxAll } from "./components/account-box-new";
-
 import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
-import {
-  initPrice,
-  useMultipleAssets,
-} from "@src/screens/home/hooks/use-multiple-assets";
+import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import {
   CoinPretty,
   Dec,
@@ -52,21 +45,14 @@ import {
   IntPretty,
   PricePretty,
 } from "@owallet/unit";
-import {
-  chainInfos,
-  getTokensFromNetwork,
-  network,
-  oraichainNetwork,
-  TokenItemType,
-} from "@oraichain/oraidex-common";
-import { useCoinGeckoPrices, useLoadTokens } from "@owallet/hooks";
-import { debounce, flatten } from "lodash";
-import { showToast } from "@src/utils/helper";
-
+import { chainInfos, network } from "@oraichain/oraidex-common";
+import { useCoinGeckoPrices } from "@owallet/hooks";
+import { debounce } from "lodash";
 import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
+import { StakeCardAll } from "./components/stake-card-all";
 import { ChainInfoInner } from "@owallet/stores";
 import Web3 from "web3";
 import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
@@ -74,7 +60,6 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
-import delay from "delay";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -92,17 +77,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     keyRingStore,
-    hugeQueriesStore,
-    universalSwapStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const [isPending, startTransition] = useTransition();
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -186,7 +165,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     onRefresh();
   }, [address, chainStore.current.chainId]);
 
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const onRefresh = async () => {
     try {
       const queries = queriesStore.get(chainStore.current.chainId);
@@ -207,24 +185,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             }),
         ]);
       }
-      if (
-        accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
-      ) {
-        const customChainInfos = appInitStore.getChainInfos ?? chainInfos;
-        const currentDate = Date.now();
-        const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
-        const differenceInSeconds = differenceInMilliseconds / 1000;
-        let timeoutId: NodeJS.Timeout;
-        if (differenceInSeconds > 10) {
-          universalSwapStore.setLoaded(false);
-          onFetchAmount(customChainInfos);
-        } else {
-          console.log("The dates are 10 seconds or less apart.");
-        }
-      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -232,114 +192,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setRefreshDate(Date.now());
     }
   };
-  const loadTokenAmounts = useLoadTokens(universalSwapStore);
-  // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (
-    params: { orai?: string; eth?: string; tron?: string; kwt?: string },
-    customChainInfos
-  ) => {
-    const { orai, eth, tron, kwt } = params;
-
-    let loadTokenParams = {};
-    try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc,
-      };
-
-      // other chains, oraichain
-      const otherChainTokens = flatten(
-        customChainInfos
-          .filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-          .map(getTokensFromNetwork)
-      );
-      const oraichainTokens: TokenItemType[] =
-        getTokensFromNetwork(oraichainNetwork);
-
-      const tokens = [otherChainTokens, oraichainTokens];
-      const flattenTokens = flatten(tokens);
-
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? null,
-        kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
-        tronAddress: tron ?? null,
-        cwStargate,
-        tokenReload:
-          universalSwapStore?.getTokenReload?.length > 0
-            ? universalSwapStore.getTokenReload
-            : null,
-        customChainInfos: flattenTokens,
-      };
-
-      loadTokenAmounts(loadTokenParams);
-      universalSwapStore.clearTokenReload();
-    } catch (error) {
-      console.log("error loadTokenAmounts", error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: "danger",
-      });
-    }
-  };
-  useEffect(() => {
-    universalSwapStore.setLoaded(false);
-  }, [accountOrai.bech32Address]);
-
-  const onFetchAmount = (customChainInfos) => {
-    let timeoutId;
-    if (accountOrai.isNanoLedger) {
-      if (Object.keys(keyRingStore.keyRingLedgerAddresses)?.length > 0) {
-        timeoutId = setTimeout(() => {
-          handleFetchAmounts(
-            {
-              orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? null,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? null,
-              kwt: accountKawaiiCosmos.bech32Address,
-            },
-            customChainInfos
-          );
-        }, 800);
-      }
-    } else if (
-      accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
-    ) {
-      timeoutId = setTimeout(() => {
-        handleFetchAmounts(
-          {
-            orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: getBase58Address(accountTron.evmosHexAddress),
-            kwt: accountKawaiiCosmos.bech32Address,
-          },
-          customChainInfos
-        );
-      }, 1000);
-    }
-
-    return timeoutId;
-  };
-
-  useEffect(() => {
-    if (appInitStore.getChainInfos) {
-      let timeoutId;
-      InteractionManager.runAfterInteractions(() => {
-        startTransition(() => {
-          timeoutId = onFetchAmount(appInitStore.getChainInfos);
-        });
-      });
-      // Clean up the timeout if the component unmounts or the dependency changes
-      return () => {
-        if (timeoutId) clearTimeout(timeoutId);
-      };
-    }
-  }, [accountOrai.bech32Address, appInitStore.getChainInfos]);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -1044,12 +896,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     >
       <AccountBoxAll
         isLoading={isLoading}
-        totalBalanceByChain={(
-          availableTotalPriceByChain || initPrice
-        )?.toString()}
-        totalPriceBalance={(availableTotalPrice || initPrice)?.toString()}
+        totalBalanceByChain={availableTotalPriceByChain || initPrice}
+        totalPriceBalance={availableTotalPrice || initPrice}
+        dataBalances={dataBalances}
       />
-      <EarningCardNew />
+      {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome
         dataTokens={
           appInitStore.getInitApp.isAllNetworks

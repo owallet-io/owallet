@@ -4,15 +4,14 @@ import { observer } from "mobx-react-lite";
 import { StyleSheet, View } from "react-native";
 import { OWBox } from "@components/card";
 import { OWButton } from "@src/components/button";
-
+import { ViewToken } from "@src/stores/huge-queries";
 import { HistoryCard } from "@src/screens/transactions";
 import { TokensCardAll } from "./tokens-card-all";
 import { NftCard } from "./nft-card";
 import { useStore } from "@src/stores";
-import { ViewToken } from "@owallet/types";
 
 export const MainTabHome: FC<{
-  dataTokens: readonly ViewToken[];
+  dataTokens: ViewToken[];
 }> = observer(({ dataTokens }) => {
   const { colors } = useTheme();
   const { chainStore, appInitStore } = useStore();

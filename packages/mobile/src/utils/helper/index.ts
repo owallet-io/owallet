@@ -805,3 +805,11 @@ export function numberWithCommas(number) {
   // Combine the formatted integer part and the decimal part
   return formattedNumber + "." + decPart;
 }
+
+export const sortChainsByPrice = (chains) => {
+  return chains.sort(
+    (a, b) =>
+      Number(b.balance.toDec().toString()) -
+      Number(a.balance.toDec().toString())
+  );
+};

@@ -13,6 +13,7 @@ import { NetworkModal } from "@src/screens/home/components";
 import { HEADER_KEY } from "@src/common/constants";
 import { DownArrowIcon } from "../icon";
 import { useNavigation } from "@react-navigation/native";
+import OWIcon from "../ow-icon/ow-icon";
 
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
@@ -20,9 +21,10 @@ interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   const { chainStore, modalStore, appInitStore } = useStore();
   const { colors } = useTheme();
-  const navigation = useNavigation();
-  const currentTab =
-    navigation.getState().routeNames[navigation.getState().index];
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
+
+  // const navigation = useNavigation();
+  // const currentTab = navigation.getState().routeNames[navigation.getState().index];
 
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
@@ -37,19 +39,44 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     return (
       <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
         <View style={styles.containerTitle}>
-          <Text color={colors["neutral-text-title"]} weight="700" size={16}>
+          {/* <Text color={colors["neutral-text-title"]} weight="700" size={16}>
             {currentTab.toUpperCase() ?? "ASSETS"}
-          </Text>
+          </Text> */}
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
             }}
           >
+            {appInitStore.getInitApp.isAllNetworks ? (
+              <OWIcon
+                name={"tdesignblockchain"}
+                size={20}
+                color={colors["neutral-text-title"]}
+              />
+            ) : (
+              <View
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 32,
+                  backgroundColor: colors["neutral-icon-on-dark"],
+                }}
+              >
+                <OWIcon
+                  type="images"
+                  source={{
+                    uri: chainInfo?.stakeCurrency?.coinImageUrl,
+                  }}
+                  size={20}
+                />
+              </View>
+            )}
             <Text
-              style={{ paddingRight: 6 }}
+              style={{ marginHorizontal: 6 }}
               color={colors["neutral-text-title"]}
-              size={13}
+              size={16}
+              weight="600"
             >
               {appInitStore.getInitApp.isAllNetworks
                 ? "All networks"

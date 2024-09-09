@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ViewProps, ViewStyle } from "react-native";
+import { View, ViewProps, ViewStyle } from "react-native";
 import React from "react";
 import { metrics, spacing } from "@src/themes";
 import { useTheme } from "@src/themes/theme-provider";
@@ -50,7 +50,9 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["horizontal-pad"],
         borderRadius: spacing["horizontal-pad"],
-        backgroundColor: colors["neutral-surface-bg2"],
+        backgroundColor: colors["neutral-surface-card-brutal"],
+        borderWidth: 1,
+        borderColor: colors["neutral-border-brutal"],
       };
       break;
     default:
@@ -59,7 +61,9 @@ const useStyleType = ({ type }) => {
         width: metrics.screenWidth,
         padding: spacing["24"],
         borderRadius: spacing["24"],
-        backgroundColor: colors["neutral-surface-bg2"],
+        backgroundColor: colors["neutral-surface-card-brutal"],
+        borderWidth: 1,
+        borderColor: colors["neutral-border-brutal"],
       };
       break;
   }

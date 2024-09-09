@@ -10,7 +10,7 @@ import {
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
-import { computed, makeObservable } from "mobx";
+import { computed, makeObservable, action } from "mobx";
 import {
   ChainIdEnum,
   DenomHelper,
@@ -21,6 +21,7 @@ import { computedFn } from "mobx-utils";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
 import { ChainInfoWithEmbed } from "@owallet/background";
+import { BinarySortArray } from "./sort";
 
 export interface ViewToken {
   //TODO: need check type for chain info
@@ -70,6 +71,13 @@ interface ViewChainAddress {
 export class HugeQueriesStore {
   protected static zeroDec = new Dec(0);
 
+  protected balanceBinarySort: BinarySortArray<ViewToken>;
+  protected delegationBinarySort: BinarySortArray<ViewToken>;
+  protected unbondingBinarySort: BinarySortArray<{
+    viewToken: ViewToken;
+    completeTime: string;
+  }>;
+  protected claimableRewardsBinarySort: BinarySortArray<ViewToken>;
   constructor(
     protected readonly chainStore: ChainStore,
     //TODO: need check type for queriesStore and accountStore
@@ -449,5 +457,46 @@ export class HugeQueriesStore {
       }
     }
     return res;
+  }
+  @action
+  protected updateClaimableRewards(): void {
+    const prevKeyMap = new Map(
+      this.claimableRewardsBinarySort.indexForKeyMap()
+    );
+
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      if (account.bech32Address === "") {
+        continue;
+      }
+      const queries = this.queriesStore.get(chainInfo.chainId);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
+
+      if (
+        queryRewards.stakableReward &&
+        queryRewards.stakableReward.toDec().gt(new Dec(0))
+      ) {
+        const key = `${chainInfo.chainId}/${account.bech32Address}`;
+        prevKeyMap.delete(key);
+        this.claimableRewardsBinarySort.pushAndSort(key, {
+          chainInfo,
+          token: queryRewards.stakableReward,
+          price: this.priceStore.calculatePrice(queryRewards.stakableReward),
+          isFetching: queryRewards.isFetching,
+          error: queryRewards.error,
+        });
+      }
+    }
+
+    for (const removedKey of prevKeyMap.keys()) {
+      this.claimableRewardsBinarySort.remove(removedKey);
+    }
+  }
+
+  @computed
+  get claimableRewards(): ReadonlyArray<ViewToken> {
+    return this.claimableRewardsBinarySort.arr;
   }
 }
