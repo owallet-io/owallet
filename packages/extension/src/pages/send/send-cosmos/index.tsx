@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   AddressInput,
   FeeButtons,
@@ -8,7 +14,7 @@ import {
 import { useStore } from "src/stores";
 import { observer } from "mobx-react-lite";
 import style from "./style.module.scss";
-
+import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
 import { useIntl } from "react-intl";
 import cn from "classnames/bind";
 import { useHistory, useLocation } from "react-router";
@@ -26,6 +32,7 @@ import { Card } from "components/common/card";
 import { HeaderModal } from "pages/home/components/header-modal";
 import { HeaderNew } from "layouts/footer-layout/components/header";
 import { toast } from "react-toastify";
+import { CosmosMsgOpts } from "@owallet/stores";
 const cx = cn.bind(style);
 
 export const SendPage: FunctionComponent<{
@@ -41,6 +48,8 @@ export const SendPage: FunctionComponent<{
     priceStore,
   } = useStore();
   const language = useLanguage();
+  const defaultGasSendNative = 20000;
+  const [gasMsgSend, setGasMsgSend] = useState<CosmosMsgOpts["send"]>();
   const [openSetting, setOpenSetting] = useState(false);
   const settingRef = useRef();
 
@@ -76,14 +85,16 @@ export const SendPage: FunctionComponent<{
 
   const current = chainStore.current;
   const accountInfo = accountStore.getAccount(current.chainId);
+
   const walletAddress = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
   );
+  console.log(gasMsgSend, "gasMsgSend");
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
     //@ts-ignore
-    accountInfo.msgOpts.send,
+    gasMsgSend || accountInfo.msgOpts.send,
     walletAddress,
     queriesStore.get(current.chainId).queryBalances
   );
@@ -202,6 +213,48 @@ export const SendPage: FunctionComponent<{
       </div>
     );
   };
+  const simulateTx = async () => {
+    try {
+      const simulateTx = await accountInfo.cosmos.simulateTx(
+        [
+          {
+            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+            value: MsgSend.encode({
+              fromAddress: accountInfo.bech32Address,
+              toAddress: sendConfigs.recipientConfig.recipient,
+              amount: [sendConfigs.amountConfig.getAmountPrimitive()],
+            }).finish(),
+          },
+        ],
+        {
+          amount: sendConfigs.feeConfig.toStdFee()?.amount ?? [],
+        },
+        sendConfigs.memoConfig.memo
+      );
+      console.log(simulateTx, "simulateTx");
+      if (!simulateTx?.gasUsed) {
+        setGasMsgSend(null);
+        return;
+      }
+      setGasMsgSend({
+        native: {
+          type: "cosmos-sdk/MsgSend",
+          gas: Math.floor(simulateTx?.gasUsed * 1.1),
+        },
+      });
+    } catch (error) {
+      console.error("SimulateTx Estimate Error", error);
+    }
+  };
+  useEffect(() => {
+    if (!txStateIsValid) return;
+    simulateTx();
+    return () => {};
+  }, [
+    sendConfigs.amountConfig.amount,
+    sendConfigs.recipientConfig.recipient,
+    txStateIsValid,
+  ]);
 
   return (
     <div

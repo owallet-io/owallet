@@ -246,7 +246,7 @@ const TokenItem: FC<{
               type="images"
               source={{
                 uri:
-                  item?.chainInfo.stakeCurrency.coinImageUrl ||
+                  item?.chainInfo?.feeCurrencies?.[0]?.coinImageUrl ||
                   unknownToken.coinImageUrl,
               }}
               size={16}

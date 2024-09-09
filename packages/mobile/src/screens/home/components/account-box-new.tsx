@@ -348,11 +348,13 @@ export const AccountBoxAll: FunctionComponent<{
               }
               if (chainStore.current.chainId === ChainIdEnum.TRON) {
                 smartNavigation.navigateSmart("SendTron", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                  currency:
+                    chainStore.current?.feeCurrencies[0]?.coinMinimalDenom,
                 });
               } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
                 smartNavigation.navigateSmart("SendOasis", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                  currency:
+                    chainStore.current?.feeCurrencies[0]?.coinMinimalDenom,
                 });
               } else if (chainStore.current.networkType === "bitcoin") {
                 navigate(SCREENS.STACK.Others, {
@@ -364,7 +366,8 @@ export const AccountBoxAll: FunctionComponent<{
                 });
               } else {
                 smartNavigation.navigateSmart("NewSend", {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+                  currency:
+                    chainStore.current?.feeCurrencies[0]?.coinMinimalDenom,
                 });
               }
             }}

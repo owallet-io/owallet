@@ -585,7 +585,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "celestia",
       },
     ],
-    features: [],
+    features: ["no-legacy-stdTx"],
   },
   {
     rpc: "https://rpc-akash.keplr.app",
@@ -624,7 +624,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
       },
     ],
-    features: ["ibc-transfer"],
+    features: ["ibc-transfer", "no-legacy-stdTx"],
   },
   {
     rpc: "https://rpc-dydx.keplr.app",
@@ -668,9 +668,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "dydx-chain",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+        gasPriceStep: {
+          average: 25000000000,
+          high: 30000000000,
+          low: 20000000000,
+        },
       },
     ],
-    features: [],
+    features: ["no-legacy-stdTx"],
   },
   {
     chainId: "dymension_1100-1",
@@ -715,13 +720,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl:
           "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
         gasPriceStep: {
-          average: 20000000000,
-          high: 20000000000,
+          average: 25000000000,
+          high: 30000000000,
           low: 20000000000,
         },
       },
     ],
-    features: ["eth-address-gen", "eth-key-sign"],
+    features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
   },
   {
     rpc: "https://rpc-stargaze.keplr.app",
@@ -758,9 +763,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "stargaze",
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
     ],
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "no-legacy-stdTx"],
     txExplorer: {
       name: "Scanium",
       txUrl: "https://scanium.io/stargaze/tx/{txHash}",
@@ -905,6 +915,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
       {
         coinDenom: "ATOM",
@@ -1538,7 +1553,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
       },
     ],
-    features: [],
+    features: ["no-legacy-stdTx"],
   },
   {
     chainId: "Neutaro-1",

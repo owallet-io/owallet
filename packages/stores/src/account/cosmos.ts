@@ -248,7 +248,6 @@ export class CosmosAccount {
               ],
             },
           };
-
           const simulateTx = await this.simulateTx(
             this.checkNoLegacyStdFeature([
               {
@@ -265,6 +264,11 @@ export class CosmosAccount {
             },
             memo
           );
+          console.log(simulateTx, simulateTx?.gasUsed, "simulateTx?.gasUsed");
+          const gasEstimate = simulateTx?.gasUsed
+            ? Math.floor(simulateTx.gasUsed * 1.3).toString()
+            : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString();
+          console.log(gasEstimate, stdFee.amount, "gasEstimate");
           await this.base.sendMsgs(
             "send",
             {
@@ -294,9 +298,7 @@ export class CosmosAccount {
             memo,
             {
               amount: stdFee.amount ?? [],
-              gas: simulateTx?.gasUsed
-                ? (simulateTx.gasUsed * 1.3).toString()
-                : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
+              gas: gasEstimate,
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
