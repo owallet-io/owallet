@@ -7,7 +7,7 @@ import { HashRouter } from "react-router-dom";
 import { configure } from "mobx";
 import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, Zoom } from "react-toastify";
-
+import "./ledger";
 import { StoreProvider } from "./stores";
 import { AppIntlProviderWithStorage } from "./setup/AppIntlProviderWithStorage";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
