@@ -34,7 +34,9 @@ export class InteractionService {
   constructor(
     @inject(TYPES.EventMsgRequester)
     protected readonly eventMsgRequester: MessageRequester,
+    @inject(TYPES.SidePanelService)
     protected readonly sidePanelService: SidePanelService,
+    @inject(TYPES.EventMsgRequester)
     protected readonly extensionMessageRequesterToUI?: MessageRequester
   ) {}
 

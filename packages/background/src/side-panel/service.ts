@@ -1,6 +1,7 @@
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { isServiceWorker, KVStore } from "@owallet/common";
-
+import { singleton } from "tsyringe";
+@singleton()
 export class SidePanelService {
   @observable
   protected _isEnabled: boolean = false;
