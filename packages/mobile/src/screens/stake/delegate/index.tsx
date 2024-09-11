@@ -3,7 +3,6 @@ import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -339,12 +338,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Stake"
-          subtitle={chainStore.current.chainName}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Stake"*/}
+        {/*  subtitle={chainStore.current.chainName}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>

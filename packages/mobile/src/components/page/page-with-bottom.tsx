@@ -36,7 +36,7 @@ export const PageWithBottom: FunctionComponent<
         {
           ...styles.container,
           ...style,
-          backgroundColor: backgroundColor ?? colors["neutral-surface-bg2"],
+          backgroundColor: backgroundColor ?? colors["neutral-surface-bg"],
         },
       ]}
     >
@@ -57,7 +57,7 @@ export const PageWithBottom: FunctionComponent<
 const useStyle = (safeAreaInsets, colors) => {
   return StyleSheet.create({
     container: {
-      paddingTop: safeAreaInsets.top,
+      // paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
       height: "100%",
     },

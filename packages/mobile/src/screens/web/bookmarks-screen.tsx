@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { PageWithView } from "@src/components/page";
-import { PageHeader } from "@src/components/header/header-new";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
@@ -128,14 +127,14 @@ export const BookmarksScreen = observer(() => {
     <PageWithView
       style={{
         // backgroundColor: colors["neutral-surface-action"],
-        paddingTop: top,
+        paddingTop: 16,
       }}
     >
-      <PageHeader
-        title="BOOKMARKS"
-        // subtitle={chainStore.current.chainName}
-        // colors={colors}
-      />
+      {/*<PageHeader*/}
+      {/*  title="BOOKMARKS"*/}
+      {/*  // subtitle={chainStore.current.chainName}*/}
+      {/*  // colors={colors}*/}
+      {/*/>*/}
       <View
         style={{
           paddingHorizontal: 16,

@@ -14,7 +14,6 @@ import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
-import { PageHeader } from "@src/components/header/header-new";
 import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
@@ -240,7 +239,6 @@ export const AddTokenEVMScreen: FunctionComponent<{
         />
       }
     >
-      <PageHeader title="Add Token" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <OWBox>
           <TouchableOpacity

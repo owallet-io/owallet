@@ -6,7 +6,6 @@ import {
 } from "@owallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
-import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -145,7 +144,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="add new contact" />
       <ScrollView
         contentContainerStyle={{ height: metrics.screenHeight }}
         showsVerticalScrollIndicator={false}

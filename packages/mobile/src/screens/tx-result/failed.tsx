@@ -8,8 +8,6 @@ import { View, Image, ScrollView, StyleSheet } from "react-native";
 import { useTheme } from "@src/themes/theme-provider";
 import { capitalizedText, formatContractAddress } from "@src/utils/helper";
 
-import { PageHeader } from "@src/components/header/header-new";
-
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -105,7 +103,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderTx
             type={capitalizedText(params?.data?.type) || "Send"}

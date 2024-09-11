@@ -40,7 +40,7 @@ import {
 } from "@src/utils/helper";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -322,12 +322,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Redelegate"
-          subtitle={"Oraichain"}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Redelegate"*/}
+        {/*  subtitle={"Oraichain"}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {
           <View>
             {srcValidator ? (

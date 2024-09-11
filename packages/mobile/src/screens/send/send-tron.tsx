@@ -31,7 +31,7 @@ import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -278,11 +278,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
+      {/*<PageHeader*/}
+      {/*  title="Send"*/}
+      {/*  subtitle={chainStore.current.chainName}*/}
+      {/*  colors={colors}*/}
+      {/*/>*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

@@ -15,6 +15,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import imagesGlobal from "@src/assets/images";
 import { BlurView } from "@react-native-community/blur";
 import { NewSettingScreen } from "@src/screens/setting/setting";
+import OWHeaderTitle from "../components/header/ow-header-title";
+import { useGetNewHeaderHeight } from "@src/hooks";
+
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { colors, dark } = useTheme();
@@ -96,7 +99,24 @@ export const MainTabNavigation: FC = observer(() => {
         component={SendNavigation}
       />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
-      <Tab.Screen name={SCREENS.TABS.Settings} component={NewSettingScreen} />
+      <Tab.Screen
+        options={({ route }) => ({
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors["neutral-surface-bg"],
+            shadowColor: colors["neutral-border-default"],
+            borderBottomWidth: 0,
+            elevation: 0,
+            height: useGetNewHeaderHeight(),
+          },
+          headerTitle: () => (
+            <OWHeaderTitle title={SCREENS_OPTIONS[route.name]?.title} />
+          ),
+          headerTitleAlign: "center",
+        })}
+        name={SCREENS.TABS.Settings}
+        component={NewSettingScreen}
+      />
     </Tab.Navigator>
   );
 });

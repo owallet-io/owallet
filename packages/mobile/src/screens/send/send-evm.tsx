@@ -343,11 +343,11 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
+      {/*<PageHeader*/}
+      {/*  title="Send"*/}
+      {/*  subtitle={chainStore.current.chainName}*/}
+      {/*  colors={colors}*/}
+      {/*/>*/}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

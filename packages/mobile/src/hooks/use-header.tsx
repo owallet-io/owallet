@@ -15,11 +15,7 @@ import { metrics } from "@src/themes";
 import { navigate } from "@src/router/root";
 
 interface IUseHeaderOptions extends StackNavigationOptions {}
-const useHeaderOptions = (
-  data?: IUseHeaderOptions,
-  navigation?: any
-): IUseHeaderOptions => {
-  const { colors } = useTheme();
+export const useGetNewHeaderHeight = () => {
   const { top } = useSafeAreaInsets();
   const defaultHeaderHeight = getDefaultHeaderHeight(
     {
@@ -29,7 +25,14 @@ const useHeaderOptions = (
     false,
     top
   );
-  const newHeaderHeight = defaultHeaderHeight + 10;
+  return defaultHeaderHeight + 10;
+};
+const useHeaderOptions = (
+  data?: IUseHeaderOptions,
+  navigation?: any
+): IUseHeaderOptions => {
+  const { colors } = useTheme();
+
   const onGoBack = () => {
     navigation.goBack();
   };
@@ -43,7 +46,7 @@ const useHeaderOptions = (
     navigate(SCREENS.Camera);
     return;
   };
-
+  const newHeaderHeight = useGetNewHeaderHeight();
   return {
     headerStyle: {
       backgroundColor: colors["neutral-surface-bg"],

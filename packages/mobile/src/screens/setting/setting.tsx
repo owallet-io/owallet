@@ -19,7 +19,6 @@ import { SettingRemoveAccountItem } from "./items/remove-account";
 import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
-import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -181,10 +180,9 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
+      contentContainerStyle={{ paddingTop: 16 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Settings" />
       <View>
         <OWCard style={{ marginBottom: 16 }} type="normal">
           <BasicSettingItem

@@ -23,7 +23,7 @@ import { API } from "@src/common/api";
 import { OwalletEvent, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
-import { PageHeader } from "@src/components/header/header-new";
+
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { AppCurrency, StdFee } from "@owallet/types";
@@ -256,7 +256,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderTx
             type={capitalizedText(params?.data?.type) || "Send"}

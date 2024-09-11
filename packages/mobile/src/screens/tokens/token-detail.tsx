@@ -11,7 +11,7 @@ import { OWButton } from "@src/components/button";
 import { metrics } from "@src/themes";
 import { API } from "@src/common/api";
 import { useSimpleTimer } from "@src/hooks";
-import { PageHeader } from "@src/components/header/header-new";
+// import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SCREENS } from "@src/common/constants";
 import {
@@ -169,17 +169,17 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       />
       <View
         style={{
-          zIndex: 1000,
-          paddingTop: useSafeAreaInsets().top,
+          // zIndex: 1000,
+          // paddingTop: useSafeAreaInsets().top,
           backgroundColor: colors["neutral-surface-bg"],
         }}
       >
-        <PageHeader
-          title={removeDataInParentheses(item.token.currency.coinDenom)}
-          subtitle={
-            item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`
-          }
-        />
+        {/*<PageHeader*/}
+        {/*  title={removeDataInParentheses(item.token.currency.coinDenom)}*/}
+        {/*  subtitle={*/}
+        {/*    item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`*/}
+        {/*  }*/}
+        {/*/>*/}
       </View>
 
       <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>

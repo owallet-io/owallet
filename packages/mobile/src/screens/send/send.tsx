@@ -30,7 +30,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -404,11 +404,11 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
+      {/*<PageHeader*/}
+      {/*  title="Send"*/}
+      {/*  subtitle={chainStore.current.chainName}*/}
+      {/*  colors={colors}*/}
+      {/*/>*/}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

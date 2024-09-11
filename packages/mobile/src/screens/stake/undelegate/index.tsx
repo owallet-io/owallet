@@ -4,7 +4,7 @@ import { BondStatus } from "@owallet/stores";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -295,12 +295,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Unstake"
-          subtitle={chainStore.current.chainName}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Unstake"*/}
+        {/*  subtitle={chainStore.current.chainName}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>

@@ -34,7 +34,7 @@ import {
   toAmount,
 } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -364,7 +364,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         />
       }
     >
-      <PageHeader title="Send" subtitle={chainStore.current.chainName} />
+      {/*<PageHeader title="Send" subtitle={chainStore.current.chainName} />*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

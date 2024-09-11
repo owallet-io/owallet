@@ -23,7 +23,7 @@ import {
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 
 import { metrics, spacing } from "../../../themes";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
@@ -273,32 +273,32 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader
-          title="Validator details"
-          colors={colors}
-          onPress={async () => {}}
-          right={
-            isStakedValidator ? (
-              <TouchableOpacity
-                onPress={() => {
-                  navigate(SCREENS.Undelegate, {
-                    validatorAddress,
-                  });
-                }}
-                style={{
-                  borderRadius: 999,
-                  backgroundColor: colors["error-surface-default"],
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                }}
-              >
-                <OWText color={colors["neutral-icon-on-dark"]} weight="600">
-                  Unstake
-                </OWText>
-              </TouchableOpacity>
-            ) : null
-          }
-        />
+        {/*<PageHeader*/}
+        {/*  title="Validator details"*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*  right={*/}
+        {/*    isStakedValidator ? (*/}
+        {/*      <TouchableOpacity*/}
+        {/*        onPress={() => {*/}
+        {/*          navigate(SCREENS.Undelegate, {*/}
+        {/*            validatorAddress,*/}
+        {/*          });*/}
+        {/*        }}*/}
+        {/*        style={{*/}
+        {/*          borderRadius: 999,*/}
+        {/*          backgroundColor: colors["error-surface-default"],*/}
+        {/*          paddingHorizontal: 12,*/}
+        {/*          paddingVertical: 8,*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        <OWText color={colors["neutral-icon-on-dark"]} weight="600">*/}
+        {/*          Unstake*/}
+        {/*        </OWText>*/}
+        {/*      </TouchableOpacity>*/}
+        {/*    ) : null*/}
+        {/*  }*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>

@@ -15,7 +15,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
 import { metrics } from "@src/themes";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
@@ -216,7 +216,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="Manage wallet" colors={colors} />
+      {/*<PageHeader title="Manage wallet" colors={colors} />*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

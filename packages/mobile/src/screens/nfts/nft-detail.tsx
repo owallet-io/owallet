@@ -24,7 +24,6 @@ import LottieView from "lottie-react-native";
 import ItemReceivedToken from "../transactions/components/item-received-token";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 
-import { PageHeader } from "@src/components/header/header-new";
 import { useNft } from "./hooks/useNft";
 import { CoinPretty } from "@owallet/unit";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
@@ -50,7 +49,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
   const chainInfo = chainStore.getChain(nft?.network || ChainIdEnum.Oraichain);
   return (
     <PageWithView>
-      <PageHeader title="NFT" subtitle={chainInfo?.chainName || "Oraichain"} />
+      {/*<PageHeader title="NFT" subtitle={chainInfo?.chainName || "Oraichain"} />*/}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <ProgressiveFastImage

@@ -1,4 +1,3 @@
-import { PageHeader } from "@src/components/header/header-new";
 import { DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -39,7 +38,6 @@ export const AddTokenScreen = observer(() => {
 
   return (
     <PageWithBottom showBottom={false}>
-      <PageHeader title="Add Token" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <TouchableOpacity
           onPress={_onPressNetworkModal}

@@ -18,7 +18,7 @@ import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
 import { useStore } from "@src/stores";
 import { Cw721BaseQueryClient } from "@oraichain/common-contracts-sdk";
 import OWFlatList from "@src/components/page/ow-flat-list";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { ChainInfo } from "@owallet/types";
 import { NftItem } from "./components/nft-item";
@@ -80,7 +80,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   };
   return (
     <PageWithView>
-      <PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />
+      {/*<PageHeader title="My NFTs" subtitle={chainInfo?.chainName} />*/}
       <OWBox style={[styles.container]}>{renderScreen()}</OWBox>
     </PageWithView>
   );

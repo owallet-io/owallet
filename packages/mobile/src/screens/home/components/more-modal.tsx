@@ -120,9 +120,7 @@ const MoreModal: FunctionComponent<{
       <TouchableOpacity
         onPress={() => {
           close();
-          navigate(SCREENS.STACK.Others, {
-            screen: SCREENS.BuyFiat,
-          });
+          navigate(SCREENS.BuyFiat);
           return;
         }}
         style={{
