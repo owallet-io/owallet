@@ -14,7 +14,7 @@ import {
   PushInteractionDataMsg,
 } from "./foreground";
 import { autorun } from "mobx";
-import { SidePanelService } from "src/side-panel";
+import { SidePanelService } from "../side-panel";
 
 @singleton()
 export class InteractionService {

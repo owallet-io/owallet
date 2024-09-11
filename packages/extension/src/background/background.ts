@@ -4,6 +4,7 @@ import {
   ExtensionGuards,
   ExtensionEnv,
   ContentScriptMessageRequester,
+  InExtensionMessageRequester,
 } from "@owallet/router-extension";
 import { ExtensionKVStore } from "@owallet/common";
 import { init, Ledger, ScryptParams } from "@owallet/background";
@@ -20,6 +21,7 @@ init(
   router,
   (prefix: string) => new ExtensionKVStore(prefix),
   new ContentScriptMessageRequester(),
+  new InExtensionMessageRequester(),
   EmbedChainInfos,
   PrivilegedOrigins,
   (array) => {

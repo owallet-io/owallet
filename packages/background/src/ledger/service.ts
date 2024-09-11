@@ -176,8 +176,8 @@ export class LedgerService {
                   ledgerType,
                 },
                 {
-                  forceOpenWindow: true,
-                  channel: "ledger",
+                  // forceOpenWindow: true,
+                  // channel: "ledger",
                 }
               )) as
                 | {
