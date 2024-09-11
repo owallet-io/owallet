@@ -262,23 +262,8 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         {renderRating()}
         <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
           <BasicSettingItem
-            left={
-              <View
-                style={{
-                  borderRadius: 99,
-                  marginRight: 16,
-                  backgroundColor: colors["neutral-surface-action"],
-                  padding: 15,
-                }}
-              >
-                <Image
-                  style={{ width: 16, height: 16 }}
-                  source={require("../../assets/image/logo_owallet.png")}
-                  fadeDuration={0}
-                  resizeMode="contain"
-                />
-              </View>
-            }
+            typeLeftIcon={"images"}
+            source={require("../../assets/image/logo_owallet.png")}
             containerStyle={{
               marginVertical: -16,
             }}
