@@ -6,6 +6,7 @@ import {
 } from "@owallet/router";
 import { openPopupWindow as openPopupWindowInner } from "@owallet/popup";
 import { InExtensionMessageRequester } from "../requester";
+import { ReplacePageMsg } from "../interaction-addon";
 
 class PromiseQueue {
   protected workingOnPromise: boolean = false;
@@ -58,13 +59,21 @@ const openPopupQueue = new PromiseQueue();
 // just open the popup one by one.
 async function openPopupWindow(
   url: string,
-  channel: string = "default"
+  channel: string = "default",
+  options: { ignoreURIReplacement?: boolean } = {}
 ): Promise<number> {
-  return await openPopupQueue.enqueue(() => openPopupWindowInner(url, channel));
+  return await openPopupQueue.enqueue(() =>
+    openPopupWindowInner(url, channel, options)
+  );
 }
 
+const MAX_RETRIES_TO_OPEN_WINDOW_AND_GET_TAB_ID = 2;
+
 export class ExtensionEnv {
-  static readonly produceEnv = (sender: MessageSender): Env => {
+  static readonly produceEnv = (
+    sender: MessageSender,
+    routerMeta: Record<string, any>
+  ): Env => {
     const isInternalMsg = ExtensionEnv.checkIsInternalMessage(
       sender,
       browser.runtime.id,
@@ -87,36 +96,64 @@ export class ExtensionEnv {
         url += "?" + queryString;
       }
 
-      const windowId = await openPopupWindow(url, options?.channel);
-      const window = await browser.windows.get(windowId, {
-        populate: true,
-      });
+      let retries = 0;
+      const openWindowAndGetTabId: () => Promise<number> = async () => {
+        try {
+          const windowId = await openPopupWindow(url, undefined, {
+            ignoreURIReplacement: options?.ignoreURIReplacement,
+          });
+          const window = await browser.windows.get(windowId, {
+            populate: true,
+          });
 
-      let tabId: number;
-      tabId = window.tabs![0].id!;
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const tabId = window.tabs![0].id!;
 
-      // Wait until that tab is loaded
-      await (async () => {
-        const tab = await browser.tabs.get(tabId);
-        if (tab.status === "complete") {
-          return;
-        }
+          if (tabId && options?.unstableOnClose) {
+            const listener = (_tabId: number) => {
+              if (tabId === _tabId) {
+                if (options?.unstableOnClose) {
+                  options.unstableOnClose();
+                }
+                browser.tabs.onRemoved.removeListener(listener);
+              }
+            };
+            browser.tabs.onRemoved.addListener(listener);
+          }
 
-        return new Promise<void>((resolve) => {
-          const handler = (_tabId: number, changeInfo: { status: string }) => {
-            if (tabId === _tabId && changeInfo.status === "complete") {
-              browser.tabs.onUpdated.removeListener(handler);
-              resolve();
+          // Wait until that tab is loaded
+          await (async () => {
+            const tab = await browser.tabs.get(tabId);
+            if (tab.status === "complete") {
+              return;
             }
-          };
-          browser.tabs.onUpdated.addListener(handler);
-        });
-      })();
+
+            return new Promise<void>((resolve) => {
+              browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+                if (tabId === _tabId && changeInfo.status === "complete") {
+                  resolve();
+                }
+              });
+            });
+          })();
+
+          return tabId;
+        } catch (e) {
+          if (retries > MAX_RETRIES_TO_OPEN_WINDOW_AND_GET_TAB_ID) {
+            throw e;
+          } else {
+            // Retry to open window and get tab id to resolve an issue that open closed window.
+            retries++;
+            return await openWindowAndGetTabId();
+          }
+        }
+      };
+      const tabId = await openWindowAndGetTabId();
 
       return await InExtensionMessageRequester.sendMessageToTab(
+        tabId,
         APP_PORT,
-        msg,
-        tabId
+        msg
       );
     };
 
@@ -125,24 +162,27 @@ export class ExtensionEnv {
       return {
         isInternalMsg,
         requestInteraction: openAndSendMsg,
+        sender,
       };
     } else {
       // If msg is from the extension itself, it can send the msg back to the extension itself.
       // In this case, this expects that there is only one extension popup have been opened.
-      const requestInteraction: FnRequestInteraction = async (
-        url,
-        msg,
-        options
-      ) => {
-        if (options?.forceOpenWindow) {
-          return await openAndSendMsg(url, msg, options);
-        }
-
+      const requestInteraction: FnRequestInteraction = async (url, msg) => {
         if (url.startsWith("/")) {
           url = url.slice(1);
         }
 
-        url = browser.runtime.getURL("/popup.html#/" + url);
+        let isFromSidePanel = false;
+        if (sender.url) {
+          isFromSidePanel = new URL(sender.url).pathname === "/sidePanel.html";
+        } else {
+          console.warn(
+            "No way to determine that the sender is from popup or side panel due to empty sender url. Fallback to popup"
+          );
+        }
+        url = browser.runtime.getURL(
+          `/${isFromSidePanel ? "sidePanel" : "popup"}.html#/` + url
+        );
 
         if (url.includes("?")) {
           url += "&" + queryString;
@@ -150,8 +190,18 @@ export class ExtensionEnv {
           url += "?" + queryString;
         }
 
-        // post message reload to popup
-        msg.routerMeta = { url };
+        const messageRequester = new InExtensionMessageRequester();
+        const replacePageMsg = new ReplacePageMsg(url);
+        replacePageMsg.routerMeta = {
+          ...replacePageMsg.routerMeta,
+          receiverRouterId: routerMeta["routerId"],
+        };
+        await messageRequester.sendMessage(APP_PORT, replacePageMsg);
+
+        msg.routerMeta = {
+          ...msg.routerMeta,
+          receiverRouterId: routerMeta["routerId"],
+        };
 
         return await new InExtensionMessageRequester().sendMessage(
           APP_PORT,
@@ -162,6 +212,7 @@ export class ExtensionEnv {
       return {
         isInternalMsg,
         requestInteraction,
+        sender,
       };
     }
   };

@@ -7,8 +7,7 @@ export class ContentScriptGuards {
     msg: Message<unknown>,
     sender: MessageSender
   ): Promise<void> => {
-    //if (!env.isInternalMsg || msg.approveExternal(env, sender)) {
-    if (!env.isInternalMsg) {
+    if (!env.isInternalMsg || msg.approveExternal(env, sender)) {
       throw new Error(
         "Content script can't handle the message that is able to be sent from external"
       );
