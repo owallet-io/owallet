@@ -29,8 +29,9 @@ import { Popup } from "react-native-popup-confirm-toast";
 import { tracking } from "@src/utils/tracking";
 import { showToast } from "@src/utils/helper";
 import { useBIP44Option } from "@src/screens/register/bip44";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { OWBox } from "@src/components/card";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@common/constants";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
@@ -187,7 +188,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       apr: 0,
     },
   ]);
-  const smartNavigation = useSmartNavigation();
 
   const bip44Option = useBIP44Option();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -204,16 +204,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       const blockTime = await getBlockTime(chainInfo.rest);
 
       const blocksPerYear = (60 * 60 * 24 * 365) / blockTime;
-      //   console.log("validator", validator);
-      //   console.log("blockTime", blockTime);
-      //   console.log("blocksPerYear", blocksPerYear);
-      //   console.log("inflationRate", parseFloat(inflationRate));
-      //   console.log(
-      //     "community_tax - base_proposer_reward - bonus_proposer_reward",
-      //     community_tax,
-      //     base_proposer_reward,
-      //     bonus_proposer_reward
-      //   );
 
       let votingPower = valVotingPower;
       const totalDelegatedTokens = parseFloat(validator.tokens);
@@ -555,7 +545,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   const handlePressStake = useCallback(
     (chain, validatorAddress) => {
       handleSwitchNetwork(chain);
-      smartNavigation.navigateSmart("Delegate", {
+      navigate(SCREENS.Delegate, {
         validatorAddress,
       });
     },
