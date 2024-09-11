@@ -48,7 +48,6 @@ export const SendPage: FunctionComponent<{
     priceStore,
   } = useStore();
   const language = useLanguage();
-  const defaultGasSendNative = 20000;
   const [gasMsgSend, setGasMsgSend] = useState<CosmosMsgOpts["send"]>();
   const [openSetting, setOpenSetting] = useState(false);
   const settingRef = useRef();
@@ -239,10 +238,11 @@ export const SendPage: FunctionComponent<{
       setGasMsgSend({
         native: {
           type: "cosmos-sdk/MsgSend",
-          gas: Math.floor(simulateTx?.gasUsed * 1.1),
+          gas: Math.floor(simulateTx?.gasUsed * 1.3),
         },
       });
     } catch (error) {
+      setGasMsgSend(null);
       console.error("SimulateTx Estimate Error", error);
     }
   };

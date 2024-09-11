@@ -19,6 +19,7 @@ import {
 } from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
+import { initPrice } from "hooks/use-multiple-assets";
 var mixpanel = process.env.REACT_APP_MIX_PANEL_TOKEN
   ? Mixpanel.init(process.env.REACT_APP_MIX_PANEL_TOKEN)
   : null;
@@ -198,7 +199,7 @@ export const HomePage = observer(() => {
     <FooterLayout>
       <InfoAccountCard
         isLoading={false}
-        totalPrice={availableTotalPrice?.toString() || "-"}
+        totalPrice={(availableTotalPrice || initPrice)?.toString() || "-"}
       />
 
       {/*TODO:// need check again Claim reward */}

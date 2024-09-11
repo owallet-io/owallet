@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useStore } from "../../../stores";
+import { useStore } from "@src/stores";
 import { ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
@@ -19,10 +19,10 @@ import {
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
   ValidatorVotingIcon,
-} from "../../../components/icon";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
-import { metrics, spacing } from "../../../themes";
+} from "@components/icon";
+import { ValidatorThumbnail } from "@components/thumbnail";
+import { useSmartNavigation } from "@src/navigation.provider";
+import { metrics, spacing } from "@src/themes";
 import { PageHeader } from "@src/components/header/header-new";
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -340,16 +340,17 @@ export const ValidatorDetailsCard: FunctionComponent<{
                   {validator?.description.moniker}
                 </OWText>
                 <View style={{ flexDirection: "row", marginTop: 8 }}>
-                  <View style={styles.topSubInfo}>
-                    <OWText
-                      style={{
-                        color: colors["neutral-text-title"],
-                      }}
-                    >
-                      APR:{" "}
-                      {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-                    </OWText>
-                  </View>
+                  {apr && apr > 0 ? (
+                    <View style={styles.topSubInfo}>
+                      <OWText
+                        style={{
+                          color: colors["neutral-text-title"],
+                        }}
+                      >
+                        APR: {apr.toFixed(2).toString() + "%"}
+                      </OWText>
+                    </View>
+                  ) : null}
                   <View style={styles.topSubInfo}>
                     <ValidatorBlockIcon
                       color={colors["neutral-text-title"]}
