@@ -3,8 +3,8 @@ import { View, TouchableOpacity } from "react-native";
 import { Text } from "@src/components/text";
 import { metrics, spacing } from "../../themes";
 import OWIcon from "../ow-icon/ow-icon";
-import { useSmartNavigation } from "@src/navigation.provider";
 import { useTheme } from "@src/themes/theme-provider";
+import { goBack } from "@src/router/root";
 
 export const PageHeader: FunctionComponent<{
   title?: string;
@@ -15,11 +15,7 @@ export const PageHeader: FunctionComponent<{
   onGoBack?: () => void;
   right?: ReactElement;
 }> = ({ title, subtitle, right, middle, left, onGoBack }) => {
-  const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
-  const goBack = () => {
-    smartNavigation.goBack();
-  };
 
   return (
     <View

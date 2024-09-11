@@ -1,43 +1,26 @@
 import { Platform, StyleSheet, View } from "react-native";
-import React, { FC, useEffect, useMemo, useState } from "react";
-import { useStore } from "@src/stores";
+import React, { FC } from "react";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { ICONS_TITLE, SCREENS, SCREENS_OPTIONS } from "@src/common/constants";
-import {
-  BottomTabBar,
-  createBottomTabNavigator,
-} from "@react-navigation/bottom-tabs";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MainNavigation } from "./main-navigation";
 import { WebNavigation } from "./web-navigation";
 import { SendNavigation } from "./send-navigation";
 import { InvestNavigation } from "./invest-navigation";
-import { SettingStackScreen } from "./settings-navigation";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { observer } from "mobx-react-lite";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import imagesGlobal from "@src/assets/images";
 import { BlurView } from "@react-native-community/blur";
+import { NewSettingScreen } from "@src/screens/setting/setting";
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
-  const { chainStore, appInitStore } = useStore();
   const { colors, dark } = useTheme();
-  const { visibleTabBar } = appInitStore.getInitApp;
-  const [loading, setLoading] = useState(true);
+
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
-  const checkTabbarVisible = useMemo(() => {
-    return visibleTabBar
-      ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false
-      : false;
-  }, [visibleTabBar]);
-
-  const waitToLoad = async () => {
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    waitToLoad();
-  }, []);
 
   return (
     <Tab.Navigator
@@ -53,6 +36,7 @@ export const MainTabNavigation: FC = observer(() => {
             }
             return (
               <OWIcon
+                //@ts-ignore
                 name={`${ICONS_TITLE[route.name]}`}
                 size={22}
                 color={color}
@@ -103,36 +87,16 @@ export const MainTabNavigation: FC = observer(() => {
           ),
         };
       }}
-      tabBar={(props) => {
-        if (
-          props.state.routeNames[props.state.index] ===
-          SCREENS.TABS.SendNavigation
-        )
-          return null;
-
-        return checkTabbarVisible && !loading ? (
-          <BottomTabBar {...props} />
-        ) : null;
-      }}
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
+        options={{ tabBarStyle: { display: "none" } }}
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
-        initialParams={{
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          chainId: chainStore.current.chainId,
-        }}
       />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
-      <Tab.Screen
-        name={SCREENS.TABS.Settings}
-        component={SettingStackScreen}
-        options={{
-          unmountOnBlur: true,
-        }}
-      />
+      <Tab.Screen name={SCREENS.TABS.Settings} component={NewSettingScreen} />
     </Tab.Navigator>
   );
 });

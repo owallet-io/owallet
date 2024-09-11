@@ -11,10 +11,12 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -39,7 +41,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
-    const smartNavigation = useSmartNavigation();
     const staked = queries.cosmos.queryDelegations
       .getQueryBech32Address(account.bech32Address)
       .getDelegationTo(validatorAddress);
@@ -192,7 +193,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                 justifyContent: "center",
               }}
               onPress={() => {
-                smartNavigation.navigateSmart("Validator.Details", {
+                navigate(SCREENS.ValidatorDetails, {
                   validatorAddress,
                   apr,
                 });
@@ -213,7 +214,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             style={styles.containerBtn}
             label="Stake more"
             onPress={() => {
-              smartNavigation.navigateSmart("Delegate", {
+              navigate(SCREENS.Delegate, {
                 validatorAddress,
               });
             }}
@@ -223,7 +224,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             type="secondary"
             label="Switch validator"
             onPress={() => {
-              smartNavigation.navigateSmart("Redelegate", {
+              navigate(SCREENS.Redelegate, {
                 validatorAddress,
               });
             }}
@@ -237,7 +238,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               color: colors["red-500"],
             }}
             onPress={() => {
-              smartNavigation.navigateSmart("Undelegate", { validatorAddress });
+              navigate(SCREENS.Undelegate, { validatorAddress });
             }}
           />
         </View>

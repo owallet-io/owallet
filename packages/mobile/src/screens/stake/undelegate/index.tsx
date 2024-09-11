@@ -19,7 +19,7 @@ import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { OWButton } from "../../../components/button";
 
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { FeeModal } from "@src/modals/fee";
@@ -27,6 +27,8 @@ import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { API } from "@src/common/api";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -54,7 +56,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const smartNavigation = useSmartNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -165,7 +167,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
       if (result?.code === 0 || result?.code == null) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             type: "unstake",
@@ -246,7 +248,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           validator?.description.moniker ?? "..."
                         };`
                       );
-                      smartNavigation.pushSmart("TxPendingResult", {
+                      navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "unstake",
@@ -269,7 +271,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   return;
                 } else {
                   console.log(e);
-                  // smartNavigation.navigate("Home", {});
+
                   showToast({
                     message: JSON.stringify(e),
                     type: "danger",

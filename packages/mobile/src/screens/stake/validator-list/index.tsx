@@ -19,11 +19,13 @@ import {
 } from "../../../components/icon";
 import { SelectorModal, TextInput } from "../../../components/input";
 import { RectButton } from "../../../components/rect-button";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { spacing, typography } from "../../../themes";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { tracking } from "@src/utils/tracking";
+import { goBack, navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 type Sort = "APR" | "Amount Staked" | "Name";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
@@ -240,7 +242,6 @@ const ValidatorItem: FunctionComponent<{
     BondStatus.Bonded
   );
   const validator = bondedValidators.getValidator(validatorAddress);
-  const smartNavigation = useSmartNavigation();
 
   return validator ? (
     <RectButton
@@ -255,9 +256,9 @@ const ValidatorItem: FunctionComponent<{
       onPress={() => {
         if (onSelectValidator) {
           onSelectValidator(validatorAddress);
-          smartNavigation.goBack();
+          goBack();
         } else {
-          smartNavigation.navigateSmart("Validator.Details", {
+          navigate(SCREENS.ValidatorDetails, {
             validatorAddress,
             apr,
           });

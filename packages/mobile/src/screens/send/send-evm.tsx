@@ -24,7 +24,7 @@ import {
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { PageHeader } from "@src/components/header/header-new";
@@ -208,18 +208,15 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           {
             onFulfill: (tx) => {
               if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                navigate("Others", {
-                  screen: SCREENS.TxSuccessResult,
-                  params: {
-                    txHash: tx,
-                    data: {
-                      memo: sendConfigs.memoConfig.memo,
-                      toAddress: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                      fromAddress: address,
-                      fee: sendConfigs.feeConfig.toStdFee(),
-                      currency: sendConfigs.amountConfig.sendCurrency,
-                    },
+                navigate(SCREENS.TxSuccessResult, {
+                  txHash: tx,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    toAddress: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fromAddress: address,
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
                   },
                 });
               }
@@ -230,18 +227,15 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-              navigate("Others", {
-                screen: "TxPendingResult",
-                params: {
-                  txHash: txHash,
-                  data: {
-                    memo: sendConfigs.memoConfig.memo,
-                    from: address,
-                    to: sendConfigs.recipientConfig.recipient,
-                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fee: sendConfigs.feeConfig.toStdFee(),
-                    currency: sendConfigs.amountConfig.sendCurrency,
-                  },
+              navigate(SCREENS.TxPendingResult, {
+                txHash: txHash,
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  from: address,
+                  to: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
                 },
               });
               const fee = sendConfigs.feeConfig.fee

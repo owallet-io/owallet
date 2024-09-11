@@ -12,6 +12,7 @@ import { HEADER_KEY, SCREENS } from "@src/common/constants";
 import { getDefaultHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { metrics } from "@src/themes";
+import { navigate } from "@src/router/root";
 
 interface IUseHeaderOptions extends StackNavigationOptions {}
 const useHeaderOptions = (
@@ -33,18 +34,13 @@ const useHeaderOptions = (
     navigation.goBack();
   };
   const onAddWallet = () => {
-    navigation.navigate("Register", {
-      screen: "Register.Intro",
-      params: {
-        canBeBack: true,
-      },
+    navigate(SCREENS.RegisterIntro, {
+      canBeBack: true,
     });
   };
 
   const onScan = () => {
-    navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Camera,
-    });
+    navigate(SCREENS.Camera);
     return;
   };
 

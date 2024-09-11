@@ -282,18 +282,15 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             if (tx) {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.TxSuccessResult,
-                params: {
-                  txHash: tx,
-                  data: {
-                    memo: sendConfigs.memoConfig.memo,
-                    from: address,
-                    to: sendConfigs.recipientConfig.recipient,
-                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fee: sendConfigs.feeConfig.toStdFee(),
-                    currency: sendConfigs.amountConfig.sendCurrency,
-                  },
+              navigate(SCREENS.TxSuccessResult, {
+                txHash: tx,
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  from: address,
+                  to: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
                 },
               });
             }

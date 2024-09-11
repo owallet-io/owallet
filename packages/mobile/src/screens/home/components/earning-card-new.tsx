@@ -9,21 +9,21 @@ import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
-import { checkRouter } from "@src/router/root";
+import { checkRouter, navigate } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
-  const smartNavigation = useSmartNavigation();
+
   const {
     chainStore,
     accountStore,
@@ -60,9 +60,7 @@ export const EarningCardNew = observer(({}) => {
     if (checkRouter(route?.name, SCREENS.Invest)) {
       return;
     }
-    navigation.dispatch(
-      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-    );
+    navigate(SCREENS.TABS.Invest);
   };
 
   const _onPressCompound = async () => {
@@ -95,7 +93,7 @@ export const EarningCardNew = observer(({}) => {
               const validatorObject = convertArrToObject(
                 queryReward.pendingRewardValidatorAddresses
               );
-              smartNavigation.pushSmart("TxPendingResult", {
+              navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 title: "Compound",
                 data: {
@@ -146,7 +144,7 @@ export const EarningCardNew = observer(({}) => {
             const validatorObject = convertArrToObject(
               queryReward.pendingRewardValidatorAddresses
             );
-            smartNavigation.pushSmart("TxPendingResult", {
+            navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               title: "Withdraw rewards",
               data: {

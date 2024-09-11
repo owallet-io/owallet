@@ -13,9 +13,11 @@ import {
   View,
 } from "react-native";
 import OWButton from "../../components/button/OWButton";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 import { metrics } from "../../themes";
+import { goBack, navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const RegisterIntroScreen: FunctionComponent = observer((props) => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -23,34 +25,23 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
 
   const route = useRoute();
 
-  const smartNavigation = useSmartNavigation();
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
     analyticsStore.logEvent("Import account started", {
       registerType: "seed",
     });
-    // smartNavigation.navigateSmart('Register.RecoverMnemonic', {
-    //   registerConfig
-    // });
-    smartNavigation.navigateSmart("Register.RecoverPhrase", {
-      registerConfig,
-    });
+
+    navigate(SCREENS.RegisterRecoverPhrase);
   };
   const handleImportLedgerNanoX = () => {
-    smartNavigation.navigateSmart("Register.NewLedger", {
-      registerConfig,
-    });
+    navigate(SCREENS.RegisterNewLedger);
   };
   const handleCreateANewWallet = () => {
     analyticsStore.logEvent("Create account started", {
       registerType: "seed",
     });
-    smartNavigation.navigateSmart("Register.NewMnemonic", {
-      registerConfig,
-    });
-    // smartNavigation.navigateSmart("Register.NewPincode", {
-    //   registerConfig,
-    // });
+
+    navigate(SCREENS.RegisterNewMnemonic);
   };
   const styles = useStyles();
 
@@ -71,7 +62,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
         {route.params?.canBeBack ? (
           <TouchableOpacity
             onPress={() => {
-              smartNavigation.goBack();
+              goBack();
             }}
             style={{
               backgroundColor: colors["neutral-surface-card"],

@@ -143,9 +143,7 @@ export const TokensCardAll: FunctionComponent<{
             size="large"
             type="secondary"
             onPress={() => {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.BuyFiat,
-              });
+              navigate(SCREENS.BuyFiat);
             }}
           />
         </View>
@@ -168,9 +166,7 @@ export const TokensCardAll: FunctionComponent<{
         size="large"
         type="secondary"
         onPress={() => {
-          navigate(SCREENS.STACK.Others, {
-            screen: SCREENS.NetworkToken,
-          });
+          navigate(SCREENS.NetworkToken);
           return;
         }}
       />

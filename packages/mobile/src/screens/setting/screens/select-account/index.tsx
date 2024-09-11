@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
-import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
+
 import { KeyStoreItem, KeyStoreSectionTitle } from "../../components";
 import Svg, { Path } from "react-native-svg";
 import { useLoadingScreen } from "../../../../providers/loading-screen";
@@ -10,7 +10,7 @@ import {
   MultiKeyStoreInfoWithSelectedElem,
 } from "@owallet/background";
 import { Image, ScrollView, View } from "react-native";
-import { useSmartNavigation } from "../../../../navigation.provider";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
@@ -21,6 +21,8 @@ import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { useNavigation } from "@react-navigation/native";
 import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
     ? keyStore.bip44HDPath
@@ -71,7 +73,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const { colors } = useTheme();
 
-  const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
 
   const mnemonicKeyStores = useMemo(() => {
@@ -101,7 +102,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     if (index >= 0) {
       await keyRingStore.changeKeyRing(index);
       await waitAccountInit(chainStore, accountStore, keyRingStore);
-      smartNavigation.navigateSmart("Home", {});
+      navigate(SCREENS.Home);
     }
   };
   const handleOnKeyStore = useCallback(async (keyStore) => {
@@ -198,11 +199,8 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Add wallets"
           onPress={() => {
-            navigation.navigate("Register", {
-              screen: "Register.Intro",
-              params: {
-                canBeBack: true,
-              },
+            navigate(SCREENS.RegisterIntro, {
+              canBeBack: true,
             });
           }}
           style={{

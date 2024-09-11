@@ -19,10 +19,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { AsyncKVStore } from "../../../../common";
 import { PageWithScrollView } from "../../../../components/page";
 import { RectButton } from "../../../../components/rect-button";
-import { useSmartNavigation } from "../../../../navigation.provider";
+
 import { useStore } from "../../../../stores";
 import { useStyle } from "../../../../styles";
 import { metrics, spacing } from "../../../../themes";
+import { goBack, navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -156,8 +158,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
 
-  const smartNavigation = useSmartNavigation();
-
   const chainId = recipientConfig
     ? recipientConfig.chainId
     : chainStore.current.chainId;
@@ -272,7 +272,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           }}
           contentAlign="left"
           onPress={() => {
-            smartNavigation.navigateSmart("AddAddressBook", {
+            navigate(SCREENS.AddAddressBook, {
               chainId,
               addressBookConfig,
               recipient: "",
@@ -306,7 +306,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   onPress={() => {
                     if (isInTransaction) {
                       addressBookConfig.selectAddressAt(i);
-                      smartNavigation.goBack();
+                      goBack();
                     }
                   }}
                 >

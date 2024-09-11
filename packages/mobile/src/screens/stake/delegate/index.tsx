@@ -25,7 +25,7 @@ import {
   InteractionManager,
 } from "react-native";
 import { OWButton } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -37,6 +37,8 @@ import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -63,8 +65,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-
-  const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -230,7 +230,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       });
       if (result?.code === 0 || result?.code == null) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             type: "stake",
@@ -292,7 +292,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                           validator?.description.moniker ?? "..."
                         };`
                       );
-                      smartNavigation.pushSmart("TxPendingResult", {
+                      navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "stake",
@@ -315,7 +315,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   return;
                 } else {
                   console.log(e);
-                  // smartNavigation.navigate("Home", {});
+
                   showToast({
                     message: JSON.stringify(e),
                     type: "danger",

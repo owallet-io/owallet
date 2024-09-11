@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Text } from "@src/components/text";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { metrics } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import {
@@ -31,6 +31,8 @@ import { BondStatus, CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import { TendermintTxTracer } from "@owallet/cosmos";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const {
@@ -79,7 +81,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const txHash = params?.txHash;
   const chainInfo = chainStore.getChain(chainId);
 
-  const smartNavigation = useSmartNavigation();
   const isFocused = useIsFocused();
   useEffect(() => {
     // let txTracer: TendermintTxTracer | undefined;
@@ -88,7 +89,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
           .then((res: any) => {
             if (res?.confirmed) {
-              smartNavigation.pushSmart("TxSuccessResult", {
+              navigate(SCREENS.TxSuccessResult, {
                 txHash: txHash,
               });
             }
@@ -98,14 +99,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     }
 
     return () => {};
-  }, [
-    chainId,
-    chainStore,
-    isFocused,
-    route.params.txHash,
-    smartNavigation,
-    retry,
-  ]);
+  }, [chainId, chainStore, isFocused, route.params.txHash, retry]);
   const handleUrl = (txHash) => {
     return chainInfo.raw.txExplorer.txUrl.replace(
       "{txHash}",
@@ -150,14 +144,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           ...params?.data,
         };
         if (chainInfo?.chainId === "oraibtc-mainnet-1") {
-          // const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-          // console.log(chainInfo.rpc,"chainInfo.rpc");
-          // console.log(Buffer.from(txHash, "hex"),"txHash hex")
-          // txTracer.traceTx(Buffer.from(txHash, "hex")).then((tx) => {
-          //   console.log(tx, "tx");
-
-          //   txTracer.close();
-          // }).catch(err => console.log(err,"errr"));
           setTimeout(() => {
             if (params?.data?.type === "send") {
               const bal = queries.queryBalances
@@ -196,7 +182,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   .fetch(),
               ]);
             }
-            smartNavigation.replaceSmart("TxSuccessResult", {
+            navigate(SCREENS.TxSuccessResult, {
               chainId,
               txHash,
               data,
@@ -206,14 +192,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         }
         OwalletEvent.txHashListener(txHash, (txInfo) => {
           if (txInfo?.code === 0) {
-            smartNavigation.replaceSmart("TxSuccessResult", {
+            navigate(SCREENS.TxSuccessResult, {
               chainId,
               txHash,
               data,
             });
             return;
           } else {
-            smartNavigation.replaceSmart("TxFailedResult", {
+            navigate(SCREENS.TxFailedResult, {
               chainId,
               txHash,
               data,
