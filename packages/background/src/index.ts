@@ -15,6 +15,7 @@ import * as Updater from "./updater/internal";
 import * as Tokens from "./tokens/internal";
 import * as Interaction from "./interaction/internal";
 import * as Permission from "./permission/internal";
+import * as SidePanel from "./side-panel/internal";
 
 export * from "./persistent-memory";
 export * from "./chains";
@@ -41,6 +42,7 @@ export function init(
   storeCreator: (prefix: string) => KVStore,
   // Message requester to the content script.
   eventMsgRequester: MessageRequester,
+  extensionMessageRequesterToUI: MessageRequester | undefined,
   embedChainInfos: ChainInfo[],
   // The origins that are able to pass any permission.
   privilegedOrigins: string[],
@@ -86,7 +88,16 @@ export function init(
   });
   container.register(TYPES.UpdaterStore, { useValue: storeCreator("updator") });
 
-  const interactionService = container.resolve(Interaction.InteractionService);
+  const sidePanelService = new SidePanel.SidePanelService(
+    storeCreator("side-panel")
+  );
+
+  const interactionService = new Interaction.InteractionService(
+    eventMsgRequester,
+    sidePanelService,
+    extensionMessageRequesterToUI
+  );
+
   Interaction.init(router, interactionService);
 
   const persistentMemory = container.resolve(

@@ -11,3 +11,6 @@ export * from "./escape";
 export * from "./json";
 export * from "./universal-swap";
 export * from "./api";
+export * from "./retry";
+export * from "./service-worker";
+export * from "./sleep";
