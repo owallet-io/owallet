@@ -570,8 +570,6 @@ export class CosmosAccount {
       },
     };
 
-    console.log("msg", msg);
-
     const simulateTx = await this.simulateTx(
       [
         {

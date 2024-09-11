@@ -60,7 +60,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const stakingReward = queryReward.stakableReward;
 
   useEffect(() => {
-    if (!stakingReward.toDec().equals(new Dec(0))) {
+    if (stakingReward && !stakingReward.toDec().equals(new Dec(0))) {
       setActive("my");
     }
   }, [stakingReward]);

@@ -60,7 +60,7 @@ const useHeaderOptions = (
       }
     },
     headerLeft: () => {
-      if (navigation.canGoBack())
+      if (navigation.canGoBack()) {
         return (
           <OWButtonIcon
             colorIcon={colors["neutral-icon-on-light"]}
@@ -76,7 +76,8 @@ const useHeaderOptions = (
             sizeIcon={16}
           />
         );
-      return null;
+      } else {
+      }
     },
     ...TransitionPresets.SlideFromRightIOS,
     headerShown:

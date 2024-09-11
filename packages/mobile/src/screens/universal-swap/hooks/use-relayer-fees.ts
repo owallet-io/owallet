@@ -12,7 +12,7 @@ import {
   IBC_WASM_CONTRACT,
 } from "@oraichain/oraidex-common";
 import {
-  handleSimulateSwap,
+  UniversalSwapHelper,
   isEvmNetworkNativeSwapSupported,
 } from "@oraichain/oraidex-universal-swap";
 import { ConfigResponse } from "@oraichain/common-contracts-sdk/build/CwIcs20Latest.types";
@@ -98,7 +98,7 @@ export const useRelayerFeeToken = (
         const oraiToken = oraichainTokens.find(
           (token) => token.coinGeckoId === "oraichain-token"
         );
-        const data = await handleSimulateSwap({
+        const data = await UniversalSwapHelper.handleSimulateSwap({
           originalFromInfo: oraiToken,
           originalToInfo: originalToToken,
           originalAmount: relayerFeeInOrai,
