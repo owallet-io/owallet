@@ -242,7 +242,11 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
                 >
                   {priceStore.defaultVsCurrency.toUpperCase()}
                 </OWText>
-                <OWIcon name="chevron_right" size={16} />
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
               </View>
             }
           />
@@ -256,24 +260,35 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         {renderRating()}
-        <BasicSettingItem
-          left={
-            <View style={{ padding: 12 }}>
-              <Image
-                style={{ width: 24, height: 24 }}
-                source={require("../../assets/image/logo_owallet.png")}
-                fadeDuration={0}
-                resizeMode="contain"
-              />
-            </View>
-          }
-          containerStyle={{ marginHorizontal: 16 }}
-          icon="owallet"
-          paragraph="About OWallet"
-          onPress={() => {
-            navigate(SCREENS.SettingVersion, {});
-          }}
-        />
+        <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
+          <BasicSettingItem
+            left={
+              <View
+                style={{
+                  borderRadius: 99,
+                  marginRight: 16,
+                  backgroundColor: colors["neutral-surface-action"],
+                  padding: 15,
+                }}
+              >
+                <Image
+                  style={{ width: 16, height: 16 }}
+                  source={require("../../assets/image/logo_owallet.png")}
+                  fadeDuration={0}
+                  resizeMode="contain"
+                />
+              </View>
+            }
+            containerStyle={{
+              marginVertical: -16,
+            }}
+            icon="owallet"
+            paragraph="About OWallet"
+            onPress={() => {
+              navigate(SCREENS.SettingVersion, {});
+            }}
+          />
+        </OWCard>
       </View>
     </PageWithScrollViewInBottomTabView>
   );
