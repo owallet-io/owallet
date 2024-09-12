@@ -3,6 +3,7 @@ import {
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
@@ -44,7 +45,7 @@ const OWHeaderTitle = observer(
     };
     if (title === HEADER_KEY.showNetworkHeader)
       return (
-        <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
+        <TouchableOpacity onPress={_onPressNetworkModal} {...props}>
           <View style={styles.containerTitle}>
             <View
               style={{
@@ -89,7 +90,7 @@ const OWHeaderTitle = observer(
               <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
             </View>
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
       );
     if (!!chainData) {
       return (

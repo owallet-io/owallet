@@ -78,7 +78,7 @@ const styling = (colors) =>
       paddingHorizontal: 0,
     },
     container: {
-      marginBottom: 60,
+      // marginBottom: 60,
     },
     pl12: {
       paddingLeft: 12,
