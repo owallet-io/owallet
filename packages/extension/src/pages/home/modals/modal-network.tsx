@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { SearchInput } from "../components/search-input";
@@ -35,6 +35,7 @@ export const ModalNetwork: FC<{
   const onChangeInput = (e) => {
     setKeyword(e.target.value);
   };
+
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const [tab, setTab] = useState<(typeof typeNetwork)[0]>(typeNetwork[0]);
   const activeTab = (item: (typeof typeNetwork)[0]) => {
@@ -142,6 +143,7 @@ export const ModalNetwork: FC<{
             chainInfo.chainId
           );
         }
+
         await handleUpdateChain(chainInfo);
         return;
       } else {
@@ -198,6 +200,7 @@ export const ModalNetwork: FC<{
     } catch (error) {
       console.error(error);
     } finally {
+      setKeyword("");
       onRequestClose();
     }
   };

@@ -171,7 +171,7 @@ const TokenItem: FC<{
               <img
                 className={styles.chain}
                 src={
-                  item?.chainInfo?.currencies[0]?.coinImageUrl ||
+                  item?.chainInfo?.feeCurrencies[0]?.coinImageUrl ||
                   (unknownToken.coinImageUrl as string)
                 }
               />

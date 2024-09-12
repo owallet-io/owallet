@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useStore } from "../../../stores";
+import { useStore } from "@src/stores";
 import { ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
@@ -357,16 +357,17 @@ export const ValidatorDetailsCard: FunctionComponent<{
                   {validator?.description.moniker}
                 </OWText>
                 <View style={{ flexDirection: "row", marginTop: 8 }}>
-                  <View style={styles.topSubInfo}>
-                    <OWText
-                      style={{
-                        color: colors["neutral-text-title"],
-                      }}
-                    >
-                      APR:{" "}
-                      {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-                    </OWText>
-                  </View>
+                  {apr && apr > 0 ? (
+                    <View style={styles.topSubInfo}>
+                      <OWText
+                        style={{
+                          color: colors["neutral-text-title"],
+                        }}
+                      >
+                        APR: {apr.toFixed(2).toString() + "%"}
+                      </OWText>
+                    </View>
+                  ) : null}
                   <View style={styles.topSubInfo}>
                     <ValidatorBlockIcon
                       color={colors["neutral-text-title"]}

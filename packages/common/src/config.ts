@@ -548,7 +548,186 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://scanium.io/osmosis/tx/{txHash}",
     },
   },
-
+  {
+    rpc: "https://rpc-celestia.keplr.app",
+    rest: "https://lcd-celestia.keplr.app",
+    chainId: "celestia",
+    chainName: "Celestia",
+    stakeCurrency: {
+      coinDenom: "TIA",
+      coinDecimals: 6,
+      coinMinimalDenom: "utia",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+      coinGeckoId: "celestia",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("celestia"),
+    currencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+  },
+  {
+    rpc: "https://rpc-akash.keplr.app",
+    rest: "https://lcd-akash.keplr.app",
+    chainId: "akashnet-2",
+    chainName: "Akash",
+    stakeCurrency: {
+      coinDenom: "AKT",
+      coinMinimalDenom: "uakt",
+      coinDecimals: 6,
+      coinGeckoId: "akash-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("akash"),
+    currencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+      },
+    ],
+    features: ["ibc-transfer", "no-legacy-stdTx"],
+  },
+  {
+    rpc: "https://rpc-dydx.keplr.app",
+    rest: "https://lcd-dydx.keplr.app",
+    chainId: "dydx-mainnet-1",
+    chainName: "dYdX",
+    stakeCurrency: {
+      coinDenom: "DYDX",
+      coinDecimals: 18,
+      coinMinimalDenom: "adydx",
+      coinGeckoId: "dydx-chain",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dydx",
+      bech32PrefixAccPub: "dydxpub",
+      bech32PrefixValAddr: "dydxvaloper",
+      bech32PrefixValPub: "dydxvaloperpub",
+      bech32PrefixConsAddr: "dydxvalcons",
+      bech32PrefixConsPub: "dydxvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+        coinGeckoId: "dydx-chain",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+        coinGeckoId: "dydx-chain",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+        gasPriceStep: {
+          average: 25000000000,
+          high: 30000000000,
+          low: 20000000000,
+        },
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+  },
+  {
+    chainId: "dymension_1100-1",
+    chainName: "Dymension",
+    rpc: "https://rpc-dymension.keplr.app",
+    rest: "https://lcd-dymension.keplr.app",
+    currencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        coinGeckoId: "dymension",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+      },
+    ],
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dym",
+      bech32PrefixAccPub: "dympub",
+      bech32PrefixValAddr: "dymvaloper",
+      bech32PrefixValPub: "dymvaloperpub",
+      bech32PrefixConsAddr: "dymvalcons",
+      bech32PrefixConsPub: "dymvalconspub",
+    },
+    stakeCurrency: {
+      coinMinimalDenom: "adym",
+      coinDenom: "DYM",
+      coinDecimals: 18,
+      coinGeckoId: "dymension",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+    },
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        coinGeckoId: "dymension",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+        gasPriceStep: {
+          average: 25000000000,
+          high: 30000000000,
+          low: 20000000000,
+        },
+      },
+    ],
+    features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
+  },
   {
     rpc: "https://rpc-stargaze.keplr.app",
     rest: "https://lcd-stargaze.keplr.app",
@@ -584,9 +763,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "stargaze",
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
     ],
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "no-legacy-stdTx"],
     txExplorer: {
       name: "Scanium",
       txUrl: "https://scanium.io/stargaze/tx/{txHash}",
@@ -731,6 +915,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
       {
         coinDenom: "ATOM",
@@ -1315,6 +1504,56 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl:
         "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
     },
+  },
+  {
+    rpc: "https://rpc-neutron.keplr.app",
+    rest: "https://lcd-neutron.keplr.app",
+    chainId: "neutron-1",
+    chainName: "Neutron",
+    stakeCurrency: {
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
+      coinDecimals: 6,
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "neutron",
+      bech32PrefixAccPub: "neutronpub",
+      bech32PrefixValAddr: "neutronvaloper",
+      bech32PrefixValPub: "neutronvaloperpub",
+      bech32PrefixConsAddr: "neutronvalcons",
+      bech32PrefixConsPub: "neutronvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "neutron-3",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "neutron-3",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+      },
+    ],
+    features: ["no-legacy-stdTx"],
   },
   {
     chainId: "Neutaro-1",
