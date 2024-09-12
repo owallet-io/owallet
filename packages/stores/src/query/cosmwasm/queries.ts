@@ -6,6 +6,7 @@ import { DeepReadonly } from "utility-types";
 import { ObservableQueryCw20BalanceRegistry } from "./cw20-balance";
 import { QueriesWrappedSecret } from "../secret-wasm";
 import { OWallet } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export interface HasCosmwasmQueries {
   cosmwasm: CosmwasmQueries;
@@ -18,14 +19,19 @@ export class QueriesWrappedCosmwasm
   public cosmwasm: CosmwasmQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter, apiGetter);
+    super(sharedContext, chainId, chainGetter, apiGetter);
 
-    this.cosmwasm = new CosmwasmQueries(this, kvStore, chainId, chainGetter);
+    this.cosmwasm = new CosmwasmQueries(
+      this,
+      sharedContext,
+      chainId,
+      chainGetter
+    );
   }
 }
 
@@ -34,16 +40,16 @@ export class CosmwasmQueries {
 
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryCw20BalanceRegistry(kvStore)
+      new ObservableQueryCw20BalanceRegistry(sharedContext)
     );
 
     this.querycw20ContractInfo = new ObservableQueryCw20ContractInfo(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );

@@ -1,38 +1,41 @@
 import {
   addressToPublicKey,
+  API,
   ChainIdEnum,
   DenomHelper,
   getOasisNic,
   getRpcByChainId,
   KVStore,
+  MapChainIdToNetwork,
   MyBigInt,
   parseRpcBalance,
+  urlTxHistory,
   Web3Provider,
 } from "@owallet/common";
 import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
-import { CoinPretty, Int } from "@owallet/unit";
-import { StoreUtils } from "../../../common";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+
 import {
   BalanceRegistry,
   BalanceRegistryType,
   ObservableQueryBalanceInner,
 } from "../../balances";
-import { ObservableChainQuery } from "../../chain-query";
-import { Balances } from "./types";
-import { CancelToken } from "axios";
+
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
+import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryEvmBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -71,26 +74,31 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     if (!this.nativeBalances.response) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-
-    return StoreUtils.getBalanceFromCurrency(
+    return new CoinPretty(
       currency,
-      this.nativeBalances.response.data.balances
+      new Int(Web3.utils.hexToNumberString(this.response.data))
     );
   }
 }
 
-export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
+export class ObservableQueryEvmBalances extends ObservableEvmChainJsonRpcQuery<string> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      !Web3.utils.isAddress(walletAddress) ? "" : "eth_getBalance",
+      !Web3.utils.isAddress(walletAddress) ? null : [walletAddress, "latest"]
+    );
 
     this.walletAddress = walletAddress;
 
@@ -131,66 +139,87 @@ export class ObservableQueryEvmBalances extends ObservableChainQuery<Balances> {
       );
     }
   }
-  protected async fetchResponse(): Promise<QueryResponse<Balances>> {
-    try {
-      if (this._chainId === ChainIdEnum.Oasis) {
-        const oasisRs = await this.getOasisBalance();
-        console.log(oasisRs, "oasis rs");
-        const denomNative = this.chainGetter.getChain(this.chainId)
-          .stakeCurrency.coinMinimalDenom;
-        console.log(denomNative, oasisRs.available, "available kaka");
-        const balances: CoinPrimitive[] = [
-          {
-            amount: oasisRs.available,
-            denom: denomNative,
-          },
-        ];
-
-        const data = {
-          balances,
-        };
-        return {
-          status: 1,
-          staled: false,
-          data,
-          timestamp: Date.now(),
-        };
-      }
-      const web3 = new Web3(
-        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-      );
-      const ethBalance = await web3.eth.getBalance(this.walletAddress);
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ ethBalance:",
-        ethBalance
-      );
-      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
-        .coinMinimalDenom;
-      const balances: CoinPrimitive[] = [
-        {
-          amount: ethBalance,
-          denom: denomNative,
-        },
-      ];
-
-      const data = {
-        balances,
-      };
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: any }> {
+    if (this.chainId === ChainIdEnum.Oasis) {
+      const oasisBalance = await this.getOasisBalance();
       return {
-        status: 1,
-        staled: false,
-        data,
-        timestamp: Date.now(),
+        data: Number(oasisBalance.available)
+          ? Web3.utils.numberToHex(Number(oasisBalance.available))
+          : "0x1",
+        headers: null,
       };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryEvmBalances ~ fetchResponse ~ error:",
-        error
-      );
     }
+    // this.fetchAllErc20();
+    return await super.fetchResponse(abortController);
   }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${this.instance.defaults.baseURL}-balance-evm-native-${this.chainId}-${this.walletAddress}`;
+
+  protected async fetchAllErc20() {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    // Attempt to register the denom in the returned response.
+    // If it's already registered anyway, it's okay because the method below doesn't do anything.
+    // Better to set it as an array all at once to reduce computed.
+    if (!MapChainIdToNetwork[chainInfo.chainId]) return;
+    const response = await API.getAllBalancesEvm({
+      address: this.walletAddress,
+      network: MapChainIdToNetwork[chainInfo.chainId],
+    });
+
+    if (!response.result) return;
+
+    const allTokensAddress = response.result
+      .filter(
+        (token) =>
+          !!chainInfo.currencies.find(
+            (coin) =>
+              new DenomHelper(
+                coin.coinMinimalDenom
+              ).contractAddress?.toLowerCase() !==
+              token.tokenAddress?.toLowerCase()
+          ) && MapChainIdToNetwork[chainInfo.chainId]
+      )
+      .map((coin) => {
+        const str = `${
+          MapChainIdToNetwork[chainInfo.chainId]
+        }%2B${new URLSearchParams(coin.tokenAddress)
+          .toString()
+          .replace("=", "")}`;
+        return str;
+      });
+
+    if (allTokensAddress?.length === 0) return;
+
+    const tokenInfos = await API.getMultipleTokenInfo({
+      tokenAddresses: allTokensAddress.join(","),
+    });
+    const infoTokens = tokenInfos
+      .filter(
+        (item, index, self) =>
+          index ===
+            self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+          chainInfo.currencies.findIndex(
+            (item2) =>
+              new DenomHelper(
+                item2.coinMinimalDenom
+              ).contractAddress.toLowerCase() ===
+              item.contractAddress.toLowerCase()
+          ) < 0
+      )
+      .map((tokeninfo) => {
+        const infoToken = {
+          coinImageUrl: tokeninfo.imgUrl,
+          coinDenom: tokeninfo.abbr,
+          coinGeckoId: tokeninfo.coingeckoId,
+          coinDecimals: tokeninfo.decimal,
+          coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
+          contractAddress: tokeninfo.contractAddress,
+        };
+        return infoToken;
+      });
+
+    //@ts-ignore
+    chainInfo.addCurrencies(...infoTokens);
   }
 }
 
@@ -199,7 +228,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
 
   readonly type: BalanceRegistryType = "evm";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -208,14 +237,8 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    console.log(
-      "🚀 ~ ObservableQueryEvmBalanceRegistry ~ denomHelper.type:",
-      minimalDenom,
-      denomHelper.type
-    );
-    if (denomHelper.type !== "native") {
-      return;
-    }
+
+    if (denomHelper.type !== "native") return;
     const networkType = chainGetter.getChain(chainId).networkType;
     if (networkType !== "evm") return;
     const key = `evm-${chainId}/${walletAddress}`;
@@ -224,7 +247,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryEvmBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           walletAddress
@@ -232,7 +255,7 @@ export class ObservableQueryEvmBalanceRegistry implements BalanceRegistry {
       );
     }
     return new ObservableQueryBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

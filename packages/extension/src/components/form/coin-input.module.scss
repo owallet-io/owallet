@@ -14,11 +14,12 @@ input[type="number"] {
 
 .input {
   // box-shadow: $input-alternative-box-shadow !important;
-  color: $color-gray-70 !important;
+  // color: $color-gray-70 !important;
   &::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: $color-gray-70 !important;
-    opacity: 1 !important; /* Firefox */
+    // color: $color-gray-70 !important;
+    // opacity: 1 !important; /* Firefox */
+    font-size: 28px;
   }
 
   &:focus {

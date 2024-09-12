@@ -45,6 +45,7 @@ import {
   RequestSignBitcoinMsg,
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
+  GetKeySettledMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -96,6 +97,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleUnlockKeyRingMsg(service)(env, msg as UnlockKeyRingMsg);
       case GetKeyMsg:
         return handleGetKeyMsg(service)(env, msg as GetKeyMsg);
+      case GetKeySettledMsg:
+        return handleGetKeySettledMsg(service)(env, msg as GetKeySettledMsg);
       case RequestSignAminoMsg:
         return handleRequestSignAminoMsg(service)(
           env,
@@ -347,6 +350,18 @@ const handleUnlockKeyRingMsg: (
     return {
       status: await service.unlock(msg.password, msg.saving),
     };
+  };
+};
+//@ts-ignore
+const handleGetKeySettledMsg: (
+  service: KeyRingService
+) => InternalHandler<GetKeySettledMsg> = (service) => {
+  return async (env, msg) => {
+    const paramArray = msg.chainIds.map((chainId) =>
+      handleGetKeyMsg(service)(env, { chainId } as GetKeyMsg)
+    );
+    const data = await Promise.allSettled(paramArray);
+    return data;
   };
 };
 

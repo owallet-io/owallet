@@ -120,7 +120,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-  console.log(route?.params, "route?.params?.contractAddress");
+
   useEffect(() => {
     tracking(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {

@@ -5,16 +5,17 @@ import { KVStore } from "@owallet/common";
 import { computed, makeObservable } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
 import { ObservableQueryOsmosisMintParmas } from "./params";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryOsmosisEpochProvisions extends ObservableChainQuery<EpochProvisions> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly queryMintParmas: ObservableQueryOsmosisMintParmas
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/osmosis/mint/v1beta1/epoch_provisions`

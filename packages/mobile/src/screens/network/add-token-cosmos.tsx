@@ -67,10 +67,10 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     modalStore,
   } = useStore();
   const selectedChain = chainStore.current;
-  const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
+  // const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
   const [loading, setLoading] = useState(false);
-  const [coingeckoId, setCoingeckoID] = useState(null);
+  const [coingeckoId, setCoingeckoID] = useState("");
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
   const [coingeckoImg, setCoingeckoImg] = useState(null);
 
@@ -211,13 +211,14 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         const currency: CW20Currency = {
           type: selectedType,
           contractAddress: data.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
+          coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
           coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
-          coinGeckoId: coingeckoId,
+          coinGeckoId: coingeckoId || unknownToken.coinGeckoId,
         };
-        await tokensOf.addToken(currency);
+        await tokensStore.addToken(selectedChain.chainId, currency);
+        // await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }
     } catch (err) {

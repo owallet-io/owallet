@@ -445,14 +445,16 @@ export const DetailsBrowserScreen = observer((props) => {
         >
           {visible && percent < 1 && (
             <>
-              <View style={styles.containerLoading}>
-                <LottieView
-                  source={require("@src/assets/animations/loading_owallet.json")}
-                  style={{ width: 130, height: 130 }}
-                  autoPlay
-                  loop
-                />
-              </View>
+              {Platform.OS !== "android" && (
+                <View style={styles.containerLoading}>
+                  <LottieView
+                    source={require("@src/assets/animations/loading_owallet.json")}
+                    style={{ width: 130, height: 130 }}
+                    autoPlay
+                    loop
+                  />
+                </View>
+              )}
               <LoadingBar height={height} color={color} percent={percent} />
             </>
           )}
@@ -462,11 +464,7 @@ export const DetailsBrowserScreen = observer((props) => {
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
-                style={
-                  visible && percent < 1
-                    ? { flex: 0, height: 0, opacity: 0 }
-                    : {}
-                }
+                // style={visible && percent < 1 ? { flex: 0, height: 0, opacity: 0 } : {}}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoadedForMainFrameOnly={false}
                 injectedJavaScriptForMainFrameOnly={false}

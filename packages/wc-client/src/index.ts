@@ -11,6 +11,7 @@ import {
   OWalletSignOptions,
   Key,
   ChainInfoWithoutEndpoints,
+  SettledResponses,
 } from "@owallet/types";
 import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
@@ -290,7 +291,13 @@ export class OWalletConnectV1 implements OWallet {
   getEnigmaUtils(_chainId: string): SecretUtils {
     throw new Error("Not yet implemented");
   }
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    const paramArray = chainIds.map(async (chainId) => {
+      return await this.getKey(chainId);
+    });
 
+    return await Promise.allSettled(paramArray);
+  }
   async getKey(chainId: string): Promise<Key> {
     const lastSeenKey = await this.getLastSeenKey(chainId);
     if (lastSeenKey) {

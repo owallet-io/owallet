@@ -270,6 +270,9 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get rpc(): string {
     return this.raw.rpc;
   }
+  get evmRpc(): string {
+    return this.raw.evmRpc;
+  }
 
   get rpcConfig(): AxiosRequestConfig | undefined {
     return this.raw.rpcConfig;

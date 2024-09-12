@@ -22,6 +22,7 @@
     "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/tendermint-rpc": "^0.29.4",
     "@hanchon/ethermint-address-converter": "^1.1.0",
+    "@owallet/simple-fetch":"*",
     "@owallet/background": "^0.9.16",
     "@owallet/common": "^0.9.10",
     "@owallet/cosmos": "^0.9.16",

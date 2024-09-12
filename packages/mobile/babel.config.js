@@ -4,8 +4,8 @@ module.exports = {
     [
       "module:react-native-dotenv",
       {
-        moduleName: "react-native-dotenv"
-      }
+        moduleName: "react-native-dotenv",
+      },
     ],
     [
       "module-resolver",
@@ -20,14 +20,15 @@ module.exports = {
           "@common": "./src/common",
           "@stores": "./src/stores",
           "@utils": "./src/utils",
-          "@hooks": "./src/hooks"
-        }
-      }
+          "@hooks": "./src/hooks",
+        },
+      },
     ],
     ["react-native-reanimated/plugin"],
     ["@babel/plugin-transform-flow-strip-types"],
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     ["@babel/plugin-proposal-class-properties", { loose: true }],
-    ["@babel/plugin-proposal-export-default-from"]
-  ]
+    ["@babel/plugin-proposal-export-default-from"],
+    ["@babel/plugin-transform-export-namespace-from"],
+  ],
 };

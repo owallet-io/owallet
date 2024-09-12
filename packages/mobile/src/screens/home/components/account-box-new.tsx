@@ -335,6 +335,7 @@ export const AccountBoxAll: FunctionComponent<{
         let tmpStaked = 0;
         for (const chainInfo of chainStore.chainInfosInUI) {
           const chainId = chainInfo.chainId;
+          if (chainInfo.networkType !== "cosmos") continue;
           const accountAddress = accountStore.getAccount(chainId).bech32Address;
           const queries = queriesStore.get(chainId);
           const queryDelegated =
