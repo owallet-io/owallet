@@ -180,7 +180,6 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: 16 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
       <View>

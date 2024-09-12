@@ -530,7 +530,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                           weight="600"
                           size={14}
                         >
-                          ORAI
+                          {chainStore.current?.stakeCurrency?.coinDenom ||
+                            "Unknown"}
                         </OWText>
                       </View>
                     </View>

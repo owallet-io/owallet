@@ -81,12 +81,10 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{}}
       backgroundColor={colors["neutral-surface-bg"]}
     >
       <OWCard
         style={{
-          marginTop: spacing["16"],
           marginBottom: spacing["12"],
         }}
       >
