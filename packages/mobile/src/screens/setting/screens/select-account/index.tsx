@@ -21,8 +21,11 @@ import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { useNavigation } from "@react-navigation/native";
 import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
-import { navigate } from "@src/router/root";
+import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { reset } from "react-native-svg/lib/typescript/lib/Matrix2D";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
     ? keyStore.bip44HDPath
@@ -102,7 +105,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     if (index >= 0) {
       await keyRingStore.changeKeyRing(index);
       await waitAccountInit(chainStore, accountStore, keyRingStore);
-      navigate(SCREENS.Home);
+      resetTo(SCREENS.STACK.MainTab);
     }
   };
   const handleOnKeyStore = useCallback(async (keyStore) => {
@@ -118,7 +121,8 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const renderKeyStoreItem = (keyStore, i) => {
     return (
-      <View
+      <TouchableOpacity
+        onPress={() => handleOnKeyStore(keyStore)}
         style={{
           flexDirection: "row",
           justifyContent: "space-between",
@@ -150,9 +154,8 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
           }
           id={i.toString()}
           selected={keyStore.selected}
-          onPress={() => handleOnKeyStore(keyStore)}
         />
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -174,18 +177,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
             </OWText>
             {keyStores.map((keyStore, i) => {
               return renderKeyStoreItem(keyStore, i);
-              // return (
-              // <KeyStoreItem
-              //   key={i.toString()}
-              //   colors={colors}
-              //   label={keyStore.meta?.name || "OWallet Account"}
-              //   paragraph={getKeyStoreParagraph(keyStore)}
-              //   topBorder={i === 0}
-              //   bottomBorder={keyStores.length - 1 !== i}
-              //   active={keyStore.selected}
-              //   onPress={() => handleOnKeyStore(keyStore)}
-              // />
-              //);
             })}
           </React.Fragment>
         ) : null}
@@ -216,7 +207,6 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      {/*<PageHeader title="Manage wallet" colors={colors} />*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

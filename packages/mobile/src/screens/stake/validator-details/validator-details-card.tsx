@@ -3,7 +3,7 @@ import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -31,6 +31,8 @@ import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useNavigation } from "@react-navigation/native";
+import { OWHeaderTitle } from "@components/header";
 
 const renderIconValidator = (
   label: string,
@@ -111,6 +113,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
+  const navigation = useNavigation();
+
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
@@ -211,6 +215,41 @@ export const ValidatorDetailsCard: FunctionComponent<{
       }
     }
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Validator Details"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+      headerRight: () => {
+        if (!isStakedValidator) return;
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              navigate(SCREENS.Undelegate, {
+                validatorAddress,
+              });
+            }}
+            style={{
+              borderRadius: 999,
+              backgroundColor: colors["error-surface-default"],
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              marginRight: 16,
+            }}
+          >
+            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+              Unstake
+            </OWText>
+          </TouchableOpacity>
+        );
+      },
+    });
+  }, [isStakedValidator, chainStore.current.chainName]);
+
   return (
     <PageWithBottom
       bottomGroup={

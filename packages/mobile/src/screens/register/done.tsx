@@ -208,6 +208,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                   );
                 }
                 await waitAccountInit(chainStore, accountStore, keyRingStore);
+
                 resetTo(SCREENS.STACK.MainTab);
               } catch (e) {
                 console.log(e);

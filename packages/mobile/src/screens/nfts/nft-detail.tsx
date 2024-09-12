@@ -26,6 +26,8 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 
 import { useNft } from "./hooks/useNft";
 import { CoinPretty } from "@owallet/unit";
+import { OWHeaderTitle } from "@components/header";
+import { useNavigation } from "@react-navigation/native";
 export const NftDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, appInitStore } = useStore();
   const { item } = props.route?.params;
@@ -46,10 +48,17 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
     nft?.tokenInfo || unknownToken,
     nft?.floorPrice || "0"
   );
+  const navigation = useNavigation();
   const chainInfo = chainStore.getChain(nft?.network || ChainIdEnum.Oraichain);
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle title={"NFT"} subTitle={chainInfo?.chainName} />
+      ),
+    });
+  }, [chainInfo]);
   return (
     <PageWithView>
-      {/*<PageHeader title="NFT" subtitle={chainInfo?.chainName || "Oraichain"} />*/}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <ProgressiveFastImage

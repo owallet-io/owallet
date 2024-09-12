@@ -3,6 +3,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { StackActions } from "@react-navigation/routers";
 import { SCREENS } from "@src/common/constants";
+import { HeaderOptions } from "@react-navigation/elements";
+import { StackNavigationOptions } from "@react-navigation/stack";
 
 interface Params {
   params?: any;
@@ -12,6 +14,12 @@ export const navigationRef: any = React.createRef();
 
 export const NavigationAction = navigationRef.current;
 
+export const setOptions = (options: StackNavigationOptions) => {
+  // Ensure `NavigationAction` exists before calling `setOptions`
+  if (NavigationAction) {
+    NavigationAction.setOptions(options);
+  }
+};
 export function navigate(name, params?: any) {
   if (
     !Object.values(SCREENS).includes(name) &&

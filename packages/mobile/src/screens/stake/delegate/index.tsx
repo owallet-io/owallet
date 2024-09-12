@@ -1,7 +1,7 @@
 import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -38,6 +38,7 @@ import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -78,6 +79,17 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Stake"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;

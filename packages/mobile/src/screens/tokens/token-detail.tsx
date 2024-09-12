@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { spacing } from "../../themes";
 import { _keyExtract } from "../../utils/helper";
-import { navigate } from "../../router/root";
+import { navigate, setOptions } from "../../router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { StyleSheet, View, InteractionManager, Clipboard } from "react-native";
 import OWText from "@src/components/text/ow-text";
@@ -37,6 +37,9 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import MoreModal from "../home/components/more-modal";
+import { HeaderOptions } from "@react-navigation/elements";
+import { StackNavigationOptions } from "@react-navigation/stack";
+import { OWHeaderTitle } from "@components/header";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
@@ -157,6 +160,11 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   };
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => <OWHeaderTitle chainData={item.chainInfo} />,
+    });
+  }, [item.chainInfo]);
   return (
     <>
       <MoreModal
@@ -167,22 +175,13 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
           enableOverDrag: false,
         }}
       />
-      <View
-        style={{
-          // zIndex: 1000,
-          // paddingTop: useSafeAreaInsets().top,
-          backgroundColor: colors["neutral-surface-bg"],
-        }}
-      >
-        {/*<PageHeader*/}
-        {/*  title={removeDataInParentheses(item.token.currency.coinDenom)}*/}
-        {/*  subtitle={*/}
-        {/*    item.chainInfo.chainName + `${item?.type ? ` (${item?.type})` : ""}`*/}
-        {/*  }*/}
-        {/*/>*/}
-      </View>
 
-      <PageWithScrollView style={{}} showsVerticalScrollIndicator={false}>
+      <PageWithScrollView
+        style={{
+          marginBottom: 60,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         <OWBox style={styles.containerOWBox}>
           <View style={styles.containerInfoAccount}>
             <OWButton

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { BondStatus } from "@owallet/stores";
@@ -31,7 +31,7 @@ import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
-import { OWSubTitleHeader } from "@src/components/header";
+import { OWHeaderTitle, OWSubTitleHeader } from "@src/components/header";
 import {
   capitalizedText,
   computeTotalVotingPower,
@@ -299,6 +299,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     chainStore.current.chainId === ChainIdEnum.Oraichain
       ? formatPercentage(currentVotingPower / totalVotingPower, 2)
       : 0;
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Redelegate"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={

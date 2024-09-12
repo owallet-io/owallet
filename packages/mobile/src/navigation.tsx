@@ -82,7 +82,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const handleScreenOptions = ({ route, navigation }) => {
-    console.log(route?.name, SCREENS_OPTIONS[route?.name]?.title, "test title");
     const headerOptions = useHeaderOptions(
       { title: SCREENS_OPTIONS[route?.name]?.title },
       navigation

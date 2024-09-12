@@ -22,11 +22,11 @@ export const MainNavigation: FC = observer(() => {
       initialRouteName={SCREENS.Home}
     >
       <Stack.Screen
-        options={() => {
-          return {
-            headerLeft: null,
-          };
-        }}
+        // options={() => {
+        //   return {
+        //     headerLeft: null,
+        //   };
+        // }}
         name={SCREENS.Home}
         component={HomeScreen}
       />

@@ -21,9 +21,9 @@ export const InvestNavigation: FC = observer(() => {
       initialRouteName={SCREENS.Invest}
     >
       <Stack.Screen
-        options={{
-          headerLeft: null,
-        }}
+        // options={{
+        //   headerLeft: null,
+        // }}
         name={SCREENS.Invest}
         component={StakingDashboardScreen}
       />

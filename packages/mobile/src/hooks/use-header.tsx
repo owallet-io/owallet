@@ -1,7 +1,9 @@
 import React from "react";
 import { StyleSheet } from "react-native";
 import OWHeaderTitle from "@src/components/header/ow-header-title";
-import OWHeaderRight from "@src/components/header/ow-header-right";
+import OWHeaderRight, {
+  OWHeaderLeft,
+} from "@src/components/header/ow-header-right";
 import { useTheme } from "@src/themes/theme-provider";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import {
@@ -57,13 +59,16 @@ const useHeaderOptions = (
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: "center",
+
     headerRight: () => {
       if (data?.title == HEADER_KEY.showNetworkHeader) {
-        return <OWHeaderRight onAddWallet={onAddWallet} onScan={onScan} />;
+        return <OWHeaderRight onScan={onScan} />;
       }
     },
     headerLeft: () => {
-      if (navigation.canGoBack()) {
+      if (data?.title == HEADER_KEY.showNetworkHeader) {
+        return <OWHeaderLeft onAddWallet={onAddWallet} />;
+      } else if (navigation.canGoBack()) {
         return (
           <OWButtonIcon
             colorIcon={colors["neutral-icon-on-light"]}
@@ -79,7 +84,6 @@ const useHeaderOptions = (
             sizeIcon={16}
           />
         );
-      } else {
       }
     },
     ...TransitionPresets.SlideFromRightIOS,

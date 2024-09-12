@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   StatusBar,
 } from "react-native";
-import { metrics } from "@src/themes";
+import { metrics, spacing } from "@src/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { isAndroid } from "@src/common/constants";
@@ -60,6 +60,7 @@ const useStyle = (safeAreaInsets, colors) => {
       // paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
       height: "100%",
+      paddingTop: spacing["16"],
     },
     bottom: {
       borderTopWidth: 1,

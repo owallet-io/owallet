@@ -19,7 +19,7 @@ import { useStore } from "@src/stores";
 import { Cw721BaseQueryClient } from "@oraichain/common-contracts-sdk";
 import OWFlatList from "@src/components/page/ow-flat-list";
 
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { ChainInfo } from "@owallet/types";
 import { NftItem } from "./components/nft-item";
 import { API } from "@src/common/api";
@@ -42,6 +42,7 @@ import {
 import { useQuery } from "@apollo/client";
 import { OwnedTokens } from "@src/graphql/queries";
 import { useClient } from "@owallet/hooks";
+import { OWHeaderTitle } from "@components/header";
 
 export const NftsScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -62,6 +63,14 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const ecosystem = route.params?.ecosystem;
   const contractAddress = route.params?.contractAddress;
   const styles = styling(colors);
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle title={"MY NFTS"} subTitle={chainInfo?.chainName} />
+      ),
+    });
+  }, [chainInfo]);
   const renderScreen = () => {
     if (chainInfo.chainId === ChainIdEnum.Oraichain) {
       if (ecosystem === ECOSYSTEM_NFT_CHAIN.AIRIGHT) {
@@ -438,7 +447,7 @@ const styling = (colors) =>
     containerSkeleton: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 16,
+      gap: 8,
       justifyContent: "space-between",
     },
   });

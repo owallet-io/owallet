@@ -113,9 +113,6 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   };
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>

@@ -124,17 +124,7 @@ export const BookmarksScreen = observer(() => {
   };
   const { top } = useSafeAreaInsets();
   return (
-    <PageWithView
-      style={{
-        // backgroundColor: colors["neutral-surface-action"],
-        paddingTop: 16,
-      }}
-    >
-      {/*<PageHeader*/}
-      {/*  title="BOOKMARKS"*/}
-      {/*  // subtitle={chainStore.current.chainName}*/}
-      {/*  // colors={colors}*/}
-      {/*/>*/}
+    <PageWithView>
       <View
         style={{
           paddingHorizontal: 16,

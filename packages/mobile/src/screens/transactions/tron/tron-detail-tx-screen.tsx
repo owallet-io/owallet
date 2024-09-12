@@ -132,9 +132,6 @@ export const TronDetailTx: FunctionComponent = observer((props) => {
     amountStr !== "0" && item.transactionType === "incoming" ? "+" : "-" ?? "";
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>

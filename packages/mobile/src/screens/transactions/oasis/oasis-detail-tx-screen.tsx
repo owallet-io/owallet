@@ -118,9 +118,6 @@ export const OasisDetailTx: FunctionComponent = observer((props) => {
   const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>

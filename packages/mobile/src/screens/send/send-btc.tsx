@@ -27,7 +27,7 @@ import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { capitalizedText, shortenAddress, showToast } from "@src/utils/helper";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import {
   EthereumEndpoint,
   getKeyDerivationFromAddressType,
@@ -50,6 +50,7 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
 import { useBIP44Option } from "@src/screens/register/bip44";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 const dataTypeBtc = [
   { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
@@ -342,6 +343,17 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -364,7 +376,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         />
       }
     >
-      {/*<PageHeader title="Send" subtitle={chainStore.current.chainName} />*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

@@ -25,7 +25,7 @@ import {
   TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
@@ -40,6 +40,7 @@ import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -205,6 +206,17 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       return getFeeErrorText(error);
     }
   })();
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -278,11 +290,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      {/*<PageHeader*/}
-      {/*  title="Send"*/}
-      {/*  subtitle={chainStore.current.chainName}*/}
-      {/*  colors={colors}*/}
-      {/*/>*/}
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

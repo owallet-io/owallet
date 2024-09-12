@@ -1,6 +1,6 @@
 import { ValidatorThumbnails } from "@owallet/common";
 import { BondStatus } from "@owallet/stores";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
@@ -8,7 +8,7 @@ import { PageWithView } from "@src/components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 
@@ -17,6 +17,7 @@ import { spacing, typography } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -75,6 +76,17 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       validatorAddress,
     ]);
     tracking(`Delegate Detail Screen`);
+    const navigation = useNavigation();
+    useEffect(() => {
+      navigation.setOptions({
+        headerTitle: () => (
+          <OWHeaderTitle
+            title={"delegate"}
+            subTitle={chainStore.current?.chainName}
+          />
+        ),
+      });
+    }, [chainStore.current?.chainName]);
     return (
       <PageWithView>
         <OWSubTitleHeader title="Staking detail" />

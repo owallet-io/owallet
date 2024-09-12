@@ -22,7 +22,7 @@ import {
   CurrencySelector,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 
 import { Buffer } from "buffer";
@@ -39,6 +39,7 @@ import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -317,6 +318,17 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
     );
   };
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -343,11 +355,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      {/*<PageHeader*/}
-      {/*  title="Send"*/}
-      {/*  subtitle={chainStore.current.chainName}*/}
-      {/*  colors={colors}*/}
-      {/*/>*/}
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
