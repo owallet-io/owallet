@@ -20,9 +20,7 @@ import {
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
-var mixpanel = process.env.REACT_APP_MIX_PANEL_TOKEN
-  ? Mixpanel.init(process.env.REACT_APP_MIX_PANEL_TOKEN)
-  : null;
+var mixpanel = "acbafd21a85654933cbb0332c5a6f4f8";
 export const HomePage = observer(() => {
   const {
     chainStore,

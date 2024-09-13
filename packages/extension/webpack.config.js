@@ -172,9 +172,9 @@ const extensionConfig = {
     new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new NodePolyfillPlugin(),
-    new webpack.DefinePlugin({
-      "process.env": JSON.stringify(process.env),
-    }),
+    // new webpack.DefinePlugin({
+    //   "process.env": JSON.stringify(process.env),
+    // }),
     new CopyWebpackPlugin(
       [
         {
