@@ -133,11 +133,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.Home]: {
     title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
   },
   [SCREENS.Invest]: {
     title: HEADER_KEY.showNetworkHeader,
-    showTabBar: true,
   },
   [SCREENS.TransactionDetail]: {
     title: "Transaction Details",
@@ -169,11 +167,14 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.Tokens]: {
     title: HEADER_KEY.showNetworkHeader,
   },
+  [SCREENS.TokenDetails]: {
+    title: "Token",
+  },
   [SCREENS.Nfts]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "My nfts",
   },
   [SCREENS.NftsDetail]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "NFT",
   },
   [SCREENS.UniversalSwapScreen]: {
     // title: HEADER_KEY.notShowHeader,
@@ -219,30 +220,19 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.QRScreen]: {
-    title: HEADER_KEY.notShowHeader,
-  },
-  [SCREENS.Governance]: {
-    title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.GovernanceDetails]: {
-    title: HEADER_KEY.showNetworkHeader,
-  },
-  [SCREENS.Dashboard]: {
-    title: HEADER_KEY.showNetworkHeader,
+    title: "Receive",
   },
   [SCREENS.NewSend]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Send",
   },
   [SCREENS.SendTron]: {
-    // title: "Send",
-    title: HEADER_KEY.notShowHeader,
+    title: "Send",
   },
   [SCREENS.PincodeScreen]: {
     title: HEADER_KEY.notShowHeader,
   },
   [SCREENS.SendOasis]: {
-    // title: "Send",
-    title: HEADER_KEY.notShowHeader,
+    title: "Send",
   },
   [SCREENS.Notifications]: {
     title: HEADER_KEY.showNetworkHeader,
@@ -252,29 +242,28 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.NetworkToken]: {
     // title: HEADER_KEY.showNetworkHeader,
-    title: HEADER_KEY.notShowHeader,
+    title: "Add Token",
   },
   [SCREENS.ValidatorDetails]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Validator details",
   },
   [SCREENS.ValidatorList]: {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.TxPendingResult]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Transaction details",
   },
   [SCREENS.TxSuccessResult]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Transaction details",
   },
   [SCREENS.TxFailedResult]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Transaction details",
   },
   [SCREENS.Setting]: {
-    title: HEADER_KEY.notShowHeader,
-    showTabBar: true,
+    title: "Settings",
   },
   [SCREENS.SettingSelectAccount]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Manage wallet",
   },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",
@@ -283,27 +272,25 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Transaction details",
   },
   [SCREENS.BuyFiat]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Buy",
   },
   [SCREENS.SettingVersion]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "About",
   },
   [SCREENS.SendBtc]: {
-    // title: "Send",
-    title: HEADER_KEY.notShowHeader,
+    title: "Send",
   },
   [SCREENS.SendEvm]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Send",
   },
   [SCREENS.AddressBook]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Address book",
   },
   [SCREENS.AddAddressBook]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Add new contact",
   },
   [SCREENS.Browser]: {
     title: "Browser",
-    showTabBar: true,
   },
   [SCREENS.BookMarks]: {
     title: "Bookmarks",
@@ -315,19 +302,16 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "",
   },
   [SCREENS.Delegate]: {
-    // title: HEADER_KEY.showNetworkHeader,
-    title: HEADER_KEY.notShowHeader,
+    title: "Stake",
   },
   [SCREENS.DelegateDetail]: {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.Redelegate]: {
-    // title: HEADER_KEY.showNetworkHeader,
-    title: HEADER_KEY.notShowHeader,
+    title: "Redelegate",
   },
   [SCREENS.Undelegate]: {
-    // title: HEADER_KEY.showNetworkHeader,
-    title: HEADER_KEY.notShowHeader,
+    title: "Unstake",
   },
   [SCREENS.STACK.Unlock]: {
     title: "",
@@ -381,9 +365,9 @@ export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
 export const EVENTS = {
   hiddenTabBar: "hiddenTabBar",
 };
-export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
+// export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
 export const urlAiRight = "https://developers.airight.io";
-// export const urlTxHistory = "http://10.10.20.115:8000/";
+// export const urlTxHistory = "http://10.10.20.113:8000/";
 // export const urlTxHistory = "https://tx-history-backend-staging.oraidex.io/";
 export const listSkeleton = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 export const getTimeMilliSeconds = (timeStamp) => {

@@ -8,7 +8,6 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import OWCard from "@src/components/card/ow-card";
 import { OWEmpty } from "@src/components/empty";
-import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -227,10 +226,9 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
+      contentContainerStyle={{ marginTop: 16 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Address book" />
       <View
         style={{
           flexDirection: "row",

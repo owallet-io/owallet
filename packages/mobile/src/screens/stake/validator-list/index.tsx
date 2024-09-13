@@ -270,10 +270,7 @@ const ValidatorItem: FunctionComponent<{
           marginRight: spacing["8"],
         }}
         size={38}
-        url={
-          ValidatorThumbnails[validator.operator_address] ??
-          bondedValidators.getValidatorThumbnail(validator.operator_address)
-        }
+        url={bondedValidators.getValidatorThumbnail(validator.operator_address)}
       />
 
       <View

@@ -28,7 +28,7 @@ export const ModalCurrency: FC<{
   const switchFiat = async (currency) => {
     language.setFiatCurrency(currency);
     priceStore.setDefaultVsCurrency(currency);
-    await priceStore.saveDefaultVsCurrency();
+    // await priceStore.saveDefaultVsCurrency();
     onRequestClose();
     return;
   };

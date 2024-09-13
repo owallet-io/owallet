@@ -9,16 +9,17 @@ import {
 } from "../balances";
 import { Cw20ContractBalance } from "./types";
 import { ObservableCosmwasmContractChainQuery } from "./contract-query";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryCw20Balance extends ObservableCosmwasmContractChainQuery<Cw20ContractBalance> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
     protected readonly bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, contractAddress, {
+    super(sharedContext, chainId, chainGetter, contractAddress, {
       balance: { address: bech32Address },
     });
   }
@@ -32,14 +33,14 @@ export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner
   protected readonly queryCw20Balance: ObservableQueryCw20Balance;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly bech32Address: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url at initial.
@@ -50,7 +51,7 @@ export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner
     makeObservable(this);
 
     this.queryCw20Balance = new ObservableQueryCw20Balance(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       denomHelper.contractAddress,
@@ -99,7 +100,7 @@ export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner
 export class ObservableQueryCw20BalanceRegistry implements BalanceRegistry {
   readonly type: BalanceRegistryType = "cw20";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -110,7 +111,7 @@ export class ObservableQueryCw20BalanceRegistry implements BalanceRegistry {
     const denomHelper = new DenomHelper(minimalDenom);
     if (denomHelper.type === "cw20") {
       return new ObservableQueryCw20BalanceInner(
-        this.kvStore,
+        this.sharedContext,
         chainId,
         chainGetter,
         denomHelper,

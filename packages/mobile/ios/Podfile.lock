@@ -23,11 +23,11 @@ PODS:
   - BVLinearGradient (2.7.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
-  - CodePush (8.3.0):
+  - CodePush (8.3.1):
     - Base64 (~> 1.1)
     - JWT (~> 3.0.0-beta.12)
     - React-Core
-    - SSZipArchive (~> 2.5.5)
+    - SSZipArchive (~> 2.2.2)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.72.15)
   - FBReactNativeSpec (0.72.15):
@@ -595,14 +595,14 @@ PODS:
     - React-Core
   - react-native-netinfo (9.4.1):
     - React-Core
-  - react-native-pager-view (6.3.3):
+  - react-native-pager-view (6.3.4):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
   - react-native-safe-area-context (4.7.3):
     - React-Core
-  - react-native-skia (1.3.8):
+  - react-native-skia (1.3.10):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
@@ -749,7 +749,7 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.17.1):
+  - RNGestureHandler (2.18.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNInAppBrowser (3.7.0):
@@ -760,9 +760,20 @@ PODS:
     - React-Core
   - RNRate (1.2.12):
     - React-Core
-  - RNReactNativeHapticFeedback (2.2.0):
+  - RNReactNativeHapticFeedback (2.3.1):
+    - RCT-Folly (= 2021.07.22.00)
     - React-Core
-  - RNReanimated (3.14.0):
+  - RNReanimated (3.15.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+    - RNReanimated/reanimated (= 3.15.0)
+    - RNReanimated/worklets (= 3.15.0)
+  - RNReanimated/reanimated (3.15.0):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
+    - ReactCommon/turbomodule/core
+  - RNReanimated/worklets (3.15.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
     - ReactCommon/turbomodule/core
@@ -771,11 +782,11 @@ PODS:
     - React-Core
   - RNScrypt (1.2.1):
     - React
-  - RNSentry (5.26.0):
+  - RNSentry (5.28.0):
     - hermes-engine
     - React-Core
     - React-hermes
-    - Sentry/HybridSDK (= 8.31.1)
+    - Sentry/HybridSDK (= 8.33.0)
   - RNSVG (12.5.1):
     - React-Core
   - RNVectorIcons (9.2.0):
@@ -786,9 +797,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry/HybridSDK (8.31.1)
+  - Sentry/HybridSDK (8.33.0)
   - SocketRocket (0.6.1)
-  - SSZipArchive (2.5.5)
+  - SSZipArchive (2.2.3)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -1118,7 +1129,7 @@ SPEC CHECKSUMS:
   BranchSDK: 28bec34fb99c53ab8e86b7bf69cc55a4505fe0b3
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  CodePush: 922cc9532f9c184a795fc1474524443737ee74e9
+  CodePush: d892f13c5012e9e2cb36640f4929654b7be21fe5
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: 25cbffbaec517695d376ab4bc428948cd0f08088
   FBReactNativeSpec: e03b22fbf7017a6f76641ea4472e73c915dcdda7
@@ -1179,10 +1190,10 @@ SPEC CHECKSUMS:
   react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
-  react-native-pager-view: ea67d9ca8e0e83118b46996ddec3c818ee032f26
+  react-native-pager-view: 218f86136e5f55023a9424ad19356ed2ffe49d65
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 238cd8b619e05cb904ccad97ef42e84d1b5ae6ec
-  react-native-skia: 5538c018bdf7e377908e7473ac6c29f44fd8e62f
+  react-native-skia: 8794e1ed1479ea1df60fb94e5bd4fdf0c109b65c
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-webview: f1745c33e5278e7c58ff7b8aff48dbb801395269
   React-NativeModulesApple: ee36a33f5ad8d80487c43e6b4370ea2eaaa81750
@@ -1210,23 +1221,23 @@ SPEC CHECKSUMS:
   RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
   RNFBCrashlytics: a4a66785997e629313ec8005a0811765738239fd
   RNFBMessaging: b82ef70d252500d3ad104284c0c7f8e1cd22b51e
-  RNGestureHandler: 53f1b8fcdf62b349da820ef4616abeed04cde85c
+  RNGestureHandler: 9e0d0a46b7af6d21fbe3343912502afa8baf755e
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
   RNRate: ef3bcff84f39bb1d1e41c5593d3eea4aab2bd73a
-  RNReactNativeHapticFeedback: ec56a5f81c3941206fd85625fa669ffc7b4545f9
-  RNReanimated: e71a1d6bb6427f45ea57c5e23f99030129b6db62
+  RNReactNativeHapticFeedback: e115bb12d05ced2aba090123e2690978507811ca
+  RNReanimated: c2027c397233801d4aceb7375e000ac87ec2e67d
   RNScreens: bea7b9767050d69e4b9da14639cdd5c8f5a37881
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
-  RNSentry: 85fe1023bf60ead12d059d9c845de19de0ed6f0d
+  RNSentry: a3c29b5992ee3cac1980db7e57c050a17f1ff97b
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
-  Sentry: 9c1188876ea1291d1a9db4b38c3f17ebd8e6985e
+  Sentry: 8560050221424aef0bebc8e31eedf00af80f90a6
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  SSZipArchive: c69881e8ac5521f0e622291387add5f60f30f3c4
+  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Yoga: 6f5ab94cd8b1ecd04b6e973d0bc583ede2a598cc
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 

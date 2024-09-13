@@ -3,7 +3,7 @@ import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useStore } from "../../../stores";
+import { useStore } from "@src/stores";
 import { ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
@@ -23,7 +23,7 @@ import {
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 
 import { metrics, spacing } from "../../../themes";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
@@ -31,6 +31,8 @@ import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { useNavigation } from "@react-navigation/native";
+import { OWHeaderTitle } from "@components/header";
 
 const renderIconValidator = (
   label: string,
@@ -111,6 +113,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
+  const navigation = useNavigation();
+
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
@@ -122,7 +126,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress,
   ]);
-
+  console.log(validatorAddress, "validatorAddress");
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
@@ -211,6 +215,41 @@ export const ValidatorDetailsCard: FunctionComponent<{
       }
     }
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Validator Details"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+      headerRight: () => {
+        if (!isStakedValidator) return;
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              navigate(SCREENS.Undelegate, {
+                validatorAddress,
+              });
+            }}
+            style={{
+              borderRadius: 999,
+              backgroundColor: colors["error-surface-default"],
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              marginRight: 16,
+            }}
+          >
+            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+              Unstake
+            </OWText>
+          </TouchableOpacity>
+        );
+      },
+    });
+  }, [isStakedValidator, chainStore.current.chainName]);
+
   return (
     <PageWithBottom
       bottomGroup={
@@ -273,32 +312,32 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader
-          title="Validator details"
-          colors={colors}
-          onPress={async () => {}}
-          right={
-            isStakedValidator ? (
-              <TouchableOpacity
-                onPress={() => {
-                  navigate(SCREENS.Undelegate, {
-                    validatorAddress,
-                  });
-                }}
-                style={{
-                  borderRadius: 999,
-                  backgroundColor: colors["error-surface-default"],
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                }}
-              >
-                <OWText color={colors["neutral-icon-on-dark"]} weight="600">
-                  Unstake
-                </OWText>
-              </TouchableOpacity>
-            ) : null
-          }
-        />
+        {/*<PageHeader*/}
+        {/*  title="Validator details"*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*  right={*/}
+        {/*    isStakedValidator ? (*/}
+        {/*      <TouchableOpacity*/}
+        {/*        onPress={() => {*/}
+        {/*          navigate(SCREENS.Undelegate, {*/}
+        {/*            validatorAddress,*/}
+        {/*          });*/}
+        {/*        }}*/}
+        {/*        style={{*/}
+        {/*          borderRadius: 999,*/}
+        {/*          backgroundColor: colors["error-surface-default"],*/}
+        {/*          paddingHorizontal: 12,*/}
+        {/*          paddingVertical: 8,*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        <OWText color={colors["neutral-icon-on-dark"]} weight="600">*/}
+        {/*          Unstake*/}
+        {/*        </OWText>*/}
+        {/*      </TouchableOpacity>*/}
+        {/*    ) : null*/}
+        {/*  }*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>
@@ -318,16 +357,17 @@ export const ValidatorDetailsCard: FunctionComponent<{
                   {validator?.description.moniker}
                 </OWText>
                 <View style={{ flexDirection: "row", marginTop: 8 }}>
-                  <View style={styles.topSubInfo}>
-                    <OWText
-                      style={{
-                        color: colors["neutral-text-title"],
-                      }}
-                    >
-                      APR:{" "}
-                      {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-                    </OWText>
-                  </View>
+                  {apr && apr > 0 ? (
+                    <View style={styles.topSubInfo}>
+                      <OWText
+                        style={{
+                          color: colors["neutral-text-title"],
+                        }}
+                      >
+                        APR: {apr.toFixed(2).toString() + "%"}
+                      </OWText>
+                    </View>
+                  ) : null}
                   <View style={styles.topSubInfo}>
                     <ValidatorBlockIcon
                       color={colors["neutral-text-title"]}

@@ -19,7 +19,6 @@ import { SettingRemoveAccountItem } from "./items/remove-account";
 import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
-import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -181,10 +180,8 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Settings" />
       <View>
         <OWCard style={{ marginBottom: 16 }} type="normal">
           <BasicSettingItem
@@ -242,7 +239,11 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
                 >
                   {priceStore.defaultVsCurrency.toUpperCase()}
                 </OWText>
-                <OWIcon name="chevron_right" size={16} />
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
               </View>
             }
           />
@@ -256,24 +257,20 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         {renderRating()}
-        <BasicSettingItem
-          left={
-            <View style={{ padding: 12 }}>
-              <Image
-                style={{ width: 24, height: 24 }}
-                source={require("../../assets/image/logo_owallet.png")}
-                fadeDuration={0}
-                resizeMode="contain"
-              />
-            </View>
-          }
-          containerStyle={{ marginHorizontal: 16 }}
-          icon="owallet"
-          paragraph="About OWallet"
-          onPress={() => {
-            navigate(SCREENS.SettingVersion, {});
-          }}
-        />
+        <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
+          <BasicSettingItem
+            typeLeftIcon={"images"}
+            source={require("../../assets/image/logo_owallet.png")}
+            containerStyle={{
+              marginVertical: -16,
+            }}
+            icon="owallet"
+            paragraph="About OWallet"
+            onPress={() => {
+              navigate(SCREENS.SettingVersion, {});
+            }}
+          />
+        </OWCard>
       </View>
     </PageWithScrollViewInBottomTabView>
   );

@@ -51,10 +51,11 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly hugeQueriesStore: HugeQueriesStore;
+
   public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
-  public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
+  public readonly tokensStore: TokensStore;
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
@@ -139,6 +140,9 @@ export class RootStore {
 
       new AsyncKVStore("store_queries_fix2"),
       this.chainStore,
+      {
+        responseDebounceMs: 75,
+      },
       async () => {
         return new OWallet(
           `${name}-${version}`,
@@ -246,6 +250,16 @@ export class RootStore {
       "usd"
     );
 
+    // this.tokensStore = new TokensStore(
+    //   {
+    //     addEventListener: (type: string, fn: () => void) => {
+    //       eventEmitter.addListener(type, fn);
+    //     },
+    //   },
+    //   this.chainStore,
+    //   new RNMessageRequesterInternal(),
+    //   this.interactionStore
+    // );
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -254,9 +268,10 @@ export class RootStore {
       },
       this.chainStore,
       new RNMessageRequesterInternal(),
-      this.interactionStore
+      this.interactionStore,
+      this.accountStore,
+      this.keyRingStore
     );
-
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
       new AsyncKVStore("store_test_ibc_currency_registrar"),
       24 * 3600 * 1000,
@@ -316,6 +331,7 @@ export class RootStore {
       this.priceStore,
       this.keyRingStore
     );
+
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>

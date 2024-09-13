@@ -313,13 +313,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={CameraScreen}
             />
 
-            <Stack.Screen
-              options={{
-                headerShown: false,
-              }}
-              name={SCREENS.QRScreen}
-              component={AddressQRScreen}
-            />
+            <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />
 
             <Stack.Screen
               name={SCREENS.NetworkSelect}
@@ -331,18 +325,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
 
             <Stack.Screen
-              options={{
-                gestureEnabled: false,
-                headerShown: false,
-              }}
               name={SCREENS.TxPendingResult}
               component={TxPendingResultScreen}
             />
             <Stack.Screen
-              options={{
-                gestureEnabled: false,
-                headerShown: false,
-              }}
               name={SCREENS.TxSuccessResult}
               component={TxSuccessResultScreen}
             />

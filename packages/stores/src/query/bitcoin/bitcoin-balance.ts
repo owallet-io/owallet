@@ -21,6 +21,7 @@ import {
   ObservableQueryBalanceInner,
 } from "../balances";
 import { AddressBtcType, Currency } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected bech32Address: string;
@@ -28,12 +29,17 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/address/${bech32Address}/utxo`);
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      `/address/${bech32Address}/utxo`
+    );
 
     this.bech32Address = bech32Address;
 
@@ -44,10 +50,10 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.bech32Address?.length > 0;
   }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
-    const resApi = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: Result }> {
+    const { headers, data } = await super.fetchResponse(abortController);
     const addressType = getAddressTypeByAddress(
       this.bech32Address
     ) as AddressBtcType;
@@ -58,30 +64,28 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     }) as string;
     const btcResult = processBalanceFromUtxos({
       address: this.bech32Address,
-      utxos: resApi.data,
+      utxos: data,
       path,
     });
     if (!btcResult) {
       throw new Error("Failed to get the response from bitcoin");
     }
     return {
+      headers,
       data: btcResult,
-      status: 1,
-      staled: false,
-      timestamp: Date.now(),
     };
   }
 }
 export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryBtcBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -139,7 +143,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryBtcBalances> = new Map();
   readonly type: BalanceRegistryType = "bitcoin";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -158,7 +162,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryBtcBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           bech32Address
@@ -167,7 +171,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
     }
 
     return new ObservableQueryBitcoinBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

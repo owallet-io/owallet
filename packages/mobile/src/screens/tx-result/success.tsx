@@ -21,7 +21,7 @@ import {
 import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { PageHeader } from "@src/components/header/header-new";
+
 import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
@@ -169,7 +169,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderTx
             type={capitalizedText(params?.data?.type) || "Send"}

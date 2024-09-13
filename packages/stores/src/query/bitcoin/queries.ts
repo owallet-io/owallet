@@ -6,6 +6,7 @@ import { OWallet } from "@owallet/types";
 import { ObservableQueryBitcoinBalanceRegistry } from "./bitcoin-balance";
 import { ObservableQueryBitcoinBalance } from "./bitcoin-query";
 import { QueriesWrappedEvmContract } from "../evm-contract";
+import { QuerySharedContext } from "src/common/query/context";
 
 export interface HasBtcQueries {
   bitcoin: BitcoinQueries;
@@ -18,14 +19,19 @@ export class QueriesWrappedBitcoin
   public bitcoin: BitcoinQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter, apiGetter);
+    super(sharedContext, chainId, chainGetter, apiGetter);
 
-    this.bitcoin = new BitcoinQueries(this, kvStore, chainId, chainGetter);
+    this.bitcoin = new BitcoinQueries(
+      this,
+      sharedContext,
+      chainId,
+      chainGetter
+    );
   }
 }
 
@@ -34,18 +40,18 @@ export class BitcoinQueries {
 
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryBitcoinBalanceRegistry(kvStore)
+      new ObservableQueryBitcoinBalanceRegistry(sharedContext)
     );
 
     // queryBitcoinBalance, we need to seperate native balance from cosmos as it is default implementation
     // other implementations will require corresponding templates
     this.queryBitcoinBalance = new ObservableQueryBitcoinBalance(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );

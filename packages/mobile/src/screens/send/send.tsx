@@ -25,12 +25,12 @@ import {
   MemoInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -68,6 +68,8 @@ import { Any } from "@owallet/proto-types/google/protobuf/any";
 import { TendermintTxTracer } from "@owallet/cosmos";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
+
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -118,7 +120,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-  console.log(route?.params, "route?.params?.contractAddress");
+
   useEffect(() => {
     tracking(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {
@@ -385,6 +387,17 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   const estimatePrice = priceStore.calculatePrice(amount)?.toString();
   return (
     <PageWithBottom
@@ -404,11 +417,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

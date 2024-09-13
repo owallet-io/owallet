@@ -152,7 +152,7 @@ const styling = (colors) =>
     containerList: {
       flexDirection: "row",
       flexWrap: "wrap",
-      gap: 16,
+      gap: 8,
       justifyContent: "space-between",
     },
   });

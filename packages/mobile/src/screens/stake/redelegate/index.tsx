@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
 import { BondStatus } from "@owallet/stores";
@@ -31,7 +31,7 @@ import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
-import { OWSubTitleHeader } from "@src/components/header";
+import { OWHeaderTitle, OWSubTitleHeader } from "@src/components/header";
 import {
   capitalizedText,
   computeTotalVotingPower,
@@ -40,7 +40,7 @@ import {
 } from "@src/utils/helper";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { chainIcons } from "@oraichain/oraidex-common";
 import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -102,8 +102,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      ValidatorThumbnails[validatorAddress]
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -299,6 +298,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     chainStore.current.chainId === ChainIdEnum.Oraichain
       ? formatPercentage(currentVotingPower / totalVotingPower, 2)
       : 0;
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Redelegate"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -322,12 +332,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Redelegate"
-          subtitle={"Oraichain"}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Redelegate"*/}
+        {/*  subtitle={"Oraichain"}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {
           <View>
             {srcValidator ? (
@@ -519,7 +529,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                           weight="600"
                           size={14}
                         >
-                          ORAI
+                          {chainStore.current?.stakeCurrency?.coinDenom ||
+                            "Unknown"}
                         </OWText>
                       </View>
                     </View>

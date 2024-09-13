@@ -2,9 +2,9 @@ import { toAmount, ValidatorThumbnails } from "@owallet/common";
 import { useUndelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -29,6 +29,7 @@ import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { API } from "@src/common/api";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -61,7 +62,17 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"UnStake"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   const validator =
     queries.cosmos.queryValidators
       .getQueryStatus(BondStatus.Bonded)
@@ -82,8 +93,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      ValidatorThumbnails[validatorAddress]
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -295,12 +305,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Unstake"
-          subtitle={chainStore.current.chainName}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Unstake"*/}
+        {/*  subtitle={chainStore.current.chainName}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>

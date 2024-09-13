@@ -234,6 +234,9 @@ export const NetworkModal: FC<{
               source={{
                 uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
               }}
+              style={{
+                borderRadius: 999,
+              }}
               size={28}
             />
           </View>

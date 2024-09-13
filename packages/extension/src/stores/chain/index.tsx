@@ -87,7 +87,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   get isHideDust(): boolean {
     return this._hideDust;
   }
-
+  get chainInfosInUI() {
+    return this.chainInfos.filter((chainInfo) => {
+      return !chainInfo.raw.hideInUI;
+    });
+  }
   get selectedChainId(): string {
     return this._selectedChainId;
   }

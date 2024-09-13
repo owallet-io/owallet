@@ -21,6 +21,9 @@ import { Address } from "../../components/address";
 import { shortenAddress, tryAllABI } from "./helpers/helpers";
 import { EVMRenderArgs } from "./components/render-evm-args";
 import { DataTabEvm } from "./data-tab-evm";
+import withErrorBoundary from "./hoc/withErrorBoundary";
+
+const EVMRenderArgsWithErrorBoundary = withErrorBoundary(EVMRenderArgs);
 
 export const DetailsTabEvm: FunctionComponent<{
   msgSign: any;
@@ -118,13 +121,6 @@ export const DetailsTabEvm: FunctionComponent<{
     //   ? signDocHelper.signDocWrapper.mode
     //   : "none";
     const msgs = msgSign ? msgSign : [];
-
-    console.log(
-      "decodedData",
-      decodedData,
-      decodedData?.args?._to,
-      decodedData?.args?.[1]
-    );
 
     useEffect(() => {
       if (decodedData?.args?._to) {
@@ -567,7 +563,7 @@ export const DetailsTabEvm: FunctionComponent<{
                 <Text>{decodedData.name}</Text>
               )}
               {decodedData?.args ? (
-                <EVMRenderArgs
+                <EVMRenderArgsWithErrorBoundary
                   msgs={msgs}
                   args={decodedData.args}
                   renderInfo={renderInfo}

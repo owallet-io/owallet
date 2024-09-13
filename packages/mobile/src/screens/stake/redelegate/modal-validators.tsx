@@ -33,8 +33,7 @@ const Validators = ({
         onPress={() =>
           onPressSelectValidator(
             validatorsAddress,
-            ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress),
+            bondedValidators.getValidatorThumbnail(validatorsAddress),
             item?.description?.moniker
           )
         }
@@ -50,10 +49,7 @@ const Validators = ({
               marginRight: spacing["8"],
             }}
             size={38}
-            url={
-              ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress)
-            }
+            url={bondedValidators.getValidatorThumbnail(validatorsAddress)}
           />
           <View
             style={{
