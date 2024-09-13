@@ -78,11 +78,7 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
 
   @computed
   get thumbnail(): string {
-    if (
-      !this.response?.data?.status?.code ||
-      this.response?.data?.status?.code !== 0 ||
-      !this.response?.data?.them
-    )
+    if (this.response?.data?.status?.code !== 0 || !this.response?.data?.them)
       return "";
     if (this.response.data.them && this.response.data.them.length > 0) {
       return this.response.data.them[0].pictures?.primary?.url ?? "";

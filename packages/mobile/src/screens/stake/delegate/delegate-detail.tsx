@@ -60,7 +60,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       BondStatus.Unbonded
     );
     const thumbnail =
-      ValidatorThumbnails[validatorAddress] ||
       bondedValidators.getValidatorThumbnail(validatorAddress) ||
       unbondingValidators.getValidatorThumbnail(validatorAddress) ||
       unbondedValidators.getValidatorThumbnail(validatorAddress);

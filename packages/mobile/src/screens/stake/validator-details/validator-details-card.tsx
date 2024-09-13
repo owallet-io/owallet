@@ -126,7 +126,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress,
   ]);
-
+  console.log(validatorAddress, "validatorAddress");
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||

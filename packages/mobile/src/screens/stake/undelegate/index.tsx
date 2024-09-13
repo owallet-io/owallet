@@ -93,8 +93,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      ValidatorThumbnails[validatorAddress]
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations

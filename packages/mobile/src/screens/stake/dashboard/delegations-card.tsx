@@ -104,7 +104,6 @@ export const DelegationsCard: FunctionComponent<{
             });
 
             const thumbnail =
-              ValidatorThumbnails[val.operator_address] ||
               bondedValidators.getValidatorThumbnail(val.operator_address) ||
               unbondingValidators.getValidatorThumbnail(val.operator_address) ||
               unbondedValidators.getValidatorThumbnail(val.operator_address);

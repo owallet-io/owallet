@@ -300,12 +300,9 @@ const ValidatorItem: FunctionComponent<{
                 alignItems: "center",
               }}
               size={40}
-              url={
-                ValidatorThumbnails[validator.operator_address] ??
-                bondedValidators.getValidatorThumbnail(
-                  validator.operator_address
-                )
-              }
+              url={bondedValidators.getValidatorThumbnail(
+                validator.operator_address
+              )}
             />
             <View style={{ marginLeft: 8 }}>
               <OWText
