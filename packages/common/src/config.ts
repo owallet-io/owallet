@@ -6,7 +6,8 @@ import { FiatCurrency } from "@owallet/types";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
 export const AutoFetchingAssetsInterval = 15 * 1000; // 15sec
-
+export const AprByChain =
+  "https://pjld2aanw3elvteui4gwyxgx4m0ceweg.lambda-url.us-west-2.on.aws";
 export const FiatCurrencies: FiatCurrency[] = [
   {
     currency: "usd",
@@ -89,8 +90,8 @@ export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 
 export const EthereumEndpoint = "https://rpc.ankr.com/eth";
-
-export const CoinGeckoGetPrice = "/simple/price";
+export const KeplrCoingecko = "https://satellite.keplr.app";
+export const CoinGeckoGetPrice = "/price/simple";
 
 // default networks
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -552,6 +553,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc-celestia.keplr.app",
     rest: "https://lcd-celestia.keplr.app",
     chainId: "celestia",
+    networkType: "cosmos",
     chainName: "Celestia",
     stakeCurrency: {
       coinDenom: "TIA",
@@ -590,6 +592,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://rpc-akash.keplr.app",
     rest: "https://lcd-akash.keplr.app",
+    networkType: "cosmos",
     chainId: "akashnet-2",
     chainName: "Akash",
     stakeCurrency: {
@@ -629,6 +632,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://rpc-dydx.keplr.app",
     rest: "https://lcd-dydx.keplr.app",
+    networkType: "cosmos",
     chainId: "dydx-mainnet-1",
     chainName: "dYdX",
     stakeCurrency: {
@@ -680,6 +684,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     chainId: "dymension_1100-1",
     chainName: "Dymension",
+    networkType: "cosmos",
     rpc: "https://rpc-dymension.keplr.app",
     rest: "https://lcd-dymension.keplr.app",
     currencies: [
@@ -733,6 +738,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://lcd-stargaze.keplr.app",
     chainId: "stargaze-1",
     chainName: "Stargaze",
+    networkType: "cosmos",
     stakeCurrency: {
       coinDenom: "STARS",
       coinMinimalDenom: "ustars",
@@ -1509,6 +1515,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc-neutron.keplr.app",
     rest: "https://lcd-neutron.keplr.app",
     chainId: "neutron-1",
+    networkType: "cosmos",
     chainName: "Neutron",
     stakeCurrency: {
       coinDenom: "STAKE",

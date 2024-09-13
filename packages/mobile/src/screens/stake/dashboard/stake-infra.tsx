@@ -19,8 +19,10 @@ import { metrics, spacing } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { API } from "@src/common/api";
 import {
+  AprByChain,
   ChainIdEnum,
   COINTYPE_NETWORK,
+  DenomHelper,
   getKeyDerivationFromAddressType,
 } from "@owallet/common";
 import axios from "axios";
@@ -32,6 +34,8 @@ import { useBIP44Option } from "@src/screens/register/bip44";
 import { OWBox } from "@src/components/card";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { Dec, IntPretty } from "@owallet/unit";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
@@ -144,51 +148,51 @@ async function getInflationRate(lcdEndpoint) {
     return 0;
   }
 }
-
+export interface AprItemInner {
+  apr?: number;
+}
 export const StakingInfraScreen: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, appInitStore, modalStore, accountStore } =
     useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [search, setSearch] = useState("");
-  const [owalletOraichain, setOwalletOraichain] = useState("0");
-  const [owalletOsmosis, setOwalletOsmosis] = useState("0");
-  const [cosmosApr, setCosmosApr] = useState("0");
+  const [owalletOraichain, setOwalletOraichain] = useState("0.00");
+
   const [listAprByChain, setListApr] = useState([
     {
-      chainId: ChainIdEnum.CosmosHub,
-      apr: 15.13,
-    },
-    {
-      chainId: ChainIdEnum.Osmosis,
-      apr: 11.33,
-    },
-    {
-      chainId: ChainIdEnum.Injective,
-      apr: 13.53,
-    },
-    {
       chainId: ChainIdEnum.Stargaze,
-      apr: 13.44,
-    },
-    {
-      chainId: ChainIdEnum.Noble,
-      apr: 0,
-    },
-    {
-      chainId: ChainIdEnum.KawaiiCosmos,
-      apr: 0,
-    },
-    {
-      chainId: ChainIdEnum.Juno,
-      apr: 17.77,
-    },
-    {
-      chainId: ChainIdEnum.Neutaro,
-      apr: 0,
+      apr: "13.65",
     },
   ]);
 
+  const fetchAllApr = async () => {
+    for (const chainInfo of chainStore.chainInfosInUI.filter(
+      (item) =>
+        !item.chainName.toLowerCase().includes("test") &&
+        item?.networkType === "cosmos"
+    )) {
+      if (chainInfo.chainId === ChainIdEnum.Oraichain) continue;
+      try {
+        const response = await simpleFetch<AprItemInner>(
+          `${AprByChain}/apr/${chainInfo.chainId}`
+        );
+        if (!response.data?.apr) continue;
+        setListApr((prev) => [
+          ...prev,
+          {
+            chainId: chainInfo.chainId,
+            apr: new IntPretty(new Dec(response.data.apr))
+              .moveDecimalPointRight(2)
+              .maxDecimals(2)
+              .toString(),
+          },
+        ]);
+      } catch (error) {
+        console.log(error, `error fetch apr for ${chainInfo?.chainId}`);
+      }
+    }
+  };
   const bip44Option = useBIP44Option();
   const account = accountStore.getAccount(chainStore.current.chainId);
 
@@ -247,106 +251,15 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     const apr = await calculateAPRByChain(chainInfo, owalletOraichainAddress);
     setOwalletOraichain(apr.toFixed(2));
   };
-
-  const getOWalletOsmosisAPR = async () => {
-    const currentDate = moment();
-    // Subtract 10 days from the current date
-    const pastDate = currentDate.subtract(10, "days");
-
-    try {
-      const params = await axios.get(
-        `https://www.datalenses.zone/numia/osmosis/lenses/apr?start_date=${pastDate.format(
-          "YYYY-MM-DD"
-        )}&end_date=${moment().format("YYYY-MM-DD")}`
-      );
-
-      if (params?.data?.length > 0) {
-        setOwalletOsmosis(params.data[0].total?.toFixed(2));
-      }
-    } catch (error) {
-      console.error(
-        "Error fgetOWalletOsmosisAPR:",
-        `https://www.datalenses.zone/numia/osmosis/lenses/apr?start_date=${pastDate.format(
-          "YYYY-MM-DD"
-        )}&end_date=${moment().format("YYYY-MM-DD")}`,
-        error
-      );
-    }
-  };
-
-  const getCosmosAPR = async () => {
-    const currentDate = moment();
-    // Subtract 10 days from the current date
-    const pastDate = currentDate.subtract(10, "days");
-
-    try {
-      const params = await axios.get(
-        `https://www.datalenses.zone/numia/cosmos/lenses/apr?start_date=${pastDate.format(
-          "YYYY-MM-DD"
-        )}&end_date=${moment().format("YYYY-MM-DD")}`
-      );
-
-      if (params?.data?.length > 0) {
-        setCosmosApr(params.data[0].ATOM?.toFixed(2));
-      }
-    } catch (error) {
-      console.error(
-        "Error getCosmosAPR:",
-        `https://www.datalenses.zone/numia/cosmos/lenses/apr?start_date=${pastDate.format(
-          "YYYY-MM-DD"
-        )}&end_date=${moment().format("YYYY-MM-DD")}`,
-        error
-      );
-    }
-  };
-
-  async function processListAPR() {
-    const stakeableChainsInfo = chainStore.chainInfos.filter((chain) => {
-      if (
-        chain.networkType === "cosmos" &&
-        !chain.chainName.toLowerCase().includes("test") &&
-        !chain.chainName.toLowerCase().includes("bridge")
-      )
-        return chain;
-    });
-
-    const results = await Promise.all(
-      stakeableChainsInfo.map(async (chain) => {
-        if (
-          chain.chainId !== ChainIdEnum.Oraichain &&
-          chain.chainId !== ChainIdEnum.Osmosis
-        ) {
-          const firstValidator = await API.getFirstValidator(chain.rest);
-          if (firstValidator) {
-            const apr = await calculateAPRByChain(
-              chain,
-              firstValidator.operator_address
-            );
-            return {
-              chainId: chain.chainId as ChainIdEnum,
-              apr: apr,
-            };
-          }
-        }
-      })
-    );
-
-    return results;
-  }
-
-  const getListAPR = async () => {
-    const listAPR = await processListAPR();
-    setListApr(listAPR);
-  };
-
   useEffect(() => {
     getOWalletOraichainAPR();
-    getOWalletOsmosisAPR();
-    getCosmosAPR();
-    // getListAPR();
+    fetchAllApr();
   }, []);
 
   const renderOWalletValidators = () => {
+    const owalletOsmosis = listAprByChain.find(
+      (item) => item.chainId === ChainIdEnum.Osmosis
+    )?.apr;
     return (
       <View
         style={{
@@ -405,6 +318,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                     backgroundColor: colors["neutral-surface-action"],
                     borderRadius: 999,
                   }}
+                  tintColor={colors["neutral-text-title"]}
                   source={require("../../../assets/logo/oraichain.png")}
                 />
                 <OWText
@@ -419,7 +333,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                   size={16}
                   weight="500"
                 >
-                  APR: {owalletOraichain ?? "0"}%
+                  APR: {owalletOraichain ?? "0.00"}%
                 </OWText>
               </View>
             </TouchableOpacity>
@@ -456,7 +370,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                   size={16}
                   weight="500"
                 >
-                  APR: {owalletOsmosis ?? "0"}%
+                  APR: {owalletOsmosis ?? "0.00"}%
                 </OWText>
               </View>
             </TouchableOpacity>
@@ -559,20 +473,16 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 
         chainAPR =
           listAprByChain.find((item) => item.chainId === chain.chainId)?.apr ??
-          0;
+          "0.00";
 
         if (
           chain.chainId === ChainIdEnum.Oraichain &&
           Number(owalletOraichain) > 0
         )
           chainAPR = owalletOraichain;
-        if (chain.chainId === ChainIdEnum.Osmosis && Number(owalletOsmosis) > 0)
-          chainAPR = owalletOsmosis;
-        if (chain.chainId === ChainIdEnum.CosmosHub && Number(cosmosApr) > 0)
-          chainAPR = cosmosApr;
-
         return (
           <TouchableOpacity
+            key={chain.chainId}
             onPress={() => {
               handleSwitchNetwork(chain);
             }}
@@ -583,6 +493,11 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 <View style={styles.chainIcon}>
                   <Image
                     style={styles.icon}
+                    tintColor={
+                      chain.stakeCurrency?.coinDenom === "ORAI"
+                        ? colors["neutral-text-title"]
+                        : null
+                    }
                     source={{ uri: chain.stakeCurrency.coinImageUrl }}
                   />
                 </View>
@@ -603,7 +518,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         );
       }
     },
-    [handleSwitchNetwork, owalletOsmosis, colors, owalletOraichain]
+    [handleSwitchNetwork, colors, owalletOraichain, listAprByChain]
   );
 
   const renderNetworks = () => {
@@ -612,6 +527,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         chain.networkType === "cosmos" &&
         !chain.chainName.toLowerCase().includes("test") &&
         !chain.chainName.toLowerCase().includes("bridge") &&
+        !chain.chainName.toLowerCase().includes("kawai") &&
         chain.chainName.toLowerCase().includes(search.toLowerCase())
       )
         return chain;
