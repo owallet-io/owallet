@@ -211,8 +211,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 
       let votingPower = valVotingPower;
       const totalDelegatedTokens = parseFloat(validator.tokens);
-      //   console.log("totalDelegatedTokens", totalDelegatedTokens);
-
       if (totalDelegatedTokens > 0) {
         votingPower = totalDelegatedTokens;
       }
@@ -652,6 +650,7 @@ const styling = (colors) =>
     icon: {
       width: 28,
       height: 28,
+      borderRadius: 999,
     },
     borderBottom: {
       backgroundColor: colors["neutral-border-default"],
