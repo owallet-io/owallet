@@ -588,6 +588,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/celestia/tx/{txHash}",
+    },
   },
   {
     rpc: "https://rpc-akash.keplr.app",
@@ -628,6 +632,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/akash/tx/{txHash}",
+    },
   },
   {
     rpc: "https://rpc-dydx.keplr.app",
@@ -680,6 +688,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/dydx/tx/{txHash}",
+    },
   },
   {
     chainId: "dymension_1100-1",
@@ -732,6 +744,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
+    txExplorer: {
+      name: "Mintscan",
+      txUrl: "https://mintscan.io/dymension/tx{txHash}",
+    },
   },
   {
     rpc: "https://rpc-stargaze.keplr.app",
@@ -1561,6 +1577,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/neutron/tx/{txHash}",
+    },
   },
   {
     chainId: "Neutaro-1",
