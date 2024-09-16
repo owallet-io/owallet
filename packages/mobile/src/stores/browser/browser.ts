@@ -6,7 +6,7 @@ export const DAppInfos = [
   {
     id: 1,
     name: "Oraidex",
-    uri: "https://oraidex.io/",
+    uri: "https://app.oraidex.io/",
   },
   {
     id: 3,

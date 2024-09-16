@@ -16,6 +16,8 @@ import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { removeDataInParentheses, unknownToken } from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
+import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
+import { useSendTxConfig } from "@owallet/hooks";
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
@@ -70,6 +72,15 @@ export const StakeCardAll = observer(({}) => {
 
     return state;
   };
+
+  const sendConfigs = useSendTxConfig(
+    chainStore,
+    chainStore.current.chainId,
+    //@ts-ignore
+    account.msgOpts.compound,
+    account.bech32Address,
+    queriesStore.get(chainStore.current.chainId).queryBalances
+  );
 
   const viewTokens: StakeViewToken[] = (() => {
     const res: StakeViewToken[] = [];
@@ -217,7 +228,7 @@ export const StakeCardAll = observer(({}) => {
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
           validatorRewars,
           "",
-          {},
+          sendConfigs.feeConfig.toStdFee(),
           {},
           {
             onBroadcasted: (txHash) => {},
