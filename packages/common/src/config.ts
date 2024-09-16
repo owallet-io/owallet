@@ -746,7 +746,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
     txExplorer: {
       name: "Mintscan",
-      txUrl: "https://mintscan.io/dymension/tx{txHash}",
+      txUrl: "https://mintscan.io/dymension/tx/{txHash}",
     },
   },
   {
