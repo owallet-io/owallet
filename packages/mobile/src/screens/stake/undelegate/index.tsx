@@ -368,11 +368,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   >
                     <View
                       style={{
-                        backgroundColor: colors["neutral-icon-on-dark"],
                         borderRadius: 999,
+                        justifyContent: "center",
                       }}
                     >
                       <OWIcon
+                        style={{
+                          borderRadius: 999,
+                        }}
                         type="images"
                         source={{
                           uri: sendConfigs.amountConfig.sendCurrency
