@@ -17,12 +17,14 @@ import {
 import { OWButton } from "../../components/button";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Buffer } from "buffer";
 import { spacing } from "../../themes";
 import { Text } from "@src/components/text";
 import { Toggle } from "../../components/toggle";
 import { OWBox } from "@src/components/card";
+import { goBack, navigate, NavigationAction } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -71,8 +73,6 @@ export const SendScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
-  const smartNavigation = useSmartNavigation();
 
   const chainId = route?.params?.chainId
     ? route?.params?.chainId
@@ -268,7 +268,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                           chainName: chainStore.current.chainName,
                           feeType: sendConfigs.feeConfig.feeType,
                         });
-                        smartNavigation.pushSmart("TxPendingResult", {
+                        navigate(SCREENS.TxPendingResult, {
                           txHash: Buffer.from(txHash).toString("hex"),
                           data: {
                             memo: sendConfigs.memoConfig.memo,
@@ -301,10 +301,10 @@ export const SendScreen: FunctionComponent = observer(() => {
                   // }
 
                   // alert(e.message);
-                  if (smartNavigation.canGoBack) {
-                    smartNavigation.goBack();
+                  if (NavigationAction?.canGoBack()) {
+                    goBack();
                   } else {
-                    smartNavigation.navigateSmart("Home", {});
+                    navigate(SCREENS.Home, {});
                   }
                 }
               }

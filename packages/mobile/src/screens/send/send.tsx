@@ -25,17 +25,17 @@ import {
   MemoInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { fromBase64 } from "@cosmjs/encoding";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
@@ -66,6 +66,10 @@ import {
 import { TxBody } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { Any } from "@owallet/proto-types/google/protobuf/any";
 import { TendermintTxTracer } from "@owallet/cosmos";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
+
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
     chainStore,
@@ -103,8 +107,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
 
-  const smartNavigation = useSmartNavigation();
-
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
   const address = account.getAddressDisplay(
@@ -118,7 +120,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
-  console.log(route?.params, "route?.params?.contractAddress");
+
   useEffect(() => {
     tracking(`Send ${chainStore.current.chainName} Screen`);
     if (route?.params?.currency) {
@@ -281,7 +283,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       });
       if (result?.code == 0) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             memo: sendConfigs.memoConfig.memo,
@@ -343,7 +345,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                   networkType: "cosmos",
                 },
               ]);
-              smartNavigation.pushSmart("TxPendingResult", {
+              navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   memo: sendConfigs.memoConfig.memo,
@@ -362,12 +364,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-
-        // if (smartNavigation.canGoBack) {
-        //   smartNavigation.goBack();
-        // } else {
-        //   smartNavigation.navigateSmart("Home", {});
-        // }
       }
     }
   };
@@ -391,6 +387,17 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       }
     });
   }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   const estimatePrice = priceStore.calculatePrice(amount)?.toString();
   return (
     <PageWithBottom
@@ -410,11 +417,6 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

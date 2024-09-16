@@ -28,7 +28,7 @@ import {
   shuffleArray,
   sortChainsByPrice,
 } from "@src/utils/helper";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import OWText from "@src/components/text/ow-text";
@@ -91,7 +91,7 @@ export const AccountBoxAll: FunctionComponent<{
     const [series, setSeries] = useState([]);
     const [sliceColor, setSliceColor] = useState([]);
     const [isPending, startTransition] = useTransition();
-    const smartNavigation = useSmartNavigation();
+
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
@@ -317,11 +317,11 @@ export const AccountBoxAll: FunctionComponent<{
     };
 
     const renderAvailableperStaked = () => {
-      let availabelPercent = 0;
+      let availablePercent = 0;
       let stakedPercent = 0;
       let staked = "0";
       let totalAllChainStaked = 0;
-      const availabel = appInitStore.getInitApp.isAllNetworks
+      const available = appInitStore.getInitApp.isAllNetworks
         ? totalPriceBalance?.toString()
         : totalBalanceByChain?.toString();
       const queryDelegated =
@@ -335,6 +335,7 @@ export const AccountBoxAll: FunctionComponent<{
         let tmpStaked = 0;
         for (const chainInfo of chainStore.chainInfosInUI) {
           const chainId = chainInfo.chainId;
+          if (chainInfo.networkType !== "cosmos") continue;
           const accountAddress = accountStore.getAccount(chainId).bech32Address;
           const queries = queriesStore.get(chainId);
           const queryDelegated =
@@ -357,17 +358,17 @@ export const AccountBoxAll: FunctionComponent<{
           Number(priceStore.calculatePrice(delegated)?.toDec().toString()) +
           Number(totalBalanceByChain?.toDec().toString());
 
-        availabelPercent =
+        availablePercent =
           (Number(totalBalanceByChain?.toDec().toString()) / total) * 100;
-        stakedPercent = 100 - availabelPercent;
+        stakedPercent = 100 - availablePercent;
       } else {
         const total =
           Number(totalAllChainStaked) +
           Number(totalPriceBalance?.toDec().toString());
 
-        availabelPercent =
+        availablePercent =
           (Number(totalPriceBalance?.toDec().toString()) / total) * 100;
-        stakedPercent = 100 - availabelPercent;
+        stakedPercent = 100 - availablePercent;
       }
 
       return (
@@ -382,14 +383,14 @@ export const AccountBoxAll: FunctionComponent<{
           >
             <Text color={colors["neutral-text-body"]}>Available/Staked</Text>
             <Text color={colors["neutral-text-body"]}>
-              {availabel} / <Text>{staked}</Text>
+              {available} / <Text>{staked}</Text>
             </Text>
           </View>
           <View style={{ width: "100%", flexDirection: "row" }}>
             <View
               style={{
                 backgroundColor: colors["primary-surface-default"],
-                width: `${availabelPercent}%`,
+                width: `${availablePercent}%`,
                 height: 12,
                 borderTopLeftRadius: 8,
                 borderBottomLeftRadius: 8,
@@ -403,8 +404,8 @@ export const AccountBoxAll: FunctionComponent<{
                 backgroundColor: colors["highlight-surface-active"],
                 width: `${stakedPercent}%`,
                 height: 12,
-                borderTopLeftRadius: availabelPercent <= 0.1 ? 8 : 0,
-                borderBottomLeftRadius: availabelPercent <= 0.1 ? 8 : 0,
+                borderTopLeftRadius: availablePercent <= 0.1 ? 8 : 0,
+                borderBottomLeftRadius: availablePercent <= 0.1 ? 8 : 0,
                 borderTopRightRadius: 8,
                 borderBottomRightRadius: 8,
               }}
@@ -421,7 +422,7 @@ export const AccountBoxAll: FunctionComponent<{
         appInitStore.getInitApp.isAllNetworks
       )
         return;
-      const availabel = appInitStore.getInitApp.isAllNetworks
+      const available = appInitStore.getInitApp.isAllNetworks
         ? totalPriceBalance?.toString()
         : totalBalanceByChain?.toString();
 
@@ -451,7 +452,7 @@ export const AccountBoxAll: FunctionComponent<{
               {"  "}
               Available
             </OWText>
-            <OWText size={14} weight="500">{`${availabel}`}</OWText>
+            <OWText size={14} weight="500">{`${available}`}</OWText>
           </View>
           <View
             style={{
@@ -583,7 +584,7 @@ export const AccountBoxAll: FunctionComponent<{
             enableOverDrag: false,
           }}
         />
-        <OWBox style={styles.containerOWBox}>
+        <OWBox style={[styles.containerOWBox]}>
           <View style={styles.containerInfoAccount}>
             <TouchableOpacity
               disabled={isLoading}
@@ -709,34 +710,25 @@ export const AccountBoxAll: FunctionComponent<{
                 label={appInitStore.getInitApp.isAllNetworks ? "Buy" : "Send"}
                 onPress={() => {
                   if (appInitStore.getInitApp.isAllNetworks) {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.BuyFiat,
-                    });
+                    navigate(SCREENS.BuyFiat);
                     return;
                   }
                   if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                    smartNavigation.navigateSmart("SendTron", {
+                    navigate(SCREENS.SendTron, {
                       currency:
                         chainStore.current.stakeCurrency.coinMinimalDenom,
                     });
                   } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                    smartNavigation.navigateSmart("SendOasis", {
+                    navigate(SCREENS.SendOasis, {
                       currency:
                         chainStore.current.stakeCurrency.coinMinimalDenom,
                     });
                   } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendBtc,
-                    });
+                    navigate(SCREENS.SendBtc);
                   } else if (chainStore.current.networkType === "evm") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendEvm,
-                    });
+                    navigate(SCREENS.SendEvm);
                   } else {
-                    smartNavigation.navigateSmart("NewSend", {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
+                    navigate(SCREENS.NewSend);
                   }
                 }}
               />
@@ -764,9 +756,7 @@ export const AccountBoxAll: FunctionComponent<{
                 }}
                 label="Receive"
                 onPress={() => {
-                  navigate(SCREENS.STACK.Others, {
-                    screen: SCREENS.QRScreen,
-                  });
+                  navigate(SCREENS.QRScreen);
                   return;
                 }}
               />
@@ -812,7 +802,6 @@ const styling = (colors) =>
       marginTop: 0,
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
-      backgroundColor: colors["neutral-surface-card"],
       borderBottomLeftRadius: 6,
       borderBottomRightRadius: 6,
     },

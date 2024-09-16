@@ -26,12 +26,12 @@ import {
   isMilliseconds,
   MapNetworkToChainId,
   unknownToken,
+  urlTxHistory,
 } from "@owallet/common";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 import { Currency, AllNetworkItemTx, ResDetailAllTx } from "@owallet/types";
 
-import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { CosmosItem } from "@src/screens/transactions/cosmos/types";
 
@@ -104,9 +104,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
   const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>

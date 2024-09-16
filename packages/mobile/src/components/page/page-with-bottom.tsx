@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   StatusBar,
 } from "react-native";
-import { metrics } from "@src/themes";
+import { metrics, spacing } from "@src/themes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { isAndroid } from "@src/common/constants";
@@ -36,7 +36,7 @@ export const PageWithBottom: FunctionComponent<
         {
           ...styles.container,
           ...style,
-          backgroundColor: backgroundColor ?? colors["neutral-surface-bg2"],
+          backgroundColor: backgroundColor ?? colors["neutral-surface-bg"],
         },
       ]}
     >
@@ -57,9 +57,10 @@ export const PageWithBottom: FunctionComponent<
 const useStyle = (safeAreaInsets, colors) => {
   return StyleSheet.create({
     container: {
-      paddingTop: safeAreaInsets.top,
+      // paddingTop: safeAreaInsets.top,
       justifyContent: "space-between",
       height: "100%",
+      paddingTop: spacing["16"],
     },
     bottom: {
       borderTopWidth: 1,

@@ -9,13 +9,14 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { BackupWordChip } from "../../../components/mnemonic";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { metrics } from "../../../themes";
 import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import { CheckIcon, CopyFillIcon } from "@src/components/icon";
+import { goBack } from "@src/router/root";
 
 export const BackupMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -31,7 +32,6 @@ export const BackupMnemonicScreen: FunctionComponent = observer((props) => {
     >
   >();
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const { isTimedOut, setTimer } = useSimpleTimer();
   const privateData = route.params.privateData;
@@ -46,7 +46,7 @@ export const BackupMnemonicScreen: FunctionComponent = observer((props) => {
   const styles = useStyles();
 
   const onGoBack = () => {
-    smartNavigation.goBack();
+    goBack();
   };
 
   return (

@@ -2,10 +2,12 @@ import React, { FunctionComponent } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { colors, metrics, spacing } from "../../themes";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useSimpleTimer } from "../../hooks";
 import OWText from "@src/components/text/ow-text";
 import OWButton from "@src/components/button/OWButton";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const styles = StyleSheet.create({
   img: {
@@ -27,13 +29,13 @@ const styles = StyleSheet.create({
 
 const GatewayIntroScreen: FunctionComponent = () => {
   const { appInitStore } = useStore();
-  const smartNavigation = useSmartNavigation();
+
   const { isTimedOut, setTimer } = useSimpleTimer();
   const onGetStarted = async () => {
     await appInitStore.updateInitApp();
     setTimer(1000);
     setTimeout(() => {
-      smartNavigation.navigateSmart("Register.Intro", {});
+      navigate(SCREENS.RegisterIntro);
     }, 1000);
   };
   return (

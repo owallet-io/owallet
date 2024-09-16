@@ -22,9 +22,9 @@ import {
   CurrencySelector,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { PageHeader } from "@src/components/header/header-new";
@@ -39,6 +39,7 @@ import { capitalizedText } from "@src/utils/helper";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 export const SendEvmScreen: FunctionComponent = observer(() => {
   const {
@@ -208,18 +209,15 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           {
             onFulfill: (tx) => {
               if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                navigate("Others", {
-                  screen: SCREENS.TxSuccessResult,
-                  params: {
-                    txHash: tx,
-                    data: {
-                      memo: sendConfigs.memoConfig.memo,
-                      toAddress: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                      fromAddress: address,
-                      fee: sendConfigs.feeConfig.toStdFee(),
-                      currency: sendConfigs.amountConfig.sendCurrency,
-                    },
+                navigate(SCREENS.TxSuccessResult, {
+                  txHash: tx,
+                  data: {
+                    memo: sendConfigs.memoConfig.memo,
+                    toAddress: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                    fromAddress: address,
+                    fee: sendConfigs.feeConfig.toStdFee(),
+                    currency: sendConfigs.amountConfig.sendCurrency,
                   },
                 });
               }
@@ -230,18 +228,15 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType,
               });
-              navigate("Others", {
-                screen: "TxPendingResult",
-                params: {
-                  txHash: txHash,
-                  data: {
-                    memo: sendConfigs.memoConfig.memo,
-                    from: address,
-                    to: sendConfigs.recipientConfig.recipient,
-                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fee: sendConfigs.feeConfig.toStdFee(),
-                    currency: sendConfigs.amountConfig.sendCurrency,
-                  },
+              navigate(SCREENS.TxPendingResult, {
+                txHash: txHash,
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  from: address,
+                  to: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
                 },
               });
               const fee = sendConfigs.feeConfig.fee
@@ -323,6 +318,17 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
       <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
     );
   };
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -349,11 +355,6 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}

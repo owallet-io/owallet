@@ -54,12 +54,9 @@ export const AllNetworkTxItem: FC<{
       currency?.coinGeckoId === unknownToken.coinGeckoId
     )
       return;
-    navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.HistoryDetail,
-      params: {
-        item,
-        currency,
-      },
+    navigate(SCREENS.HistoryDetail, {
+      item,
+      currency,
     });
 
     return;

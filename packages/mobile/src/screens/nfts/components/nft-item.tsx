@@ -11,14 +11,13 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useStore } from "@src/stores";
 import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { CoinPretty, Dec } from "@owallet/unit";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { useSmartNavigation } from "@src/navigation.provider";
-import { useNavigation } from "@react-navigation/native";
+
 import ProgressiveFastImage from "@freakycoder/react-native-progressive-fast-image";
 import images from "@src/assets/images";
 import LottieView from "lottie-react-native";
 import { IItemNft } from "../types/nft.types";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const NftItem = ({ item }: { item: IItemNft }) => {
   const { colors } = useTheme();
@@ -29,13 +28,13 @@ export const NftItem = ({ item }: { item: IItemNft }) => {
     item?.tokenInfo || unknownToken,
     item?.floorPrice || "0"
   );
-  const smartNavigation = useSmartNavigation();
+
   const coinDenom = item?.tokenInfo?.coinDenom || "";
   return (
     <TouchableOpacity
       style={styles.flatListItem}
       onPress={() => {
-        smartNavigation.pushSmart("Nfts.Detail", {
+        navigate(SCREENS.NftsDetail, {
           item,
         });
       }}

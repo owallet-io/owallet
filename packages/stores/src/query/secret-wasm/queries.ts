@@ -7,6 +7,7 @@ import { DeepReadonly } from "utility-types";
 import { ObservableQuerySecret20BalanceRegistry } from "./secret20-balance";
 import { QueriesWrappedCosmos } from "../cosmos";
 import { OWallet } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export interface HasSecretQueries {
   secret: SecretQueries;
@@ -19,16 +20,16 @@ export class QueriesWrappedSecret
   public secret: SecretQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter);
+    super(sharedContext, chainId, chainGetter);
 
     this.secret = new SecretQueries(
       this,
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       apiGetter
@@ -42,24 +43,28 @@ export class SecretQueries {
 
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
     this.querySecretContractCodeHash =
-      new ObservableQuerySecretContractCodeHash(kvStore, chainId, chainGetter);
+      new ObservableQuerySecretContractCodeHash(
+        sharedContext,
+        chainId,
+        chainGetter
+      );
 
     base.queryBalances.addBalanceRegistry(
       new ObservableQuerySecret20BalanceRegistry(
-        kvStore,
+        sharedContext,
         apiGetter,
         this.querySecretContractCodeHash
       )
     );
 
     this.querySecret20ContractInfo = new ObservableQuerySecret20ContractInfo(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       apiGetter,

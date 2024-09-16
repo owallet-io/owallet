@@ -7,19 +7,29 @@ import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
+import {
+  ObservableEvmChainJsonRpcQuery,
+  ObservableEvmChainJsonRpcQueryMap,
+} from "../../../query/evm-contract/evm-chain-json-rpc";
 
 type GasRequest = {
   to: string;
   from: string;
 };
-export class ObservableQueryGasInner extends ObservableChainQuery<number> {
+export class ObservableQueryGasInner extends ObservableEvmChainJsonRpcQuery<number> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly paramGas: GasRequest
   ) {
-    super(kvStore, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, `eth_estimateGas`, [
+      {
+        to: paramGas.to,
+        from: paramGas.from,
+      },
+    ]);
     makeObservable(this);
   }
 
@@ -36,52 +46,19 @@ export class ObservableQueryGasInner extends ObservableChainQuery<number> {
       //TODO: default gas for eth is 21000
       return 21000;
     }
-    return this.response.data;
-  }
-  protected async fetchResponse(): Promise<QueryResponse<number>> {
-    try {
-      const web3 = new Web3(this.chainGetter.getChain(this.chainId).rpc);
-
-      if (!this.paramGas.to || !this.paramGas.from) return;
-      const estimateGas = await web3.eth.estimateGas({
-        to: this.paramGas.to,
-        from: this.paramGas.from,
-      });
-      console.log(
-        "🚀 ~ ObservableQueryGasInner ~ fetchResponse ~ estimateGas:",
-        estimateGas
-      );
-
-      return {
-        status: 1,
-        staled: false,
-        data: estimateGas,
-        timestamp: Date.now(),
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryGasInner ~ fetchResponse ~ error:",
-        error
-      );
-      throw Error(error);
-    }
-  }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }-gas-evm-native-${this.chainId}-${JSON.stringify(this.paramGas)}`;
+    return Web3.utils.hexToNumber(this.response.data);
   }
 }
 
-export class ObservableQueryGas extends ObservableChainQueryMap<number> {
+export class ObservableQueryGas extends ObservableEvmChainJsonRpcQueryMap<number> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (data) => {
+    super(sharedContext, chainId, chainGetter, (data) => {
       return new ObservableQueryGasInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         JSON.parse(data)

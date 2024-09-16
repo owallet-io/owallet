@@ -45,12 +45,14 @@ export const BasicSettingItem: FunctionComponent<{
   labelStyle?: TextStyle;
   paragraphStyle?: TextStyle;
   icon?: string;
+  source?: any;
   paragraph?: string;
   subtitle?: string;
   left?: React.ReactElement;
   right?: React.ReactElement;
   onPress?: () => void;
   topBorder?: boolean;
+  typeLeftIcon?: "images";
 }> = ({
   containerStyle,
   paragraphStyle,
@@ -60,6 +62,8 @@ export const BasicSettingItem: FunctionComponent<{
   right,
   left,
   onPress,
+  source,
+  typeLeftIcon,
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -71,13 +75,15 @@ export const BasicSettingItem: FunctionComponent<{
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {left ?? (
               <View style={styles.icon}>
-                {
+                {typeLeftIcon === "images" ? (
+                  <OWIcon type={"images"} source={source} size={16} />
+                ) : (
                   <OWIcon
                     color={colors["neutral-icon-on-light"]}
                     name={icon ?? "wallet"}
                     size={16}
                   />
-                }
+                )}
               </View>
             )}
             <View>

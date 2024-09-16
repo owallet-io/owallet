@@ -8,21 +8,23 @@ import { View, StyleSheet, Clipboard, TouchableOpacity } from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import { useNewMnemonicConfig } from "./hook";
 import { CheckIcon } from "../../../components/icon";
 import { BackupWordChip } from "../../../components/mnemonic";
 import { TextInput } from "../../../components/input";
 import { Controller, useForm } from "react-hook-form";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useSimpleTimer } from "../../../hooks";
 import { useBIP44Option } from "../bip44";
-import { navigate, checkRouter } from "../../../router/root";
+import { navigate, checkRouter, goBack } from "../../../router/root";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { metrics } from "../../../themes";
 import OWText from "@src/components/text/ow-text";
 import { tracking } from "@src/utils/tracking";
+import { SCREENS } from "@src/common/constants";
+import { useStore } from "@src/stores";
 
 interface FormData {
   name: string;
@@ -48,9 +50,9 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   }, []);
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
-
-  const registerConfig: RegisterConfig = route.params.registerConfig;
+  const { keyRingStore } = useStore();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
@@ -67,13 +69,13 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
 
   const submit = handleSubmit(() => {
     if (checkRouter(props?.route?.name, "RegisterMain")) {
-      navigate("RegisterVerifyMnemonicMain", {
+      navigate(SCREENS.RegisterVerifyMnemonic, {
         registerConfig,
         newMnemonicConfig,
         bip44HDPath: bip44Option.bip44HDPath,
       });
     } else {
-      smartNavigation.navigateSmart("Register.VerifyMnemonic", {
+      navigate(SCREENS.RegisterVerifyMnemonic, {
         registerConfig,
         newMnemonicConfig,
         bip44HDPath: bip44Option.bip44HDPath,
@@ -82,11 +84,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
     }
   });
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
+    goBack();
   };
 
   const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {

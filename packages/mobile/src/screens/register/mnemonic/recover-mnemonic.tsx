@@ -3,8 +3,8 @@ import { PageWithScrollView } from "../../../components/page";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
-import { useSmartNavigation } from "../../../navigation.provider";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
 import {
@@ -23,7 +23,9 @@ import { Buffer } from "buffer";
 import {
   checkRouter,
   checkRouterPaddingBottomBar,
+  goBack,
   navigate,
+  resetTo,
 } from "../../../router/root";
 import { OWalletLogo } from "../owallet-logo";
 import { spacing, typography } from "../../../themes";
@@ -84,12 +86,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     return () => {};
   }, []);
 
-  const { analyticsStore } = useStore();
+  const { analyticsStore, keyRingStore } = useStore();
 
-  const smartNavigation = useSmartNavigation();
-
-  const registerConfig: RegisterConfig = route.params.registerConfig;
-
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 
@@ -140,17 +139,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
         type: "recover",
       });
     } else {
-      smartNavigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.End",
-            params: {
-              password: getValues("password"),
-              type: "recover",
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterEnd, {
+        password: getValues("password"),
+        type: "recover",
       });
     }
   });
@@ -164,11 +155,12 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(props?.route?.name, "RegisterRecoverMnemonicMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
+    // if (checkRouter(props?.route?.name, "RegisterRecoverMnemonicMain")) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
   const validateMnemonic = (value: string) => {
     value = trimWordsStr(value);

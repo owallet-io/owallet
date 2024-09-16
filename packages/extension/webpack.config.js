@@ -6,11 +6,15 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WriteFilePlugin = require("write-file-webpack-plugin");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const TerserPlugin = require("terser-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const isEnvDevelopment = process.env.NODE_ENV !== "production";
 const isEnvAnalyzer = process.env.ANALYZER === "true";
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const fallback = {
   fs: false,
@@ -26,7 +30,7 @@ const fallback = {
   stream: require.resolve("stream-browserify"),
   https: require.resolve("https-browserify"),
   assert: require.resolve("assert"),
-  zlib: require.resolve("browserify-zlib")
+  zlib: require.resolve("browserify-zlib"),
 };
 
 const commonResolve = () => ({
@@ -40,9 +44,9 @@ const commonResolve = () => ({
     src: path.resolve(__dirname, "./src"),
     stores: path.resolve(__dirname, "./src/stores"),
     theme: path.resolve(__dirname, "./src/theme"),
-    hooks: path.resolve(__dirname, "./src/hooks")
+    hooks: path.resolve(__dirname, "./src/hooks"),
   },
-  fallback
+  fallback,
 });
 
 const sassRule = {
@@ -57,18 +61,18 @@ const sassRule = {
           loader: "css-loader",
           options: {
             modules: {
-              localIdentName: "[local]-[hash:base64]"
+              localIdentName: "[local]-[hash:base64]",
             },
-            localsConvention: "camelCase"
-          }
+            localsConvention: "camelCase",
+          },
         },
         {
           loader: "sass-loader",
           options: {
-            implementation: require("sass")
-          }
-        }
-      ]
+            implementation: require("sass"),
+          },
+        },
+      ],
     },
     {
       use: [
@@ -77,20 +81,20 @@ const sassRule = {
         {
           loader: "sass-loader",
           options: {
-            implementation: require("sass")
-          }
-        }
-      ]
-    }
-  ]
+            implementation: require("sass"),
+          },
+        },
+      ],
+    },
+  ],
 };
 const tsRule = {
   test: /\.tsx?$/,
   loader: "ts-loader",
   options: {
     transpileOnly: true,
-    allowTsInNodeModules: true
-  }
+    allowTsInNodeModules: true,
+  },
 };
 const fileRule = {
   test: /\.(svg|png|jpe?g|gif|woff|woff2|eot|ttf)$/i,
@@ -100,10 +104,10 @@ const fileRule = {
       options: {
         name: "[name].[ext]",
         publicPath: "assets",
-        outputPath: "assets"
-      }
-    }
-  ]
+        outputPath: "assets",
+      },
+    },
+  ],
 };
 
 const extensionConfig = {
@@ -118,11 +122,14 @@ const extensionConfig = {
     popup: ["./src/index.tsx"],
     background: ["./src/background/background.ts"],
     contentScripts: ["./src/content-scripts/content-scripts.ts"],
-    injectedScript: ["./src/content-scripts/inject/injected-script.ts"]
+    injectedScript: ["./src/content-scripts/inject/injected-script.ts"],
   },
   output: {
-    path: path.resolve(__dirname, process.env.OUT_DIR || (isEnvDevelopment ? "dist" : "prod")),
-    filename: "[name].bundle.js"
+    path: path.resolve(
+      __dirname,
+      process.env.OUT_DIR || (isEnvDevelopment ? "dist" : "prod")
+    ),
+    filename: "[name].bundle.js",
   },
   resolve: commonResolve(),
   module: {
@@ -133,15 +140,15 @@ const extensionConfig = {
       {
         test: /\.m?js/,
         resolve: {
-          fullySpecified: false
-        }
-      }
-    ]
+          fullySpecified: false,
+        },
+      },
+    ],
   },
   performance: {
     hints: false,
     maxEntrypointSize: 512000,
-    maxAssetSize: 512000
+    maxAssetSize: 512000,
   },
   optimization: {
     minimize: !isEnvDevelopment,
@@ -153,11 +160,11 @@ const extensionConfig = {
           compress: {
             drop_console: true,
             drop_debugger: true,
-            pure_funcs: ["console.log", "console.info"] // Delete console
-          }
-        }
-      })
-    ]
+            pure_funcs: ["console.log", "console.info"], // Delete console
+          },
+        },
+      }),
+    ],
   },
   plugins: [
     // Remove all and write anyway
@@ -165,37 +172,43 @@ const extensionConfig = {
     new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new NodePolyfillPlugin(),
+    // new webpack.DefinePlugin({
+    //   "process.env": JSON.stringify(process.env),
+    // }),
     new CopyWebpackPlugin(
       [
         {
-          from: process.env.GECKO === "true" ? "./src/manifest-gecko.json" : "./src/manifest.json",
-          to: "./manifest.json"
+          from:
+            process.env.GECKO === "true"
+              ? "./src/manifest-gecko.json"
+              : "./src/manifest.json",
+          to: "./manifest.json",
         },
         {
           from: "./src/service_worker.js",
-          to: "./"
+          to: "./",
         },
         {
-          from: "../../node_modules/webextension-polyfill/dist/browser-polyfill.js"
-        }
+          from: "../../node_modules/webextension-polyfill/dist/browser-polyfill.js",
+        },
       ],
       { copyUnmodified: true }
     ),
     new HtmlWebpackPlugin({
       template: "./src/index.html",
       filename: "popup.html",
-      excludeChunks: ["background", "contentScripts", "injectedScript"]
+      excludeChunks: ["background", "contentScripts", "injectedScript"],
     }),
     new WriteFilePlugin(),
     new webpack.EnvironmentPlugin(["NODE_ENV"]),
     new BundleAnalyzerPlugin({
-      analyzerMode: isEnvAnalyzer ? "server" : "disabled"
+      analyzerMode: isEnvAnalyzer ? "server" : "disabled",
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
-      Buffer: ["buffer", "Buffer"]
-    })
-  ]
+      Buffer: ["buffer", "Buffer"],
+    }),
+  ],
 };
 
 module.exports = extensionConfig;

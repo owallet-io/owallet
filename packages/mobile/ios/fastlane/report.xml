@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="fastlane.lanes">
-    
-    
-    
-      
+  <testsuite name="fastlane.lanes">  
       <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000224">
         
       </testcase>

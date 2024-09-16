@@ -13,6 +13,7 @@ import { ObservableSecretContractChainQuery } from "./contract-query";
 import { CancelToken } from "axios";
 import { WrongViewingKeyError } from "./errors";
 import { OWallet } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQuerySecret20Balance extends ObservableSecretContractChainQuery<{
   balance: { amount: string };
@@ -21,7 +22,7 @@ export class ObservableQuerySecret20Balance extends ObservableSecretContractChai
   };
 }> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
@@ -31,7 +32,7 @@ export class ObservableQuerySecret20Balance extends ObservableSecretContractChai
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       apiGetter,
@@ -70,10 +71,10 @@ export class ObservableQuerySecret20Balance extends ObservableSecretContractChai
     );
   }
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<{ balance: { amount: string } }>> {
-    const result = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: { balance: { amount: string } } }> {
+    const result = await super.fetchResponse(abortController);
 
     if (result.data["viewing_key_error"]) {
       throw new WrongViewingKeyError(result.data["viewing_key_error"]?.msg);
@@ -87,7 +88,7 @@ export class ObservableQuerySecret20BalanceInner extends ObservableQueryBalanceI
   protected readonly querySecret20Balance: ObservableQuerySecret20Balance;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
@@ -96,7 +97,7 @@ export class ObservableQuerySecret20BalanceInner extends ObservableQueryBalanceI
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url at initial.
@@ -107,7 +108,7 @@ export class ObservableQuerySecret20BalanceInner extends ObservableQueryBalanceI
     makeObservable(this);
 
     this.querySecret20Balance = new ObservableQuerySecret20Balance(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       this.apiGetter,
@@ -174,7 +175,7 @@ export class ObservableQuerySecret20BalanceRegistry implements BalanceRegistry {
   readonly type: BalanceRegistryType = "cw20";
 
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
     protected readonly querySecretContractCodeHash: ObservableQuerySecretContractCodeHash
   ) {}
@@ -188,7 +189,7 @@ export class ObservableQuerySecret20BalanceRegistry implements BalanceRegistry {
     const denomHelper = new DenomHelper(minimalDenom);
     if (denomHelper.type === "secret20") {
       return new ObservableQuerySecret20BalanceInner(
-        this.kvStore,
+        this.sharedContext,
         chainId,
         chainGetter,
         this.apiGetter,

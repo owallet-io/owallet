@@ -1,6 +1,6 @@
 import { ValidatorThumbnails } from "@owallet/common";
 import { BondStatus } from "@owallet/stores";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
@@ -8,13 +8,16 @@ import { PageWithView } from "@src/components/page";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -39,7 +42,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
-    const smartNavigation = useSmartNavigation();
     const staked = queries.cosmos.queryDelegations
       .getQueryBech32Address(account.bech32Address)
       .getDelegationTo(validatorAddress);
@@ -58,7 +60,6 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       BondStatus.Unbonded
     );
     const thumbnail =
-      ValidatorThumbnails[validatorAddress] ||
       bondedValidators.getValidatorThumbnail(validatorAddress) ||
       unbondingValidators.getValidatorThumbnail(validatorAddress) ||
       unbondedValidators.getValidatorThumbnail(validatorAddress);
@@ -74,6 +75,17 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       validatorAddress,
     ]);
     tracking(`Delegate Detail Screen`);
+    const navigation = useNavigation();
+    useEffect(() => {
+      navigation.setOptions({
+        headerTitle: () => (
+          <OWHeaderTitle
+            title={"delegate"}
+            subTitle={chainStore.current?.chainName}
+          />
+        ),
+      });
+    }, [chainStore.current?.chainName]);
     return (
       <PageWithView>
         <OWSubTitleHeader title="Staking detail" />
@@ -192,7 +204,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                 justifyContent: "center",
               }}
               onPress={() => {
-                smartNavigation.navigateSmart("Validator.Details", {
+                navigate(SCREENS.ValidatorDetails, {
                   validatorAddress,
                   apr,
                 });
@@ -213,7 +225,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             style={styles.containerBtn}
             label="Stake more"
             onPress={() => {
-              smartNavigation.navigateSmart("Delegate", {
+              navigate(SCREENS.Delegate, {
                 validatorAddress,
               });
             }}
@@ -223,7 +235,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             type="secondary"
             label="Switch validator"
             onPress={() => {
-              smartNavigation.navigateSmart("Redelegate", {
+              navigate(SCREENS.Redelegate, {
                 validatorAddress,
               });
             }}
@@ -237,7 +249,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               color: colors["red-500"],
             }}
             onPress={() => {
-              smartNavigation.navigateSmart("Undelegate", { validatorAddress });
+              navigate(SCREENS.Undelegate, { validatorAddress });
             }}
           />
         </View>

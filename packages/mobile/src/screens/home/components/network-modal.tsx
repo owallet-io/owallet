@@ -113,6 +113,12 @@ export const NetworkModal: FC<{
     }
   }, [chainStore.current.chainName]);
 
+  useEffect(() => {
+    if (appInitStore.getInitApp.hideTestnet) {
+      setActiveTab("mainnet");
+    }
+  }, [appInitStore.getInitApp.hideTestnet]);
+
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
       if (account.isNanoLedger) {
@@ -228,6 +234,9 @@ export const NetworkModal: FC<{
               source={{
                 uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
               }}
+              style={{
+                borderRadius: 999,
+              }}
               size={28}
             />
           </View>
@@ -342,40 +351,42 @@ export const NetworkModal: FC<{
           />
         </View>
       </View>
-      <View style={styles.wrapHeaderTitle}>
-        <OWButton
-          type="link"
-          label={"Mainnet"}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          onPress={() => setActiveTab("mainnet")}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "mainnet" ? styles.active : null,
-          ]}
-        />
-        <OWButton
-          type="link"
-          label={"Testnet"}
-          onPress={() => setActiveTab("testnet")}
-          textStyle={{
-            color: colors["primary-surface-default"],
-            fontWeight: "600",
-            fontSize: 16,
-          }}
-          style={[
-            {
-              width: "50%",
-            },
-            activeTab === "testnet" ? styles.active : null,
-          ]}
-        />
-      </View>
+      {!appInitStore.getInitApp.hideTestnet ? (
+        <View style={styles.wrapHeaderTitle}>
+          <OWButton
+            type="link"
+            label={"Mainnet"}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            onPress={() => setActiveTab("mainnet")}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "mainnet" ? styles.active : null,
+            ]}
+          />
+          <OWButton
+            type="link"
+            label={"Testnet"}
+            onPress={() => setActiveTab("testnet")}
+            textStyle={{
+              color: colors["primary-surface-default"],
+              fontWeight: "600",
+              fontSize: 16,
+            }}
+            style={[
+              {
+                width: "50%",
+              },
+              activeTab === "testnet" ? styles.active : null,
+            ]}
+          />
+        </View>
+      ) : null}
       <View
         style={{
           marginTop: spacing["12"],

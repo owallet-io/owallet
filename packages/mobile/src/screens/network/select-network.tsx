@@ -8,12 +8,13 @@ import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../components/input";
 import { LoadingSpinner } from "../../components/spinner";
 import { useSimpleTimer } from "../../hooks";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 import { Bech32Address } from "@owallet/cosmos";
 import RadioGroup from "react-native-radio-buttons-group";
 import CheckBox from "react-native-check-box";
 import { useTheme } from "@src/themes/theme-provider";
+import { goBack } from "@src/router/root";
 
 interface FormData {
   name: string;
@@ -155,7 +156,7 @@ export const SelectNetworkScreen = () => {
   } = useForm<FormData>();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { chainStore } = useStore();
-  const smartNavigation = useSmartNavigation();
+
   const [networkType, setNetworkType] = useState("cosmos");
 
   const submit = handleSubmit(async () => {
@@ -242,7 +243,7 @@ export const SelectNetworkScreen = () => {
       };
 
       await chainStore.addChain(chainInfo);
-      smartNavigation.goBack();
+      goBack();
     } catch (err) {
       console.log("err: ", err);
       // alert('Oops! Something went wrong!');
@@ -794,7 +795,7 @@ export const SelectNetworkScreen = () => {
       <TouchableOpacity
         disabled={isTimedOut}
         onPress={() => {
-          smartNavigation.goBack();
+          goBack();
         }}
       >
         <Text

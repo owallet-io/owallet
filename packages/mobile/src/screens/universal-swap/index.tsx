@@ -833,7 +833,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const renderSmartRoutes = () => {
     return null;
-    // if (fromAmountToken > 0 && routersSwapData?.routes?.length > 0) {
     return (
       <>
         <View
@@ -896,7 +895,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
       </>
     );
-    // }
   };
 
   const renderModals = () => {

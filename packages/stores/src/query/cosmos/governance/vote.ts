@@ -5,6 +5,7 @@ import {
 import { ProposalVoter, ProposalVoterStargate } from "./types";
 import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryProposalVoteInner extends ObservableChainQuery<
   ProposalVoter | ProposalVoterStargate
@@ -13,14 +14,14 @@ export class ObservableQueryProposalVoteInner extends ObservableChainQuery<
   protected bech32Address: string;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     proposalsId: string,
     bech32Address: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/gov/proposals/${proposalsId}/votes/${bech32Address}`
@@ -65,15 +66,15 @@ export class ObservableQueryProposalVote extends ObservableChainQueryMap<
   ProposalVoter | ProposalVoterStargate
 > {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (param: string) => {
+    super(sharedContext, chainId, chainGetter, (param: string) => {
       const { proposalId, voter } = JSON.parse(param);
 
       return new ObservableQueryProposalVoteInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         proposalId,

@@ -1,7 +1,9 @@
 import {
   StyleSheet,
   TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   TouchableWithoutFeedbackProps,
+  TouchableOpacity,
   View,
 } from "react-native";
 import React from "react";
@@ -14,96 +16,148 @@ import { HEADER_KEY } from "@src/common/constants";
 import { DownArrowIcon } from "../icon";
 import { useNavigation } from "@react-navigation/native";
 import OWIcon from "../ow-icon/ow-icon";
+import { unknownToken } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
 
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
+  subTitle?: string;
+  chainData?: ChainInfo;
 }
-const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
-  const { chainStore, modalStore, appInitStore } = useStore();
-  const { colors } = useTheme();
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
-  // const navigation = useNavigation();
-  // const currentTab = navigation.getState().routeNames[navigation.getState().index];
+const OWHeaderTitle = observer(
+  ({ title, subTitle, chainData, ...props }: IOWHeaderTitle) => {
+    const { chainStore, modalStore, appInitStore } = useStore();
+    const { colors } = useTheme();
+    const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
-  const _onPressNetworkModal = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(<NetworkModal />);
-  };
-  if (title === HEADER_KEY.showNetworkHeader)
-    return (
-      <TouchableWithoutFeedback onPress={_onPressNetworkModal} {...props}>
+    // const navigation = useNavigation();
+    // const currentTab = navigation.getState().routeNames[navigation.getState().index];
+
+    const _onPressNetworkModal = () => {
+      modalStore.setOptions({
+        bottomSheetModalConfig: {
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        },
+      });
+      modalStore.setChildren(<NetworkModal />);
+    };
+    if (title === HEADER_KEY.showNetworkHeader)
+      return (
+        <TouchableOpacity onPress={_onPressNetworkModal} {...props}>
+          <View style={styles.containerTitle}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              {appInitStore.getInitApp.isAllNetworks ? (
+                <OWIcon
+                  name={"tdesignblockchain"}
+                  size={20}
+                  color={colors["neutral-text-title"]}
+                />
+              ) : (
+                <View
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 32,
+                    backgroundColor: colors["neutral-icon-on-dark"],
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{
+                      uri: chainInfo?.stakeCurrency?.coinImageUrl,
+                    }}
+                    size={20}
+                  />
+                </View>
+              )}
+              <Text
+                style={{ marginHorizontal: 6 }}
+                color={colors["neutral-text-title"]}
+                size={16}
+                weight="600"
+              >
+                {appInitStore.getInitApp.isAllNetworks
+                  ? "All networks"
+                  : chainStore.current.chainName}
+              </Text>
+              <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    if (!!chainData) {
+      return (
         <View style={styles.containerTitle}>
-          {/* <Text color={colors["neutral-text-title"]} weight="700" size={16}>
-            {currentTab.toUpperCase() ?? "ASSETS"}
-          </Text> */}
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
             }}
           >
-            {appInitStore.getInitApp.isAllNetworks ? (
+            <View
+              style={{
+                width: 26,
+                height: 26,
+                borderRadius: 999,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: colors["neutral-icon-on-dark"],
+              }}
+            >
               <OWIcon
-                name={"tdesignblockchain"}
-                size={20}
-                color={colors["neutral-text-title"]}
-              />
-            ) : (
-              <View
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: 32,
-                  backgroundColor: colors["neutral-icon-on-dark"],
+                type="images"
+                source={{
+                  uri:
+                    chainData?.feeCurrencies?.[0]?.coinImageUrl ||
+                    unknownToken.coinImageUrl,
                 }}
-              >
-                <OWIcon
-                  type="images"
-                  source={{
-                    uri: chainInfo?.stakeCurrency?.coinImageUrl,
-                  }}
-                  size={20}
-                />
-              </View>
-            )}
+                style={{
+                  borderRadius: 999,
+                }}
+                size={20}
+              />
+            </View>
             <Text
               style={{ marginHorizontal: 6 }}
               color={colors["neutral-text-title"]}
               size={16}
               weight="600"
             >
-              {appInitStore.getInitApp.isAllNetworks
-                ? "All networks"
-                : chainStore.current.chainName}
+              {chainData?.chainName || "Unknown"}
             </Text>
-            <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      );
+    }
+    return (
+      <View style={styles.containerTitle}>
+        <Text
+          style={{
+            fontSize: 16,
+            fontWeight: "700",
+            lineHeight: 24,
+            color: colors["neutral-text-title"],
+            textTransform: "uppercase",
+          }}
+        >
+          {title}
+        </Text>
+        {subTitle && typeof subTitle === "string" ? (
+          <Text color={colors["neutral-text-body"]} size={13}>
+            {subTitle}
+          </Text>
+        ) : null}
+      </View>
     );
-
-  return (
-    <View style={styles.containerTitle}>
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: "700",
-          lineHeight: 24,
-          color: colors["neutral-text-title"],
-          textTransform: "uppercase",
-        }}
-      >
-        {title}
-      </Text>
-    </View>
-  );
-});
+  }
+);
 export default OWHeaderTitle;
 
 const styles = StyleSheet.create({
