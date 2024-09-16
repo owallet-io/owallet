@@ -233,9 +233,17 @@ export const StakeCardAll = observer(({}) => {
     } catch (e) {
       console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
+        if (chainId?.includes("dydx-mainnet")) {
+          showToast({
+            message: `Does not support compound for DYDX network`,
+            type: "danger",
+          });
+          return;
+        }
         showToast({
           message:
-            e?.message ?? "Something went wrong! Please try again later.",
+            `Failed to Compound: ${e?.message}` ??
+            "Something went wrong! Please try again later.",
           type: "danger",
         });
         return;
@@ -332,7 +340,7 @@ export const StakeCardAll = observer(({}) => {
             <Text style={[styles["amount"]]}>
               {removeDataInParentheses(
                 token.token
-                  .shrink(true)
+                  ?.shrink(true)
                   .maxDecimals(6)
                   .trim(true)
                   .upperCase(true)
