@@ -26,7 +26,12 @@ import {
 import { OWButton } from "../../../components/button";
 
 import { metrics, spacing } from "../../../themes";
-import { ChainIdEnum, toAmount, ValidatorThumbnails } from "@owallet/common";
+import {
+  ChainIdEnum,
+  toAmount,
+  unknownToken,
+  ValidatorThumbnails,
+} from "@owallet/common";
 import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
 import { Toggle } from "../../../components/toggle";
@@ -41,7 +46,6 @@ import {
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 
-import { chainIcons } from "@oraichain/oraidex-common";
 import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -49,6 +53,7 @@ import { API } from "@src/common/api";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { FeeModal } from "@src/modals/fee";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -195,9 +200,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     chainStore.current.feeCurrencies[0],
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
   );
-  const chainIcon = chainIcons.find(
-    (c) => c.chainId === chainStore.current.chainId
-  );
 
   const handleError = (e) => {
     if (e?.message.toLowerCase().includes("rejected")) {
@@ -207,7 +209,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     } else {
       console.log(e);
       showToast({
-        message: JSON.stringify(e),
+        message: `Failed to Redelegate: ${e?.message || JSON.stringify(e)}`,
         type: "danger",
       });
     }
@@ -309,6 +311,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       ),
     });
   }, [chainStore.current?.chainName]);
+  const _onPressFee = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <FeeModal vertical={true} sendConfigs={sendConfigs} />
+    );
+  };
   return (
     <PageWithBottom
       bottomGroup={
@@ -514,13 +527,20 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       >
                         <View
                           style={{
-                            backgroundColor: colors["neutral-icon-on-dark"],
                             borderRadius: 999,
+                            justifyContent: "center",
                           }}
                         >
                           <OWIcon
                             type="images"
-                            source={{ uri: chainIcon?.Icon }}
+                            style={{
+                              borderRadius: 999,
+                            }}
+                            source={{
+                              uri:
+                                chainStore.current?.stakeCurrency
+                                  .coinImageUrl || unknownToken.coinImageUrl,
+                            }}
                             size={16}
                           />
                         </View>
@@ -619,21 +639,32 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     <OWText color={colors["neutral-text-title"]} weight="600">
                       Transaction fee
                     </OWText>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                      style={{ flexDirection: "row" }}
+                      onPress={_onPressFee}
+                    >
                       <OWText
                         color={colors["primary-text-action"]}
                         weight="600"
+                        size={16}
                       >
-                        {/* Fast: $0.01 */}
+                        {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
+                        {priceStore
+                          .calculatePrice(sendConfigs.feeConfig.fee)
+                          ?.toString()}{" "}
                       </OWText>
+                      <DownArrowIcon
+                        height={11}
+                        color={colors["primary-text-action"]}
+                      />
                     </TouchableOpacity>
                   </View>
-                  <FeeButtons
-                    label=""
-                    gasLabel="gas"
-                    feeConfig={sendConfigs.feeConfig}
-                    gasConfig={sendConfigs.gasConfig}
-                  />
+                  {/*<FeeButtons*/}
+                  {/*  label=""*/}
+                  {/*  gasLabel="gas"*/}
+                  {/*  feeConfig={sendConfigs.feeConfig}*/}
+                  {/*  gasConfig={sendConfigs.gasConfig}*/}
+                  {/*/>*/}
                 </OWCard>
               </View>
             ) : null}

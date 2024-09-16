@@ -1,4 +1,4 @@
-import { Dec } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
@@ -14,7 +14,11 @@ import { tracking } from "@src/utils/tracking";
 import { ViewToken } from "@owallet/types";
 import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { unknownToken } from "@owallet/common";
+import {
+  DenomDydx,
+  removeDataInParentheses,
+  unknownToken,
+} from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
 import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 import { useSendTxConfig } from "@owallet/hooks";
@@ -45,6 +49,7 @@ class ClaimAllEachState {
     this.failedReason = value;
   }
 }
+
 const zeroDec = new Dec(0);
 
 export const StakeCardAll = observer(({}) => {
@@ -91,9 +96,11 @@ export const StakeCardAll = observer(({}) => {
         queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
 
       const targetDenom = (() => {
+        if (chainInfo.chainId?.includes("dydx-mainnet")) {
+          return DenomDydx;
+        }
         return chainInfo.stakeCurrency?.coinMinimalDenom;
       })();
-
       if (targetDenom) {
         const currency = chainInfo.findCurrency(targetDenom);
         if (currency) {
@@ -201,12 +208,20 @@ export const StakeCardAll = observer(({}) => {
       const account = accountStore.getAccount(chainId);
 
       const validatorRewars = [];
+      const isDydx = chainId?.includes("dydx-mainnet");
+      const denom = DenomDydx;
       queryReward
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
+          let rewards: CoinPretty | undefined;
+
+          if (isDydx) {
+            rewards = queryReward
+              .getRewardsOf(validatorAddress)
+              .find((r) => r.currency.coinMinimalDenom === denom);
+          } else {
+            rewards = queryReward.getStakableRewardOf(validatorAddress);
+          }
           validatorRewars.push({ validatorAddress, rewards });
         });
 
@@ -221,7 +236,7 @@ export const StakeCardAll = observer(({}) => {
           {
             onBroadcasted: (txHash) => {},
           },
-          queryReward.stakableReward.currency.coinMinimalDenom
+          isDydx ? denom : queryReward.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({
@@ -232,9 +247,17 @@ export const StakeCardAll = observer(({}) => {
     } catch (e) {
       console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
+        if (chainId?.includes("dydx-mainnet")) {
+          showToast({
+            message: `Compound not supported for DYDX network`,
+            type: "danger",
+          });
+          return;
+        }
         showToast({
           message:
-            e?.message ?? "Something went wrong! Please try again later.",
+            `Failed to Compound: ${e?.message}` ??
+            "Something went wrong! Please try again later.",
           type: "danger",
         });
         return;
@@ -312,6 +335,9 @@ export const StakeCardAll = observer(({}) => {
                   token?.chainInfo?.stakeCurrency?.coinImageUrl ||
                   unknownToken.coinImageUrl,
               }}
+              style={{
+                borderRadius: 999,
+              }}
               size={22}
             />
           </View>
@@ -326,14 +352,14 @@ export const StakeCardAll = observer(({}) => {
               +{token.price ? token.price?.toString() : "$0"}
             </Text>
             <Text style={[styles["amount"]]}>
-              {token.token.toDec().gt(new Dec(0.001))
-                ? token.token
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()
-                : `< 0.001 ${token.token.toCoin().denom.toUpperCase()}`}
+              {removeDataInParentheses(
+                token.token
+                  ?.shrink(true)
+                  .maxDecimals(6)
+                  .trim(true)
+                  .upperCase(true)
+                  .toString()
+              )}
             </Text>
           </View>
         </View>
