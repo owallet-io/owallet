@@ -41,13 +41,19 @@ const renderImageCoin = (amount: CoinPrimitive, currencies: AppCurrency[]) => {
     amount?.denom?.toLowerCase(),
     amount?.amount
   );
+  const { colors } = useTheme();
 
   if (coin?.currency?.coinImageUrl)
     return (
       <View
         style={{
           alignSelf: "center",
-          paddingVertical: 8,
+          backgroundColor: colors["neutral-icon-on-dark"],
+          height: 36,
+          width: 36,
+          borderRadius: 36,
+          padding: 2,
+          alignItems: "center",
         }}
       >
         <FastImage
