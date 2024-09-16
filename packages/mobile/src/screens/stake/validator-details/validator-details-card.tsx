@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useStore } from "@src/stores";
-import { ValidatorThumbnails } from "@owallet/common";
+import { removeDataInParentheses, ValidatorThumbnails } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
   ValidatorAPYIcon,
@@ -126,16 +126,31 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress,
   ]);
-  console.log(validatorAddress, "validatorAddress");
+
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
     unbondedValidators.getValidatorThumbnail(validatorAddress) ||
     ValidatorThumbnails[validatorAddress];
+  const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
+  const rewards = (() => {
+    let reward: CoinPretty | undefined;
+    const isDydx = chainStore.current.chainId?.includes("dydx-mainnet");
+    const denomDydx =
+      "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+    const currency = chainStore.current.currencyMap.get(denomDydx);
+    if (isDydx) {
+      reward = queryRewards
+        .getRewardsOf(validatorAddress)
+        .find((r) => r.currency.coinMinimalDenom === denomDydx);
+    } else {
+      reward = queryRewards.getStakableRewardOf(validatorAddress);
+    }
 
-  const rewards = queries.cosmos.queryRewards
-    .getQueryBech32Address(account.bech32Address)
-    .getStakableRewardOf(validatorAddress);
+    return !reward && isDydx ? new CoinPretty(currency, 0) : reward;
+  })();
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -189,19 +204,19 @@ export const ValidatorDetailsCard: FunctionComponent<{
         {
           onBroadcasted: (txHash) => {
             const validatorObject = convertArrToObject([validatorAddress]);
-            tracking(`Claim ${rewards.currency.coinDenom}`);
+            tracking(`Claim ${rewards?.currency.coinDenom}`);
             navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
                 ...validatorObject,
                 type: "claim",
                 amount: rewards?.toCoin(),
-                currency: rewards.currency,
+                currency: rewards?.currency,
               },
             });
           },
         },
-        rewards.currency.coinMinimalDenom
+        rewards?.currency.coinMinimalDenom
       );
     } catch (e) {
       console.error({ errorClaim: e });
@@ -312,32 +327,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
-        {/*<PageHeader*/}
-        {/*  title="Validator details"*/}
-        {/*  colors={colors}*/}
-        {/*  onPress={async () => {}}*/}
-        {/*  right={*/}
-        {/*    isStakedValidator ? (*/}
-        {/*      <TouchableOpacity*/}
-        {/*        onPress={() => {*/}
-        {/*          navigate(SCREENS.Undelegate, {*/}
-        {/*            validatorAddress,*/}
-        {/*          });*/}
-        {/*        }}*/}
-        {/*        style={{*/}
-        {/*          borderRadius: 999,*/}
-        {/*          backgroundColor: colors["error-surface-default"],*/}
-        {/*          paddingHorizontal: 12,*/}
-        {/*          paddingVertical: 8,*/}
-        {/*        }}*/}
-        {/*      >*/}
-        {/*        <OWText color={colors["neutral-icon-on-dark"]} weight="600">*/}
-        {/*          Unstake*/}
-        {/*        </OWText>*/}
-        {/*      </TouchableOpacity>*/}
-        {/*    ) : null*/}
-        {/*  }*/}
-        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>
@@ -432,7 +421,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                         fullWidth={false}
                         label={"Claimable"}
                         type={"primary"}
-                        disabled={rewards.toDec().lte(new Dec(0))}
+                        disabled={rewards?.toDec().lte(new Dec(0))}
                         onPress={_onPressClaim}
                       />
                       <OWText
@@ -440,12 +429,16 @@ export const ValidatorDetailsCard: FunctionComponent<{
                         weight="500"
                         color={colors["success-text-body"]}
                       >
-                        +
                         {rewards
-                          .trim(true)
-                          .shrink(true)
-                          .maxDecimals(6)
-                          .toString()}
+                          ? "+" +
+                            removeDataInParentheses(
+                              rewards
+                                .trim(true)
+                                .shrink(true)
+                                .maxDecimals(6)
+                                .toString()
+                            )
+                          : ""}
                       </OWText>
                     </View>
                   </View>

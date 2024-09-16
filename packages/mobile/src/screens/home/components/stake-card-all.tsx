@@ -14,7 +14,7 @@ import { tracking } from "@src/utils/tracking";
 import { ViewToken } from "@owallet/types";
 import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { unknownToken } from "@owallet/common";
+import { removeDataInParentheses, unknownToken } from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
 
 interface StakeViewToken extends ViewToken {
@@ -43,6 +43,7 @@ class ClaimAllEachState {
     this.failedReason = value;
   }
 }
+
 const zeroDec = new Dec(0);
 
 export const StakeCardAll = observer(({}) => {
@@ -80,9 +81,11 @@ export const StakeCardAll = observer(({}) => {
         queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
 
       const targetDenom = (() => {
+        if (chainInfo.chainId?.includes("dydx-mainnet")) {
+          return "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+        }
         return chainInfo.stakeCurrency?.coinMinimalDenom;
       })();
-
       if (targetDenom) {
         const currency = chainInfo.findCurrency(targetDenom);
         if (currency) {
@@ -301,6 +304,9 @@ export const StakeCardAll = observer(({}) => {
                   token?.chainInfo?.stakeCurrency?.coinImageUrl ||
                   unknownToken.coinImageUrl,
               }}
+              style={{
+                borderRadius: 999,
+              }}
               size={22}
             />
           </View>
@@ -315,14 +321,14 @@ export const StakeCardAll = observer(({}) => {
               +{token.price ? token.price?.toString() : "$0"}
             </Text>
             <Text style={[styles["amount"]]}>
-              {token.token.toDec().gt(new Dec(0.001))
-                ? token.token
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()
-                : `< 0.001 ${token.token.toCoin().denom.toUpperCase()}`}
+              {removeDataInParentheses(
+                token.token
+                  .shrink(true)
+                  .maxDecimals(6)
+                  .trim(true)
+                  .upperCase(true)
+                  .toString()
+              )}
             </Text>
           </View>
         </View>
