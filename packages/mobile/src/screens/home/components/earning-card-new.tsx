@@ -149,7 +149,7 @@ export const EarningCardNew = observer(({}) => {
       console.error({ errorClaim: e });
       if (chainId?.includes("dydx-mainnet")) {
         showToast({
-          message: `Does not support compound for DYDX network`,
+          message: `Compound not supported for DYDX network`,
           type: "danger",
         });
         return;

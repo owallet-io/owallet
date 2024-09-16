@@ -235,7 +235,7 @@ export const StakeCardAll = observer(({}) => {
       if (!e?.message?.startsWith("Transaction Rejected")) {
         if (chainId?.includes("dydx-mainnet")) {
           showToast({
-            message: `Does not support compound for DYDX network`,
+            message: `Compound not supported for DYDX network`,
             type: "danger",
           });
           return;
