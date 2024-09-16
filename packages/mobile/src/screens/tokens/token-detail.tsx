@@ -229,7 +229,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
                         ? unknownToken.coinImageUrl
                         : item.token?.currency?.coinImageUrl,
                   }}
-                  size={32}
+                  size={24}
                 />
               </View>
 
@@ -481,8 +481,8 @@ const useStyles = (colors) => {
     },
     container: {},
     iconWrap: {
-      width: 24,
-      height: 24,
+      width: 32,
+      height: 32,
       borderRadius: 999,
       alignItems: "center",
       justifyContent: "center",

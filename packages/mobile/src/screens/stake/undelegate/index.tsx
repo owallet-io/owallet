@@ -193,7 +193,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       if (error?.message?.includes("'signature' of undefined")) return;
       showToast({
         type: "danger",
-        message: error?.message || JSON.stringify(error),
+        message: `Failed to UnDelegate: ${
+          error?.message || JSON.stringify(error)
+        }`,
       });
       console.log(error, "error");
     } finally {
@@ -368,11 +370,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   >
                     <View
                       style={{
-                        backgroundColor: colors["neutral-icon-on-dark"],
                         borderRadius: 999,
+                        justifyContent: "center",
                       }}
                     >
                       <OWIcon
+                        style={{
+                          borderRadius: 999,
+                        }}
                         type="images"
                         source={{
                           uri: sendConfigs.amountConfig.sendCurrency

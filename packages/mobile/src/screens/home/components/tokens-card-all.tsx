@@ -223,6 +223,9 @@ const TokenItem: FC<{
           </View>
           <View style={styles.chainWrap}>
             <OWIcon
+              style={{
+                borderRadius: 999,
+              }}
               type="images"
               source={{
                 uri:

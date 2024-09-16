@@ -1,4 +1,4 @@
-import { Dec } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import {
   RouteProp,
   StackActions,
@@ -20,6 +20,7 @@ import { OWBox } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
+import { DenomDydx, removeDataInParentheses } from "@owallet/common";
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
@@ -45,11 +46,34 @@ export const EarningCardNew = observer(({}) => {
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+  const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
-  const stakingReward = queryReward.stakableReward;
-  const totalStakingReward = priceStore.calculatePrice(stakingReward);
+  const stakingRewards = (() => {
+    const isDydx = chainId?.includes("dydx");
+    const targetDenom = (() => {
+      if (isDydx) {
+        return DenomDydx;
+      }
+
+      return chainStore.current.stakeCurrency?.coinMinimalDenom;
+    })();
+    if (targetDenom) {
+      const currency = chainStore.current.findCurrency(targetDenom);
+      if (currency) {
+        const reward = queryRewards.rewards.find(
+          (r) => r.currency.coinMinimalDenom === targetDenom
+        );
+        if (!reward) {
+          if (isDydx) return new CoinPretty(currency, 0);
+          return queryRewards.stakableReward;
+        }
+        return reward;
+      }
+    }
+  })();
+
+  const totalStakingReward = priceStore.calculatePrice(stakingRewards);
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
   );
@@ -66,19 +90,26 @@ export const EarningCardNew = observer(({}) => {
   const _onPressCompound = async () => {
     try {
       const validatorRewars = [];
-      queryReward
+      const isDydx = chainId?.includes("dydx-mainnet");
+      const denom = DenomDydx;
+      queryRewards
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
+          let rewards: CoinPretty | undefined;
+          if (isDydx) {
+            rewards = queryRewards
+              .getRewardsOf(validatorAddress)
+              .find((r) => r.currency.coinMinimalDenom === denom);
+          } else {
+            rewards = queryRewards.getStakableRewardOf(validatorAddress);
+          }
           validatorRewars.push({ validatorAddress, rewards });
         });
 
-      if (queryReward) {
+      if (queryRewards) {
         tracking(`${chainStore.current.chainName} Compound`);
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-          queryReward.getDescendingPendingRewardValidatorAddresses(10),
+          queryRewards.getDescendingPendingRewardValidatorAddresses(10),
           validatorRewars,
           "",
           {},
@@ -91,21 +122,21 @@ export const EarningCardNew = observer(({}) => {
               });
 
               const validatorObject = convertArrToObject(
-                queryReward.pendingRewardValidatorAddresses
+                queryRewards.pendingRewardValidatorAddresses
               );
               navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 title: "Compound",
                 data: {
                   ...validatorObject,
-                  amount: stakingReward?.toCoin(),
+                  amount: stakingRewards?.toCoin(),
                   currency: chainStore.current.stakeCurrency,
                   type: "claim",
                 },
               });
             },
           },
-          stakingReward.currency.coinMinimalDenom
+          isDydx ? denom : queryRewards.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({
@@ -115,6 +146,13 @@ export const EarningCardNew = observer(({}) => {
       }
     } catch (e) {
       console.error({ errorClaim: e });
+      if (chainId?.includes("dydx-mainnet")) {
+        showToast({
+          message: `Compound not supported for DYDX network`,
+          type: "danger",
+        });
+        return;
+      }
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
@@ -130,7 +168,7 @@ export const EarningCardNew = observer(({}) => {
     try {
       tracking(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        queryReward.getDescendingPendingRewardValidatorAddresses(10),
+        queryRewards.getDescendingPendingRewardValidatorAddresses(10),
         "",
         {},
         {},
@@ -142,21 +180,21 @@ export const EarningCardNew = observer(({}) => {
             });
 
             const validatorObject = convertArrToObject(
-              queryReward.pendingRewardValidatorAddresses
+              queryRewards.pendingRewardValidatorAddresses
             );
             navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               title: "Withdraw rewards",
               data: {
                 ...validatorObject,
-                amount: stakingReward?.toCoin(),
+                amount: stakingRewards?.toCoin(),
                 currency: chainStore.current.stakeCurrency,
                 type: "claim",
               },
             });
           },
         },
-        stakingReward.currency.coinMinimalDenom
+        stakingRewards.currency.coinMinimalDenom
       );
     } catch (e) {
       console.error({ errorClaim: e });
@@ -172,8 +210,8 @@ export const EarningCardNew = observer(({}) => {
   };
   const isDisableClaim =
     !account.isReadyToSendMsgs ||
-    stakingReward.toDec().equals(new Dec(0)) ||
-    queryReward.pendingRewardValidatorAddresses.length === 0;
+    stakingRewards.toDec().equals(new Dec(0)) ||
+    queryRewards.pendingRewardValidatorAddresses.length === 0;
   return (
     <OWBox
       style={{
@@ -250,7 +288,7 @@ export const EarningCardNew = observer(({}) => {
               +
               {totalStakingReward
                 ? totalStakingReward.toString()
-                : stakingReward.shrink(true).maxDecimals(6).toString()}
+                : stakingRewards.shrink(true).maxDecimals(6).toString()}
             </Text>
             <View
               style={{
@@ -260,14 +298,16 @@ export const EarningCardNew = observer(({}) => {
               }}
             >
               <Text style={[styles["amount"]]}>
-                {stakingReward.toDec().gt(new Dec(0.001))
-                  ? stakingReward
-                      .shrink(true)
-                      .maxDecimals(6)
-                      .trim(true)
-                      .upperCase(true)
-                      .toString()
-                  : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+                {stakingRewards
+                  ? removeDataInParentheses(
+                      stakingRewards
+                        .shrink(true)
+                        .maxDecimals(6)
+                        .trim(true)
+                        .upperCase(true)
+                        .toString()
+                    )
+                  : ""}
               </Text>
 
               <OWButton

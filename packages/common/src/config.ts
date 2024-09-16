@@ -746,7 +746,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
     txExplorer: {
       name: "Mintscan",
-      txUrl: "https://mintscan.io/dymension/tx{txHash}",
+      txUrl: "https://mintscan.io/dymension/tx/{txHash}",
     },
   },
   {
@@ -1766,9 +1766,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
       gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.004,
+        low: 0.1,
+        average: 0.25,
+        high: 0.4,
       },
     },
     bip44: {
@@ -1786,14 +1786,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     get feeCurrencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: "ATOM",
+          coinMinimalDenom:
+            "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+          coinDecimals: 6,
+          gasPriceStep: {
+            low: 0.001 * 0.33,
+            average: 0.0025 * 0.33,
+            high: 0.004 * 0.33,
+          },
+        },
+      ];
     },
     features: [
-      "stargate",
-      "no-legacy-stdTx",
       "cosmwasm",
+      "no-legacy-stdTx",
       "ibc-transfer",
       "ibc-go",
+      "wasmd_0.24+",
     ],
     chainSymbolImageUrl:
       "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",

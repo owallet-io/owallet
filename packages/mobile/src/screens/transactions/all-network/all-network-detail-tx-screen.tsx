@@ -92,7 +92,10 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
     await openLink(detail?.explorer);
   };
 
-  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(detail.fee[0]));
+  const fee = new CoinPretty(
+    chainInfo.feeCurrencies?.[0],
+    new Dec(detail.fee[0])
+  );
   const amount = new CoinPretty(currency, new Dec(detail.amount[0]));
 
   const onRefresh = () => {
@@ -183,14 +186,14 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                       styles.imgNetwork,
                       {
                         tintColor:
-                          chainInfo.stakeCurrency.coinDenom === "ORAI"
+                          chainInfo.feeCurrencies?.[0].coinDenom === "ORAI"
                             ? colors["neutral-text-title"]
                             : null,
                       },
                     ]}
                     source={{
                       uri:
-                        chainInfo.stakeCurrency.coinImageUrl ||
+                        chainInfo.feeCurrencies?.[0].coinImageUrl ||
                         unknownToken.coinImageUrl,
                     }}
                   />

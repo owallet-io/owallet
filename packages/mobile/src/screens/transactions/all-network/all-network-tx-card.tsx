@@ -60,6 +60,7 @@ export const AllNetworkTxCard: FunctionComponent<{
           baseURL: urlTxHistory,
         }
       );
+
       if (status !== 200) throw Error("Failed");
       setHistories(data.data);
       setLoading(false);
@@ -72,6 +73,7 @@ export const AllNetworkTxCard: FunctionComponent<{
   useEffect(() => {
     setHistories([]);
     const allAddress = convertObjChainAddressToString(allArr);
+
     if (!allAddress) return;
     getWalletHistory(allAddress);
   }, [
@@ -79,14 +81,6 @@ export const AllNetworkTxCard: FunctionComponent<{
     appInitStore.getInitApp.isAllNetworks,
     accountOrai.bech32Address,
   ]);
-
-  const fiat = priceStore.defaultVsCurrency;
-
-  const price = priceStore.getPrice(
-    chainStore.current.stakeCurrency.coinGeckoId,
-    fiat
-  );
-  if (!price) return <EmptyTx />;
   return (
     <View
       style={{
