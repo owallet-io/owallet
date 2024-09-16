@@ -27,14 +27,14 @@ import { observer } from "mobx-react-lite";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { capitalizedText, shortenAddress, showToast } from "@src/utils/helper";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import {
   EthereumEndpoint,
   getKeyDerivationFromAddressType,
   toAmount,
 } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -50,6 +50,7 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { AddressBtcType } from "@owallet/types";
 import { useBIP44Option } from "@src/screens/register/bip44";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 const dataTypeBtc = [
   { id: AddressBtcType.Bech32, name: "Bitcoin Segwit" },
@@ -282,18 +283,15 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             if (tx) {
-              navigate(SCREENS.STACK.Others, {
-                screen: SCREENS.TxSuccessResult,
-                params: {
-                  txHash: tx,
-                  data: {
-                    memo: sendConfigs.memoConfig.memo,
-                    from: address,
-                    to: sendConfigs.recipientConfig.recipient,
-                    amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                    fee: sendConfigs.feeConfig.toStdFee(),
-                    currency: sendConfigs.amountConfig.sendCurrency,
-                  },
+              navigate(SCREENS.TxSuccessResult, {
+                txHash: tx,
+                data: {
+                  memo: sendConfigs.memoConfig.memo,
+                  from: address,
+                  to: sendConfigs.recipientConfig.recipient,
+                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  fee: sendConfigs.feeConfig.toStdFee(),
+                  currency: sendConfigs.amountConfig.sendCurrency,
                 },
               });
             }
@@ -345,6 +343,17 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     sendConfigs.amountConfig.sendCurrency,
     new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
   );
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -367,7 +376,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         />
       }
     >
-      <PageHeader title="Send" subtitle={chainStore.current.chainName} />
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

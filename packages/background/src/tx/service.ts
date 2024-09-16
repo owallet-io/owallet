@@ -180,7 +180,11 @@ export class BackgroundTxService {
 
         return chainInfo.chainId;
       default:
+        console.log("method", method);
+
         chainInfo = await this.chainsService.getChainInfo(chainId);
+        console.log("chainInfo", chainInfo);
+
         if (!chainInfo.rest)
           throw new Error(
             `The given chain ID: ${chainId} does not have a RPC endpoint to connect to`

@@ -1,27 +1,28 @@
-import { DenomHelper, getRpcByChainId, KVStore } from "@owallet/common";
-import { ChainGetter, CoinPrimitive, QueryResponse } from "../../../common";
+import { DenomHelper } from "@owallet/common";
+import { ChainGetter } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
-import { StoreUtils } from "../../../common";
+
 import {
   BalanceRegistry,
   BalanceRegistryType,
   ObservableQueryBalanceInner,
 } from "../../balances";
-import { ObservableChainQuery } from "../../chain-query";
-import { Balances } from "./types";
+
 import Web3 from "web3";
+import { QuerySharedContext } from "src/common/query/context";
+import { ObservableEvmChainJsonRpcQuery } from "../../../query/evm-contract/evm-chain-json-rpc";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
     protected readonly nativeBalances: ObservableQueryTronBalances
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       // No need to set the url
@@ -57,29 +58,31 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   get balance(): CoinPretty {
     const currency = this.currency;
 
-    if (!this.nativeBalances.response) {
+    if (!this.response?.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-
-    return StoreUtils.getBalanceFromCurrency(
+    return new CoinPretty(
       currency,
-      this.nativeBalances.response.data.balances
+      new Int(Web3.utils.hexToNumberString(this.response.data))
     );
   }
 }
 
-export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> {
+export class ObservableQueryTronBalances extends ObservableEvmChainJsonRpcQuery<string> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(sharedContext, chainId, chainGetter, "eth_getBalance", [
+      walletAddress,
+      "latest",
+    ]);
 
     this.walletAddress = walletAddress;
 
@@ -87,7 +90,6 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
   }
 
   protected canFetch(): boolean {
-    // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.walletAddress?.length > 0;
   }
 
@@ -104,43 +106,6 @@ export class ObservableQueryTronBalances extends ObservableChainQuery<Balances> 
       yield super.fetch();
     }
   }
-
-  protected async fetchResponse(): Promise<QueryResponse<Balances>> {
-    try {
-      const web3 = new Web3(
-        getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
-      );
-      const ethBalance = await web3.eth.getBalance(this.walletAddress);
-
-      const denomNative = this.chainGetter.getChain(this.chainId).stakeCurrency
-        .coinMinimalDenom;
-      const balances: CoinPrimitive[] = [
-        {
-          amount: ethBalance,
-          denom: denomNative,
-        },
-      ];
-
-      const data = {
-        balances,
-      };
-      return {
-        status: 1,
-        staled: false,
-        data,
-        timestamp: Date.now(),
-      };
-    } catch (error) {
-      console.log(
-        "🚀 ~ ObservableQueryTronBalances ~ fetchResponse ~ error:",
-        error
-      );
-    }
-  }
-
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${this.instance.defaults.baseURL}-balance-evm-native-${this.chainId}-${this.walletAddress}`;
-  }
 }
 
 export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
@@ -149,7 +114,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
 
   readonly type: BalanceRegistryType = "evm";
 
-  constructor(protected readonly kvStore: KVStore) {}
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   getBalanceInner(
     chainId: string,
@@ -159,9 +124,8 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
 
-    if (denomHelper.type !== "native") {
+    if (denomHelper.type !== "native" || !Web3.utils.isAddress(walletAddress))
       return;
-    }
     const networkType = chainGetter.getChain(chainId).networkType;
     if (networkType !== "evm") return;
     const key = `tron-${chainId}/${walletAddress}`;
@@ -170,7 +134,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
       this.nativeBalances.set(
         key,
         new ObservableQueryTronBalances(
-          this.kvStore,
+          this.sharedContext,
           chainId,
           chainGetter,
           walletAddress
@@ -178,7 +142,7 @@ export class ObservableQueryTronBalanceRegistry implements BalanceRegistry {
       );
     }
     return new ObservableQueryBalanceNative(
-      this.kvStore,
+      this.sharedContext,
       chainId,
       chainGetter,
       denomHelper,

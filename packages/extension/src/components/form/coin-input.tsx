@@ -235,6 +235,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 fontSize: 28,
                 fontWeight: "500",
               }}
+              className={styleCoinInput.input}
               id={`input-${randomId}`}
               type="number"
               value={amountConfig.amount}

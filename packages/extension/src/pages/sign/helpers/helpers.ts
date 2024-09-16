@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
-import {
-  MapChainIdToNetwork,
-  TX_HISTORY_ENDPOINT,
-} from "../../../helpers/constant";
+import { MapChainIdToNetwork } from "../../../helpers/constant";
+import { urlTxHistory } from "@owallet/common";
 
 export const tryAllABI = (
   signData,
@@ -78,7 +76,7 @@ export const findKeyBySimilarValue = (obj, value) => {
 export const getTokenInfo = async (tokenContract, chainId) => {
   try {
     const response = await fetch(
-      `${TX_HISTORY_ENDPOINT}/v1/token-info/${MapChainIdToNetwork[chainId]}/${tokenContract}`
+      `${urlTxHistory}v1/token-info/${MapChainIdToNetwork[chainId]}/${tokenContract}`
     );
     if (!response.ok) {
       if (response.status === 500) {
@@ -101,7 +99,7 @@ export const getTokenInfo = async (tokenContract, chainId) => {
 export const getTokenDetail = async (tokenContract, chainId) => {
   try {
     const response = await fetch(
-      `${TX_HISTORY_ENDPOINT}/v1/token-info/by-addresses/${MapChainIdToNetwork[chainId]}-${tokenContract}`
+      `${urlTxHistory}v1/token-info/by-addresses/${MapChainIdToNetwork[chainId]}-${tokenContract}`
     );
     if (!response.ok) {
       if (response.status === 500) {

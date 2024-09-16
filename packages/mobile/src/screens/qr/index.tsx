@@ -3,7 +3,6 @@ import { Clipboard, Image, Share, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { metrics, spacing } from "@src/themes";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
 import { ScrollView } from "react-native-gesture-handler";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -141,7 +140,6 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
         />
       }
     >
-      <PageHeader title="Receive" colors={colors} />
       <CopyAddressModal
         copyable={false}
         close={() => setModalOpen(false)}

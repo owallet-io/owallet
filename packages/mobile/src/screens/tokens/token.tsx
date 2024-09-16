@@ -10,13 +10,14 @@ import { _keyExtract } from "../../utils/helper";
 import { TokenItem } from "./components/token-item";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { Text } from "@src/components/text";
-import { useSmartNavigation } from "@src/navigation.provider";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
     useStore();
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
+
   const account = accountStore.getAccount(chainStore.current.chainId);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -43,7 +44,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
         >
           <TouchableOpacity
             onPress={() => {
-              smartNavigation.navigateSmart("Network.token", {});
+              navigate(SCREENS.NetworkToken, {});
             }}
           >
             <Text

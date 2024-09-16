@@ -17,6 +17,7 @@ import {
   ChainNameEnum,
   getBase58Address,
   KADOChainNameEnum,
+  unknownToken,
 } from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
@@ -34,72 +35,21 @@ export const CopyAddressModal: FunctionComponent<{
 }> = registerModal(({ onPress, copyable = true, close }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const [keyword, setKeyword] = useState("");
-  const [addresses, setAddresses] = useState({});
-  const [refresh, setRefresh] = useState(Date.now());
+
   const { colors } = useTheme();
 
   const styles = styling(colors);
 
-  const { accountStore, keyRingStore } = useStore();
-
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountBtc = accountStore.getAccount(ChainIdEnum.Bitcoin);
-
-  useEffect(() => {
-    tracking(`Copy Address Modal`);
-    setTimeout(() => {
-      setRefresh(Date.now());
-    }, 300);
-  }, []);
-
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      let accounts = {};
-
-      let defaultEvmAddress;
-      if (
-        accountEth.isNanoLedger &&
-        keyRingStore?.keyRingLedgerAddresses?.eth
-      ) {
-        defaultEvmAddress = keyRingStore.keyRingLedgerAddresses.eth;
-      } else {
-        defaultEvmAddress = accountEth.evmosHexAddress;
-      }
-      Object.keys(ChainIdEnum).map((key) => {
-        let defaultCosmosAddress = accountStore.getAccount(
-          ChainIdEnum[key]
-        ).bech32Address;
-
-        if (defaultCosmosAddress.startsWith("evmos")) {
-          accounts[ChainNameEnum[key]] = defaultEvmAddress;
-        } else if (key === KADOChainNameEnum[ChainIdEnum.TRON]) {
-          accounts[ChainNameEnum.TRON] = null;
-        } else {
-          accounts[ChainNameEnum[key]] = defaultCosmosAddress;
-        }
-      });
-
-      if (
-        accountTron.isNanoLedger &&
-        keyRingStore?.keyRingLedgerAddresses?.trx
-      ) {
-        accounts[ChainNameEnum.TRON] = keyRingStore.keyRingLedgerAddresses.trx;
-      } else {
-        if (accountTron) {
-          accounts[ChainNameEnum.TRON] = getBase58Address(
-            accountTron.evmosHexAddress
-          );
-        }
-      }
-
-      accounts[ChainNameEnum.BitcoinLegacy] = accountBtc.allBtcAddresses.legacy;
-      accounts[ChainNameEnum.BitcoinSegWit] = accountBtc.allBtcAddresses.bech32;
-
-      setAddresses(accounts);
-    });
-  }, [accountOrai.bech32Address, accountEth.evmosHexAddress, refresh]);
+  const { accountStore, keyRingStore, chainStore } = useStore();
+  const btcLegacyChain = chainStore.chainInfosInUI.find(
+    (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
+  );
+  const chains = chainStore.chainInfosInUI.filter(
+    (item, index) =>
+      item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
+      !item?.chainName?.toLowerCase()?.includes("test")
+  );
+  const chainsData = btcLegacyChain ? [...chains, btcLegacyChain] : [...chains];
 
   return (
     <View>
@@ -135,116 +85,44 @@ export const CopyAddressModal: FunctionComponent<{
         showsVerticalScrollIndicator={false}
         persistentScrollbar={true}
       >
-        {addresses && Object.keys(addresses).length > 0 ? (
-          Object.keys(addresses).map((key) => {
-            const item = { name: key, address: addresses[key] };
-            if (item.name.toLowerCase().includes("testnet")) {
-              return;
+        {chainsData?.length > 0 &&
+          chainsData.map((item, index) => {
+            let address;
+            if (index === chainsData.length - 1) {
+              address = accountStore.getAccount(item.chainId).legacyAddress;
+            } else {
+              address = accountStore
+                .getAccount(item.chainId)
+                .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
             }
-            const chainNameKey = Object.keys(ChainNameEnum).find(
-              (k) => ChainNameEnum[k] === key
-            );
-            const chainId = ChainIdEnum[chainNameKey];
-
-            let chainIcon = chainIcons.find((c) => c.chainId === chainId);
-
-            // Hardcode for Oasis because oraidex-common does not have icon yet
-            if (item.name.includes("Oasis")) {
-              chainIcon = {
-                chainId: chainId,
-                Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
-              };
-            }
-            // Hardcode for BTC because oraidex-common does not have icon yet
-            if (item.name.includes("Bit")) {
-              chainIcon = {
-                chainId: chainId,
-                Icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png",
-              };
-            }
-
-            // Hardcode for Neutaro because oraidex-common does not have icon yet
-            if (item.name.toLowerCase().includes("neutaro")) {
-              chainIcon = {
-                chainId: chainId,
-                Icon: "https://assets.coingecko.com/coins/images/36277/large/Neutaro_logo.jpg?1711371142",
-              };
-            }
-
-            if (!chainIcon) {
-              chainIcon = chainIcons.find(
-                (c) => c.chainId === ChainIdEnum.Oraichain
-              );
-            }
-
-            if (key !== "undefined") {
-              if (keyword === "") {
-                return (
-                  <CustomAddressCopyable
-                    copyable={copyable}
-                    onPress={() => {
-                      if (onPress) {
-                        onPress({ ...item, chainIcon: chainIcon?.Icon });
-                        close();
-                      }
+            return (
+              <CustomAddressCopyable
+                copyable={copyable}
+                onPress={() => onPress && onPress({ ...item })}
+                icon={
+                  <OWIcon
+                    style={{
+                      borderRadius: 999,
                     }}
-                    icon={
-                      <OWIcon
-                        type="images"
-                        source={{ uri: chainIcon.Icon }}
-                        size={28}
-                      />
-                    }
-                    chain={item.name}
-                    address={item.address}
-                    maxCharacters={22}
+                    type="images"
+                    source={{
+                      uri:
+                        item?.feeCurrencies?.[0]?.coinImageUrl ||
+                        unknownToken.coinImageUrl,
+                    }}
+                    size={28}
                   />
-                );
-              }
-
-              if (
-                keyword !== "" &&
-                key.toString().toLowerCase().includes(keyword.toLowerCase())
-              ) {
-                return (
-                  <CustomAddressCopyable
-                    copyable={copyable}
-                    onPress={() =>
-                      onPress &&
-                      onPress({ ...item, chainIcon: chainIcon?.Icon })
-                    }
-                    icon={
-                      chainIcon ? (
-                        <OWIcon
-                          type="images"
-                          source={{ uri: chainIcon.Icon }}
-                          size={28}
-                        />
-                      ) : (
-                        <OWText>{item.name.charAt(0)}</OWText>
-                      )
-                    }
-                    chain={item.name}
-                    address={item.address}
-                    maxCharacters={22}
-                  />
-                );
-              }
-            }
-          })
-        ) : (
-          <View style={{ justifyContent: "center", alignItems: "center" }}>
-            <Image
-              style={{
-                width: metrics.screenWidth / 1.7,
-                height: metrics.screenWidth / 1.7,
-              }}
-              source={require("../../../../assets/image/img_planet.png")}
-              resizeMode="contain"
-              fadeDuration={0}
-            />
-          </View>
-        )}
+                }
+                chain={`${
+                  index === chainsData.length - 1
+                    ? item.chainName + " Legacy"
+                    : item.chainName
+                }`}
+                address={address}
+                maxCharacters={22}
+              />
+            );
+          })}
       </ScrollView>
     </View>
   );

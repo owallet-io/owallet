@@ -25,13 +25,13 @@ import {
   TextInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../navigation.provider";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+
 import { Buffer } from "buffer";
 import { metrics, spacing } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { NewAmountInput } from "@src/components/input/amount-input";
@@ -40,6 +40,7 @@ import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { tracking } from "@src/utils/tracking";
+import { OWHeaderTitle } from "@components/header";
 
 export const SendTronScreen: FunctionComponent = observer(() => {
   const {
@@ -77,8 +78,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
-  const smartNavigation = useSmartNavigation();
 
   const { chainId } = chainStore.current;
 
@@ -207,6 +206,17 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       return getFeeErrorText(error);
     }
   })();
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   return (
     <PageWithBottom
       bottomGroup={
@@ -225,35 +235,27 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 {
                   onFulfill: async (tx) => {
                     if (tx?.code === 0) {
-                      navigate("Others", {
-                        screen: SCREENS.TxSuccessResult,
-                        params: {
-                          txHash: tx.txid,
-                          data: {
-                            memo: sendConfigs.memoConfig.memo,
-                            toAddress: sendConfigs.recipientConfig.recipient,
-                            amount:
-                              sendConfigs.amountConfig.getAmountPrimitive(),
-                            fromAddress: address,
-                            fee: sendConfigs.feeConfig.toStdFee(),
-                            currency: sendConfigs.amountConfig.sendCurrency,
-                          },
+                      navigate(SCREENS.TxSuccessResult, {
+                        txHash: tx.txid,
+                        data: {
+                          memo: sendConfigs.memoConfig.memo,
+                          toAddress: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fromAddress: address,
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
                     } else {
-                      navigate("Others", {
-                        screen: SCREENS.TxFailedResult,
-                        params: {
-                          txHash: tx.txid,
-                          data: {
-                            memo: sendConfigs.memoConfig.memo,
-                            from: address,
-                            to: sendConfigs.recipientConfig.recipient,
-                            amount:
-                              sendConfigs.amountConfig.getAmountPrimitive(),
-                            fee: sendConfigs.feeConfig.toStdFee(),
-                            currency: sendConfigs.amountConfig.sendCurrency,
-                          },
+                      navigate(SCREENS.TxFailedResult, {
+                        txHash: tx.txid,
+                        data: {
+                          memo: sendConfigs.memoConfig.memo,
+                          from: address,
+                          to: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          fee: sendConfigs.feeConfig.toStdFee(),
+                          currency: sendConfigs.amountConfig.sendCurrency,
                         },
                       });
                     }
@@ -288,11 +290,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader
-        title="Send"
-        subtitle={chainStore.current.chainName}
-        colors={colors}
-      />
       <ScrollView
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}

@@ -91,7 +91,7 @@ export const getFavicon = (url) => {
 };
 export const dataBookMarks = [
   {
-    url: getFavicon("https://oraidex.io"),
+    url: getFavicon("https://app.oraidex.io"),
     name: "oraidex",
     link: "https://app.oraidex.io",
   },

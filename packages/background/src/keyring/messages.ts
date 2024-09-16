@@ -18,6 +18,7 @@ import {
   Key,
   BIP44HDPath,
   AppCurrency,
+  SettledResponses,
 } from "@owallet/types";
 import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
@@ -528,6 +529,43 @@ export class GetKeyMsg extends Message<Key> {
 
   type(): string {
     return GetKeyMsg.type();
+  }
+}
+export class GetKeySettledMsg extends Message<SettledResponses<Key>> {
+  public static type() {
+    return "get-cosmos-keys-settled";
+  }
+
+  constructor(public readonly chainIds: string[]) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainIds || this.chainIds.length === 0) {
+      throw new Error("chainIds are not set");
+    }
+
+    const seen = new Map<string, boolean>();
+
+    for (const chainId of this.chainIds) {
+      if (seen.get(chainId)) {
+        throw new Error(`chainId ${chainId} is duplicated`);
+      }
+
+      seen.set(chainId, true);
+    }
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return GetKeySettledMsg.type();
   }
 }
 

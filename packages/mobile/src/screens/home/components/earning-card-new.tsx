@@ -9,21 +9,21 @@ import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
-import { checkRouter } from "@src/router/root";
+import { checkRouter, navigate } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
-  const smartNavigation = useSmartNavigation();
+
   const {
     chainStore,
     accountStore,
@@ -60,9 +60,7 @@ export const EarningCardNew = observer(({}) => {
     if (checkRouter(route?.name, SCREENS.Invest)) {
       return;
     }
-    navigation.dispatch(
-      StackActions.replace("MainTab", { screen: SCREENS.TABS.Invest })
-    );
+    navigate(SCREENS.TABS.Invest);
   };
 
   const _onPressCompound = async () => {
@@ -95,7 +93,7 @@ export const EarningCardNew = observer(({}) => {
               const validatorObject = convertArrToObject(
                 queryReward.pendingRewardValidatorAddresses
               );
-              smartNavigation.pushSmart("TxPendingResult", {
+              navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 title: "Compound",
                 data: {
@@ -146,7 +144,7 @@ export const EarningCardNew = observer(({}) => {
             const validatorObject = convertArrToObject(
               queryReward.pendingRewardValidatorAddresses
             );
-            smartNavigation.pushSmart("TxPendingResult", {
+            navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               title: "Withdraw rewards",
               data: {
@@ -190,8 +188,14 @@ export const EarningCardNew = observer(({}) => {
     >
       <View>
         <View style={styles.cardBody}>
-          <TouchableOpacity onPress={_onPressStake}>
-            <View style={{ flexDirection: "row", paddingBottom: 6 }}>
+          <View
+            style={{
+              justifyContent: "space-between",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ flexDirection: "row" }}>
               <View style={styles["claim-title"]}>
                 <OWIcon
                   name={"trending-outline"}
@@ -199,11 +203,43 @@ export const EarningCardNew = observer(({}) => {
                   color={colors["neutral-text-title"]}
                 />
               </View>
-              <Text style={[{ ...styles["text-earn"] }]}>
-                Claimable rewards
-              </Text>
+              <Text style={[{ ...styles["text-earn"] }]}>Rewards</Text>
             </View>
-
+            <OWButton
+              style={[
+                styles["btn-claim"],
+                {
+                  backgroundColor: isDisableClaim
+                    ? colors["neutral-surface-disable"]
+                    : colors["primary-surface-default"],
+                },
+              ]}
+              fullWidth={false}
+              textStyle={{
+                fontSize: 15,
+                fontWeight: "600",
+                color: isDisableClaim
+                  ? colors["neutral-text-disable"]
+                  : colors["neutral-text-action-on-dark-bg"],
+              }}
+              icon={
+                <OWIcon
+                  name={"trending-outline"}
+                  size={14}
+                  color={
+                    isDisableClaim
+                      ? colors["neutral-text-disable"]
+                      : colors["neutral-text-action-on-dark-bg"]
+                  }
+                />
+              }
+              label="Compound"
+              onPress={_onPressCompound}
+              loading={account.isSendingMsg === "withdrawRewards"}
+              disabled={isDisableClaim}
+            />
+          </View>
+          <View>
             <Text
               style={[
                 {
@@ -216,111 +252,47 @@ export const EarningCardNew = observer(({}) => {
                 ? totalStakingReward.toString()
                 : stakingReward.shrink(true).maxDecimals(6).toString()}
             </Text>
-            <Text style={[styles["amount"]]}>
-              {stakingReward.toDec().gt(new Dec(0.001))
-                ? stakingReward
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()
-                : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
-            </Text>
-          </TouchableOpacity>
-          <OWButton
-            style={[
-              styles["btn-claim"],
-              {
-                backgroundColor: isDisableClaim
-                  ? colors["neutral-surface-disable"]
-                  : colors["primary-surface-default"],
-              },
-            ]}
-            textStyle={{
-              fontSize: 15,
-              fontWeight: "600",
-              color: isDisableClaim
-                ? colors["neutral-text-disable"]
-                : colors["neutral-text-action-on-dark-bg"],
-            }}
-            label="Compound"
-            onPress={_onPressCompound}
-            loading={account.isSendingMsg === "withdrawRewards"}
-            disabled={isDisableClaim}
-          />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text style={[styles["amount"]]}>
+                {stakingReward.toDec().gt(new Dec(0.001))
+                  ? stakingReward
+                      .shrink(true)
+                      .maxDecimals(6)
+                      .trim(true)
+                      .upperCase(true)
+                      .toString()
+                  : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+              </Text>
+
+              <OWButton
+                textStyle={{
+                  fontSize: 16,
+                  fontWeight: "600",
+                  color: colors["neutral-text-action-on-light-bg"],
+                }}
+                iconRight={
+                  <OWIcon
+                    color={colors["neutral-text-action-on-light-bg"]}
+                    name={"tdesigngift"}
+                    size={20}
+                  />
+                }
+                type="link"
+                style={styles.getStarted}
+                label={"Claim all"}
+                fullWidth={false}
+                disabled={isDisableClaim}
+                onPress={_onPressClaim}
+              />
+            </View>
+          </View>
         </View>
-        <View
-          style={{
-            backgroundColor: colors["primary-surface-subtle"],
-            marginTop: 6,
-            borderRadius: 16,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-            Staked:{" "}
-            {totalPrice
-              ? totalPrice.toString()
-              : delegated.shrink(true).maxDecimals(6).toString()}
-          </Text>
-          <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-            {delegated
-              .shrink(true)
-              .maxDecimals(6)
-              .trim(true)
-              .upperCase(true)
-              .toString()}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.btnGroup}>
-        <OWButton
-          textStyle={{
-            fontSize: 15,
-            fontWeight: "600",
-            color: colors["neutral-text-action-on-light-bg"],
-          }}
-          icon={
-            <OWIcon
-              color={colors["neutral-text-action-on-light-bg"]}
-              name={"tdesigngift"}
-              size={20}
-            />
-          }
-          type="link"
-          style={styles.getStarted}
-          label={"Claim"}
-          disabled={isDisableClaim}
-          onPress={_onPressClaim}
-        />
-        <View
-          style={{
-            width: 1,
-            height: "100%",
-            backgroundColor: colors["neutral-border-default"],
-          }}
-        />
-        <OWButton
-          style={styles.getStarted}
-          type="link"
-          icon={
-            <OWIcon
-              color={colors["neutral-text-action-on-light-bg"]}
-              name={"tdesignwealth-1"}
-              size={20}
-            />
-          }
-          textStyle={{
-            fontSize: 15,
-            fontWeight: "600",
-            color: colors["neutral-text-action-on-light-bg"],
-          }}
-          label="Stake"
-          onPress={_onPressStake}
-        />
       </View>
     </OWBox>
   );
@@ -356,14 +328,8 @@ const styling = (colors) =>
     },
     "btn-claim": {
       backgroundColor: colors["primary-surface-default"],
-      // borderWidth: 0.5,
-      marginTop: 16,
       borderRadius: 999,
-      width: metrics.screenWidth / 4,
       height: 32,
-      position: "absolute",
-      right: 0,
-      bottom: 10,
     },
     "claim-title": {
       width: 24,
@@ -376,8 +342,8 @@ const styling = (colors) =>
     },
     getStarted: {
       borderRadius: 999,
-      width: metrics.screenWidth / 2.45,
-      height: 32,
+      // width: metrics.screenWidth / 2.45,
+      // height: 32,
     },
 
     btnGroup: {

@@ -495,7 +495,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     processedItemsTotalPriceByChain.clear();
     setTimeout(() => {
       fetchAllBalances();
-    }, 300);
+    }, 700);
     return () => {};
   }, [accountOrai.bech32Address]);
   const getBalanceBtc = async (
@@ -567,7 +567,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const tokenInfos = await API.getMultipleTokenInfo({
         tokenAddresses: allTokensAddress.join(","),
       });
-
+      if (!tokenInfos) return;
       const newCurrencies = tokenInfos
         .map((tokeninfo) => {
           const existingToken = chainInfo.currencies.find(
@@ -623,7 +623,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const tokensCw20 = chainInfo.currencies.filter(
         (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
       );
-
+      if (!tokensCw20) return;
       const multicall = new MulticallQueryClient(client, network.multicall);
       const res = await multicall.aggregate({
         queries: tokensCw20.map((t) => ({
@@ -920,7 +920,6 @@ const styling = (colors) =>
     containerStyle: {
       paddingBottom: 12,
       backgroundColor: colors["neutral-surface-bg"],
-      paddingTop: 16,
     },
     containerEarnStyle: {
       backgroundColor: colors["neutral-surface-bg2"],

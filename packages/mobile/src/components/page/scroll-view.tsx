@@ -81,6 +81,7 @@ export const PageWithScrollView = forwardRef<
           }}
           style={StyleSheet.flatten([
             styles.flatten(["flex-1", "padding-0", "overflow-visible"]),
+            { paddingTop: 16 },
             style,
           ])}
           keyboardOpeningTime={0}

@@ -19,6 +19,9 @@ import { Card } from "../../components/common/card";
 import { CosmosRenderArgs } from "./components/render-cosmos-args";
 import { useLanguage } from "@owallet/common";
 import { Address } from "../../components/address";
+import withErrorBoundary from "./hoc/withErrorBoundary";
+
+const CosmosRenderArgsWithErrorBoundary = withErrorBoundary(CosmosRenderArgs);
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -344,7 +347,11 @@ export const DetailsTab: FunctionComponent<{
                   padding: 8,
                 }}
               >
-                <CosmosRenderArgs msg={msg} chain={chain} i={i} />
+                <CosmosRenderArgsWithErrorBoundary
+                  msg={msg}
+                  chain={chain}
+                  i={i}
+                />
               </Card>
             </div>
           );

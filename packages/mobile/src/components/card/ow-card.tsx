@@ -12,7 +12,6 @@ const useStyleType = ({ type }) => {
   switch (type) {
     default:
       styles = {
-        backgroundColor: colors["neutral-surface-card-brutal"],
         width: metrics.screenWidth - 32,
         borderRadius: 24,
         position: "relative",
@@ -20,6 +19,9 @@ const useStyleType = ({ type }) => {
         overflow: "hidden",
         alignSelf: "center",
         marginTop: 2,
+        backgroundColor: colors["neutral-surface-card-brutal"],
+        borderWidth: 1,
+        borderColor: colors["neutral-border-brutal"],
       };
       break;
   }

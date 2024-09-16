@@ -7,17 +7,18 @@ import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryBlockInner extends ObservableChainQuery<{
   block: Block;
 }> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly paramHeight: number | "latest"
   ) {
-    super(kvStore, chainId, chainGetter, `/blocks/${paramHeight}`);
+    super(sharedContext, chainId, chainGetter, `/blocks/${paramHeight}`);
 
     makeObservable(this);
   }
@@ -40,16 +41,16 @@ export class ObservableQueryBlock extends ObservableChainQueryMap<{
   block: Block;
 }> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (height) => {
+    super(sharedContext, chainId, chainGetter, (height) => {
       const param: number | "latest" =
         height === "latest" ? height : parseInt(height);
 
       return new ObservableQueryBlockInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         param

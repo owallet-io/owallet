@@ -6,7 +6,6 @@ import {
 } from "@owallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
-import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -22,9 +21,10 @@ import {
   MemoInput,
   TextInput,
 } from "../../../../components/input";
-import { useSmartNavigation } from "../../../../navigation.provider";
+
 import { useStore } from "../../../../stores";
 import { metrics, spacing } from "../../../../themes";
+import { goBack, navigate } from "@src/router/root";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -83,7 +83,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     EthereumEndpoint
   );
 
-  const smartNavigation = useSmartNavigation();
   const addressBookConfig = route.params.addressBookConfig;
 
   const [name, setName] = useState("");
@@ -121,15 +120,13 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                   address: recipientConfig.rawRecipient,
                   memo: memoConfig.memo,
                 });
-                smartNavigation.goBack();
+                goBack();
               } else {
                 showToast({
                   message: "Something went wrong! Plase try again.",
                   type: "danger",
                 });
               }
-
-              // smartNavigation.navigateSmart('AddressBook', {});
             }
           }}
           style={[
@@ -147,7 +144,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         />
       }
     >
-      <PageHeader title="add new contact" />
       <ScrollView
         contentContainerStyle={{ height: metrics.screenHeight }}
         showsVerticalScrollIndicator={false}
@@ -201,7 +197,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             inputRight={
               <TouchableOpacity
                 onPress={() => {
-                  smartNavigation.navigateSmart("Camera", {
+                  navigate("Camera", {
                     screenCurrent: "addressbook",
                     name,
                   });

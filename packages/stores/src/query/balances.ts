@@ -6,19 +6,20 @@ import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { AppCurrency, NetworkType } from "@owallet/types";
 import { HasMapStore } from "../common";
 import { computedFn } from "mobx-utils";
+import { QuerySharedContext } from "../common/query/context";
 
 export abstract class ObservableQueryBalanceInner<
   T = unknown,
   E = unknown
 > extends ObservableChainQuery<T, E> {
   protected constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     url: string,
     protected readonly denomHelper: DenomHelper
   ) {
-    super(kvStore, chainId, chainGetter, url);
+    super(sharedContext, chainId, chainGetter, url);
     makeObservable(this);
   }
 
@@ -60,7 +61,7 @@ export class ObservableQueryBalancesInner {
   protected balanceMap: Map<string, ObservableQueryBalanceInner> = new Map();
 
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly balanceRegistries: BalanceRegistry[],
@@ -100,7 +101,7 @@ export class ObservableQueryBalancesInner {
           this.balanceMap.set(key, balanceInner);
         } else {
           // throw new Error(`Failed to get and parse the balance for ${key}`);
-          console.log(`Failed to get and parse the balance for ${key}`);
+          console.error(`Failed to get and parse the balance for ${key}`);
         }
       });
     }
@@ -220,13 +221,13 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   protected balanceRegistries: BalanceRegistry[] = [];
 
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
     super((bech32Address: string) => {
       return new ObservableQueryBalancesInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         this.balanceRegistries,

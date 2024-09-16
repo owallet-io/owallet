@@ -21,7 +21,10 @@ export const PageWithScrollViewInBottomTabView = React.forwardRef<
     <PageWithScrollView
       disableSafeArea={true}
       {...rest}
-      style={StyleSheet.flatten([{ marginBottom: bottomTabBarHeight }, style])}
+      style={StyleSheet.flatten([
+        { marginBottom: bottomTabBarHeight + 16 },
+        style,
+      ])}
       ref={ref}
     />
   );

@@ -110,7 +110,8 @@ export const InfoAccountCard: FC<{
       </div>
       <div className={styles.bodyBalance}>
         <span className={styles.textBalance}>
-          {totalPrice || "$0"}
+          {totalPrice}
+          {/* {(new PricePretty(fiatCurrency, totalPrice) || initPrice)?.toString()} */}
           {isLoading && (
             <span>
               {" "}

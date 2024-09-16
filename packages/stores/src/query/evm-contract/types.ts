@@ -2,6 +2,12 @@ export type Erc20ContractBalance = {
   balance: string;
 };
 
+export type Erc20RpcBalance = {
+  id: string;
+  jsonrpc: string;
+  result: string;
+};
+
 export type Erc20ContractTokenInfo = {
   decimals: number;
   name: string;

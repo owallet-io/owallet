@@ -7,7 +7,7 @@ import { ObservableQueryEvmBalanceRegistry } from "./balance";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryGasPrice } from "./gas-price";
 import { ObservableQueryGas } from "./gas";
-import { ObservableQueryErc20ContractInfo } from "./erc20-contract-info";
+import { QuerySharedContext } from "src/common/query/context";
 
 export interface HasEvmQueries {
   evm: EvmQueries;
@@ -20,41 +20,35 @@ export class QueriesWrappedEvm
   public evm: EvmQueries;
 
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    super(kvStore, chainId, chainGetter, apiGetter);
+    super(sharedContext, chainId, chainGetter, apiGetter);
 
-    this.evm = new EvmQueries(this, kvStore, chainId, chainGetter);
+    this.evm = new EvmQueries(this, sharedContext, chainId, chainGetter);
   }
 }
 
 export class EvmQueries {
   public readonly queryGasPrice: DeepReadonly<ObservableQueryGasPrice>;
   public readonly queryGas: DeepReadonly<ObservableQueryGas>;
-  public readonly queryErc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
 
   constructor(
     base: QueriesSetBase,
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryEvmBalanceRegistry(kvStore)
+      new ObservableQueryEvmBalanceRegistry(sharedContext)
     );
     this.queryGasPrice = new ObservableQueryGasPrice(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
-    this.queryGas = new ObservableQueryGas(kvStore, chainId, chainGetter);
-    this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.queryGas = new ObservableQueryGas(sharedContext, chainId, chainGetter);
   }
 }

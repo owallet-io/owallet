@@ -10,7 +10,6 @@ import { useStyle } from "../../../../styles";
 import { useStore } from "../../../../stores";
 import moment from "moment";
 import { useTheme } from "@src/themes/theme-provider";
-import { PageHeader } from "@src/components/header/header-new";
 import OWCard from "@src/components/card/ow-card";
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
@@ -82,13 +81,10 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{}}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="About" />
       <OWCard
         style={{
-          marginTop: spacing["16"],
           marginBottom: spacing["12"],
         }}
       >

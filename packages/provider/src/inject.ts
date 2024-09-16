@@ -17,6 +17,7 @@ import {
   Bitcoin as IBitcoin,
   // Oasis as IOasis,
   BitcoinMode,
+  SettledResponses,
 } from "@owallet/types";
 import { Result, JSONUint8Array } from "@owallet/router";
 import {
@@ -65,7 +66,7 @@ export interface ProxyRequestResponse {
  * So, to request some methods of the extension, this will proxy the request to the content script that is injected to webpage on the extension level.
  * This will use `window.postMessage` to interact with the content script.
  */
-
+const isOsmosis = window?.location?.origin?.includes("app.osmosis.zone");
 export class InjectedOWallet implements IOWallet {
   static startProxy(
     owallet: IOWallet,
@@ -88,15 +89,12 @@ export class InjectedOWallet implements IOWallet {
       //TO DO: this version got from packages/mobile/package.json
       const isReactNative = owallet.version.includes("mobile");
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
-      const typeProxy: any = !isReactNative
-        ? `${NAMESPACE}-proxy-request`
-        : "proxy-request";
+      const typeProxy: any =
+        !isReactNative && !isOsmosis
+          ? `${NAMESPACE}-proxy-request`
+          : "proxy-request";
       // filter proxy-request by namespace
-      if (
-        !message ||
-        message.type !== typeProxy ||
-        message.namespace !== NAMESPACE
-      ) {
+      if (!message || message.type !== typeProxy) {
         return;
       }
 
@@ -217,11 +215,12 @@ export class InjectedOWallet implements IOWallet {
 
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     // TO DO: Mode 'extension' got from params InjectOwallet extension
+
     const typeProxy: any =
-      this.mode === "extension"
+      this.mode === "extension" && !isOsmosis
         ? `${NAMESPACE}-proxy-request`
         : "proxy-request";
-    console.log("args", args);
+    console.log("args", method, args);
 
     const proxyMessage: ProxyRequest = {
       type: typeProxy,
@@ -257,6 +256,8 @@ export class InjectedOWallet implements IOWallet {
           reject(new Error(result.error));
           return;
         }
+
+        console.log("result", result);
 
         resolve(result.return);
       };
@@ -300,7 +301,9 @@ export class InjectedOWallet implements IOWallet {
   async getKey(chainId: string): Promise<Key> {
     return await this.requestMethod("getKey", [chainId]);
   }
-
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this.requestMethod("getKeysSettled", [chainIds]);
+  }
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,
@@ -625,6 +628,8 @@ export class InjectedEthereum implements Ethereum {
             }
             break;
           default:
+            console.log("message", message.method, message.args);
+
             result = await ethereum.request({
               method: message.method as string,
               params: message.args[0],

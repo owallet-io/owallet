@@ -9,10 +9,12 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, ViewStyle } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
 import { find } from "lodash";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorList: Array<any>;
@@ -59,8 +61,6 @@ export const DelegationsCard: FunctionComponent<{
     return map;
   }, [validators]);
 
-  const smartNavigation = useSmartNavigation();
-
   const [warningList, setWarningList] = useState([]);
 
   useEffect(() => {
@@ -104,7 +104,6 @@ export const DelegationsCard: FunctionComponent<{
             });
 
             const thumbnail =
-              ValidatorThumbnails[val.operator_address] ||
               bondedValidators.getValidatorThumbnail(val.operator_address) ||
               unbondingValidators.getValidatorThumbnail(val.operator_address) ||
               unbondedValidators.getValidatorThumbnail(val.operator_address);
@@ -131,7 +130,7 @@ export const DelegationsCard: FunctionComponent<{
                   borderWidth: 0.5,
                 }}
                 onPress={() => {
-                  smartNavigation.navigate("Delegate.Detail", {
+                  navigate(SCREENS.DelegateDetail, {
                     validatorAddress: del.validator_address,
                     apr: foundValidator?.apr ?? 0,
                     uptime: foundValidator?.uptime ?? 0,

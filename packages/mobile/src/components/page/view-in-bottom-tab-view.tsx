@@ -19,7 +19,7 @@ export const PageWithViewInBottomTabView: FunctionComponent<ViewProps> = (
       style={StyleSheet.flatten([
         style.flatten(["flex-1"]),
         {
-          marginBottom: bottomTabBarHeight,
+          marginBottom: bottomTabBarHeight + 16,
         },
         propStyle,
       ])}
