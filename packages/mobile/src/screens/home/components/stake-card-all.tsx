@@ -1,4 +1,4 @@
-import { Dec } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
@@ -193,12 +193,21 @@ export const StakeCardAll = observer(({}) => {
       const account = accountStore.getAccount(chainId);
 
       const validatorRewars = [];
+      const isDydx = chainId?.includes("dydx-mainnet");
+      const denom =
+        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
       queryReward
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
+          let rewards: CoinPretty | undefined;
+
+          if (isDydx) {
+            rewards = queryReward
+              .getRewardsOf(validatorAddress)
+              .find((r) => r.currency.coinMinimalDenom === denom);
+          } else {
+            rewards = queryReward.getStakableRewardOf(validatorAddress);
+          }
           validatorRewars.push({ validatorAddress, rewards });
         });
 
@@ -213,7 +222,7 @@ export const StakeCardAll = observer(({}) => {
           {
             onBroadcasted: (txHash) => {},
           },
-          queryReward.stakableReward.currency.coinMinimalDenom
+          isDydx ? denom : queryReward.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({

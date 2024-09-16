@@ -90,12 +90,20 @@ export const EarningCardNew = observer(({}) => {
   const _onPressCompound = async () => {
     try {
       const validatorRewars = [];
+      const isDydx = chainId?.includes("dydx-mainnet");
+      const denom =
+        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
       queryRewards
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
+          let rewards: CoinPretty | undefined;
+          if (isDydx) {
+            rewards = queryRewards
+              .getRewardsOf(validatorAddress)
+              .find((r) => r.currency.coinMinimalDenom === denom);
+          } else {
+            rewards = queryRewards.getStakableRewardOf(validatorAddress);
+          }
           validatorRewars.push({ validatorAddress, rewards });
         });
 
@@ -129,7 +137,7 @@ export const EarningCardNew = observer(({}) => {
               });
             },
           },
-          stakingRewards.currency.coinMinimalDenom
+          isDydx ? denom : queryRewards.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({
