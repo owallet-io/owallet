@@ -193,7 +193,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       if (error?.message?.includes("'signature' of undefined")) return;
       showToast({
         type: "danger",
-        message: error?.message || JSON.stringify(error),
+        message: `Failed to UnDelegate: ${
+          error?.message || JSON.stringify(error)
+        }`,
       });
       console.log(error, "error");
     } finally {

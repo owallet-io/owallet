@@ -209,7 +209,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     } else {
       console.log(e);
       showToast({
-        message: JSON.stringify(e),
+        message: `Failed to Redelegate: ${e?.message || JSON.stringify(e)}`,
         type: "danger",
       });
     }

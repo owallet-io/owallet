@@ -257,7 +257,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       if (error?.message?.includes("'signature' of undefined")) return;
       showToast({
         type: "danger",
-        message: error?.message || JSON.stringify(error),
+        message: `Failed to Stake: ${error?.message || JSON.stringify(error)}`,
       });
       console.log(error, "error");
     } finally {
