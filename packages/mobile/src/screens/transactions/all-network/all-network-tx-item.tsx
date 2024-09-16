@@ -83,7 +83,7 @@ export const AllNetworkTxItem: FC<{
     item.fromAddress?.toLowerCase() === item.toAddress?.toLowerCase();
   const method = isSent ? "Sent" : "Received";
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item.network]);
-  const { coinDenom } = chainInfo.stakeCurrency;
+  const { coinDenom } = chainInfo.feeCurrencies?.[0] ?? chainInfo.stakeCurrency;
   const { coinDenom: denom } = currency;
   return (
     <View
@@ -121,13 +121,13 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: chainInfo.stakeCurrency.coinImageUrl,
+                uri: chainInfo.feeCurrencies?.[0].coinImageUrl,
               }}
               size={20}
               style={{
                 borderRadius: 999,
                 tintColor:
-                  chainInfo.stakeCurrency.coinDenom === "ORAI"
+                  chainInfo.feeCurrencies?.[0].coinDenom === "ORAI"
                     ? colors["neutral-text-title"]
                     : null,
               }}

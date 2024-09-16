@@ -73,6 +73,9 @@ const OWHeaderTitle = observer(
                     source={{
                       uri: chainInfo?.stakeCurrency?.coinImageUrl,
                     }}
+                    style={{
+                      borderRadius: 999,
+                    }}
                     size={20}
                   />
                 </View>

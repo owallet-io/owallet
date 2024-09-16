@@ -24,12 +24,20 @@ export enum OasisNetwork {
   SAPPHIRE = "oasis-sapphire-mainnet",
   EMERALD = "oasis-emerald-mainnet",
 }
+export const urlTxHistoryStaging =
+  "https://tx-history-backend-staging.oraidex.io/";
 export const urlTxHistory = "https://tx-history-backend.oraidex.io/";
 export enum COSMOS_NETWORK {
   COSMOSHUB = "cosmoshub-4",
   OSMOSIS = "osmosis-1",
   INJECTIVE = "injective-1",
   ORAICHAIN = "Oraichain",
+  DYDX = "dydx-mainnet-1",
+  SEI = "pacific-1",
+  CELESTIA = "celestia",
+  AKASH = "akashnet-2",
+  JUNO = "juno-1",
+  NEUTRON = "neutron-1",
 }
 
 export type Network = NetworkTatum & OasisNetwork & COSMOS_NETWORK;
@@ -60,6 +68,11 @@ export enum ChainIdEnum {
   Neutaro = "Neutaro-1",
   Noble = "noble-1",
   Stargaze = "stargaze-1",
+  DYDX = "dydx-mainnet-1",
+  SEI = "pacific-1",
+  CELESTIA = "celestia",
+  AKASH = "akashnet-2",
+  NEUTRON = "neutron-1",
 }
 
 export enum KADOChainNameEnum {

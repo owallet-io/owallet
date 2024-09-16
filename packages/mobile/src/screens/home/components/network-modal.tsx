@@ -229,16 +229,24 @@ export const NetworkModal: FC<{
               marginRight: 16,
             }}
           >
-            <OWIcon
-              type="images"
-              source={{
-                uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
-              }}
-              style={{
-                borderRadius: 999,
-              }}
-              size={28}
-            />
+            {item.isAll ? (
+              <OWIcon
+                name={"tdesignblockchain"}
+                size={20}
+                // color={colors["neutral-text-title"]}
+              />
+            ) : (
+              <OWIcon
+                type="images"
+                source={{
+                  uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
+                }}
+                style={{
+                  borderRadius: 999,
+                }}
+                size={28}
+              />
+            )}
           </View>
           <View>
             <Text

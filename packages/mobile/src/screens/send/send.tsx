@@ -30,27 +30,20 @@ import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
 import OWCard from "@src/components/card/ow-card";
-
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { fromBase64 } from "@cosmjs/encoding";
-
 import { FeeModal } from "@src/modals/fee";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { DownArrowIcon } from "@src/components/icon";
 import { capitalizedText, showToast } from "@src/utils/helper";
 import { Buffer } from "buffer";
-import { ChainIdEnum } from "@oraichain/oraidex-common";
 import { tracking } from "@src/utils/tracking";
-import { GasPrice } from "@cosmjs/stargate";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { coin, StdFee } from "@cosmjs/amino";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import axios from "axios";
 import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
-import { makeStdTx } from "@cosmjs/amino";
 import { API } from "@src/common/api";
 const { coins } = require("@cosmjs/amino");
 import {

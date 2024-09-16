@@ -21,7 +21,7 @@ export const HistoryCard: FunctionComponent<{
   const fiat = priceStore.defaultVsCurrency;
   const { chainId } = chainStore.current;
   const price = priceStore.getPrice(
-    chainStore.current.stakeCurrency.coinGeckoId,
+    chainStore.current.feeCurrencies?.[0]?.coinGeckoId,
     fiat
   );
   const heightHeader = useGetHeightHeader();
