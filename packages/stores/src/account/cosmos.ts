@@ -956,19 +956,29 @@ export class CosmosAccount {
       memo
     );
 
-    const gas = simulateTx?.gasUsed
-      ? (
-          simulateTx.gasUsed *
-          1.2 *
-          validatorAddresses.length *
-          Math.ceil(totalAmount)
-        ).toString()
-      : (
-          Number(stdFee.gas) *
-          1.2 *
-          validatorAddresses.length *
-          Math.ceil(totalAmount)
-        ).toString();
+    let simulatedGas = 0;
+    let gas = "0";
+    if (simulateTx?.gasUsed) {
+      simulatedGas =
+        simulateTx.gasUsed *
+        1.2 *
+        validatorAddresses.length *
+        Math.ceil(totalAmount);
+      gas = simulatedGas.toString();
+    }
+    const stdGas =
+      Number(stdFee.gas) *
+      1.2 *
+      validatorAddresses.length *
+      Math.ceil(totalAmount);
+
+    if (stdGas > simulatedGas) {
+      gas = stdGas.toString();
+    }
+
+    // let gas = simulateTx?.gasUsed
+    //   ? (simulateTx.gasUsed * 1.2 * validatorAddresses.length * Math.ceil(totalAmount)).toString()
+    //   : (Number(stdFee.gas) * 1.2 * validatorAddresses.length * Math.ceil(totalAmount)).toString();
 
     await this.base.sendMsgs(
       "withdrawRewardsAndDelegation",
