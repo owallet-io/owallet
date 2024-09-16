@@ -303,6 +303,7 @@ const styling = (colors) => {
     imgNetwork: {
       height: 20,
       width: 20,
+      borderRadius: 20,
       backgroundColor: colors["neutral-icon-on-dark"],
     },
     containerBox: {
