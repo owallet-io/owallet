@@ -12,7 +12,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useStore } from "@src/stores";
-import { removeDataInParentheses, ValidatorThumbnails } from "@owallet/common";
+import {
+  DenomDydx,
+  removeDataInParentheses,
+  ValidatorThumbnails,
+} from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
   ValidatorAPYIcon,
@@ -138,8 +142,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const rewards = (() => {
     let reward: CoinPretty | undefined;
     const isDydx = chainStore.current.chainId?.includes("dydx-mainnet");
-    const denomDydx =
-      "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+    const denomDydx = DenomDydx;
     const currency = chainStore.current.currencyMap.get(denomDydx);
     if (isDydx) {
       reward = queryRewards

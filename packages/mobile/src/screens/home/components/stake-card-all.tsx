@@ -14,7 +14,11 @@ import { tracking } from "@src/utils/tracking";
 import { ViewToken } from "@owallet/types";
 import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { removeDataInParentheses, unknownToken } from "@owallet/common";
+import {
+  DenomDydx,
+  removeDataInParentheses,
+  unknownToken,
+} from "@owallet/common";
 import { ObservableQueryRewardsInner } from "@owallet/stores";
 import { ArrowOpsiteUpDownIcon, DownArrowIcon } from "@src/components/icon";
 import { useSendTxConfig } from "@owallet/hooks";
@@ -93,7 +97,7 @@ export const StakeCardAll = observer(({}) => {
 
       const targetDenom = (() => {
         if (chainInfo.chainId?.includes("dydx-mainnet")) {
-          return "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+          return DenomDydx;
         }
         return chainInfo.stakeCurrency?.coinMinimalDenom;
       })();
@@ -205,8 +209,7 @@ export const StakeCardAll = observer(({}) => {
 
       const validatorRewars = [];
       const isDydx = chainId?.includes("dydx-mainnet");
-      const denom =
-        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+      const denom = DenomDydx;
       queryReward
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {

@@ -20,7 +20,7 @@ import { OWBox } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
-import { removeDataInParentheses } from "@owallet/common";
+import { DenomDydx, removeDataInParentheses } from "@owallet/common";
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();
@@ -53,7 +53,7 @@ export const EarningCardNew = observer(({}) => {
     const isDydx = chainId?.includes("dydx");
     const targetDenom = (() => {
       if (isDydx) {
-        return "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+        return DenomDydx;
       }
 
       return chainStore.current.stakeCurrency?.coinMinimalDenom;
@@ -91,8 +91,7 @@ export const EarningCardNew = observer(({}) => {
     try {
       const validatorRewars = [];
       const isDydx = chainId?.includes("dydx-mainnet");
-      const denom =
-        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
+      const denom = DenomDydx;
       queryRewards
         .getDescendingPendingRewardValidatorAddresses(10)
         .map((validatorAddress) => {
