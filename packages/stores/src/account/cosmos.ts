@@ -44,6 +44,9 @@ export interface CosmosMsgOpts {
   readonly redelegate: MsgOpt;
   // The gas multiplication per rewards.
   readonly withdrawRewards: MsgOpt;
+  readonly compound: {
+    readonly native: MsgOpt;
+  };
   readonly govVote: MsgOpt;
 }
 
@@ -80,6 +83,12 @@ export class AccountWithCosmos
     withdrawRewards: {
       type: "cosmos-sdk/MsgWithdrawDelegationReward",
       gas: 140000,
+    },
+    compound: {
+      native: {
+        type: "cosmos-sdk/MsgDelegate",
+        gas: 800000,
+      },
     },
     govVote: {
       type: "cosmos-sdk/MsgVote",
@@ -891,10 +900,13 @@ export class CosmosAccount {
         },
       };
     });
-
+    let totalAmount = 0;
     // Delegate msgs
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
     const delegateMsgs = validatorRewars.map((vr) => {
+      totalAmount += Number(
+        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
+      );
       let dec = new Dec(
         vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
       );
@@ -908,7 +920,7 @@ export class CosmosAccount {
           validator_address: vr.validatorAddress,
           amount: {
             denom: stakeCurrency.coinMinimalDenom,
-            amount: dec.truncate().toString(),
+            amount: Number(dec.truncate().toString()).toString(),
           },
         },
       };
@@ -941,6 +953,21 @@ export class CosmosAccount {
       },
       memo
     );
+
+    const gas = simulateTx?.gasUsed
+      ? (
+          simulateTx.gasUsed *
+          1.2 *
+          validatorAddresses.length *
+          Math.ceil(totalAmount)
+        ).toString()
+      : (
+          Number(stdFee.gas) *
+          1.2 *
+          validatorAddresses.length *
+          Math.ceil(totalAmount)
+        ).toString();
+
     await this.base.sendMsgs(
       "withdrawRewardsAndDelegation",
       {
@@ -981,9 +1008,7 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: simulateTx?.gasUsed
-          ? (simulateTx.gasUsed * 1.2 * validatorAddresses.length).toString()
-          : (Number(stdFee.gas) * 1.1).toString(),
+        gas,
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
