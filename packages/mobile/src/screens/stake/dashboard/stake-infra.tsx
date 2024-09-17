@@ -629,7 +629,7 @@ const styling = (colors) =>
       marginTop: spacing["16"],
       borderRadius: 16,
       padding: 16,
-      justifyContent: "center",
+      // justifyContent: "center",
     },
     row: {
       flexDirection: "row",
