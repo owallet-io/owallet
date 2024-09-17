@@ -47,7 +47,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView
-      scrollEnabled={chainStore.current.networkType === "cosmos"}
+      // scrollEnabled={chainStore.current.networkType === "cosmos"}
       backgroundColor={colors["neutral-surface-bg"]}
     >
       {chainStore.current.networkType === "cosmos" &&
