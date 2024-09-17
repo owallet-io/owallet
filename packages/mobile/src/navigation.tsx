@@ -224,8 +224,9 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterMain}
               component={NewMnemonicScreen}
             />
+
             <Stack.Screen
-              name={SCREENS.RegisterVerifyMnemonicMain}
+              name={SCREENS.RegisterVerifyMnemonic}
               component={VerifyMnemonicScreen}
             />
             <Stack.Screen
