@@ -23,6 +23,7 @@ import { SCREENS } from "@src/common/constants";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { tracking } from "@src/utils/tracking";
+import Web3 from "web3";
 interface keyable {
   [key: string]: any;
 }
@@ -101,9 +102,11 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                 if (chainInfo) {
                   const routersParam: keyable =
                     NavigationAction?.getState()?.routes;
-                  const isParamAddressBook = routersParam.find(
-                    (route) => route?.params?.screenCurrent === "addressbook"
-                  );
+                  const isParamAddressBook =
+                    routersParam &&
+                    routersParam.find(
+                      (route) => route?.params?.screenCurrent === "addressbook"
+                    );
                   if (isParamAddressBook) {
                     navigate(SCREENS.AddAddressBook, {
                       chainId: chainInfo.chainId,
