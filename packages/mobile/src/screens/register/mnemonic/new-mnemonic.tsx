@@ -4,7 +4,13 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { View, StyleSheet, Clipboard, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Clipboard,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
@@ -68,20 +74,21 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    if (checkRouter(props?.route?.name, "RegisterMain")) {
-      navigate(SCREENS.RegisterVerifyMnemonic, {
-        registerConfig,
-        newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath,
-      });
-    } else {
-      navigate(SCREENS.RegisterVerifyMnemonic, {
-        registerConfig,
-        newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath,
-        walletName: getValues("name"),
-      });
-    }
+    // if (checkRouter(props?.route?.name, "RegisterMain")) {
+    //   navigate(SCREENS.RegisterVerifyMnemonic, {
+    //     registerConfig,
+    //     newMnemonicConfig,
+    //     bip44HDPath: bip44Option.bip44HDPath,
+    //   });
+    // } else {
+    //
+    // }
+    navigate(SCREENS.RegisterVerifyMnemonic, {
+      registerConfig,
+      newMnemonicConfig,
+      bip44HDPath: bip44Option.bip44HDPath,
+      walletName: getValues("name"),
+    });
   });
   const onGoBack = () => {
     goBack();
@@ -123,7 +130,10 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
           <OWIcon
             size={16}
@@ -131,6 +141,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             name="arrow-left"
           />
         </TouchableOpacity>
+
         <View style={[styles.aic, styles.title]}>
           <OWText variant="heading" style={{ textAlign: "center" }} typo="bold">
             Create new wallet
@@ -156,7 +167,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             }`}
           />
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.aic}>
         <View style={styles.signIn}>
