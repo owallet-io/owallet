@@ -273,11 +273,9 @@ export class CosmosAccount {
             },
             memo
           );
-          console.log(simulateTx, simulateTx?.gasUsed, "simulateTx?.gasUsed");
           const gasEstimate = simulateTx?.gasUsed
             ? Math.floor(simulateTx.gasUsed * 1.5).toString()
             : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString();
-          console.log(gasEstimate, stdFee.amount, "gasEstimate");
           await this.base.sendMsgs(
             "send",
             {

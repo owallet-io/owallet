@@ -421,7 +421,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
       setGasMsgSend({
         native: {
           type: "cosmos-sdk/MsgSend",
-          gas: Math.floor(simulateTx?.gasUsed * 1.5),
+          gas: Math.floor(simulateTx?.gasUsed * 1.3),
         },
       });
     } catch (error) {
