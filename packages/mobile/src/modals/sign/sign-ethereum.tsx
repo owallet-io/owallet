@@ -267,6 +267,7 @@ export const SignEthereumModal: FunctionComponent<{
               style={{
                 height: 30,
                 width: 30,
+                borderRadius: 999,
               }}
               source={{
                 uri: currency?.coinImageUrl,

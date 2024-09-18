@@ -18,8 +18,9 @@ import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
-import { resetTo } from "@src/router/root";
+import { goBack, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { OWButton } from "@components/button";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore } = useStore();
@@ -54,8 +55,9 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain(chainId);
 
-  const onDone = () => {
+  const onRetry = () => {
     resetTo(SCREENS.STACK.MainTab);
+    return;
   };
 
   const amount = new CoinPretty(
@@ -64,10 +66,10 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
   );
   const fee = params?.data?.fee?.amount?.[0]?.amount
     ? new CoinPretty(
-        chainInfo.stakeCurrency,
+        chainInfo.feeCurrencies?.[0],
         new Dec(params?.data?.fee?.amount?.[0]?.amount)
       )
-    : new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    : new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -84,20 +86,13 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     <PageWithBottom
       bottomGroup={
         <View style={styles.containerBottomButton}>
-          <OWButtonGroup
-            labelApprove={"Retry"}
-            labelClose={"Contact Us"}
-            iconClose={<OWIcon name={"send"} />}
-            styleApprove={{
+          <OWButton
+            label={"Retry"}
+            style={{
               borderRadius: 99,
               backgroundColor: colors["primary-surface-default"],
             }}
-            // onPressClose={_onPressReject}
-            onPressApprove={onDone}
-            styleClose={{
-              borderRadius: 99,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            onPress={onRetry}
           />
         </View>
       }
@@ -140,10 +135,9 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               })}
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee) || "$0"
+              })`}
               btnCopy={false}
             />
             <ItemReceivedToken

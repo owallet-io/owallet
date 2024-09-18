@@ -210,6 +210,7 @@ export const SignBitcoinModal: FunctionComponent<{
               style={{
                 height: 30,
                 width: 30,
+                borderRadius: 999,
               }}
               source={{
                 uri: chainStore.current.stakeCurrency?.coinImageUrl,

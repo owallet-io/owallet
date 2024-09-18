@@ -337,10 +337,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
             <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />
             <Stack.Screen
-              options={{
-                gestureEnabled: false,
-                headerShown: false,
-              }}
               name={SCREENS.TxFailedResult}
               component={TxFailedResultScreen}
             />

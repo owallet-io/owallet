@@ -256,6 +256,7 @@ export const SignTronModal: FunctionComponent<{
               style={{
                 height: 30,
                 width: 30,
+                borderRadius: 999,
               }}
               source={{
                 uri: amountConfig.sendCurrency?.coinImageUrl,

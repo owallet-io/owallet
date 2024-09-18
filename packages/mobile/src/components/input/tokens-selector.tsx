@@ -94,7 +94,14 @@ export const TokenView: FunctionComponent<{
             }}
           >
             {image && (
-              <OWIcon type="images" source={{ uri: image }} size={28} />
+              <OWIcon
+                type="images"
+                source={{ uri: image }}
+                style={{
+                  borderRadius: 999,
+                }}
+                size={28}
+              />
             )}
           </View>
           <View>
@@ -361,6 +368,9 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             <OWIcon
               size={20}
               type={"images"}
+              style={{
+                borderRadius: 999,
+              }}
               source={{
                 uri: currencyActive?.coinImageUrl,
               }}

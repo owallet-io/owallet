@@ -62,6 +62,7 @@ import { TendermintTxTracer } from "@owallet/cosmos";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
+import { CosmosMsgOpts } from "@owallet/stores";
 
 export const NewSendScreen: FunctionComponent = observer(() => {
   const {
@@ -80,6 +81,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const styles = styling(colors);
   const [balance, setBalance] = useState<CoinPretty>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [gasMsgSend, setGasMsgSend] = useState<CosmosMsgOpts["send"]>();
   const route = useRoute<
     RouteProp<
       Record<
@@ -108,7 +110,8 @@ export const NewSendScreen: FunctionComponent = observer(() => {
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
-    account.msgOpts["send"],
+    //@ts-ignore
+    gasMsgSend || account.msgOpts.send,
     address,
     queries.queryBalances,
     EthereumEndpoint
@@ -392,6 +395,49 @@ export const NewSendScreen: FunctionComponent = observer(() => {
     });
   }, [chainStore.current?.chainName]);
   const estimatePrice = priceStore.calculatePrice(amount)?.toString();
+  const simulateTx = async () => {
+    try {
+      const simulateTx = await account.cosmos.simulateTx(
+        [
+          {
+            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+            value: MsgSend.encode({
+              fromAddress: account.bech32Address,
+              toAddress: sendConfigs.recipientConfig.recipient,
+              amount: [sendConfigs.amountConfig.getAmountPrimitive()],
+            }).finish(),
+          },
+        ],
+        {
+          amount: sendConfigs.feeConfig.toStdFee()?.amount ?? [],
+        },
+        sendConfigs.memoConfig.memo
+      );
+      console.log(simulateTx, "simulateTx");
+      if (!simulateTx?.gasUsed) {
+        setGasMsgSend(null);
+        return;
+      }
+      setGasMsgSend({
+        native: {
+          type: "cosmos-sdk/MsgSend",
+          gas: Math.floor(simulateTx?.gasUsed * 1.5),
+        },
+      });
+    } catch (error) {
+      setGasMsgSend(null);
+      console.error("SimulateTx Estimate Error", error);
+    }
+  };
+  useEffect(() => {
+    if (!txStateIsValid) return;
+    simulateTx();
+    return () => {};
+  }, [
+    sendConfigs.amountConfig.amount,
+    sendConfigs.recipientConfig.recipient,
+    txStateIsValid,
+  ]);
   return (
     <PageWithBottom
       bottomGroup={

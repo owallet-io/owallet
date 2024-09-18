@@ -916,17 +916,17 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     currencies: [
       {
-        coinDenom: "STAKE",
-        coinMinimalDenom: "ustake",
-        coinDecimals: 6,
-      },
-      {
         coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      },
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
       },
     ],
     feeCurrencies: [
@@ -1553,17 +1553,17 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     currencies: [
       {
-        coinDenom: "STAKE",
-        coinMinimalDenom: "ustake",
-        coinDecimals: 6,
-      },
-      {
         coinDenom: "NTRN",
         coinMinimalDenom: "untrn",
         coinDecimals: 6,
         coinGeckoId: "neutron-3",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+      },
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
       },
     ],
     feeCurrencies: [
