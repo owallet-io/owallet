@@ -65,7 +65,7 @@ export const HomePage = observer(() => {
   };
   return (
     <FooterLayout>
-      <InfoAccountCard isLoading={isLoading} totalPrice={totalPriceBalance} />
+      <InfoAccountCard isLoading={false} totalPrice={totalPriceBalance} />
       {/*TODO:// need check again Claim reward */}
       {/* <ClaimReward /> */}
       {chainStore.isAllNetwork ||

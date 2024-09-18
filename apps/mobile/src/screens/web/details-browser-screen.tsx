@@ -482,6 +482,7 @@ export const DetailsBrowserScreen = observer((props) => {
                 decelerationRate="normal"
                 allowsBackForwardNavigationGestures={true}
                 // onScroll={_onScroll}
+                applicationNameForUserAgent={`OWalletMobile/${DeviceInfo.getVersion()}`}
                 source={{ uri: route?.params?.url }}
               />
             </>
