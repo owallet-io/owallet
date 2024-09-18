@@ -93,8 +93,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
       bottomGroup={
         <OWButton
           label="Share Address"
-          loading={!!addressToShow}
-          disabled={!!addressToShow}
+          disabled={!addressToShow ? true : false}
           onPress={() => {
             Share.share({
               message: addressToShow,
