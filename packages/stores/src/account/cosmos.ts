@@ -926,47 +926,47 @@ export class CosmosAccount {
       };
     });
 
+    const mergeMsgs = [
+      ...msgs.map((msg) => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+          value: MsgWithdrawDelegatorReward.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+          }).finish(),
+        };
+      }),
+      ...delegateMsgs.map((delegateMsg) => {
+        return {
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.encode({
+            delegatorAddress: delegateMsg.value.delegator_address,
+            validatorAddress: delegateMsg.value.validator_address,
+            amount: delegateMsg.value.amount,
+          }).finish(),
+        };
+      }),
+    ];
+
     const simulateTx = await this.simulateTx(
-      [
-        ...msgs.map((msg) => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-            value: MsgWithdrawDelegatorReward.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorAddress: msg.value.validator_address,
-            }).finish(),
-          };
-        }),
-        ...delegateMsgs.map((delegateMsg) => {
-          return {
-            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-            value: MsgDelegate.encode({
-              delegatorAddress: delegateMsg.value.delegator_address,
-              validatorAddress: delegateMsg.value.validator_address,
-              amount: delegateMsg.value.amount,
-            }).finish(),
-          };
-        }),
-      ],
+      mergeMsgs,
       {
         amount: stdFee.amount ?? [],
       },
       memo
     );
 
-    const gas = simulateTx?.gasUsed
-      ? (
-          simulateTx.gasUsed *
-          1.2 *
-          validatorAddresses.length *
-          Math.ceil(totalAmount)
-        ).toString()
-      : (
-          Number(stdFee.gas) *
-          1.2 *
-          validatorAddresses.length *
-          Math.ceil(totalAmount)
-        ).toString();
+    let simulatedGas = 0;
+    let gas = "0";
+    if (simulateTx?.gasUsed) {
+      simulatedGas = simulateTx.gasUsed * 1.2 * mergeMsgs.length;
+      gas = simulatedGas.toString();
+    }
+    const stdGas = Number(stdFee.gas) * 1.2 * mergeMsgs.length;
+
+    if (stdGas > simulatedGas) {
+      gas = stdGas.toString();
+    }
 
     await this.base.sendMsgs(
       "withdrawRewardsAndDelegation",
