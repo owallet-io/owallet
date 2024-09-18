@@ -217,26 +217,6 @@ export const AccountBoxAll: FunctionComponent<{
                 ? totalPriceBalance?.toString()
                 : totalBalanceByChain?.toString()}
             </Text>
-            {/* {isLoading ? (
-            <View
-              style={{
-                maxHeight: 30
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading.json")}
-                resizeMode={"contain"}
-                style={{
-                  width: 70,
-                  height: 70,
-                  marginLeft: -10,
-                  marginTop: -20
-                }}
-                autoPlay
-                loop
-              />
-            </View>
-          ) : null} */}
           </View>
         </>
       );

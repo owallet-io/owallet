@@ -306,7 +306,7 @@ export const StakeCardAll = observer(({}) => {
 
   const renderToken = useCallback((token) => {
     if (!token) return;
-
+    const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
     return (
       <View
         style={{
@@ -372,6 +372,10 @@ export const StakeCardAll = observer(({}) => {
             <Text style={styles.outlineButton}>Claim</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            disabled={isDisabledCompound}
+            style={{
+              opacity: isDisabledCompound ? 0.5 : 1,
+            }}
             onPress={() => {
               _onPressCompound(token.queryRewards, token.chainInfo.chainId);
             }}
