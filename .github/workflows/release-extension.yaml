@@ -61,7 +61,7 @@ jobs:
 
       - name: Publish extension for test
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           REF_NAME: ${{ github.ref_name }}
         run: |
           chmod 777 -R ./scripts
