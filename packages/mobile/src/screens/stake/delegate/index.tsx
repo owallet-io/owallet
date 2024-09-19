@@ -427,6 +427,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         source={{
                           uri: chainStore.current.stakeCurrency?.coinImageUrl,
                         }}
+                        style={{
+                          borderRadius: 999,
+                        }}
                         size={16}
                       />
                     </View>

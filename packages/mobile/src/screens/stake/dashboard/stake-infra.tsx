@@ -22,11 +22,9 @@ import {
   AprByChain,
   ChainIdEnum,
   COINTYPE_NETWORK,
-  DenomHelper,
   getKeyDerivationFromAddressType,
 } from "@owallet/common";
 import axios from "axios";
-import moment from "moment";
 import { Popup } from "react-native-popup-confirm-toast";
 import { tracking } from "@src/utils/tracking";
 import { showToast } from "@src/utils/helper";
@@ -36,11 +34,25 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { Dec, IntPretty } from "@owallet/unit";
+import { ScrollView } from "react-native-gesture-handler";
 
-const owalletOraichainAddress =
-  "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
-const owalletOsmosisAddress =
-  "osmovaloper1zqevmn000unnjj709akc8p86f9jc4xevf8f8g3";
+const dataOWalletStake = [
+  {
+    chainId: ChainIdEnum.Oraichain,
+    isRecommended: true,
+    validator: "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp",
+  },
+  {
+    chainId: ChainIdEnum.Osmosis,
+    isRecommended: false,
+    validator: "osmovaloper1zqevmn000unnjj709akc8p86f9jc4xevf8f8g3",
+  },
+  {
+    chainId: ChainIdEnum.CosmosHub,
+    isRecommended: false,
+    validator: "cosmosvaloper19qv67gvevp4xw64kmhd6ff6ta2l2ywgfm74xtz",
+  },
+];
 
 const valVotingPower = 1000;
 const daysInYears = 365.2425;
@@ -148,16 +160,17 @@ async function getInflationRate(lcdEndpoint) {
     return 0;
   }
 }
+
 export interface AprItemInner {
   apr?: number;
 }
+
 export const StakingInfraScreen: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, appInitStore, modalStore, accountStore } =
     useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [search, setSearch] = useState("");
-  const [owalletOraichain, setOwalletOraichain] = useState("0.00");
 
   const [listAprByChain, setListApr] = useState([
     {
@@ -246,8 +259,17 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
 
   const getOWalletOraichainAPR = async () => {
     const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
-    const apr = await calculateAPRByChain(chainInfo, owalletOraichainAddress);
-    setOwalletOraichain(apr.toFixed(2));
+    const apr = await calculateAPRByChain(
+      chainInfo,
+      dataOWalletStake[0].validator
+    );
+    setListApr((prevApr) => [
+      ...prevApr,
+      {
+        chainId: ChainIdEnum.Oraichain,
+        apr: apr.toFixed(2),
+      },
+    ]);
   };
   useEffect(() => {
     getOWalletOraichainAPR();
@@ -255,9 +277,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   }, []);
 
   const renderOWalletValidators = () => {
-    const owalletOsmosis = listAprByChain.find(
-      (item) => item.chainId === ChainIdEnum.Osmosis
-    )?.apr;
     return (
       <View
         style={{
@@ -269,110 +288,130 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
           <OWText size={15} weight={"600"}>
             {`Native Staking with OWALLET`}
           </OWText>
-          <View
+          <ScrollView
+            showsHorizontalScrollIndicator={false}
+            horizontal
+            contentContainerStyle={{
+              flexDirection: "row",
+              gap: 16,
+            }}
             style={{
               paddingTop: 16,
-              flexDirection: "row",
-              justifyContent: "space-between",
             }}
           >
-            <TouchableOpacity
-              onPress={() => {
-                const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
-                handlePressStake(chainInfo, owalletOraichainAddress);
-              }}
-              style={{
-                backgroundColor: colors["neutral-surface-card-brutal"],
-                borderRadius: 16,
-                borderWidth: 2,
-                borderColor: colors["neutral-border-brutal"],
-                width: metrics.screenWidth / 2.25,
-              }}
-            >
-              <View
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  backgroundColor: colors["primary-surface-default"],
-                  paddingHorizontal: 15,
-                  paddingVertical: 5,
-                  borderTopRightRadius: 16,
-                  borderBottomLeftRadius: 16,
-                }}
-              >
-                <OWText
-                  color={colors["neutral-text-action-on-dark-bg"]}
-                  size={10}
-                  weight={"500"}
-                >
-                  {`Recommended`.toUpperCase()}
-                </OWText>
-              </View>
-              <View style={{ padding: 16 }}>
-                <Image
-                  style={{
-                    width: 32,
-                    height: 32,
-                    backgroundColor: colors["neutral-surface-action"],
-                    borderRadius: 999,
+            {dataOWalletStake.map((item, index) => {
+              const chainInfo = chainStore.getChain(item.chainId);
+              const chainAPR =
+                listAprByChain.find(
+                  (aprItem) => aprItem.chainId === item.chainId
+                )?.apr ?? "0.00";
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    handlePressStake(chainInfo, item.validator);
                   }}
-                  tintColor={colors["neutral-text-title"]}
-                  source={require("../../../assets/logo/oraichain.png")}
-                />
-                <OWText
-                  style={{ marginTop: 12, marginBottom: 8 }}
-                  weight={"500"}
-                >
-                  Stake ORAI
-                </OWText>
-
-                <OWText
-                  color={colors["success-text-body"]}
-                  size={16}
-                  weight="500"
-                >
-                  APR: {owalletOraichain ?? "0.00"}%
-                </OWText>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                const chainInfo = chainStore.getChain(ChainIdEnum.Osmosis);
-                handlePressStake(chainInfo, owalletOsmosisAddress);
-              }}
-              style={{
-                backgroundColor: colors["neutral-surface-card-brutal"],
-                borderRadius: 16,
-                borderWidth: 2,
-                borderColor: colors["neutral-border-brutal"],
-                width: metrics.screenWidth / 2.25,
-              }}
-            >
-              <View style={{ padding: 16 }}>
-                <Image
                   style={{
-                    width: 32,
-                    height: 32,
+                    backgroundColor: colors["neutral-surface-card-brutal"],
+                    borderRadius: 16,
+                    borderWidth: 2,
+                    borderColor: colors["neutral-border-brutal"],
+                    width: metrics.screenWidth / 2.25,
                   }}
-                  source={require("../../../assets/logo/osmosis.png")}
-                />
-                <OWText
-                  style={{ marginTop: 12, marginBottom: 8 }}
-                  weight={"500"}
                 >
-                  Stake OSMO
-                </OWText>
+                  {item.isRecommended && (
+                    <View
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        backgroundColor: colors["primary-surface-default"],
+                        paddingHorizontal: 15,
+                        paddingVertical: 5,
+                        borderTopRightRadius: 16,
+                        borderBottomLeftRadius: 16,
+                      }}
+                    >
+                      <OWText
+                        color={colors["neutral-text-action-on-dark-bg"]}
+                        size={10}
+                        weight={"500"}
+                      >
+                        {`Recommended`.toUpperCase()}
+                      </OWText>
+                    </View>
+                  )}
+                  <View style={{ padding: 16 }}>
+                    <OWIcon
+                      type={"images"}
+                      size={32}
+                      style={{
+                        borderRadius: 999,
+                        tintColor:
+                          item.chainId === ChainIdEnum.Oraichain
+                            ? colors["neutral-text-title"]
+                            : null,
+                      }}
+                      source={{
+                        uri: chainInfo.stakeCurrency.coinImageUrl,
+                      }}
+                    />
+                    <OWText
+                      style={{ marginTop: 12, marginBottom: 8 }}
+                      weight={"500"}
+                    >
+                      Stake {chainInfo.stakeCurrency.coinDenom}
+                    </OWText>
 
-                <OWText
-                  color={colors["success-text-body"]}
-                  size={16}
-                  weight="500"
-                >
-                  APR: {owalletOsmosis ?? "0.00"}%
-                </OWText>
-              </View>
-            </TouchableOpacity>
-          </View>
+                    <OWText
+                      color={colors["success-text-body"]}
+                      size={16}
+                      weight="500"
+                    >
+                      APR: {chainAPR ?? "0.00"}%
+                    </OWText>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            {/*<TouchableOpacity*/}
+            {/*  onPress={() => {*/}
+            {/*    const chainInfo = chainStore.getChain(ChainIdEnum.Osmosis);*/}
+            {/*    handlePressStake(chainInfo, owalletOsmosisAddress);*/}
+            {/*  }}*/}
+            {/*  style={{*/}
+            {/*    backgroundColor: colors["neutral-surface-card-brutal"],*/}
+            {/*    borderRadius: 16,*/}
+            {/*    borderWidth: 2,*/}
+            {/*    borderColor: colors["neutral-border-brutal"],*/}
+            {/*    width: metrics.screenWidth / 2.25,*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  <View style={{ padding: 16 }}>*/}
+            {/*    <Image*/}
+            {/*      style={{*/}
+            {/*        width: 32,*/}
+            {/*        height: 32,*/}
+            {/*      }}*/}
+            {/*      source={require("../../../assets/logo/osmosis.png")}*/}
+            {/*    />*/}
+            {/*    <OWText*/}
+            {/*      style={{ marginTop: 12, marginBottom: 8 }}*/}
+            {/*      weight={"500"}*/}
+            {/*    >*/}
+            {/*      Stake OSMO*/}
+            {/*    </OWText>*/}
+
+            {/*    <OWText*/}
+            {/*      color={colors["success-text-body"]}*/}
+            {/*      size={16}*/}
+            {/*      weight="500"*/}
+            {/*    >*/}
+            {/*      APR: {owalletOsmosis ?? "0.00"}%*/}
+            {/*    </OWText>*/}
+            {/*  </View>*/}
+            {/*</TouchableOpacity>*/}
+          </ScrollView>
         </View>
       </View>
     );
@@ -467,17 +506,9 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   const renderNetworkItem = useCallback(
     (chain) => {
       if (chain) {
-        let chainAPR;
-
-        chainAPR =
+        const chainAPR =
           listAprByChain.find((item) => item.chainId === chain.chainId)?.apr ??
           "0.00";
-
-        if (
-          chain.chainId === ChainIdEnum.Oraichain &&
-          Number(owalletOraichain) > 0
-        )
-          chainAPR = owalletOraichain;
         return (
           <TouchableOpacity
             key={chain.chainId}
@@ -516,7 +547,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         );
       }
     },
-    [handleSwitchNetwork, colors, owalletOraichain, listAprByChain]
+    [handleSwitchNetwork, colors, listAprByChain]
   );
 
   const renderNetworks = () => {
@@ -629,7 +660,7 @@ const styling = (colors) =>
       marginTop: spacing["16"],
       borderRadius: 16,
       padding: 16,
-      justifyContent: "center",
+      // justifyContent: "center",
     },
     row: {
       flexDirection: "row",

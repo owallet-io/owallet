@@ -24,6 +24,7 @@ import { Badge } from "@src/components/badge";
 import { FormattedMessage } from "react-intl";
 import { formatAddress } from "@owallet/common";
 import { ScrollView } from "react-native-gesture-handler";
+import OWIcon from "@components/ow-icon/ow-icon";
 
 const styles = StyleSheet.create({
   container: {
@@ -56,14 +57,15 @@ const renderImageCoin = (amount: CoinPrimitive, currencies: AppCurrency[]) => {
           alignItems: "center",
         }}
       >
-        <FastImage
-          style={{
-            height: 30,
-            width: 30,
-          }}
+        <OWIcon
+          type="images"
           source={{
             uri: coin?.currency?.coinImageUrl,
           }}
+          style={{
+            borderRadius: 999,
+          }}
+          size={30}
         />
       </View>
     );

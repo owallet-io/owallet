@@ -20,7 +20,8 @@ import {
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
-var mixpanel = "acbafd21a85654933cbb0332c5a6f4f8";
+var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
+const mixpanel = Mixpanel.init(mixpanelId);
 export const HomePage = observer(() => {
   const {
     chainStore,

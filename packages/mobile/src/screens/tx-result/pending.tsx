@@ -204,6 +204,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               txHash,
               data,
             });
+            return;
           }
         });
         getDetailByHash(txHash);
@@ -213,17 +214,17 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const fee = () => {
     if (params?.data?.fee) {
       return new CoinPretty(
-        chainInfo.stakeCurrency,
+        chainInfo.feeCurrencies?.[0],
         new Dec(params?.data?.fee.amount?.[0]?.amount)
       );
     } else {
       if (data?.stdFee?.amount?.[0]?.amount) {
         return new CoinPretty(
-          chainInfo.stakeCurrency,
+          chainInfo.feeCurrencies?.[0],
           new Dec(data?.stdFee?.amount?.[0]?.amount)
         );
       }
-      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
     }
   };
   const dataItem =

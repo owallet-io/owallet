@@ -10,6 +10,7 @@ import { SCREENS } from "@src/common/constants";
 import { showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
+import { Dec } from "@owallet/unit";
 
 const MoreModal: FunctionComponent<{
   isOpen: boolean;
@@ -20,15 +21,14 @@ const MoreModal: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
   const chainId = chainStore.current.chainId;
-
+  const isDydx = chainId?.includes("dydx-mainnet");
+  const queries = queriesStore.get(chainId);
+  const account = accountStore.getAccount(chainId);
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
+  const stakingReward = queryReward.stakableReward;
   const _onPressCompound = async () => {
-    const queries = queriesStore.get(chainId);
-    const account = accountStore.getAccount(chainId);
-    const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-      account.bech32Address
-    );
-    const stakingReward = queryReward.stakableReward;
-
     try {
       const validatorRewars = [];
       queryReward
@@ -76,10 +76,15 @@ const MoreModal: FunctionComponent<{
       }
     }
   };
-
+  const isDisableCompund =
+    isDydx ||
+    !account.isReadyToSendMsgs ||
+    stakingReward?.toDec().equals(new Dec(0)) ||
+    queryReward?.pendingRewardValidatorAddresses.length === 0;
   return (
     <View style={{ padding: 24 }}>
       <TouchableOpacity
+        disabled={isDisableCompund}
         onPress={() => {
           _onPressCompound();
           setTimeout(() => {
@@ -89,6 +94,7 @@ const MoreModal: FunctionComponent<{
         style={{
           flexDirection: "row",
           alignItems: "center",
+          opacity: isDisableCompund ? 0.5 : 1,
         }}
       >
         <View

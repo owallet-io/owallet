@@ -224,8 +224,9 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterMain}
               component={NewMnemonicScreen}
             />
+
             <Stack.Screen
-              name={SCREENS.RegisterVerifyMnemonicMain}
+              name={SCREENS.RegisterVerifyMnemonic}
               component={VerifyMnemonicScreen}
             />
             <Stack.Screen
@@ -336,10 +337,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
             <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />
             <Stack.Screen
-              options={{
-                gestureEnabled: false,
-                headerShown: false,
-              }}
               name={SCREENS.TxFailedResult}
               component={TxFailedResultScreen}
             />

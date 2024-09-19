@@ -86,11 +86,11 @@ export const EarningCardNew = observer(({}) => {
     }
     navigate(SCREENS.TABS.Invest);
   };
-
+  const isDydx = chainId?.includes("dydx-mainnet");
   const _onPressCompound = async () => {
     try {
       const validatorRewars = [];
-      const isDydx = chainId?.includes("dydx-mainnet");
+
       const denom = DenomDydx;
       queryRewards
         .getDescendingPendingRewardValidatorAddresses(10)
@@ -210,7 +210,12 @@ export const EarningCardNew = observer(({}) => {
   };
   const isDisableClaim =
     !account.isReadyToSendMsgs ||
-    stakingRewards.toDec().equals(new Dec(0)) ||
+    stakingRewards?.toDec().equals(new Dec(0)) ||
+    queryRewards.pendingRewardValidatorAddresses.length === 0;
+  const isDisableCompund =
+    isDydx ||
+    !account.isReadyToSendMsgs ||
+    stakingRewards?.toDec().equals(new Dec(0)) ||
     queryRewards.pendingRewardValidatorAddresses.length === 0;
   return (
     <OWBox
@@ -247,7 +252,7 @@ export const EarningCardNew = observer(({}) => {
               style={[
                 styles["btn-claim"],
                 {
-                  backgroundColor: isDisableClaim
+                  backgroundColor: isDisableCompund
                     ? colors["neutral-surface-disable"]
                     : colors["primary-surface-default"],
                 },
@@ -256,7 +261,7 @@ export const EarningCardNew = observer(({}) => {
               textStyle={{
                 fontSize: 15,
                 fontWeight: "600",
-                color: isDisableClaim
+                color: isDisableCompund
                   ? colors["neutral-text-disable"]
                   : colors["neutral-text-action-on-dark-bg"],
               }}
@@ -265,7 +270,7 @@ export const EarningCardNew = observer(({}) => {
                   name={"trending-outline"}
                   size={14}
                   color={
-                    isDisableClaim
+                    isDisableCompund
                       ? colors["neutral-text-disable"]
                       : colors["neutral-text-action-on-dark-bg"]
                   }
@@ -274,7 +279,7 @@ export const EarningCardNew = observer(({}) => {
               label="Compound"
               onPress={_onPressCompound}
               loading={account.isSendingMsg === "withdrawRewards"}
-              disabled={isDisableClaim}
+              disabled={isDisableCompund}
             />
           </View>
           <View>

@@ -122,7 +122,7 @@ export const BookmarksScreen = observer(() => {
       </TouchableOpacity>
     );
   };
-  const { top } = useSafeAreaInsets();
+  // const { top } = useSafeAreaInsets();
   return (
     <PageWithView>
       <View

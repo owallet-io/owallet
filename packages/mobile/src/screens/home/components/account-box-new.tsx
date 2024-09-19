@@ -19,7 +19,11 @@ import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
 import { metrics, spacing } from "@src/themes";
 import MyWalletModal from "./my-wallet-modal/my-wallet-modal";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  ChainIdEnum,
+  DenomDydx,
+  removeDataInParentheses,
+} from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
@@ -35,7 +39,7 @@ import OWText from "@src/components/text/ow-text";
 import { useSimpleTimer } from "@src/hooks";
 import images from "@src/assets/images";
 import PieChart from "react-native-pie-chart";
-import { Dec, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import { initPrice } from "../hooks/use-multiple-assets";
 import MoreModal from "./more-modal";
@@ -111,8 +115,32 @@ export const AccountBoxAll: FunctionComponent<{
     const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
       account.bech32Address
     );
-    const stakingReward = queryReward.stakableReward;
-    const totalStakingReward = priceStore.calculatePrice(stakingReward);
+    // const stakingReward = queryReward.stakableReward;
+    const stakingRewards = (() => {
+      const isDydx = chainStore.current.chainId?.includes("dydx");
+      const targetDenom = (() => {
+        if (isDydx) {
+          return DenomDydx;
+        }
+
+        return chainStore.current.stakeCurrency?.coinMinimalDenom;
+      })();
+      if (targetDenom) {
+        const currency = chainStore.current.findCurrency(targetDenom);
+        if (currency) {
+          const reward = queryReward.rewards.find(
+            (r) => r.currency.coinMinimalDenom === targetDenom
+          );
+          if (!reward) {
+            if (isDydx) return new CoinPretty(currency, 0);
+            return queryReward.stakableReward;
+          }
+          return reward;
+        }
+      }
+    })();
+
+    const totalStakingReward = priceStore.calculatePrice(stakingRewards);
     const queryDelegated =
       queries.cosmos.queryDelegations.getQueryBech32Address(
         account.bech32Address
@@ -217,26 +245,6 @@ export const AccountBoxAll: FunctionComponent<{
                 ? totalPriceBalance?.toString()
                 : totalBalanceByChain?.toString()}
             </Text>
-            {/* {isLoading ? (
-            <View
-              style={{
-                maxHeight: 30
-              }}
-            >
-              <LottieView
-                source={require("@src/assets/animations/loading.json")}
-                resizeMode={"contain"}
-                style={{
-                  width: 70,
-                  height: 70,
-                  marginLeft: -10,
-                  marginTop: -20
-                }}
-                autoPlay
-                loop
-              />
-            </View>
-          ) : null} */}
           </View>
         </>
       );
@@ -502,20 +510,22 @@ export const AccountBoxAll: FunctionComponent<{
               />
               {"  "}
               Rewards:{" "}
-              {stakingReward.toDec().gt(new Dec(0.001))
-                ? stakingReward
-                    .shrink(true)
-                    .maxDecimals(4)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()
-                : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
+              {stakingRewards
+                ? removeDataInParentheses(
+                    stakingRewards
+                      .shrink(true)
+                      .maxDecimals(6)
+                      .trim(true)
+                      .upperCase(true)
+                      .toString()
+                  )
+                : ""}
             </OWText>
             <OWText size={14} weight="500" color={colors["success-text-body"]}>
               {" "}
               {totalStakingReward
                 ? totalStakingReward.toString()
-                : stakingReward.shrink(true).maxDecimals(6).toString()}
+                : stakingRewards?.shrink(true).maxDecimals(6).toString()}
             </OWText>
           </View>
           {chainStore.current.chainId === ChainIdEnum.TRON && (

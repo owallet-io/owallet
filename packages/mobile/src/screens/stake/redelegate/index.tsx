@@ -192,6 +192,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
+  console.log(sendConfigError, "sendConfigError");
   const txStateIsValid = sendConfigError == null;
 
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
@@ -345,12 +346,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/*<PageHeader*/}
-        {/*  title="Redelegate"*/}
-        {/*  subtitle={"Oraichain"}*/}
-        {/*  colors={colors}*/}
-        {/*  onPress={async () => {}}*/}
-        {/*/>*/}
         {
           <View>
             {srcValidator ? (

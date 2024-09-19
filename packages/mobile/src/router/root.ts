@@ -32,8 +32,9 @@ export function navigate(name, params?: any) {
   const isExist =
     routes.findIndex((item) => {
       if (
-        item.name === name &&
-        JSON.stringify(item.params) === JSON.stringify(params)
+        item.name === name
+        //   &&
+        // JSON.stringify(item.params) === JSON.stringify(params)
       ) {
         return true;
       }

@@ -23,6 +23,7 @@ import OWIcon from "../../../components/ow-icon/ow-icon";
 import { SCREENS } from "@src/common/constants";
 import OWText from "@src/components/text/ow-text";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
+import { ScrollView } from "react-native-gesture-handler";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
@@ -249,7 +250,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
           <OWIcon
             size={16}
@@ -315,7 +319,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
             }`}
           />
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.aic}>
         <View style={styles.signIn}>
