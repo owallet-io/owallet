@@ -23,6 +23,7 @@ export interface ISwapBox extends IInputSelectToken {
   onSelectAmount?: Function;
   type?: string;
   loading?: boolean;
+  impactWarning?: number;
 }
 
 export interface IInputSelectToken {
@@ -31,6 +32,7 @@ export interface IInputSelectToken {
   currencyValue?: string;
   editable?: boolean;
   loading?: boolean;
+  impactWarning?: number;
   onChangeAmount?: (txt: any) => void;
   onOpenTokenModal: (ev: any) => void;
 }
@@ -45,7 +47,7 @@ const HALF = "50";
 const THREE_QUARTERS = "75";
 export const MAX = "100";
 export const interpolateURL = "https://static.orai.io/interpolate.html";
-export const oraidexURL = "https://oraidex.io";
+export const oraidexURL = "https://app.oraidex.io";
 
 export const balances: BalanceType[] = [
   {

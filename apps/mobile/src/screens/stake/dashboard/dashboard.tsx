@@ -13,6 +13,7 @@ import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
 import { UndelegationsCard } from "./undelegations-card";
 import { NetworkModal } from "@src/screens/home/components";
+import { StakingInfraScreen } from "./stake-infra";
 
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
@@ -41,18 +42,23 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
         enableOverDrag: false,
       },
     });
-    modalStore.setChildren(<NetworkModal stakeable={true} />);
+    modalStore.setChildren(<NetworkModal />);
   };
 
   return (
     <PageWithScrollViewInBottomTabView
-      scrollEnabled={chainStore.current.networkType === "cosmos"}
       backgroundColor={colors["neutral-surface-bg"]}
     >
       {chainStore.current.networkType === "cosmos" &&
       !appInitStore.getInitApp.isAllNetworks ? (
         <>
-          <OWCard style={{ padding: 24 }}>
+          <OWCard
+            style={{
+              padding: 24,
+              borderBottomLeftRadius: 8,
+              borderBottomRightRadius: 8,
+            }}
+          >
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
@@ -103,6 +109,8 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           <EarningCardNew />
           <ValidatorList />
         </>
+      ) : appInitStore.getInitApp.isAllNetworks ? (
+        <StakingInfraScreen />
       ) : (
         <View
           style={{

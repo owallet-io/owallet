@@ -4,11 +4,11 @@ import { PageWithView } from "@src/components/page";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
-import { MapChainIdToNetwork } from "@src/utils/helper";
+
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { SCREENS, urlTxHistory } from "@src/common/constants";
+import { SCREENS } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
@@ -17,6 +17,7 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
+import { MapChainIdToNetwork, urlTxHistory } from "@owallet/common";
 
 const EvmTxsScreen = observer(() => {
   const { chainStore, accountStore, keyRingStore } = useStore();
@@ -133,7 +134,7 @@ export const SearchFilter = () => {
   const styles = styling();
   return (
     <View style={styles.containerTop}>
-      <OWSearchInput placeHolder={"Search for a chain"} />
+      {/* <OWSearchInput placeHolder={"Search for a chain"} /> */}
       <OWButtonIcon
         fullWidth={false}
         name={"tdesignfilter"}

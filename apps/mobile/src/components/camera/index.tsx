@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { RNCamera } from "react-native-camera";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Text } from "@src/components/text";
 import { CloseIcon } from "../icon";
@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
 import { metrics, typography } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
+import { goBack, NavigationAction } from "@src/router/root";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -15,7 +16,6 @@ export const FullScreenCameraView: FunctionComponent<
     isLoading?: boolean;
   }
 > = (props) => {
-  const navigation = useNavigation();
   const { colors } = useTheme();
 
   const isFocused = useIsFocused();
@@ -66,10 +66,10 @@ export const FullScreenCameraView: FunctionComponent<
               flex: 1,
             }}
           />
-          {navigation.canGoBack() ? (
+          {NavigationAction?.canGoBack() ? (
             <TouchableOpacity
               onPress={() => {
-                navigation.goBack();
+                goBack();
               }}
             >
               <View

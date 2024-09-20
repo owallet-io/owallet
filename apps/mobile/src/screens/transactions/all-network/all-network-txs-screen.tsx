@@ -7,7 +7,6 @@ import { useStore } from "@src/stores";
 import { OWBox } from "@src/components/card";
 import { spacing } from "@src/themes";
 
-import { urlTxHistory } from "@src/common/constants";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { API } from "@src/common/api";
 import get from "lodash/get";
@@ -20,6 +19,7 @@ import {
   ChainIdEnum,
   getOasisAddress,
   MapChainIdToNetwork,
+  urlTxHistory,
 } from "@owallet/common";
 import { AllNetworkTxItem } from "@src/screens/transactions/all-network/all-network-tx-item";
 import { convertObjChainAddressToString } from "@src/screens/transactions/all-network/all-network.helper";
@@ -170,7 +170,7 @@ export const SearchFilter = () => {
   const styles = styling();
   return (
     <View style={styles.containerTop}>
-      <OWSearchInput placeHolder={"Search for a chain"} />
+      {/* <OWSearchInput placeHolder={"Search for a chain"} /> */}
       <OWButtonIcon
         fullWidth={false}
         name={"tdesignfilter"}

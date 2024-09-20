@@ -95,7 +95,15 @@ export const Button: FunctionComponent<{
       ].join(" ")}
       style={{ ...containerStyle, ...disabledBtn }}
     >
-      {loading ? <i className="fa fa-spinner fa-spin"></i> : null}
+      {loading ? (
+        <div
+          style={{
+            paddingRight: 7,
+          }}
+        >
+          <i className="fa fa-spinner fa-spin"></i>
+        </div>
+      ) : null}
       {leftIcon ? <div>{leftIcon}</div> : null}
       {text ?? props.children}
       {rightIcon ? <div>{rightIcon}</div> : null}

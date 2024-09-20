@@ -2,9 +2,9 @@ import { toAmount, ValidatorThumbnails } from "@owallet/common";
 import { useUndelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
+
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -19,7 +19,7 @@ import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { OWButton } from "../../../components/button";
 
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { FeeModal } from "@src/modals/fee";
@@ -27,6 +27,9 @@ import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { API } from "@src/common/api";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -54,12 +57,22 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const smartNavigation = useSmartNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"UnStake"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   const validator =
     queries.cosmos.queryValidators
       .getQueryStatus(BondStatus.Bonded)
@@ -80,8 +93,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      ValidatorThumbnails[validatorAddress]
+        .getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -165,7 +177,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
       if (result?.code === 0 || result?.code == null) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             type: "unstake",
@@ -181,7 +193,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       if (error?.message?.includes("'signature' of undefined")) return;
       showToast({
         type: "danger",
-        message: error?.message || JSON.stringify(error),
+        message: `Failed to UnDelegate: ${
+          error?.message || JSON.stringify(error)
+        }`,
       });
       console.log(error, "error");
     } finally {
@@ -246,7 +260,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           validator?.description.moniker ?? "..."
                         };`
                       );
-                      smartNavigation.pushSmart("TxPendingResult", {
+                      navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "unstake",
@@ -269,7 +283,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   return;
                 } else {
                   console.log(e);
-                  // smartNavigation.navigate("Home", {});
+
                   showToast({
                     message: JSON.stringify(e),
                     type: "danger",
@@ -293,12 +307,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Unstake"
-          subtitle={chainStore.current.chainName}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Unstake"*/}
+        {/*  subtitle={chainStore.current.chainName}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>
@@ -356,11 +370,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   >
                     <View
                       style={{
-                        backgroundColor: colors["neutral-icon-on-dark"],
                         borderRadius: 999,
+                        justifyContent: "center",
                       }}
                     >
                       <OWIcon
+                        style={{
+                          borderRadius: 999,
+                        }}
                         type="images"
                         source={{
                           uri: sendConfigs.amountConfig.sendCurrency

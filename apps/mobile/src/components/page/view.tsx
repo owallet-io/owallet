@@ -50,6 +50,7 @@ export const PageWithView: FunctionComponent<
           <View
             style={StyleSheet.flatten([
               style.flatten(["flex-1", "padding-0", "overflow-visible"]),
+              { paddingTop: 16 },
               propStyle,
             ])}
             {...restProps}

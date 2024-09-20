@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, ViewStyle } from "react-native";
 import { API } from "@src/common/api";
-import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
+import { listSkeleton, SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 import { OWButton } from "@src/components/button";
 import { TxSkeleton } from "@src/components/page";
@@ -15,6 +15,7 @@ import {
   ChainIdEnum,
   getOasisAddress,
   MapChainIdToNetwork,
+  urlTxHistory,
 } from "@owallet/common";
 
 export const AllNetworkTxCard: FunctionComponent<{
@@ -59,6 +60,7 @@ export const AllNetworkTxCard: FunctionComponent<{
           baseURL: urlTxHistory,
         }
       );
+
       if (status !== 200) throw Error("Failed");
       setHistories(data.data);
       setLoading(false);
@@ -71,6 +73,7 @@ export const AllNetworkTxCard: FunctionComponent<{
   useEffect(() => {
     setHistories([]);
     const allAddress = convertObjChainAddressToString(allArr);
+
     if (!allAddress) return;
     getWalletHistory(allAddress);
   }, [
@@ -78,14 +81,6 @@ export const AllNetworkTxCard: FunctionComponent<{
     appInitStore.getInitApp.isAllNetworks,
     accountOrai.bech32Address,
   ]);
-
-  const fiat = priceStore.defaultVsCurrency;
-
-  const price = priceStore.getPrice(
-    chainStore.current.stakeCurrency.coinGeckoId,
-    fiat
-  );
-  if (!price) return <EmptyTx />;
   return (
     <View
       style={{
@@ -122,9 +117,7 @@ export const AllNetworkTxCard: FunctionComponent<{
           type="secondary"
           onPress={() => {
             // setMore(!more);
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.Transactions,
-            });
+            navigate(SCREENS.Transactions);
             return;
           }}
         />

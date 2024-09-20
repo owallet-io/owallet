@@ -5,15 +5,16 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { PageWithView } from "../../components/page";
 import { Toggle } from "../../components/toggle";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 import OWButton from "@src/components/button/OWButton";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, typography } from "../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { HugeQueriesStore } from "@src/stores/huge-queries";
-import { autorun } from "mobx";
+
 import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
+import { resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
   const {
@@ -25,7 +26,6 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
     hugeQueriesStore,
   } = useStore();
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const styles = styling(colors);
   const route = useRoute<
@@ -208,16 +208,8 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                   );
                 }
                 await waitAccountInit(chainStore, accountStore, keyRingStore);
-                setTimeout(() => {
-                  smartNavigation.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: "MainTab",
-                      },
-                    ],
-                  });
-                }, 1500);
+
+                resetTo(SCREENS.STACK.MainTab);
               } catch (e) {
                 console.log(e);
                 // alert(JSON.stringify(e));

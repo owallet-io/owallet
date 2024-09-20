@@ -120,6 +120,7 @@ export const SendEvmPage: FunctionComponent<{
   const { gasPrice } = queriesStore
     .get(current.chainId)
     .evm.queryGasPrice.getGasPrice();
+  console.log(gasPrice, "gasPrice");
   useEffect(() => {
     if (!gasPrice) return;
     sendConfigs.gasConfig.setGasPriceStep(gasPrice);

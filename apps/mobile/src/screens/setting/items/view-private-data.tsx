@@ -4,7 +4,7 @@ import { BasicSettingItem } from "../components";
 import { PasswordInputModal } from "../../../modals/password-input/modal";
 import { useStore } from "../../../stores";
 // import { getPrivateDataTitle } from "../screens/view-private-data";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { Alert } from "react-native";
@@ -16,8 +16,6 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
   const { keyRingStore, modalStore, chainStore } = useStore();
-
-  const smartNavigation = useSmartNavigation();
 
   const onGoBack = () => {
     modalStore.close();
@@ -35,7 +33,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           chainStore.current.chainId,
           isPrivateKey
         );
-        smartNavigation.navigateSmart("Setting.BackupMnemonic", {
+        navigate(SCREENS.SettingBackupMnemonic, {
           privateData,
           privateDataType: isPrivateKey ? "privateKey" : "mnemonic",
         });

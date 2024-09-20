@@ -3,7 +3,7 @@ import { RNCamera } from "react-native-camera";
 import { PageWithView } from "../../components/page";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { Button, OWButton } from "../../components/button";
 import { Share, StyleSheet, View } from "react-native";
 import { ChainSelectorModal } from "../../components/chain-selector";
@@ -11,18 +11,19 @@ import { registerModal } from "../../modals/base";
 import { CardModal } from "../../modals/card";
 import { AddressCopyable } from "../../components/address-copyable";
 import QRCode from "react-native-qrcode-svg";
-import { useNavigation } from "@react-navigation/native";
+
 import { Bech32Address } from "@owallet/cosmos";
 import { FullScreenCameraView } from "../../components/camera";
 import { useFocusEffect } from "@react-navigation/native";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { TRON_ID } from "@owallet/common";
 import { checkValidDomain } from "@src/utils/helper";
-import { navigate } from "@src/router/root";
+import { navigate, NavigationAction } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { tracking } from "@src/utils/tracking";
+import Web3 from "web3";
 interface keyable {
   [key: string]: any;
 }
@@ -30,9 +31,6 @@ interface keyable {
 export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore, walletConnectStore } = useStore();
   const { colors } = useTheme();
-
-  const navigation = useNavigation();
-  const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
   // To prevent the reading while changing to other screen after processing the result.
@@ -79,15 +77,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
               // navigation.reset({routes: [{name: 'Home'}]});
             }
             if (chainStore.current.chainId === TRON_ID && data) {
-              smartNavigation.pushSmart("SendTron", {
+              navigate(SCREENS.SendTron, {
                 recipient: data,
               });
             }
 
             try {
               if (checkValidDomain(data.toLowerCase())) {
-                navigation.navigate("Browser", { url: data.toLowerCase() });
-
+                navigate(SCREENS.Browser, { url: data.toLowerCase() });
                 return;
               }
 
@@ -110,12 +107,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                 );
                 if (chainInfo) {
                   const routersParam: keyable =
-                    smartNavigation?.getState()?.routes;
-                  const isParamAddressBook = routersParam.find(
-                    (route) => route?.params?.screenCurrent === "addressbook"
-                  );
+                    NavigationAction?.getState()?.routes;
+                  const isParamAddressBook =
+                    routersParam &&
+                    routersParam.find(
+                      (route) => route?.params?.screenCurrent === "addressbook"
+                    );
                   if (isParamAddressBook) {
-                    smartNavigation.navigateSmart("AddAddressBook", {
+                    navigate(SCREENS.AddAddressBook, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                       addressBookObj: {
@@ -123,21 +122,18 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       },
                     });
                   } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.STACK.Others, {
-                      screen: SCREENS.SendBtc,
-                      params: {
-                        chainId: chainInfo.chainId,
-                        recipient: data,
-                      },
+                    navigate(SCREENS.SendBtc, {
+                      chainId: chainInfo.chainId,
+                      recipient: data,
                     });
                   } else {
-                    smartNavigation.pushSmart("NewSend", {
+                    navigate(SCREENS.NewSend, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
                   }
                 } else {
-                  smartNavigation.navigateSmart("Home", {});
+                  navigate(SCREENS.Home, {});
                 }
               }
 
@@ -168,9 +164,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
               <OWButton
                 label="My QR Code"
                 onPress={() => {
-                  navigate(SCREENS.STACK.Others, {
-                    screen: SCREENS.QRScreen,
-                  });
+                  navigate(SCREENS.QRScreen);
                 }}
                 style={[
                   {

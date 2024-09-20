@@ -106,7 +106,7 @@ export const AddressInput: FunctionComponent<{
 
     return (
       <TextInput
-        // multiline
+        multiline
         label={label}
         topInInputContainer={topInInputContainer}
         labelStyle={labelStyle}
@@ -163,12 +163,9 @@ export const AddressInput: FunctionComponent<{
                 <TouchableOpacity
                   style={style.flatten(["padding-4"])}
                   onPress={() => {
-                    navigate(SCREENS.STACK.AddressBooks, {
-                      screen: SCREENS.AddressBook,
-                      params: {
-                        recipientConfig,
-                        memoConfig,
-                      },
+                    navigate(SCREENS.AddressBook, {
+                      recipientConfig,
+                      memoConfig,
                     });
                   }}
                 >

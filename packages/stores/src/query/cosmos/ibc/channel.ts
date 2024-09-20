@@ -6,17 +6,18 @@ import {
 import { ChainGetter } from "../../../common";
 import { ChannelResponse } from "./types";
 import { autorun } from "mobx";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableChainQueryIBCChannel extends ObservableChainQuery<ChannelResponse> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly portId: string,
     protected readonly channelId: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}`
@@ -38,15 +39,15 @@ export class ObservableChainQueryIBCChannel extends ObservableChainQuery<Channel
 
 export class ObservableQueryIBCChannel extends ObservableChainQueryMap<ChannelResponse> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (key: string) => {
+    super(sharedContext, chainId, chainGetter, (key: string) => {
       const params = JSON.parse(key);
 
       return new ObservableChainQueryIBCChannel(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         params.portId,

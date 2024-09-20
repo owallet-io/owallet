@@ -10,7 +10,8 @@ import {
 import { IndexedDBKVStore } from "@owallet/common";
 import { ChainInfo } from "@keplr-wallet/types";
 import { EmbedChainInfos } from "../config";
-import { getWCOWallet } from "../get-wc-keplr";
+import { getWCOWallet } from "../get-wc-owallet";
+import { OWallet } from "@owallet/provider";
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -19,10 +20,15 @@ export class RootStore {
   public readonly accountStore: AccountStore<AccountWithAll>;
   constructor() {
     this.chainStore = new ChainStore<ChainInfo>(EmbedChainInfos);
-
     this.queriesStore = new QueriesStore(
+      // Fix prefix key because there was a problem with storage being corrupted.
+      // In the case of storage where the prefix key is "store_queries" or "store_queries_fix", we should not use it because it is already corrupted in some users.
+
       new IndexedDBKVStore("store_queries"),
       this.chainStore,
+      {
+        responseDebounceMs: 75,
+      },
       getWCOWallet,
       QueriesWrappedTron
     );

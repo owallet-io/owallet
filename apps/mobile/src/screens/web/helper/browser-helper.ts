@@ -39,7 +39,7 @@ export const defiData = [
     logo: images.dapps_dex_logo,
     title: "OraiDEX",
     subTitle: "Universal swap, Bridge and earn tokens",
-    url: "https://oraidex.io/",
+    url: "https://app.oraidex.io/",
   },
   {
     images: images.img_homebase,
@@ -91,9 +91,9 @@ export const getFavicon = (url) => {
 };
 export const dataBookMarks = [
   {
-    url: getFavicon("https://oraidex.io"),
+    url: getFavicon("https://app.oraidex.io"),
     name: "oraidex",
-    link: "https://oraidex.io",
+    link: "https://app.oraidex.io",
   },
   {
     url: getFavicon("https://orai.io"),

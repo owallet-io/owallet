@@ -16,7 +16,7 @@ const oraiLogo = require("../../assets/image/webpage/orai_logo.png");
 export const DAppInfos: DAppInfo[] = [
   {
     name: "Oraidex",
-    uri: "https://oraidex.io",
+    uri: "https://app.oraidex.io",
     logo: oraiLogo,
   },
   // {

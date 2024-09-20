@@ -4,15 +4,10 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import _ from "lodash";
 import { View, Image, ScrollView, StyleSheet } from "react-native";
-import { Text } from "@src/components/text";
-import { useSmartNavigation } from "../../navigation.provider";
-import { CommonActions } from "@react-navigation/native";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { capitalizedText, formatContractAddress } from "@src/utils/helper";
 
-import { PageHeader } from "@src/components/header/header-new";
-import image from "@src/assets/images";
-import OWCard from "@src/components/card/ow-card";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -23,6 +18,9 @@ import { AppCurrency, StdFee } from "@owallet/types";
 import { CoinPrimitive } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
+import { goBack, resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWButton } from "@components/button";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore } = useStore();
@@ -54,27 +52,24 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { params } = route;
 
   const { colors, images } = useTheme();
-  const smartNavigation = useSmartNavigation();
+
   const chainInfo = chainStore.getChain(chainId);
 
-  const onDone = () => {
-    smartNavigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [{ name: "MainTab" }],
-      })
-    );
+  const onRetry = () => {
+    resetTo(SCREENS.STACK.MainTab);
+    return;
   };
+
   const amount = new CoinPretty(
     params?.data?.currency,
     new Dec(params?.data?.amount?.amount)
   );
   const fee = params?.data?.fee?.amount?.[0]?.amount
     ? new CoinPretty(
-        chainInfo.stakeCurrency,
+        chainInfo.feeCurrencies?.[0],
         new Dec(params?.data?.fee?.amount?.[0]?.amount)
       )
-    : new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+    : new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -91,26 +86,19 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     <PageWithBottom
       bottomGroup={
         <View style={styles.containerBottomButton}>
-          <OWButtonGroup
-            labelApprove={"Retry"}
-            labelClose={"Contact Us"}
-            iconClose={<OWIcon name={"send"} />}
-            styleApprove={{
+          <OWButton
+            label={"Retry"}
+            style={{
               borderRadius: 99,
               backgroundColor: colors["primary-surface-default"],
             }}
-            // onPressClose={_onPressReject}
-            onPressApprove={onDone}
-            styleClose={{
-              borderRadius: 99,
-              backgroundColor: colors["neutral-surface-action3"],
-            }}
+            onPress={onRetry}
           />
         </View>
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderTx
             type={capitalizedText(params?.data?.type) || "Send"}
@@ -147,10 +135,9 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               })}
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee
-                ?.shrink(true)
-                ?.trim(true)
-                ?.toString()} (${priceStore.calculatePrice(fee)})`}
+              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee) || "$0"
+              })`}
               btnCopy={false}
             />
             <ItemReceivedToken

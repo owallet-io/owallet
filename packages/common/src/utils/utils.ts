@@ -115,6 +115,12 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Osmosis]: Network.OSMOSIS,
   [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
   [ChainIdEnum.Injective]: Network.INJECTIVE,
+  [ChainIdEnum.CELESTIA]: Network.CELESTIA,
+  [ChainIdEnum.DYDX]: Network.DYDX,
+  [ChainIdEnum.Juno]: Network.JUNO,
+  [ChainIdEnum.AKASH]: Network.AKASH,
+  [ChainIdEnum.SEI]: Network.SEI,
+  [ChainIdEnum.NEUTRON]: Network.NEUTRON,
 };
 export const MapNetworkToChainId = {
   [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
@@ -128,6 +134,12 @@ export const MapNetworkToChainId = {
   [Network.OSMOSIS]: ChainIdEnum.Osmosis,
   [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
   [Network.INJECTIVE]: ChainIdEnum.Injective,
+  [Network.DYDX]: ChainIdEnum.DYDX,
+  [Network.JUNO]: ChainIdEnum.Juno,
+  [Network.AKASH]: ChainIdEnum.AKASH,
+  [Network.SEI]: ChainIdEnum.SEI,
+  [Network.CELESTIA]: ChainIdEnum.CELESTIA,
+  [Network.NEUTRON]: ChainIdEnum.NEUTRON,
 };
 export const getRpcByChainId = (
   chainInfo: ChainInfo,
@@ -278,6 +290,8 @@ export const getCoinTypeByChainId = (chainId) => {
 };
 
 export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
+  console.log("chainId getChainInfoOrThrow", chainId);
+
   const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   if (!chainInfo) {
     throw new Error(`There is no chain info for ${chainId}`);

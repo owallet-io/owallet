@@ -2,7 +2,12 @@ import { handleError, parseObjectToQueryString } from "@src/utils/helper";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import moment from "moment";
 import { Network } from "@tatumio/tatum";
-import { ChainIdEnum, CosmosNetwork, OasisNetwork } from "@owallet/common";
+import {
+  ChainIdEnum,
+  CosmosNetwork,
+  OasisNetwork,
+  urlTxHistory,
+} from "@owallet/common";
 import {
   CosmosItem,
   ResTxsCosmos,
@@ -13,7 +18,7 @@ import {
   TokenInfo,
   TxsAllNetwork,
 } from "@src/screens/transactions/all-network/all-network.types";
-import { fetchRetry, urlTxHistory } from "@src/common/constants";
+import { fetchRetry } from "@src/common/constants";
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -570,6 +575,35 @@ export const API = {
 
     let url = `/nft-market-backend-service/assets/${tokenId}`;
     return API.get(url, config);
+  },
+  getValidatorInfo: async (url, validatorAddress): Promise<any> => {
+    try {
+      const rs = await API.get(
+        `/cosmos/staking/v1beta1/validators/${validatorAddress}`,
+        { baseURL: url }
+      );
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getFirstValidator: async (url): Promise<any> => {
+    try {
+      const response = await API.get(`/cosmos/staking/v1beta1/validators`, {
+        baseURL: url,
+      });
+      const validators = response.data.validators;
+
+      if (validators.length > 0) {
+        const firstValidator = validators[0];
+        return Promise.resolve(firstValidator);
+      } else {
+        console.log("No validators found.");
+        return Promise.resolve(null);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
   },
 };
 const retryWrapper = (axios, options) => {

@@ -15,17 +15,17 @@ import {
 import { observer } from "mobx-react-lite";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
 import NumericPad from "react-native-numeric-pad";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { useSmartNavigation } from "@src/navigation.provider";
+
 import { useBIP44Option } from "./bip44";
 import { useNewMnemonicConfig } from "./mnemonic";
 import { Controller, useForm } from "react-hook-form";
-import { checkRouter } from "@src/router/root";
+import { checkRouter, goBack, navigate, resetTo } from "@src/router/root";
 import { TextInput } from "@src/components/input";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -33,6 +33,7 @@ import { LoadingWalletScreen } from "./loading-wallet";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
+import { SCREENS } from "@src/common/constants";
 
 interface FormData {
   name: string;
@@ -54,12 +55,11 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
       string
     >
   >();
-  const { appInitStore } = useStore();
+  const { appInitStore, keyRingStore } = useStore();
 
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
-  const registerConfig: RegisterConfig = route.params.registerConfig;
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const words: string = route.params?.words;
   const walletName: string = route.params?.walletName;
   const bip44Option = useBIP44Option();
@@ -77,8 +77,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-
-  const navigation = useNavigation();
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -109,19 +107,10 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
           newMnemonicConfig.password
         );
       }
-
-      navigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: "Register.Done",
-            params: {
-              password: newMnemonicConfig.password,
-              type: "new",
-              walletName,
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterDone, {
+        password: newMnemonicConfig.password,
+        type: "new",
+        walletName,
       });
     } catch (err) {
       console.log("errrr,", err);
@@ -133,11 +122,12 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   } = useForm<FormData>();
 
   const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
+    // if (checkRouter(route?.name, SCREENS.RegisterMain)) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
 
   useEffect(() => {

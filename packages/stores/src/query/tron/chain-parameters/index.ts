@@ -7,10 +7,15 @@ import { ChainGetter } from "../../../common";
 import { ChainParameters } from "./types";
 import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryChainParameterTronInner extends ObservableChainQuery<ChainParameters> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, `/api/chainparameters`);
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, `/api/chainparameters`);
 
     makeObservable(this);
   }
@@ -41,13 +46,13 @@ export class ObservableQueryChainParameterTronInner extends ObservableChainQuery
 
 export class ObservableQueryChainParameterTron extends ObservableChainQueryMap<ChainParameters> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (walletAddress) => {
+    super(sharedContext, chainId, chainGetter, (walletAddress) => {
       return new ObservableQueryChainParameterTronInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter
       );

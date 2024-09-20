@@ -6,18 +6,19 @@ import {
 } from "../../chain-query";
 import { ChainGetter } from "../../../common";
 import { autorun } from "mobx";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
   SupplyTotal | SupplyTotalStargate
 > {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     denom: string
   ) {
     super(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter,
       `/cosmos/bank/v1beta1/supply/${denom}`
@@ -39,13 +40,13 @@ export class ObservableQuerySupplyTotal extends ObservableChainQueryMap<
   SupplyTotal | SupplyTotalStargate
 > {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (denom: string) => {
+    super(sharedContext, chainId, chainGetter, (denom: string) => {
       return new ObservableChainQuerySupplyTotal(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         denom

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PageWithViewInBottomTabView } from "@src/components/page";
+
 import { TextInput } from "@src/components/input";
 import { RightArrowIcon, SearchIcon } from "@src/components/icon";
 import { OWButton } from "@src/components/button";
@@ -24,6 +24,11 @@ import { checkValidDomain, showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { tracking } from "@src/utils/tracking";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
@@ -176,6 +181,9 @@ export const BrowserScreen = observer(() => {
                 fontSize: 13,
               }}
               fullWidth={false}
+              disabled={!sourceCode}
+              loading={!sourceCode}
+              colorLoading={colors["neutral-icon-on-light"]}
               label={"Paste & Go"}
             />
             {url?.length > 0 && (
@@ -234,44 +242,58 @@ export const BrowserScreen = observer(() => {
                 }
               />
             </View>
-            <FlatList
-              horizontal={true}
-              style={{
-                paddingBottom: 16,
-              }}
-              showsHorizontalScrollIndicator={false}
-              data={[...(browserStore.getBookmarks || [])]}
-              renderItem={({ item, index }) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => onDetailBrowser(item?.uri)}
-                    style={{
-                      alignItems: "center",
-                      marginHorizontal: 16,
-                    }}
-                  >
-                    <OWIcon
-                      size={30}
-                      type={"images"}
-                      source={{
-                        uri: getFavicon(item?.uri),
-                      }}
-                      style={{ borderRadius: 999 }}
-                    />
-                    <OWText
+            {!inject ? (
+              <SkeletonPlaceholder
+                highlightColor={colors["skeleton"]}
+                backgroundColor={colors["neutral-surface-card-brutal"]}
+                borderRadius={12}
+              >
+                <SkeletonPlaceholder.Item
+                  width={"100%"}
+                  marginBottom={8}
+                  height={65}
+                ></SkeletonPlaceholder.Item>
+              </SkeletonPlaceholder>
+            ) : (
+              <FlatList
+                horizontal={true}
+                style={{
+                  paddingBottom: 16,
+                }}
+                showsHorizontalScrollIndicator={false}
+                data={[...(browserStore.getBookmarks || [])]}
+                renderItem={({ item, index }) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={() => onDetailBrowser(item?.uri)}
                       style={{
-                        paddingTop: 3,
+                        alignItems: "center",
+                        marginHorizontal: 16,
                       }}
-                      color={colors["neutral-text-title"]}
-                      size={14}
-                      weight={"400"}
                     >
-                      {getNameBookmark(item?.name ? item?.name : item?.uri)}
-                    </OWText>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+                      <OWIcon
+                        size={30}
+                        type={"images"}
+                        source={{
+                          uri: getFavicon(item?.uri),
+                        }}
+                        style={{ borderRadius: 999 }}
+                      />
+                      <OWText
+                        style={{
+                          paddingTop: 3,
+                        }}
+                        color={colors["neutral-text-title"]}
+                        size={14}
+                        weight={"400"}
+                      >
+                        {getNameBookmark(item?.name ? item?.name : item?.uri)}
+                      </OWText>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            )}
           </View>
         ) : null}
       </View>

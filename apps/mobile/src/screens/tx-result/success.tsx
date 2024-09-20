@@ -10,7 +10,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { Text } from "@src/components/text";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import {
@@ -21,7 +21,7 @@ import {
 import { ChainIdEnum, TRON_ID } from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { PageHeader } from "@src/components/header/header-new";
+
 import image from "@src/assets/images";
 import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
@@ -32,6 +32,8 @@ import { CoinPrimitive } from "@owallet/stores";
 import _ from "lodash";
 import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
@@ -75,7 +77,6 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     false
   );
   const txs = txsStore(chainTxs);
-  const smartNavigation = useSmartNavigation();
 
   const chainInfo = chainStore.getChain(chainId);
   const handleUrl = (txHash) => {
@@ -99,16 +100,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   };
 
   const onDone = () => {
-    smartNavigation.dispatch(
-      CommonActions.reset({
-        index: 1,
-        routes: [
-          {
-            name: "MainTab",
-          },
-        ],
-      })
-    );
+    resetTo(SCREENS.STACK.MainTab);
   };
   const amount = new CoinPretty(
     params?.data?.currency,
@@ -118,17 +110,17 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const fee = () => {
     if (params?.data?.fee) {
       return new CoinPretty(
-        chainInfo.stakeCurrency,
+        chainInfo.feeCurrencies?.[0],
         new Dec(params?.data?.fee.amount?.[0]?.amount)
       );
     } else {
       if (data?.stdFee?.amount?.[0]?.amount) {
         return new CoinPretty(
-          chainInfo.stakeCurrency,
+          chainInfo.feeCurrencies?.[0],
           new Dec(data?.stdFee?.amount?.[0]?.amount)
         );
       }
-      return new CoinPretty(chainInfo.stakeCurrency, new Dec(0));
+      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
     }
   };
   const getDetailByHash = async (txHash) => {
@@ -177,7 +169,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
       }
     >
       <View style={styles.containerBox}>
-        <PageHeader title={"Transaction details"} />
+        {/*<PageHeader title={"Transaction details"} />*/}
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderTx
             type={capitalizedText(params?.data?.type) || "Send"}
@@ -311,6 +303,7 @@ const styling = (colors) => {
     imgNetwork: {
       height: 20,
       width: 20,
+      borderRadius: 20,
       backgroundColor: colors["neutral-icon-on-dark"],
     },
     containerBox: {

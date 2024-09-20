@@ -43,6 +43,9 @@ export const ModalMenuLeft: FC<{
       case MenuEnum.PREFERENCES:
         history.push("/preferences");
         break;
+      case MenuEnum.FEEDBACK:
+        window.open(item.link);
+        break;
       default:
       // code block
     }
@@ -110,6 +113,7 @@ enum MenuEnum {
   PREFERENCES = 5,
   LOCK = 6,
   ABOUT_USER = 7,
+  FEEDBACK = 8,
 }
 
 const dataItem = [
@@ -150,5 +154,12 @@ const dataItem = [
     icon: require("assets/svg/tdesign_info_circle.svg"),
     id: MenuEnum.ABOUT_USER,
     value: `v${manifestData.version}`,
+    isBorderBottom: true,
+  },
+  {
+    name: "Feedback",
+    icon: require("assets/svg/tdesign_info_circle.svg"),
+    id: MenuEnum.FEEDBACK,
+    link: `https://defi.featurebase.app/?b=66b096ba4e5763c7884f0f77`,
   },
 ];

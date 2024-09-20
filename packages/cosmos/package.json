@@ -19,6 +19,7 @@
   "dependencies": {
     "@cosmjs/launchpad": "^0.27.1",
     "@owallet/crypto": "^0.9.10",
+    "@owallet/simple-fetch": "*",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
     "axios": "^1.7.2",

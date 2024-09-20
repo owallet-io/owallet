@@ -1,3 +1,10 @@
+import { AppCurrency } from "@owallet/types";
+
+export interface TokenInfo {
+  associatedAccountAddress?: string;
+  currency: AppCurrency;
+}
+
 export function getSecret20ViewingKeyPermissionType(contractAddress: string) {
   return `viewing-key/${contractAddress}`;
 }

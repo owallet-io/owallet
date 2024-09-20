@@ -15,7 +15,7 @@ import { useTheme } from "@src/themes/theme-provider";
 import { API } from "../../../common/api";
 import { AlertIcon } from "../../../components/icon";
 import { RectButton } from "../../../components/rect-button";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { metrics, spacing } from "../../../themes";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import OWText from "@src/components/text/ow-text";
@@ -28,6 +28,8 @@ import {
 } from "@src/utils/helper";
 import OwEmpty from "@src/components/empty/ow-empty";
 import { tracking } from "@src/utils/tracking";
+import { goBack, navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -58,7 +60,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const stakingReward = queryReward.stakableReward;
 
   useEffect(() => {
-    if (!stakingReward.toDec().equals(new Dec(0))) {
+    if (stakingReward && !stakingReward.toDec().equals(new Dec(0))) {
       setActive("my");
     }
   }, [stakingReward]);
@@ -261,7 +263,6 @@ const ValidatorItem: FunctionComponent<{
       BondStatus.Bonded
     );
     const validator = bondedValidators.getValidator(validatorAddress);
-    const smartNavigation = useSmartNavigation();
 
     return validator ? (
       <View>
@@ -275,9 +276,9 @@ const ValidatorItem: FunctionComponent<{
           onPress={() => {
             if (onSelectValidator) {
               onSelectValidator(validatorAddress);
-              smartNavigation.goBack();
+              goBack();
             } else {
-              smartNavigation.navigateSmart("Validator.Details", {
+              navigate(SCREENS.ValidatorDetails, {
                 validatorAddress,
                 apr,
                 percentageVote,
@@ -299,12 +300,9 @@ const ValidatorItem: FunctionComponent<{
                 alignItems: "center",
               }}
               size={40}
-              url={
-                ValidatorThumbnails[validator.operator_address] ??
-                bondedValidators.getValidatorThumbnail(
-                  validator.operator_address
-                )
-              }
+              url={bondedValidators.getValidatorThumbnail(
+                validator.operator_address
+              )}
             />
             <View style={{ marginLeft: 8 }}>
               <OWText

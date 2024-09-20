@@ -2,8 +2,8 @@ import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig } from "@owallet/hooks";
-import { useSmartNavigation } from "../../../navigation.provider";
+import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
 import {
@@ -16,13 +16,14 @@ import {
 import { useStore } from "../../../stores";
 import { useBIP44Option } from "../bip44";
 import { Buffer } from "buffer";
-import { checkRouter, navigate } from "../../../router/root";
+import { checkRouter, goBack, navigate, resetTo } from "../../../router/root";
 import { metrics, typography } from "../../../themes";
 import OWButton from "../../../components/button/OWButton";
 import OWIcon from "../../../components/ow-icon/ow-icon";
 import { SCREENS } from "@src/common/constants";
 import OWText from "@src/components/text/ow-text";
 import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
+import { ScrollView } from "react-native-gesture-handler";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
@@ -45,12 +46,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     >
   >();
 
-  const { analyticsStore, universalSwapStore } = useStore();
+  const { analyticsStore, universalSwapStore, keyRingStore } = useStore();
 
-  const smartNavigation = useSmartNavigation();
-
-  const registerConfig: RegisterConfig = route.params.registerConfig;
-
+  // const registerConfig: RegisterConfig = route.params.registerConfig;
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option();
   const [mode] = useState(registerConfig.mode);
 
@@ -102,18 +101,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
         walletName: walletName,
       });
     } else {
-      smartNavigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: SCREENS.RegisterDone,
-            params: {
-              password: getValues("password"),
-              type: "recover",
-              walletName: walletName,
-            },
-          },
-        ],
+      resetTo(SCREENS.RegisterDone, {
+        password: getValues("password"),
+        type: "recover",
+        walletName: walletName,
       });
     }
   });
@@ -122,8 +113,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     // check if the mode is create or add
     // create - do the flowing process below
     const mnemonic = trimWordsStr(getValues("mnemonic"));
-
-    smartNavigation.navigateSmart("Register.NewPincode", {
+    navigate(SCREENS.RegisterNewPincode, {
       registerConfig,
       words: mnemonic,
       walletName: getValues("name"),
@@ -139,11 +129,12 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     }
   };
   const onGoBack = () => {
-    if (checkRouter(route?.name, "RegisterRecoverMnemonicMain")) {
-      smartNavigation.goBack();
-    } else {
-      smartNavigation.navigateSmart("Register.Intro", {});
-    }
+    // if (checkRouter(route?.name, SCREENS.RegisterRecoverMnemonicMain)) {
+    //   goBack();
+    // } else {
+    //   navigate(SCREENS.RegisterIntro);
+    // }
+    goBack();
   };
   const validateMnemonic = (value: string) => {
     value = trimWordsStr(value);
@@ -259,7 +250,10 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
 
   return (
     <View style={styles.container}>
-      <View>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <TouchableOpacity onPress={onGoBack} style={styles.goBack}>
           <OWIcon
             size={16}
@@ -325,7 +319,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
             }`}
           />
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.aic}>
         <View style={styles.signIn}>

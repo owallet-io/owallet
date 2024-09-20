@@ -494,7 +494,7 @@ export class KeyRing {
     }
     this.password = password;
 
-    if (saving) {
+    if (saving && this.kvStore.type() !== KVStoreType.mobile) {
       await this.savePasscode(password);
     }
   }
@@ -506,12 +506,11 @@ export class KeyRing {
     // add prefix to make passcode more obfuscated
     crypto.getRandomValues(prefix);
     const encryptedBytes = aesCtr.encrypt(Buffer.from(this._iv + password));
-    if (this.kvStore.type() !== KVStoreType.mobile) {
-      await this.kvStore.set(
-        "passcode",
-        Buffer.from(encryptedBytes).toString("base64")
-      );
-    }
+
+    await this.kvStore.set(
+      "passcode",
+      Buffer.from(encryptedBytes).toString("base64")
+    );
   }
 
   public async save() {
@@ -563,7 +562,9 @@ export class KeyRing {
               await this.kvStore.set("passcode", null);
             }
           } else {
-            await this.savePasscode(this.password);
+            if (this.kvStore.type() !== KVStoreType.mobile) {
+              await this.savePasscode(this.password);
+            }
           }
         }
         const multiKeyStore = await this.kvStore.get<KeyStore[]>(
@@ -978,13 +979,6 @@ export class KeyRing {
         isNanoLedger: this.keyStore.type === "ledger",
       };
     }
-    // const secp256k1 = new ec("secp256k1");
-
-    // const key = secp256k1.keyFromPrivate(this.privKey);
-
-    // return new PubKeySecp256k1(
-    //   new Uint8Array(key.getPublic().encodeCompressed("array"))
-    // );
 
     const pubKey = await this.getPubKey(coinType);
 

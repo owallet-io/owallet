@@ -36,7 +36,7 @@ export const AddTokenPage = observer(() => {
     setIsShowNetwork(false);
   };
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
-  const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+  // const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [coingeckoId, setCoingeckoId] = useState<string>("");
   const [coingeckoImg, setCoingeckoImg] = useState<string>("");
@@ -47,7 +47,7 @@ export const AddTokenPage = observer(() => {
       tokensStore.rejectAllSuggestedTokens();
     }
   });
-
+  console.log(chainStore.current.currencies, "chainStore.current.currencies");
   const { handleSubmit, watch, setValue, register, errors } = useForm<FormData>(
     {
       defaultValues: {
@@ -118,7 +118,9 @@ export const AddTokenPage = observer(() => {
       const currency: CW20Currency | ERC20Currency = {
         type: chainStore.current.networkType === "evm" ? "erc20" : "cw20",
         contractAddress: data.contractAddress,
-        coinMinimalDenom: tokenInfo.name,
+        coinMinimalDenom: `${
+          chainStore.current.networkType === "evm" ? "erc20" : "cw20"
+        }:${data.contractAddress}:${tokenInfo.name}`,
         coinDenom: tokenInfo.symbol,
         coinDecimals: tokenInfo.decimals,
         coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
@@ -128,7 +130,8 @@ export const AddTokenPage = observer(() => {
       if (interactionInfo.interaction && tokensStore.waitingSuggestedToken) {
         await tokensStore.approveSuggestedToken(currency);
       } else {
-        await tokensOf.addToken(currency);
+        await tokensStore.addToken(chainStore.current.chainId, currency);
+        // await tokensOf.addToken(currency);
       }
 
       toast("Add Token Success", {

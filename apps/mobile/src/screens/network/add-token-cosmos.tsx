@@ -4,7 +4,7 @@ import { metrics } from "../../themes";
 import { Text } from "@src/components/text";
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../components/input";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 import CheckBox from "react-native-check-box";
 import { AppCurrency, CW20Currency, Secret20Currency } from "@owallet/types";
@@ -13,7 +13,6 @@ import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { OWButton } from "@src/components/button";
-import { PageHeader } from "@src/components/header/header-new";
 import { OWBox } from "@src/components/card";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -22,6 +21,8 @@ import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
 import { unknownToken, MapChainIdToNetwork } from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 interface FormData {
   viewingKey?: string;
@@ -54,7 +55,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     getValues,
     formState: { errors },
   } = useForm<FormData>();
-  const smartNavigation = useSmartNavigation();
+
   const { colors } = useTheme();
 
   const {
@@ -66,10 +67,10 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     modalStore,
   } = useStore();
   const selectedChain = chainStore.current;
-  const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
+  // const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
   const [loading, setLoading] = useState(false);
-  const [coingeckoId, setCoingeckoID] = useState(null);
+  const [coingeckoId, setCoingeckoID] = useState("");
   const [selectedType, setSelectedType] = useState<"cw20">("cw20");
   const [coingeckoImg, setCoingeckoImg] = useState(null);
 
@@ -195,15 +196,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     // }
 
     // appInitStore.updateChainInfos(newChainInfos);
-    // smartNavigation.navigateSmart('Home', {});
-    smartNavigation.reset({
-      index: 0,
-      routes: [
-        {
-          name: "MainTab",
-        },
-      ],
-    });
+
+    resetTo(SCREENS.STACK.MainTab);
+
     showToast({
       message: "Token added",
     });
@@ -216,18 +211,19 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         const currency: CW20Currency = {
           type: selectedType,
           contractAddress: data.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
+          coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
           coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
-          coinGeckoId: coingeckoId,
+          coinGeckoId: coingeckoId || unknownToken.coinGeckoId,
         };
-        await tokensOf.addToken(currency);
+        await tokensStore.addToken(selectedChain.chainId, currency);
+        // await tokensOf.addToken(currency);
         addTokenSuccess(currency);
       }
     } catch (err) {
       setLoading(false);
-      smartNavigation.navigateSmart("Home", {});
+      navigate(SCREENS.Home, {});
       showToast({
         message: JSON.stringify(err.message),
         type: "danger",
@@ -258,7 +254,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         />
       }
     >
-      <PageHeader title="Add Token" />
       <ScrollView showsVerticalScrollIndicator={false}>
         <OWBox>
           <TouchableOpacity

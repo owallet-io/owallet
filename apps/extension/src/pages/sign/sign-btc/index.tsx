@@ -23,16 +23,16 @@ import { useHistory } from "react-router";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { DataModal } from "../modals/data-modal";
 import useOnClickOutside from "../../../hooks/use-click-outside";
-import { Card } from "../../../components/common/card";
 import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import { Address } from "../../../components/address";
-import { ChainIdEnum, useLanguage } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 // eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-extraneous-dependencies
 const { BitcoinUnit } = require("bitcoin-units");
 import cn from "classnames/bind";
 import { WalletStatus } from "@owallet/stores";
 import { Button } from "../../../components/common/button";
+import withErrorBoundary from "../hoc/withErrorBoundary";
 
 const cx = cn.bind(style);
 
@@ -40,6 +40,8 @@ enum Tab {
   Details,
   Data,
 }
+
+const BtcDetailsTabWithErrorBoundary = withErrorBoundary(BtcDetailsTab);
 
 export const SignBtcPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -265,7 +267,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
               >
                 {tab === Tab.Data && <BtcDataTab data={lastestData} />}
                 {tab === Tab.Details && (
-                  <BtcDetailsTab
+                  <BtcDetailsTabWithErrorBoundary
                     priceStore={priceStore}
                     feeConfig={feeConfig}
                     gasConfig={gasConfig}

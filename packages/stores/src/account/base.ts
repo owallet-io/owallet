@@ -76,6 +76,7 @@ import { AddressesLedger } from "@owallet/types";
 import { wallet } from "@owallet/bitcoin";
 import TronWebProvider from "tronweb";
 import { getEip712TypedDataBasedOnChainId } from "./utils";
+import { AccountSharedContext } from "./context";
 
 export interface Coin {
   readonly denom: string;
@@ -180,6 +181,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   protected pubKey: Uint8Array;
 
+  protected readonly sharedContext: AccountSharedContext;
+
   protected hasInited = false;
 
   protected sendTokenFns: ((
@@ -210,7 +213,12 @@ export class AccountSetBase<MsgOpts, Queries> {
     protected readonly opts: AccountSetOpts<MsgOpts>
   ) {
     makeObservable(this);
-
+    this.sharedContext = new AccountSharedContext(
+      this.opts.getOWallet,
+      this.opts.getEthereum,
+      this.opts.getTronWeb,
+      this.opts.getBitcoin
+    );
     this.pubKey = new Uint8Array();
 
     if (opts.autoInit) {
@@ -219,19 +227,19 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
 
   getOWallet(): Promise<OWallet | undefined> {
-    return this.opts.getOWallet();
+    return this.sharedContext.getOWallet();
   }
 
   getEthereum(): Promise<Ethereum | undefined> {
-    return this.opts.getEthereum();
+    return this.sharedContext.getEthereum();
   }
 
   getBitcoin(): Promise<Bitcoin | undefined> {
-    return this.opts.getBitcoin();
+    return this.sharedContext.getBitcoin();
   }
 
   getTronWeb(): Promise<TronWeb | undefined> {
-    return this.opts.getTronWeb();
+    return this.sharedContext.getTronWeb();
   }
 
   get msgOpts(): MsgOpts {
@@ -257,17 +265,26 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.sendTokenFns.push(fn);
   }
 
-  protected async enable(owallet: OWallet, chainId: string): Promise<void> {
+  protected async enable(chainId: string): Promise<void> {
     const chainInfo = this.chainGetter.getChain(chainId);
 
     if (this.opts.suggestChain) {
+      const owallet = await this.sharedContext.getOWallet();
       if (this.opts.suggestChainFn) {
-        await this.opts.suggestChainFn(owallet, chainInfo);
+        await this.sharedContext.suggestChain(async () => {
+          if (owallet && this.opts.suggestChainFn) {
+            await this.opts.suggestChainFn(owallet, chainInfo);
+          }
+        });
       } else {
-        await this.suggestChain(owallet, chainInfo);
+        await this.sharedContext.suggestChain(async () => {
+          if (owallet) {
+            await owallet.experimentalSuggestChain(chainInfo);
+          }
+        });
       }
     }
-    await owallet.enable(chainId);
+    await this.sharedContext.enable(chainId);
   }
 
   protected async suggestChain(
@@ -307,7 +324,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     // Set wallet status as loading whenever try to init.
     this._walletStatus = WalletStatus.Loading;
 
-    const owallet = yield* toGenerator(this.getOWallet());
+    const owallet = yield* toGenerator(this.sharedContext.getOWallet());
     if (!owallet) {
       this._walletStatus = WalletStatus.NotExist;
       return;
@@ -316,23 +333,37 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._walletVersion = owallet.version;
 
     try {
-      yield this.enable(owallet, this.chainId);
+      yield this.enable(this.chainId);
     } catch (e) {
       console.log(e);
       this._walletStatus = WalletStatus.Rejected;
       return;
     }
 
-    const key = yield* toGenerator(owallet.getKey(this.chainId));
+    yield this.sharedContext.getKey(this.chainId, (res) => {
+      if (res.status === "fulfilled") {
+        const key = res.value;
+        this._bech32Address = key.bech32Address;
+        this._address = key.address;
+        this._isNanoLedger = key.isNanoLedger;
+        this._name = key.name;
+        this.pubKey = key.pubKey;
+        this._legacyAddress = key.legacyAddress;
+        // Set the wallet status as loaded after getting all necessary infos.
+        this._walletStatus = WalletStatus.Loaded;
+      } else {
+        // Caught error loading key
+        // Reset properties, and set status to Rejected
 
-    this._bech32Address = key.bech32Address;
-    this._address = key.address;
-    this._isNanoLedger = key.isNanoLedger;
-    this._name = key.name;
-    this.pubKey = key.pubKey;
-    this._legacyAddress = key.legacyAddress;
-    // Set the wallet status as loaded after getting all necessary infos.
-    this._walletStatus = WalletStatus.Loaded;
+        this._walletStatus = WalletStatus.Rejected;
+        this._bech32Address = "";
+        this._address = new Uint8Array(0);
+        this._isNanoLedger = false;
+        this._name = "";
+        this.pubKey = new Uint8Array(0);
+        this._legacyAddress = "";
+      }
+    });
   }
 
   @action
