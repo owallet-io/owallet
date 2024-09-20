@@ -19,7 +19,7 @@ packages/extension/src/config.ui.var.tsx
 
 coverage
 
-.yarn/
+.yarn/cache
 .yarnrc
 
 .env
