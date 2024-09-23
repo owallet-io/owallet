@@ -203,7 +203,10 @@ export class PermissionStore extends HasMapStore<
   }
 
   @flow
-  *approveAccessAndWaitEnd(datas: string[]) {
+  *approveAccessAndWaitEnd(
+    datas: string[],
+    afterFn?: (proceedNext: boolean) => void | Promise<void>
+  ) {
     if (this.waitingDatas.length === 0) {
       return;
     }
@@ -211,8 +214,11 @@ export class PermissionStore extends HasMapStore<
     this._isLoading = true;
     const id = this.waitingDatas[0].id;
     try {
-      // yield this.interactionStore.approveWithoutRemovingData(id, datas);
+      yield this.interactionStore.approveWithoutRemovingData(id, datas);
     } finally {
+      if (afterFn) {
+        yield afterFn(this.interactionStore.hasOtherData(id));
+      }
       yield this.waitEnd();
       this._isLoading = false;
       // this.interactionStore.removeData('enable-access', id);
@@ -295,21 +301,37 @@ export class PermissionStore extends HasMapStore<
   }
 
   @flow
-  *approve(id: string) {
+  *approve(
+    id: string,
+    afterFn?: (proceedNext: boolean) => void | Promise<void>
+  ) {
     this._isLoading = true;
     try {
       yield this.interactionStore.approve(INTERACTION_TYPE_PERMISSION, id, {});
     } finally {
+      if (afterFn) {
+        yield afterFn(
+          this.interactionStore.hasOtherData(id ?? this.waitingDatas[0].id)
+        );
+      }
       this._isLoading = false;
     }
   }
 
   @flow
-  *reject(id: string) {
+  *reject(
+    id: string,
+    afterFn?: (proceedNext: boolean) => void | Promise<void>
+  ) {
     this._isLoading = true;
     try {
       yield this.interactionStore.reject(INTERACTION_TYPE_PERMISSION, id);
     } finally {
+      if (afterFn) {
+        yield afterFn(
+          this.interactionStore.hasOtherData(id ?? this.waitingDatas[0].id)
+        );
+      }
       this._isLoading = false;
     }
   }
@@ -317,6 +339,7 @@ export class PermissionStore extends HasMapStore<
   @flow
   *rejectAll() {
     this._isLoading = true;
+
     try {
       yield this.interactionStore.rejectAll(INTERACTION_TYPE_PERMISSION);
     } finally {

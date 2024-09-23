@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { useInteractionInfo } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -9,6 +9,8 @@ import classnames from "classnames";
 import { Button } from "../../components/common/button";
 import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 export const AccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -60,6 +62,22 @@ export const AccessPage: FunctionComponent = observer(() => {
 
     return waitingPermission.data.chainIds.join(", ");
   }, [waitingPermission]);
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
 
   return (
     <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
@@ -132,7 +150,26 @@ export const AccessPage: FunctionComponent = observer(() => {
               e.preventDefault();
 
               if (waitingPermission) {
-                await permissionStore.reject(waitingPermission.id);
+                await permissionStore.reject(
+                  waitingPermission.id,
+                  async (proceedNext) => {
+                    if (!proceedNext) {
+                      if (
+                        ineractionInfo.interaction &&
+                        !ineractionInfo.interactionInternal
+                      ) {
+                        handleExternalInteractionWithNoProceedNext();
+                      }
+                    }
+
+                    if (
+                      ineractionInfo.interaction &&
+                      ineractionInfo.interactionInternal
+                    ) {
+                      await unmountPromise.promise;
+                    }
+                  }
+                );
                 if (
                   permissionStore.waitingBasicAccessPermissions.length === 0
                 ) {
@@ -154,7 +191,26 @@ export const AccessPage: FunctionComponent = observer(() => {
               e.preventDefault();
 
               if (waitingPermission) {
-                await permissionStore.approve(waitingPermission.id);
+                await permissionStore.approve(
+                  waitingPermission.id,
+                  async (proceedNext) => {
+                    if (!proceedNext) {
+                      if (
+                        ineractionInfo.interaction &&
+                        !ineractionInfo.interactionInternal
+                      ) {
+                        handleExternalInteractionWithNoProceedNext();
+                      }
+                    }
+
+                    if (
+                      ineractionInfo.interaction &&
+                      ineractionInfo.interactionInternal
+                    ) {
+                      await unmountPromise.promise;
+                    }
+                  }
+                );
                 if (
                   permissionStore.waitingBasicAccessPermissions.length === 0
                 ) {
