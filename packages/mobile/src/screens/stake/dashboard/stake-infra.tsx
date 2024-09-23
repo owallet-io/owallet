@@ -255,7 +255,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getOWalletOraichainAPR();
     fetchAllApr();
-  }, [chainStore.current.chainId]);
+  }, []);
 
   const renderOWalletValidators = () => {
     return (
