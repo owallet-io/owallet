@@ -217,7 +217,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: "Transaction History",
   },
   [SCREENS.Camera]: {
-    title: HEADER_KEY.notShowHeader,
+    title: "Scan QR Code",
   },
   [SCREENS.QRScreen]: {
     title: "Receive",

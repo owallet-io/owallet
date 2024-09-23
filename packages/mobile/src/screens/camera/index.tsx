@@ -23,7 +23,7 @@ import { SCREENS } from "@src/common/constants";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { tracking } from "@src/utils/tracking";
-import Web3 from "web3";
+
 interface keyable {
   [key: string]: any;
 }
