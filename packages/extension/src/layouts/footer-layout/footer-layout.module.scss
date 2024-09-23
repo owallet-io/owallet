@@ -1,9 +1,11 @@
 @import '../../styles/var';
 .container {
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: $neutral-surface-bg;
+  overflow: 'scroll';
+  padding-bottom: 60px;
 }
 
 .inner-container {

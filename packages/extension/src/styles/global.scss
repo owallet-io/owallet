@@ -26,7 +26,7 @@ body {
   color: $color;
   background-color: $neutral-surface-card;
   min-width: $popup-size-width;
-  height: $popup-size-height;
+  min-height: $popup-size-height;
   overflow: hidden;
   &[data-lang='ko'] {
     word-break: keep-all;
@@ -61,7 +61,7 @@ hr {
 
 #app {
   min-width: $popup-size-width;
-  height: $popup-size-height;
+  min-height: $popup-size-height;
 }
 
 @keyframes spinAround {

@@ -222,7 +222,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
     <div
       style={{
         height: "100%",
-        width: "100vw",
+        // width: "100vw",
         overflowX: "auto",
       }}
     >
@@ -254,7 +254,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
           <div className={style.container}>
             <div
               style={{
-                height: "75%",
+                // height: '75%',
                 overflowY: "scroll",
                 overflowX: "hidden",
                 padding: 16,
@@ -315,7 +315,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                 position: "absolute",
                 bottom: 0,
                 width: "100%",
-                height: "25%",
+                height: 160,
                 backgroundColor: colors["neutral-surface-card"],
                 borderTop: "1px solid" + colors["neutral-border-default"],
               }}

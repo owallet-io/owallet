@@ -350,7 +350,7 @@ export const SignPage: FunctionComponent = observer(() => {
     <div
       style={{
         height: "100%",
-        width: "100vw",
+        // width: '100vw',
         overflowX: "auto",
       }}
     >
@@ -382,7 +382,8 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
-            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+            {/* <div style={{ height: "75%", overflow: "scroll", padding: 16 }}> */}
+            <div style={{ overflow: "scroll", padding: 16 }}>
               <div
                 className={classnames(style.tabs)}
                 style={{ display: "flex", paddingBottom: 12 }}
@@ -429,7 +430,7 @@ export const SignPage: FunctionComponent = observer(() => {
                 position: "absolute",
                 bottom: 0,
                 width: "100%",
-                height: "25%",
+                height: 160,
                 backgroundColor: colors["neutral-surface-card"],
                 borderTop: "1px solid" + colors["neutral-border-default"],
               }}
