@@ -165,16 +165,39 @@ export const StakeCardAll = observer(({}) => {
 
       state.setIsLoading(true);
 
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        viewToken.queryRewards.getDescendingPendingRewardValidatorAddresses(10),
-        "",
-        {},
-        {},
-        {
-          onBroadcasted: (txHash) => {},
-        },
-        viewToken.token?.currency.coinMinimalDenom
-      );
+      try {
+        await account.cosmos.sendWithdrawDelegationRewardMsgs(
+          viewToken.queryRewards.getDescendingPendingRewardValidatorAddresses(
+            10
+          ),
+          "",
+          {},
+          {},
+          {
+            onBroadcasted: (txHash) => {
+              setTimeout(() => {
+                state.setIsLoading(false);
+              }, 1000);
+            },
+            onFulfill: (tx: any) => {
+              // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
+              // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
+              setTimeout(() => {
+                state.setIsLoading(false);
+              }, 1000);
+            },
+          },
+          viewToken.token?.currency.coinMinimalDenom
+        );
+        if (state.isLoading === false) {
+          break;
+        }
+      } catch (e) {
+        console.log(e, "error claim all");
+        state.setIsLoading(false);
+        break;
+        // throw Error("break");
+      }
     }
   };
 
@@ -363,24 +386,60 @@ export const StakeCardAll = observer(({}) => {
           </View>
         </View>
         <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
+          <OWButton
+            type="link"
+            label="Claim"
+            loading={
+              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
+              "withdrawRewards"
+            }
             onPress={() => {
               _onPressClaim(token.queryRewards, token.chainInfo.chainId);
             }}
-          >
-            <Text style={styles.outlineButton}>Claim</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            disabled={isDisabledCompound}
-            style={{
-              opacity: isDisabledCompound ? 0.5 : 1,
+            textStyle={{
+              color: colors["neutral-text-title"],
             }}
+            disabled={
+              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
+              "withdrawRewards"
+            }
+            fullWidth={false}
+            size={"small"}
+          />
+          <OWButton
             onPress={() => {
               _onPressCompound(token.queryRewards, token.chainInfo.chainId);
             }}
-          >
-            <Text style={styles.outlineButton}>Compound</Text>
-          </TouchableOpacity>
+            disabled={
+              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
+                "withdrawRewardsAndDelegation" || isDisabledCompound
+            }
+            type="link"
+            label="Compound"
+            textStyle={{
+              color: colors["neutral-text-title"],
+            }}
+            style={{
+              opacity: isDisabledCompound ? 0.5 : 1,
+            }}
+            loading={
+              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
+              "withdrawRewardsAndDelegation"
+            }
+            size={"small"}
+            fullWidth={false}
+          />
+          {/*<TouchableOpacity*/}
+          {/*  disabled={isDisabledCompound}*/}
+          {/*  style={{*/}
+          {/*    opacity: isDisabledCompound ? 0.5 : 1,*/}
+          {/*  }}*/}
+          {/*  onPress={() => {*/}
+          {/*    _onPressCompound(token.queryRewards, token.chainInfo.chainId);*/}
+          {/*  }}*/}
+          {/*>*/}
+          {/*  <Text style={styles.outlineButton}>Compound</Text>*/}
+          {/*</TouchableOpacity>*/}
         </View>
       </View>
     );
@@ -459,7 +518,7 @@ export const StakeCardAll = observer(({}) => {
                   claimAll();
                 }}
                 disabled={claimAllDisabled}
-                loading={account.isSendingMsg === "withdrawRewards"}
+                loading={claimAllIsLoading}
               />
             </View>
             <View>
