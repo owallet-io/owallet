@@ -77,8 +77,6 @@ export class ExtensionRouter extends Router {
               tabId: sender.tab.id,
             })
             .then(() => {
-              console.log("open side panel");
-
               resolve({
                 return: {},
               });

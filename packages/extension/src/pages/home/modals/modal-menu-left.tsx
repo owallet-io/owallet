@@ -162,12 +162,9 @@ export const ModalMenuLeft: FC<{
                               if (activeTabs.length > 0) {
                                 const id = activeTabs[0].id;
                                 if (id != null) {
-                                  await chrome.sidePanel.open({
+                                  chrome.sidePanel.open({
                                     tabId: id,
                                   });
-                                  // await chrome.sidePanel.setPanelBehavior({
-                                  //   openPanelOnActionClick: value
-                                  // });
                                 }
                               }
                             } catch (e) {

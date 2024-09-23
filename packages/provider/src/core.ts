@@ -809,6 +809,257 @@ export class OWallet implements IOWallet {
           );
         } catch (e) {
           console.log(e);
+          if (
+            !ignoreGestureFailure &&
+            e.message &&
+            e.message.includes("in response to a user gesture")
+          ) {
+            if (!document.getElementById("__open_keplr_side_panel__")) {
+              const sidePanelPing = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "interaction",
+                "ping-content-script-tab-has-opened-side-panel",
+                {}
+              );
+
+              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
+              // 이 경우는 무시하도록 한다.
+              if (sidePanelPing) {
+                return;
+              }
+
+              const isKeplrLocked = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "keyring",
+                "GetIsLockedMsg",
+                {}
+              );
+
+              const keplrThemeOption = await sendSimpleMessage<
+                "light" | "dark" | "auto"
+              >(
+                this.requester,
+                BACKGROUND_PORT,
+                "settings",
+                "GetThemeOptionMsg",
+                {}
+              );
+
+              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
+              const fontUrl = chrome.runtime.getURL(
+                "/assets/Inter-SemiBold.ttf"
+              );
+              const fontFaceAndKeyFrames = `
+                @font-face {
+                  font-family: 'Inter-SemiBold-Keplr';
+                  src: url('${fontUrl}') format('truetype');
+                  font-weight: 600;
+                  font-style: normal;
+                }
+
+                @keyframes slide-left {
+                  0% {
+                    transform: translateY(0%) translateX(100%);
+                  }
+                  100% {
+                    transform: translateY(0%) translateX(0);
+                  }
+                }
+                    
+                @keyframes tada {
+                  0% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                  10%, 20% {
+                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
+                  }
+                  30%, 50%, 70%, 90% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+                  }
+                  40%, 60%, 80% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+                  }
+                  100% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                }
+                  
+            `;
+
+              const isLightMode =
+                keplrThemeOption === "auto"
+                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
+                  : keplrThemeOption === "light";
+
+              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
+              const styleElement = document.createElement("style");
+              styleElement.appendChild(
+                document.createTextNode(fontFaceAndKeyFrames)
+              );
+              document.head.appendChild(styleElement);
+
+              const button = document.createElement("div");
+              button.id = "__open_keplr_side_panel__";
+              button.style.boxSizing = "border-box";
+              button.style.animation = "slide-left 0.5s forwards";
+              button.style.position = "fixed";
+              button.style.right = "1.5rem";
+              button.style.top = "1.5rem";
+              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
+              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.borderRadius = "1rem";
+              button.style.display = "flex";
+              button.style.alignItems = "center";
+
+              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontWeight = "600";
+
+              // button.style.cursor = "pointer";
+              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // if (isLightMode) {
+              //   button.style.boxShadow =
+              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
+              // }
+              // button.addEventListener("mouseover", () => {
+              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
+              // });
+              // button.addEventListener("mouseout", () => {
+              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // });
+
+              // const megaphoneWrapper = document.createElement("div");
+              // megaphoneWrapper.style.boxSizing = "border-box";
+              // megaphoneWrapper.style.display = "flex";
+              // megaphoneWrapper.style.position = "absolute";
+              // megaphoneWrapper.style.left = "-10px";
+              // megaphoneWrapper.style.top = "-10px";
+              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
+              // megaphoneWrapper.style.borderRadius = "255px";
+              // megaphoneWrapper.style.background = "#FC8441";
+              //
+              // const megaphone = document.createElement("img");
+              // const megaphoneUrl = chrome.runtime.getURL(
+              //   "/assets/megaphone.svg"
+              // );
+              // megaphone.src = megaphoneUrl;
+              // megaphone.style.width = "1.25rem";
+              // megaphone.style.height = "1.25rem";
+              // megaphone.style.animation = "tada 1s infinite";
+              // megaphoneWrapper.appendChild(megaphone);
+
+              const arrowTop = document.createElement("div");
+              arrowTop.style.boxSizing = "border-box";
+              arrowTop.style.transform = "translateY(-0.65rem)";
+              arrowTop.style.marginRight = "0.35rem";
+              arrowTop.innerHTML = `
+                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+                      isLightMode ? "#2C4BE2" : "#72747B"
+                    }"/>
+                </svg>
+              `;
+
+              const keplrLogoWrap = document.createElement("div");
+              keplrLogoWrap.style.boxSizing = "border-box";
+              keplrLogoWrap.style.position = "relative";
+              keplrLogoWrap.style.marginRight = "1rem";
+              const keplrLogo = document.createElement("img");
+              const keplrLogoUrl = chrome.runtime.getURL(
+                `/assets/${
+                  isKeplrLocked ? "locked-keplr-logo" : "icon"
+                }-128.png`
+              );
+              keplrLogo.src = keplrLogoUrl;
+              keplrLogo.style.boxSizing = "border-box";
+              keplrLogo.style.width = "3rem";
+              keplrLogo.style.height = "3rem";
+              keplrLogoWrap.appendChild(keplrLogo);
+
+              const logoClickCursor = document.createElement("img");
+              const logoClickCursorUrl = chrome.runtime.getURL(
+                "assets/icon-click-cursor.png"
+              );
+              logoClickCursor.src = logoClickCursorUrl;
+              logoClickCursor.style.boxSizing = "border-box";
+              logoClickCursor.style.position = "absolute";
+              logoClickCursor.style.right = "-0.2rem";
+              logoClickCursor.style.bottom = "-0.2rem";
+              logoClickCursor.style.aspectRatio = "78/98";
+              logoClickCursor.style.height = "1.375rem";
+              keplrLogoWrap.appendChild(logoClickCursor);
+
+              const mainText = document.createElement("span");
+              mainText.style.boxSizing = "border-box";
+              // mainText.style.maxWidth = "9.125rem";
+              mainText.style.fontSize = "1rem";
+              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
+              mainText.textContent = isKeplrLocked
+                ? "Unlock Keplr to proceed"
+                : "Open Keplr to approve request(s)";
+
+              // const arrowLeftOpenWrapper = document.createElement("div");
+              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
+              // arrowLeftOpenWrapper.style.display = "flex";
+              // arrowLeftOpenWrapper.style.alignItems = "center";
+              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
+              //
+              // arrowLeftOpenWrapper.innerHTML = `
+              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              // </svg>`;
+              //
+              // const openText = document.createElement("span");
+              // openText.style.boxSizing = "border-box";
+              // openText.style.fontSize = "1rem";
+              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
+              // openText.textContent = "OPEN";
+              //
+              // arrowLeftOpenWrapper.appendChild(openText);
+
+              // button.appendChild(megaphoneWrapper);
+              button.appendChild(arrowTop);
+              button.appendChild(keplrLogoWrap);
+              button.appendChild(mainText);
+              // button.appendChild(arrowLeftOpenWrapper);
+
+              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
+              const hasAlready = document.getElementById(
+                "__open_keplr_side_panel__"
+              );
+
+              if (!hasAlready) {
+                let removed = false;
+                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
+                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+                const intervalId = setInterval(() => {
+                  sendSimpleMessage<boolean>(
+                    this.requester,
+                    BACKGROUND_PORT,
+                    "interaction",
+                    "ping-content-script-tab-has-opened-side-panel",
+                    {}
+                  ).then((sidePanelPing) => {
+                    if (sidePanelPing) {
+                      clearInterval(intervalId);
+                      if (!removed) {
+                        button.remove();
+                        removed = true;
+                      }
+                    }
+                  });
+                }, 300);
+
+                document.body.appendChild(button);
+              }
+            }
+          }
         }
       }
     }
@@ -1217,6 +1468,257 @@ export class Ethereum implements IEthereum {
           );
         } catch (e) {
           console.log(e);
+          if (
+            !ignoreGestureFailure &&
+            e.message &&
+            e.message.includes("in response to a user gesture")
+          ) {
+            if (!document.getElementById("__open_keplr_side_panel__")) {
+              const sidePanelPing = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "interaction",
+                "ping-content-script-tab-has-opened-side-panel",
+                {}
+              );
+
+              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
+              // 이 경우는 무시하도록 한다.
+              if (sidePanelPing) {
+                return;
+              }
+
+              const isKeplrLocked = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "keyring",
+                "GetIsLockedMsg",
+                {}
+              );
+
+              const keplrThemeOption = await sendSimpleMessage<
+                "light" | "dark" | "auto"
+              >(
+                this.requester,
+                BACKGROUND_PORT,
+                "settings",
+                "GetThemeOptionMsg",
+                {}
+              );
+
+              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
+              const fontUrl = chrome.runtime.getURL(
+                "/assets/Inter-SemiBold.ttf"
+              );
+              const fontFaceAndKeyFrames = `
+                @font-face {
+                  font-family: 'Inter-SemiBold-Keplr';
+                  src: url('${fontUrl}') format('truetype');
+                  font-weight: 600;
+                  font-style: normal;
+                }
+
+                @keyframes slide-left {
+                  0% {
+                    transform: translateY(0%) translateX(100%);
+                  }
+                  100% {
+                    transform: translateY(0%) translateX(0);
+                  }
+                }
+                    
+                @keyframes tada {
+                  0% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                  10%, 20% {
+                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
+                  }
+                  30%, 50%, 70%, 90% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+                  }
+                  40%, 60%, 80% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+                  }
+                  100% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                }
+                  
+            `;
+
+              const isLightMode =
+                keplrThemeOption === "auto"
+                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
+                  : keplrThemeOption === "light";
+
+              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
+              const styleElement = document.createElement("style");
+              styleElement.appendChild(
+                document.createTextNode(fontFaceAndKeyFrames)
+              );
+              document.head.appendChild(styleElement);
+
+              const button = document.createElement("div");
+              button.id = "__open_keplr_side_panel__";
+              button.style.boxSizing = "border-box";
+              button.style.animation = "slide-left 0.5s forwards";
+              button.style.position = "fixed";
+              button.style.right = "1.5rem";
+              button.style.top = "1.5rem";
+              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
+              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.borderRadius = "1rem";
+              button.style.display = "flex";
+              button.style.alignItems = "center";
+
+              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontWeight = "600";
+
+              // button.style.cursor = "pointer";
+              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // if (isLightMode) {
+              //   button.style.boxShadow =
+              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
+              // }
+              // button.addEventListener("mouseover", () => {
+              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
+              // });
+              // button.addEventListener("mouseout", () => {
+              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // });
+
+              // const megaphoneWrapper = document.createElement("div");
+              // megaphoneWrapper.style.boxSizing = "border-box";
+              // megaphoneWrapper.style.display = "flex";
+              // megaphoneWrapper.style.position = "absolute";
+              // megaphoneWrapper.style.left = "-10px";
+              // megaphoneWrapper.style.top = "-10px";
+              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
+              // megaphoneWrapper.style.borderRadius = "255px";
+              // megaphoneWrapper.style.background = "#FC8441";
+              //
+              // const megaphone = document.createElement("img");
+              // const megaphoneUrl = chrome.runtime.getURL(
+              //   "/assets/megaphone.svg"
+              // );
+              // megaphone.src = megaphoneUrl;
+              // megaphone.style.width = "1.25rem";
+              // megaphone.style.height = "1.25rem";
+              // megaphone.style.animation = "tada 1s infinite";
+              // megaphoneWrapper.appendChild(megaphone);
+
+              const arrowTop = document.createElement("div");
+              arrowTop.style.boxSizing = "border-box";
+              arrowTop.style.transform = "translateY(-0.65rem)";
+              arrowTop.style.marginRight = "0.35rem";
+              arrowTop.innerHTML = `
+                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+                      isLightMode ? "#2C4BE2" : "#72747B"
+                    }"/>
+                </svg>
+              `;
+
+              const keplrLogoWrap = document.createElement("div");
+              keplrLogoWrap.style.boxSizing = "border-box";
+              keplrLogoWrap.style.position = "relative";
+              keplrLogoWrap.style.marginRight = "1rem";
+              const keplrLogo = document.createElement("img");
+              const keplrLogoUrl = chrome.runtime.getURL(
+                `/assets/${
+                  isKeplrLocked ? "locked-keplr-logo" : "icon"
+                }-128.png`
+              );
+              keplrLogo.src = keplrLogoUrl;
+              keplrLogo.style.boxSizing = "border-box";
+              keplrLogo.style.width = "3rem";
+              keplrLogo.style.height = "3rem";
+              keplrLogoWrap.appendChild(keplrLogo);
+
+              const logoClickCursor = document.createElement("img");
+              const logoClickCursorUrl = chrome.runtime.getURL(
+                "assets/icon-click-cursor.png"
+              );
+              logoClickCursor.src = logoClickCursorUrl;
+              logoClickCursor.style.boxSizing = "border-box";
+              logoClickCursor.style.position = "absolute";
+              logoClickCursor.style.right = "-0.2rem";
+              logoClickCursor.style.bottom = "-0.2rem";
+              logoClickCursor.style.aspectRatio = "78/98";
+              logoClickCursor.style.height = "1.375rem";
+              keplrLogoWrap.appendChild(logoClickCursor);
+
+              const mainText = document.createElement("span");
+              mainText.style.boxSizing = "border-box";
+              // mainText.style.maxWidth = "9.125rem";
+              mainText.style.fontSize = "1rem";
+              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
+              mainText.textContent = isKeplrLocked
+                ? "Unlock Keplr to proceed"
+                : "Open Keplr to approve request(s)";
+
+              // const arrowLeftOpenWrapper = document.createElement("div");
+              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
+              // arrowLeftOpenWrapper.style.display = "flex";
+              // arrowLeftOpenWrapper.style.alignItems = "center";
+              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
+              //
+              // arrowLeftOpenWrapper.innerHTML = `
+              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              // </svg>`;
+              //
+              // const openText = document.createElement("span");
+              // openText.style.boxSizing = "border-box";
+              // openText.style.fontSize = "1rem";
+              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
+              // openText.textContent = "OPEN";
+              //
+              // arrowLeftOpenWrapper.appendChild(openText);
+
+              // button.appendChild(megaphoneWrapper);
+              button.appendChild(arrowTop);
+              button.appendChild(keplrLogoWrap);
+              button.appendChild(mainText);
+              // button.appendChild(arrowLeftOpenWrapper);
+
+              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
+              const hasAlready = document.getElementById(
+                "__open_keplr_side_panel__"
+              );
+
+              if (!hasAlready) {
+                let removed = false;
+                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
+                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+                const intervalId = setInterval(() => {
+                  sendSimpleMessage<boolean>(
+                    this.requester,
+                    BACKGROUND_PORT,
+                    "interaction",
+                    "ping-content-script-tab-has-opened-side-panel",
+                    {}
+                  ).then((sidePanelPing) => {
+                    if (sidePanelPing) {
+                      clearInterval(intervalId);
+                      if (!removed) {
+                        button.remove();
+                        removed = true;
+                      }
+                    }
+                  });
+                }, 300);
+
+                document.body.appendChild(button);
+              }
+            }
+          }
         }
       }
     }
@@ -1518,6 +2020,257 @@ export class Bitcoin implements IBitcoin {
           );
         } catch (e) {
           console.log(e);
+          if (
+            !ignoreGestureFailure &&
+            e.message &&
+            e.message.includes("in response to a user gesture")
+          ) {
+            if (!document.getElementById("__open_keplr_side_panel__")) {
+              const sidePanelPing = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "interaction",
+                "ping-content-script-tab-has-opened-side-panel",
+                {}
+              );
+
+              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
+              // 이 경우는 무시하도록 한다.
+              if (sidePanelPing) {
+                return;
+              }
+
+              const isKeplrLocked = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "keyring",
+                "GetIsLockedMsg",
+                {}
+              );
+
+              const keplrThemeOption = await sendSimpleMessage<
+                "light" | "dark" | "auto"
+              >(
+                this.requester,
+                BACKGROUND_PORT,
+                "settings",
+                "GetThemeOptionMsg",
+                {}
+              );
+
+              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
+              const fontUrl = chrome.runtime.getURL(
+                "/assets/Inter-SemiBold.ttf"
+              );
+              const fontFaceAndKeyFrames = `
+                @font-face {
+                  font-family: 'Inter-SemiBold-Keplr';
+                  src: url('${fontUrl}') format('truetype');
+                  font-weight: 600;
+                  font-style: normal;
+                }
+
+                @keyframes slide-left {
+                  0% {
+                    transform: translateY(0%) translateX(100%);
+                  }
+                  100% {
+                    transform: translateY(0%) translateX(0);
+                  }
+                }
+                    
+                @keyframes tada {
+                  0% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                  10%, 20% {
+                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
+                  }
+                  30%, 50%, 70%, 90% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+                  }
+                  40%, 60%, 80% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+                  }
+                  100% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                }
+                  
+            `;
+
+              const isLightMode =
+                keplrThemeOption === "auto"
+                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
+                  : keplrThemeOption === "light";
+
+              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
+              const styleElement = document.createElement("style");
+              styleElement.appendChild(
+                document.createTextNode(fontFaceAndKeyFrames)
+              );
+              document.head.appendChild(styleElement);
+
+              const button = document.createElement("div");
+              button.id = "__open_keplr_side_panel__";
+              button.style.boxSizing = "border-box";
+              button.style.animation = "slide-left 0.5s forwards";
+              button.style.position = "fixed";
+              button.style.right = "1.5rem";
+              button.style.top = "1.5rem";
+              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
+              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.borderRadius = "1rem";
+              button.style.display = "flex";
+              button.style.alignItems = "center";
+
+              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontWeight = "600";
+
+              // button.style.cursor = "pointer";
+              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // if (isLightMode) {
+              //   button.style.boxShadow =
+              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
+              // }
+              // button.addEventListener("mouseover", () => {
+              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
+              // });
+              // button.addEventListener("mouseout", () => {
+              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // });
+
+              // const megaphoneWrapper = document.createElement("div");
+              // megaphoneWrapper.style.boxSizing = "border-box";
+              // megaphoneWrapper.style.display = "flex";
+              // megaphoneWrapper.style.position = "absolute";
+              // megaphoneWrapper.style.left = "-10px";
+              // megaphoneWrapper.style.top = "-10px";
+              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
+              // megaphoneWrapper.style.borderRadius = "255px";
+              // megaphoneWrapper.style.background = "#FC8441";
+              //
+              // const megaphone = document.createElement("img");
+              // const megaphoneUrl = chrome.runtime.getURL(
+              //   "/assets/megaphone.svg"
+              // );
+              // megaphone.src = megaphoneUrl;
+              // megaphone.style.width = "1.25rem";
+              // megaphone.style.height = "1.25rem";
+              // megaphone.style.animation = "tada 1s infinite";
+              // megaphoneWrapper.appendChild(megaphone);
+
+              const arrowTop = document.createElement("div");
+              arrowTop.style.boxSizing = "border-box";
+              arrowTop.style.transform = "translateY(-0.65rem)";
+              arrowTop.style.marginRight = "0.35rem";
+              arrowTop.innerHTML = `
+                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+                      isLightMode ? "#2C4BE2" : "#72747B"
+                    }"/>
+                </svg>
+              `;
+
+              const keplrLogoWrap = document.createElement("div");
+              keplrLogoWrap.style.boxSizing = "border-box";
+              keplrLogoWrap.style.position = "relative";
+              keplrLogoWrap.style.marginRight = "1rem";
+              const keplrLogo = document.createElement("img");
+              const keplrLogoUrl = chrome.runtime.getURL(
+                `/assets/${
+                  isKeplrLocked ? "locked-keplr-logo" : "icon"
+                }-128.png`
+              );
+              keplrLogo.src = keplrLogoUrl;
+              keplrLogo.style.boxSizing = "border-box";
+              keplrLogo.style.width = "3rem";
+              keplrLogo.style.height = "3rem";
+              keplrLogoWrap.appendChild(keplrLogo);
+
+              const logoClickCursor = document.createElement("img");
+              const logoClickCursorUrl = chrome.runtime.getURL(
+                "assets/icon-click-cursor.png"
+              );
+              logoClickCursor.src = logoClickCursorUrl;
+              logoClickCursor.style.boxSizing = "border-box";
+              logoClickCursor.style.position = "absolute";
+              logoClickCursor.style.right = "-0.2rem";
+              logoClickCursor.style.bottom = "-0.2rem";
+              logoClickCursor.style.aspectRatio = "78/98";
+              logoClickCursor.style.height = "1.375rem";
+              keplrLogoWrap.appendChild(logoClickCursor);
+
+              const mainText = document.createElement("span");
+              mainText.style.boxSizing = "border-box";
+              // mainText.style.maxWidth = "9.125rem";
+              mainText.style.fontSize = "1rem";
+              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
+              mainText.textContent = isKeplrLocked
+                ? "Unlock Keplr to proceed"
+                : "Open Keplr to approve request(s)";
+
+              // const arrowLeftOpenWrapper = document.createElement("div");
+              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
+              // arrowLeftOpenWrapper.style.display = "flex";
+              // arrowLeftOpenWrapper.style.alignItems = "center";
+              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
+              //
+              // arrowLeftOpenWrapper.innerHTML = `
+              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              // </svg>`;
+              //
+              // const openText = document.createElement("span");
+              // openText.style.boxSizing = "border-box";
+              // openText.style.fontSize = "1rem";
+              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
+              // openText.textContent = "OPEN";
+              //
+              // arrowLeftOpenWrapper.appendChild(openText);
+
+              // button.appendChild(megaphoneWrapper);
+              button.appendChild(arrowTop);
+              button.appendChild(keplrLogoWrap);
+              button.appendChild(mainText);
+              // button.appendChild(arrowLeftOpenWrapper);
+
+              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
+              const hasAlready = document.getElementById(
+                "__open_keplr_side_panel__"
+              );
+
+              if (!hasAlready) {
+                let removed = false;
+                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
+                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+                const intervalId = setInterval(() => {
+                  sendSimpleMessage<boolean>(
+                    this.requester,
+                    BACKGROUND_PORT,
+                    "interaction",
+                    "ping-content-script-tab-has-opened-side-panel",
+                    {}
+                  ).then((sidePanelPing) => {
+                    if (sidePanelPing) {
+                      clearInterval(intervalId);
+                      if (!removed) {
+                        button.remove();
+                        removed = true;
+                      }
+                    }
+                  });
+                }, 300);
+
+                document.body.appendChild(button);
+              }
+            }
+          }
         }
       }
     }
@@ -1600,6 +2353,257 @@ export class Oasis implements IOasis {
           );
         } catch (e) {
           console.log(e);
+          if (
+            !ignoreGestureFailure &&
+            e.message &&
+            e.message.includes("in response to a user gesture")
+          ) {
+            if (!document.getElementById("__open_keplr_side_panel__")) {
+              const sidePanelPing = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "interaction",
+                "ping-content-script-tab-has-opened-side-panel",
+                {}
+              );
+
+              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
+              // 이 경우는 무시하도록 한다.
+              if (sidePanelPing) {
+                return;
+              }
+
+              const isKeplrLocked = await sendSimpleMessage<boolean>(
+                this.requester,
+                BACKGROUND_PORT,
+                "keyring",
+                "GetIsLockedMsg",
+                {}
+              );
+
+              const keplrThemeOption = await sendSimpleMessage<
+                "light" | "dark" | "auto"
+              >(
+                this.requester,
+                BACKGROUND_PORT,
+                "settings",
+                "GetThemeOptionMsg",
+                {}
+              );
+
+              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
+              const fontUrl = chrome.runtime.getURL(
+                "/assets/Inter-SemiBold.ttf"
+              );
+              const fontFaceAndKeyFrames = `
+                @font-face {
+                  font-family: 'Inter-SemiBold-Keplr';
+                  src: url('${fontUrl}') format('truetype');
+                  font-weight: 600;
+                  font-style: normal;
+                }
+
+                @keyframes slide-left {
+                  0% {
+                    transform: translateY(0%) translateX(100%);
+                  }
+                  100% {
+                    transform: translateY(0%) translateX(0);
+                  }
+                }
+                    
+                @keyframes tada {
+                  0% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                  10%, 20% {
+                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
+                  }
+                  30%, 50%, 70%, 90% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
+                  }
+                  40%, 60%, 80% {
+                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
+                  }
+                  100% {
+                    transform: scale3d(1, 1, 1);
+                  }
+                }
+                  
+            `;
+
+              const isLightMode =
+                keplrThemeOption === "auto"
+                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
+                  : keplrThemeOption === "light";
+
+              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
+              const styleElement = document.createElement("style");
+              styleElement.appendChild(
+                document.createTextNode(fontFaceAndKeyFrames)
+              );
+              document.head.appendChild(styleElement);
+
+              const button = document.createElement("div");
+              button.id = "__open_keplr_side_panel__";
+              button.style.boxSizing = "border-box";
+              button.style.animation = "slide-left 0.5s forwards";
+              button.style.position = "fixed";
+              button.style.right = "1.5rem";
+              button.style.top = "1.5rem";
+              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
+              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.borderRadius = "1rem";
+              button.style.display = "flex";
+              button.style.alignItems = "center";
+
+              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontWeight = "600";
+
+              // button.style.cursor = "pointer";
+              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // if (isLightMode) {
+              //   button.style.boxShadow =
+              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
+              // }
+              // button.addEventListener("mouseover", () => {
+              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
+              // });
+              // button.addEventListener("mouseout", () => {
+              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              // });
+
+              // const megaphoneWrapper = document.createElement("div");
+              // megaphoneWrapper.style.boxSizing = "border-box";
+              // megaphoneWrapper.style.display = "flex";
+              // megaphoneWrapper.style.position = "absolute";
+              // megaphoneWrapper.style.left = "-10px";
+              // megaphoneWrapper.style.top = "-10px";
+              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
+              // megaphoneWrapper.style.borderRadius = "255px";
+              // megaphoneWrapper.style.background = "#FC8441";
+              //
+              // const megaphone = document.createElement("img");
+              // const megaphoneUrl = chrome.runtime.getURL(
+              //   "/assets/megaphone.svg"
+              // );
+              // megaphone.src = megaphoneUrl;
+              // megaphone.style.width = "1.25rem";
+              // megaphone.style.height = "1.25rem";
+              // megaphone.style.animation = "tada 1s infinite";
+              // megaphoneWrapper.appendChild(megaphone);
+
+              const arrowTop = document.createElement("div");
+              arrowTop.style.boxSizing = "border-box";
+              arrowTop.style.transform = "translateY(-0.65rem)";
+              arrowTop.style.marginRight = "0.35rem";
+              arrowTop.innerHTML = `
+                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+                      isLightMode ? "#2C4BE2" : "#72747B"
+                    }"/>
+                </svg>
+              `;
+
+              const keplrLogoWrap = document.createElement("div");
+              keplrLogoWrap.style.boxSizing = "border-box";
+              keplrLogoWrap.style.position = "relative";
+              keplrLogoWrap.style.marginRight = "1rem";
+              const keplrLogo = document.createElement("img");
+              const keplrLogoUrl = chrome.runtime.getURL(
+                `/assets/${
+                  isKeplrLocked ? "locked-keplr-logo" : "icon"
+                }-128.png`
+              );
+              keplrLogo.src = keplrLogoUrl;
+              keplrLogo.style.boxSizing = "border-box";
+              keplrLogo.style.width = "3rem";
+              keplrLogo.style.height = "3rem";
+              keplrLogoWrap.appendChild(keplrLogo);
+
+              const logoClickCursor = document.createElement("img");
+              const logoClickCursorUrl = chrome.runtime.getURL(
+                "assets/icon-click-cursor.png"
+              );
+              logoClickCursor.src = logoClickCursorUrl;
+              logoClickCursor.style.boxSizing = "border-box";
+              logoClickCursor.style.position = "absolute";
+              logoClickCursor.style.right = "-0.2rem";
+              logoClickCursor.style.bottom = "-0.2rem";
+              logoClickCursor.style.aspectRatio = "78/98";
+              logoClickCursor.style.height = "1.375rem";
+              keplrLogoWrap.appendChild(logoClickCursor);
+
+              const mainText = document.createElement("span");
+              mainText.style.boxSizing = "border-box";
+              // mainText.style.maxWidth = "9.125rem";
+              mainText.style.fontSize = "1rem";
+              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
+              mainText.textContent = isKeplrLocked
+                ? "Unlock Keplr to proceed"
+                : "Open Keplr to approve request(s)";
+
+              // const arrowLeftOpenWrapper = document.createElement("div");
+              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
+              // arrowLeftOpenWrapper.style.display = "flex";
+              // arrowLeftOpenWrapper.style.alignItems = "center";
+              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
+              //
+              // arrowLeftOpenWrapper.innerHTML = `
+              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
+              //     isLightMode ? "#1633C0" : "#566FEC"
+              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              // </svg>`;
+              //
+              // const openText = document.createElement("span");
+              // openText.style.boxSizing = "border-box";
+              // openText.style.fontSize = "1rem";
+              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
+              // openText.textContent = "OPEN";
+              //
+              // arrowLeftOpenWrapper.appendChild(openText);
+
+              // button.appendChild(megaphoneWrapper);
+              button.appendChild(arrowTop);
+              button.appendChild(keplrLogoWrap);
+              button.appendChild(mainText);
+              // button.appendChild(arrowLeftOpenWrapper);
+
+              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
+              const hasAlready = document.getElementById(
+                "__open_keplr_side_panel__"
+              );
+
+              if (!hasAlready) {
+                let removed = false;
+                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
+                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+                const intervalId = setInterval(() => {
+                  sendSimpleMessage<boolean>(
+                    this.requester,
+                    BACKGROUND_PORT,
+                    "interaction",
+                    "ping-content-script-tab-has-opened-side-panel",
+                    {}
+                  ).then((sidePanelPing) => {
+                    if (sidePanelPing) {
+                      clearInterval(intervalId);
+                      if (!removed) {
+                        button.remove();
+                        removed = true;
+                      }
+                    }
+                  });
+                }, 300);
+
+                document.body.appendChild(button);
+              }
+            }
+          }
         }
       }
     }
