@@ -53,7 +53,7 @@ export const UnbondingCard: FunctionComponent<{
                     .formatRelativeTime(relativeEndTimeDays, "days", {
                       numeric: "always",
                     })
-                    .replace("in ", "") + " left"
+                    .replace("in ", "") + " days left"
                 );
               } else if (relativeEndTimeHours) {
                 return (
@@ -61,7 +61,7 @@ export const UnbondingCard: FunctionComponent<{
                     .formatRelativeTime(relativeEndTimeHours, "hours", {
                       numeric: "always",
                     })
-                    .replace("in ", "") + " left"
+                    .replace("in ", "") + " hours left"
                 );
               }
 
