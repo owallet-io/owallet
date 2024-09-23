@@ -517,7 +517,7 @@ export const StakeCardAll = observer(({}) => {
                 onPress={() => {
                   claimAll();
                 }}
-                disabled={claimAllDisabled}
+                disabled={claimAllIsLoading || claimAllDisabled}
                 loading={claimAllIsLoading}
               />
             </View>
