@@ -155,9 +155,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
           coinDecimals: 6,
-          coinGeckoId: "cat-cat-token",
+          coinGeckoId: "simon-s-cat",
           coinImageUrl:
-            "https://assets.coingecko.com/coins/images/29850/standard/pepe-token.jpeg?1696528776",
+            "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
         },
         {
           type: "cw20",
