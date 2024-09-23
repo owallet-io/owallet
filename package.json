@@ -132,7 +132,8 @@
     "web3-utils":"1.7.4",
     "ws":"8.17.1",
     "@oraichain/oraidex-common": "^1.1.3",
-    "@oraichain/oraidex-universal-swap":"1.0.99"
+    "@oraichain/oraidex-universal-swap":"1.0.99",
+    "webextension-polyfill": "0.10.0"
   },
   "browser": {
     "assert": false

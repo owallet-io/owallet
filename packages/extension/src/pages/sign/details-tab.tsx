@@ -39,14 +39,12 @@ export const DetailsTab: FunctionComponent<{
     signDocHelper,
     memoConfig,
     feeConfig,
-    gasConfig,
-    isInternal,
-    preferNoSetFee,
     preferNoSetMemo,
     signDocJsonAll,
     setOpenSetting,
   }) => {
-    const { chainStore, accountStore, priceStore } = useStore();
+    const { chainStore, accountStore, priceStore, signInteractionStore } =
+      useStore();
     const intl = useIntl();
     const language = useLanguage();
 

@@ -34,6 +34,8 @@ import { Text } from "../../components/common/text";
 import { DataModal } from "./modals/data-modal";
 import { WalletStatus } from "@owallet/stores";
 import { Address } from "../../components/address";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 enum Tab {
   Details,
@@ -266,6 +268,22 @@ export const SignPage: FunctionComponent = observer(() => {
     return undefined;
   })();
 
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
+
   useOnClickOutside(settingRef, () => {
     setOpenSetting(false);
   });
@@ -392,6 +410,7 @@ export const SignPage: FunctionComponent = observer(() => {
                 </div>
               </div>
               <RenderTab
+                //@ts-ignore
                 signDocHelper={signDocHelper}
                 tab={tab}
                 isADR36WithString={isADR36WithString}
@@ -491,7 +510,26 @@ export const SignPage: FunctionComponent = observer(() => {
                           setIsProcessing(true);
                         }
 
-                        await signInteractionStore.reject();
+                        await signInteractionStore.reject(
+                          signInteractionStore.waitingData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
 
                         if (
                           interactionInfo.interaction &&
@@ -521,17 +559,34 @@ export const SignPage: FunctionComponent = observer(() => {
 
                         if (signDocHelper.signDocWrapper) {
                           await signInteractionStore.approveAndWaitEnd(
-                            signDocHelper.signDocWrapper
+                            signDocHelper.signDocWrapper,
+                            async (proceedNext) => {
+                              if (!proceedNext) {
+                                if (
+                                  interactionInfo.interaction &&
+                                  !interactionInfo.interactionInternal
+                                ) {
+                                  handleExternalInteractionWithNoProceedNext();
+                                }
+                              }
+
+                              if (
+                                interactionInfo.interaction &&
+                                interactionInfo.interactionInternal
+                              ) {
+                                await unmountPromise.promise;
+                              }
+                            }
                           );
                         }
-
-                        history.goBack();
 
                         if (
                           interactionInfo.interaction &&
                           !interactionInfo.interactionInternal
                         ) {
                           window.close();
+                        } else {
+                          history.goBack();
                         }
                       }}
                     >

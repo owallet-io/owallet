@@ -171,7 +171,6 @@ export class ExtensionEnv {
         if (url.startsWith("/")) {
           url = url.slice(1);
         }
-
         let isFromSidePanel = false;
         if (sender.url) {
           isFromSidePanel = new URL(sender.url).pathname === "/sidePanel.html";
@@ -183,6 +182,8 @@ export class ExtensionEnv {
         url = browser.runtime.getURL(
           `/${isFromSidePanel ? "sidePanel" : "popup"}.html#/` + url
         );
+
+        console.log("isFromSidePanel", url, isFromSidePanel);
 
         if (url.includes("?")) {
           url += "&" + queryString;

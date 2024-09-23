@@ -33,7 +33,7 @@ export const Routes: React.FC = () => (
   <>
     <Route exact path="/" component={StateRenderer} />
     <Route exact path="/unlock" component={LockPage} />
-    <Route exact path="/access" component={AccessPage} />
+    <Route exact path="/permission" component={AccessPage} />
     <Route exact path="/receive" component={ReceivePage} />
     <Route exact path="/activities" component={ActivitiesPage} />
     <Route exact path="/explore" component={ExplorePage} />
@@ -58,7 +58,7 @@ export const Routes: React.FC = () => (
     <Route exact path="/connected-dapp" component={ConnectedDappPage} />
     <Route
       exact
-      path="/access/viewing-key"
+      path="/permission/viewing-key"
       component={Secret20ViewingKeyAccessPage}
     />
     <Route exact path="/register" component={RegisterPage} />

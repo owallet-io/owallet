@@ -1,8 +1,9 @@
 import {
   MessageRequester,
   Message,
-  JSONUint8Array,
   Result,
+  JSONUint8Array,
+  OWalletError,
 } from "@owallet/router";
 import { MockRouter } from "../router";
 
@@ -42,7 +43,19 @@ export class MockMessageRequester implements MessageRequester {
     }
 
     if (result.error) {
-      throw result.error;
+      if (typeof result.error === "string") {
+        throw new Error(result.error);
+      } else {
+        if ("module" in result.error) {
+          if (typeof result.error.module === "string") {
+            throw new OWalletError(
+              result.error.module,
+              result.error.code,
+              result.error.message
+            );
+          }
+        }
+      }
     }
 
     return result.return;

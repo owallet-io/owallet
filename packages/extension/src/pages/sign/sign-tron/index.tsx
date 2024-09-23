@@ -25,6 +25,8 @@ import { Button } from "../../../components/common/button";
 import cn from "classnames/bind";
 import useOnClickOutside from "../../../hooks/use-click-outside";
 import withErrorBoundary from "../hoc/withErrorBoundary";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 enum Tab {
   Details,
@@ -89,6 +91,22 @@ const SignTronContent: FunctionComponent = () => {
     queries.queryBalances,
     queries
   );
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
 
   useOnClickOutside(dataRef, () => {
     handleCloseDataModal();
@@ -316,7 +334,26 @@ const SignTronContent: FunctionComponent = () => {
                     onClick={async (e) => {
                       e.preventDefault();
 
-                      await signInteractionStore.reject();
+                      await signInteractionStore.reject(
+                        signInteractionStore.waitingTronData.id,
+                        async (proceedNext) => {
+                          if (!proceedNext) {
+                            if (
+                              interactionInfo.interaction &&
+                              !interactionInfo.interactionInternal
+                            ) {
+                              handleExternalInteractionWithNoProceedNext();
+                            }
+                          }
+
+                          if (
+                            interactionInfo.interaction &&
+                            interactionInfo.interactionInternal
+                          ) {
+                            await unmountPromise.promise;
+                          }
+                        }
+                      );
                       if (
                         interactionInfo.interaction &&
                         !interactionInfo.interactionInternal
@@ -339,16 +376,56 @@ const SignTronContent: FunctionComponent = () => {
                       e.preventDefault();
                       //@ts-ignore
                       if (txInfo?.functionSelector) {
-                        await signInteractionStore.approveTronAndWaitEnd({
-                          ...waitingTronData?.data,
-                        });
+                        await signInteractionStore.approveTronAndWaitEnd(
+                          {
+                            ...waitingTronData?.data,
+                          },
+                          signInteractionStore.waitingTronData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
                       } else {
                         //@ts-ignore
-                        await signInteractionStore.approveTronAndWaitEnd({
-                          ...waitingTronData?.data,
-                          amount: amountConfig?.getAmountPrimitive()?.amount,
-                          feeLimit: feeLimitData,
-                        });
+                        await signInteractionStore.approveTronAndWaitEnd(
+                          {
+                            ...waitingTronData?.data,
+                            amount: amountConfig?.getAmountPrimitive()?.amount,
+                            feeLimit: feeLimitData,
+                          },
+                          signInteractionStore.waitingTronData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
                       }
                       if (
                         interactionInfo.interaction &&
@@ -380,6 +457,22 @@ export const SignTronPage: FunctionComponent = observer(() => {
 
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
+  });
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
   });
 
   const selectTronNetwork = async () => {
@@ -473,7 +566,27 @@ export const SignTronPage: FunctionComponent = observer(() => {
                     onClick={async (e) => {
                       e.preventDefault();
 
-                      await signInteractionStore.reject();
+                      await signInteractionStore.reject(
+                        signInteractionStore.waitingTronData.id,
+                        async (proceedNext) => {
+                          if (!proceedNext) {
+                            if (
+                              interactionInfo.interaction &&
+                              !interactionInfo.interactionInternal
+                            ) {
+                              handleExternalInteractionWithNoProceedNext();
+                            }
+                          }
+
+                          if (
+                            interactionInfo.interaction &&
+                            interactionInfo.interactionInternal
+                          ) {
+                            await unmountPromise.promise;
+                          }
+                        }
+                      );
+
                       if (
                         interactionInfo.interaction &&
                         !interactionInfo.interactionInternal

@@ -9,7 +9,7 @@ export class BaseKVStore implements KVStore {
   async get<T = unknown>(key: string): Promise<T | undefined> {
     const k = this.prefix() + "/" + key;
 
-    const data = await this.provider.get();
+    const data = await this.provider.get(k);
     return data[k];
   }
 
@@ -22,7 +22,6 @@ export class BaseKVStore implements KVStore {
   prefix(): string {
     return this._prefix;
   }
-
   type(): KVStoreType {
     return KVStoreType.extension;
   }

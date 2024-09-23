@@ -1,20 +1,14 @@
-import { Router, MessageSender, Result } from "@owallet/router";
+import { Router, MessageSender, Result, OWalletError } from "@owallet/router";
 import { EventEmitter } from "events";
 
 export class MockRouter extends Router {
   public static eventEmitter = new EventEmitter();
 
-  listen(port: string): void {
-    if (!port) {
-      throw new Error("Empty port");
-    }
-
-    this.port = port;
+  protected attachHandler() {
     MockRouter.eventEmitter.addListener("message", this.onMessage);
   }
 
-  unlisten(): void {
-    this.port = "";
+  protected detachHandler() {
     MockRouter.eventEmitter.removeListener("message", this.onMessage);
   }
 
@@ -39,7 +33,15 @@ export class MockRouter extends Router {
       console.log(
         `Failed to process msg ${message.type}: ${e?.message || e?.toString()}`
       );
-      if (e) {
+      if (e instanceof OWalletError) {
+        sender.resolver({
+          error: {
+            code: e.code,
+            module: e.module,
+            message: e.message || e.toString(),
+          },
+        });
+      } else if (e) {
         sender.resolver({
           error: e.message || e.toString(),
         });

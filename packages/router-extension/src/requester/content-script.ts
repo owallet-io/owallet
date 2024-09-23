@@ -1,5 +1,5 @@
 import { MessageRequester, Message, JSONUint8Array } from "@owallet/router";
-import { getKeplrExtensionRouterId } from "../utils";
+import { getOWalletExtensionRouterId } from "../utils";
 
 // The message requester to send the message to the content scripts.
 // This will send message to the tab with the content script.
@@ -18,7 +18,7 @@ export class ContentScriptMessageRequester implements MessageRequester {
     msg["origin"] = globalThis.location.origin;
     msg.routerMeta = {
       ...msg.routerMeta,
-      routerId: getKeplrExtensionRouterId(),
+      routerId: getOWalletExtensionRouterId(),
     };
 
     const wrappedMsg = JSONUint8Array.wrap(msg);

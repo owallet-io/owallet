@@ -77,13 +77,11 @@ const handleRemoveSuggestedChainInfoMsg: (
   };
 };
 
+//@ts-ignore
 const handleGetChainInfosWithoutEndpointsMsg: (
   service: ChainsService
 ) => InternalHandler<GetChainInfosWithoutEndpointsMsg> = (service) => {
   return async (env, msg) => {
-    const chainInfos = await service.getChainInfosWithoutEndpoints();
-    return {
-      chainInfos,
-    };
+    return await service.getChainInfosWithoutEndpoints();
   };
 };

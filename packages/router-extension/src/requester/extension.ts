@@ -4,7 +4,7 @@ import {
   OWalletError,
   JSONUint8Array,
 } from "@owallet/router";
-import { getKeplrExtensionRouterId } from "../utils";
+import { getOWalletExtensionRouterId } from "../utils";
 
 export class InExtensionMessageRequester implements MessageRequester {
   async sendMessage<M extends Message<unknown>>(
@@ -19,7 +19,7 @@ export class InExtensionMessageRequester implements MessageRequester {
     msg["origin"] = globalThis.location.origin;
     msg.routerMeta = {
       ...msg.routerMeta,
-      routerId: getKeplrExtensionRouterId(),
+      routerId: getOWalletExtensionRouterId(),
     };
 
     const result = JSONUint8Array.unwrap(
@@ -70,7 +70,7 @@ export class InExtensionMessageRequester implements MessageRequester {
     msg["origin"] = globalThis.location.origin;
     msg.routerMeta = {
       ...msg.routerMeta,
-      routerId: getKeplrExtensionRouterId(),
+      routerId: getOWalletExtensionRouterId(),
     };
 
     const result = JSONUint8Array.unwrap(

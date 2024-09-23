@@ -38,12 +38,14 @@ import {
   RequestSendRawTransactionMsg,
   SimulateSignTronMsg,
   GetKeySettledMsg,
+  GetIsLockedMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
 import { KeyRingService } from "./service";
 
 export function init(router: Router, service: KeyRingService): void {
+  router.registerMessage(GetIsLockedMsg);
   router.registerMessage(RestoreKeyRingMsg);
   router.registerMessage(DeleteKeyRingMsg);
   router.registerMessage(UpdateNameKeyRingMsg);

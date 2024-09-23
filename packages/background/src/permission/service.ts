@@ -1,6 +1,6 @@
 import { delay, inject, singleton } from "tsyringe";
 import { TYPES } from "../types";
-
+import { autorun, makeObservable, observable, runInAction } from "mobx";
 import { InteractionService } from "../interaction";
 import { APP_PORT, Env } from "@owallet/router";
 import {
@@ -12,20 +12,12 @@ import { KVStore } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { KeyRingService } from "../keyring";
 import { ChainIdHelper } from "@owallet/cosmos";
+import { migrate } from "./migrate";
 
 @singleton()
 export class PermissionService {
-  protected permissionMap: {
-    [chainIdentifier: string]:
-      | {
-          [type: string]:
-            | {
-                [origin: string]: true | undefined;
-              }
-            | undefined;
-        }
-      | undefined;
-  } = {};
+  @observable
+  protected permissionMap: Map<string, true> = new Map();
 
   protected privilegedOrigins: Map<string, boolean> = new Map();
 
@@ -46,8 +38,43 @@ export class PermissionService {
     }
 
     this.restore();
-
     this.chainsService.addChainRemovedHandler(this.onChainRemoved);
+    makeObservable(this);
+  }
+
+  async init() {
+    const migration = await migrate(this.kvStore);
+    if (migration) {
+      runInAction(() => {
+        for (const key of Object.keys(migration)) {
+          const granted = migration[key];
+          if (granted) {
+            this.permissionMap.set(key, true);
+          }
+        }
+      });
+    } else {
+      const savedPermissionMap = await this.kvStore.get<
+        Record<string, true | undefined>
+      >("permissionMap/v1");
+      if (savedPermissionMap) {
+        runInAction(() => {
+          for (const key of Object.keys(savedPermissionMap)) {
+            const granted = savedPermissionMap[key];
+            if (granted) {
+              this.permissionMap.set(key, true);
+            }
+          }
+        });
+      }
+    }
+
+    autorun(() => {
+      this.kvStore.set(
+        "permissionMap/v1",
+        Object.fromEntries(this.permissionMap)
+      );
+    });
   }
 
   protected readonly onChainRemoved = (chainId: string) => {
@@ -132,7 +159,7 @@ export class PermissionService {
 
     await this.grantPermission(
       env,
-      "/access",
+      "/permission",
       chainIds,
       getBasicAccessPermissionType(),
       origins

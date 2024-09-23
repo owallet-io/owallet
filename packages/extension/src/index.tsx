@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
+import React from "react";
+import { createRoot } from "react-dom/client";
 import "./styles/global.scss";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,7 +48,7 @@ const logError = (error: Error, info: { componentStack: string }) => {
   console.error("Component Stack:", info.componentStack);
 };
 
-ReactDOM.render(
+createRoot(document.getElementById("app")).render(
   <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
     <StoreProvider>
       <AppIntlProviderWithStorage>
@@ -82,6 +82,5 @@ ReactDOM.render(
         </LoadingIndicatorProvider>
       </AppIntlProviderWithStorage>
     </StoreProvider>
-  </ErrorBoundary>,
-  document.getElementById("app")
+  </ErrorBoundary>
 );

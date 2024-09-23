@@ -11,6 +11,8 @@ export class InteractionForegroundService {
   ) {}
 
   pushData(data: InteractionWaitingData): void {
+    console.log("push data", data);
+
     this.handler.onInteractionDataReceived(data);
   }
 

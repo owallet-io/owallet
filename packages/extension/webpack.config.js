@@ -171,8 +171,8 @@ const extensionConfig = {
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(process.env)
     }),
-    new CopyWebpackPlugin(
-      [
+    new CopyWebpackPlugin({
+      patterns: [
         {
           from: process.env.GECKO === 'true' ? './src/manifest-gecko.json' : './src/manifest.json',
           to: './manifest.json'
@@ -184,9 +184,8 @@ const extensionConfig = {
         {
           from: '../../node_modules/webextension-polyfill/dist/browser-polyfill.js'
         }
-      ],
-      { copyUnmodified: true }
-    ),
+      ]
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'popup.html',

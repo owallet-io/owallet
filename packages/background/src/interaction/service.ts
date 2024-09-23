@@ -36,7 +36,7 @@ export class InteractionService {
     protected readonly eventMsgRequester: MessageRequester,
     @inject(TYPES.SidePanelService)
     protected readonly sidePanelService: SidePanelService,
-    @inject(TYPES.EventMsgRequester)
+    @inject(TYPES.ExtensionMessageRequesterToUI)
     protected readonly extensionMessageRequesterToUI?: MessageRequester
   ) {}
 
@@ -102,7 +102,7 @@ export class InteractionService {
       uri,
       data
     );
-
+    console.log("interactionWaitingData waitApproveV1", interactionWaitingData);
     return await this.wait(env, interactionWaitingData, options);
   }
 
@@ -127,6 +127,8 @@ export class InteractionService {
       uri,
       data
     );
+
+    console.log("interactionWaitingData waitApproveV2", interactionWaitingData);
 
     try {
       const response: any = await this.wait(
@@ -190,6 +192,7 @@ export class InteractionService {
           // msg만 보내준다
           if (this.extensionMessageRequesterToUI) {
             this.extensionMessageRequesterToUI.sendMessage(APP_PORT, msg);
+            console.log("extensionMessageRequesterToUI", msg);
           }
         } else {
           env.requestInteraction("", msg, {
@@ -282,6 +285,8 @@ export class InteractionService {
       uri,
     };
 
+    console.log("interactionWaitingData background", interactionWaitingData);
+
     if (this.waitingMap.has(id)) {
       throw new OWalletError("interaction", 100, "Id is aleady in use");
     }
@@ -307,7 +312,7 @@ export class InteractionService {
       }
       this.startCheckPingOnUI();
     }
-
+    console.log("this.waitingMap 2", this.waitingMap);
     return interactionWaitingData;
   }
 
@@ -348,6 +353,7 @@ export class InteractionService {
             return false;
           }
         })();
+
         let succeeded = false;
         try {
           // sendMessage는 처음에는 UI에서 background로 통신을 위한 용도 뿐이였기 때문에
@@ -369,11 +375,12 @@ export class InteractionService {
               false
             )
           );
+
           if (res) {
             succeeded = true;
           }
         } catch (e) {
-          console.log(e);
+          console.log(e, windowId);
         }
 
         if (wasPingSucceeded && !succeeded) {
@@ -509,6 +516,8 @@ export class InteractionService {
     }
 
     const tab = await browser.tabs.get(env.sender.tab.id);
+    console.log("tab", tab.windowId, current);
+
     return tab.windowId || current;
   }
 

@@ -18,7 +18,7 @@ import {
 } from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
-import colors from "theme/colors";
+
 var mixpanel = process.env.REACT_APP_MIX_PANEL_TOKEN
   ? Mixpanel.init(process.env.REACT_APP_MIX_PANEL_TOKEN)
   : null;
@@ -29,7 +29,8 @@ export const HomePage = observer(() => {
     priceStore,
     accountStore,
     tokensStore,
-    keyRingStore,
+    signInteractionStore,
+    permissionStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const allBalances = hugeQueriesStore.getAllBalances(true);

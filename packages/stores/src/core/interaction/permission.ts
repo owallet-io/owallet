@@ -215,7 +215,8 @@ export class PermissionStore extends HasMapStore<
     } finally {
       yield this.waitEnd();
       this._isLoading = false;
-      this.interactionStore.removeData("enable-access", id);
+      // this.interactionStore.removeData('enable-access', id);
+      this.interactionStore.removeData(id);
     }
   }
 

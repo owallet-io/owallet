@@ -184,6 +184,7 @@ export class CosmosAccount {
           amount: fee.amount.map((amount) => {
             return { amount: amount.amount, denom: amount.denom };
           }),
+          //@ts-ignore
           gasLimit: Long.fromString("500000"),
         }),
       }).finish(),

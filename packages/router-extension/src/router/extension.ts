@@ -4,11 +4,10 @@ import {
   Result,
   EnvProducer,
   OWalletError,
-  EthereumProviderRpcError,
   Message,
   JSONUint8Array,
 } from "@owallet/router";
-import { getKeplrExtensionRouterId } from "../utils";
+import { getOWalletExtensionRouterId } from "../utils";
 
 export class ExtensionRouter extends Router {
   constructor(
@@ -55,7 +54,7 @@ export class ExtensionRouter extends Router {
     // If this value exists, it compares this value with the current router id and processes them only if they are the same.
     if (
       message.msg?.routerMeta?.receiverRouterId &&
-      message.msg.routerMeta.receiverRouterId !== getKeplrExtensionRouterId()
+      message.msg.routerMeta.receiverRouterId !== getOWalletExtensionRouterId()
     ) {
       return;
     }
@@ -78,6 +77,8 @@ export class ExtensionRouter extends Router {
               tabId: sender.tab.id,
             })
             .then(() => {
+              console.log("open side panel");
+
               resolve({
                 return: {},
               });
@@ -124,14 +125,6 @@ export class ExtensionRouter extends Router {
             code: e.code,
             module: e.module,
             message: e.message || e.toString(),
-          },
-        });
-      } else if (e instanceof EthereumProviderRpcError) {
-        return Promise.resolve({
-          error: {
-            code: e.code,
-            message: e.message || e.toString(),
-            data: e.data,
           },
         });
       } else if (e) {

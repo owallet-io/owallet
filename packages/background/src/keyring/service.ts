@@ -457,6 +457,8 @@ export class KeyRingService {
       ...newSignDoc,
       memo: escapeHTML(newSignDoc.memo),
     };
+    console.log("newSignDoc", newSignDoc);
+
     try {
       // const signature = null;
       const signature = await this.keyRing.sign(
@@ -468,6 +470,8 @@ export class KeyRingService {
           eip712,
         } as any)
       );
+
+      console.log("signature", signature);
 
       return {
         signed: newSignDoc,
@@ -537,6 +541,8 @@ export class KeyRingService {
       }
     )) as StdSignDoc;
 
+    console.log("newSignDoc 2", newSignDoc);
+
     if (isADR36SignDoc) {
       // Validate the new sign doc, if it was for ADR-36.
       if (checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix)) {
@@ -563,7 +569,7 @@ export class KeyRingService {
         coinType,
         serializeSignDoc(newSignDoc)
       );
-
+      console.log("signature 2", signature);
       return {
         signed: newSignDoc,
         signature: encodeSecp256k1Signature(key.pubKey, signature),
@@ -585,6 +591,7 @@ export class KeyRingService {
 
     // sign get here
     const key = await this.keyRing.getKey(chainId, coinType);
+
     const bech32Address = new Bech32Address(key.address).toBech32(
       (await this.chainsService.getChainInfo(chainId)).bech32Config
         .bech32PrefixAccAddr
@@ -592,6 +599,34 @@ export class KeyRingService {
     if (signer !== bech32Address) {
       throw new Error("Signer mismatched");
     }
+
+    // return await this.interactionService.waitApproveV2(
+    //   env,
+    //   '/sign',
+    //   'request-sign',
+    //   {
+    //     msgOrigin,
+    //     chainId,
+    //     mode: 'direct',
+    //     signDocBytes: SignDoc.encode(signDoc).finish(),
+    //     signer,
+    //     signOptions
+    //   },
+    //   async (res: { newSignDocBytes: Uint8Array; signature?: Uint8Array }) => {
+    //     const newSignDoc = SignDoc.decode(res.newSignDocBytes);
+
+    //     try {
+    //       const signature = await this.keyRing.sign(env, chainId, coinType, makeSignBytes(newSignDoc));
+
+    //       return {
+    //         signed: newSignDoc,
+    //         signature: encodeSecp256k1Signature(key.pubKey, signature)
+    //       };
+    //     } finally {
+    //       this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+    //     }
+    //   }
+    // );
 
     const newSignDocBytes = (await this.interactionService.waitApprove(
       env,
@@ -606,6 +641,8 @@ export class KeyRingService {
         signOptions,
       }
     )) as Uint8Array;
+
+    console.log("newSignDoc", newSignDocBytes);
 
     const newSignDoc = SignDoc.decode(newSignDocBytes);
 

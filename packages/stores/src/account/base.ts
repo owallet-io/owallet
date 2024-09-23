@@ -1108,6 +1108,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         ],
         fee: Fee.fromPartial({
           amount: signResponse.signed.fee.amount as Coin[],
+          //@ts-ignore
           gasLimit: Long.fromString(signResponse.signed.fee.gas),
           payer:
             eip712Signing && !chainIsInjective

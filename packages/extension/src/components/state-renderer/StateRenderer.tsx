@@ -9,8 +9,14 @@ import { Banner } from "../../components/banner";
 let hasLoadedOnce = false;
 
 export const StateRenderer: React.FC = observer(() => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, permissionStore, signInteractionStore } = useStore();
   const [isLoading, setIsLoading] = useState(!hasLoadedOnce);
+
+  console.log("permissionStore.waitingData", permissionStore.waitingDatas);
+  console.log(
+    "signInteractionStore.waitingData",
+    signInteractionStore.waitingData
+  );
 
   useEffect(() => {
     if (!hasLoadedOnce) {

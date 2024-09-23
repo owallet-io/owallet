@@ -103,6 +103,15 @@ export class ChainsService {
     this.cachedChainInfos = chainInfos;
   }
 
+  getChainInfoOrThrow(chainId: string): ChainInfo {
+    const chainInfo = this.getChainInfo(chainId);
+    if (!chainInfo) {
+      throw new Error(`There is no chain info for ${chainId}`);
+    }
+    //@ts-ignore
+    return chainInfo;
+  }
+
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     return (await this.getChainInfos()).map<ChainInfoWithoutEndpoints>(
       (chainInfo) => {
@@ -135,9 +144,6 @@ export class ChainsService {
   ): Promise<ChainInfoWithEmbed> {
     let chainInfo: ChainInfoWithEmbed;
     if (networkType) {
-      console.log("chainId getChainInfo", chainId);
-      console.log("networkType", networkType);
-
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         if (networkType === "evm") {
           return (

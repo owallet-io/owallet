@@ -34,6 +34,8 @@ import cn from "classnames/bind";
 import { Button } from "../../components/common/button";
 import { ModalFee } from "pages/modals/modal-fee";
 import { DataTab } from "./data-tab";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 enum Tab {
   Details,
@@ -128,6 +130,22 @@ export const SignEvmPage: FunctionComponent = observer(() => {
 
     return () => {};
   }, [gasPrice, amountConfig?.sendCurrency]);
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
 
   useOnClickOutside(settingRef, () => {
     setOpenSetting(false);
@@ -379,7 +397,26 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                           setIsProcessing(true);
                         }
 
-                        await signInteractionStore.reject();
+                        await signInteractionStore.reject(
+                          signInteractionStore.waitingEthereumData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
 
                         if (
                           interactionInfo.interaction &&
@@ -406,12 +443,32 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                           setIsProcessing(true);
                         }
                         if (!dataSign) return;
-                        await signInteractionStore.approveEthereumAndWaitEnd({
-                          gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
-                          gasLimit: Web3.utils.toHex(
-                            Math.round(gasConfig.gas * 1.1)
-                          ),
-                        });
+                        await signInteractionStore.approveEthereumAndWaitEnd(
+                          {
+                            gasPrice: Web3.utils.toHex(gasConfig.gasPrice),
+                            gasLimit: Web3.utils.toHex(
+                              Math.round(gasConfig.gas * 1.1)
+                            ),
+                          },
+                          signInteractionStore.waitingEthereumData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
                         history.goBack();
                         if (
                           interactionInfo.interaction &&

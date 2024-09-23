@@ -18,6 +18,11 @@ export const AccessPage: FunctionComponent = observer(() => {
       ? permissionStore.waitingBasicAccessPermissions[0]
       : undefined;
 
+  console.log(
+    "waitingBasicAccessPermissions",
+    permissionStore.waitingBasicAccessPermissions
+  );
+
   const ineractionInfo = useInteractionInfo(() => {
     permissionStore.rejectAll();
   });

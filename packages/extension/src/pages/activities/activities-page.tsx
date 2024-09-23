@@ -136,7 +136,8 @@ export const ActivitiesPage = observer(() => {
                             className={styles.token}
                             src={
                               currency?.coinImageUrl?.includes("missing.png") ||
-                              !currency?.coinImageUrl
+                              !currency?.coinImageUrl ||
+                              currency?.coinImageUrl?.includes("missing.svg")
                                 ? unknownToken.coinImageUrl
                                 : currency?.coinImageUrl
                             }

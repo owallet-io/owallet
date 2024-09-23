@@ -36,6 +36,9 @@ const handlePushInteractionDataMsg: (
   service: InteractionForegroundService
 ) => InternalHandler<PushInteractionDataMsg> = (service) => {
   return (_, msg) => {
+    // it can not get here
+    console.log("on handle", msg.data);
+
     return service.pushData(msg.data);
   };
 };

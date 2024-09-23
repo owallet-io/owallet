@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
@@ -8,6 +8,13 @@ import { ChainIdEnum } from "@owallet/common";
 import { toast } from "react-toastify";
 import Switch from "react-switch";
 import colors from "theme/colors";
+import {
+  GetSidePanelEnabledMsg,
+  GetSidePanelIsSupportedMsg,
+  SetSidePanelEnabledMsg,
+} from "@owallet/background";
+import { InExtensionMessageRequester } from "@owallet/router-extension";
+import { BACKGROUND_PORT } from "@owallet/router";
 
 export const ModalMenuLeft: FC<{
   isOpen: boolean;
@@ -16,7 +23,24 @@ export const ModalMenuLeft: FC<{
   const { keyRingStore, chainStore } = useStore();
   const history = useHistory();
 
-  const [isOpenSide, setOpenSide] = useState(chainStore.isSidePanel);
+  const [sidePanelSupported, setSidePanelSupported] = useState(false);
+  const [sidePanelEnabled, setSidePanelEnabled] = useState(false);
+
+  useEffect(() => {
+    const msg = new GetSidePanelIsSupportedMsg();
+    new InExtensionMessageRequester()
+      .sendMessage(BACKGROUND_PORT, msg)
+      .then((res) => {
+        setSidePanelSupported(res.supported);
+
+        const msg = new GetSidePanelEnabledMsg();
+        new InExtensionMessageRequester()
+          .sendMessage(BACKGROUND_PORT, msg)
+          .then((res) => {
+            setSidePanelEnabled(res.enabled);
+          });
+      });
+  }, []);
 
   const lock = async () => {
     await keyRingStore.lock();
@@ -110,84 +134,91 @@ export const ModalMenuLeft: FC<{
                 height={20}
                 width={35}
                 onChange={async (value) => {
-                  setOpenSide(value);
-                  console.log("value", value);
+                  const msg = new SetSidePanelEnabledMsg(!sidePanelEnabled);
+                  new InExtensionMessageRequester()
+                    .sendMessage(BACKGROUND_PORT, msg)
+                    .then((res) => {
+                      setSidePanelEnabled(res.enabled);
 
-                  chainStore.setIsSidePanel(value);
-                  if (value) {
-                    if (
-                      typeof chrome !== "undefined" &&
-                      typeof chrome.sidePanel !== "undefined"
-                    ) {
-                      (async () => {
+                      if (res.enabled) {
+                        if (
+                          typeof chrome !== "undefined" &&
+                          typeof chrome.sidePanel !== "undefined"
+                        ) {
+                          (async () => {
+                            const selfCloseId = Math.random() * 100000;
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            window.__self_id_for_closing_view_side_panel =
+                              selfCloseId;
+                            // side panel을 열고 나서 기존의 popup view를 모두 지워야한다
+                            const viewsBefore = browser.extension.getViews();
+
+                            try {
+                              const activeTabs = await browser.tabs.query({
+                                active: true,
+                                currentWindow: true,
+                              });
+                              if (activeTabs.length > 0) {
+                                const id = activeTabs[0].id;
+                                if (id != null) {
+                                  await chrome.sidePanel.open({
+                                    tabId: id,
+                                  });
+                                  // await chrome.sidePanel.setPanelBehavior({
+                                  //   openPanelOnActionClick: value
+                                  // });
+                                }
+                              }
+                            } catch (e) {
+                              console.log(e);
+                            } finally {
+                              for (const view of viewsBefore) {
+                                if (
+                                  // 자기 자신은 제외해야한다.
+                                  // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                  // @ts-ignore
+                                  window.__self_id_for_closing_view_side_panel !==
+                                  selfCloseId
+                                ) {
+                                  view.window.close();
+                                }
+                              }
+
+                              window.close();
+                            }
+                          })();
+                        } else {
+                          window.close();
+                        }
+                      } else {
                         const selfCloseId = Math.random() * 100000;
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
                         window.__self_id_for_closing_view_side_panel =
                           selfCloseId;
-                        const viewsBefore = browser.extension.getViews();
+                        // side panel을 모두 닫아야한다.
+                        const views = browser.extension.getViews();
 
-                        try {
-                          const activeTabs = await browser.tabs.query({
-                            active: true,
-                            currentWindow: true,
-                          });
-                          if (activeTabs.length > 0) {
-                            const id = activeTabs[0].id;
-                            if (id != null) {
-                              await chrome.sidePanel.open({
-                                tabId: id,
-                              });
-
-                              await chrome.sidePanel.setPanelBehavior({
-                                openPanelOnActionClick: true,
-                              });
-                            }
+                        for (const view of views) {
+                          if (
+                            // 자기 자신은 제외해야한다.
+                            // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            window.__self_id_for_closing_view_side_panel !==
+                            selfCloseId
+                          ) {
+                            view.window.close();
                           }
-                        } catch (e) {
-                          console.log(e);
-                        } finally {
-                          for (const view of viewsBefore) {
-                            if (
-                              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                              // @ts-ignore
-                              window.__self_id_for_closing_view_side_panel !==
-                              selfCloseId
-                            ) {
-                              view.window.close();
-                            }
-                          }
-
-                          window.close();
                         }
-                      })();
-                    } else {
-                      window.close();
-                    }
-                  } else {
-                    const selfCloseId = Math.random() * 100000;
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                    window.__self_id_for_closing_view_side_panel = selfCloseId;
-                    const views = browser.extension.getViews();
 
-                    for (const view of views) {
-                      if (
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        window.__self_id_for_closing_view_side_panel !==
-                        selfCloseId
-                      ) {
-                        view.window.close();
+                        window.close();
                       }
-                    }
-                    window.close();
-                    await chrome.sidePanel.setPanelBehavior({
-                      openPanelOnActionClick: false,
                     });
-                  }
                 }}
-                checked={isOpenSide}
+                checked={sidePanelEnabled}
               />
             )}
           </div>

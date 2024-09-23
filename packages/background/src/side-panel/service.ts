@@ -8,6 +8,7 @@ export class SidePanelService {
 
   constructor(protected readonly kvStore: KVStore) {
     makeObservable(this);
+    this.init();
   }
 
   async init(): Promise<void> {
@@ -26,6 +27,7 @@ export class SidePanelService {
       autorun(() => {
         // XXX: setPanelBehavior() 안에서 this._isEnabled를 사용하고 this._isEnabled는 observable이기 때문에
         //      알아서 반응해서 처리된다는 점을 참고...
+
         this.setPanelBehavior().catch(console.log);
       });
     }
