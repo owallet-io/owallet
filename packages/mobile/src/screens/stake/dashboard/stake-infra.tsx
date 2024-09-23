@@ -22,6 +22,7 @@ import {
   AprByChain,
   ChainIdEnum,
   COINTYPE_NETWORK,
+  fetchRetry,
   getKeyDerivationFromAddressType,
 } from "@owallet/common";
 import axios from "axios";
@@ -53,7 +54,6 @@ const dataOWalletStake = [
     validator: "cosmosvaloper19qv67gvevp4xw64kmhd6ff6ta2l2ywgfm74xtz",
   },
 ];
-
 const valVotingPower = 1000;
 const daysInYears = 365.2425;
 
@@ -102,62 +102,57 @@ async function getBlockTime(lcdEndpoint, blockHeightDiff = 100) {
   }
 }
 
-async function getParamsFromLcd(lcdEndpoint) {
+const fetchValidatorByApr = async () => {
   try {
-    const params = await axios.get(
-      `${lcdEndpoint}/cosmos/distribution/v1beta1/params`
+    const res = await fetchRetry(
+      "https://api.scan.orai.io/v1/validators?page_id=1"
     );
-    return params?.data?.params;
-  } catch (error) {
-    console.error(
-      "Error fetching validator getParamsFromLcd:",
-      `${lcdEndpoint}/cosmos/distribution/v1beta1/params`,
-      error
-    );
-    return {};
+    console.log(res, "res");
+    if (!res.data) return [];
+    return res.data;
+  } catch (e) {
+    console.log(e, "err for fetch Validator oraichain");
   }
-}
+};
 
-async function getTotalSupply(chainInfo) {
+async function fetchChainData(chainInfo, validatorAddress) {
   try {
-    if (chainInfo.stakeCurrency.coinMinimalDenom === "orai") {
-      const totalSupply = await axios.get(
-        `${chainInfo.rest}/cosmos/bank/v1beta1/supply`
-      );
-      const supply = totalSupply.data.supply?.find((s) => s.denom === "orai");
+    const [
+      totalSupplyResponse,
+      paramsResponse,
+      inflationResponse,
+      validatorInfoResponse,
+      blockTimeResponse,
+    ] = await Promise.all([
+      axios.get(
+        `${chainInfo.rest}/cosmos/bank/v1beta1/supply${
+          chainInfo.stakeCurrency.coinMinimalDenom === "orai"
+            ? ""
+            : `/by_denom?denom=${chainInfo.stakeCurrency.coinMinimalDenom}`
+        }`
+      ),
+      axios.get(`${chainInfo.rest}/cosmos/distribution/v1beta1/params`),
+      axios.get(`${chainInfo.rest}/cosmos/mint/v1beta1/inflation`),
+      API.getValidatorInfo(chainInfo.rest, validatorAddress),
+      getBlockTime(chainInfo.rest),
+    ]);
 
-      return supply?.amount;
-    } else {
-      const totalSupply = await axios.get(
-        `${chainInfo.rest}/cosmos/bank/v1beta1/supply/by_denom?denom=${chainInfo.stakeCurrency.coinMinimalDenom}`
-      );
+    const totalSupply =
+      chainInfo.stakeCurrency.coinMinimalDenom === "orai"
+        ? totalSupplyResponse.data.supply?.find((s) => s.denom === "orai")
+            ?.amount
+        : totalSupplyResponse.data?.amount?.amount;
 
-      return totalSupply?.data?.amount.amount;
-    }
+    return {
+      totalSupply,
+      params: paramsResponse.data?.params,
+      inflationRate: inflationResponse.data?.inflation,
+      validator: validatorInfoResponse.validator,
+      blockTime: blockTimeResponse,
+    };
   } catch (error) {
-    console.error(
-      "Error fetching validator getTotalSupply:",
-      `${chainInfo.rest}/cosmos/bank/v1beta1/supply`,
-      error
-    );
-    return 0;
-  }
-}
-
-async function getInflationRate(lcdEndpoint) {
-  try {
-    const inflation = await axios.get(
-      `${lcdEndpoint}/cosmos/mint/v1beta1/inflation`
-    );
-
-    return inflation?.data?.inflation;
-  } catch (error) {
-    console.error(
-      "Error fetching validator getInflationRate:",
-      `${lcdEndpoint}/cosmos/mint/v1beta1/inflation`,
-      error
-    );
-    return 0;
+    console.error("Error fetching chain data:", error);
+    throw error;
   }
 }
 
@@ -208,73 +203,59 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   };
   const bip44Option = useBIP44Option();
   const account = accountStore.getAccount(chainStore.current.chainId);
-
-  const calculateAPRByChain = async (chainInfo, validatorAddress) => {
-    try {
-      const totalSupply = await getTotalSupply(chainInfo);
-      const { community_tax, base_proposer_reward, bonus_proposer_reward } =
-        await getParamsFromLcd(chainInfo.rest);
-      const inflationRate = await getInflationRate(chainInfo.rest);
-      const res = await API.getValidatorInfo(chainInfo.rest, validatorAddress);
-      const validator = res.validator;
-
-      const blockTime = await getBlockTime(chainInfo.rest);
-
-      const blocksPerYear = (60 * 60 * 24 * 365) / blockTime;
-
-      let votingPower = valVotingPower;
-      const totalDelegatedTokens = parseFloat(validator.tokens);
-      if (totalDelegatedTokens > 0) {
-        votingPower = totalDelegatedTokens;
-      }
-
-      const blockProvision =
-        (parseFloat(inflationRate) * totalSupply) / blocksPerYear;
-      const voteMultiplier =
-        1 - community_tax - base_proposer_reward - bonus_proposer_reward;
-      const valRewardPerBlock =
-        votingPower > 0
-          ? ((blockProvision * votingPower) / votingPower) * voteMultiplier
-          : 0;
-
-      //   console.log("valRewardPerBlock", valRewardPerBlock);
-
-      const delegatorsRewardPerBlock =
-        valRewardPerBlock * (1 - validator.commission.commission_rates.rate);
-      const numBlocksPerDay = blockTime > 0 ? (60 / blockTime) * 60 * 24 : 0;
-
-      //   console.log("numBlocksPerDay", numBlocksPerDay);
-
-      const delegatorsRewardPerDay = delegatorsRewardPerBlock * numBlocksPerDay;
-      const apr = (delegatorsRewardPerDay * daysInYears) / totalDelegatedTokens;
-
-      // console.log("apr", chainInfo.chainName, apr);
-
-      return apr;
-    } catch (err) {
-      console.log("error calculateAPRByChain", err);
-      return 0;
-    }
-  };
-
+  // const calculateAPRByChain = async (chainInfo, validatorAddress) => {
+  //   try {
+  //     const start = new Date();
+  //
+  //     const {
+  //       totalSupply,
+  //       params: { community_tax, base_proposer_reward, bonus_proposer_reward },
+  //       inflationRate,
+  //       validator,
+  //       blockTime
+  //     } = await fetchChainData(chainInfo, validatorAddress);
+  //
+  //     const blocksPerYear = (60 * 60 * 24 * 365) / blockTime;
+  //     const totalDelegatedTokens = parseFloat(validator.tokens);
+  //     const votingPower = Math.max(valVotingPower, totalDelegatedTokens);
+  //
+  //     const blockProvision = (parseFloat(inflationRate) * totalSupply) / blocksPerYear;
+  //     const voteMultiplier = 1 - community_tax - base_proposer_reward - bonus_proposer_reward;
+  //     const valRewardPerBlock = votingPower > 0 ? ((blockProvision * votingPower) / votingPower) * voteMultiplier : 0;
+  //
+  //     const delegatorsRewardPerBlock = valRewardPerBlock * (1 - validator.commission.commission_rates.rate);
+  //     const numBlocksPerDay = blockTime > 0 ? (60 / blockTime) * 60 * 24 : 0;
+  //
+  //     const delegatorsRewardPerDay = delegatorsRewardPerBlock * numBlocksPerDay;
+  //     const apr = (delegatorsRewardPerDay * daysInYears) / totalDelegatedTokens;
+  //
+  //     const end = new Date() - start;
+  //     console.log(end, "end time");
+  //     return apr;
+  //   } catch (err) {
+  //     console.log("error calculateAPRByChain", err);
+  //     return 0;
+  //   }
+  // };
   const getOWalletOraichainAPR = async () => {
-    const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
-    const apr = await calculateAPRByChain(
-      chainInfo,
-      dataOWalletStake[0].validator
+    const validators = await fetchValidatorByApr();
+    const totalAPR = validators.reduce(
+      (sum, validator) => sum + validator.apr,
+      0
     );
+    const averageAPR = totalAPR / validators.length;
     setListApr((prevApr) => [
       ...prevApr,
       {
         chainId: ChainIdEnum.Oraichain,
-        apr: apr.toFixed(2),
+        apr: (averageAPR || 0).toFixed(2),
       },
     ]);
   };
   useEffect(() => {
     getOWalletOraichainAPR();
     fetchAllApr();
-  }, []);
+  }, [chainStore.current.chainId]);
 
   const renderOWalletValidators = () => {
     return (
