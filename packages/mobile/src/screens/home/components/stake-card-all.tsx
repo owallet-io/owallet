@@ -429,17 +429,6 @@ export const StakeCardAll = observer(({}) => {
             size={"small"}
             fullWidth={false}
           />
-          {/*<TouchableOpacity*/}
-          {/*  disabled={isDisabledCompound}*/}
-          {/*  style={{*/}
-          {/*    opacity: isDisabledCompound ? 0.5 : 1,*/}
-          {/*  }}*/}
-          {/*  onPress={() => {*/}
-          {/*    _onPressCompound(token.queryRewards, token.chainInfo.chainId);*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Text style={styles.outlineButton}>Compound</Text>*/}
-          {/*</TouchableOpacity>*/}
         </View>
       </View>
     );
