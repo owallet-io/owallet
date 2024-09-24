@@ -6,8 +6,6 @@ export const handleExternalInteractionWithNoProceedNext = () => {
   if (window.isStartFromInteractionWithSidePanelEnabled) {
     window.close();
   } else {
-    console.log("isRunningInSidePanel", isRunningInSidePanel());
-
     if (isRunningInSidePanel()) {
       if (window.history.length > 1) {
         window.history.back();

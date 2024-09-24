@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/global.scss";
 import "react-sliding-pane/dist/react-sliding-pane.css";
@@ -7,7 +7,7 @@ import { HashRouter } from "react-router-dom";
 import { configure } from "mobx";
 import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, Zoom } from "react-toastify";
-
+import { useMatchPopupSize } from "../popup-size";
 import { StoreProvider } from "./stores";
 import { AppIntlProviderWithStorage } from "./setup/AppIntlProviderWithStorage";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
@@ -22,6 +22,9 @@ import { initializeSentry } from "./setup/sentry";
 // import "./styles/global.scss";
 
 import { isProdMode } from "helpers/helper";
+import { isRunningInSidePanel } from "./utils/side-panel";
+import { GlobalPopupStyle, GlobalSidePanelStyle } from "./styles";
+import { GlobalStyle } from "./styles/global";
 
 // Initialize wallet providers
 initializeWalletProviders();
@@ -48,39 +51,47 @@ const logError = (error: Error, info: { componentStack: string }) => {
   console.error("Component Stack:", info.componentStack);
 };
 
-createRoot(document.getElementById("app")).render(
-  <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
-    <StoreProvider>
-      <AppIntlProviderWithStorage>
-        <LoadingIndicatorProvider>
-          <ConfirmProvider>
-            <HashRouter>
-              <LogPageViewWrapper>
-                <Routes />
-              </LogPageViewWrapper>
-            </HashRouter>
-          </ConfirmProvider>
-          <ToastContainer
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            toastStyle={{ borderRadius: 8 }}
-            style={{
-              maxWidth: "calc(100vw - 32px)",
-              margin: 16,
-            }}
-            bodyStyle={{ fontSize: 14 }}
-            transition={Zoom}
-          />
-        </LoadingIndicatorProvider>
-      </AppIntlProviderWithStorage>
-    </StoreProvider>
-  </ErrorBoundary>
-);
+const App: FunctionComponent = () => {
+  useMatchPopupSize();
+
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
+      <StoreProvider>
+        <AppIntlProviderWithStorage>
+          <LoadingIndicatorProvider>
+            <ConfirmProvider>
+              {/* <GlobalStyle /> */}
+              {/* {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : <GlobalPopupStyle />} */}
+              <HashRouter>
+                <LogPageViewWrapper>
+                  <Routes />
+                </LogPageViewWrapper>
+              </HashRouter>
+            </ConfirmProvider>
+            <ToastContainer
+              position="top-center"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              toastStyle={{ borderRadius: 8 }}
+              style={{
+                maxWidth: "calc(100vw - 32px)",
+                margin: 16,
+              }}
+              bodyStyle={{ fontSize: 14 }}
+              transition={Zoom}
+            />
+          </LoadingIndicatorProvider>
+        </AppIntlProviderWithStorage>
+      </StoreProvider>
+    </ErrorBoundary>
+  );
+};
+
+createRoot(document.getElementById("app")).render(<App />);
