@@ -349,8 +349,7 @@ export const SignPage: FunctionComponent = observer(() => {
     // >
     <div
       style={{
-        height: "100%",
-        // width: '100vw',
+        height: "100vh",
         overflowX: "auto",
       }}
     >

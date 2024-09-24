@@ -837,16 +837,6 @@ export class OWallet implements IOWallet {
                 {}
               );
 
-              const keplrThemeOption = await sendSimpleMessage<
-                "light" | "dark" | "auto"
-              >(
-                this.requester,
-                BACKGROUND_PORT,
-                "settings",
-                "GetThemeOptionMsg",
-                {}
-              );
-
               // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
@@ -888,10 +878,7 @@ export class OWallet implements IOWallet {
                   
             `;
 
-              const isLightMode =
-                keplrThemeOption === "auto"
-                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
-                  : keplrThemeOption === "light";
+              const isLightMode = true;
 
               // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
@@ -966,11 +953,8 @@ export class OWallet implements IOWallet {
               keplrLogoWrap.style.position = "relative";
               keplrLogoWrap.style.marginRight = "1rem";
               const keplrLogo = document.createElement("img");
-              const keplrLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isKeplrLocked ? "locked-keplr-logo" : "icon"
-                }-128.png`
-              );
+              const keplrLogoUrl =
+                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
               keplrLogo.src = keplrLogoUrl;
               keplrLogo.style.boxSizing = "border-box";
               keplrLogo.style.width = "3rem";
@@ -997,7 +981,7 @@ export class OWallet implements IOWallet {
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isKeplrLocked
                 ? "Unlock Keplr to proceed"
-                : "Open Keplr to approve request(s)";
+                : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
               // arrowLeftOpenWrapper.style.boxSizing = "border-box";
@@ -1496,16 +1480,6 @@ export class Ethereum implements IEthereum {
                 {}
               );
 
-              const keplrThemeOption = await sendSimpleMessage<
-                "light" | "dark" | "auto"
-              >(
-                this.requester,
-                BACKGROUND_PORT,
-                "settings",
-                "GetThemeOptionMsg",
-                {}
-              );
-
               // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
@@ -1547,10 +1521,7 @@ export class Ethereum implements IEthereum {
                   
             `;
 
-              const isLightMode =
-                keplrThemeOption === "auto"
-                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
-                  : keplrThemeOption === "light";
+              const isLightMode = true;
 
               // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
@@ -1625,11 +1596,8 @@ export class Ethereum implements IEthereum {
               keplrLogoWrap.style.position = "relative";
               keplrLogoWrap.style.marginRight = "1rem";
               const keplrLogo = document.createElement("img");
-              const keplrLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isKeplrLocked ? "locked-keplr-logo" : "icon"
-                }-128.png`
-              );
+              const keplrLogoUrl =
+                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
               keplrLogo.src = keplrLogoUrl;
               keplrLogo.style.boxSizing = "border-box";
               keplrLogo.style.width = "3rem";
@@ -1656,7 +1624,7 @@ export class Ethereum implements IEthereum {
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isKeplrLocked
                 ? "Unlock Keplr to proceed"
-                : "Open Keplr to approve request(s)";
+                : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
               // arrowLeftOpenWrapper.style.boxSizing = "border-box";
@@ -2048,16 +2016,6 @@ export class Bitcoin implements IBitcoin {
                 {}
               );
 
-              const keplrThemeOption = await sendSimpleMessage<
-                "light" | "dark" | "auto"
-              >(
-                this.requester,
-                BACKGROUND_PORT,
-                "settings",
-                "GetThemeOptionMsg",
-                {}
-              );
-
               // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
@@ -2099,10 +2057,7 @@ export class Bitcoin implements IBitcoin {
                   
             `;
 
-              const isLightMode =
-                keplrThemeOption === "auto"
-                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
-                  : keplrThemeOption === "light";
+              const isLightMode = true;
 
               // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
@@ -2177,11 +2132,8 @@ export class Bitcoin implements IBitcoin {
               keplrLogoWrap.style.position = "relative";
               keplrLogoWrap.style.marginRight = "1rem";
               const keplrLogo = document.createElement("img");
-              const keplrLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isKeplrLocked ? "locked-keplr-logo" : "icon"
-                }-128.png`
-              );
+              const keplrLogoUrl =
+                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
               keplrLogo.src = keplrLogoUrl;
               keplrLogo.style.boxSizing = "border-box";
               keplrLogo.style.width = "3rem";
@@ -2208,7 +2160,7 @@ export class Bitcoin implements IBitcoin {
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isKeplrLocked
                 ? "Unlock Keplr to proceed"
-                : "Open Keplr to approve request(s)";
+                : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
               // arrowLeftOpenWrapper.style.boxSizing = "border-box";
@@ -2381,16 +2333,6 @@ export class Oasis implements IOasis {
                 {}
               );
 
-              const keplrThemeOption = await sendSimpleMessage<
-                "light" | "dark" | "auto"
-              >(
-                this.requester,
-                BACKGROUND_PORT,
-                "settings",
-                "GetThemeOptionMsg",
-                {}
-              );
-
               // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
@@ -2432,10 +2374,7 @@ export class Oasis implements IOasis {
                   
             `;
 
-              const isLightMode =
-                keplrThemeOption === "auto"
-                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
-                  : keplrThemeOption === "light";
+              const isLightMode = true;
 
               // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
@@ -2510,11 +2449,8 @@ export class Oasis implements IOasis {
               keplrLogoWrap.style.position = "relative";
               keplrLogoWrap.style.marginRight = "1rem";
               const keplrLogo = document.createElement("img");
-              const keplrLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isKeplrLocked ? "locked-keplr-logo" : "icon"
-                }-128.png`
-              );
+              const keplrLogoUrl =
+                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
               keplrLogo.src = keplrLogoUrl;
               keplrLogo.style.boxSizing = "border-box";
               keplrLogo.style.width = "3rem";
@@ -2541,7 +2477,7 @@ export class Oasis implements IOasis {
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isKeplrLocked
                 ? "Unlock Keplr to proceed"
-                : "Open Keplr to approve request(s)";
+                : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
               // arrowLeftOpenWrapper.style.boxSizing = "border-box";
