@@ -125,13 +125,13 @@ platform :android do
     version_name_local = android_get_version_name(
       gradle_file: "app/build.gradle" # optional
     ).gsub("'", "")
-    # sentry_upload_dif(
-    #   auth_token: ENV["SENTRY_TOKEN"],
-    #   org_slug: 'oraichain',
-    #   project_slug: 'owallet-mobile',
-    #   include_sources: true, # Optional. For source context.
-    # )
-    gradle(task: 'bundle', build_type: 'Release',properties: {
+    sentry_upload_dif(
+      auth_token: ENV["SENTRY_TOKEN"],
+      org_slug: 'oraichain',
+      project_slug: 'owallet-mobile',
+      include_sources: true, # Optional. For source context.
+    )
+    gradle(task: 'clean bundle', build_type: 'Release',properties: {
       "android.injected.signing.store.file" => Dir.pwd + ENV["FILE_PATH"],
       "android.injected.signing.store.password" => ENV["PASS_KEY_STORE"],
       "android.injected.signing.key.alias" => ENV["ALIAS"],
