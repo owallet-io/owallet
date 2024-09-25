@@ -1,12 +1,33 @@
-import { AccountSetBase, AccountSetOpts, MsgOpt } from "./base";
-import { AppCurrency, OWalletSignOptions } from "@owallet/types";
+import { AccountSetBase, AccountSetOpts, MsgOpt, WalletStatus } from "./base";
+import {
+  AppCurrency,
+  OWalletSignOptions,
+  SignDoc,
+  StdSignDoc,
+  Msg,
+  BroadcastMode,
+  OWallet,
+  AminoSignResponse,
+  Coin,
+} from "@owallet/types";
 import { StdFee } from "@cosmjs/launchpad";
-import { DenomHelper, EVMOS_NETWORKS } from "@owallet/common";
+import {
+  DenomHelper,
+  escapeHTML,
+  EVMOS_NETWORKS,
+  sortObjectByKey,
+} from "@owallet/common";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { ChainIdHelper, BaseAccount } from "@owallet/cosmos";
+import {
+  ChainIdHelper,
+  BaseAccount,
+  Bech32Address,
+  TendermintTxTracer,
+  EthermintChainIdHelper,
+} from "@owallet/cosmos";
 import { BondStatus } from "../query/cosmos/staking/types";
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from "../query";
-import { DeepReadonly } from "utility-types";
+import { DeepReadonly, Mutable } from "utility-types";
 import { ChainGetter } from "../common";
 import Axios, { AxiosInstance } from "axios";
 import { MsgTransfer } from "@owallet/proto-types/ibc/applications/transfer/v1/tx";
@@ -28,7 +49,18 @@ import {
   TxBody,
   TxRaw,
 } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
-// import SignMode = cosmos.tx.signing.v1beta1.SignMode;
+import {
+  KeplrSignOptionsWithAltSignMethods,
+  MakeTxResponse,
+  ProtoMsgsOrWithAminoMsgs,
+} from "./type";
+import {
+  getEip712TypedDataBasedOnChainId,
+  txEventsWithPreOnFulfill,
+} from "./utils";
+import { PubKey } from "@owallet/proto-types/cosmos/crypto/secp256k1/keys";
+import { Any } from "@owallet/proto-types/google/protobuf/any";
+import { ExtensionOptionsWeb3Tx } from "@owallet/proto-types/ethermint/types/v1/web3";
 
 export interface HasCosmosAccount {
   cosmos: DeepReadonly<CosmosAccount>;
@@ -332,6 +364,684 @@ export class CosmosAccount {
 
     return false;
   }
+
+  // New Send Token Process
+
+  /**
+   * @deprecated Predict gas through simulation rather than using a fixed gas.
+   */
+  get msgOpts(): CosmosMsgOpts {
+    return this.base.msgOpts;
+  }
+
+  protected processMakeSendTokenTx(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string
+  ) {
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+
+    if (denomHelper.type === "native") {
+      const actualAmount = (() => {
+        let dec = new Dec(amount);
+        dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
+        return dec.truncate().toString();
+      })();
+
+      Bech32Address.validate(
+        recipient,
+        this.chainGetter.getChain(this.chainId).bech32Config
+          ?.bech32PrefixAccAddr
+      );
+
+      const msg = {
+        type: this.msgOpts.send.native.type,
+        value: {
+          from_address: this.base.bech32Address,
+          to_address: recipient,
+          amount: [
+            {
+              denom: currency.coinMinimalDenom,
+              amount: actualAmount,
+            },
+          ],
+        },
+      };
+
+      return this.makeTx(
+        "send",
+        {
+          aminoMsgs: [msg],
+          protoMsgs: [
+            {
+              typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+              value: MsgSend.encode({
+                fromAddress: msg.value.from_address,
+                toAddress: msg.value.to_address,
+                amount: msg.value.amount,
+              }).finish(),
+            },
+          ],
+          rlpTypes: {
+            MsgValue: [
+              { name: "from_address", type: "string" },
+              { name: "to_address", type: "string" },
+              { name: "amount", type: "TypeAmount[]" },
+            ],
+            TypeAmount: [
+              { name: "denom", type: "string" },
+              { name: "amount", type: "string" },
+            ],
+          },
+        },
+        (tx) => {
+          if (tx.code == null || tx.code === 0) {
+            // After succeeding to send token, refresh the balance.
+            const queryBalance = this.queries.queryBalances
+              .getQueryBech32Address(this.base.bech32Address)
+              .balances.find((bal) => {
+                return (
+                  bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+                );
+              });
+
+            if (queryBalance) {
+              queryBalance.fetch();
+            }
+          }
+        }
+      );
+    }
+  }
+
+  async sendMsgs(
+    type: string | "unknown",
+    msgs:
+      | ProtoMsgsOrWithAminoMsgs
+      | (() => Promise<ProtoMsgsOrWithAminoMsgs> | ProtoMsgsOrWithAminoMsgs),
+    memo: string = "",
+    fee: StdFee,
+    signOptions?: KeplrSignOptionsWithAltSignMethods,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) {
+    this.base.setTxTypeInProgress(type);
+
+    let txHash: Uint8Array;
+    let signDoc: StdSignDoc | SignDoc;
+    try {
+      if (typeof msgs === "function") {
+        msgs = await msgs();
+      }
+
+      const result = await this.broadcastMsgs(msgs, fee, memo, signOptions);
+      txHash = result.txHash;
+      signDoc = result.signDoc;
+    } catch (e) {
+      this.base.setTxTypeInProgress("");
+
+      if (
+        onTxEvents &&
+        "onBroadcastFailed" in onTxEvents &&
+        onTxEvents.onBroadcastFailed
+      ) {
+        onTxEvents.onBroadcastFailed(e);
+      }
+
+      throw e;
+    }
+
+    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
+    let onFulfill: ((tx: any) => void) | undefined;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === "function") {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    if (onBroadcasted) {
+      onBroadcasted(txHash);
+    }
+
+    const txTracer = new TendermintTxTracer(
+      this.chainGetter.getChain(this.chainId).rpc,
+      "/websocket",
+      {}
+    );
+    txTracer.traceTx(txHash).then((tx) => {
+      txTracer.close();
+
+      this.base.setTxTypeInProgress("");
+
+      // After sending tx, the balances is probably changed due to the fee.
+      const feeDenoms: string[] = (() => {
+        if ("fee" in signDoc) {
+          return signDoc.fee.amount.map((amount) => amount.denom);
+        } else if ("authInfoBytes" in signDoc) {
+          const authInfo = AuthInfo.decode(signDoc.authInfoBytes);
+          return authInfo.fee?.amount.map((amount) => amount.denom) ?? [];
+        } else {
+          return [];
+        }
+      })();
+      for (const feeDenom of feeDenoms) {
+        const bal = this.queries.queryBalances
+          .getQueryBech32Address(this.base.bech32Address)
+          .balances.find((bal) => bal.currency.coinMinimalDenom === feeDenom);
+
+        if (bal) {
+          bal.fetch();
+        }
+      }
+
+      // Always add the tx hash data.
+      if (tx && !tx.hash) {
+        tx.hash = Buffer.from(txHash).toString("hex");
+      }
+
+      if (onFulfill) {
+        onFulfill(tx);
+      }
+    });
+  }
+
+  // Return the tx hash.
+  protected async broadcastMsgs(
+    msgs: ProtoMsgsOrWithAminoMsgs,
+    fee: StdFee,
+    memo: string = "",
+    signOptions?: KeplrSignOptionsWithAltSignMethods
+  ): Promise<{
+    txHash: Uint8Array;
+    signDoc: StdSignDoc | SignDoc;
+  }> {
+    if (this.base.walletStatus !== WalletStatus.Loaded) {
+      throw new Error(`Wallet is not loaded: ${this.base.walletStatus}`);
+    }
+
+    const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
+
+    const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+    const protoMsgs: Any[] = msgs.protoMsgs;
+
+    if (protoMsgs.length === 0) {
+      throw new Error("There is no msg to send");
+    }
+
+    if (!isDirectSign) {
+      if (aminoMsgs.length !== protoMsgs.length) {
+        throw new Error("The length of aminoMsgs and protoMsgs are different");
+      }
+    }
+
+    const account = await BaseAccount.fetchFromRest(
+      this.instance,
+      this.base.bech32Address,
+      true
+    );
+
+    const useEthereumSign =
+      this.chainGetter
+        .getChain(this.chainId)
+        .features?.includes("eth-key-sign") === true;
+
+    const eip712Signing = useEthereumSign && this.base.isNanoLedger;
+
+    if (eip712Signing && !msgs.rlpTypes) {
+      throw new Error(
+        "RLP types information is needed for signing tx for ethermint chain with ledger"
+      );
+    }
+
+    if (eip712Signing && isDirectSign) {
+      throw new Error("EIP712 signing is not supported for proto signing");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const keplr = (await this.base.getOWallet())!;
+
+    const signedTx = await (async () => {
+      if (isDirectSign) {
+        return await this.createSignedTxWithDirectSign(
+          keplr,
+          account,
+          msgs.protoMsgs,
+          fee,
+          memo,
+          signOptions
+        );
+      } else {
+        const signDocRaw: StdSignDoc = {
+          chain_id: this.chainId,
+          account_number: account.getAccountNumber().toString(),
+          sequence: account.getSequence().toString(),
+          fee: fee,
+          msgs: aminoMsgs,
+          memo: escapeHTML(memo),
+        };
+
+        const chainIsInjective = this.chainId.startsWith("injective");
+        const chainIsStratos = this.chainId.startsWith("stratos");
+
+        if (eip712Signing) {
+          if (chainIsInjective) {
+            // Due to injective's problem, it should exist if injective with ledger.
+            // There is currently no effective way to handle this in keplr. Just set a very large number.
+            (signDocRaw as Mutable<StdSignDoc>).timeout_height =
+              Number.MAX_SAFE_INTEGER.toString();
+          } else {
+            // If not injective (evmos), they require fee payer.
+            // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
+            //      That means this part is not standard.
+            (signDocRaw as Mutable<StdSignDoc>).fee = {
+              ...signDocRaw.fee,
+              feePayer: this.base.bech32Address,
+            };
+          }
+        }
+
+        const signDoc = sortObjectByKey(signDocRaw);
+
+        // Should use bind to avoid "this" problem
+        let signAmino = keplr.signAmino.bind(keplr);
+        if (signOptions?.signAmino) {
+          signAmino = signOptions.signAmino;
+        }
+
+        // Should use bind to avoid "this" problem
+        let experimentalSignEIP712CosmosTx_v0 =
+          keplr.experimentalSignEIP712CosmosTx_v0.bind(keplr);
+        if (signOptions?.experimentalSignEIP712CosmosTx_v0) {
+          experimentalSignEIP712CosmosTx_v0 =
+            signOptions.experimentalSignEIP712CosmosTx_v0;
+        }
+
+        const signResponse: AminoSignResponse = await (async () => {
+          if (!eip712Signing) {
+            return await signAmino(
+              this.chainId,
+              this.base.bech32Address,
+              signDoc,
+              signOptions
+            );
+          }
+
+          return await experimentalSignEIP712CosmosTx_v0(
+            this.chainId,
+            this.base.bech32Address,
+            getEip712TypedDataBasedOnChainId(this.chainId, msgs),
+            signDoc,
+            signOptions
+          );
+        })();
+
+        return {
+          tx: TxRaw.encode({
+            bodyBytes: TxBody.encode(
+              TxBody.fromPartial({
+                messages: protoMsgs,
+                timeoutHeight: signResponse.signed.timeout_height,
+                memo: signResponse.signed.memo,
+                extensionOptions: eip712Signing
+                  ? [
+                      {
+                        typeUrl: (() => {
+                          if (chainIsInjective) {
+                            return "/injective.types.v1beta1.ExtensionOptionsWeb3Tx";
+                          }
+
+                          return "/ethermint.types.v1.ExtensionOptionsWeb3Tx";
+                        })(),
+                        value: ExtensionOptionsWeb3Tx.encode(
+                          ExtensionOptionsWeb3Tx.fromPartial({
+                            typedDataChainId: EthermintChainIdHelper.parse(
+                              this.chainId
+                            ).ethChainId.toString(),
+                            feePayer: !chainIsInjective
+                              ? signResponse.signed.fee.feePayer
+                              : undefined,
+                            feePayerSig: !chainIsInjective
+                              ? Buffer.from(
+                                  signResponse.signature.signature,
+                                  "base64"
+                                )
+                              : undefined,
+                          })
+                        ).finish(),
+                      },
+                    ]
+                  : undefined,
+              })
+            ).finish(),
+            authInfoBytes: AuthInfo.encode({
+              signerInfos: [
+                {
+                  publicKey: {
+                    typeUrl: (() => {
+                      if (!useEthereumSign) {
+                        return "/cosmos.crypto.secp256k1.PubKey";
+                      }
+
+                      if (chainIsInjective) {
+                        return "/injective.crypto.v1beta1.ethsecp256k1.PubKey";
+                      }
+
+                      if (chainIsStratos) {
+                        return "/stratos.crypto.v1.ethsecp256k1.PubKey";
+                      }
+
+                      return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
+                    })(),
+                    value: PubKey.encode({
+                      key: Buffer.from(
+                        signResponse.signature.pub_key.value,
+                        "base64"
+                      ),
+                    }).finish(),
+                  },
+                  modeInfo: {
+                    single: {
+                      mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+                    },
+                    multi: undefined,
+                  },
+                  sequence: signResponse.signed.sequence,
+                },
+              ],
+              fee: Fee.fromPartial({
+                amount: signResponse.signed.fee.amount as Coin[],
+                gasLimit: signResponse.signed.fee.gas,
+                payer:
+                  eip712Signing && !chainIsInjective
+                    ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
+                      signResponse.signed.fee.feePayer
+                    : undefined,
+              }),
+            }).finish(),
+            signatures:
+              // Injective needs the signature in the signatures list even if eip712
+              !eip712Signing || chainIsInjective
+                ? [Buffer.from(signResponse.signature.signature, "base64")]
+                : [new Uint8Array(0)],
+          }).finish(),
+          signDoc: signResponse.signed,
+        };
+      }
+    })();
+
+    // Should use bind to avoid "this" problem
+    let sendTx = keplr.sendTx.bind(keplr);
+    if (signOptions?.sendTx) {
+      sendTx = signOptions.sendTx;
+    }
+
+    return {
+      txHash: await sendTx(this.chainId, signedTx.tx, "sync" as BroadcastMode),
+      signDoc: signedTx.signDoc,
+    };
+  }
+
+  protected async createSignedTxWithDirectSign(
+    owallet: OWallet,
+    account: BaseAccount,
+    protoMsgs: Any[],
+    fee: StdFee,
+    memo: string,
+    signOptions: KeplrSignOptionsWithAltSignMethods | undefined
+  ): Promise<{
+    tx: Uint8Array;
+    signDoc: SignDoc;
+  }> {
+    const useEthereumSign =
+      this.chainGetter
+        .getChain(this.chainId)
+        .features?.includes("eth-key-sign") === true;
+
+    const chainIsInjective = this.chainId.startsWith("injective");
+    const chainIsStratos = this.chainId.startsWith("stratos");
+
+    // Should use bind to avoid "this" problem
+    let signDirect = owallet.signDirect.bind(owallet);
+    if (signOptions?.signDirect) {
+      signDirect = signOptions.signDirect;
+    }
+
+    const signed = await signDirect(
+      this.chainId,
+      this.base.bech32Address,
+      {
+        bodyBytes: TxBody.encode(
+          TxBody.fromPartial({
+            messages: protoMsgs,
+            memo,
+          })
+        ).finish(),
+        authInfoBytes: AuthInfo.encode({
+          signerInfos: [
+            {
+              publicKey: {
+                typeUrl: (() => {
+                  if (!useEthereumSign) {
+                    return "/cosmos.crypto.secp256k1.PubKey";
+                  }
+
+                  if (chainIsInjective) {
+                    return "/injective.crypto.v1beta1.ethsecp256k1.PubKey";
+                  }
+
+                  if (chainIsStratos) {
+                    return "/stratos.crypto.v1.ethsecp256k1.PubKey";
+                  }
+
+                  return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
+                })(),
+                value: PubKey.encode({
+                  key: this.base._pubKey,
+                }).finish(),
+              },
+              modeInfo: {
+                single: {
+                  mode: SignMode.SIGN_MODE_DIRECT,
+                },
+                multi: undefined,
+              },
+              sequence: account.getSequence().toString(),
+            },
+          ],
+          fee: Fee.fromPartial({
+            amount: fee.amount.map((coin) => {
+              return {
+                denom: coin.denom,
+                amount: coin.amount.toString(),
+              };
+            }),
+            gasLimit: fee.gas,
+          }),
+        }).finish(),
+        chainId: this.chainId,
+        accountNumber: Long.fromString(account.getAccountNumber().toString()),
+      },
+      signOptions
+    );
+
+    return {
+      tx: TxRaw.encode({
+        bodyBytes: signed.signed.bodyBytes,
+        authInfoBytes: signed.signed.authInfoBytes,
+        signatures: [Buffer.from(signed.signature.signature, "base64")],
+      }).finish(),
+      signDoc: signed.signed,
+    };
+  }
+
+  makeTx(
+    defaultType: string | "unknown",
+    msgs: ProtoMsgsOrWithAminoMsgs | (() => Promise<ProtoMsgsOrWithAminoMsgs>),
+    preOnTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ): MakeTxResponse {
+    let type = defaultType;
+
+    const simulate = async (
+      fee: Partial<Omit<StdFee, "gas">> = {},
+      memo: string = ""
+    ): Promise<{
+      gasUsed: number;
+    }> => {
+      if (typeof msgs === "function") {
+        msgs = await msgs();
+      }
+
+      return this.simulateTx(
+        msgs.protoMsgs,
+        {
+          amount: fee.amount ?? [],
+        },
+        memo
+      );
+    };
+
+    const sendWithGasPrice = async (
+      gasInfo: {
+        gas: number;
+        gasPrice?: {
+          denom: string;
+          amount: Dec;
+        };
+      },
+      memo: string = "",
+      signOptions?: KeplrSignOptionsWithAltSignMethods,
+      onTxEvents?:
+        | ((tx: any) => void)
+        | {
+            onBroadcasted?: (txHash: Uint8Array) => void;
+            onFulfill?: (tx: any) => void;
+          }
+    ): Promise<void> => {
+      if (gasInfo.gas < 0) {
+        throw new Error("Gas is zero or negative");
+      }
+
+      const fee = {
+        gas: gasInfo.gas.toString(),
+        amount: gasInfo.gasPrice
+          ? [
+              {
+                denom: gasInfo.gasPrice.denom,
+                amount: gasInfo.gasPrice.amount
+                  .mul(new Dec(gasInfo.gas))
+                  .truncate()
+                  .toString(),
+              },
+            ]
+          : [],
+      };
+
+      return this.sendMsgs(
+        type,
+        msgs,
+        memo,
+        fee,
+        signOptions,
+        txEventsWithPreOnFulfill(onTxEvents, preOnTxEvents)
+      );
+    };
+
+    return {
+      ui: {
+        type: () => type,
+        overrideType: (paramType: string) => {
+          type = paramType;
+        },
+      },
+      msgs: async (): Promise<ProtoMsgsOrWithAminoMsgs> => {
+        if (typeof msgs === "function") {
+          msgs = await msgs();
+        }
+        return msgs;
+      },
+      simulate,
+      simulateAndSend: async (
+        feeOptions: {
+          gasAdjustment: number;
+          gasPrice?: {
+            denom: string;
+            amount: Dec;
+          };
+        },
+        memo: string = "",
+        signOptions?: KeplrSignOptionsWithAltSignMethods,
+        onTxEvents?:
+          | ((tx: any) => void)
+          | {
+              onBroadcasted?: (txHash: Uint8Array) => void;
+              onFulfill?: (tx: any) => void;
+            }
+      ): Promise<void> => {
+        this.base.setTxTypeInProgress(type);
+
+        try {
+          const { gasUsed } = await simulate({}, memo);
+
+          if (gasUsed < 0) {
+            throw new Error("Gas estimated is zero or negative");
+          }
+
+          const gasAdjusted = Math.floor(feeOptions.gasAdjustment * gasUsed);
+
+          return sendWithGasPrice(
+            {
+              gas: gasAdjusted,
+              gasPrice: feeOptions.gasPrice,
+            },
+            memo,
+            signOptions,
+            onTxEvents
+          );
+        } catch (e) {
+          this.base.setTxTypeInProgress("");
+          throw e;
+        }
+      },
+      send: async (
+        fee: StdFee,
+        memo: string = "",
+        signOptions?: KeplrSignOptionsWithAltSignMethods,
+        onTxEvents?:
+          | ((tx: any) => void)
+          | {
+              onBroadcasted?: (txHash: Uint8Array) => void;
+              onFulfill?: (tx: any) => void;
+            }
+      ): Promise<void> => {
+        return this.sendMsgs(
+          type,
+          msgs,
+          memo,
+          fee,
+          signOptions,
+          txEventsWithPreOnFulfill(onTxEvents, preOnTxEvents)
+        );
+      },
+      sendWithGasPrice,
+    };
+  }
+
+  // End
 
   async sendIBCTransferMsg(
     channel: {
