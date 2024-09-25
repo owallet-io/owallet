@@ -13,6 +13,7 @@ export function makeURL(baseURL: string, url: string): string {
 }
 
 function removeFirstSlashIfIs(str: string): string {
+  if (!str) return;
   if (str.length > 0 && str[0] === "/") {
     return str.slice(1);
   }

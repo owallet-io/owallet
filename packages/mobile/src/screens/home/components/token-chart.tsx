@@ -241,7 +241,7 @@ export const TokenChart: FC<{
           </OWText>
         </View>
       </View>
-      {dataPriceChart && (
+      {dataPriceChart?.length > 0 && (
         <LineGraph
           animated={true}
           style={{
