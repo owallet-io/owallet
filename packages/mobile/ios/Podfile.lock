@@ -1115,7 +1115,7 @@ SPEC CHECKSUMS:
   appcenter-crashes: 9cb825ee8f89715a1b0a7164a71fc8c582b0e796
   AppCenterReactNativeShared: 22aea9046e80c449137f4e574ae1f229616e2358
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
-  boost: 7dcd2de282d72e344012f7d6564d024930a6a440
+  boost: 57d2868c099736d80fcd648bf211b4431e51a558
   BranchSDK: 28bec34fb99c53ab8e86b7bf69cc55a4505fe0b3
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
