@@ -1722,7 +1722,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "cosmwasm"],
-    chainSymbolImageUrl: "https://orai.io/images/logos/logomark-dark.png",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     txExplorer: {
       name: "Oraiscan",
       txUrl: "https://testnet.scan.orai.io/txs/{txHash}",
