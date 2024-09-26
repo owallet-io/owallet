@@ -82,6 +82,7 @@ export class ObservableJsonRPCQuery<
 
   protected override getCacheKey(): string {
     try {
+      if (!this.params) return;
       const paramsHash = Buffer.from(
         Hash.sha256(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
       ).toString("hex");
