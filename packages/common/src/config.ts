@@ -984,8 +984,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://rpc.ankr.com/eth",
-    rest: "https://rpc.ankr.com/eth",
+    rpc: "https://evm-1.keplr.app",
+    rest: "https://evm-1.keplr.app",
     chainId: "0x01",
     chainName: "Ethereum",
     bip44: {
@@ -1060,8 +1060,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://bsc-dataseed1.ninicoin.io",
-    rest: "https://bsc-dataseed1.ninicoin.io",
+    rpc: "https://evm-56.keplr.app",
+    rest: "https://evm-56.keplr.app",
     chainId: "0x38",
     chainName: "BNB Chain",
     bip44: {
