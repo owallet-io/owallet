@@ -255,7 +255,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             }}
           />
           <BasicSettingItem
-            icon="tdesign_book"
+            icon="tdesignapp"
             paragraph="Manage Chain"
             onPress={() => {
               navigate(SCREENS.ManageChain, {});
