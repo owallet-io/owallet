@@ -4496,29 +4496,7 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.91":
-  version "1.1.15"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.15.tgz#e4644d0cc0c89f332936a80d376190db20c28627"
-  integrity sha512-BzkdWsXoF7J+5VGaIq0/8PX5v29Gb+3ALvHXXykJ3xUhYTH4g714ZnEwqQR69e63hKwopR5qoCwnB7YNvxS3ow==
-  dependencies:
-    "@cosmjs/amino" "0.31.3"
-    "@cosmjs/cosmwasm-stargate" "0.31.3"
-    "@cosmjs/crypto" "0.31.3"
-    "@cosmjs/proto-signing" "0.31.3"
-    "@cosmjs/stargate" "0.31.3"
-    "@cosmjs/tendermint-rpc" "0.31.3"
-    "@ethersproject/providers" "^5.0.10"
-    "@injectivelabs/sdk-ts" "1.12.1"
-    "@keplr-wallet/types" "^0.11.38"
-    "@oraichain/oraidex-contracts-sdk" latest
-    axios "1.7.2"
-    axios-extensions "3.1.7"
-    bignumber.js "^9.1.2"
-    cosmjs-types "0.8.0"
-    ethers "^5.0.15"
-    tronweb "6.0.0-beta.4"
-
-"@oraichain/oraidex-common@^1.1.18":
+"@oraichain/oraidex-common@1.1.18", "@oraichain/oraidex-common@^1.0.91", "@oraichain/oraidex-common@^1.1.18":
   version "1.1.18"
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.1.18.tgz#ef06939daabd7adf5023dd52ab39e040f64ca7d1"
   integrity sha512-igH4pFjEB7q8bPEAJXhYa372kU05ZzxOe6C/vntegu0DUjGCJUmKE6ikCG2svs2VytkmEv2D9env70AFGXePEw==
@@ -4555,10 +4533,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.45.tgz#42dae0fdd9e005f920ba305b987009f791acc365"
   integrity sha512-/nYztdxEX5LQM4DMJQmi9HvZrBVoY3nLAmYqSKZGZ0U1h1SxU7O/o22R3/pQwB+sAJdcibaI8ygC0ov7jC8paA==
 
-"@oraichain/oraidex-universal-swap@^1.1.5-beta.7":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.6.tgz#6dcef12170cdca5bd287434c4a3c3460351d0c30"
-  integrity sha512-sBKJ/CYpWvTRP8vQAbEx/4eDiPt/Mci7PfTIkunshMlH3CmZPk2NAxpLRF6bz+ntS01IZWuEDr4HJK5lNiwK6A==
+"@oraichain/oraidex-universal-swap@1.1.9", "@oraichain/oraidex-universal-swap@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.1.9.tgz#db90a3682e18435103f803ebf618570bf1465c93"
+  integrity sha512-ozg9PuRcWubuu7VJbMhDKYmvvd1eAoy/qvD93lBOcTwJTA/5+pl/79tkvoP6uvDzcbtfbRDqJHdGvmJVZNlgXQ==
   dependencies:
     "@oraichain/common" "^1.0.3"
     "@oraichain/oraidex-common" "^1.0.91"

@@ -5,62 +5,57 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000289">
+      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000205">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: google_play_track_version_codes" time="2.1644">
+      <testcase classname="fastlane.lanes" name="01: google_play_track_version_codes" time="2.523492">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: android_get_version_code" time="0.000959">
+      <testcase classname="fastlane.lanes" name="02: android_get_version_code" time="0.002523">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: google_play_track_release_names" time="2.634635">
+      <testcase classname="fastlane.lanes" name="03: google_play_track_release_names" time="2.144203">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: android_get_version_name" time="0.00103">
+      <testcase classname="fastlane.lanes" name="04: android_get_version_name" time="0.001323">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: android_set_version_name" time="0.003266">
+      <testcase classname="fastlane.lanes" name="05: android_set_version_code" time="0.005795">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: android_set_version_code" time="0.0027">
+      <testcase classname="fastlane.lanes" name="06: android_get_version_code" time="0.000471">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="07: android_get_version_code" time="0.000467">
+      <testcase classname="fastlane.lanes" name="07: android_get_version_name" time="0.000439">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="08: android_get_version_name" time="0.000408">
+      <testcase classname="fastlane.lanes" name="08: sentry_upload_dif" time="12.287204">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="09: sentry_upload_dif" time="13.721912">
+      <testcase classname="fastlane.lanes" name="09: clean bundleRelease" time="304.902732">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="10: clean bundleRelease" time="5904.916971">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="11: upload_to_play_store" time="50.810352">
+      <testcase classname="fastlane.lanes" name="10: upload_to_play_store" time="65.656929">
         
       </testcase>
     
