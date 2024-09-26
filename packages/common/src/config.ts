@@ -142,6 +142,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
         },
         {
+          coinDenom: "HMSTR",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/HMSTR",
+          coinDecimals: 9,
+          coinGeckoId: "hamster-kombat",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
+        },
+        {
           coinDenom: "PEPE",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE",
