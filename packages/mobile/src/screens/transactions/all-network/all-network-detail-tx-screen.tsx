@@ -194,7 +194,7 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                     ]}
                     source={{
                       uri:
-                        chainInfo.feeCurrencies?.[0].coinImageUrl ||
+                        chainInfo.chainSymbolImageUrl ||
                         unknownToken.coinImageUrl,
                     }}
                   />

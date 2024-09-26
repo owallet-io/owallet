@@ -74,6 +74,7 @@ export const SCREENS = {
   SettingVersion: "Setting.Version",
   DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
+  ManageChain: "ManageChain",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
   BookMarks: "BookMarks",
@@ -286,6 +287,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.AddressBook]: {
     title: "Address book",
   },
+  [SCREENS.ManageChain]: {
+    title: "Select Chains",
+  },
+
   [SCREENS.AddAddressBook]: {
     title: "Add new contact",
   },

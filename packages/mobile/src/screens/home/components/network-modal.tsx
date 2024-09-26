@@ -239,7 +239,7 @@ export const NetworkModal: FC<{
               <OWIcon
                 type="images"
                 source={{
-                  uri: item?.stakeCurrency?.coinImageUrl || oraiIcon,
+                  uri: item?.chainSymbolImageUrl || oraiIcon,
                 }}
                 style={{
                   borderRadius: 999,
@@ -288,7 +288,7 @@ export const NetworkModal: FC<{
       </TouchableOpacity>
     );
   };
-
+  console.log(chainStore.chainInfosInUI, "chainStore.chainInfos");
   const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
     let balances = dataBalances.filter(
       (token) => token.chainInfo.chainId === item.chainId
@@ -307,7 +307,7 @@ export const NetworkModal: FC<{
     item.balance = result || initPrice;
     return item;
   });
-
+  // console.log(chainsInfoWithBalance,"chainsInfoWithBalance");
   const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
     (c) =>
       c.chainName.toLowerCase().includes("test") &&

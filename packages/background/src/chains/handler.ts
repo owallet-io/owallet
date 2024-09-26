@@ -58,7 +58,6 @@ const handleSuggestChainInfoMsg: (
     }
 
     const chainInfo = msg.chainInfo as Writeable<ChainInfo>;
-
     // And, always handle it as beta, if not specific.
     if (chainInfo.beta === undefined) {
       chainInfo.beta = true;

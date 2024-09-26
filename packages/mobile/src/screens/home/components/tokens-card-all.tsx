@@ -229,7 +229,7 @@ const TokenItem: FC<{
               type="images"
               source={{
                 uri:
-                  item?.chainInfo?.feeCurrencies?.[0]?.coinImageUrl ||
+                  item?.chainInfo?.chainSymbolImageUrl ||
                   unknownToken.coinImageUrl,
               }}
               size={16}

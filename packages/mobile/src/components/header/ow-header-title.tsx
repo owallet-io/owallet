@@ -71,7 +71,7 @@ const OWHeaderTitle = observer(
                   <OWIcon
                     type="images"
                     source={{
-                      uri: chainInfo?.stakeCurrency?.coinImageUrl,
+                      uri: chainInfo?.chainSymbolImageUrl,
                     }}
                     style={{
                       borderRadius: 999,
@@ -118,8 +118,7 @@ const OWHeaderTitle = observer(
                 type="images"
                 source={{
                   uri:
-                    chainData?.feeCurrencies?.[0]?.coinImageUrl ||
-                    unknownToken.coinImageUrl,
+                    chainData?.chainSymbolImageUrl || unknownToken.coinImageUrl,
                 }}
                 style={{
                   borderRadius: 999,

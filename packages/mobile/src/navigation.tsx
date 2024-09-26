@@ -76,6 +76,7 @@ import {
   AddressBookScreen,
 } from "./screens/setting/screens/address-book";
 import useHeaderOptions from "./hooks/use-header";
+import { SelectChainsScreen } from "@screens/setting/screens/manage-chains/select-chains";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -201,6 +202,11 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.AddressBook}
               component={AddressBookScreen}
             />
+            <Stack.Screen
+              name={SCREENS.ManageChain}
+              component={SelectChainsScreen}
+            />
+
             <Stack.Screen
               name={SCREENS.AddAddressBook}
               component={AddAddressBookScreen}

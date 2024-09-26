@@ -503,12 +503,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 <View style={styles.chainIcon}>
                   <Image
                     style={styles.icon}
-                    tintColor={
-                      chain.stakeCurrency?.coinDenom === "ORAI"
-                        ? colors["neutral-text-title"]
-                        : null
-                    }
-                    source={{ uri: chain.stakeCurrency.coinImageUrl }}
+                    source={{ uri: chain.chainSymbolImageUrl }}
                   />
                 </View>
                 <OWText size={16} weight="600">

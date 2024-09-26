@@ -221,6 +221,9 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get stakeCurrency(): Currency {
     return this.raw.stakeCurrency;
   }
+  get chainSymbolImageUrl(): string {
+    return this.raw.chainSymbolImageUrl;
+  }
 
   get alternativeBIP44s(): BIP44[] | undefined {
     return this.raw.alternativeBIP44s;
@@ -362,13 +365,12 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
         const chainInfoInner = new ChainInfoInner(chainInfo);
         this._cachedChainInfosMap.set(chainInfo.chainId, chainInfoInner);
         chainInfoInners.push(chainInfoInner);
-
         for (const handler of this.setChainInfoHandlers) {
           handler(chainInfoInner);
         }
       }
     }
-
+    console.log(chainInfoInners, "chainInfoInners");
     this._chainInfos = chainInfoInners;
   }
 }

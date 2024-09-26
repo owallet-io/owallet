@@ -198,7 +198,7 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
                     style={styles.imgNetwork}
                     source={{
                       uri:
-                        chainInfo?.stakeCurrency?.coinImageUrl ||
+                        chainInfo?.chainSymbolImageUrl ||
                         unknownToken.coinImageUrl,
                     }}
                   />

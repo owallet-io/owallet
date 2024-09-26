@@ -254,6 +254,13 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               navigate(SCREENS.AddressBook, {});
             }}
           />
+          <BasicSettingItem
+            icon="tdesign_book"
+            paragraph="Manage Chain"
+            onPress={() => {
+              navigate(SCREENS.ManageChain, {});
+            }}
+          />
         </OWCard>
 
         {renderRating()}
