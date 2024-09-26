@@ -7,7 +7,7 @@ import React, {
 import { observer } from "mobx-react-lite";
 import { PageWithScrollView, PageWithView } from "@components/page";
 import { OWBox } from "@components/card";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { fetchRetry, limitString, unknownToken } from "@owallet/common";
 import { useTheme } from "@src/themes/theme-provider";
@@ -16,7 +16,7 @@ import OWFlatList from "@components/page/ow-flat-list";
 import { Toggle } from "@components/toggle";
 import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
-import { _keyExtract } from "@utils/helper";
+import { _keyExtract, showToast } from "@utils/helper";
 
 export const SelectChainsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
@@ -40,6 +40,40 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       setChains(sortedChains);
     })();
   }, []);
+  const onEnableOrDisableChain = useCallback(
+    async (item) => {
+      if (!chainEnables?.[item.chainId]) {
+        try {
+          await chainStore.addChain(item);
+          setChainEnables((prev) => ({
+            ...prev,
+            [item.chainId]: true,
+          }));
+        } catch (e) {
+          showToast({
+            type: "danger",
+            message: "This chain does not support enabling.",
+          });
+          console.log(e, "err add chain");
+        }
+      } else {
+        try {
+          await chainStore.removeChainInfo(item.chainId);
+          setChainEnables((prev) => ({
+            ...prev,
+            [item.chainId]: false,
+          }));
+        } catch (e) {
+          showToast({
+            type: "danger",
+            message: "Do not disable chain native from the config.",
+          });
+          console.log(e, "err removeChain chain");
+        }
+      }
+    },
+    [chainEnables]
+  );
   // Create a function to check if the chainInfo exists
   const chainInfoExists = (chainId) => {
     try {
@@ -67,11 +101,11 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
 
   const renderChain = ({ item }) => {
     return (
-      <View
+      <TouchableOpacity
+        onPress={() => onEnableOrDisableChain(item)}
         style={{
           flexDirection: "row",
           alignItems: "center",
-
           paddingVertical: 12,
           paddingHorizontal: 8,
           borderBottomWidth: 0.5,
@@ -120,35 +154,9 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         </View>
         <Toggle
           on={chainEnables?.[item.chainId]}
-          onChange={async (value) => {
-            if (!chainEnables?.[item.chainId]) {
-              try {
-                await chainStore.addChain(item);
-                setChainEnables((prev) => ({
-                  ...prev,
-                  [item.chainId]: true,
-                }));
-              } catch (e) {
-                console.log(e, "err add chain");
-              }
-            } else {
-              try {
-                await chainStore.removeChainInfo(item.chainId);
-                setChainEnables((prev) => ({
-                  ...prev,
-                  [item.chainId]: false,
-                }));
-              } catch (e) {
-                console.log(e, "err removeChain chain");
-              }
-            }
-
-            // const chainInfo = chains.find(chain => chain.chainId === value);
-
-            // setToggle(value);
-          }}
+          onChange={() => onEnableOrDisableChain(item)}
         />
-      </View>
+      </TouchableOpacity>
     );
   };
   return (
