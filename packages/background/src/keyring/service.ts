@@ -1171,4 +1171,95 @@ export class KeyRingService {
       );
     }
   }
+
+  async privilegeSignAminoWithdrawRewards(
+    env: Env,
+    origin: string,
+    chainId: string,
+    signer: string,
+    signDoc: StdSignDoc,
+    signOptions: OWalletSignOptions & {
+      // Hack option field to detect the sign arbitrary for string
+      isADR36WithString?: boolean;
+    }
+  ) {
+    const chainInfo = await this.chainsService.getChainInfo(chainId);
+
+    signDoc = {
+      ...signDoc,
+      memo: escapeHTML(signDoc.memo),
+    };
+
+    signDoc = trimAminoSignDoc(signDoc);
+    signDoc = sortObjectByKey(signDoc);
+
+    const coinType = await this.chainsService.getChainCoinType(chainId);
+
+    const key = await this.keyRing.getKey(chainId, coinType);
+    const bech32Address = new Bech32Address(key.address).toBech32(
+      chainInfo.bech32Config.bech32PrefixAccAddr
+    );
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
+
+    if (signer !== bech32Address) {
+      throw new Error("Signer mismatched");
+    }
+
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
+    if (isADR36SignDoc) {
+      throw new Error("Can't use ADR-36 sign doc");
+    }
+
+    if (!signDoc.msgs || signDoc.msgs.length === 0) {
+      throw new Error("No msgs");
+    }
+
+    for (const msg of signDoc.msgs) {
+      // Some chains modify types for obscure reasons. For now, treat it like this:
+      const i = msg.type.indexOf("/");
+      if (i < 0) {
+        throw new Error("Invalid msg type");
+      }
+      const action = msg.type.slice(i + 1);
+      if (action !== "MsgWithdrawDelegationReward") {
+        throw new Error("Invalid msg type");
+      }
+    }
+
+    try {
+      const newSignDoc = (await this.interactionService.waitApprove(
+        env,
+        "/sign",
+        "request-sign",
+        {
+          origin,
+          chainId,
+          mode: "amino",
+          signDoc,
+          signer,
+          signOptions,
+          isADR36SignDoc,
+          isADR36WithString: signOptions.isADR36WithString,
+        }
+      )) as StdSignDoc;
+
+      const signature = await this.keyRing.sign(
+        env,
+        chainId,
+        coinType,
+        serializeSignDoc(newSignDoc)
+      );
+
+      return {
+        signed: signDoc,
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
+      };
+    } finally {
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+    }
+  }
 }

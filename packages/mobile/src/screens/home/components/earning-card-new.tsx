@@ -1,10 +1,5 @@
 import { CoinPretty, Dec } from "@owallet/unit";
-import {
-  RouteProp,
-  StackActions,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -14,13 +9,47 @@ import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { OWBox } from "../../../components/card";
-
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
 import { DenomDydx, removeDataInParentheses } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import { action, makeObservable, observable } from "mobx";
+import { QueryError } from "@owallet/stores";
+
+class ClaimAllEachState {
+  @observable
+  isLoading: boolean = false;
+
+  @observable
+  failedReason: Error | undefined = undefined;
+
+  constructor() {
+    makeObservable(this);
+  }
+
+  @action
+  setIsLoading(value: boolean): void {
+    this.isLoading = value;
+  }
+
+  @action
+  setFailedReason(value: Error | undefined): void {
+    this.isLoading = false;
+    this.failedReason = value;
+  }
+}
+
+const zeroDec = new Dec(0);
+
+export interface ViewToken {
+  token: CoinPretty;
+  chainInfo: ChainInfo;
+  isFetching: boolean;
+  error: QueryError<any> | undefined;
+}
 
 export const EarningCardNew = observer(({}) => {
   const route = useRoute<RouteProp<Record<string, {}>, string>>();

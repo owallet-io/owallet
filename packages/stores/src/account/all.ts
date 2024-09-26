@@ -20,6 +20,7 @@ import {
   HasSecretQueries,
   QueriesSetBase,
   QueriesStore,
+  OsmosisQueries,
 } from "../query";
 import deepmerge from "deepmerge";
 import { DeepReadonly } from "utility-types";

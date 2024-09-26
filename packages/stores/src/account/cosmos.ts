@@ -246,6 +246,56 @@ export class CosmosAccount {
   }
 
   //send token
+  makeWithdrawDelegationRewardTx(validatorAddresses: string[]) {
+    for (const validatorAddress of validatorAddresses) {
+      Bech32Address.validate(
+        validatorAddress,
+        this.chainGetter.getChain(this.chainId).bech32Config
+          ?.bech32PrefixValAddr
+      );
+    }
+
+    const msgs = validatorAddresses.map((validatorAddress) => {
+      return {
+        type: this.msgOpts.withdrawRewards.type,
+        value: {
+          delegator_address: this.base.bech32Address,
+          validator_address: validatorAddress,
+        },
+      };
+    });
+
+    return this.makeTx(
+      "withdrawRewards",
+      {
+        aminoMsgs: msgs,
+        protoMsgs: msgs.map((msg) => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+            value: MsgWithdrawDelegatorReward.encode({
+              delegatorAddress: msg.value.delegator_address,
+              validatorAddress: msg.value.validator_address,
+            }).finish(),
+          };
+        }),
+        rlpTypes: {
+          MsgValue: [
+            { name: "delegator_address", type: "string" },
+            { name: "validator_address", type: "string" },
+          ],
+        },
+      },
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // After succeeding to withdraw rewards, refresh rewards.
+          this.queries.cosmos.queryRewards
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+        }
+      }
+    );
+  }
+
   protected async processSendToken(
     amount: string,
     currency: AppCurrency,
