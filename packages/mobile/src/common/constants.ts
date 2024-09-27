@@ -75,6 +75,7 @@ export const SCREENS = {
   DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   ManageChain: "ManageChain",
+  AddChain: "AddChain",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
   BookMarks: "BookMarks",
@@ -265,6 +266,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.SettingSelectAccount]: {
     title: "Manage wallet",
+  },
+  [SCREENS.AddChain]: {
+    title: "Add Chain",
   },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",

@@ -77,6 +77,10 @@ import {
 } from "./screens/setting/screens/address-book";
 import useHeaderOptions from "./hooks/use-header";
 import { SelectChainsScreen } from "@screens/setting/screens/manage-chains/select-chains";
+import { OWButton } from "@components/button";
+import OWButtonIcon from "@components/button/ow-button-icon";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -202,7 +206,29 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.AddressBook}
               component={AddressBookScreen}
             />
+            <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />
+
             <Stack.Screen
+              options={{
+                headerRight: () => {
+                  return (
+                    <OWButtonIcon
+                      name={"tdesignadd"}
+                      sizeIcon={24}
+                      onPress={() => navigate(SCREENS.AddChain)}
+                      fullWidth={false}
+                      style={{
+                        backgroundColor: colors["neutral-surface-card"],
+                        height: 40,
+                        width: 40,
+                        borderRadius: 99,
+                        marginRight: 16,
+                      }}
+                      colorIcon={colors["neutral-text-action-on-light-bg"]}
+                    />
+                  );
+                },
+              }}
               name={SCREENS.ManageChain}
               component={SelectChainsScreen}
             />

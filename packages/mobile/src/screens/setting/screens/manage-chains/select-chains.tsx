@@ -24,20 +24,29 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
 
   const [keyword, setKeyword] = useState("");
   const { chainStore } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
   const [chainEnables, setChainEnables] = useState({});
   useEffect(() => {
     (async () => {
-      const data = await fetchRetry(
-        "https://keplr-chain-registry.vercel.app/api/chains"
-      );
-      if (!data.chains) return;
-      const sortedChains = [...data.chains].sort((a, b) => {
-        const aHasChainInfo = chainInfoExists(a.chainId);
-        const bHasChainInfo = chainInfoExists(b.chainId);
-        // Sort: true comes first, false comes later
-        return aHasChainInfo === bHasChainInfo ? 0 : aHasChainInfo ? -1 : 1;
-      });
-      setChains(sortedChains);
+      try {
+        setChainEnables(true);
+        const data = await fetchRetry(
+          "https://keplr-chain-registry.vercel.app/api/chains"
+        );
+        if (!data.chains) return;
+
+        const sortedChains = [...data.chains]
+          .filter((item) => !item?.chainId.includes("eip155"))
+          .sort((a, b) => {
+            const aHasChainInfo = chainInfoExists(a.chainId);
+            const bHasChainInfo = chainInfoExists(b.chainId);
+            // Sort: true comes first, false comes later
+            return aHasChainInfo === bHasChainInfo ? 0 : aHasChainInfo ? -1 : 1;
+          });
+        setChains(sortedChains);
+      } finally {
+        setChainEnables(false);
+      }
     })();
   }, []);
   const onEnableOrDisableChain = useCallback(
@@ -179,6 +188,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
           />
         </View>
         <OWFlatList
+          loading={isLoading}
           style={{
             marginTop: 35,
           }}
