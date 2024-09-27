@@ -79,7 +79,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
               style={{
                 width: metrics.screenWidth,
                 height:
-                  metrics.screenHeight < 800
+                  metrics.screenHeight < 844
                     ? metrics.screenHeight / 2.5
                     : metrics.screenWidth,
               }}
