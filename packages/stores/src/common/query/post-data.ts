@@ -63,11 +63,15 @@ export class ObservableJsonPostQuery<
   }
 
   protected override getCacheKey(): string {
-    const paramsHash = Buffer.from(
-      Hash.sha256(Buffer.from(JSON.stringify(this.data))).slice(0, 8)
-    ).toString("hex");
-
-    return `${super.getCacheKey()}-${this.url}-${paramsHash}`;
+    try {
+      const paramsHash = Buffer.from(
+        Hash.sha256(Buffer.from(JSON.stringify(this.data))).slice(0, 8)
+      ).toString("hex");
+      return `${super.getCacheKey()}-${this.url}-${paramsHash}`;
+    } catch (e) {
+      console.error(e, "error for getCacheKey method at postData");
+      return super.getCacheKey();
+    }
   }
 }
 
