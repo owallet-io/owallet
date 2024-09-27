@@ -66,29 +66,29 @@ export const FullScreenCameraView: FunctionComponent<
               flex: 1,
             }}
           />
-          {NavigationAction?.canGoBack() ? (
-            <TouchableOpacity
-              onPress={() => {
-                goBack();
+          {/*{NavigationAction?.canGoBack() ? (*/}
+          <TouchableOpacity
+            onPress={() => {
+              goBack();
+            }}
+          >
+            <View
+              style={{
+                height: 38,
+                width: 38,
+                borderRadius: 64,
+                backgroundColor: colors["neutral-surface-card"],
+                opacity: 0.9,
+                marginTop: 8,
+                marginRight: 16,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <View
-                style={{
-                  height: 38,
-                  width: 38,
-                  borderRadius: 64,
-                  backgroundColor: colors["neutral-surface-card"],
-                  opacity: 0.9,
-                  marginTop: 8,
-                  marginRight: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <CloseIcon size={16} color={colors["neutral-icon-on-light"]} />
-              </View>
-            </TouchableOpacity>
-          ) : null}
+              <CloseIcon size={16} color={colors["neutral-icon-on-light"]} />
+            </View>
+          </TouchableOpacity>
+          {/*) : null}*/}
         </View>
         <View
           style={{
