@@ -139,6 +139,7 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
     API.getMultipleTokenInfo({
       tokenAddresses: allTokensAddress.join(","),
     }).then((tokenInfos) => {
+      if (!tokenInfos) return;
       const infoTokens = tokenInfos
         .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
         .map((tokeninfo) => {
