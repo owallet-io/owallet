@@ -40,7 +40,7 @@ export class AppInit {
       passcodeType: "alphabet",
       date_updated: null,
       theme: "light",
-      hideTestnet: false,
+      hideTestnet: true,
       hideTokensWithoutBalance: true,
       feeOption: "average",
       isAllNetworks: false,
