@@ -22,6 +22,7 @@ import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
 import { maskedNumber } from "@src/utils/helper";
+import { unknownToken } from "@owallet/common";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -33,7 +34,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   impactWarning,
 }) => {
   const { colors } = useTheme();
-  const { appInitStore } = useStore();
+  const { appInitStore, chainStore } = useStore();
 
   const styles = styling(colors);
   const [txt, setText] = useState("0");
@@ -64,7 +65,13 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
       tokensIcon,
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
-    setTokenIcon(tokenIcon);
+    const currencies = tokenActive.chainId
+      ? chainStore.getChain(tokenActive.chainId).currencies
+      : [];
+    const tokenIconFromLocal = currencies.find(
+      (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
+    );
+    setTokenIcon(tokenIcon ? tokenIcon : tokenIconFromLocal);
   }, [tokenActive]);
 
   return (
@@ -86,7 +93,12 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           <OWIcon
             style={{ borderRadius: 999 }}
             type="images"
-            source={{ uri: tokenIcon?.Icon }}
+            source={{
+              uri:
+                tokenIcon?.Icon ||
+                tokenIcon?.coinImageUrl ||
+                unknownToken.coinImageUrl,
+            }}
             size={30}
           />
         </View>

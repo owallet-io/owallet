@@ -57,12 +57,8 @@ export class SignDocHelper {
           denom: fee.denom,
         };
       }),
-      granter: protoSignDoc.authInfo.fee?.granter
-        ? protoSignDoc.authInfo.fee?.granter
-        : null,
-      payer: protoSignDoc.authInfo.fee?.payer
-        ? protoSignDoc.authInfo.fee?.granter
-        : null,
+      granter: protoSignDoc.authInfo.fee?.granter,
+      payer: protoSignDoc.authInfo.fee?.payer,
     });
 
     const newSignDoc = SignDoc.create({

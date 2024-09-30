@@ -20,9 +20,10 @@ coverage
 
 .yarn/
 .yarnrc
-
+.npmrc
 .env
 .env.*
+
 
 packages/proto-types/**/*.ts
 packages/proto-types/**/*.js
