@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useRef } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
 import styleStake from "./stake.module.scss";
@@ -6,7 +12,11 @@ import classnames from "classnames";
 import { Dec } from "@owallet/unit";
 import { useHistory } from "react-router";
 import { FormattedMessage } from "react-intl";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  ChainIdEnum,
+  removeDataInParentheses,
+  unknownToken,
+} from "@owallet/common";
 import { Button } from "components/common/button";
 import { Text } from "components/common/text";
 import colors from "theme/colors";
@@ -71,18 +81,7 @@ export const StakeAll: FunctionComponent = observer(() => {
     : chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-
-  const rewards = queries.cosmos.queryRewards.getQueryBech32Address(
-    accountInfo.bech32Address
-  );
-  const stakableReward = rewards.stakableReward;
-  const totalStakingReward = priceStore.calculatePrice(stakableReward);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    accountInfo.bech32Address
-  );
-  const delegated = queryDelegated.total;
-  const totalPrice = priceStore.calculatePrice(delegated);
-  const isRewardExist = rewards.rewards.length > 0;
+  const [viewMore, setViewMore] = useState(false);
 
   const statesRef = useRef(new Map<string, ClaimAllEachState>());
   const getClaimAllEachState = (chainId: string): ClaimAllEachState => {
@@ -637,43 +636,84 @@ export const StakeAll: FunctionComponent = observer(() => {
     }
   };
 
-  const withdrawAllRewards = async () => {
-    if (accountInfo.isReadyToSendMsgs) {
-      try {
-        // When the user delegated too many validators,
-        // it can't be sent to withdraw rewards from all validators due to the block gas limit.
-        // So, to prevent this problem, just send the msgs up to 8.
-        await accountInfo.cosmos.sendWithdrawDelegationRewardMsgs(
-          rewards.getDescendingPendingRewardValidatorAddresses(8),
-          "",
-          undefined,
-          undefined,
-          {
-            onBroadcasted: () => {
-              analyticsStore.logEvent("Claim reward tx broadcasted", {
-                chainId: chainId,
-                chainName: chainStore.current.chainName,
-              });
-            },
-            onFulfill: (tx) => {
-              console.log(tx, "TX INFO ON CLAIM PAGE!!!!!!!!!!!!!!!!!!!!!");
-            },
-          },
-          stakableReward.currency.coinMinimalDenom
-        );
-        history.push("/");
+  const [totalStakingReward, setTotalStakingReward] = useState(`0`);
 
-        toast(`Success`, {
-          type: "success",
-        });
-      } catch (e) {
-        history.push("/");
-        toast(`Fail to withdraw rewards: ${e.message}`, {
-          type: "error",
-        });
-      }
+  useEffect(() => {
+    if (viewTokens.length > 0) {
+      let tmpRewards = 0;
+      viewTokens.map((token) => {
+        tmpRewards += Number(token.price.toDec().toString());
+      });
+      setTotalStakingReward(tmpRewards.toFixed(4));
+    } else {
+      setTotalStakingReward(`0`);
     }
-  };
+  }, [viewTokens]);
+
+  const renderToken = useCallback((token) => {
+    console.log("token", token);
+
+    if (!token) return;
+    const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
+    return (
+      <div
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 8,
+        }}
+      >
+        <div style={{ flexDirection: "row", alignItems: "center" }}>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 32,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: colors["neutral-icon-on-dark"],
+              marginRight: 8,
+            }}
+          >
+            <img
+              src={
+                token?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                unknownToken.coinImageUrl
+              }
+              style={{
+                borderRadius: 999,
+              }}
+            />
+          </div>
+          <div>
+            <div>+{token.price ? token.price?.toString() : "$0"}</div>
+            <div>
+              {removeDataInParentheses(
+                token.token
+                  ?.shrink(true)
+                  .maxDecimals(6)
+                  .trim(true)
+                  .upperCase(true)
+                  .toString()
+              )}
+            </div>
+          </div>
+        </div>
+        <div style={{ flexDirection: "row" }}>
+          <div onClick={() => {}} />
+          <div
+            onClick={() => {}}
+            style={{
+              opacity: isDisabledCompound ? 0.5 : 1,
+            }}
+          />
+        </div>
+      </div>
+    );
+  }, []);
+
+  if (Number(totalStakingReward) <= 0) return;
 
   return (
     <div className={classnames(styleStake.containerStakeCard)}>
@@ -687,79 +727,31 @@ export const StakeAll: FunctionComponent = observer(() => {
               styleStake.paragraphSub
             )}
           >
-            <Text size={14} weight="600">
+            <div>
               <FormattedMessage id="main.stake.message.pending-staking-reward" />
-            </Text>
+            </div>
           </p>
-          <Text color={colors["success-text-body"]} weight="500" size={28}>
-            +
-            {totalStakingReward
-              ? totalStakingReward.toString()
-              : stakableReward.shrink(true).maxDecimals(6).toString()}
-          </Text>
-          <Text>
-            {stakableReward.toDec().gt(new Dec(0.001))
-              ? stakableReward
-                  .shrink(true)
-                  .maxDecimals(6)
-                  .trim(true)
-                  .upperCase(true)
-                  .toString()
-              : `< 0.001 ${stakableReward.toCoin().denom.toUpperCase()}`}
-            {rewards.isFetching ? (
-              <span>
-                <i className="fas fa-spinner fa-spin" />
-              </span>
-            ) : null}
-          </Text>
+          <div color={colors["success-text-body"]}>+{0}</div>
+          <div>{`< 0.001`}</div>
         </div>
         <div style={{ flex: 1 }} />
         <Button
           size="small"
           className={styleStake.button}
-          disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
-          onClick={withdrawAllRewards}
+          onClick={claimAll}
           data-loading={accountInfo.isSendingMsg === "withdrawRewards"}
         >
           <div style={{ paddingLeft: 12, paddingRight: 12 }}>
-            <Text
-              size={14}
-              weight="500"
-              color={colors["neutral-text-action-on-dark-bg"]}
-            >
+            <div color={colors["neutral-text-action-on-dark-bg"]}>
               <FormattedMessage id="main.stake.button.claim-rewards" />
-            </Text>
+            </div>
           </div>
         </Button>
       </div>
-      <div
-        style={{
-          backgroundColor: colors["primary-surface-subtle"],
-          marginTop: 6,
-          borderRadius: 16,
-          paddingLeft: 12,
-          paddingRight: 12,
-          paddingTop: 8,
-          paddingBottom: 8,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          display: "flex",
-        }}
-      >
-        <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-          Staked:{" "}
-          {totalPrice
-            ? totalPrice.toString()
-            : delegated.shrink(true).maxDecimals(6).toString()}
-        </Text>
-        <Text weight="500" color={colors["neutral-text-action-on-light-bg"]}>
-          {delegated
-            .shrink(true)
-            .maxDecimals(6)
-            .trim(true)
-            .upperCase(true)
-            .toString()}
-        </Text>
+      <div>
+        {viewTokens.map((token, index) => {
+          return renderToken(token);
+        })}
       </div>
     </div>
   );
