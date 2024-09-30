@@ -326,7 +326,7 @@ export const StakeCardAll = observer(({}) => {
     }
   }, [viewTokens]);
 
-  const renderToken = useCallback((token) => {
+  const renderToken = (token) => {
     if (!token) return;
     const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
     return (
@@ -432,7 +432,7 @@ export const StakeCardAll = observer(({}) => {
         </View>
       </View>
     );
-  }, []);
+  };
 
   if (Number(totalStakingReward) <= 0) return;
 
