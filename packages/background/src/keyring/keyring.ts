@@ -953,21 +953,25 @@ export class KeyRing {
     })();
 
     if (coinType === 474) {
-      const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
-      const path = `m/44'/474'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
-      const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
-        this.keyStore
-      )}-${path}`;
-
-      const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
-      let signerPublicKey: Uint8Array;
-      if (pubKeyGet) {
-        signerPublicKey = Uint8Array.from(Buffer.from(pubKeyGet, "base64"));
-      } else {
-        signerPublicKey = await this.loadPublicKeyOasis();
-        var encodePublicKey = Buffer.from(signerPublicKey).toString("base64");
-        await this.kvStore.set(pubKeyIdentity, encodePublicKey);
-      }
+      // const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
+      // console.log(bip44HDPath,"bip44HDPath");
+      // console.log(KeyRing.getKeyStoreId(
+      //     this.keyStore
+      // ),"key store ID")
+      // const path = `m/44'/474'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+      // const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
+      //   this.keyStore
+      // )}-${path}`;
+      // console.log(pubKeyIdentity,this.keyStore.type,"pubKeyIdentity");
+      // const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
+      // let signerPublicKey: Uint8Array;
+      // if (pubKeyGet) {
+      //   signerPublicKey = Uint8Array.from(Buffer.from(pubKeyGet, "base64"));
+      // } else {
+      const signerPublicKey = await this.loadPublicKeyOasis();
+      //   var encodePublicKey = Buffer.from(signerPublicKey).toString("base64");
+      //   await this.kvStore.set(pubKeyIdentity, encodePublicKey);
+      // }
 
       const addressUint8Array = await oasis.staking.addressFromPublicKey(
         signerPublicKey
@@ -1630,6 +1634,11 @@ export class KeyRing {
       throw new Error("Key ring is not unlocked");
     }
     if (!this.mnemonic) {
+      throw new Error(
+        "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
+      );
+    }
+    if (this.type !== "mnemonic") {
       throw new Error(
         "Key store type is mnemonic and it is unlocked. But, mnemonic is not loaded unexpectedly"
       );
