@@ -9,7 +9,12 @@ import { PageWithScrollView, PageWithView } from "@components/page";
 import { OWBox } from "@components/card";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
-import { fetchRetry, limitString, unknownToken } from "@owallet/common";
+import {
+  EmbedChainInfos,
+  fetchRetry,
+  limitString,
+  unknownToken,
+} from "@owallet/common";
 import { useTheme } from "@src/themes/theme-provider";
 import OWText from "@components/text/ow-text";
 import OWFlatList from "@components/page/ow-flat-list";
@@ -36,15 +41,21 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
           "https://keplr-chain-registry.vercel.app/api/chains"
         );
         if (!data.chains) return;
+        const chainsFilter = data.chains.filter(
+          (chain) =>
+            !EmbedChainInfos.some(
+              (embedChain) => embedChain.chainId === chain.chainId
+            ) &&
+            !/test|dev/i.test(chain?.chainName) &&
+            !chain?.chainId.includes("eip155")
+        );
+        const sortedChains = chainsFilter.sort((a, b) => {
+          const aHasChainInfo = chainInfoExists(a.chainId);
+          const bHasChainInfo = chainInfoExists(b.chainId);
+          // Sort: true comes first, false comes later
+          return aHasChainInfo === bHasChainInfo ? 0 : aHasChainInfo ? -1 : 1;
+        });
 
-        const sortedChains = [...data.chains]
-          .filter((item) => !item?.chainId.includes("eip155"))
-          .sort((a, b) => {
-            const aHasChainInfo = chainInfoExists(a.chainId);
-            const bHasChainInfo = chainInfoExists(b.chainId);
-            // Sort: true comes first, false comes later
-            return aHasChainInfo === bHasChainInfo ? 0 : aHasChainInfo ? -1 : 1;
-          });
         setChains(sortedChains);
       } finally {
         setIsLoading(false);
@@ -101,14 +112,17 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       return false;
     }
   };
+
   useEffect(() => {
     if (!chains?.length) return;
+
     const chainInfoCheck = {};
     for (const chain of chains) {
       chainInfoCheck[chain.chainId] = chainInfoExists(chain.chainId);
     }
     setChainEnables(chainInfoCheck);
   }, [chains]);
+
   const styles = styling(colors);
   const renderChain = ({ item }) => {
     return (
@@ -145,7 +159,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
     );
   };
-
+  console.log(chains, "chains kaka");
   return (
     <PageWithView>
       <OWBox style={styles.pageContainer}>
