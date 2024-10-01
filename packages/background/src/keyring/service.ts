@@ -868,6 +868,29 @@ export class KeyRingService {
     );
   }
 
+  async signWithVault(
+    env: Env,
+    chainId: string,
+    message: Uint8Array
+  ): Promise<{
+    readonly r: Uint8Array;
+    readonly s: Uint8Array;
+    readonly v: number | null;
+  }> {
+    if (this.keyRing.isLocked) {
+      throw new Error("KeyRing is locked");
+    }
+
+    return Promise.resolve(
+      this.keyRing.sign(
+        env,
+        chainId,
+        await this.chainsService.getChainCoinType(chainId),
+        message
+      )
+    );
+  }
+
   // here
   async sign(
     env: Env,
@@ -1231,32 +1254,16 @@ export class KeyRingService {
     }
 
     try {
-      const newSignDoc = (await this.interactionService.waitApprove(
-        env,
-        "/sign",
-        "request-sign",
-        {
-          origin,
-          chainId,
-          mode: "amino",
-          signDoc,
-          signer,
-          signOptions,
-          isADR36SignDoc,
-          isADR36WithString: signOptions.isADR36WithString,
-        }
-      )) as StdSignDoc;
-
-      const signature = await this.keyRing.sign(
+      const _sig = await this.keyRing.sign(
         env,
         chainId,
         coinType,
-        serializeSignDoc(newSignDoc)
+        serializeSignDoc(signDoc)
       );
 
       return {
         signed: signDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature),
+        signature: encodeSecp256k1Signature(key.pubKey, _sig),
       };
     } finally {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
