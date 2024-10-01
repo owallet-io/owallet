@@ -20,6 +20,9 @@ import { Bech32Address } from "@owallet/cosmos";
 import { useStore } from "@src/stores";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
+import { AlertIcon } from "@components/icon";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export interface StatusRpcResponse {
   jsonrpc: string;
@@ -347,9 +350,35 @@ export const AddChainScreen: FunctionComponent = observer(() => {
       }}
     />
   );
+  const { colors } = useTheme();
   return (
-    <PageWithScrollView>
-      <OWBox>
+    <PageWithScrollView showsVerticalScrollIndicator={false}>
+      <View
+        style={{
+          flexDirection: "row",
+          borderRadius: 12,
+          backgroundColor: colors["warning-surface-subtle"],
+          padding: 12,
+          marginTop: 8,
+        }}
+      >
+        <AlertIcon color={colors["warning-text-body"]} size={16} />
+        <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+          <OWText>Caution: {"\n"}</OWText>
+          <OWText
+            style={{
+              fontWeight: "bold",
+            }}
+          >
+            Only add custom networks you trust
+          </OWText>
+        </OWText>
+      </View>
+      <OWBox
+        style={{
+          marginTop: 8,
+        }}
+      >
         <TextInput
           editable={false}
           label={"Network Type"}
