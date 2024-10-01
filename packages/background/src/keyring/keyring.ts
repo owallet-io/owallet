@@ -1082,12 +1082,7 @@ export class KeyRing {
       const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
         this.keyStore
       )}-${path}`;
-      console.log(
-        pubKeyIdentity,
-        encodePublicKey,
-        this.keyStore.type,
-        "pubKeyIdentity3"
-      );
+
       await this.kvStore.set(pubKeyIdentity, encodePublicKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {
