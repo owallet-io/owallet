@@ -73,15 +73,16 @@ class ClaimAllEachState {
 const zeroDec = new Dec(0);
 
 export const StakeAll: FunctionComponent = observer(() => {
-  const history = useHistory();
-  const { chainStore, accountStore, queriesStore, analyticsStore, priceStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const chainId = chainStore.isAllNetwork
     ? ChainIdEnum.Oraichain
     : chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
-  const queries = queriesStore.get(chainId);
+
+  const [totalStakingReward, setTotalStakingReward] = useState(`0`);
   const [viewMore, setViewMore] = useState(false);
+  const [isClaimLoading, setClaimLoading] = useState(false);
+  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const statesRef = useRef(new Map<string, ClaimAllEachState>());
   const getClaimAllEachState = (chainId: string): ClaimAllEachState => {
@@ -95,15 +96,6 @@ export const StakeAll: FunctionComponent = observer(() => {
 
     return state;
   };
-
-  const sendConfigs = useSendTxConfig(
-    chainStore,
-    chainStore.current.chainId,
-    //@ts-ignore
-    accountInfo.msgOpts.compound,
-    accountInfo.bech32Address,
-    queriesStore.get(chainStore.current.chainId).queryBalances
-  );
 
   const viewTokens: StakeViewToken[] = (() => {
     const res: StakeViewToken[] = [];
@@ -173,7 +165,7 @@ export const StakeAll: FunctionComponent = observer(() => {
 
   const claimAll = () => {
     // analyticsStore.logEvent('click_claimAll');
-
+    setClaimLoading(true);
     for (const viewToken of viewTokens) {
       const chainId = viewToken.chainInfo.chainId;
       const account = accountStore.getAccount(chainId);
@@ -596,8 +588,6 @@ export const StakeAll: FunctionComponent = observer(() => {
                   // });
                 },
                 onFulfill: (tx: any) => {
-                  // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
-                  // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
                   setTimeout(() => {
                     state.setIsLoading(false);
                   }, 1000);
@@ -608,7 +598,9 @@ export const StakeAll: FunctionComponent = observer(() => {
                 },
               }
             );
+            setClaimLoading(false);
           } catch (e) {
+            setClaimLoading(false);
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
               if (
@@ -636,8 +628,6 @@ export const StakeAll: FunctionComponent = observer(() => {
     }
   };
 
-  const [totalStakingReward, setTotalStakingReward] = useState(`0`);
-
   useEffect(() => {
     if (viewTokens.length > 0) {
       let tmpRewards = 0;
@@ -651,20 +641,25 @@ export const StakeAll: FunctionComponent = observer(() => {
   }, [viewTokens]);
 
   const renderToken = useCallback((token) => {
-    console.log("token", token);
-
     if (!token) return;
     const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
     return (
       <div
         style={{
+          display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
           alignItems: "center",
           marginBottom: 8,
         }}
       >
-        <div style={{ flexDirection: "row", alignItems: "center" }}>
+        <div
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            display: "flex",
+          }}
+        >
           <div
             style={{
               width: 32,
@@ -682,13 +677,17 @@ export const StakeAll: FunctionComponent = observer(() => {
                 unknownToken.coinImageUrl
               }
               style={{
-                borderRadius: 999,
+                width: 32,
+                height: 32,
+                borderRadius: 32,
               }}
             />
           </div>
           <div>
-            <div>+{token.price ? token.price?.toString() : "$0"}</div>
-            <div>
+            <div style={{ color: colors["success-text-body"], fontSize: 14 }}>
+              +{token.price ? token.price?.toString() : "$0"}
+            </div>
+            <div style={{ color: colors["neutral-text-body"], fontSize: 13 }}>
               {removeDataInParentheses(
                 token.token
                   ?.shrink(true)
@@ -701,7 +700,15 @@ export const StakeAll: FunctionComponent = observer(() => {
           </div>
         </div>
         <div style={{ flexDirection: "row" }}>
-          <div onClick={() => {}} />
+          <div
+            style={{
+              color: colors["neutral-text-heading"],
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+            onClick={() => {}}
+          ></div>
           <div
             onClick={() => {}}
             style={{
@@ -713,43 +720,109 @@ export const StakeAll: FunctionComponent = observer(() => {
     );
   }, []);
 
+  const claimAllDisabled = (() => {
+    if (viewTokens.length === 0) {
+      return true;
+    }
+
+    for (const viewToken of viewTokens) {
+      if (viewToken.token.toDec().gt(new Dec(0))) {
+        return false;
+      }
+    }
+
+    return true;
+  })();
+
+  const claimAllIsLoading = (() => {
+    for (const chainInfo of chainStore.chainInfosInUI) {
+      const state = getClaimAllEachState(chainInfo.chainId);
+      if (state.isLoading) {
+        return true;
+      }
+    }
+    return false;
+  })();
+
   if (Number(totalStakingReward) <= 0) return;
 
   return (
     <div className={classnames(styleStake.containerStakeCard)}>
       <div className={classnames(styleStake.containerInner, styleStake.reward)}>
-        <div className={styleStake.vertical}>
-          <p
-            className={classnames(
-              "h4",
-              "my-0",
-              "font-weight-normal",
-              styleStake.paragraphSub
-            )}
+        <div
+          style={{
+            flexDirection: "row",
+            display: "flex",
+            cursor: "pointer",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => {
+            setViewMore(!viewMore);
+          }}
+        >
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 28,
+              marginRight: 4,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: colors["neutral-surface-action"],
+              display: "flex",
+            }}
           >
-            <div>
-              <FormattedMessage id="main.stake.message.pending-staking-reward" />
-            </div>
-          </p>
-          <div color={colors["success-text-body"]}>+{0}</div>
-          <div>{`< 0.001`}</div>
+            <img src={require("assets/images/tdesign_trending-up.svg")} />
+          </div>
+          <div
+            style={{
+              color: colors["success-text-body"],
+              fontSize: 16,
+              fontWeight: 600,
+            }}
+          >
+            +
+            {totalStakingReward
+              ? `${fiatCurrency.symbol}` + totalStakingReward
+              : `${fiatCurrency.symbol}0`}
+          </div>
+          {!viewMore ? (
+            <img src={require("assets/images/tdesign_chevron_down.svg")} />
+          ) : (
+            <img src={require("assets/images/tdesign_chevron_up.svg")} />
+          )}
         </div>
         <div style={{ flex: 1 }} />
         <Button
           size="small"
           className={styleStake.button}
           onClick={claimAll}
-          data-loading={accountInfo.isSendingMsg === "withdrawRewards"}
+          disabled={claimAllIsLoading || claimAllDisabled}
+          data-loading={claimAllIsLoading}
         >
-          <div style={{ paddingLeft: 12, paddingRight: 12 }}>
+          <div
+            style={{
+              paddingLeft: 12,
+              paddingRight: 12,
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            {isClaimLoading || claimAllIsLoading ? (
+              <span>
+                <i className="fas fa-spinner fa-spin" />
+              </span>
+            ) : null}
             <div color={colors["neutral-text-action-on-dark-bg"]}>
-              <FormattedMessage id="main.stake.button.claim-rewards" />
+              {"Claim All"}
             </div>
           </div>
         </Button>
       </div>
-      <div>
+      <div style={{ marginTop: 16 }}>
         {viewTokens.map((token, index) => {
+          if (!viewMore && index >= 0) return null;
           return renderToken(token);
         })}
       </div>

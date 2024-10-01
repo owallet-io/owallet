@@ -23,7 +23,8 @@ export type ProtoMsgsOrWithAminoMsgs = {
   >;
 };
 
-export interface KeplrSignOptionsWithAltSignMethods extends OWalletSignOptions {
+export interface OWalletSignOptionsWithAltSignMethods
+  extends OWalletSignOptions {
   readonly signAmino?: OWallet["signAmino"];
   readonly signDirect?: OWallet["signDirect"];
   readonly experimentalSignEIP712CosmosTx_v0?: OWallet["experimentalSignEIP712CosmosTx_v0"];
@@ -55,7 +56,7 @@ export interface MakeTxResponse {
       };
     },
     memo?: string,
-    signOptions?: KeplrSignOptionsWithAltSignMethods,
+    signOptions?: OWalletSignOptionsWithAltSignMethods,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -66,7 +67,7 @@ export interface MakeTxResponse {
   send(
     fee: StdFee,
     memo?: string,
-    signOptions?: KeplrSignOptionsWithAltSignMethods,
+    signOptions?: OWalletSignOptionsWithAltSignMethods,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -83,7 +84,7 @@ export interface MakeTxResponse {
       };
     },
     memo?: string,
-    signOptions?: KeplrSignOptionsWithAltSignMethods,
+    signOptions?: OWalletSignOptionsWithAltSignMethods,
     onTxEvents?:
       | ((tx: any) => void)
       | {

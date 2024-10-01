@@ -50,7 +50,7 @@ import {
   TxRaw,
 } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import {
-  KeplrSignOptionsWithAltSignMethods,
+  OWalletSignOptionsWithAltSignMethods,
   MakeTxResponse,
   ProtoMsgsOrWithAminoMsgs,
 } from "./type";
@@ -511,7 +511,7 @@ export class CosmosAccount {
       | (() => Promise<ProtoMsgsOrWithAminoMsgs> | ProtoMsgsOrWithAminoMsgs),
     memo: string = "",
     fee: StdFee,
-    signOptions?: KeplrSignOptionsWithAltSignMethods,
+    signOptions?: OWalletSignOptionsWithAltSignMethods,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -609,7 +609,7 @@ export class CosmosAccount {
     msgs: ProtoMsgsOrWithAminoMsgs,
     fee: StdFee,
     memo: string = "",
-    signOptions?: KeplrSignOptionsWithAltSignMethods
+    signOptions?: OWalletSignOptionsWithAltSignMethods
   ): Promise<{
     txHash: Uint8Array;
     signDoc: StdSignDoc | SignDoc;
@@ -657,12 +657,12 @@ export class CosmosAccount {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const keplr = (await this.base.getOWallet())!;
+    const owallet = (await this.base.getOWallet())!;
 
     const signedTx = await (async () => {
       if (isDirectSign) {
         return await this.createSignedTxWithDirectSign(
-          keplr,
+          owallet,
           account,
           msgs.protoMsgs,
           fee,
@@ -685,7 +685,7 @@ export class CosmosAccount {
         if (eip712Signing) {
           if (chainIsInjective) {
             // Due to injective's problem, it should exist if injective with ledger.
-            // There is currently no effective way to handle this in keplr. Just set a very large number.
+            // There is currently no effective way to handle this in owallet. Just set a very large number.
             (signDocRaw as Mutable<StdSignDoc>).timeout_height =
               Number.MAX_SAFE_INTEGER.toString();
           } else {
@@ -702,14 +702,14 @@ export class CosmosAccount {
         const signDoc = sortObjectByKey(signDocRaw);
 
         // Should use bind to avoid "this" problem
-        let signAmino = keplr.signAmino.bind(keplr);
+        let signAmino = owallet.signAmino.bind(owallet);
         if (signOptions?.signAmino) {
           signAmino = signOptions.signAmino;
         }
 
         // Should use bind to avoid "this" problem
         let experimentalSignEIP712CosmosTx_v0 =
-          keplr.experimentalSignEIP712CosmosTx_v0.bind(keplr);
+          owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
         if (signOptions?.experimentalSignEIP712CosmosTx_v0) {
           experimentalSignEIP712CosmosTx_v0 =
             signOptions.experimentalSignEIP712CosmosTx_v0;
@@ -829,7 +829,7 @@ export class CosmosAccount {
     })();
 
     // Should use bind to avoid "this" problem
-    let sendTx = keplr.sendTx.bind(keplr);
+    let sendTx = owallet.sendTx.bind(owallet);
     if (signOptions?.sendTx) {
       sendTx = signOptions.sendTx;
     }
@@ -846,7 +846,7 @@ export class CosmosAccount {
     protoMsgs: Any[],
     fee: StdFee,
     memo: string,
-    signOptions: KeplrSignOptionsWithAltSignMethods | undefined
+    signOptions: OWalletSignOptionsWithAltSignMethods | undefined
   ): Promise<{
     tx: Uint8Array;
     signDoc: SignDoc;
@@ -974,7 +974,7 @@ export class CosmosAccount {
         };
       },
       memo: string = "",
-      signOptions?: KeplrSignOptionsWithAltSignMethods,
+      signOptions?: OWalletSignOptionsWithAltSignMethods,
       onTxEvents?:
         | ((tx: any) => void)
         | {
@@ -1034,7 +1034,7 @@ export class CosmosAccount {
           };
         },
         memo: string = "",
-        signOptions?: KeplrSignOptionsWithAltSignMethods,
+        signOptions?: OWalletSignOptionsWithAltSignMethods,
         onTxEvents?:
           | ((tx: any) => void)
           | {
@@ -1070,7 +1070,7 @@ export class CosmosAccount {
       send: async (
         fee: StdFee,
         memo: string = "",
-        signOptions?: KeplrSignOptionsWithAltSignMethods,
+        signOptions?: OWalletSignOptionsWithAltSignMethods,
         onTxEvents?:
           | ((tx: any) => void)
           | {
