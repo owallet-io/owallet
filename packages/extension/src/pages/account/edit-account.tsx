@@ -8,7 +8,7 @@ import { useStore } from "../../stores";
 // import { useLocation } from 'react-router';
 import { useParams, useLocation } from "react-router-dom";
 import { KeyStore } from "@owallet/background/build/keyring/crypto";
-import { formatAddress } from "@owallet/common";
+import { ChainIdEnum, formatAddress } from "@owallet/common";
 import { useHistory } from "react-router";
 
 export const EditAccountPage = observer(() => {
@@ -89,14 +89,16 @@ export const EditAccountPage = observer(() => {
             </div>
           </div>
         )}
-        {wallet?.type !== "ledger" && (
-          <div onClick={onShowPrivKey} className={styles.actionItem}>
-            <span className={styles.leftTitle}>Reveal Private Key</span>
-            <div className={styles.blockRight}>
-              <img src={require("assets/svg/tdesign_chevron_right.svg")} />
+        {wallet?.type !== "ledger" &&
+          !chainStore.isAllNetwork &&
+          chainStore.current.chainId !== ChainIdEnum.Oasis && (
+            <div onClick={onShowPrivKey} className={styles.actionItem}>
+              <span className={styles.leftTitle}>Reveal Private Key</span>
+              <div className={styles.blockRight}>
+                <img src={require("assets/svg/tdesign_chevron_right.svg")} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
         <div
           onClick={onShowModalRemoveAccount}
           className={`${styles.actionItem} ${styles.removeAccount}`}

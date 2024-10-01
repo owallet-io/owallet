@@ -11,11 +11,12 @@ import { Alert } from "react-native";
 import { showToast } from "@src/utils/helper";
 import { useNavigation } from "@react-navigation/native";
 import { PincodeModal } from "@src/screens/pincode/pincode-modal";
+import { ChainIdEnum } from "@owallet/common";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { keyRingStore, modalStore, chainStore } = useStore();
+  const { keyRingStore, modalStore, chainStore, appInitStore } = useStore();
 
   const onGoBack = () => {
     modalStore.close();
@@ -77,15 +78,18 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           }}
         />
       )}
-      {keyStore?.type !== "ledger" && (
-        <BasicSettingItem
-          icon="md_key"
-          paragraph={"Reveal Private Key"}
-          onPress={() => {
-            _onPressPincodekModal(true);
-          }}
-        />
-      )}
+      {keyStore?.type !== "ledger" &&
+        !appInitStore.getInitApp.isAllNetworks &&
+        chainStore.current.chainId !== ChainIdEnum.Oasis && (
+          <BasicSettingItem
+            icon="md_key"
+            paragraph={"Reveal Private Key"}
+            onPress={() => {
+              if (chainStore.current.chainId === ChainIdEnum.Oasis) return;
+              _onPressPincodekModal(true);
+            }}
+          />
+        )}
     </React.Fragment>
   );
 });

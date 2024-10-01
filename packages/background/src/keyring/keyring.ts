@@ -99,10 +99,12 @@ export enum KeyRingStatus {
   LOCKED,
   UNLOCKED,
 }
+
 interface ISensitive {
   masterKey: string;
   mnemonic: string;
 }
+
 export interface Key {
   algo: string;
   pubKey: Uint8Array;
@@ -239,6 +241,7 @@ export class KeyRing {
   private get mnemonic(): string | undefined {
     return this._mnemonic;
   }
+
   private get masterKey(): string | undefined {
     return this._masterKey;
   }
@@ -249,6 +252,7 @@ export class KeyRing {
     this._ledgerPublicKey = undefined;
     this.cached = new Map();
   }
+
   private set masterKey(masterKey: string | undefined) {
     this._masterKey = masterKey;
     this._privateKey = undefined;
@@ -954,23 +958,20 @@ export class KeyRing {
 
     if (coinType === 474) {
       // const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
-      // console.log(bip44HDPath,"bip44HDPath");
-      // console.log(KeyRing.getKeyStoreId(
-      //     this.keyStore
-      // ),"key store ID")
       // const path = `m/44'/474'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
       // const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
-      //   this.keyStore
+      //     this.keyStore
       // )}-${path}`;
-      // console.log(pubKeyIdentity,this.keyStore.type,"pubKeyIdentity");
+      //
       // const pubKeyGet = (await this.kvStore.get(pubKeyIdentity)) as string;
+      //
       // let signerPublicKey: Uint8Array;
       // if (pubKeyGet) {
-      //   signerPublicKey = Uint8Array.from(Buffer.from(pubKeyGet, "base64"));
+      //     signerPublicKey = Uint8Array.from(Buffer.from(pubKeyGet, "base64"));
       // } else {
       const signerPublicKey = await this.loadPublicKeyOasis();
-      //   var encodePublicKey = Buffer.from(signerPublicKey).toString("base64");
-      //   await this.kvStore.set(pubKeyIdentity, encodePublicKey);
+      //     const encodePublicKey = Buffer.from(signerPublicKey).toString("base64");
+      //     await this.kvStore.set(pubKeyIdentity, encodePublicKey);
       // }
 
       const addressUint8Array = await oasis.staking.addressFromPublicKey(
@@ -1034,6 +1035,8 @@ export class KeyRing {
     ) {
       throw new Error("Key ring is not unlocked");
     }
+    if (coinType === 474)
+      throw new Error("This coin type not support private key");
     const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
     // and here
     if (this.type === "mnemonic") {
@@ -1079,6 +1082,12 @@ export class KeyRing {
       const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
         this.keyStore
       )}-${path}`;
+      console.log(
+        pubKeyIdentity,
+        encodePublicKey,
+        this.keyStore.type,
+        "pubKeyIdentity3"
+      );
       await this.kvStore.set(pubKeyIdentity, encodePublicKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {
@@ -1261,6 +1270,7 @@ export class KeyRing {
     const response = await request(rpc, "eth_sendRawTransaction", [rawTxHex]);
     return response;
   }
+
   public async signOasis(chainId: string, data): Promise<any> {
     if (
       this.status !== KeyRingStatus.UNLOCKED ||
@@ -1312,6 +1322,7 @@ export class KeyRing {
 
     return payload;
   }
+
   public async signAndBroadcastEthereum(
     env: Env,
     chainId: string,
@@ -1625,6 +1636,7 @@ export class KeyRing {
       };
     }
   }
+
   public async loadPublicKeyOasis(): Promise<Uint8Array> {
     if (
       this.status !== KeyRingStatus.UNLOCKED ||
@@ -1646,6 +1658,7 @@ export class KeyRing {
     const signer = await oasis.hdkey.HDKey.getAccountSigner(this.mnemonic, 0);
     return signer.publicKey;
   }
+
   public async getPublicKey(chainId: string): Promise<string | Uint8Array> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error("Key ring is not unlocked");
