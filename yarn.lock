@@ -5946,7 +5946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.0.91, @oraichain/oraidex-common@npm:^1.1.3, @oraichain/oraidex-common@npm:^1.1.6":
+"@oraichain/oraidex-common@npm:^1.0.91, @oraichain/oraidex-common@npm:^1.1.3":
   version: 1.1.13
   resolution: "@oraichain/oraidex-common@npm:1.1.13"
   dependencies:
@@ -5967,6 +5967,30 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
   checksum: 5810931fea898883348ffe2be5a9d11fca06f9215d04941f15ed4c32a4ea818e6795472e08e545a9194601b6f5dba32410e3eca57034b9dc2a13da3bc2c9f239
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-common@npm:^1.1.21":
+  version: 1.1.21
+  resolution: "@oraichain/oraidex-common@npm:1.1.21"
+  dependencies:
+    "@cosmjs/amino": 0.31.3
+    "@cosmjs/cosmwasm-stargate": 0.31.3
+    "@cosmjs/crypto": 0.31.3
+    "@cosmjs/proto-signing": 0.31.3
+    "@cosmjs/stargate": 0.31.3
+    "@cosmjs/tendermint-rpc": 0.31.3
+    "@ethersproject/providers": ^5.0.10
+    "@injectivelabs/sdk-ts": 1.12.1
+    "@keplr-wallet/types": ^0.11.38
+    "@oraichain/oraidex-contracts-sdk": latest
+    axios: 1.7.2
+    axios-extensions: 3.1.7
+    bignumber.js: ^9.1.2
+    cosmjs-types: 0.8.0
+    ethers: ^5.0.15
+    tronweb: 6.0.0-beta.4
+  checksum: 6e8a73369d10b7c291c4a05d6bba390801bba98d25dfb46c2e0630c98abc7f3a9e07e0ef5ae5f7ea404a1ff09535eb07a9f83523405984bb64c40e5fe965f7a7
   languageName: node
   linkType: hard
 
@@ -5991,7 +6015,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.0, @oraichain/oraidex-universal-swap@npm:^1.1.3":
+"@oraichain/oraidex-universal-swap@npm:^1.1.0":
   version: 1.1.5
   resolution: "@oraichain/oraidex-universal-swap@npm:1.1.5"
   dependencies:
@@ -6003,6 +6027,21 @@ __metadata:
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
   checksum: 8245c426e8dbcc3054648903a1fe7df0a7a8dfacee3106f5fa0e3b4af30edba9dc3187e5a33362958629d244485d917c5b8bf24dc37720b03ebd01458f057781
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-universal-swap@npm:^1.1.11":
+  version: 1.1.11
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.11"
+  dependencies:
+    "@oraichain/common": ^1.0.3
+    "@oraichain/oraidex-common": ^1.1.21
+    "@oraichain/oraidex-contracts-sdk": ^1.0.49
+    bech32: 1.1.4
+    ethers: ^5.0.15
+    tronweb: 5.3.2
+    ts-protoc-gen: ^0.15.0
+  checksum: a9cc58a4e4119847a5af79fec86e0d19a7c81e5fbfa87f4555680712601690220fe9a1208eadbe241073f3785b5c7b6a89e24c048b81fbdd2b119d89f66dca05
   languageName: node
   linkType: hard
 
@@ -24817,10 +24856,10 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.6
+    "@oraichain/oraidex-common": ^1.1.21
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.3
+    "@oraichain/oraidex-universal-swap": ^1.1.11
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-community/blur": 4.3.2
     "@react-native-community/netinfo": 9.4.1

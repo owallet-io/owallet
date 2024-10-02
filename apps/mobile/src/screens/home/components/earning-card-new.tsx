@@ -278,8 +278,11 @@ export const EarningCardNew = observer(({}) => {
               }
               label="Compound"
               onPress={_onPressCompound}
-              loading={account.isSendingMsg === "withdrawRewards"}
-              disabled={isDisableCompund}
+              loading={account.isSendingMsg === "withdrawRewardsAndDelegation"}
+              disabled={
+                account.isSendingMsg === "withdrawRewardsAndDelegation" ||
+                isDisableCompund
+              }
             />
           </View>
           <View>
@@ -332,8 +335,11 @@ export const EarningCardNew = observer(({}) => {
                 style={styles.getStarted}
                 label={"Claim all"}
                 fullWidth={false}
-                disabled={isDisableClaim}
+                disabled={
+                  account.isSendingMsg === "withdrawRewards" || isDisableClaim
+                }
                 onPress={_onPressClaim}
+                loading={account.isSendingMsg === "withdrawRewards"}
               />
             </View>
           </View>

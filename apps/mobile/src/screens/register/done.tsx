@@ -78,7 +78,10 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
             <Image
               style={{
                 width: metrics.screenWidth,
-                height: metrics.screenWidth,
+                height:
+                  metrics.screenHeight < 844
+                    ? metrics.screenHeight / 2.5
+                    : metrics.screenWidth,
               }}
               source={require("../../assets/image/img-bg.png")}
               resizeMode="contain"

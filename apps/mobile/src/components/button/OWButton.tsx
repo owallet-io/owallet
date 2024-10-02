@@ -5,6 +5,7 @@ import {
   StyleProp,
   TextStyle,
   ViewStyle,
+  View,
 } from "react-native";
 import React, { FunctionComponent } from "react";
 import { useMapStyles } from "./hooks";
@@ -68,10 +69,47 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       ]}
     >
       {loading ? (
-        <LoadingSpinner
-          color={colorLoading ?? colors["neutral-text-action-on-dark-bg"]}
-          size={20}
-        />
+        <View>
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <LoadingSpinner
+              color={colorLoading ?? colors["neutral-text-action-on-dark-bg"]}
+              size={20}
+            />
+          </View>
+          <View
+            style={{
+              opacity: 0,
+            }}
+          >
+            {!!icon && icon}
+            {!!label && (
+              <OWText
+                variant={textVariant}
+                typo={textTypo}
+                style={[
+                  styles.textBtn,
+                  styles.iconInBtn,
+                  styleMapped.text,
+                  textStyle,
+                ]}
+                color={colors["neutral-text-action-on-dark-bg"]}
+              >
+                {label}
+              </OWText>
+            )}
+            {!!iconRight && iconRight}
+          </View>
+        </View>
       ) : (
         <>
           {!!icon && icon}
