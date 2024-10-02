@@ -64,7 +64,7 @@ export function getWCOWallet(): Promise<OWallet> {
   const fn = async () => {
     const signClient = await SignClient.init({
       // If do you have your own project id, you can set it.
-      projectId: "20eea4b9e4c6e7b1f1030b26c844ed2c",
+      projectId: "2bd21bae70d0708420acba90a33cd752",
       metadata: {
         name: "WC Test Dapp",
         description: "WC Test Dapp",
