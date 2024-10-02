@@ -915,7 +915,7 @@ const ClaimTokenItem: FunctionComponent<{
           }}
         >
           {state.failedReason ? (
-            <img src={require("assets/svg/tdesign_chevron_down.svg")} />
+            <img src={require("assets/svg/tdesign_error-triangle.svg")} />
           ) : undefined}
           {isLoading ? (
             <span>

@@ -614,7 +614,9 @@ export const StakeCardAll = observer(({}) => {
                 },
               }
             );
+            state.setIsLoading(false);
           } catch (e) {
+            state.setIsLoading(false);
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
               if (
