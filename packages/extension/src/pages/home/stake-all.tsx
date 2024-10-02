@@ -598,8 +598,10 @@ export const StakeAll: FunctionComponent = observer(() => {
                 },
               }
             );
+            state.setIsLoading(false);
             setClaimLoading(false);
           } catch (e) {
+            state.setIsLoading(false);
             setClaimLoading(false);
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
@@ -825,6 +827,110 @@ export const StakeAll: FunctionComponent = observer(() => {
           if (!viewMore && index >= 0) return null;
           return renderToken(token);
         })}
+      </div>
+    </div>
+  );
+});
+
+const ClaimTokenItem: FunctionComponent<{
+  viewToken: StakeViewToken;
+  state: ClaimAllEachState;
+  _onPressClaim: Function;
+  itemsLength: number;
+}> = observer(({ viewToken, state, _onPressClaim }) => {
+  const { accountStore } = useStore();
+
+  const isLoading =
+    accountStore.getAccount(viewToken.chainInfo.chainId).isSendingMsg ===
+      "withdrawRewards" || state.isLoading;
+
+  if (!viewToken) return;
+  const isDisabledCompound = viewToken.chainInfo?.chainId?.includes("dydx");
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+      }}
+    >
+      <div
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          display: "flex",
+        }}
+      >
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 32,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors["neutral-icon-on-dark"],
+            marginRight: 8,
+          }}
+        >
+          <img
+            src={
+              viewToken?.chainInfo?.stakeCurrency?.coinImageUrl ||
+              unknownToken.coinImageUrl
+            }
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 32,
+            }}
+          />
+        </div>
+        <div>
+          <div style={{ color: colors["success-text-body"], fontSize: 14 }}>
+            +{viewToken.price ? viewToken.price?.toString() : "$0"}
+          </div>
+          <div style={{ color: colors["neutral-text-body"], fontSize: 13 }}>
+            {removeDataInParentheses(
+              viewToken.token
+                ?.shrink(true)
+                .maxDecimals(6)
+                .trim(true)
+                .upperCase(true)
+                .toString()
+            )}
+          </div>
+        </div>
+      </div>
+      <div style={{ flexDirection: "row" }}>
+        <div
+          style={{
+            color: colors["neutral-text-heading"],
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
+          }}
+        >
+          {state.failedReason ? (
+            <img src={require("assets/svg/tdesign_chevron_down.svg")} />
+          ) : undefined}
+          {isLoading ? (
+            <span>
+              <i className="fas fa-spinner fa-spin" />
+            </span>
+          ) : (
+            "Claim"
+          )}
+        </div>
+        <div
+          onClick={() => {}}
+          style={{
+            opacity: isDisabledCompound ? 0.5 : 1,
+          }}
+        />
       </div>
     </div>
   );
