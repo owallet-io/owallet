@@ -81,7 +81,6 @@ export const StakeAll: FunctionComponent = observer(() => {
 
   const [totalStakingReward, setTotalStakingReward] = useState(`0`);
   const [viewMore, setViewMore] = useState(false);
-  const [isClaimLoading, setClaimLoading] = useState(false);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const statesRef = useRef(new Map<string, ClaimAllEachState>());
@@ -165,7 +164,6 @@ export const StakeAll: FunctionComponent = observer(() => {
 
   const claimAll = () => {
     // analyticsStore.logEvent('click_claimAll');
-    setClaimLoading(true);
     for (const viewToken of viewTokens) {
       const chainId = viewToken.chainInfo.chainId;
       const account = accountStore.getAccount(chainId);
@@ -599,10 +597,8 @@ export const StakeAll: FunctionComponent = observer(() => {
               }
             );
             state.setIsLoading(false);
-            setClaimLoading(false);
           } catch (e) {
             state.setIsLoading(false);
-            setClaimLoading(false);
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
               if (
@@ -642,85 +638,26 @@ export const StakeAll: FunctionComponent = observer(() => {
     }
   }, [viewTokens]);
 
-  const renderToken = useCallback((token) => {
-    if (!token) return;
-    const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 8,
-        }}
-      >
-        <div
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            display: "flex",
-          }}
-        >
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 32,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: colors["neutral-icon-on-dark"],
-              marginRight: 8,
-            }}
-          >
-            <img
-              src={
-                token?.chainInfo?.stakeCurrency?.coinImageUrl ||
-                unknownToken.coinImageUrl
-              }
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: 32,
-              }}
-            />
-          </div>
-          <div>
-            <div style={{ color: colors["success-text-body"], fontSize: 14 }}>
-              +{token.price ? token.price?.toString() : "$0"}
-            </div>
-            <div style={{ color: colors["neutral-text-body"], fontSize: 13 }}>
-              {removeDataInParentheses(
-                token.token
-                  ?.shrink(true)
-                  .maxDecimals(6)
-                  .trim(true)
-                  .upperCase(true)
-                  .toString()
-              )}
-            </div>
-          </div>
-        </div>
-        <div style={{ flexDirection: "row" }}>
-          <div
-            style={{
-              color: colors["neutral-text-heading"],
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-            onClick={() => {}}
-          ></div>
-          <div
-            onClick={() => {}}
-            style={{
-              opacity: isDisabledCompound ? 0.5 : 1,
-            }}
-          />
-        </div>
-      </div>
-    );
-  }, []);
+  const _onPressClaim = async (queryReward, chainId) => {
+    try {
+      const account = accountStore.getAccount(chainId);
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        queryReward.getDescendingPendingRewardValidatorAddresses(10),
+        "",
+        {},
+        {},
+        {
+          onBroadcasted: (txHash) => {},
+        },
+        queryReward.stakableReward.currency.coinMinimalDenom
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        return;
+      }
+    }
+  };
 
   const claimAllDisabled = (() => {
     if (viewTokens.length === 0) {
@@ -758,6 +695,7 @@ export const StakeAll: FunctionComponent = observer(() => {
             cursor: "pointer",
             alignItems: "center",
             justifyContent: "center",
+            paddingTop: 8,
           }}
           onClick={() => {
             setViewMore(!viewMore);
@@ -795,7 +733,6 @@ export const StakeAll: FunctionComponent = observer(() => {
             <img src={require("assets/images/tdesign_chevron_up.svg")} />
           )}
         </div>
-        <div style={{ flex: 1 }} />
         <Button
           size="small"
           className={styleStake.button}
@@ -811,8 +748,8 @@ export const StakeAll: FunctionComponent = observer(() => {
               flexDirection: "row",
             }}
           >
-            {isClaimLoading || claimAllIsLoading ? (
-              <span>
+            {claimAllIsLoading ? (
+              <span style={{ paddingRight: 4 }}>
                 <i className="fas fa-spinner fa-spin" />
               </span>
             ) : null}
@@ -823,9 +760,17 @@ export const StakeAll: FunctionComponent = observer(() => {
         </Button>
       </div>
       <div style={{ marginTop: 16 }}>
-        {viewTokens.map((token, index) => {
+        {viewTokens.map((viewToken, index) => {
           if (!viewMore && index >= 0) return null;
-          return renderToken(token);
+          return (
+            <ClaimTokenItem
+              key={`${viewToken.chainInfo.chainId}-${viewToken.token.currency.coinMinimalDenom}`}
+              viewToken={viewToken}
+              state={getClaimAllEachState(viewToken.chainInfo.chainId)}
+              itemsLength={viewTokens.length}
+              _onPressClaim={_onPressClaim}
+            />
+          );
         })}
       </div>
     </div>
@@ -902,13 +847,15 @@ const ClaimTokenItem: FunctionComponent<{
           </div>
         </div>
       </div>
-      <div style={{ flexDirection: "row" }}>
+      <div style={{ flexDirection: "row", display: "flex" }}>
         <div
           style={{
             color: colors["neutral-text-heading"],
             fontSize: 13,
             fontWeight: 600,
             cursor: "pointer",
+            flexDirection: "row",
+            display: "flex",
           }}
           onClick={() => {
             _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
