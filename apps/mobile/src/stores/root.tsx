@@ -17,7 +17,7 @@ import { APP_PORT } from "@owallet/router";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
 import { ChainStore } from "./chain";
-import { DeepLinkStore, BrowserStore, browserStore } from "./browser";
+import { BrowserStore, browserStore } from "./browser";
 import { AppInit, appInit } from "./app_init";
 import { Notification, notification } from "./notification";
 import EventEmitter from "eventemitter3";
@@ -41,6 +41,7 @@ import { TxsStore } from "./txs";
 import { universalSwapStore, UniversalSwapStore } from "./universal_swap";
 import { HugeQueriesStore } from "@src/stores/huge-queries";
 import { WalletConnectStore } from "./wallet-connect";
+import { DeepLinkStore } from "@stores/deep-link";
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
   public readonly chainStore: ChainStore;
@@ -319,7 +320,7 @@ export class RootStore {
         },
       }
     );
-    this.deepLinkUriStore = new DeepLinkStore();
+
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
@@ -345,6 +346,7 @@ export class RootStore {
       this.keyRingStore,
       this.permissionStore
     );
+    this.deepLinkUriStore = new DeepLinkStore(this.walletConnectStore);
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>
