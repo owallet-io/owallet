@@ -19,7 +19,7 @@
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
     "rebuild": "lerna run rebuild",
-    "build:libs": "yarn build:proto && yarn build:btc && lerna run build --ignore @owallet/extension  --ignore @owallet/proto-types --ignore @owallet/bitcoin --ignore @owallet/wc-client-example --include-dependencies --stream",
+    "build:libs": "yarn build:btc && lerna run build --ignore @owallet/extension  --ignore @owallet/proto-types --ignore @owallet/bitcoin --ignore @owallet/wc-client-example --include-dependencies --stream",
     "postinstall": "yarn update:libs && patch-package && rimraf node_modules/crypto && yarn workspace mobile postinstall",
     "update:libs": "node ./scripts/update-inj.js",
     "build:proto": "lerna run build --scope @owallet/proto-types",
