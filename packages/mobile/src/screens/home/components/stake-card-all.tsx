@@ -1,11 +1,17 @@
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { useRef, useCallback, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+  FunctionComponent,
+} from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
 import { useStore } from "../../../stores";
@@ -35,6 +41,7 @@ import {
 import { isSimpleFetchError } from "@owallet/simple-fetch";
 import { RNMessageRequesterInternal } from "@src/router";
 import { BACKGROUND_PORT } from "@owallet/router";
+import { AlertIcon } from "@src/components/icon";
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
@@ -588,8 +595,13 @@ export const StakeCardAll = observer(({}) => {
                   //   chainName: viewToken.chainInfo.chainName,
                   //   isClaimAll: true,
                   // });
+                  setTimeout(() => {
+                    state.setIsLoading(false);
+                  }, 1000);
+                  console.log("onBroadcasted");
                 },
                 onFulfill: (tx: any) => {
+                  console.log("onFulfill");
                   // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
                   // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
                   setTimeout(() => {
@@ -804,114 +816,6 @@ export const StakeCardAll = observer(({}) => {
     }
   }, [viewTokens]);
 
-  const renderToken = useCallback((token) => {
-    if (!token) return;
-    const isDisabledCompound = token.chainInfo?.chainId?.includes("dydx");
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 8,
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 32,
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: colors["neutral-icon-on-dark"],
-              marginRight: 8,
-            }}
-          >
-            <OWIcon
-              type="images"
-              source={{
-                uri:
-                  token?.chainInfo?.stakeCurrency?.coinImageUrl ||
-                  unknownToken.coinImageUrl,
-              }}
-              style={{
-                borderRadius: 999,
-              }}
-              size={22}
-            />
-          </View>
-          <View>
-            <Text
-              style={[
-                {
-                  ...styles["text-amount"],
-                },
-              ]}
-            >
-              +{token.price ? token.price?.toString() : "$0"}
-            </Text>
-            <Text style={[styles["amount"]]}>
-              {removeDataInParentheses(
-                token.token
-                  ?.shrink(true)
-                  .maxDecimals(6)
-                  .trim(true)
-                  .upperCase(true)
-                  .toString()
-              )}
-            </Text>
-          </View>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <OWButton
-            type="link"
-            label="Claim"
-            loading={
-              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
-              "withdrawRewards"
-            }
-            onPress={() => {
-              _onPressClaim(token.queryRewards, token.chainInfo.chainId);
-            }}
-            textStyle={{
-              color: colors["neutral-text-title"],
-            }}
-            disabled={
-              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
-              "withdrawRewards"
-            }
-            fullWidth={false}
-            size={"small"}
-          />
-          <OWButton
-            onPress={() => {
-              _onPressCompound(token.queryRewards, token.chainInfo.chainId);
-            }}
-            disabled={
-              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
-                "withdrawRewardsAndDelegation" || isDisabledCompound
-            }
-            type="link"
-            label="Compound"
-            textStyle={{
-              color: colors["neutral-text-title"],
-            }}
-            style={{
-              opacity: isDisabledCompound ? 0.5 : 1,
-            }}
-            loading={
-              accountStore.getAccount(token?.chainInfo.chainId).isSendingMsg ===
-              "withdrawRewardsAndDelegation"
-            }
-            size={"small"}
-            fullWidth={false}
-          />
-        </View>
-      </View>
-    );
-  }, []);
-
   if (Number(totalStakingReward) <= 0) return;
 
   return (
@@ -989,15 +893,156 @@ export const StakeCardAll = observer(({}) => {
               />
             </View>
             <View>
-              {viewTokens.map((token, index) => {
+              {viewTokens.map((viewToken, index) => {
                 if (!viewMore && index >= 0) return null;
-                return renderToken(token);
+                return (
+                  <ClaimTokenItem
+                    key={`${viewToken.chainInfo.chainId}-${viewToken.token.currency.coinMinimalDenom}`}
+                    viewToken={viewToken}
+                    state={getClaimAllEachState(viewToken.chainInfo.chainId)}
+                    itemsLength={viewTokens.length}
+                    _onPressCompound={_onPressCompound}
+                    _onPressClaim={_onPressClaim}
+                  />
+                );
               })}
             </View>
           </View>
         </View>
       </View>
     </OWBox>
+  );
+});
+
+const ClaimTokenItem: FunctionComponent<{
+  viewToken: StakeViewToken;
+  state: ClaimAllEachState;
+  _onPressClaim: Function;
+  _onPressCompound: Function;
+  itemsLength: number;
+}> = observer(({ viewToken, state, _onPressCompound, _onPressClaim }) => {
+  const { accountStore } = useStore();
+
+  const { colors } = useTheme();
+  const styles = styling(colors);
+
+  const isLoading =
+    accountStore.getAccount(viewToken.chainInfo.chainId).isSendingMsg ===
+      "withdrawRewards" || state.isLoading;
+
+  if (!viewToken) return;
+  const isDisabledCompound = viewToken.chainInfo?.chainId?.includes("dydx");
+  return (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 8,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 32,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: colors["neutral-icon-on-dark"],
+            marginRight: 8,
+          }}
+        >
+          <OWIcon
+            type="images"
+            source={{
+              uri:
+                viewToken?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                unknownToken.coinImageUrl,
+            }}
+            style={{
+              borderRadius: 999,
+            }}
+            size={22}
+          />
+        </View>
+        <View>
+          <Text
+            style={[
+              {
+                ...styles["text-amount"],
+              },
+            ]}
+          >
+            +{viewToken.price ? viewToken.price?.toString() : "$0"}
+          </Text>
+          <Text style={[styles["amount"]]}>
+            {removeDataInParentheses(
+              viewToken.token
+                ?.shrink(true)
+                .maxDecimals(6)
+                .trim(true)
+                .upperCase(true)
+                .toString()
+            )}
+          </Text>
+        </View>
+      </View>
+      <View style={{ flexDirection: "row" }}>
+        <OWButton
+          type="link"
+          label="Claim"
+          loading={isLoading}
+          onPress={() => {
+            _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
+          }}
+          icon={
+            state.failedReason ? (
+              <AlertIcon color={colors["error-text-action"]} size={20} />
+            ) : undefined
+          }
+          textStyle={{
+            color: colors["neutral-text-title"],
+          }}
+          colorLoading={colors["neutral-text-title"]}
+          disabled={
+            isLoading ||
+            accountStore.getAccount(viewToken?.chainInfo.chainId)
+              .isSendingMsg === "withdrawRewardsAndDelegation"
+          }
+          fullWidth={false}
+          size={"small"}
+        />
+        <OWButton
+          onPress={() => {
+            _onPressCompound(
+              viewToken.queryRewards,
+              viewToken.chainInfo.chainId
+            );
+          }}
+          disabled={
+            accountStore.getAccount(viewToken?.chainInfo.chainId)
+              .isSendingMsg === "withdrawRewardsAndDelegation" ||
+            isDisabledCompound
+          }
+          type="link"
+          label="Compound"
+          colorLoading={colors["neutral-text-title"]}
+          textStyle={{
+            color: colors["neutral-text-title"],
+          }}
+          style={{
+            opacity: isDisabledCompound ? 0.5 : 1,
+          }}
+          loading={
+            accountStore.getAccount(viewToken?.chainInfo.chainId)
+              .isSendingMsg === "withdrawRewardsAndDelegation"
+          }
+          size={"small"}
+          fullWidth={false}
+        />
+      </View>
+    </View>
   );
 });
 
