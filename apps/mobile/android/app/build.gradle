@@ -82,8 +82,8 @@ android {
         applicationId 'com.io.owallet'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 200
-        versionName '3.1.14'
+        versionCode 201
+        versionName '3.1.15'
         missingDimensionStrategy 'react-native-camera', 'general' //
     }
     signingConfigs {
