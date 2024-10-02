@@ -40,7 +40,7 @@ export class RNMessageRequesterBase implements MessageRequester {
     if (this.eventEmitter.listenerCount("message") === 0) {
       throw new Error("There is no router to send" + JSON.stringify(msg));
     }
-
+    console.log(msg.type(), "start type");
     const result: Result = JSONUint8Array.unwrap(
       await new Promise((resolve) => {
         this.eventEmitter.emit("message", {
@@ -58,7 +58,7 @@ export class RNMessageRequesterBase implements MessageRequester {
         });
       })
     );
-
+    console.log(msg.type(), result, "end type");
     if (!result) {
       throw new Error("Null result");
     }

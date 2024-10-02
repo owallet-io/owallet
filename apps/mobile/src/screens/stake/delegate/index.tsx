@@ -1,9 +1,8 @@
 import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
 import { BondStatus } from "@owallet/stores";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { PageHeader } from "@src/components/header/header-new";
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
@@ -25,7 +24,7 @@ import {
   InteractionManager,
 } from "react-native";
 import { OWButton } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -37,6 +36,9 @@ import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -64,8 +66,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
 
-  const smartNavigation = useSmartNavigation();
-
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const [validatorDetail, setValidatorDetail] = useState();
@@ -79,6 +79,17 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     queries.queryBalances,
     EthereumEndpoint
   );
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Stake"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+    });
+  }, [chainStore.current?.chainName]);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
@@ -230,7 +241,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       });
       if (result?.code === 0 || result?.code == null) {
         setIsLoading(false);
-        smartNavigation.pushSmart("TxPendingResult", {
+        navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString("hex"),
           data: {
             type: "stake",
@@ -246,7 +257,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       if (error?.message?.includes("'signature' of undefined")) return;
       showToast({
         type: "danger",
-        message: error?.message || JSON.stringify(error),
+        message: `Failed to Stake: ${error?.message || JSON.stringify(error)}`,
       });
       console.log(error, "error");
     } finally {
@@ -292,7 +303,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                           validator?.description.moniker ?? "..."
                         };`
                       );
-                      smartNavigation.pushSmart("TxPendingResult", {
+                      navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "stake",
@@ -315,7 +326,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   return;
                 } else {
                   console.log(e);
-                  // smartNavigation.navigate("Home", {});
+
                   showToast({
                     message: JSON.stringify(e),
                     type: "danger",
@@ -339,12 +350,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <PageHeader
-          title="Stake"
-          subtitle={chainStore.current.chainName}
-          colors={colors}
-          onPress={async () => {}}
-        />
+        {/*<PageHeader*/}
+        {/*  title="Stake"*/}
+        {/*  subtitle={chainStore.current.chainName}*/}
+        {/*  colors={colors}*/}
+        {/*  onPress={async () => {}}*/}
+        {/*/>*/}
         {validator ? (
           <View>
             <OWCard>
@@ -415,6 +426,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                         type="images"
                         source={{
                           uri: chainStore.current.stakeCurrency?.coinImageUrl,
+                        }}
+                        style={{
+                          borderRadius: 999,
                         }}
                         size={16}
                       />

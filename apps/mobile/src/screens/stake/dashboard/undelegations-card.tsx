@@ -90,13 +90,10 @@ export const UndelegationsCard: FunctionComponent<{
               <View
                 style={{
                   marginTop: 1,
-                  flexDirection: "row",
-                  justifyContent: "space-between",
                   backgroundColor: colors["neutral-surface-action2"],
                   borderRadius: 16,
                   paddingHorizontal: 12,
                   paddingVertical: 8,
-                  alignItems: "center",
                 }}
                 key={unbondingIndex}
               >
@@ -129,7 +126,7 @@ export const UndelegationsCard: FunctionComponent<{
                             .formatRelativeTime(relativeEndTimeDays, "days", {
                               numeric: "always",
                             })
-                            .replace("in ", "") + " left"
+                            .replace("in ", "") + " days left"
                         );
                       } else if (relativeEndTimeHours) {
                         return (
@@ -137,7 +134,7 @@ export const UndelegationsCard: FunctionComponent<{
                             .formatRelativeTime(relativeEndTimeHours, "hours", {
                               numeric: "always",
                             })
-                            .replace("in ", "") + " left"
+                            .replace("in ", "") + " hours left"
                         );
                       }
 
@@ -160,7 +157,6 @@ export const UndelegationsCard: FunctionComponent<{
                       <View
                         style={{
                           marginBottom: 8,
-                          width: metrics.screenWidth / 1.3,
                         }}
                         key={i.toString()}
                       >

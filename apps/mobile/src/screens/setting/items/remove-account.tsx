@@ -13,7 +13,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { View } from "react-native";
 import { showToast } from "@src/utils/helper";
 import { SCREENS } from "@src/common/constants";
-import { navigate } from "@src/router/root";
+import { navigate, resetTo } from "@src/router/root";
 import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
@@ -83,15 +83,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
 
         if (!keyRingStore.multiKeyStoreInfo.length) {
           await keychainStore.reset();
-
-          navigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: "Unlock",
-              },
-            ],
-          });
+          resetTo(SCREENS.STACK.PincodeUnlock);
         }
       }
       modalStore.close();

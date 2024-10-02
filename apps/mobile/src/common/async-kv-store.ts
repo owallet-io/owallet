@@ -26,7 +26,23 @@ export class AsyncKVStore implements KVStore {
 
     return await AsyncStorage.setItem(k, JSON.stringify(data));
   }
+  async multiGet(keys: string[]): Promise<{ [p: string]: any }> {
+    // Remove duplications
+    keys = Array.from(new Set(keys));
+    const prefixedKeys = keys.map((k) => this.prefix() + "/" + k);
 
+    const res: { [key: string]: any } = {};
+
+    const data = await AsyncStorage.multiGet(prefixedKeys);
+    for (const [prefixedKey, value] of data) {
+      const key = prefixedKey.slice(this.prefix().length + 1);
+      if (value != null) {
+        res[key] = JSON.parse(value);
+      }
+    }
+
+    return res;
+  }
   prefix(): string {
     return this._prefix;
   }

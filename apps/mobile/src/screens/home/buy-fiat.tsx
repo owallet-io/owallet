@@ -5,7 +5,6 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import { metrics } from "@src/themes";
 import { ChainIdEnum } from "@owallet/common";
-import { PageHeader } from "@src/components/header/header-new";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { tracking } from "@src/utils/tracking";
@@ -32,8 +31,7 @@ const BuyFiat = observer(() => {
     tracking("Buy ORAI KADO Screen");
   }, []);
   return (
-    <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
-      <PageHeader title="Buy" />
+    <View style={[styles.container]}>
       {accountList.length > 0 ? (
         <View style={{ flex: 1 }}>
           <WebView

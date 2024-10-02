@@ -255,14 +255,19 @@ export const SignEthereumModal: FunctionComponent<{
           <View
             style={{
               alignSelf: "center",
-              paddingVertical: 8,
               backgroundColor: colors["neutral-icon-on-dark"],
+              height: 36,
+              width: 36,
+              borderRadius: 36,
+              padding: 2,
+              alignItems: "center",
             }}
           >
             <FastImage
               style={{
                 height: 30,
                 width: 30,
+                borderRadius: 999,
               }}
               source={{
                 uri: currency?.coinImageUrl,

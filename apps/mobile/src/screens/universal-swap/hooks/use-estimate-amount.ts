@@ -2,18 +2,22 @@ import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import {
   BigDecimal,
   calculateMinReceive,
+  CoinGeckoPrices,
   CW20_DECIMALS,
   network,
   toAmount,
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
-import { handleSimulateSwap } from "@oraichain/oraidex-universal-swap";
+import { UniversalSwapHelper } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos } from "@owallet/common";
+import { isNegative } from "@src/utils/helper";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getRemoteDenom } from "../helpers";
 import { useRelayerFeeToken, useTokenFee } from "./use-relayer-fees";
+
+export const SIMULATE_INIT_AMOUNT = 1;
 
 /**
  * Simulate token fee between fromToken & toToken
@@ -23,6 +27,7 @@ import { useRelayerFeeToken, useTokenFee } from "./use-relayer-fees";
  * @param toToken
  * @param toToken
  * @param fromAmountToken
+ * @param prices
  * @param userSlippage
  * @param setSwapAmount
  * @param handleErrorSwap
@@ -37,6 +42,7 @@ const useEstimateAmount = (
   fromToken: TokenItemType,
   toToken: TokenItemType,
   fromAmountToken: number,
+  prices: CoinGeckoPrices<string>,
   userSlippage: number,
   client: SigningCosmWasmClient,
   setSwapAmount: Function,
@@ -44,6 +50,7 @@ const useEstimateAmount = (
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
     useIbcWasm?: boolean;
+    protocols?: string[];
   },
   isAIRoute?: boolean
 ) => {
@@ -56,7 +63,39 @@ const useEstimateAmount = (
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
 
-  console.log("ratio", ratio);
+  const [isAvgSimulate, setIsAvgSimulate] = useState({
+    tokenFrom: originalFromToken.coinGeckoId,
+    tokenTo: originalToToken.coinGeckoId,
+    status: false,
+  });
+
+  useEffect(() => {
+    const {
+      tokenFrom: currentFrom,
+      tokenTo: currentTo,
+      status: currentStatus,
+    } = isAvgSimulate;
+    const { coinGeckoId: fromTokenId } = originalFromToken;
+    const { coinGeckoId: toTokenId } = originalToToken;
+
+    const shouldUpdate = currentFrom !== fromTokenId || currentTo !== toTokenId;
+
+    if (shouldUpdate) {
+      setIsAvgSimulate({
+        tokenFrom: fromTokenId,
+        tokenTo: toTokenId,
+        status: false,
+      });
+    }
+
+    if (currentStatus || !ratio?.amount) return;
+
+    setIsAvgSimulate({
+      tokenFrom: fromTokenId,
+      tokenTo: toTokenId,
+      status: true,
+    });
+  }, [ratio, originalFromToken, originalToToken]);
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -73,10 +112,9 @@ const useEstimateAmount = (
     setAmountLoading(true);
     if (client) {
       const routerClient = getRouterClient();
-      console.log("initAmount", initAmount);
 
       try {
-        const data = await handleSimulateSwap({
+        const data = await UniversalSwapHelper.handleSimulateSwap({
           originalFromInfo: originalFromToken,
           originalToInfo: originalToToken,
           originalAmount: initAmount,
@@ -88,14 +126,12 @@ const useEstimateAmount = (
           routerConfig: {
             url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
-            protocols: simulateOption?.useIbcWasm
-              ? ["Oraidex", "OraidexV3"]
-              : ["Oraidex", "OraidexV3", "Osmosis"],
+            protocols: simulateOption?.protocols ?? ["Oraidex", "OraidexV3"],
+            dontAllowSwapAfter: ["Oraidex", "OraidexV3"],
           },
         });
         setAmountLoading(false);
-        console.log("data", data);
-
+        setImpactWarning(0);
         return data;
       } catch (err) {
         console.error("Error in getSimulateSwap:", err);
@@ -104,17 +140,40 @@ const useEstimateAmount = (
     }
   };
 
-  const calculateImpactWarning = (data, fromAmountToken, ratio) => {
-    if (fromAmountToken && data?.displayAmount && ratio?.amount) {
-      const calculateImpactPrice = new BigDecimal(data.displayAmount)
-        .div(fromAmountToken)
-        .div(ratio.displayAmount)
+  function caculateImpactWarning(data, fromAmountToken, ratio, tokenInfos) {
+    const { usdPriceShowFrom, usdPriceShowTo } = tokenInfos;
+    let impactWarning = 0;
+    if (Number(usdPriceShowFrom) && Number(usdPriceShowTo)) {
+      const calculateImpactPrice = new BigDecimal(usdPriceShowFrom)
+        .sub(usdPriceShowTo)
+        .toNumber();
+
+      if (isNegative(calculateImpactPrice)) return impactWarning;
+      return new BigDecimal(calculateImpactPrice)
+        .div(usdPriceShowFrom)
         .mul(100)
         .toNumber();
-      return 100 - calculateImpactPrice;
     }
-    return 0;
-  };
+
+    const isValidValue = (value) => value && value !== "";
+    const isImpactPrice =
+      isValidValue(fromAmountToken) &&
+      isValidValue(data?.displayAmount) &&
+      isValidValue(ratio?.amount) &&
+      isValidValue(simulateData?.displayAmount) &&
+      isValidValue(ratio?.displayAmount);
+
+    if (isImpactPrice) {
+      const calculateImpactPrice = new BigDecimal(data.displayAmount)
+        .div(fromAmountToken)
+        .div(data.displayAmount)
+        .mul(100)
+        .toNumber();
+
+      if (calculateImpactPrice) impactWarning = 100 - calculateImpactPrice;
+    }
+    return impactWarning;
+  }
 
   const calculateMinimumReceive = (
     data,
@@ -157,13 +216,22 @@ const useEstimateAmount = (
       const defaultRouterSwap = { amount: "0", displayAmount: 0, routes: [] };
       const routersSwapData =
         fromAmountToken && data
-          ? { ...data, routes: data?.routes?.routes ?? [] }
+          ? //@ts-ignore
+            { ...data, routes: data?.routes?.routes ?? [] }
           : defaultRouterSwap;
 
-      const impactWarning = calculateImpactWarning(
+      const usdPriceShowFrom = (
+        prices?.[originalFromToken?.coinGeckoId] * fromAmountToken
+      ).toFixed(6);
+      const usdPriceShowTo = (
+        prices?.[originalToToken?.coinGeckoId] * data?.displayAmount
+      ).toFixed(6);
+
+      const impactWarning = caculateImpactWarning(
         data,
         fromAmountToken,
-        ratio
+        ratio,
+        { usdPriceShowFrom, usdPriceShowTo }
       );
       setImpactWarning(impactWarning);
       setRoutersSwapData(routersSwapData);
@@ -241,7 +309,7 @@ const useEstimateAmount = (
 
   useEffect(() => {
     setMininumReceive(0);
-    if (fromAmountToken > 0) {
+    if (fromAmountToken > 0 && isAvgSimulate.status) {
       setSwapAmount([fromAmountToken, 0]);
       estimateSwapAmount();
     } else {

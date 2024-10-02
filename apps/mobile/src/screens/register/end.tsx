@@ -5,7 +5,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { PageWithView } from "../../components/page";
 import { Toggle } from "../../components/toggle";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useStore } from "../../stores";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -13,11 +13,12 @@ import OWButton from "@src/components/button/OWButton";
 import { useTheme } from "@src/themes/theme-provider";
 import { typography } from "../../themes";
 import { OWalletLogo, OWalletStar } from "./owallet-logo";
+import { resetTo } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
   const { colors } = useTheme();
-  const smartNavigation = useSmartNavigation();
 
   const route = useRoute<
     RouteProp<
@@ -135,14 +136,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
                 keyRingStore.multiKeyStoreInfo.length - 1
               );
             }
-            smartNavigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: "MainTab",
-                },
-              ],
-            });
+            resetTo(SCREENS.STACK.MainTab);
           } catch (e) {
             console.log(e);
             // alert(JSON.stringify(e));

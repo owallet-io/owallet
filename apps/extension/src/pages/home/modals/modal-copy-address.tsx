@@ -43,7 +43,7 @@ export const ModalCopyAddress: FC<{
       item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
       !item?.chainName?.toLowerCase()?.includes("test")
   );
-  const chainsData = [...chains, btcLegacyChain];
+  const chainsData = btcLegacyChain ? [...chains, btcLegacyChain] : [...chains];
   return (
     <SlidingPane
       isOpen={isOpen}

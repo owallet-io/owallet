@@ -48,7 +48,7 @@ OWallet supports all web3 activities on most common liqudity networks, which are
 ## Technical inquiries
 - Source code: [https://github.com/oraichain/owallet](https://github.com/oraichain/owallet)
 - Support ticket: [https://orai.io/support](https://orai.io/support)
-- OWallet website: [https://owallet.dev](https://owallet.dev)
+- OWallet website: [https://owallet.io](https://owallet.io)
 - Discord: [https://discord.gg/XdTVgzKc](https://discord.gg/XdTVgzKc)
 
 You can create a pull request to add your network

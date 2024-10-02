@@ -8,6 +8,7 @@ import { computed, makeObservable } from "mobx";
 import Web3 from "web3";
 import { utils } from "ethers";
 import ERC20_ABI from "human-standard-token-abi";
+import { QuerySharedContext } from "src/common/query/context";
 type GasEvmRequest = {
   to: string;
   from: string;
@@ -16,12 +17,12 @@ type GasEvmRequest = {
 };
 export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<number> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly paramGas: GasEvmRequest
   ) {
-    super(kvStore, chainId, chainGetter, ``);
+    super(sharedContext, chainId, chainGetter, ``);
     makeObservable(this);
   }
 
@@ -37,7 +38,12 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
     }
     return this.response.data;
   }
-  protected async fetchResponse(): Promise<QueryResponse<number>> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{
+    headers: any;
+    data: number;
+  }> {
     try {
       const web3 = new Web3(
         getRpcByChainId(this.chainGetter.getChain(this.chainId), this.chainId)
@@ -57,12 +63,10 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
         .estimateGas({
           from: from,
         });
-
+      console.log(estimateGas, "estimateGas");
       return {
-        status: 1,
-        staled: false,
+        headers: null,
         data: estimateGas,
-        timestamp: Date.now(),
       };
     } catch (error) {
       console.log(
@@ -71,22 +75,17 @@ export class ObservableQueryGasEvmContractInner extends ObservableChainQuery<num
       );
     }
   }
-  protected getCacheKey(): string {
-    return `${this.instance.name}-${
-      this.instance.defaults.baseURL
-    }-gas-evm-contract-native-${this.chainId}-${JSON.stringify(this.paramGas)}`;
-  }
 }
 
 export class ObservableQueryGasEvmContract extends ObservableChainQueryMap<number> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (data) => {
+    super(sharedContext, chainId, chainGetter, (data) => {
       return new ObservableQueryGasEvmContractInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         JSON.parse(data)

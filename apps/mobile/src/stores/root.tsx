@@ -17,9 +17,8 @@ import { APP_PORT } from "@owallet/router";
 import { ChainInfoWithEmbed } from "@owallet/background";
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
 import { ChainStore } from "./chain";
-import { BrowserStore, browserStore } from "./browser";
+import { DeepLinkStore, BrowserStore, browserStore } from "./browser";
 import { AppInit, appInit } from "./app_init";
-import { DeepLinkStore } from "./deep-link";
 import { Notification, notification } from "./notification";
 import EventEmitter from "eventemitter3";
 import { OWallet, Ethereum, Bitcoin, TronWeb } from "@owallet/provider";
@@ -42,7 +41,6 @@ import { TxsStore } from "./txs";
 import { universalSwapStore, UniversalSwapStore } from "./universal_swap";
 import { HugeQueriesStore } from "@src/stores/huge-queries";
 import { WalletConnectStore } from "./wallet-connect";
-
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
   public readonly chainStore: ChainStore;
@@ -53,12 +51,12 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly hugeQueriesStore: HugeQueriesStore;
+  public readonly walletConnectStore: WalletConnectStore;
   public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
-  public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
-  public readonly walletConnectStore: WalletConnectStore;
-  public readonly deepLinkStore: DeepLinkStore;
+  public readonly tokensStore: TokensStore;
+
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
   public readonly keychainStore: KeychainStore;
@@ -142,6 +140,9 @@ export class RootStore {
 
       new AsyncKVStore("store_queries_fix2"),
       this.chainStore,
+      {
+        responseDebounceMs: 75,
+      },
       async () => {
         return new OWallet(
           `${name}-${version}`,
@@ -249,6 +250,16 @@ export class RootStore {
       "usd"
     );
 
+    // this.tokensStore = new TokensStore(
+    //   {
+    //     addEventListener: (type: string, fn: () => void) => {
+    //       eventEmitter.addListener(type, fn);
+    //     },
+    //   },
+    //   this.chainStore,
+    //   new RNMessageRequesterInternal(),
+    //   this.interactionStore
+    // );
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -257,9 +268,10 @@ export class RootStore {
       },
       this.chainStore,
       new RNMessageRequesterInternal(),
-      this.interactionStore
+      this.interactionStore,
+      this.accountStore,
+      this.keyRingStore
     );
-
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
       new AsyncKVStore("store_test_ibc_currency_registrar"),
       24 * 3600 * 1000,
@@ -307,7 +319,7 @@ export class RootStore {
         },
       }
     );
-    // this.deepLinkUriStore = new DeepLinkStore();
+    this.deepLinkUriStore = new DeepLinkStore();
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
@@ -333,8 +345,6 @@ export class RootStore {
       this.keyRingStore,
       this.permissionStore
     );
-    this.deepLinkStore = new DeepLinkStore(this.walletConnectStore);
-
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>

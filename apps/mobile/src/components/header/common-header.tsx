@@ -8,29 +8,24 @@ import { useStore } from "@src/stores";
 import { DownArrowIcon } from "../icon";
 import { NetworkModal } from "@src/screens/home/components";
 import { SCREENS } from "@src/common/constants";
-import { useNavigation } from "@react-navigation/native";
+
 import { metrics } from "@src/themes";
 import { observer } from "mobx-react-lite";
+import { navigate } from "@src/router/root";
 
 export const CommonPageHeader: FunctionComponent<{ title: string }> = observer(
   ({ title }) => {
-    const navigation = useNavigation();
     const { chainStore, appInitStore, modalStore } = useStore();
     const { colors } = useTheme();
 
     const onScan = () => {
-      navigation.navigate(SCREENS.STACK.Others, {
-        screen: SCREENS.Camera,
-      });
+      navigate(SCREENS.Camera);
       return;
     };
 
     const onAddWallet = () => {
-      navigation.navigate("Register", {
-        screen: "Register.Intro",
-        params: {
-          canBeBack: true,
-        },
+      navigate(SCREENS.RegisterIntro, {
+        canBeBack: true,
       });
     };
 

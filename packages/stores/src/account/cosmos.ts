@@ -44,6 +44,9 @@ export interface CosmosMsgOpts {
   readonly redelegate: MsgOpt;
   // The gas multiplication per rewards.
   readonly withdrawRewards: MsgOpt;
+  readonly compound: {
+    readonly native: MsgOpt;
+  };
   readonly govVote: MsgOpt;
 }
 
@@ -80,6 +83,12 @@ export class AccountWithCosmos
     withdrawRewards: {
       type: "cosmos-sdk/MsgWithdrawDelegationReward",
       gas: 140000,
+    },
+    compound: {
+      native: {
+        type: "cosmos-sdk/MsgDelegate",
+        gas: 800000,
+      },
     },
     govVote: {
       type: "cosmos-sdk/MsgVote",
@@ -248,7 +257,6 @@ export class CosmosAccount {
               ],
             },
           };
-
           const simulateTx = await this.simulateTx(
             this.checkNoLegacyStdFeature([
               {
@@ -265,6 +273,9 @@ export class CosmosAccount {
             },
             memo
           );
+          const gasEstimate = simulateTx?.gasUsed
+            ? Math.floor(simulateTx.gasUsed * 1.5).toString()
+            : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString();
           await this.base.sendMsgs(
             "send",
             {
@@ -294,9 +305,7 @@ export class CosmosAccount {
             memo,
             {
               amount: stdFee.amount ?? [],
-              gas: simulateTx?.gasUsed
-                ? (simulateTx.gasUsed * 1.3).toString()
-                : stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
+              gas: gasEstimate,
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
@@ -323,6 +332,7 @@ export class CosmosAccount {
 
     return false;
   }
+
   async sendIBCTransferMsg(
     channel: {
       portId: string;
@@ -348,38 +358,73 @@ export class CosmosAccount {
 
     const actualAmount = (() => {
       let dec = new Dec(amount);
-      dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
+      dec = dec.mul(
+        DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+      );
       return dec.truncate().toString();
     })();
 
-    const destinationInfo = this.queriesStore.get(channel.counterpartyChainId)
-      .cosmos.queryRPCStatus;
+    const destinationBlockHeight = this.queriesStore
+      .get(channel.counterpartyChainId)
+      .cosmos.queryBlock.getBlock("latest");
+
+    const msg = {
+      type: this.base.msgOpts.ibcTransfer.type,
+      value: {
+        source_port: channel.portId,
+        source_channel: channel.channelId,
+        token: {
+          denom: currency.coinMinimalDenom,
+          amount: actualAmount,
+        },
+        sender: this.base.bech32Address,
+        receiver: recipient,
+        timeout_height: {
+          revision_number: ChainIdHelper.parse(
+            channel.counterpartyChainId
+          ).version.toString() as string | undefined,
+          // Set the timeout height as the current height + 150.
+          revision_height: destinationBlockHeight.height
+            .add(new Int("150"))
+            .toString(),
+        },
+      },
+    };
+
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+          value: MsgTransfer.encode({
+            sourcePort: msg.value.source_port,
+            sourceChannel: msg.value.source_channel,
+            token: msg.value.token,
+            sender: msg.value.sender,
+            receiver: msg.value.receiver,
+            timeoutHeight: {
+              revisionNumber: msg.value.timeout_height.revision_number
+                ? Long.fromString(msg.value.timeout_height.revision_number)
+                : null,
+              revisionHeight: Long.fromString(
+                msg.value.timeout_height.revision_height
+              ),
+            },
+          }).finish(),
+        },
+      ],
+      {
+        amount: stdFee.amount ?? [],
+      },
+      memo
+    );
 
     await this.base.sendMsgs(
       "ibcTransfer",
       async () => {
         // Wait until fetching complete.
-        await destinationInfo.waitFreshResponse();
+        await destinationBlockHeight.waitFreshResponse();
 
-        if (!destinationInfo.network) {
-          throw new Error(
-            `Failed to fetch the network chain id of ${channel.counterpartyChainId}`
-          );
-        }
-
-        if (
-          ChainIdHelper.parse(destinationInfo.network).identifier !==
-          ChainIdHelper.parse(channel.counterpartyChainId).identifier
-        ) {
-          throw new Error(
-            `Fetched the network chain id is different with counterparty chain id (${destinationInfo.network}, ${channel.counterpartyChainId})`
-          );
-        }
-
-        if (
-          !destinationInfo.latestBlockHeight ||
-          destinationInfo.latestBlockHeight.equals(new Int("0"))
-        ) {
+        if (destinationBlockHeight.height.equals(new Int("0"))) {
           throw new Error(
             `Failed to fetch the latest block of ${channel.counterpartyChainId}`
           );
@@ -398,10 +443,10 @@ export class CosmosAccount {
             receiver: recipient,
             timeout_height: {
               revision_number: ChainIdHelper.parse(
-                destinationInfo.network
+                channel.counterpartyChainId
               ).version.toString() as string | undefined,
               // Set the timeout height as the current height + 150.
-              revision_height: destinationInfo.latestBlockHeight
+              revision_height: destinationBlockHeight.height
                 .add(new Int("150"))
                 .toString(),
             },
@@ -417,29 +462,62 @@ export class CosmosAccount {
           protoMsgs: [
             {
               typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-              value: MsgTransfer.encode(
-                MsgTransfer.fromPartial({
-                  sourcePort: msg.value.source_port,
-                  sourceChannel: msg.value.source_channel,
-                  token: msg.value.token,
-                  sender: msg.value.sender,
-                  receiver: msg.value.receiver,
-                  timeoutHeight: {
-                    revisionNumber: msg.value.timeout_height.revision_number
-                      ? msg.value.timeout_height.revision_number
-                      : "0",
-                    revisionHeight: msg.value.timeout_height.revision_height,
-                  },
-                })
-              ).finish(),
+              value: MsgTransfer.encode({
+                sourcePort: msg.value.source_port,
+                sourceChannel: msg.value.source_channel,
+                token: msg.value.token,
+                sender: msg.value.sender,
+                receiver: msg.value.receiver,
+                timeoutHeight: {
+                  revisionNumber: msg.value.timeout_height.revision_number
+                    ? Long.fromString(msg.value.timeout_height.revision_number)
+                    : null,
+                  revisionHeight: Long.fromString(
+                    msg.value.timeout_height.revision_height
+                  ),
+                },
+              }).finish(),
             },
           ],
+          rlpTypes: {
+            MsgValue: [
+              { name: "source_port", type: "string" },
+              { name: "source_channel", type: "string" },
+              { name: "token", type: "TypeToken" },
+              { name: "sender", type: "string" },
+              { name: "receiver", type: "string" },
+              { name: "timeout_height", type: "TypeTimeoutHeight" },
+              { name: "timeout_timestamp", type: "uint64" },
+              ...(() => {
+                if (memo != null) {
+                  return [
+                    {
+                      name: "memo",
+                      type: "string",
+                    },
+                  ];
+                }
+
+                return [];
+              })(),
+            ],
+            TypeToken: [
+              { name: "denom", type: "string" },
+              { name: "amount", type: "string" },
+            ],
+            TypeTimeoutHeight: [
+              { name: "revision_number", type: "uint64" },
+              { name: "revision_height", type: "uint64" },
+            ],
+          },
         };
       },
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.ibcTransfer.gas.toString(),
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas,
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
@@ -460,211 +538,6 @@ export class CosmosAccount {
       })
     );
   }
-  // async sendIBCTransferMsg(
-  //   channel: {
-  //     portId: string;
-  //     channelId: string;
-  //     counterpartyChainId: string;
-  //   },
-  //   amount: string,
-  //   currency: AppCurrency,
-  //   recipient: string,
-  //   memo: string = "",
-  //   stdFee: Partial<StdFee> = {},
-  //   signOptions?: OWalletSignOptions,
-  //   onTxEvents?:
-  //     | ((tx: any) => void)
-  //     | {
-  //         onBroadcasted?: (txHash: Uint8Array) => void;
-  //         onFulfill?: (tx: any) => void;
-  //       }
-  // ) {
-  //   if (new DenomHelper(currency.coinMinimalDenom).type !== "native") {
-  //     throw new Error("Only native token can be sent via IBC");
-  //   }
-
-  //   const actualAmount = (() => {
-  //     let dec = new Dec(amount);
-  //     dec = dec.mul(
-  //       DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-  //     );
-  //     return dec.truncate().toString();
-  //   })();
-
-  //   const destinationBlockHeight = this.queriesStore
-  //     .get(channel.counterpartyChainId)
-  //     .cosmos.queryBlock.getBlock("latest");
-
-  //   const msg = {
-  //     type: this.base.msgOpts.ibcTransfer.type,
-  //     value: {
-  //       source_port: channel.portId,
-  //       source_channel: channel.channelId,
-  //       token: {
-  //         denom: currency.coinMinimalDenom,
-  //         amount: actualAmount,
-  //       },
-  //       sender: this.base.bech32Address,
-  //       receiver: recipient,
-  //       timeout_height: {
-  //         revision_number: ChainIdHelper.parse(
-  //           channel.counterpartyChainId
-  //         ).version.toString() as string | undefined,
-  //         // Set the timeout height as the current height + 150.
-  //         revision_height: destinationBlockHeight.height
-  //           .add(new Int("150"))
-  //           .toString(),
-  //       },
-  //     },
-  //   };
-
-  //   const simulateTx = await this.simulateTx(
-  //     [
-  //       {
-  //         typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-  //         value: MsgTransfer.encode({
-  //           sourcePort: msg.value.source_port,
-  //           sourceChannel: msg.value.source_channel,
-  //           token: msg.value.token,
-  //           sender: msg.value.sender,
-  //           receiver: msg.value.receiver,
-  //           timeoutHeight: {
-  //             revisionNumber: msg.value.timeout_height.revision_number
-  //               ? Long.fromString(msg.value.timeout_height.revision_number)
-  //               : null,
-  //             revisionHeight: Long.fromString(
-  //               msg.value.timeout_height.revision_height
-  //             ),
-  //           },
-  //         }).finish(),
-  //       },
-  //     ],
-  //     {
-  //       amount: stdFee.amount ?? [],
-  //     },
-  //     memo
-  //   );
-
-  //   await this.base.sendMsgs(
-  //     "ibcTransfer",
-  //     async () => {
-  //       // Wait until fetching complete.
-  //       await destinationBlockHeight.waitFreshResponse();
-
-  //       if (destinationBlockHeight.height.equals(new Int("0"))) {
-  //         throw new Error(
-  //           `Failed to fetch the latest block of ${channel.counterpartyChainId}`
-  //         );
-  //       }
-
-  //       const msg = {
-  //         type: this.base.msgOpts.ibcTransfer.type,
-  //         value: {
-  //           source_port: channel.portId,
-  //           source_channel: channel.channelId,
-  //           token: {
-  //             denom: currency.coinMinimalDenom,
-  //             amount: actualAmount,
-  //           },
-  //           sender: this.base.bech32Address,
-  //           receiver: recipient,
-  //           timeout_height: {
-  //             revision_number: ChainIdHelper.parse(
-  //               channel.counterpartyChainId
-  //             ).version.toString() as string | undefined,
-  //             // Set the timeout height as the current height + 150.
-  //             revision_height: destinationBlockHeight.height
-  //               .add(new Int("150"))
-  //               .toString(),
-  //           },
-  //         },
-  //       };
-
-  //       if (msg.value.timeout_height.revision_number === "0") {
-  //         delete msg.value.timeout_height.revision_number;
-  //       }
-
-  //       return {
-  //         aminoMsgs: [msg],
-  //         protoMsgs: [
-  //           {
-  //             typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-  //             value: MsgTransfer.encode({
-  //               sourcePort: msg.value.source_port,
-  //               sourceChannel: msg.value.source_channel,
-  //               token: msg.value.token,
-  //               sender: msg.value.sender,
-  //               receiver: msg.value.receiver,
-  //               timeoutHeight: {
-  //                 revisionNumber: msg.value.timeout_height.revision_number
-  //                   ? Long.fromString(msg.value.timeout_height.revision_number)
-  //                   : null,
-  //                 revisionHeight: Long.fromString(
-  //                   msg.value.timeout_height.revision_height
-  //                 ),
-  //               },
-  //             }).finish(),
-  //           },
-  //         ],
-  //         rlpTypes: {
-  //           MsgValue: [
-  //             { name: "source_port", type: "string" },
-  //             { name: "source_channel", type: "string" },
-  //             { name: "token", type: "TypeToken" },
-  //             { name: "sender", type: "string" },
-  //             { name: "receiver", type: "string" },
-  //             { name: "timeout_height", type: "TypeTimeoutHeight" },
-  //             { name: "timeout_timestamp", type: "uint64" },
-  //             ...(() => {
-  //               if (memo != null) {
-  //                 return [
-  //                   {
-  //                     name: "memo",
-  //                     type: "string",
-  //                   },
-  //                 ];
-  //               }
-
-  //               return [];
-  //             })(),
-  //           ],
-  //           TypeToken: [
-  //             { name: "denom", type: "string" },
-  //             { name: "amount", type: "string" },
-  //           ],
-  //           TypeTimeoutHeight: [
-  //             { name: "revision_number", type: "uint64" },
-  //             { name: "revision_height", type: "uint64" },
-  //           ],
-  //         },
-  //       };
-  //     },
-  //     memo,
-  //     {
-  //       amount: stdFee.amount ?? [],
-  //       gas: simulateTx?.gasUsed
-  //         ? (simulateTx.gasUsed * 1.3).toString()
-  //         : stdFee.gas,
-  //     },
-  //     signOptions,
-  //     this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-  //       if (tx.code == null || tx.code === 0) {
-  //         // After succeeding to send token, refresh the balance.
-  //         const queryBalance = this.queries.queryBalances
-  //           .getQueryBech32Address(this.base.bech32Address)
-  //           .balances.find((bal) => {
-  //             return (
-  //               bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-  //             );
-  //           });
-
-  //         if (queryBalance) {
-  //           queryBalance.fetch();
-  //         }
-  //       }
-  //     })
-  //   );
-  // }
 
   /**
    * Send `MsgDelegate` msg to the chain.
@@ -705,8 +578,6 @@ export class CosmosAccount {
         },
       },
     };
-
-    console.log("msg", msg);
 
     const simulateTx = await this.simulateTx(
       [
@@ -1029,10 +900,13 @@ export class CosmosAccount {
         },
       };
     });
-
+    let totalAmount = 0;
     // Delegate msgs
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
     const delegateMsgs = validatorRewars.map((vr) => {
+      totalAmount += Number(
+        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
+      );
       let dec = new Dec(
         vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
       );
@@ -1046,39 +920,54 @@ export class CosmosAccount {
           validator_address: vr.validatorAddress,
           amount: {
             denom: stakeCurrency.coinMinimalDenom,
-            amount: dec.truncate().toString(),
+            amount: Number(dec.truncate().toString()).toString(),
           },
         },
       };
     });
 
+    const mergeMsgs = [
+      ...msgs.map((msg) => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+          value: MsgWithdrawDelegatorReward.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+          }).finish(),
+        };
+      }),
+      ...delegateMsgs.map((delegateMsg) => {
+        return {
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.encode({
+            delegatorAddress: delegateMsg.value.delegator_address,
+            validatorAddress: delegateMsg.value.validator_address,
+            amount: delegateMsg.value.amount,
+          }).finish(),
+        };
+      }),
+    ];
+
     const simulateTx = await this.simulateTx(
-      [
-        ...msgs.map((msg) => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-            value: MsgWithdrawDelegatorReward.encode({
-              delegatorAddress: msg.value.delegator_address,
-              validatorAddress: msg.value.validator_address,
-            }).finish(),
-          };
-        }),
-        ...delegateMsgs.map((delegateMsg) => {
-          return {
-            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-            value: MsgDelegate.encode({
-              delegatorAddress: delegateMsg.value.delegator_address,
-              validatorAddress: delegateMsg.value.validator_address,
-              amount: delegateMsg.value.amount,
-            }).finish(),
-          };
-        }),
-      ],
+      mergeMsgs,
       {
         amount: stdFee.amount ?? [],
       },
       memo
     );
+
+    let simulatedGas = 0;
+    let gas = "0";
+    if (simulateTx?.gasUsed) {
+      simulatedGas = simulateTx.gasUsed * 1.2 * mergeMsgs.length;
+      gas = simulatedGas.toString();
+    }
+    const stdGas = Number(stdFee.gas) * 1.2 * mergeMsgs.length;
+
+    if (stdGas > simulatedGas) {
+      gas = stdGas.toString();
+    }
+
     await this.base.sendMsgs(
       "withdrawRewardsAndDelegation",
       {
@@ -1119,9 +1008,7 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: simulateTx?.gasUsed
-          ? (simulateTx.gasUsed * 1.2 * validatorAddresses.length).toString()
-          : (Number(stdFee.gas) * 1.1).toString(),
+        gas,
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {

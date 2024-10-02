@@ -19,7 +19,7 @@ export default {
   "main.stake.message.earning": "Earn up to {apr}% per year",
   "main.stake.button.claim-rewards": "Claim",
   "main.stake.button.stake": "Stake",
-  "main.stake.button.link-stake": "Link Stake ",
+  "main.stake.button.link-stake": "Stake ",
   "main.stake.tooltip.no-asset":
     "No token in your account. Deposit some tokens to stake.",
 

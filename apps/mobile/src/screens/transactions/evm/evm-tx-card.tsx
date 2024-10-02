@@ -4,16 +4,17 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { View, ViewStyle } from "react-native";
 
 import { API } from "@src/common/api";
-import { listSkeleton, SCREENS, urlTxHistory } from "@src/common/constants";
+import { listSkeleton, SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
 
 import { OWButton } from "@src/components/button";
 
 import { TxSkeleton } from "@src/components/page";
-import { MapChainIdToNetwork } from "@src/utils/helper";
+
 import { useStore } from "@src/stores";
 import { EmptyTx } from "@src/screens/transactions/components/empty-tx";
 import { TxEvmItem } from "@src/screens/transactions/components/items/tx-evm-item";
+import { MapChainIdToNetwork, urlTxHistory } from "@owallet/common";
 
 export const EvmTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -108,9 +109,7 @@ export const EvmTxCard: FunctionComponent<{
           type="secondary"
           onPress={() => {
             // setMore(!more);
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.Transactions,
-            });
+            navigate(SCREENS.Transactions);
             return;
           }}
         />

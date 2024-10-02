@@ -22,6 +22,7 @@ import _debounce from "lodash/debounce";
 import { tokensIcon } from "@oraichain/oraidex-common";
 import { useStore } from "@src/stores";
 import { maskedNumber } from "@src/utils/helper";
+import { unknownToken } from "@owallet/common";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -30,9 +31,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   onOpenTokenModal,
   editable,
   loading,
+  impactWarning,
 }) => {
   const { colors } = useTheme();
-  const { appInitStore } = useStore();
+  const { appInitStore, chainStore } = useStore();
 
   const styles = styling(colors);
   const [txt, setText] = useState("0");
@@ -63,7 +65,13 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
       tokensIcon,
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
-    setTokenIcon(tokenIcon);
+    const currencies = tokenActive.chainId
+      ? chainStore.getChain(tokenActive.chainId).currencies
+      : [];
+    const tokenIconFromLocal = currencies.find(
+      (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
+    );
+    setTokenIcon(tokenIcon ? tokenIcon : tokenIconFromLocal);
   }, [tokenActive]);
 
   return (
@@ -85,7 +93,12 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           <OWIcon
             style={{ borderRadius: 999 }}
             type="images"
-            source={{ uri: tokenIcon?.Icon }}
+            source={{
+              uri:
+                tokenIcon?.Icon ||
+                tokenIcon?.coinImageUrl ||
+                unknownToken.coinImageUrl,
+            }}
             size={30}
           />
         </View>
@@ -143,7 +156,19 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             />
             <View style={{ alignSelf: "flex-end" }}>
               <BalanceText color={colors["neutral-text-body3"]} weight="500">
-                ≈ ${maskedNumber(currencyValue) || 0}
+                ≈ ${maskedNumber(currencyValue) || 0}{" "}
+                {impactWarning && impactWarning > 0 ? (
+                  <Text
+                    weight="500"
+                    color={
+                      impactWarning > 10
+                        ? colors["error-text-body"]
+                        : impactWarning > 5
+                        ? colors["warning-text-body"]
+                        : colors["neutral-text-body3"]
+                    }
+                  >{`(-${impactWarning.toFixed(2)}%)`}</Text>
+                ) : null}
               </BalanceText>
             </View>
           </>

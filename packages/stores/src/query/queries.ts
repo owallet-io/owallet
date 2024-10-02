@@ -1,15 +1,20 @@
 import { makeObservable, observable, runInAction } from "mobx";
-import { KVStore } from "@owallet/common";
+import { KVStore, MultiGet } from "@owallet/common";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryBalances } from "./balances";
 import { ChainGetter } from "../common";
 import { OWallet } from "@owallet/types";
+import { QuerySharedContext } from "../common/query/context";
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
     this.queryBalances = new ObservableQueryBalances(
-      kvStore,
+      sharedContext,
       chainId,
       chainGetter
     );
@@ -19,25 +24,32 @@ export class QueriesSetBase {
 export class QueriesStore<QueriesSet extends QueriesSetBase> {
   @observable.shallow
   protected queriesMap: Map<string, QueriesSet> = new Map();
+  public readonly sharedContext: QuerySharedContext;
 
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly kvStore: KVStore | (KVStore & MultiGet),
     protected readonly chainGetter: ChainGetter,
+    protected readonly options: {
+      responseDebounceMs?: number;
+    },
     protected readonly apiGetter: () => Promise<OWallet | undefined>,
     protected readonly queriesCreator: new (
-      kvStore: KVStore,
+      sharedContext: QuerySharedContext,
       chainId: string,
       chainGetter: ChainGetter,
       apiGetter: () => Promise<OWallet | undefined>
     ) => QueriesSet
   ) {
+    this.sharedContext = new QuerySharedContext(kvStore, {
+      responseDebounceMs: this.options.responseDebounceMs ?? 0,
+    });
     makeObservable(this);
   }
 
   get(chainId: string): DeepReadonly<QueriesSet> {
     if (!this.queriesMap.has(chainId)) {
       const queries = new this.queriesCreator(
-        this.kvStore,
+        this.sharedContext,
         chainId,
         this.chainGetter,
         this.apiGetter

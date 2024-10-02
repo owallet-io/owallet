@@ -26,12 +26,12 @@ import {
   isMilliseconds,
   MapNetworkToChainId,
   unknownToken,
+  urlTxHistory,
 } from "@owallet/common";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 import { Currency, AllNetworkItemTx, ResDetailAllTx } from "@owallet/types";
 
-import { urlTxHistory } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { CosmosItem } from "@src/screens/transactions/cosmos/types";
 
@@ -92,7 +92,10 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
     await openLink(detail?.explorer);
   };
 
-  const fee = new CoinPretty(chainInfo.stakeCurrency, new Dec(detail.fee[0]));
+  const fee = new CoinPretty(
+    chainInfo.feeCurrencies?.[0],
+    new Dec(detail.fee[0])
+  );
   const amount = new CoinPretty(currency, new Dec(detail.amount[0]));
 
   const onRefresh = () => {
@@ -104,9 +107,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
   const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>
@@ -185,15 +185,16 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                     style={[
                       styles.imgNetwork,
                       {
+                        borderRadius: 999,
                         tintColor:
-                          chainInfo.stakeCurrency.coinDenom === "ORAI"
+                          chainInfo.feeCurrencies?.[0].coinDenom === "ORAI"
                             ? colors["neutral-text-title"]
                             : null,
                       },
                     ]}
                     source={{
                       uri:
-                        chainInfo.stakeCurrency.coinImageUrl ||
+                        chainInfo.feeCurrencies?.[0].coinImageUrl ||
                         unknownToken.coinImageUrl,
                     }}
                   />

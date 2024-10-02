@@ -15,14 +15,15 @@ import {
 } from "@owallet/bitcoin";
 import { processBalanceFromUtxos } from "@owallet/bitcoin";
 import { AddressBtcType } from "@owallet/types";
+import { QuerySharedContext } from "src/common/query/context";
 export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Result> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/address/${address}/utxo`);
+    super(sharedContext, chainId, chainGetter, `/address/${address}/utxo`);
   }
 
   @computed
@@ -44,10 +45,10 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
   protected canFetch(): boolean {
     return this.address?.length !== 0;
   }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
-    const resApi = await super.fetchResponse(cancelToken);
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: Result }> {
+    const { data, headers } = await super.fetchResponse(abortController);
     const addressType = getAddressTypeByAddress(this.address) as AddressBtcType;
     const keyDerivation = getKeyDerivationFromAddressType(addressType);
     const path = getBaseDerivationPath({
@@ -56,7 +57,7 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     }) as string;
     const btcResult = processBalanceFromUtxos({
       address: this.address,
-      utxos: resApi.data,
+      utxos: data,
       path,
     });
     if (!btcResult) {
@@ -64,18 +65,20 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     }
     return {
       data: btcResult,
-      status: 1,
-      staled: false,
-      timestamp: Date.now(),
+      headers,
     };
   }
 }
 
 export class ObservableQueryBitcoinBalance extends ObservableChainQueryMap<Result> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, (address: string) => {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, (address: string) => {
       return new ObservableQueryBitcoinBalanceInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         address

@@ -6,7 +6,8 @@ import { View, ViewStyle } from "react-native";
 import { Text } from "@src/components/text";
 import { useStyle } from "../../../styles";
 import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation.provider";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const DelegatedCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -16,8 +17,6 @@ export const DelegatedCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const smartNavigation = useSmartNavigation();
 
   const style = useStyle();
 
@@ -107,7 +106,7 @@ export const DelegatedCard: FunctionComponent<{
             mode="outline"
             text="Switch Validator"
             onPress={() => {
-              smartNavigation.navigateSmart("Redelegate", { validatorAddress });
+              navigate(SCREENS.Redelegate, { validatorAddress });
             }}
           />
           <View style={style.flatten(["width-card-gap"])} />
@@ -116,7 +115,7 @@ export const DelegatedCard: FunctionComponent<{
             containerStyle={style.flatten(["flex-1"])}
             text="Unstake"
             onPress={() => {
-              smartNavigation.navigateSmart("Undelegate", { validatorAddress });
+              navigate(SCREENS.Undelegate, { validatorAddress });
             }}
           />
         </View>

@@ -1,8 +1,7 @@
 import { View } from "react-native";
 import { LineGraph } from "react-native-graph";
-import { metrics } from "@src/themes";
 import OWText from "@src/components/text/ow-text";
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
 import { OWButton } from "@src/components/button";
@@ -13,8 +12,9 @@ import moment from "moment/moment";
 import HapticFeedback, {
   HapticFeedbackTypes,
 } from "react-native-haptic-feedback";
-import { Dec, PricePretty } from "@owallet/unit";
+import { PricePretty } from "@owallet/unit";
 import { useStore } from "@src/stores";
+import { OWBox } from "@src/components/card";
 
 export interface GraphPoint {
   value: number;
@@ -70,7 +70,8 @@ const ranges = [
 ];
 export const TokenChart: FC<{
   coinGeckoId: string;
-}> = observer(({ coinGeckoId }) => {
+  denom?: string;
+}> = observer(({ coinGeckoId, denom }) => {
   const { colors } = useTheme();
   const { priceStore } = useStore();
   const [typeActive, setTypeActive] = useState(ranges[1]);
@@ -78,7 +79,7 @@ export const TokenChart: FC<{
   const [currentPrice, setCurrentPrice] = useState<GraphPoint>();
   const [simplePrice, setSimplePrice] = useState<GraphPoint>();
   const [change24h, setChange24h] = useState<number>();
-  const { data: res, refetch } = useQuery({
+  const { data: res } = useQuery({
     queryKey: ["chart-range", coinGeckoId, typeActive],
     queryFn: () => {
       if (typeActive.id === 6) {
@@ -180,21 +181,31 @@ export const TokenChart: FC<{
     return;
   };
   return (
-    <View
+    <OWBox
       style={{
-        backgroundColor: colors["neutral-surface-card"],
-        maxHeight: 330,
-        marginHorizontal: 16,
-        paddingVertical: 16,
-        marginTop: 2,
+        maxHeight: 360,
+        marginTop: 16,
         borderRadius: 24,
+        paddingHorizontal: 0,
       }}
     >
       <View
         style={{
+          paddingHorizontal: 24,
+        }}
+      >
+        <OWText size={15} weight={"400"} color={colors["neutral-text-body"]}>
+          {denom} Price
+        </OWText>
+      </View>
+
+      <View
+        style={{
           flexDirection: "row",
-          alignItems: "flex-end",
-          paddingHorizontal: 16,
+          alignItems: "center",
+          paddingHorizontal: 24,
+          paddingBottom: 24,
+          justifyContent: "space-between",
         }}
       >
         <OWText size={28} weight={"500"} color={colors["neutral-text-heading"]}>
@@ -206,20 +217,8 @@ export const TokenChart: FC<{
             currentPrice?.value
           ).toString()}
         </OWText>
-        <View
-          style={{
-            paddingLeft: 8,
-            paddingBottom: 4,
-          }}
-        >
-          <OWText
-            size={12}
-            color={colors["neutral-text-body"]}
-            style={{
-              paddingLeft: 5,
-            }}
-          >
-            {" "}
+        <View>
+          <OWText size={12} color={colors["neutral-text-body"]}>
             {currentPrice?.date &&
             simplePrice?.date &&
             currentPrice?.date !== simplePrice?.date
@@ -238,17 +237,16 @@ export const TokenChart: FC<{
             {typeof change24h === "number" && change24h < 0
               ? `${change24h?.toFixed(2)}`
               : `+${change24h?.toFixed(2) ?? "0.00"}`}{" "}
-            %
+            % Today
           </OWText>
         </View>
       </View>
-      {dataPriceChart && (
+      {dataPriceChart?.length > 0 && (
         <LineGraph
           animated={true}
           style={{
             width: "100%",
-            height: "77%",
-            // marginLeft: 5,
+            height: "70%",
           }}
           enablePanGesture={true}
           onPointSelected={(p) => setCurrentPrice(p)}
@@ -299,6 +297,6 @@ export const TokenChart: FC<{
           );
         })}
       </View>
-    </View>
+    </OWBox>
   );
 });

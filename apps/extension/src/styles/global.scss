@@ -228,7 +228,9 @@ button[data-loading="true"] {
   width: 8px;
   height: 8px;
 }
-
+::placeholder {
+  font-size: 14px;
+}
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 2px $background-color;
 }

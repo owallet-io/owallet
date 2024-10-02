@@ -21,6 +21,7 @@ import { useStore } from "@src/stores";
 import { CoinGeckoPrices } from "@owallet/hooks";
 import { find } from "lodash";
 import { maskedNumber, shortenAddress } from "@src/utils/helper";
+import { unknownToken } from "@owallet/common";
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -36,9 +37,15 @@ export const SelectTokenModal: FunctionComponent<{
 }> = registerModal(
   ({ close, activeToken, data, setToken, selectedChainFilter }) => {
     const safeAreaInsets = useSafeAreaInsets();
-    const { universalSwapStore, appInitStore, accountStore, keyRingStore } =
-      useStore();
+    const {
+      universalSwapStore,
+      appInitStore,
+      accountStore,
+      keyRingStore,
+      chainStore,
+    } = useStore();
     const [filteredTokens, setTokens] = useState([]);
+
     // const [refresh, setRefresh] = useState(Date.now());
 
     const [keyword, setKeyword] = useState("");
@@ -134,11 +141,18 @@ export const SelectTokenModal: FunctionComponent<{
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
+          const currencies = item.chainId
+            ? chainStore.getChain(item.chainId).currencies
+            : [];
+
           const tokenIcon = find(
             tokensIcon,
             (tk) => tk.coinGeckoId === item.coinGeckoId
           );
 
+          const tokenIconFromLocal = currencies.find(
+            (tk) => tk.coinGeckoId === item.coinGeckoId
+          );
           return (
             <>
               <TouchableOpacity
@@ -168,8 +182,16 @@ export const SelectTokenModal: FunctionComponent<{
                   >
                     <OWIcon
                       type="images"
-                      source={{ uri: tokenIcon?.Icon }}
+                      source={{
+                        uri:
+                          tokenIcon?.Icon ||
+                          tokenIconFromLocal?.coinImageUrl ||
+                          unknownToken.coinImageUrl,
+                      }}
                       size={30}
+                      style={{
+                        borderRadius: 999,
+                      }}
                     />
                   </View>
                   <View style={styles.pl10}>

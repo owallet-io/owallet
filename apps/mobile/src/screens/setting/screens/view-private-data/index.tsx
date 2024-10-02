@@ -7,10 +7,11 @@ import { StyleSheet, View, Clipboard } from "react-native";
 import { OWButton } from "../../../../components/button";
 import { CheckIcon, CopyFillIcon } from "../../../../components/icon";
 import { WordChip } from "../../../../components/mnemonic";
-import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
+
 import { useSimpleTimer } from "../../../../hooks";
 import { useStyle } from "../../../../styles";
 import { spacing, typography } from "../../../../themes";
+import { PageWithScrollView } from "@src/components/page";
 
 export const getPrivateDataTitle = (
   keyRingType: string,
@@ -60,7 +61,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
   const words = privateData.split(" ");
   const { colors } = useTheme();
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollView>
       <OWBox>
         <View
           style={[
@@ -107,7 +108,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
           }
         />
       </OWBox>
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 };
 

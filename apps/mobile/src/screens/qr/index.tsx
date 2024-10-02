@@ -3,7 +3,6 @@ import { Clipboard, Image, Share, StyleSheet, View } from "react-native";
 import QRCode from "react-native-qrcode-svg";
 import { metrics, spacing } from "@src/themes";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { PageHeader } from "@src/components/header/header-new";
 import { ScrollView } from "react-native-gesture-handler";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -18,6 +17,9 @@ import { CopyAddressModal } from "../home/components/copy-address/copy-address-m
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { tracking } from "@src/utils/tracking";
+import { ChainInfoInner } from "@owallet/stores";
+import { ChainInfoWithEmbed } from "@owallet/background";
+import { unknownToken } from "@owallet/common";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -61,56 +63,29 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
   const chainInfo = chainStore.getChain(
     params?.chainId ? params?.chainId : chainStore.current.chainId
   );
+
+  const [network, setNetwork] =
+    useState<ChainInfoInner<ChainInfoWithEmbed>>(chainInfo);
   const account = accountStore.getAccount(
-    params?.chainId ? params?.chainId : chainStore.current.chainId
+    network?.chainId || params?.chainId || chainStore.current.chainId
   );
-
-  const addressToShow = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
-
-  const [networkAddress, setNetworkAddress] = useState<any>();
-  const [address, setAddress] = useState("");
+  const [isBtcLegacy, setIsBtcLegacy] = useState<boolean>(false);
+  const addressToShow = isBtcLegacy
+    ? account.legacyAddress
+    : account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const [isOpen, setModalOpen] = useState(false);
 
   const { colors } = useTheme();
   const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
-
-  const chainIcon = chainIcons.find((c) => c.chainId === chainInfo.chainId);
   useEffect(() => {
     tracking(`Address QR Code Screen`);
     return () => {};
   }, []);
 
-  useEffect(() => {
-    setAddress(addressToShow);
-    Clipboard.setString(addressToShow);
-  }, [addressToShow]);
-
   const onPressAddress = (item) => {
-    setNetworkAddress(item);
-    modalStore.close();
-  };
-
-  const renderNetworkIcon = () => {
-    if (networkAddress) {
-      if (networkAddress.chainIcon) {
-        return (
-          <OWIcon
-            type="images"
-            source={{ uri: networkAddress.chainIcon }}
-            size={16}
-          />
-        );
-      } else {
-        return <OWText>{networkAddress.name.charAt(0)}</OWText>;
-      }
-    } else {
-      return (
-        <OWIcon type="images" source={{ uri: chainIcon?.Icon }} size={16} />
-      );
-    }
+    setNetwork(item);
+    setModalOpen(false);
   };
 
   return (
@@ -118,11 +93,10 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
       bottomGroup={
         <OWButton
           label="Share Address"
-          loading={address === ""}
-          disabled={address === ""}
+          disabled={!addressToShow ? true : false}
           onPress={() => {
             Share.share({
-              message: address,
+              message: addressToShow,
             }).catch((e) => {
               console.log(e);
             });
@@ -141,14 +115,13 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
         />
       }
     >
-      <PageHeader title="Receive" colors={colors} />
       <CopyAddressModal
         copyable={false}
         close={() => setModalOpen(false)}
         isOpen={isOpen}
-        onPress={(item) => {
+        onPress={(item, isBtcLegacy) => {
           onPressAddress(item);
-          setAddress(item.address);
+          setIsBtcLegacy(isBtcLegacy);
         }}
         bottomSheetModalConfig={{
           enablePanDownToClose: false,
@@ -192,11 +165,22 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                   backgroundColor: colors["neutral-icon-on-dark"],
                 }}
               >
-                {renderNetworkIcon()}
+                <OWIcon
+                  type="images"
+                  source={{
+                    uri:
+                      network?.feeCurrencies?.[0]?.coinImageUrl ||
+                      unknownToken.coinImageUrl,
+                  }}
+                  size={16}
+                  style={{
+                    borderRadius: 999,
+                  }}
+                />
               </View>
 
               <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
-                {networkAddress ? networkAddress.name : chainInfo.chainName}
+                {network?.chainName}
               </OWText>
               <DownArrowIcon height={11} color={colors["primary-text"]} />
             </TouchableOpacity>
@@ -218,8 +202,11 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                 />
               </View>
               <View style={{ marginTop: 24, alignSelf: "center" }}>
-                {address ? (
-                  <QRCode size={metrics.screenHeight / 4.2} value={address} />
+                {addressToShow ? (
+                  <QRCode
+                    size={metrics.screenHeight / 4.2}
+                    value={addressToShow}
+                  />
                 ) : null}
               </View>
             </View>
@@ -240,7 +227,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
               }}
             >
               <OWText color={colors["neutral-text-body"]} size={13}>
-                {address}
+                {addressToShow}
               </OWText>
             </View>
 
@@ -250,7 +237,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                 alignItems: "center",
               }}
               onPress={() => {
-                Clipboard.setString(address);
+                Clipboard.setString(addressToShow);
                 setTimer(2000);
               }}
             >

@@ -3,7 +3,7 @@ import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -11,8 +11,12 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useStore } from "../../../stores";
-import { ValidatorThumbnails } from "@owallet/common";
+import { useStore } from "@src/stores";
+import {
+  DenomDydx,
+  removeDataInParentheses,
+  ValidatorThumbnails,
+} from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
   ValidatorAPYIcon,
@@ -21,14 +25,18 @@ import {
   ValidatorVotingIcon,
 } from "../../../components/icon";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { useSmartNavigation } from "../../../navigation.provider";
+
 import { metrics, spacing } from "../../../themes";
-import { PageHeader } from "@src/components/header/header-new";
+
 import OWText from "@src/components/text/ow-text";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWCard from "@src/components/card/ow-card";
 import { convertArrToObject, maskedNumber, showToast } from "@src/utils/helper";
 import { tracking } from "@src/utils/tracking";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { useNavigation } from "@react-navigation/native";
+import { OWHeaderTitle } from "@components/header";
 
 const renderIconValidator = (
   label: string,
@@ -109,6 +117,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
+  const navigation = useNavigation();
+
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
@@ -120,16 +130,30 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress,
   ]);
-  const smartNavigation = useSmartNavigation();
+
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
     unbondedValidators.getValidatorThumbnail(validatorAddress) ||
     ValidatorThumbnails[validatorAddress];
+  const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+    account.bech32Address
+  );
+  const rewards = (() => {
+    let reward: CoinPretty | undefined;
+    const isDydx = chainStore.current.chainId?.includes("dydx-mainnet");
+    const denomDydx = DenomDydx;
+    const currency = chainStore.current.currencyMap.get(denomDydx);
+    if (isDydx) {
+      reward = queryRewards
+        .getRewardsOf(validatorAddress)
+        .find((r) => r.currency.coinMinimalDenom === denomDydx);
+    } else {
+      reward = queryRewards.getStakableRewardOf(validatorAddress);
+    }
 
-  const rewards = queries.cosmos.queryRewards
-    .getQueryBech32Address(account.bech32Address)
-    .getStakableRewardOf(validatorAddress);
+    return !reward && isDydx ? new CoinPretty(currency, 0) : reward;
+  })();
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
@@ -175,30 +199,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
-      // await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-      //   [validatorAddress],
-      //   "oraivaloper1u2344d8jwtsx5as7u5jw7vel28puh34q7d3y64",
-      //   "0.1",
-      //   "",
-      //   {},
-      //   {},
-      //   {
-      //     onBroadcasted: (txHash) => {
-      //       const validatorObject = convertArrToObject([validatorAddress]);
-      //       tracking(`Claim ${rewards.currency.coinDenom}`);
-      //       smartNavigation.pushSmart("TxPendingResult", {
-      //         txHash: Buffer.from(txHash).toString("hex"),
-      //         data: {
-      //           ...validatorObject,
-      //           type: "claim",
-      //           amount: rewards?.toCoin(),
-      //           currency: rewards.currency,
-      //         },
-      //       });
-      //     },
-      //   },
-      //   rewards.currency.coinMinimalDenom
-      // );
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         [validatorAddress],
         "",
@@ -207,19 +207,19 @@ export const ValidatorDetailsCard: FunctionComponent<{
         {
           onBroadcasted: (txHash) => {
             const validatorObject = convertArrToObject([validatorAddress]);
-            tracking(`Claim ${rewards.currency.coinDenom}`);
-            smartNavigation.pushSmart("TxPendingResult", {
+            tracking(`Claim ${rewards?.currency.coinDenom}`);
+            navigate(SCREENS.TxPendingResult, {
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
                 ...validatorObject,
                 type: "claim",
                 amount: rewards?.toCoin(),
-                currency: rewards.currency,
+                currency: rewards?.currency,
               },
             });
           },
         },
-        rewards.currency.coinMinimalDenom
+        rewards?.currency.coinMinimalDenom
       );
     } catch (e) {
       console.error({ errorClaim: e });
@@ -233,6 +233,41 @@ export const ValidatorDetailsCard: FunctionComponent<{
       }
     }
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Validator Details"}
+          subTitle={chainStore.current?.chainName}
+        />
+      ),
+      headerRight: () => {
+        if (!isStakedValidator) return;
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              navigate(SCREENS.Undelegate, {
+                validatorAddress,
+              });
+            }}
+            style={{
+              borderRadius: 999,
+              backgroundColor: colors["error-surface-default"],
+              paddingHorizontal: 12,
+              paddingVertical: 8,
+              marginRight: 16,
+            }}
+          >
+            <OWText color={colors["neutral-icon-on-dark"]} weight="600">
+              Unstake
+            </OWText>
+          </TouchableOpacity>
+        );
+      },
+    });
+  }, [isStakedValidator, chainStore.current.chainName]);
+
   return (
     <PageWithBottom
       bottomGroup={
@@ -244,7 +279,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               label="Switch Validator"
               type="secondary"
               onPress={() => {
-                smartNavigation.navigateSmart("Redelegate", {
+                navigate(SCREENS.Redelegate, {
                   validatorAddress,
                 });
               }}
@@ -257,7 +292,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <OWButton
               label="Stake"
               onPress={() => {
-                smartNavigation.navigateSmart("Delegate", {
+                navigate(SCREENS.Delegate, {
                   validatorAddress,
                 });
               }}
@@ -272,7 +307,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
           <OWButton
             label="Stake"
             onPress={() => {
-              smartNavigation.navigateSmart("Delegate", {
+              navigate(SCREENS.Delegate, {
                 validatorAddress,
               });
             }}
@@ -295,32 +330,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
-        <PageHeader
-          title="Validator details"
-          colors={colors}
-          onPress={async () => {}}
-          right={
-            isStakedValidator ? (
-              <TouchableOpacity
-                onPress={() => {
-                  smartNavigation.navigateSmart("Undelegate", {
-                    validatorAddress,
-                  });
-                }}
-                style={{
-                  borderRadius: 999,
-                  backgroundColor: colors["error-surface-default"],
-                  paddingHorizontal: 12,
-                  paddingVertical: 8,
-                }}
-              >
-                <OWText color={colors["neutral-icon-on-dark"]} weight="600">
-                  Unstake
-                </OWText>
-              </TouchableOpacity>
-            ) : null
-          }
-        />
         {validator ? (
           <View>
             <OWCard>
@@ -340,16 +349,17 @@ export const ValidatorDetailsCard: FunctionComponent<{
                   {validator?.description.moniker}
                 </OWText>
                 <View style={{ flexDirection: "row", marginTop: 8 }}>
-                  <View style={styles.topSubInfo}>
-                    <OWText
-                      style={{
-                        color: colors["neutral-text-title"],
-                      }}
-                    >
-                      APR:{" "}
-                      {apr && apr > 0 ? apr.toFixed(2).toString() + "%" : ""}
-                    </OWText>
-                  </View>
+                  {apr && apr > 0 ? (
+                    <View style={styles.topSubInfo}>
+                      <OWText
+                        style={{
+                          color: colors["neutral-text-title"],
+                        }}
+                      >
+                        APR: {apr.toFixed(2).toString() + "%"}
+                      </OWText>
+                    </View>
+                  ) : null}
                   <View style={styles.topSubInfo}>
                     <ValidatorBlockIcon
                       color={colors["neutral-text-title"]}
@@ -414,7 +424,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                         fullWidth={false}
                         label={"Claimable"}
                         type={"primary"}
-                        disabled={rewards.toDec().lte(new Dec(0))}
+                        disabled={rewards?.toDec().lte(new Dec(0))}
                         onPress={_onPressClaim}
                       />
                       <OWText
@@ -422,12 +432,16 @@ export const ValidatorDetailsCard: FunctionComponent<{
                         weight="500"
                         color={colors["success-text-body"]}
                       >
-                        +
                         {rewards
-                          .trim(true)
-                          .shrink(true)
-                          .maxDecimals(6)
-                          .toString()}
+                          ? "+" +
+                            removeDataInParentheses(
+                              rewards
+                                .trim(true)
+                                .shrink(true)
+                                .maxDecimals(6)
+                                .toString()
+                            )
+                          : ""}
                       </OWText>
                     </View>
                   </View>

@@ -5,6 +5,7 @@ import {
   RemoveTokenMsg,
   GetSecret20ViewingKey,
   SuggestTokenMsg,
+  GetAllTokenInfosMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -16,6 +17,7 @@ export function init(router: Router, service: TokensService): void {
   router.registerMessage(AddTokenMsg);
   router.registerMessage(RemoveTokenMsg);
   router.registerMessage(GetSecret20ViewingKey);
+  router.registerMessage(GetAllTokenInfosMsg);
 
   router.addHandler(ROUTE, getHandler(service));
 }

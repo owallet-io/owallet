@@ -19,6 +19,7 @@ import {
   // SettledResponses,
   StdSignature,
   StdSignDoc,
+  SettledResponses,
 } from "@owallet/types";
 import SignClient from "@walletconnect/sign-client";
 import {
@@ -573,13 +574,13 @@ export class OWalletWalletConnectV2 implements OWallet {
     };
   }
 
-  // async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
-  //   const paramArray = chainIds.map(async (chainId) => {
-  //     return await this.getKey(chainId);
-  //   });
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    const paramArray = chainIds.map(async (chainId) => {
+      return await this.getKey(chainId);
+    });
 
-  //   return await Promise.allSettled(paramArray);
-  // }
+    return await Promise.allSettled(paramArray);
+  }
 
   getOfflineSigner(
     chainId: string,

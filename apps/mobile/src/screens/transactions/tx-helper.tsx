@@ -89,6 +89,12 @@ export const mappingChainIdToHistoryScreen = (
     case ChainIdEnum.Injective:
     case ChainIdEnum.CosmosHub:
     case ChainIdEnum.Osmosis:
+    case ChainIdEnum.CELESTIA:
+    case ChainIdEnum.DYDX:
+    case ChainIdEnum.AKASH:
+    case ChainIdEnum.Juno:
+    case ChainIdEnum.SEI:
+    case ChainIdEnum.NEUTRON:
       return cosmosNetwork[type];
     default:
       return <EmptyTx />;

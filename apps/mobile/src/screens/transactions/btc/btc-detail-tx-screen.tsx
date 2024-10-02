@@ -21,14 +21,14 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { MapNetworkToChainId } from "@owallet/common";
+import { MapNetworkToChainId, urlTxHistory } from "@owallet/common";
 import { AddressTransaction, Network } from "@tatumio/tatum";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 
 import { Currency } from "@owallet/types";
 
-import { getTimeMilliSeconds, urlTxHistory } from "@src/common/constants";
+import { getTimeMilliSeconds } from "@src/common/constants";
 import { OWEmpty } from "@src/components/empty";
 import { AllNetworkItemTx } from "@owallet/types";
 
@@ -110,9 +110,6 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   const method = isSent ? "Sent" : "Received";
   return (
     <PageWithBottom
-      style={{
-        paddingTop: 0,
-      }}
       backgroundColor={colors["neutral-surface-bg"]}
       bottomGroup={
         <View style={styles.containerBottomButton}>

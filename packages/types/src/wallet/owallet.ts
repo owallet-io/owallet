@@ -16,6 +16,7 @@ import { SecretUtils } from "../secretjs";
 import Long from "long";
 import { SignEthereumTypedDataObject } from "../typedMessage";
 import { Signer } from "@oasisprotocol/client/dist/signature";
+import { SettledResponses } from "src/settled";
 
 export type AddressesLedger = {
   cosmos?: string;
@@ -69,6 +70,7 @@ export interface OWallet {
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
   getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
   signAmino(
     chainId: string,
     signer: string,

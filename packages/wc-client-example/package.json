@@ -7,7 +7,7 @@
   "scripts": {
     "serve": "parcel ./src/index.html",
     "build": "parcel build ./src/index.html",
-    "clean": "parcel clean"
+    "clean:example": "parcel clean"
   },
   "dependencies": {
     "@owallet/common": "*",

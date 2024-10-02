@@ -3,10 +3,15 @@ import { MintingInflation } from "./types";
 import { KVStore } from "@owallet/common";
 import { ChainGetter } from "../../../common";
 import { autorun } from "mobx";
+import { QuerySharedContext } from "src/common/query/context";
 
 export class ObservableQueryMintingInfation extends ObservableChainQuery<MintingInflation> {
-  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, "/minting/inflation");
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    super(sharedContext, chainId, chainGetter, "/minting/inflation");
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 

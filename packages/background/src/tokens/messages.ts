@@ -1,7 +1,31 @@
 import { Message } from "@owallet/router";
 import { ROUTE } from "./constants";
 import { AppCurrency } from "@owallet/types";
+import { TokenInfo } from "./types";
 
+export class GetAllTokenInfosMsg extends Message<
+  Record<string, TokenInfo[] | undefined>
+> {
+  public static type() {
+    return "GetAllTokenInfosMsg";
+  }
+
+  constructor() {
+    super();
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return GetAllTokenInfosMsg.type();
+  }
+}
 export class GetTokensMsg extends Message<AppCurrency[]> {
   public static type() {
     return "get-tokens";
@@ -62,13 +86,17 @@ export class SuggestTokenMsg extends Message<void> {
   }
 }
 
-export class AddTokenMsg extends Message<void> {
+export class AddTokenMsg extends Message<
+  Record<string, TokenInfo[] | undefined>
+> {
   public static type() {
     return "add-token";
   }
 
   constructor(
     public readonly chainId: string,
+    // Should be hex encoded. (not bech32)
+    public readonly associatedAccountAddress: string,
     public readonly currency: AppCurrency
   ) {
     super();
@@ -89,14 +117,18 @@ export class AddTokenMsg extends Message<void> {
   }
 }
 
-export class RemoveTokenMsg extends Message<void> {
+export class RemoveTokenMsg extends Message<
+  Record<string, TokenInfo[] | undefined>
+> {
   public static type() {
     return "remove-token";
   }
 
   constructor(
     public readonly chainId: string,
-    public readonly currency: AppCurrency
+    // Should be hex encoded. (not bech32)
+    public readonly associatedAccountAddress: string,
+    public readonly contractAddress: string
   ) {
     super();
   }

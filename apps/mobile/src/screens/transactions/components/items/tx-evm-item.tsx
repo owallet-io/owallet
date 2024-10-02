@@ -45,12 +45,9 @@ export const TxEvmItem: FC<{
   if (!item) return;
   let currency = unknownToken;
   const onTransactionDetail = (item, currency) => {
-    navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.HistoryDetail,
-      params: {
-        item,
-        currency,
-      },
+    navigate(SCREENS.HistoryDetail, {
+      item,
+      currency,
     });
 
     return;

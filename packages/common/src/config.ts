@@ -6,7 +6,8 @@ import { FiatCurrency } from "@owallet/types";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
 export const AutoFetchingAssetsInterval = 15 * 1000; // 15sec
-
+export const AprByChain =
+  "https://pjld2aanw3elvteui4gwyxgx4m0ceweg.lambda-url.us-west-2.on.aws";
 export const FiatCurrencies: FiatCurrency[] = [
   {
     currency: "usd",
@@ -89,8 +90,8 @@ export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 
 export const EthereumEndpoint = "https://rpc.ankr.com/eth";
-
-export const CoinGeckoGetPrice = "/simple/price";
+export const KeplrCoingecko = "https://satellite.keplr.app";
+export const CoinGeckoGetPrice = "/price/simple";
 
 // default networks
 export const EmbedChainInfos: AppChainInfo[] = [
@@ -139,6 +140,33 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: "the-open-network",
           coinImageUrl:
             "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
+        },
+        {
+          coinDenom: "PEPE",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE",
+          coinDecimals: 6,
+          coinGeckoId: "pepe",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/29850/standard/pepe-token.jpeg?1696528776",
+        },
+        {
+          coinDenom: "HMSTR",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/HMSTR",
+          coinDecimals: 9,
+          coinGeckoId: "hamster-kombat",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
+        },
+        {
+          coinDenom: "CAT",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
+          coinDecimals: 6,
+          coinGeckoId: "simon-s-cat",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
         },
         {
           type: "cw20",
@@ -519,6 +547,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
       },
       {
+        coinDenom: "TON",
+        coinMinimalDenom:
+          "ibc/905889A7F0B94F1CE1506D9BADF13AE9141E4CBDBCD565E1DFC7AE418B3E3E98",
+        coinDecimals: 9,
+        coinGeckoId: "the-open-network",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
+      },
+      {
         coinDenom: "ION",
         coinMinimalDenom: "uion",
         coinDecimals: 6,
@@ -539,12 +576,212 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://scanium.io/osmosis/tx/{txHash}",
     },
   },
-
+  {
+    rpc: "https://rpc-celestia.keplr.app",
+    rest: "https://lcd-celestia.keplr.app",
+    chainId: "celestia",
+    networkType: "cosmos",
+    chainName: "Celestia",
+    stakeCurrency: {
+      coinDenom: "TIA",
+      coinDecimals: 6,
+      coinMinimalDenom: "utia",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+      coinGeckoId: "celestia",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("celestia"),
+    currencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/celestia/tx/{txHash}",
+    },
+  },
+  {
+    rpc: "https://rpc-akash.keplr.app",
+    rest: "https://lcd-akash.keplr.app",
+    networkType: "cosmos",
+    chainId: "akashnet-2",
+    chainName: "Akash",
+    stakeCurrency: {
+      coinDenom: "AKT",
+      coinMinimalDenom: "uakt",
+      coinDecimals: 6,
+      coinGeckoId: "akash-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("akash"),
+    currencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7431.png",
+      },
+    ],
+    features: ["ibc-transfer", "no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/akash/tx/{txHash}",
+    },
+  },
+  {
+    rpc: "https://rpc-dydx.keplr.app",
+    rest: "https://lcd-dydx.keplr.app",
+    networkType: "cosmos",
+    chainId: "dydx-mainnet-1",
+    chainName: "dYdX",
+    stakeCurrency: {
+      coinDenom: "DYDX",
+      coinDecimals: 18,
+      coinMinimalDenom: "adydx",
+      coinGeckoId: "dydx-chain",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dydx",
+      bech32PrefixAccPub: "dydxpub",
+      bech32PrefixValAddr: "dydxvaloper",
+      bech32PrefixValPub: "dydxvaloperpub",
+      bech32PrefixConsAddr: "dydxvalcons",
+      bech32PrefixConsPub: "dydxvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+        coinGeckoId: "dydx-chain",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+        coinGeckoId: "dydx-chain",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/28324.png",
+        gasPriceStep: {
+          average: 25000000000,
+          high: 30000000000,
+          low: 20000000000,
+        },
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/dydx/tx/{txHash}",
+    },
+  },
+  {
+    chainId: "dymension_1100-1",
+    chainName: "Dymension",
+    networkType: "cosmos",
+    rpc: "https://rpc-dymension.keplr.app",
+    rest: "https://lcd-dymension.keplr.app",
+    currencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        coinGeckoId: "dymension",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+      },
+    ],
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dym",
+      bech32PrefixAccPub: "dympub",
+      bech32PrefixValAddr: "dymvaloper",
+      bech32PrefixValPub: "dymvaloperpub",
+      bech32PrefixConsAddr: "dymvalcons",
+      bech32PrefixConsPub: "dymvalconspub",
+    },
+    stakeCurrency: {
+      coinMinimalDenom: "adym",
+      coinDenom: "DYM",
+      coinDecimals: 18,
+      coinGeckoId: "dymension",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+    },
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        coinGeckoId: "dymension",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+        gasPriceStep: {
+          average: 25000000000,
+          high: 30000000000,
+          low: 20000000000,
+        },
+      },
+    ],
+    features: ["eth-address-gen", "eth-key-sign", "no-legacy-stdTx"],
+    txExplorer: {
+      name: "Mintscan",
+      txUrl: "https://mintscan.io/dymension/tx/{txHash}",
+    },
+  },
   {
     rpc: "https://rpc-stargaze.keplr.app",
     rest: "https://lcd-stargaze.keplr.app",
     chainId: "stargaze-1",
     chainName: "Stargaze",
+    networkType: "cosmos",
     stakeCurrency: {
       coinDenom: "STARS",
       coinMinimalDenom: "ustars",
@@ -575,9 +812,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "stargaze",
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/22363/standard/pink_star_200.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
     ],
-    features: ["ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "no-legacy-stdTx"],
     txExplorer: {
       name: "Scanium",
       txUrl: "https://scanium.io/stargaze/tx/{txHash}",
@@ -701,17 +943,17 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     currencies: [
       {
-        coinDenom: "STAKE",
-        coinMinimalDenom: "ustake",
-        coinDecimals: 6,
-      },
-      {
         coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      },
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
       },
     ],
     feeCurrencies: [
@@ -722,6 +964,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "usd-coin",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        gasPriceStep: {
+          low: 1,
+          average: 1.5,
+          high: 2,
+        },
       },
       {
         coinDenom: "ATOM",
@@ -746,8 +993,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://rpc.ankr.com/eth",
-    rest: "https://rpc.ankr.com/eth",
+    rpc: "https://evm-1.keplr.app",
+    rest: "https://evm-1.keplr.app",
     chainId: "0x01",
     chainName: "Ethereum",
     bip44: {
@@ -822,8 +1069,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://bsc-dataseed1.ninicoin.io",
-    rest: "https://bsc-dataseed1.ninicoin.io",
+    rpc: "https://evm-56.keplr.app",
+    rest: "https://evm-56.keplr.app",
     chainId: "0x38",
     chainName: "BNB Chain",
     bip44: {
@@ -919,6 +1166,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://api.trongrid.io",
     rest: "https://apilist.tronscanapi.com",
+    evmRpc: "https://api.trongrid.io/jsonrpc",
     // rpc: "https://nile.trongrid.io",
     // rest: "https://nileapi.tronscan.org",
     chainId: "0x2b6653dc",
@@ -1177,24 +1425,24 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get currencies() {
       return [
         this.stakeCurrency,
-        {
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
-          coinDenom: "MILKY",
-          coinMinimalDenom:
-            "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
-          coinDecimals: 18,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-        },
+        // {
+        //   coinDenom: "KWT",
+        //   coinMinimalDenom:
+        //     "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
+        //   coinDecimals: 18,
+        //   coinGeckoId: "kawaii-islands",
+        //   coinImageUrl:
+        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+        // },
+        // {
+        //   coinDenom: "MILKY",
+        //   coinMinimalDenom:
+        //     "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
+        //   coinDecimals: 18,
+        //   coinGeckoId: "milky-token",
+        //   coinImageUrl:
+        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
+        // },
       ];
     },
     get feeCurrencies() {
@@ -1307,6 +1555,61 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
+    rpc: "https://rpc-neutron.keplr.app",
+    rest: "https://lcd-neutron.keplr.app",
+    chainId: "neutron-1",
+    networkType: "cosmos",
+    chainName: "Neutron",
+    stakeCurrency: {
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
+      coinDecimals: 6,
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "neutron",
+      bech32PrefixAccPub: "neutronpub",
+      bech32PrefixValAddr: "neutronvaloper",
+      bech32PrefixValPub: "neutronvaloperpub",
+      bech32PrefixConsAddr: "neutronvalcons",
+      bech32PrefixConsPub: "neutronvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "neutron-3",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+      },
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+        coinGeckoId: "neutron-3",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/26680.png",
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/neutron/tx/{txHash}",
+    },
+  },
+  {
     chainId: "Neutaro-1",
     chainName: "Neutaro",
     networkType: "cosmos",
@@ -1376,7 +1679,19 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config("orai"),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          type: "cw20",
+          coinDenom: "AIRI",
+          coinMinimalDenom:
+            "cw20:orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2:aiRight Token",
+          contractAddress: "orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2",
+          coinDecimals: 6,
+          coinGeckoId: "airight",
+          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        },
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -1478,9 +1793,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",
       gasPriceStep: {
-        low: 0.001,
-        average: 0.0025,
-        high: 0.004,
+        low: 0.1,
+        average: 0.25,
+        high: 0.4,
       },
     },
     bip44: {
@@ -1498,14 +1813,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     get feeCurrencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: "ATOM",
+          coinMinimalDenom:
+            "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+          coinDecimals: 6,
+          gasPriceStep: {
+            low: 0.001 * 0.33,
+            average: 0.0025 * 0.33,
+            high: 0.004 * 0.33,
+          },
+        },
+      ];
     },
     features: [
-      "stargate",
-      "no-legacy-stdTx",
       "cosmwasm",
+      "no-legacy-stdTx",
       "ibc-transfer",
       "ibc-go",
+      "wasmd_0.24+",
     ],
     chainSymbolImageUrl:
       "https://assets.coingecko.com/coins/images/19249/standard/Juno_Logo_%28Salmon%29_%282%29.png",

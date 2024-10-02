@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { RNCamera } from "react-native-camera";
-import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useIsFocused } from "@react-navigation/native";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Text } from "@src/components/text";
 import { CloseIcon } from "../icon";
@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LoadingSpinner } from "../spinner";
 import { metrics, typography } from "../../themes";
 import { useTheme } from "@src/themes/theme-provider";
+import { goBack, NavigationAction } from "@src/router/root";
 
 export const FullScreenCameraView: FunctionComponent<
   React.ComponentProps<typeof RNCamera> & {
@@ -15,7 +16,6 @@ export const FullScreenCameraView: FunctionComponent<
     isLoading?: boolean;
   }
 > = (props) => {
-  const navigation = useNavigation();
   const { colors } = useTheme();
 
   const isFocused = useIsFocused();
@@ -66,29 +66,29 @@ export const FullScreenCameraView: FunctionComponent<
               flex: 1,
             }}
           />
-          {navigation.canGoBack() ? (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.goBack();
+          {/*{NavigationAction?.canGoBack() ? (*/}
+          <TouchableOpacity
+            onPress={() => {
+              goBack();
+            }}
+          >
+            <View
+              style={{
+                height: 38,
+                width: 38,
+                borderRadius: 64,
+                backgroundColor: "#323133",
+                opacity: 0.9,
+                marginTop: 8,
+                marginRight: 16,
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <View
-                style={{
-                  height: 38,
-                  width: 38,
-                  borderRadius: 64,
-                  backgroundColor: colors["neutral-surface-card"],
-                  opacity: 0.9,
-                  marginTop: 8,
-                  marginRight: 16,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <CloseIcon size={16} color={colors["neutral-icon-on-light"]} />
-              </View>
-            </TouchableOpacity>
-          ) : null}
+              <CloseIcon size={16} color={colors.white} />
+            </View>
+          </TouchableOpacity>
+          {/*) : null}*/}
         </View>
         <View
           style={{

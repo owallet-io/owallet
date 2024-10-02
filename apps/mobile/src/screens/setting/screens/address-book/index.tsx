@@ -8,7 +8,6 @@ import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import OWCard from "@src/components/card/ow-card";
 import { OWEmpty } from "@src/components/empty";
-import { PageHeader } from "@src/components/header/header-new";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -19,10 +18,12 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { AsyncKVStore } from "../../../../common";
 import { PageWithScrollView } from "../../../../components/page";
 import { RectButton } from "../../../../components/rect-button";
-import { useSmartNavigation } from "../../../../navigation.provider";
+
 import { useStore } from "../../../../stores";
 import { useStyle } from "../../../../styles";
 import { metrics, spacing } from "../../../../themes";
+import { goBack, navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -156,8 +157,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
 
-  const smartNavigation = useSmartNavigation();
-
   const chainId = recipientConfig
     ? recipientConfig.chainId
     : chainStore.current.chainId;
@@ -227,10 +226,9 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ marginTop: Platform.OS === "android" ? 30 : 0 }}
+      contentContainerStyle={{ marginTop: 16 }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Address book" />
       <View
         style={{
           flexDirection: "row",
@@ -272,7 +270,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           }}
           contentAlign="left"
           onPress={() => {
-            smartNavigation.navigateSmart("AddAddressBook", {
+            navigate(SCREENS.AddAddressBook, {
               chainId,
               addressBookConfig,
               recipient: "",
@@ -306,7 +304,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   onPress={() => {
                     if (isInTransaction) {
                       addressBookConfig.selectAddressAt(i);
-                      smartNavigation.goBack();
+                      goBack();
                     }
                   }}
                 >

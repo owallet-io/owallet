@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { BasicSettingItem, renderFlag } from "./components";
-import { useSmartNavigation } from "../../navigation.provider";
+
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
@@ -19,7 +19,6 @@ import { SettingRemoveAccountItem } from "./items/remove-account";
 import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
-import { PageHeader } from "@src/components/header/header-new";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -27,8 +26,9 @@ import OWCard from "@src/components/card/ow-card";
 import { Bech32Address } from "@owallet/cosmos";
 import { ChainIdEnum } from "@oraichain/oraidex-common";
 import Rate, { AndroidMarket } from "react-native-rate";
-import { SCREENS } from "@src/common/constants";
+import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -49,8 +49,6 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   const selected = keyRingStore.multiKeyStoreInfo.find(
     (keyStore) => keyStore.selected
   );
-
-  const smartNavigation = useSmartNavigation();
 
   const _onPressCountryModal = () => {
     modalStore.setOptions({
@@ -182,10 +180,8 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingTop: safeAreaInsets.top }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <PageHeader title="Settings" />
       <View>
         <OWCard style={{ marginBottom: 16 }} type="normal">
           <BasicSettingItem
@@ -207,9 +203,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               accountOrai.bech32Address,
               24
             )}
-            onPress={() =>
-              smartNavigation.navigateSmart("SettingSelectAccount", {})
-            }
+            onPress={() => navigate(SCREENS.SettingSelectAccount)}
           />
           <View style={styles.border} />
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
@@ -222,6 +216,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         <OWCard style={{ marginBottom: 16 }} type="normal">
+          <SettingSwitchHideTestnet />
           <SettingSwitchModeItem />
 
           <BasicSettingItem
@@ -244,7 +239,11 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
                 >
                   {priceStore.defaultVsCurrency.toUpperCase()}
                 </OWText>
-                <OWIcon name="chevron_right" size={16} />
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
               </View>
             }
           />
@@ -252,37 +251,26 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
             icon="tdesign_book"
             paragraph="Address book"
             onPress={() => {
-              smartNavigation.navigateSmart("AddressBook", {});
-            }}
-          />
-          <BasicSettingItem
-            icon="tdesign_book"
-            paragraph="Manage Wallet Connect"
-            onPress={() => {
-              navigate(SCREENS.ManageWalletConnect);
+              navigate(SCREENS.AddressBook, {});
             }}
           />
         </OWCard>
 
         {renderRating()}
-        <BasicSettingItem
-          left={
-            <View style={{ padding: 12 }}>
-              <Image
-                style={{ width: 24, height: 24 }}
-                source={require("../../assets/image/logo_owallet.png")}
-                fadeDuration={0}
-                resizeMode="contain"
-              />
-            </View>
-          }
-          containerStyle={{ marginHorizontal: 16 }}
-          icon="owallet"
-          paragraph="About OWallet"
-          onPress={() => {
-            smartNavigation.navigateSmart("Setting.Version", {});
-          }}
-        />
+        <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
+          <BasicSettingItem
+            typeLeftIcon={"images"}
+            source={require("../../assets/image/logo_owallet.png")}
+            containerStyle={{
+              marginVertical: -16,
+            }}
+            icon="owallet"
+            paragraph="About OWallet"
+            onPress={() => {
+              navigate(SCREENS.SettingVersion, {});
+            }}
+          />
+        </OWCard>
       </View>
     </PageWithScrollViewInBottomTabView>
   );

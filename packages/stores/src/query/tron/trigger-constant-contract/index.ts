@@ -1,9 +1,8 @@
 import {
-  ObservableChainQuery,
-  ObservableChainQueryMap,
-} from "../../chain-query";
-import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../../common";
+  ChainGetter,
+  ObservableJsonPostQuery,
+  ObservableJsonPostQueryMap,
+} from "../../../common";
 import {
   ITriggerConstantContract,
   ITriggerConstantContractReq,
@@ -11,21 +10,20 @@ import {
 } from "./types";
 import { computed, makeObservable } from "mobx";
 import { Int } from "@owallet/unit";
+import { QuerySharedContext } from "src/common/query/context";
 
-export class ObservableQueryTriggerConstantContractInner extends ObservableChainQuery<ITriggerConstantContract> {
+export class ObservableQueryTriggerConstantContractInner extends ObservableJsonPostQuery<ITriggerConstantContract> {
   constructor(
-    kvStore: KVStore,
+    sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
-    protected readonly data: ITriggerConstantContractReq
+    data: ITriggerConstantContractReq
   ) {
     super(
-      kvStore,
-      chainId,
-      chainGetter,
+      sharedContext,
+      chainGetter.getChain(chainId).rpc,
       `/walletsolidity/triggerconstantcontract`,
-      data,
-      chainGetter.getChain(chainId).rpc
+      data
     );
     makeObservable(this);
   }
@@ -42,16 +40,16 @@ export class ObservableQueryTriggerConstantContractInner extends ObservableChain
   }
 }
 
-export class ObservableQueryTriggerConstantContract extends ObservableChainQueryMap<ITriggerConstantContract> {
+export class ObservableQueryTriggerConstantContract extends ObservableJsonPostQueryMap<ITriggerConstantContract> {
   constructor(
-    protected readonly kvStore: KVStore,
+    protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(kvStore, chainId, chainGetter, (data) => {
+    super((data) => {
       const triggerConstantContract = JSON.parse(data);
       return new ObservableQueryTriggerConstantContractInner(
-        this.kvStore,
+        this.sharedContext,
         this.chainId,
         this.chainGetter,
         triggerConstantContract

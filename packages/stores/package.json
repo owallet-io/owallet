@@ -26,6 +26,7 @@
     "@owallet/cosmos": "^0.9.16",
     "@owallet/crypto": "^0.9.10",
     "@owallet/router": "^0.9.6",
+    "@owallet/simple-fetch": "*",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
     "axios": "^1.7.2",
