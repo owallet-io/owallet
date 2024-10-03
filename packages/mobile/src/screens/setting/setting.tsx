@@ -29,12 +29,17 @@ import Rate, { AndroidMarket } from "react-native-rate";
 import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { SettingSwitchOsmosisItem } from "./items/switch-osmosis";
+import { ThemeModal } from "./components/theme-modal";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
-    useStore();
-  const safeAreaInsets = useSafeAreaInsets();
+  const {
+    keychainStore,
+    keyRingStore,
+    priceStore,
+    modalStore,
+    accountStore,
+    appInitStore,
+  } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { colors } = useTheme();
@@ -65,6 +70,23 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         current: priceStore.defaultVsCurrency,
         priceStore,
         modalStore,
+        colors,
+      })
+    );
+  };
+
+  const _onPressThemeModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+
+    modalStore.setChildren(
+      ThemeModal({
+        modalStore,
+        appInitStore,
         colors,
       })
     );
@@ -235,8 +257,27 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           type="normal"
         >
           <SettingSwitchHideTestnet />
-          <SettingSwitchOsmosisItem />
-          <SettingSwitchModeItem />
+          <BasicSettingItem
+            icon="tdesign_moon"
+            paragraph="Theme"
+            onPress={_onPressThemeModal}
+            right={
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
+              </View>
+            }
+          />
+          {/* <SettingSwitchModeItem /> */}
 
           <BasicSettingItem
             icon="tdesign_money"

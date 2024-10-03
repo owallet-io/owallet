@@ -1,15 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { BasicSettingItem } from "../components";
-import { PasswordInputModal } from "../../../modals/password-input/modal";
 import { useStore } from "../../../stores";
-// import { getPrivateDataTitle } from "../screens/view-private-data";
-
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { Alert } from "react-native";
 import { showToast } from "@src/utils/helper";
-import { useNavigation } from "@react-navigation/native";
 import { PincodeModal } from "@src/screens/pincode/pincode-modal";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
@@ -70,7 +65,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
     <React.Fragment>
       {keyStore?.type === "mnemonic" && (
         <BasicSettingItem
-          icon="md_key"
+          icon="tdesignlink"
           paragraph={"Reveal secret phrase"}
           onPress={() => {
             _onPressPincodekModal(false);
