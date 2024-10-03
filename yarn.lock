@@ -8186,9 +8186,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/react-native@npm:^5.25.0":
-  version: 5.33.0
-  resolution: "@sentry/react-native@npm:5.33.0"
+"@sentry/react-native@npm:^5.33.1":
+  version: 5.33.1
+  resolution: "@sentry/react-native@npm:5.33.1"
   dependencies:
     "@sentry/babel-plugin-component-annotate": 2.20.1
     "@sentry/browser": 7.119.0
@@ -8208,7 +8208,7 @@ __metadata:
       optional: true
   bin:
     sentry-expo-upload-sourcemaps: scripts/expo-upload-sourcemaps.js
-  checksum: 95c539c3d1aba6a550e262ad3f664d4b7361a82936c4f367526800d053f8df86a1764cdef0962c4f920c733055ad50a2d424c0c97fd848329ea5ceef84e65787
+  checksum: b366f7c78003e2463e390aa7684dff93d2debc322daad0f34c39563936aa3698f16d71387c5d8fe1c456a7ac2ed50167aef7d2cbdc6a8f13fe21b2a0fe333043
   languageName: node
   linkType: hard
 
@@ -24835,7 +24835,7 @@ __metadata:
     "@react-navigation/elements": ^1.3.18
     "@react-navigation/native": 6.1.7
     "@react-navigation/stack": 6.3.17
-    "@sentry/react-native": ^5.25.0
+    "@sentry/react-native": ^5.33.1
     "@shopify/react-native-skia": ^1.3.0
     "@tanstack/react-query": ^5.14.6
     "@tatumio/tatum": ^4.2.24
