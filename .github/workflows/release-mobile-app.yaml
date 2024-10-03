@@ -8,7 +8,7 @@ on:
 jobs:
   release-android-mobile:
     name: release-android-mobile
-    runs-on: macos-14 #orai-self-hosted
+    runs-on: macos-13 #orai-self-hosted
     timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
@@ -28,7 +28,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Increase Node.js memory limit to 7GB
         run: |
-          export NODE_OPTIONS="--max-old-space-size=7168"
+          export NODE_OPTIONS="--max-old-space-size=14336"
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
