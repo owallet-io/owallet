@@ -70,6 +70,8 @@ export const useNft = (
       [TALIS_COLLECTIONS.HONORAIS]: handleForTalisOraichain(),
       [TALIS_COLLECTIONS.LAST_SAMORAIS]: handleForTalisOraichain(),
       [TALIS_COLLECTIONS.ORAI_WACHINES]: handleForTalisOraichain(),
+      [TALIS_COLLECTIONS.RUGLEO_POORDS]: handleForTalisOraichain(),
+      [TALIS_COLLECTIONS.KRANIA_ORCHA]: handleForTalisOraichain(),
     },
     [ChainIdEnum.Stargaze]: {
       stargaze: handleForStargaze(),
