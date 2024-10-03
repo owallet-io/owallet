@@ -1019,6 +1019,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           marginTop: 16,
           borderColor: colors["neutral-border-bold"],
           borderWidth: 2,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         {amountLoading ? (
@@ -1213,7 +1214,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
 
           {renderSwapInfo()}
-          <OWCard type="normal">
+          <OWCard
+            style={{ backgroundColor: colors["neutral-surface-card"] }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

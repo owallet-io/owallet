@@ -29,6 +29,7 @@ import Rate, { AndroidMarket } from "react-native-rate";
 import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { SettingSwitchOsmosisItem } from "./items/switch-osmosis";
 
 export const NewSettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
@@ -91,9 +92,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     });
   };
 
-  const renderRating = useCallback(() => {
+  const renderRating = () => {
     return (
-      <OWCard style={{ marginBottom: 16 }}>
+      <OWCard
+        style={{
+          marginBottom: 16,
+          backgroundColor: colors["neutral-surface-card"],
+        }}
+      >
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
@@ -175,7 +181,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </View>
       </OWCard>
     );
-  }, []);
+  };
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -183,7 +189,13 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       backgroundColor={colors["neutral-surface-bg"]}
     >
       <View>
-        <OWCard style={{ marginBottom: 16 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <BasicSettingItem
             left={
               <View style={{ paddingRight: 12 }}>
@@ -215,8 +227,15 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           <SettingRemoveAccountItem />
         </OWCard>
 
-        <OWCard style={{ marginBottom: 16 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <SettingSwitchHideTestnet />
+          <SettingSwitchOsmosisItem />
           <SettingSwitchModeItem />
 
           <BasicSettingItem
@@ -257,7 +276,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         {renderRating()}
-        <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            paddingBottom: 0,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <BasicSettingItem
             typeLeftIcon={"images"}
             source={require("../../assets/image/logo_owallet.png")}
