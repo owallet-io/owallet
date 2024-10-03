@@ -29,6 +29,7 @@ const styling = (colors) => {
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 2,
+      backgroundColor: colors["neutral-surface-card"],
     },
     msgType: {
       textAlign: "center",
