@@ -362,7 +362,12 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
         <View>
           <OWCard
             type="normal"
-            style={isRecipientError ? styles.errorBorder : null}
+            style={[
+              isRecipientError ? styles.errorBorder : null,
+              {
+                backgroundColor: colors["neutral-surface-card"],
+              },
+            ]}
           >
             <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
@@ -384,7 +389,13 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
             />
           </OWCard>
           <OWCard
-            style={[{ paddingTop: 22 }, isAmountError && styles.errorBorder]}
+            style={[
+              {
+                paddingTop: 22,
+                backgroundColor: colors["neutral-surface-card"],
+              },
+              isAmountError && styles.errorBorder,
+            ]}
             type="normal"
           >
             <View
@@ -447,7 +458,12 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
               </OWText>
             </View>
           </OWCard>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

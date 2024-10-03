@@ -121,7 +121,7 @@ export const SelectorModal: FunctionComponent<{
             return (
               <View
                 style={{
-                  backgroundColor: colors["background-item-list"],
+                  backgroundColor: colors["neutral-surface-action"],
                   borderRadius: spacing["12"],
                   marginTop: spacing["8"],
                   marginBottom: spacing["8"],

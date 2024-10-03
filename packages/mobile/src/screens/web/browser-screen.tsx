@@ -138,7 +138,7 @@ export const BrowserScreen = observer(() => {
             }}
           >
             <OWIcon
-              color={colors["neutral-text-action-on-light-bg"]}
+              color={colors["neutral-text-title"]}
               name={"tdesignsearch"}
               size={20}
             />
@@ -176,20 +176,20 @@ export const BrowserScreen = observer(() => {
                 // height: 20
               }}
               textStyle={{
-                color: colors["neutral-text-action-on-light-bg"],
+                color: colors["neutral-text-title"],
                 fontWeight: "600",
                 fontSize: 13,
               }}
               fullWidth={false}
               disabled={!sourceCode}
               loading={!sourceCode}
-              colorLoading={colors["neutral-icon-on-light"]}
+              colorLoading={colors["neutral-text-title"]}
               label={"Paste & Go"}
             />
             {url?.length > 0 && (
               <OWButtonIcon
                 fullWidth={false}
-                colorIcon={colors["neutral-text-action-on-light-bg"]}
+                colorIcon={colors["neutral-text-title"]}
                 name={"tdesignclose"}
                 sizeIcon={20}
                 onPress={onClear}
