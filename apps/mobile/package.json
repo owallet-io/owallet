@@ -27,7 +27,7 @@
     "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 3.1.5 --output-dir build",
     "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 3.1.5 --output-dir build",
     "images": "node ./src/scripts/generate-images.js",
-    "build:android": "react-native bundle --dev false --platform android --entry-file index.android.js --reset-cache --bundle-output index.android.bundle --sourcemap-output index.android.bundle.map",
+    "build:android": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest ios"
   },
   "dependencies": {

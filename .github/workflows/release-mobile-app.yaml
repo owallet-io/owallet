@@ -53,9 +53,9 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
-      - name: Build provider
+      - name: Bundle mobile
         working-directory: apps/mobile
-        run: yarn build:provider
+        run: yarn build:android
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
