@@ -90,6 +90,7 @@ platform :ios do
       timeout: 3600,
       lock_when_sleeps: false
     )
+     xcversion(version: "15.4")
     if ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
       match(
         storage_mode:'git',
