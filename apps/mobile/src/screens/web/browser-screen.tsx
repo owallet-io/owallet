@@ -41,7 +41,7 @@ export const BrowserScreen = observer(() => {
   const [routes] = React.useState([
     { key: "all", title: "All" },
     { key: "defi", title: "DeFi" },
-    { key: "ai", title: "AI" },
+    // { key: "ai", title: "AI" },
     { key: "explorer", title: "Explorer" },
   ]);
   const renderTabBar = (props) => (

@@ -33,11 +33,11 @@ export const DAppInfos = [
     name: "Orchai App",
     uri: "https://app.orchai.io/",
   },
-  {
-    id: 5,
-    name: "aiRight",
-    uri: "https://airight.io/",
-  },
+  // {
+  //   id: 5,
+  //   name: "aiRight",
+  //   uri: "https://airight.io/",
+  // },
 ];
 
 export class BrowserStore {

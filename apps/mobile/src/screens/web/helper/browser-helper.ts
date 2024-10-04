@@ -11,27 +11,27 @@ export const explorerData = [
   },
 ];
 export const aiData = [
-  {
-    images: images.img_airight,
-    logo: images.dapps_airight_logo,
-    title: "aiRight",
-    subTitle: "Marketplace of Generative AI",
-    url: "https://airight.io/",
-  },
-  {
-    images: images.img_defi_lens,
-    logo: images.dapps_defi_logo,
-    title: "DeFi Lens",
-    subTitle: "Simplify your Token Research with AI",
-    url: "https://layer.orai.io/",
-  },
-  {
-    images: images.img_chatbot,
-    logo: images.dapps_llm_logo,
-    title: "LLM Chatbot",
-    subTitle: "Natural language layer for Web3 Business",
-    url: "https://layer.orai.io/",
-  },
+  // {
+  //   images: images.img_airight,
+  //   logo: images.dapps_airight_logo,
+  //   title: "aiRight",
+  //   subTitle: "Marketplace of Generative AI",
+  //   url: "https://airight.io/",
+  // },
+  // {
+  //   images: images.img_defi_lens,
+  //   logo: images.dapps_defi_logo,
+  //   title: "DeFi Lens",
+  //   subTitle: "Simplify your Token Research with AI",
+  //   url: "https://layer.orai.io/",
+  // },
+  // {
+  //   images: images.img_chatbot,
+  //   logo: images.dapps_llm_logo,
+  //   title: "LLM Chatbot",
+  //   subTitle: "Natural language layer for Web3 Business",
+  //   url: "https://layer.orai.io/",
+  // },
 ];
 export const defiData = [
   {
