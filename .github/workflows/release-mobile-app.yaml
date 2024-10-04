@@ -26,9 +26,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Increase Node.js memory limit to 7GB
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=14336"
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
