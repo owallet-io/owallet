@@ -32,8 +32,9 @@ if (!__DEV__) {
   }
   Sentry.init({
     dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
-    tracesSampleRate: 0.7,
+    tracesSampleRate: 0.5,
     environment: "production",
+    enableAppHangTracking: false,
     ignoreErrors: [
       "Request rejected",
       "Failed to fetch",

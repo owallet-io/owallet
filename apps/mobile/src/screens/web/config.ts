@@ -69,11 +69,11 @@ export const DAppInfos: DAppInfo[] = [
     uri: "https://owallet-kawaii.firebaseapp.com",
     logo: oraiLogo,
   },
-  {
-    name: "aiRight",
-    uri: "https://airight.io",
-    logo: oraiLogo,
-  },
+  // {
+  //   name: "aiRight",
+  //   uri: "https://airight.io",
+  //   logo: oraiLogo,
+  // },
 ];
 
 if (__DEV__) {

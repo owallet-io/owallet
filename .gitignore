@@ -20,6 +20,7 @@ packages/extension/src/config.ui.var.tsx
 coverage
 
 .yarn/cache
+.yarn/install-state.gz
 .yarnrc
 .npmrc
 .env

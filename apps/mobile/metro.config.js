@@ -15,8 +15,7 @@ const assetExts = require("metro-config/src/defaults/defaults").assetExts;
 const getWorkspaces = require("get-yarn-workspaces");
 const path = require("path");
 const fs = require("fs");
-const { createSentryMetroSerializer } = require("@sentry/react-native/dist/js/tools/sentryMetroSerializer");
-
+const { withSentryConfig } = require("@sentry/react-native/metro");
 // const workspaces = getWorkspaces(__dirname);
 const currentPath = __dirname;
 const rootPath = (() => {
@@ -75,7 +74,7 @@ const shouldNohoistLibs = [
 //   })
 // ];
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), {
+module.exports = withSentryConfig(mergeConfig(getDefaultConfig(__dirname), {
   projectRoot: path.resolve(__dirname, "."),
   watchFolders: [
     rootPath + "/node_modules",
@@ -91,14 +90,14 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
     assetExts: assetExts.filter((ext) => ext !== "svg"),
     sourceExts: [...sourceExts, "svg"],
     blockList: exclusionList(
-      (() => {
-        const res = [];
-        for (const lib of shouldNohoistLibs) {
-          res.push(new RegExp(`^${rootPath}\\/node_modules\\/${lib}\\/.*$`));
-        }
+        (() => {
+          const res = [];
+          for (const lib of shouldNohoistLibs) {
+            res.push(new RegExp(`^${rootPath}\\/node_modules\\/${lib}\\/.*$`));
+          }
 
-        return res;
-      })()
+          return res;
+        })()
     ),
     extraNodeModules: {
       crypto: path.resolve(__dirname, "./polyfill/crypto"),
@@ -130,9 +129,7 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
       }
     })
   },
-  serializer: {
-    customSerializer: createSentryMetroSerializer()
-  },
+
   server: {
     enhanceMiddleware: (middleare) => {
       return (req, res, next) => {
@@ -144,4 +141,4 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
       };
     }
   }
-});
+}));
