@@ -22,8 +22,6 @@ import { Toggle } from "@components/toggle";
 import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
 import { _keyExtract, showToast } from "@utils/helper";
-import { SkeletonNft } from "@screens/nfts/components/nft-skeleton";
-import { colors } from "@src/themes";
 
 export const SelectChainsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
@@ -118,6 +116,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
 
     const chainInfoCheck = {};
     for (const chain of chains) {
+      if (!chain?.chainId) continue;
       chainInfoCheck[chain.chainId] = chainInfoExists(chain.chainId);
     }
     setChainEnables(chainInfoCheck);
