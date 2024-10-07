@@ -150,7 +150,7 @@ export const ManageChainsPage: FunctionComponent = observer(() => {
           checkedIcon={false}
           height={20}
           width={35}
-          onChange={() => onEnableOrDisableChain(item)}
+          onChange={() => {}}
           checked={chainEnables?.[item.chainId]}
         />
       </div>
