@@ -14,7 +14,6 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -36,7 +35,6 @@ import {
   parseRpcBalance,
 } from "@owallet/common";
 import { AccountBoxAll } from "./components/account-box-new";
-import { EarningCardNew } from "./components/earning-card-new";
 import { InjectedProviderUrl } from "../web/config";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import {
@@ -49,7 +47,7 @@ import {
 import { chainInfos, network } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices } from "@owallet/hooks";
 import { debounce } from "lodash";
-import { MainTabHome, NetworkModal } from "./components";
+import { MainTabHome } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
@@ -62,6 +60,7 @@ import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
 import { NewThemeModal } from "@src/modals/theme/new-theme";
+import { CONTRACT_WETH } from "@src/common/constants";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -676,14 +675,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   ) => {
     try {
       const network = MapChainIdToNetwork[chainInfo.chainId];
-      const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
       const res = await API.getAllBalancesEvm({ address, network });
 
       //Filter err res weth from tatumjs// NOT support weth on Ethereum
       const balances =
         res?.result?.filter(
-          (item) => item.tokenAddress?.toLowerCase() !== contractWeth
+          (item) => item.tokenAddress?.toLowerCase() !== CONTRACT_WETH
         ) || [];
       if (balances.length === 0) return;
 
@@ -718,7 +716,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       if (newCurrencies.length > 0) {
         chainInfo.addCurrencies(...newCurrencies);
       }
-      // console.log(newCurrencies, "newCurrencies");
 
       const newDataBalances = chainInfo.currencies
         .map((item) => {
@@ -791,9 +788,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         network: MapChainIdToNetwork[chainInfo.chainId],
       });
 
-      if (!res?.trc20) return;
-      const tokenAddresses = res?.trc20
-        .map((item, index) => {
+      //@ts-ignore
+      const trc20 = res?.trc20;
+
+      if (!trc20) return;
+      const tokenAddresses = trc20
+        ?.map((item) => {
           return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
             Object.keys(item)[0]
           }`;
@@ -828,7 +828,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       chainInfo.addCurrencies(...newCurrencies);
       const newDataBalances = chainInfo.currencies
         .map((item) => {
-          const contract = res.trc20.find(
+          const contract = trc20?.find(
             (obj) =>
               Object.keys(obj)[0] ===
               getBase58Address(

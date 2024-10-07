@@ -80,6 +80,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import { tracking } from "@src/utils/tracking";
+import { AFFILIATE_ADDRESS } from "@src/common/constants";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -613,7 +614,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       ? simulateData?.routes
       : undefined;
 
-    const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
       originalFromToken: originalFromToken,
@@ -629,7 +629,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: fromAmountToken,
       relayerFee,
       alphaSmartRoutes,
-      affiliates: [{ address: affiliateAddress, basis_points_fee: "25" }],
+      affiliates: [{ address: AFFILIATE_ADDRESS, basis_points_fee: "25" }],
     } as UniversalSwapData;
 
     let compileSwapData = sendToAddress

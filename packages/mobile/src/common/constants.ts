@@ -1,6 +1,6 @@
 import images from "@src/assets/images";
 import { Platform } from "react-native";
-import { ChainIdEnum, isMilliseconds } from "@owallet/common";
+import { isMilliseconds } from "@owallet/common";
 
 const fetchWrap = require("fetch-retry")(global.fetch);
 
@@ -21,6 +21,9 @@ export const HEADER_KEY = {
 export const isAndroid = Platform.OS === "android";
 export const isIos = Platform.OS === "ios";
 export const defaultAll = { label: "All", value: "All", image: images.crypto };
+export const CONTRACT_WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+export const AFFILIATE_ADDRESS = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
+
 export const SCREENS = {
   Home: "Home",
   TransactionDetail: "Transactions.Detail",
@@ -115,6 +118,7 @@ export const ICONS_TITLE = {
   [SCREENS.TABS.SendNavigation]: "",
 };
 
+//@ts-ignore
 export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.TABS.Invest]: {
     title: "Stake",
