@@ -11,6 +11,7 @@ import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   TryUpdateChainMsg,
+  SuggestChainInfoMsg,
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 
@@ -181,6 +182,20 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     this.setChainInfos(chainInfos);
   }
 
+  @flow
+  *addChain(chainInfo) {
+    const msg = new GetChainInfosMsg();
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
+    const chainInfos = yield this.requester.sendMessage(
+      BACKGROUND_PORT,
+      msgAddchain
+    );
+    console.log(chainInfos, "chainInfos");
+    yield this.setChainInfos([...result.chainInfos, chainInfo]);
+  }
   @flow
   *tryUpdateChain(chainId: string) {
     const msg = new TryUpdateChainMsg(chainId);

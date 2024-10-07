@@ -83,8 +83,7 @@ export const ModalCopyAddress: FC<{
                       <img
                         className={styles.imgChain}
                         src={
-                          item?.stakeCurrency?.coinImageUrl ||
-                          unknownToken.coinImageUrl
+                          item?.chainSymbolImageUrl || unknownToken.coinImageUrl
                         }
                       />
                     </div>

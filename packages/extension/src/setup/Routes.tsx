@@ -28,6 +28,8 @@ import { SignTronPage } from "../pages/sign/sign-tron";
 import { SignEvmPage } from "../pages/sign/sign-evm";
 import { SignBtcPage } from "../pages/sign/sign-btc";
 import { StateRenderer } from "../components/state-renderer/StateRenderer";
+import { ManageChainsPage } from "pages/chain/manage-chains/manage-chains-page";
+import { AddChainPage } from "pages/chain/add-chain/add-chain-page";
 
 export const Routes: React.FC = () => (
   <>
@@ -74,5 +76,7 @@ export const Routes: React.FC = () => (
     <Route path="/sign-ethereum" component={SignEvmPage} />
     <Route path="/sign-tron" component={SignTronPage} />
     <Route path="/suggest-chain" component={ChainSuggestedPage} />
+    <Route path="/manage-chains" component={ManageChainsPage} />
+    <Route path="/add-chain" component={AddChainPage} />
   </>
 );

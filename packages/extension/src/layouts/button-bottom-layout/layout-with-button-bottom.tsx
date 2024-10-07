@@ -11,6 +11,7 @@ export const LayoutWithButtonBottom: FC<{
   onClickButtonBottom?: (value) => void;
   btnBackgroundColor?: string;
   isHideButtonBottom?: boolean;
+  CustomRight?: () => JSX.Element;
 }> = ({
   title,
   backgroundColor,
@@ -20,6 +21,7 @@ export const LayoutWithButtonBottom: FC<{
   isDisabledHeader,
   btnBackgroundColor,
   isHideButtonBottom,
+  CustomRight,
 }) => {
   return (
     <div
@@ -36,6 +38,7 @@ export const LayoutWithButtonBottom: FC<{
           isExpand={false}
           isDisableCenterBtn={true}
           title={title}
+          CustomRight={CustomRight}
         />
       )}
       {children}

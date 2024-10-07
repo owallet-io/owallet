@@ -76,7 +76,7 @@ const TokenItem: FC<{
               <img
                 className={styles.chain}
                 src={
-                  chainStore.current?.stakeCurrency?.coinImageUrl ||
+                  chainStore.current?.chainSymbolImageUrl ||
                   (unknownToken.coinImageUrl as string)
                 }
               />
