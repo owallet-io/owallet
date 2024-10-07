@@ -355,7 +355,7 @@ export const StakeCardAll = observer(({}) => {
               type="images"
               source={{
                 uri:
-                  token?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                  token?.chainInfo?.chainSymbolImageUrl ||
                   unknownToken.coinImageUrl,
               }}
               style={{

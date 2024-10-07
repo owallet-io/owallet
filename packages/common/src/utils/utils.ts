@@ -15,6 +15,7 @@ import bs58 from "bs58";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import TronWeb from "tronweb";
+import isValidDomain from "is-valid-domain";
 import "dotenv/config";
 export const getFavicon = (url) => {
   const serviceGG =
@@ -29,6 +30,18 @@ export const COINTYPE_NETWORK = {
   195: "Tron",
   0: "Bitcoin",
   1: "Bitcoin Testnet",
+};
+export const checkValidDomain = (url: string) => {
+  if (isValidDomain(url)) {
+    return true;
+  }
+  // try with URL
+  try {
+    const { origin } = new URL(url);
+    return origin?.length > 0;
+  } catch {
+    return false;
+  }
 };
 export const convertIpfsToHttp = (ipfsUrl: string) => {
   // Ensure the URL starts with "ipfs://"

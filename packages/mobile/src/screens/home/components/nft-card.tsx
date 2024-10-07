@@ -61,7 +61,7 @@ export const NftCard = observer(() => {
                       }}
                       source={{
                         uri:
-                          it?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                          it?.chainInfo?.chainSymbolImageUrl ||
                           unknownToken.coinImageUrl,
                       }}
                     />
