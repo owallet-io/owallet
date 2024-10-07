@@ -14,6 +14,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -48,7 +49,7 @@ import {
 import { chainInfos, network } from "@oraichain/oraidex-common";
 import { useCoinGeckoPrices } from "@owallet/hooks";
 import { debounce } from "lodash";
-import { MainTabHome } from "./components";
+import { MainTabHome, NetworkModal } from "./components";
 import { sha256 } from "sha.js";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
@@ -60,6 +61,7 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
+import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -77,6 +79,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     appInitStore,
     keyRingStore,
+    modalStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -135,6 +138,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       subscription.remove();
     };
   }, [checkAndUpdateChainInfo]);
+
+  const [isThemOpen, setThemeOpen] = useState(true);
+  useEffect(() => {
+    setThemeOpen(true);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -894,6 +902,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
+      <NewThemeModal
+        isOpen={isThemOpen}
+        close={() => {
+          setThemeOpen(false);
+        }}
+      />
       <AccountBoxAll
         isLoading={isLoading}
         totalBalanceByChain={availableTotalPriceByChain || initPrice}
