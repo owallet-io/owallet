@@ -535,10 +535,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
       const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-      const IBC_DECIMALS = 18;
+      // const IBC_DECIMALS = 18;
       const fromTokenInOrai = getTokenOnOraichain(
         tokenInfo.coinGeckoId,
-        IBC_DECIMALS
+        true
+        // IBC_DECIMALS
       );
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
