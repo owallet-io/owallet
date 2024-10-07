@@ -77,6 +77,7 @@ export const StakeCardAll = observer(({}) => {
 
   const [totalStakingReward, setTotalStakingReward] = useState(`0`);
   const [viewMore, setViewMore] = useState(false);
+  const [refresh, setRefresh] = useState(null);
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   const { colors } = useTheme();
@@ -816,7 +817,7 @@ export const StakeCardAll = observer(({}) => {
     } else {
       setTotalStakingReward(`0`);
     }
-  }, [viewTokens]);
+  }, [viewTokens, refresh]);
 
   if (Number(totalStakingReward) <= 0) return;
 
@@ -889,6 +890,7 @@ export const StakeCardAll = observer(({}) => {
                 label="Claim all"
                 onPress={() => {
                   claimAll();
+                  setRefresh(Date.now());
                 }}
                 disabled={claimAllIsLoading || claimAllDisabled}
                 loading={claimAllIsLoading}
