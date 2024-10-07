@@ -143,7 +143,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     if (!appInitStore.getInitApp.isSelectTheme) {
       setThemeOpen(true);
-      appInitStore.updateSelectTheme();
     }
   }, [appInitStore.getInitApp.isSelectTheme]);
 
@@ -909,6 +908,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         isOpen={isThemOpen}
         close={() => {
           setThemeOpen(false);
+          appInitStore.updateSelectTheme();
         }}
         colors={colors}
       />
