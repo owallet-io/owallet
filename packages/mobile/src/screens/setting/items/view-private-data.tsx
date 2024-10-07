@@ -20,6 +20,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
   );
   const keyStore = keyRingStore.multiKeyStoreInfo[index];
   const onVerifyPincode = async (passcode, isPrivateKey) => {
+    modalStore.close();
     try {
       if (index >= 0) {
         const privateData = await keyRingStore.showKeyRing(
