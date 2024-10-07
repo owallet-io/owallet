@@ -11,6 +11,7 @@ export class AppInit {
     status: boolean;
     passcodeType: "numeric" | "alphabet";
     isAllNetworks: boolean;
+    isSelectTheme: boolean;
     date_updated: null | number;
     theme: "dark" | "light";
     wallet: "owallet" | "injective" | "osmosis";
@@ -40,6 +41,7 @@ export class AppInit {
       theme: "light",
       wallet: "owallet",
       hideTestnet: false,
+      isSelectTheme: false,
       hideTokensWithoutBalance: true,
       feeOption: "average",
       isAllNetworks: false,
@@ -68,6 +70,10 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+  @action
+  updateSelectTheme() {
+    this.initApp = { ...this.initApp, isSelectTheme: true };
   }
   @action
   updateMultipleAssets(data: IMultipleAsset) {

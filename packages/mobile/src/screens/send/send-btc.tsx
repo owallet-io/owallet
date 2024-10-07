@@ -518,7 +518,12 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               </OWText>
             </View>
           </OWCard>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

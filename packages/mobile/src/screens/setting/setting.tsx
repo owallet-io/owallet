@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { BasicSettingItem, renderFlag } from "./components";
 import { useTheme } from "@src/themes/theme-provider";
@@ -28,7 +28,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { ThemeModal } from "./components/theme-modal";
 
-export const NewSettingScreen: FunctionComponent = observer(() => {
+export const NewSettingScreen: FunctionComponent = observer((props) => {
   const {
     keychainStore,
     keyRingStore,
@@ -88,6 +88,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       })
     );
   };
+
+  useEffect(() => {
+    //@ts-ignore
+    if (props.route?.params?.isOpenTheme) {
+      _onPressThemeModal();
+    }
+    //@ts-ignore
+  }, [props.route?.params?.isOpenTheme]);
 
   const onRatingApp = () => {
     const options = {

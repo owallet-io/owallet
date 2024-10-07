@@ -62,6 +62,7 @@ export const AmountCard: FC<{
         height: 143,
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: colors["neutral-surface-card"],
       }}
     >
       {imageCoin}

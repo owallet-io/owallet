@@ -139,10 +139,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     };
   }, [checkAndUpdateChainInfo]);
 
-  const [isThemOpen, setThemeOpen] = useState(true);
+  const [isThemOpen, setThemeOpen] = useState(false);
   useEffect(() => {
-    setThemeOpen(true);
-  }, []);
+    if (!appInitStore.getInitApp.isSelectTheme) {
+      setThemeOpen(true);
+      appInitStore.updateSelectTheme();
+    }
+  }, [appInitStore.getInitApp.isSelectTheme]);
 
   useFocusEffect(
     useCallback(() => {
@@ -907,6 +910,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         close={() => {
           setThemeOpen(false);
         }}
+        colors={colors}
       />
       <AccountBoxAll
         isLoading={isLoading}

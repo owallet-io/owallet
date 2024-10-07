@@ -1,104 +1,94 @@
 import React, { FunctionComponent } from "react";
 import { registerModal } from "../base";
-import { CardModal } from "../card";
-import { Text, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { useStyle } from "../../styles";
-import { Button } from "../../components/button";
+import { View } from "react-native";
 import { observer } from "mobx-react-lite";
-import { colors } from "../../themes";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import OWCard from "@src/components/card/ow-card";
+import OWText from "@src/components/text/ow-text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { OWButton } from "@src/components/button";
+import { metrics } from "@src/themes";
 
 export const NewThemeModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  colors: any;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(
-  observer(({ close }) => {
-    const style = useStyle();
-
+  observer(({ close, colors }) => {
     return (
-      <CardModal title="Confirm Grant Access">
-        <View style={style.flatten(["margin-bottom-16"])}>
-          <Text style={style.flatten(["margin-bottom-3"])}>
-            <Text
-              style={style.flatten(["subtitle3", "color-primary"])}
-            >{`1 `}</Text>
-            <Text
-              style={style.flatten(["subtitle3", "color-text-black-medium"])}
-            >
-              Message
-            </Text>
-          </Text>
-          <View
-            style={style.flatten([
-              "border-radius-8",
-              "border-width-1",
-              "border-color-border-white",
-              "overflow-hidden",
-            ])}
+      <OWCard
+        type="normal"
+        style={{
+          backgroundColor: colors["neutral-surface-card"],
+          alignItems: "center",
+        }}
+      >
+        <OWIcon
+          style={{
+            borderRadius: 24,
+            width: metrics.screenWidth - 64,
+            height: metrics.screenWidth / 2,
+          }}
+          type={"images"}
+          source={require("../../assets/images/theme.png")}
+        />
+        <View style={{ paddingVertical: 24, alignItems: "center" }}>
+          <OWText size={16} weight="700">
+            {`What’s new`.toUpperCase()}
+          </OWText>
+          <OWText
+            style={{ textAlign: "center", marginTop: 4 }}
+            weight="500"
+            color={colors["neutral-text-body"]}
           >
-            <ScrollView
-              style={style.flatten(["max-height-214"])}
-              persistentScrollbar={true}
-            >
-              <Text
-                style={{
-                  color: colors["sub-text"],
-                }}
-              >
-                What news
-              </Text>
-            </ScrollView>
-          </View>
+            Seamlessly experience the Osmosis and Injective themes on OWallet
+          </OWText>
         </View>
 
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-evenly",
+            justifyContent: "space-between",
+            marginBottom: 24,
           }}
         >
-          <Button
-            text="Reject"
-            size="large"
-            containerStyle={{
-              width: "40%",
-            }}
-            style={{
-              backgroundColor: colors["red-500"],
-            }}
-            textStyle={{
-              color: colors["white"],
-            }}
-            underlayColor={colors["danger-400"]}
-            onPress={() => {
+          <OWButton
+            label="Cancel"
+            type="secondary"
+            onPress={async () => {
               close();
             }}
-          />
-          <Button
-            text="Approve"
-            size="large"
-            containerStyle={{
-              width: "40%",
+            style={{
+              borderRadius: 999,
+              width: "48%",
             }}
             textStyle={{
-              color: colors["white"],
+              fontSize: 14,
+              fontWeight: "600",
             }}
-            style={{
-              backgroundColor: colors["primary-surface-default"],
-            }}
+          />
+          <OWButton
+            label="Check it out"
             onPress={async () => {
               resetTo(SCREENS.TABS.Settings, {
                 isOpenTheme: true,
               });
               close();
             }}
+            style={{
+              borderRadius: 999,
+              width: "48%",
+            }}
+            textStyle={{
+              fontSize: 14,
+              fontWeight: "600",
+            }}
           />
         </View>
-      </CardModal>
+      </OWCard>
     );
   }),
   {
