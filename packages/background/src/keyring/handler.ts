@@ -47,6 +47,7 @@ import {
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
   GetKeySettledMsg,
+  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { KeyRingStatus } from "./keyring";
@@ -211,6 +212,12 @@ export const getHandler: (service: KeyRingService) => Handler = (
         );
       case ChangeChainMsg:
         return handleChangeChainMsg(service)(env, msg as ChangeChainMsg);
+
+      case PrivilegeCosmosSignAminoWithdrawRewardsMsg:
+        return handlePrivilegeCosmosSignAminoWithdrawRewardsMsg(service)(
+          env,
+          msg as PrivilegeCosmosSignAminoWithdrawRewardsMsg
+        );
       default:
         throw new Error("Unknown msg type");
     }
@@ -741,6 +748,23 @@ const handleTriggerSmartContractMsg: (
       msg.data
     );
     return { ...response };
+  };
+};
+
+const handlePrivilegeCosmosSignAminoWithdrawRewardsMsg: (
+  service: KeyRingService
+) => InternalHandler<PrivilegeCosmosSignAminoWithdrawRewardsMsg> = (
+  service
+) => {
+  return async (env, msg) => {
+    return await service.privilegeSignAminoWithdrawRewards(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.signDoc,
+      msg.signOptions
+    );
   };
 };
 

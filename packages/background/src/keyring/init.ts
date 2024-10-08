@@ -39,6 +39,7 @@ import {
   SimulateSignTronMsg,
   GetKeySettledMsg,
   GetIsLockedMsg,
+  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -84,5 +85,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(ExportKeyRingDatasMsg);
   router.registerMessage(RequestSignEIP712CosmosTxMsg_v0);
   router.registerMessage(ChangeChainMsg);
+  router.registerMessage(PrivilegeCosmosSignAminoWithdrawRewardsMsg);
+
   router.addHandler(ROUTE, getHandler(service));
 }

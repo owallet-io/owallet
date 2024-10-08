@@ -128,6 +128,19 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
     this._chainInfo = chainInfo;
   }
 
+  @computed
+  get chainIdentifier(): string {
+    return ChainIdHelper.parse(this.chainId).identifier;
+  }
+
+  get hideInUI(): boolean | undefined {
+    return this.hideInUI;
+  }
+
+  hasFeature(feature: string): boolean {
+    return !!(this.features && this.features.includes(feature));
+  }
+
   get raw(): C {
     return this._chainInfo;
   }
@@ -221,6 +234,9 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get stakeCurrency(): Currency {
     return this.raw.stakeCurrency;
   }
+  get chainSymbolImageUrl(): string {
+    return this.raw.chainSymbolImageUrl;
+  }
 
   get alternativeBIP44s(): BIP44[] | undefined {
     return this.raw.alternativeBIP44s;
@@ -305,6 +321,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     return this._chainInfos;
   }
 
+  //@ts-ignore
   getChain(chainId: string): ChainInfoInner<C> {
     if (chainId === "" || !chainId) {
       chainId = "Oraichain";
@@ -362,13 +379,12 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
         const chainInfoInner = new ChainInfoInner(chainInfo);
         this._cachedChainInfosMap.set(chainInfo.chainId, chainInfoInner);
         chainInfoInners.push(chainInfoInner);
-
         for (const handler of this.setChainInfoHandlers) {
           handler(chainInfoInner);
         }
       }
     }
-
+    console.log(chainInfoInners, "chainInfoInners");
     this._chainInfos = chainInfoInners;
   }
 }

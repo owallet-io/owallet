@@ -4,13 +4,12 @@
   "main": "build/index.js",
   "author": "oraichain labs",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
-    "rebuild":"rimraf build && yarn build",
+    "rebuild": "rimraf build && yarn build",
     "build": "tsc --project tsconfig.build.json",
     "dev": "tsc -w --project tsconfig.build.json",
     "test": "jest --passWithNoTests",
@@ -20,12 +19,12 @@
   "dependencies": {
     "@cosmjs/launchpad": "^0.27.1",
     "@owallet/crypto": "^0.9.10",
+    "@owallet/simple-fetch": "*",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
     "axios": "^1.7.2",
     "bech32": "^1.1.4",
     "buffer": "^6.0.3",
-    "long": "^4.0.0",
-    "@owallet/simple-fetch":"*"
+    "long": "^4.0.0"
   }
 }

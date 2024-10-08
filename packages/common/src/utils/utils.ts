@@ -15,6 +15,7 @@ import bs58 from "bs58";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import TronWeb from "tronweb";
+import isValidDomain from "is-valid-domain";
 import "dotenv/config";
 export const getFavicon = (url) => {
   const serviceGG =
@@ -29,6 +30,18 @@ export const COINTYPE_NETWORK = {
   195: "Tron",
   0: "Bitcoin",
   1: "Bitcoin Testnet",
+};
+export const checkValidDomain = (url: string) => {
+  if (isValidDomain(url)) {
+    return true;
+  }
+  // try with URL
+  try {
+    const { origin } = new URL(url);
+    return origin?.length > 0;
+  } catch {
+    return false;
+  }
 };
 export const convertIpfsToHttp = (ipfsUrl: string) => {
   // Ensure the URL starts with "ipfs://"
@@ -115,6 +128,12 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.Osmosis]: Network.OSMOSIS,
   [ChainIdEnum.CosmosHub]: Network.COSMOSHUB,
   [ChainIdEnum.Injective]: Network.INJECTIVE,
+  [ChainIdEnum.CELESTIA]: Network.CELESTIA,
+  [ChainIdEnum.DYDX]: Network.DYDX,
+  [ChainIdEnum.Juno]: Network.JUNO,
+  [ChainIdEnum.AKASH]: Network.AKASH,
+  [ChainIdEnum.SEI]: Network.SEI,
+  [ChainIdEnum.NEUTRON]: Network.NEUTRON,
 };
 export const MapNetworkToChainId = {
   [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
@@ -128,6 +147,12 @@ export const MapNetworkToChainId = {
   [Network.OSMOSIS]: ChainIdEnum.Osmosis,
   [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
   [Network.INJECTIVE]: ChainIdEnum.Injective,
+  [Network.DYDX]: ChainIdEnum.DYDX,
+  [Network.JUNO]: ChainIdEnum.Juno,
+  [Network.AKASH]: ChainIdEnum.AKASH,
+  [Network.SEI]: ChainIdEnum.SEI,
+  [Network.CELESTIA]: ChainIdEnum.CELESTIA,
+  [Network.NEUTRON]: ChainIdEnum.NEUTRON,
 };
 export const getRpcByChainId = (
   chainInfo: ChainInfo,

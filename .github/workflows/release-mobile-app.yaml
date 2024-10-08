@@ -6,117 +6,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  # release-android-mobile:
-  #   name: release-android-mobile
-  #   runs-on: macos-latest #orai-self-hosted
-  #   timeout-minutes: 120 # Set the timeout to 120 minutes
-  #   strategy:
-  #     matrix:
-  #       node-version: [18.17.0]
-  #   steps:
-  #     - name: Check tag name
-  #       if: contains(github.ref, 'cp')
-  #       run: |
-  #         exit 1
-  #     - name: Cancel Previous Runs
-  #       uses: styfle/cancel-workflow-action@0.8.0
-  #       with:
-  #         access_token: ${{ github.token }}
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Get yarn cache directory path
-  #       id: yarn-cache-dir-path
-  #       run: echo "::set-output name=dir::$(yarn cache dir)"
-  #     - name: Restore node_modules from cache
-  #       uses: actions/cache@v2
-  #       id: yarn-cache
-  #       with:
-  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-yarn-
-  #     - name: Checkout submodule repo
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
-  #       run: yarn install --frozen-lockfile
-  #     - name: Install mobile packages
-  #       working-directory: packages/mobile
-  #       run: yarn --silent
-  #     - name: restore lerna
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: "**/node_modules"
-  #         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-  #     - name: Build Libs
-  #       run: yarn build:libs
-  #     - name: Build provider
-  #       working-directory: packages/mobile
-  #       run: yarn build:provider
-  #       env:
-  #         SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-  #         API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
-  #         API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
-  #         API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-  #         SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-  #         APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-  #         API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
-  #         MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-  #         BYTE_BREW_SDK_KEY_ANDROID: ${{ secrets.BYTE_BREW_SDK_KEY_ANDROID }}
-  #         BYTE_BREW_ID_ANDROID: ${{ secrets.BYTE_BREW_ID_ANDROID }}
-  #     - name: Setup Ruby
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: 3.2
-  #         bundler-cache: true
-  #     - name: Setup JDK 11
-  #       uses: actions/setup-java@v3
-  #       with:
-  #         java-version: "11"
-  #         distribution: "temurin"
-  #         cache: gradle
-  #     - name: Grant execute permission for gradlew
-  #       working-directory: packages/mobile/android
-  #       run: chmod +x gradlew
-  #     - name: Decode Keystore File
-  #       uses: timheuer/base64-to-file@v1
-  #       id: android_keystore
-  #       with:
-  #         fileName: "OWalletKeystore"
-  #         encodedString: ${{ secrets.KEYSTORE_FILE }}
-  #         fileDir: "packages/mobile/android/fastlane"
-  #     - name: Setup Fastlane android
-  #       working-directory: packages/mobile/android/fastlane
-  #       run: cd .. && bundle update && fastlane release && fastlane android build
-  #       env:
-  #         JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
-  #         DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-  #         DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-  #         ALIAS: ${{ secrets.ALIAS }}
-  #         PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-  #         PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-  #         SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-  #         FILE_PATH: "/OWalletKeystore"
-  # #      - name: Archive artifacts
-  # #        uses: actions/upload-artifact@v4
-  # #        with:
-  # #          name: app
-  # #          path: app/build/outputs/apk/release/app-release.apk
-  # #      - name: Upload APK to Target Repo
-  # #        run: |
-  # #          curl \
-  # #            -H "Authorization: token ${{ secrets.TARGET_REPO_TOKEN }}" \
-  # #            -H "Content-Type: $(file -b --mime-type app/build/outputs/apk/release/app-release.apk)" \
-  # #            --data-binary @app/build/outputs/apk/release/app-release.apk \
-  # #            "https://uploads.github.com/repos/oraichain/owallet-provider/releases/latest/assets?name=app-release.apk"
-  release-ios-mobile:
-    name: release-ios-mobile
-    runs-on: macos-latest #orai-self-hosted
+  release-android-mobile:
+    name: release-android-mobile
+    runs-on: macos-13 #orai-self-hosted
     timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
-        node-version: [18.17.0]
+        node-version: [20.17.0]
     steps:
       - name: Check tag name
         if: contains(github.ref, 'cp')
@@ -146,11 +42,8 @@ jobs:
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
       - name: Install mobile packages
-        working-directory: packages/mobile
+        working-directory: apps/mobile
         run: yarn --silent
-      - name: Build mobile images
-        working-directory: packages/mobile
-        run: yarn images
       - name: restore lerna
         uses: actions/cache@v3
         with:
@@ -159,7 +52,7 @@ jobs:
       - name: Build Libs
         run: yarn build:libs
       - name: Build provider
-        working-directory: packages/mobile
+        working-directory: apps/mobile
         run: yarn build:provider
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
@@ -168,40 +61,135 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
-          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
-      - name: Bundle mobile
-        working-directory: packages/mobile
-        run: yarn build:ios
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.2
+          ruby-version: 2.6.10
           bundler-cache: true
-      - name: Pod install
-        working-directory: packages/mobile
-        run: yarn pod:install
-      - name: Setup Fastlane ios
-        working-directory: packages/mobile/ios/fastlane
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: "11"
+          distribution: "temurin"
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        working-directory: apps/mobile/android
+        run: chmod +x gradlew
+      - name: Decode Keystore File
+        uses: timheuer/base64-to-file@v1
+        id: android_keystore
+        with:
+          fileName: "OWalletKeystore"
+          encodedString: ${{ secrets.KEYSTORE_FILE }}
+          fileDir: "apps/mobile/android/fastlane"
+      - name: Setup Fastlane android
+        working-directory: apps/mobile/android/fastlane
         run: cd .. && bundle update && fastlane release
         env:
+          JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
           DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-          APP_STORE_CONNECT_API_KEY_DURATION: 1200
-          APP_STORE_CONNECT_API_KEY_IN_HOUSE: false
-          APP_IDENTIFIER: io.orai.owallet
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          MATCH_GIT_URL: "https://github.com/oraichain/fastlane.git"
-          KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-          MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-          KEYCHAIN_NAME: "login"
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          ALIAS: ${{ secrets.ALIAS }}
+          PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          FILE_PATH: "/OWalletKeystore"
+#  release-ios-mobile:
+#    name: release-ios-mobile
+#    runs-on: macos-14 #orai-self-hosted
+#    timeout-minutes: 120 # Set the timeout to 120 minutes
+#    strategy:
+#      matrix:
+#        node-version: [20.17.0]
+#    steps:
+#      - name: Check tag name
+#        if: contains(github.ref, 'cp')
+#        run: |
+#          exit 1
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.8.0
+#        with:
+#          access_token: ${{ github.token }}
+#      - name: Use Node.js ${{ matrix.node-version }}
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: ${{ matrix.node-version }}
+#      - name: Increase Node.js memory limit to 7GB
+#        run: |
+#          export NODE_OPTIONS="--max-old-space-size=7168"
+#      - name: Get yarn cache directory path
+#        id: yarn-cache-dir-path
+#        run: echo "::set-output name=dir::$(yarn cache dir)"
+#      - name: Restore node_modules from cache
+#        uses: actions/cache@v2
+#        id: yarn-cache
+#        with:
+#          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-yarn-
+#      - name: Checkout submodule repo
+#        uses: actions/checkout@v3
+#      - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
+#        run: yarn install --frozen-lockfile
+#      - name: Install mobile packages
+#        working-directory: apps/mobile
+#        run: yarn --silent
+#      - name: Build mobile images
+#        working-directory: apps/mobile
+#        run: yarn images
+#      - name: restore lerna
+#        uses: actions/cache@v3
+#        with:
+#          path: "**/node_modules"
+#          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#      - name: Build Libs
+#        run: yarn build:libs
+##      - name: Build provider
+##        working-directory: apps/mobile
+##        run: yarn build:provider
+#
+#      - name: Bundle mobile
+#        working-directory: apps/mobile
+#        run: yarn build:ios
+#        env:
+#          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+#          API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
+#          API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
+#          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+#          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+#          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+#          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
+#          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+#          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+#          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: 3.2
+#          bundler-cache: true
+#      - name: Pod install
+#        working-directory: apps/mobile
+#        run: yarn pod:install
+#      - name: Setup Fastlane ios
+#        working-directory: apps/mobile/ios/fastlane
+#        run: cd .. && bundle update && fastlane release
+#        env:
+#          DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+#          DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+#          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+#          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+#          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+#          APP_STORE_CONNECT_API_KEY_DURATION: 1200
+#          APP_STORE_CONNECT_API_KEY_IN_HOUSE: false
+#          APP_IDENTIFIER: io.orai.owallet
+#          APPLE_ID: ${{ secrets.APPLE_ID }}
+#          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
+#          TEAM_ID: ${{ secrets.TEAM_ID }}
+#          MATCH_GIT_URL: "https://github.com/oraichain/fastlane.git"
+#          KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
+#          MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
+#          KEYCHAIN_NAME: "login"
+#          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+#          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+#          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}

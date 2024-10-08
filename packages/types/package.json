@@ -1,21 +1,21 @@
 {
   "name": "@owallet/types",
-  "version": "0.9.12",
+  "version": "0.9.13",
   "main": "build/index.js",
   "author": "oraichain labs",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "clean": "rimraf node_modules build",
     "build": "tsc --project tsconfig.build.json",
-    "rebuild":"rimraf build && yarn build",
+    "rebuild": "rimraf build && yarn build",
     "dev": "tsc -w --project tsconfig.build.json",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
-    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
+    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "publish": "yarn publish --access public"
   },
   "dependencies": {
     "@cosmjs/launchpad": "^0.27.1",

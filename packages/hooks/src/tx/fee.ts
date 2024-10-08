@@ -230,8 +230,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         throw new Error("Fee currency not set");
       }
 
-      const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
-        ? this.chainInfo.stakeCurrency.gasPriceStep
+      const gasPriceStep = this.chainInfo.feeCurrencies[0].gasPriceStep
+        ? this.chainInfo.feeCurrencies[0].gasPriceStep
         : DefaultGasPriceStep;
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
       if (this.chainInfo.networkType === "bitcoin") {

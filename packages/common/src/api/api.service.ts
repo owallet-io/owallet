@@ -6,7 +6,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 export class API {
   static async getMultipleTokenInfo({ tokenAddresses }, config?: any) {
     const url = `${urlTxHistory}v1/token-info/by-addresses?tokenAddresses=${tokenAddresses}`;
-    console.log(url, "url data");
+
     return fetchRetry(url, config) as Promise<TokenInfo[]>;
   }
 

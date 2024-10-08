@@ -1,6 +1,10 @@
 import { ObservableQuery, QuerySharedContext } from "../common";
 import { CoinGeckoSimplePrice } from "./types";
-import { KVStore, MarketAPIEndPoint } from "@owallet/common";
+import {
+  CoinGeckoAPIEndPoint,
+  KVStore,
+  MarketAPIEndPoint,
+} from "@owallet/common";
 import { Dec, CoinPretty, Int, PricePretty } from "@owallet/unit";
 import { FiatCurrency } from "@owallet/types";
 import { DeepReadonly } from "utility-types";
@@ -186,7 +190,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       new QuerySharedContext(kvStore, {
         responseDebounceMs: 0,
       }),
-      options.baseURL || MarketAPIEndPoint,
+      options.baseURL || CoinGeckoAPIEndPoint,
       options.uri || "/simple/price"
     );
     this._optionUri = options.uri || "/simple/price";
