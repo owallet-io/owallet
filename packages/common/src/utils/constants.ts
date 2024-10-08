@@ -18,6 +18,10 @@ export const TALIS_NFT_CONTRACT = {
     "orai1typah5jrtcu8c3mj8jamxfpa6p7jh8vs9s2c0r7d9uw9quyzrhvs9ws55w",
   OraiWachines:
     "orai19kd6unf2caepuerl3y73rj8dfknstyafy7g609l4y0kegvtsclxsqvu0l9",
+  RugLeopoords:
+    "orai1jjz5muv8pg3qze7t39szdjdzws89gxk5824mner60hppq723yluq9fp2nf",
+  KraniaOrcha:
+    "orai1pvhsg2xmq2uutrr3rfzkq28p2wer2rfaskzdms8lseuuuns22mcsgzpdye",
 };
 export enum OasisNetwork {
   MAINNET = "oasis-mainnet",

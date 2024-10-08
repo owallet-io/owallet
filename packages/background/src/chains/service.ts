@@ -21,6 +21,7 @@ export class ChainsService {
   protected onChainRemovedHandlers: ChainRemovedHandler[] = [];
 
   public cachedChainInfos: ChainInfoWithEmbed[] | undefined;
+
   constructor(
     @inject(TYPES.ChainsStore)
     protected readonly kvStore: KVStore,
@@ -135,9 +136,6 @@ export class ChainsService {
   ): Promise<ChainInfoWithEmbed> {
     let chainInfo: ChainInfoWithEmbed;
     if (networkType) {
-      console.log("chainId getChainInfo", chainId);
-      console.log("networkType", networkType);
-
       chainInfo = (await this.getChainInfos()).find((chainInfo) => {
         if (networkType === "evm") {
           return (
@@ -191,15 +189,17 @@ export class ChainsService {
     chainInfo: ChainInfo,
     origin: string
   ): Promise<void> {
+    console.log(chainInfo, "chainInfo chua validate");
     chainInfo = await ChainInfoSchema.validateAsync(chainInfo, {
       stripUnknown: true,
     });
-
+    console.log(chainInfo, "chainInfo da validate");
     if (!chainInfo.networkType) {
       chainInfo = {
         ...chainInfo,
         networkType: "cosmos",
       };
+      console.log(chainInfo, "chainInfo da suggest");
     }
 
     // await this.interactionKeeper.waitApprove(
@@ -255,14 +255,22 @@ export class ChainsService {
 
     await this.kvStore.set<ChainInfo[]>("chain-infos", resultChainInfo);
 
-    // Clear the updated chain info.
-    await this.chainUpdaterKeeper.clearUpdatedProperty(chainId);
+    try {
+      // Clear the updated chain info.
+      await this.chainUpdaterKeeper.clearUpdatedProperty(chainId);
+    } catch (error) {
+      console.log(error, "error clearUpdatedProperty");
+    }
 
     for (const chainRemovedHandler of this.onChainRemovedHandlers) {
       chainRemovedHandler(chainId, ChainIdHelper.parse(chainId).identifier);
     }
-
-    this.clearCachedChainInfos();
+    try {
+      // Clear the updated chain info.
+      this.clearCachedChainInfos();
+    } catch (error) {
+      console.log(error, "error clear cache info");
+    }
   }
 
   addChainRemovedHandler(handler: ChainRemovedHandler) {

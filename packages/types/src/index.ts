@@ -11,3 +11,4 @@ export * from "./multiple-asset.types";
 export * from "./all-network.types";
 export * from "./secretjs";
 export * from "./settled";
+export * from "./chain";

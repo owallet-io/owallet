@@ -1,0 +1,27 @@
+{
+  "name": "@owallet/wc-qrcode-modal",
+  "version": "0.9.16",
+  "main": "build/index.js",
+  "author": "oraichain labs",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "test": "jest --passWithNoTests",
+    "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
+  },
+  "dependencies": {
+    "@walletconnect/sign-client": "^2.15.1",
+    "@walletconnect/types": "^2.15.1",
+    "detect-browser": "^5.3.0",
+    "qrcode.react": "^3.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  }
+}
