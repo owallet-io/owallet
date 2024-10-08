@@ -230,7 +230,6 @@ export const SendPage: FunctionComponent<{
         },
         sendConfigs.memoConfig.memo
       );
-      console.log(simulateTx, "simulateTx");
       if (!simulateTx?.gasUsed) {
         setGasMsgSend(null);
         return;

@@ -5946,9 +5946,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.21":
-  version: 1.1.21
-  resolution: "@oraichain/oraidex-common@npm:1.1.21"
+"@oraichain/oraidex-common@npm:^1.1.21, @oraichain/oraidex-common@npm:^1.1.23":
+  version: 1.1.23
+  resolution: "@oraichain/oraidex-common@npm:1.1.23"
   dependencies:
     "@cosmjs/amino": 0.31.3
     "@cosmjs/cosmwasm-stargate": 0.31.3
@@ -5966,7 +5966,7 @@ __metadata:
     cosmjs-types: 0.8.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: 6e8a73369d10b7c291c4a05d6bba390801bba98d25dfb46c2e0630c98abc7f3a9e07e0ef5ae5f7ea404a1ff09535eb07a9f83523405984bb64c40e5fe965f7a7
+  checksum: ad33ba9f1feedd74ca1d6e68a31d943915620061a6352aaa98c4553c04e840c453233aade4cbb5ebc9461461f081ae12efc4a0c4dc4250e49768e9a131d2dddc
   languageName: node
   linkType: hard
 
@@ -5991,9 +5991,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.11":
-  version: 1.1.11
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.11"
+"@oraichain/oraidex-universal-swap@npm:^1.1.11, @oraichain/oraidex-universal-swap@npm:^1.1.12":
+  version: 1.1.12
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.12"
   dependencies:
     "@oraichain/common": ^1.0.3
     "@oraichain/oraidex-common": ^1.1.21
@@ -6002,7 +6002,7 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
-  checksum: a9cc58a4e4119847a5af79fec86e0d19a7c81e5fbfa87f4555680712601690220fe9a1208eadbe241073f3785b5c7b6a89e24c048b81fbdd2b119d89f66dca05
+  checksum: e6a82324001c83f5da70f919c7969e94a2806b04271dac1726903f707ffe0860337173b1fa8f0d788719574894e34462b4895218bf12d9053cb9e4c77bc233f1
   languageName: node
   linkType: hard
 
@@ -26397,10 +26397,10 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.21
+    "@oraichain/oraidex-common": ^1.1.23
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.11
+    "@oraichain/oraidex-universal-swap": ^1.1.12
     "@types/jest": 29.5.3
     "@types/node": ^16.6.2
     "@typescript-eslint/eslint-plugin": ^4.13.0
@@ -26421,6 +26421,7 @@ __metadata:
     folder-hash: ^4.0.2
     human-standard-token-abi: 2.0.0
     husky: ^8.0.0
+    is-valid-domain: 0.1.6
     jest: 29.6.1
     lerna: ^7.1.5
     lint-staged: ^10.5.4

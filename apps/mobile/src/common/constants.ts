@@ -75,6 +75,8 @@ export const SCREENS = {
   SettingVersion: "Setting.Version",
   DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
+  ManageChain: "ManageChain",
+  AddChain: "AddChain",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
   BookMarks: "BookMarks",
@@ -269,6 +271,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.SettingSelectAccount]: {
     title: "Manage wallet",
   },
+  [SCREENS.AddChain]: {
+    title: "Add Chain",
+  },
   [SCREENS.SettingViewPrivateData]: {
     title: "Mnemonic Seed",
   },
@@ -290,6 +295,10 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.AddressBook]: {
     title: "Address book",
   },
+  [SCREENS.ManageChain]: {
+    title: "Select Chains",
+  },
+
   [SCREENS.AddAddressBook]: {
     title: "Add new contact",
   },

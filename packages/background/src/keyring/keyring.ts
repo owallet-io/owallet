@@ -1019,6 +1019,8 @@ export class KeyRing {
     ) {
       throw new Error("Key ring is not unlocked");
     }
+    if (coinType === 474)
+      throw new Error("This coin type not support private key");
     const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
     // and here
     if (this.type === "mnemonic") {
@@ -1064,6 +1066,7 @@ export class KeyRing {
       const pubKeyIdentity = `pubKey-${KeyRing.getKeyStoreId(
         this.keyStore
       )}-${path}`;
+
       await this.kvStore.set(pubKeyIdentity, encodePublicKey);
       return new PrivKeySecp256k1(privKey);
     } else if (this.type === "privateKey") {

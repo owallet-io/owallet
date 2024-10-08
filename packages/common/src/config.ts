@@ -100,6 +100,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://lcd.orai.io",
     chainId: "Oraichain",
     chainName: "Oraichain",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     networkType: "cosmos",
     stakeCurrency: {
       coinDenom: "ORAI",
@@ -300,8 +302,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     features: ["stargate", "ibc-transfer", "cosmwasm", "no-legacy-stdTx"],
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
     txExplorer: {
       name: "Oraiscan",
       txUrl: "https://scan.orai.io/txs/{txHash}",
@@ -357,6 +357,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     chainId: "oraibridge-subnet-2",
     chainName: "OraiBridge",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     rpc: "https://bridge-v2.rpc.orai.io",
     rest: "https://bridge-v2.lcd.orai.io",
     networkType: "cosmos",
@@ -438,6 +440,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://btc.rpc.orai.io",
     rest: "https://btc.lcd.orai.io",
     networkType: "cosmos",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     stakeCurrency: {
       coinDenom: "ORAIBTC",
       coinMinimalDenom: "uoraibtc",
@@ -576,53 +580,57 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://scanium.io/osmosis/tx/{txHash}",
     },
   },
-  {
-    rpc: "https://rpc-celestia.keplr.app",
-    rest: "https://lcd-celestia.keplr.app",
-    chainId: "celestia",
-    networkType: "cosmos",
-    chainName: "Celestia",
-    stakeCurrency: {
-      coinDenom: "TIA",
-      coinDecimals: 6,
-      coinMinimalDenom: "utia",
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-      coinGeckoId: "celestia",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("celestia"),
-    currencies: [
-      {
-        coinDenom: "TIA",
-        coinDecimals: 6,
-        coinMinimalDenom: "utia",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-        coinGeckoId: "celestia",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "TIA",
-        coinDecimals: 6,
-        coinMinimalDenom: "utia",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-        coinGeckoId: "celestia",
-      },
-    ],
-    features: ["no-legacy-stdTx"],
-    txExplorer: {
-      name: "Scanium",
-      txUrl: "https://scanium.io/celestia/tx/{txHash}",
-    },
-  },
+  // {
+  //   rpc: "https://rpc-celestia.keplr.app",
+  //   rest: "https://lcd-celestia.keplr.app",
+  //   chainSymbolImageUrl:
+  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/celestia/chain.png",
+  //   chainId: "celestia",
+  //   networkType: "cosmos",
+  //   chainName: "Celestia",
+  //   stakeCurrency: {
+  //     coinDenom: "TIA",
+  //     coinDecimals: 6,
+  //     coinMinimalDenom: "utia",
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+  //     coinGeckoId: "celestia",
+  //   },
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("celestia"),
+  //   currencies: [
+  //     {
+  //       coinDenom: "TIA",
+  //       coinDecimals: 6,
+  //       coinMinimalDenom: "utia",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+  //       coinGeckoId: "celestia",
+  //     },
+  //   ],
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: "TIA",
+  //       coinDecimals: 6,
+  //       coinMinimalDenom: "utia",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+  //       coinGeckoId: "celestia",
+  //     },
+  //   ],
+  //   features: ["no-legacy-stdTx"],
+  //   txExplorer: {
+  //     name: "Scanium",
+  //     txUrl: "https://scanium.io/celestia/tx/{txHash}",
+  //   },
+  // },
   {
     rpc: "https://rpc-akash.keplr.app",
     rest: "https://lcd-akash.keplr.app",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/akashnet/chain.png",
     networkType: "cosmos",
     chainId: "akashnet-2",
     chainName: "Akash",
@@ -668,6 +676,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc-dydx.keplr.app",
     rest: "https://lcd-dydx.keplr.app",
     networkType: "cosmos",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dydx-mainnet/adydx.png",
     chainId: "dydx-mainnet-1",
     chainName: "dYdX",
     stakeCurrency: {
@@ -723,6 +733,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     chainId: "dymension_1100-1",
     chainName: "Dymension",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
     networkType: "cosmos",
     rpc: "https://rpc-dymension.keplr.app",
     rest: "https://lcd-dymension.keplr.app",
@@ -780,6 +792,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: "https://rpc-stargaze.keplr.app",
     rest: "https://lcd-stargaze.keplr.app",
     chainId: "stargaze-1",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/stargaze/chain.png",
     chainName: "Stargaze",
     networkType: "cosmos",
     stakeCurrency: {
@@ -872,6 +886,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://blockstream.info/api",
     chainId: "bitcoin",
     chainName: "Bitcoin",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
     bip44: {
       coinType: 0,
     },
@@ -915,6 +931,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://rpc-noble.keplr.app",
     rest: "https://lcd-noble.keplr.app",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/chain.png",
     chainId: "noble-1",
     networkType: "cosmos",
     chainName: "Noble",
@@ -1015,7 +1033,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     },
     chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
     bech32Config: Bech32Address.defaultBech32Config("evmos"),
     networkType: "evm",
     currencies: [
@@ -1172,6 +1190,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "0x2b6653dc",
     networkType: "evm",
     chainName: "Tron",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
     stakeCurrency: {
       coinDenom: "TRX",
       coinMinimalDenom: "trx",
@@ -1265,6 +1285,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "native-0x5afe",
     networkType: "evm",
     chainName: "Oasis",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
     stakeCurrency: {
       coinDenom: "ROSE",
       coinMinimalDenom: "rose",
@@ -1309,6 +1331,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://sapphire.oasis.io",
     grpc: "https://grpc.oasis.dev",
     chainId: "0x5afe",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
     chainName: "Oasis Sapphire",
     bip44: {
       coinType: 60,
@@ -1356,6 +1380,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://emerald.oasis.dev",
     grpc: "https://grpc.oasis.dev",
     chainId: "0xa516",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
     chainName: "Oasis Emerald",
     bip44: {
       coinType: 60,
@@ -1403,6 +1429,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://cosmos1.kawaii.global",
     chainId: "kawaii_6886-1",
     networkType: "cosmos",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
     chainName: "Kawaiiverse Cosmos",
     stakeCurrency: {
       coinDenom: "ORAIE",
@@ -1461,6 +1489,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "0x1ae6",
     networkType: "evm",
     chainName: "Kawaiiverse EVM",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
     stakeCurrency: {
       coinDenom: "ORAIE",
       coinMinimalDenom: "oraie",
@@ -1512,6 +1542,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: "https://testnet.sapphire.oasis.io",
     grpc: "https://grpc.oasis.dev",
     chainId: "0x5aff",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
     chainName: "Oasis Sapphire Testnet",
     bip44: {
       coinType: 60,
@@ -1557,6 +1589,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rpc: "https://rpc-neutron.keplr.app",
     rest: "https://lcd-neutron.keplr.app",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/neutron/chain.png",
     chainId: "neutron-1",
     networkType: "cosmos",
     chainName: "Neutron",
@@ -1697,7 +1731,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "cosmwasm"],
-    chainSymbolImageUrl: "https://orai.io/images/logos/logomark-dark.png",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     txExplorer: {
       name: "Oraiscan",
       txUrl: "https://testnet.scan.orai.io/txs/{txHash}",

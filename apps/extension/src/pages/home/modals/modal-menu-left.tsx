@@ -43,6 +43,9 @@ export const ModalMenuLeft: FC<{
       case MenuEnum.PREFERENCES:
         history.push("/preferences");
         break;
+      case MenuEnum.MANAGE_CHAINS:
+        history.push("/manage-chains");
+        break;
       case MenuEnum.FEEDBACK:
         window.open(item.link);
         break;
@@ -108,6 +111,7 @@ const manifestData = chrome.runtime.getManifest();
 
 enum MenuEnum {
   ADD_TOKEN = 1,
+  MANAGE_CHAINS = 2,
   ADDR_BOOK = 3,
   CONNECTED_DAPP = 4,
   PREFERENCES = 5,
@@ -122,11 +126,11 @@ const dataItem = [
     icon: require("assets/svg/tdesign_add_circle.svg"),
     id: MenuEnum.ADD_TOKEN,
   },
-  // {
-  //   name: "Manage Token list",
-  //   icon: require("assets/svg/tdesign_list.svg"),
-  //   id: 2,
-  // },
+  {
+    name: "Manage Chains",
+    icon: require("assets/svg/tdesign_list.svg"),
+    id: MenuEnum.MANAGE_CHAINS,
+  },
   // {
   //   name: "Address Book",
   //   icon: require("assets/svg/tdesign_address_book.svg"),

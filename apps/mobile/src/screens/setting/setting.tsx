@@ -261,6 +261,13 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
               navigate(SCREENS.ManageWalletConnect);
             }}
           />
+          <BasicSettingItem
+            icon="tdesignapp"
+            paragraph="Manage Chain"
+            onPress={() => {
+              navigate(SCREENS.ManageChain, {});
+            }}
+          />
         </OWCard>
 
         {renderRating()}

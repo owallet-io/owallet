@@ -1,4 +1,4 @@
-@import '../../styles/var';
+@import '../../../styles/var';
 
 .container {
   background-color: $neutral-surface-card;
@@ -35,6 +35,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    opacity: 0.5;
     cursor: pointer;
     background-color: $neutral-surface-action3;
     padding: 20px 12px;

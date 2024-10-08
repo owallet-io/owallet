@@ -25,6 +25,8 @@ export enum TALIS_COLLECTIONS {
   HONORAIS = "HONORAIS",
   LAST_SAMORAIS = "LAST_SAMORAIS",
   ORAI_WACHINES = "ORAI_WACHINES",
+  RUGLEO_POORDS = "RUGLEO_POORDS",
+  KRANIA_ORCHA = "KRANIA_ORCHA",
 }
 export enum ECOSYSTEM_NFT_CHAIN {
   TALIS = "TALIS",
@@ -206,6 +208,12 @@ export const useNfts = (
     [TALIS_COLLECTIONS.ORAI_WACHINES]: handleNftsForTalis(
       TALIS_NFT_CONTRACT.OraiWachines
     ),
+    [TALIS_COLLECTIONS.RUGLEO_POORDS]: handleNftsForTalis(
+      TALIS_NFT_CONTRACT.RugLeopoords
+    ),
+    [TALIS_COLLECTIONS.KRANIA_ORCHA]: handleNftsForTalis(
+      TALIS_NFT_CONTRACT.KraniaOrcha
+    ),
     [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: handleNftsForOraichain(),
     [ECOSYSTEM_NFT_CHAIN.STARGAZE]: handleNftsForStargaze(),
   };
@@ -239,6 +247,22 @@ export const useNfts = (
         count: nfts[TALIS_COLLECTIONS.ORAI_WACHINES]?.total,
         ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
         contractAddress: TALIS_NFT_CONTRACT.OraiWachines,
+      },
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.TALIS],
+        data: nfts[TALIS_COLLECTIONS.KRANIA_ORCHA]?.data || [],
+        count: nfts[TALIS_COLLECTIONS.KRANIA_ORCHA]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
+        contractAddress: TALIS_NFT_CONTRACT.KraniaOrcha,
+      },
+      {
+        chainInfo: chainInfoOrai,
+        title: mapTitle[ECOSYSTEM_NFT_CHAIN.TALIS],
+        data: nfts[TALIS_COLLECTIONS.RUGLEO_POORDS]?.data || [],
+        count: nfts[TALIS_COLLECTIONS.RUGLEO_POORDS]?.total,
+        ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
+        contractAddress: TALIS_NFT_CONTRACT.RugLeopoords,
       },
       {
         chainInfo: chainInfoOrai,

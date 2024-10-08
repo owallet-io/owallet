@@ -41,10 +41,10 @@ export const CopyAddressModal: FunctionComponent<{
   const styles = styling(colors);
 
   const { accountStore, keyRingStore, chainStore } = useStore();
-  const btcLegacyChain = chainStore.chainInfosInUI.find(
+  const btcLegacyChain = chainStore.chainInfos.find(
     (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
   );
-  const chains = chainStore.chainInfosInUI.filter(
+  const chains = chainStore.chainInfos.filter(
     (item, index) =>
       item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
       !item?.chainName?.toLowerCase()?.includes("test")
@@ -109,8 +109,7 @@ export const CopyAddressModal: FunctionComponent<{
                     type="images"
                     source={{
                       uri:
-                        item?.feeCurrencies?.[0]?.coinImageUrl ||
-                        unknownToken.coinImageUrl,
+                        item?.chainSymbolImageUrl || unknownToken.coinImageUrl,
                     }}
                     size={28}
                   />

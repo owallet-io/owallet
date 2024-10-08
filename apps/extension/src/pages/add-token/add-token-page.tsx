@@ -171,7 +171,7 @@ export const AddTokenPage = observer(() => {
             <img
               className={styles.imgChain}
               src={
-                chainStore.current.stakeCurrency.coinImageUrl ||
+                chainStore.current.chainSymbolImageUrl ||
                 unknownToken.coinImageUrl
               }
             />

@@ -145,7 +145,7 @@ export const ActivitiesPage = observer(() => {
                             <img
                               className={styles.chain}
                               src={
-                                chainInfo?.stakeCurrency?.coinImageUrl ||
+                                chainInfo?.chainSymbolImageUrl ||
                                 unknownToken.coinImageUrl
                               }
                             />

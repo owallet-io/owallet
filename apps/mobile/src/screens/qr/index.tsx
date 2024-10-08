@@ -169,8 +169,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                   type="images"
                   source={{
                     uri:
-                      network?.feeCurrencies?.[0]?.coinImageUrl ||
-                      unknownToken.coinImageUrl,
+                      network?.chainSymbolImageUrl || unknownToken.coinImageUrl,
                   }}
                   size={16}
                   style={{

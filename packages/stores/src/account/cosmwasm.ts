@@ -244,19 +244,17 @@ export class CosmwasmAccount {
     // dynamic msg based on beta
     msg.value[chainInfo.beta ? "sent_funds" : "funds"] = funds;
 
-    const protoMsgs = this.hasNoLegacyStdFeature()
-      ? [
-          {
-            typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: MsgExecuteContract.encode({
-              sender: msg.value.sender,
-              contract: msg.value.contract,
-              msg: Buffer.from(JSON.stringify(msg.value.msg)),
-              funds: funds,
-            }).finish(),
-          },
-        ]
-      : undefined;
+    const protoMsgs = [
+      {
+        typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
+        value: MsgExecuteContract.encode({
+          sender: msg.value.sender,
+          contract: msg.value.contract,
+          msg: Buffer.from(JSON.stringify(msg.value.msg)),
+          funds: funds,
+        }).finish(),
+      },
+    ];
 
     await this.base.sendMsgs(
       type,

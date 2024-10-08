@@ -318,6 +318,7 @@ export const StakeCardAll = observer(({}) => {
     if (viewTokens.length > 0) {
       let tmpRewards = 0;
       viewTokens.map((token) => {
+        if (!token.price) return;
         tmpRewards += Number(token.price.toDec().toString());
       });
       setTotalStakingReward(tmpRewards.toFixed(4));
@@ -354,7 +355,7 @@ export const StakeCardAll = observer(({}) => {
               type="images"
               source={{
                 uri:
-                  token?.chainInfo?.stakeCurrency?.coinImageUrl ||
+                  token?.chainInfo?.chainSymbolImageUrl ||
                   unknownToken.coinImageUrl,
               }}
               style={{

@@ -210,9 +210,7 @@ export const ModalNetwork: FC<{
           {
             chainId: "isAll",
             chainName: "All Network",
-            stakeCurrency: {
-              coinImageUrl: require("assets/svg/Tokens.svg"),
-            },
+            chainSymbolImageUrl: require("assets/svg/Tokens.svg"),
           },
         ]
       : [];
@@ -256,7 +254,7 @@ export const ModalNetwork: FC<{
                         <img
                           className={styles.imgChain}
                           src={
-                            item?.stakeCurrency?.coinImageUrl ||
+                            item?.chainSymbolImageUrl ||
                             unknownToken.coinImageUrl
                           }
                         />

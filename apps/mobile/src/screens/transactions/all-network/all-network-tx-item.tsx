@@ -121,15 +121,11 @@ export const AllNetworkTxItem: FC<{
             <OWIcon
               type="images"
               source={{
-                uri: chainInfo.feeCurrencies?.[0].coinImageUrl,
+                uri: chainInfo?.chainSymbolImageUrl,
               }}
               size={20}
               style={{
                 borderRadius: 999,
-                tintColor:
-                  chainInfo.feeCurrencies?.[0].coinDenom === "ORAI"
-                    ? colors["neutral-text-title"]
-                    : null,
               }}
             />
           </View>

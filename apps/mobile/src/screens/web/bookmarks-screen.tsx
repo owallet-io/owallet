@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { PageWithView } from "@src/components/page";
+import {
+  PageWithView,
+  PageWithViewInBottomTabView,
+} from "@src/components/page";
 
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
@@ -124,7 +127,7 @@ export const BookmarksScreen = observer(() => {
   };
   // const { top } = useSafeAreaInsets();
   return (
-    <PageWithView>
+    <PageWithViewInBottomTabView>
       <View
         style={{
           paddingHorizontal: 16,
@@ -137,6 +140,7 @@ export const BookmarksScreen = observer(() => {
             browserStore.updateBookmarks(data);
             // setData(data);
           }}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item: any) => item?.uri}
           renderItem={renderItem}
           containerStyle={{
@@ -145,6 +149,6 @@ export const BookmarksScreen = observer(() => {
           }}
         />
       </View>
-    </PageWithView>
+    </PageWithViewInBottomTabView>
   );
 });

@@ -9,6 +9,7 @@ export interface ChainInfo {
   readonly grpc?: string;
   readonly evmRpc?: string;
   readonly rpcConfig?: AxiosRequestConfig;
+  readonly chainSymbolImageUrl?: string;
   readonly rest: string;
   readonly restConfig?: AxiosRequestConfig;
   readonly chainId: string;

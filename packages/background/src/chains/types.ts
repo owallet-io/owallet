@@ -91,7 +91,27 @@ export const SuggestingBIP44Schema = Joi.object<{ coinType: number }>({
   coinType: Joi.number().integer().min(0).required(),
   // Alow the any keys for compatibility of cosmosJS's BIP44 (for legacy).
 }).unknown(true);
-
+export const SupportedChainFeatures = [
+  "stargate",
+  "cosmwasm",
+  "wasmd_0.24+",
+  "secretwasm",
+  "ibc-transfer",
+  "no-legacy-stdTx",
+  "ibc-go",
+  "eth-address-gen",
+  "eth-key-sign",
+  "query:/cosmos/bank/v1beta1/spendable_balances",
+  "axelar-evm-bridge",
+  "osmosis-txfees",
+  "terra-classic-fee",
+  "ibc-go-v7-hot-fix",
+  "ibc-pfm",
+  "authz-msg-revoke-fixed",
+  "osmosis-base-fee-beta",
+  "feemarket",
+  "op-stack-l1-data-fee",
+];
 export const ChainInfoSchema = Joi.object<ChainInfo>({
   rpc: Joi.string().required().uri(),
   // TODO: Handle rpc config.
@@ -115,16 +135,7 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
     high: Joi.number().required(),
   }),
   features: Joi.array()
-    .items(
-      Joi.string().valid(
-        "stargate",
-        "cosmwasm",
-        "secretwasm",
-        "ibc-transfer",
-        "no-legacy-stdTx",
-        "ibc-go"
-      )
-    )
+    .items(Joi.string().valid(...SupportedChainFeatures))
     .unique()
     .custom((value: string[]) => {
       if (value.indexOf("cosmwasm") >= 0 && value.indexOf("secretwasm") >= 0) {
@@ -133,6 +144,7 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
 
       return value;
     }),
+  chainSymbolImageUrl: Joi.string().uri(),
 });
 
 export type ChainInfoWithRepoUpdateOptions = ChainInfo & {

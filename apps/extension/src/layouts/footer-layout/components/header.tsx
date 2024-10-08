@@ -23,6 +23,7 @@ export const HeaderNew: FC<{
   title?: string;
   isDisableCenterBtn?: boolean;
   isHideAllNetwork?: boolean;
+  CustomRight?: () => JSX.Element;
 }> = observer(
   ({
     isConnectDapp = true,
@@ -32,6 +33,7 @@ export const HeaderNew: FC<{
     isDisableCenterBtn,
     title,
     showNetwork,
+    CustomRight,
   }) => {
     const [isShow, setIsShow] = useState(false);
     const [isShowSiteConnected, setIsShowSiteConnected] = useState(false);
@@ -94,7 +96,7 @@ export const HeaderNew: FC<{
                   src={
                     chainStore.isAllNetwork && !showNetwork
                       ? require("assets/svg/Tokens.svg")
-                      : chainStore.current?.stakeCurrency?.coinImageUrl ||
+                      : chainStore.current?.chainSymbolImageUrl ||
                         unknownToken.coinImageUrl
                   }
                 />
@@ -133,6 +135,7 @@ export const HeaderNew: FC<{
               />
             </div>
           )}
+          {CustomRight ? <CustomRight /> : null}
         </div>
         <ModalNetwork
           isOpen={isShowNetwork}
