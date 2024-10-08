@@ -122,6 +122,9 @@ export const AddChainPage = observer(() => {
       return;
     } catch (e) {
       console.log(e, "errr");
+      toast(e?.message || JSON.stringify(e), {
+        type: "error",
+      });
     } finally {
       // setIsLoading(false);
       loading.setIsLoading("addChain", false);
