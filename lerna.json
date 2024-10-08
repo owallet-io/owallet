@@ -1,25 +1,10 @@
 {
   "version": "0.9.16",
-  "packages": ["packages/*"],
   "npmClient": "yarn",
-  "nohoist": [
-    "**/@react-native-*/**",
-    "**/react-native",
-    "**/react-native/**",
-    "**/*-react-native",
-    "**/react-native-*",
-    "**/@tanstack/**",
-    "**/@react-navigation/**",
-    "**/expo-*",
-    "**/@unimodules/**",
-    "**/unimodules-*",
-    "**/native-base",
-    "**/@react-native-async-storage/async-storage",
-    "**/@ledgerhq/react-native-hw-transport-ble",
-    "**/jetifier",
-    "**/@bugsnag/**",
-    "**/@gorhom/**",
-    "**/@shopify/**"
-  ],
-  "useNx": true
+  "command": {
+    "version": {
+      "forcePublish": true,
+      "exact": true
+    }
+  }
 }

@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native-bytebrew-sdk/android/build.gradle b/node_modules/react-native-bytebrew-sdk/android/build.gradle
+index 56433fe..b63c9c2 100644
+--- a/node_modules/react-native-bytebrew-sdk/android/build.gradle
++++ b/node_modules/react-native-bytebrew-sdk/android/build.gradle
+@@ -126,7 +126,7 @@ dependencies {
+     //noinspection GradleDynamicVersion
+   implementation "com.facebook.react:react-native:+"
+   //implementation(name: 'bytebrewlibrary-native', ext: 'aar')
+-  implementation fileTree(dir: "libs", include: ["*.aar"])
++  implementation project(":lib-bytebrewlibrary-native")
+   implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+   implementation 'com.google.firebase:firebase-messaging:23.0.0'
+   implementation 'com.android.installreferrer:installreferrer:2.2'

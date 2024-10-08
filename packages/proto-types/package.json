@@ -1,7 +1,7 @@
 {
   "name": "@owallet/proto-types",
   "version": "0.12.28",
-  "author": "chainapsis",
+  "author": "oraichain labs",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"

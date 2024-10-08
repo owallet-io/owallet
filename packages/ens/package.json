@@ -4,7 +4,6 @@
   "main": "build/index.js",
   "author": "oraichain labs",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
@@ -20,9 +19,9 @@
   "dependencies": {
     "@ensdomains/eth-ens-namehash": "^2.0.15",
     "@owallet/common": "0.9.10",
-    "ethereumjs-abi": "^0.6.8",
     "axios": "^1.7.2",
     "buffer": "^6.0.3",
+    "ethereumjs-abi": "^0.6.8",
     "mobx": "^6.13.1"
   }
 }

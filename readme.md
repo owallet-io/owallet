@@ -231,29 +231,11 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 - [Chrome extension](https://chrome.google.com/webstore/detail/owallet/hhejbopdnpbjgomhpmegemnjogflenga)
 
 ## License
-```shell
-/*
- * Copyright 2022 Oraichain Labs Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
 
- *      http://www.apache.org/licenses/LICENSE-2.0
+### Browser Extension
+Apache 2.0
 
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
+### iOS / Android App
+Copyright (c) 2022 Oraichain Labs Inc. All rights reserved.
 
- * The repository (this work) includes work covered by the following copyright and permission notices:
- *
- *    Copyright 2020 Chainapsis, Inc
- *    Licensed under the Apache License, Version 2.0.
- *
- * NOTICE: The source code branch of Chainapsis Inc. under Apache 2.0 license:
- *  https://github.com/chainapsis/keplr-wallet/tree/0e137373ac4f526caf97b4694de47fe1ba543bd8
- */
-```
 Full text: [LICENSE.txt](LICENSE.txt)

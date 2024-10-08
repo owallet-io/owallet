@@ -156,7 +156,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDenom: "HMSTR",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/HMSTR",
-
           coinDecimals: 9,
           coinGeckoId: "hamster-kombat",
           coinImageUrl:

@@ -1,32 +1,27 @@
 {
   "name": "@owallet/wc-client",
-  "version": "0.9.12",
+  "version": "0.9.16",
   "main": "build/index.js",
   "author": "oraichain labs",
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/proto-signing": "^0.29.3",
-    "@owallet/common": "^0.9.10",
-    "@owallet/provider": "^0.9.12",
-    "@owallet/types": "^0.9.12",
-    "@walletconnect/types": "^1.6.4",
-    "@walletconnect/utils": "^1.6.4",
+    "@owallet/provider": "*",
+    "@owallet/types": "*",
+    "@walletconnect/sign-client": "2.15.1",
+    "@walletconnect/types": "2.15.1",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
-    "secretjs": "^1.12.5"
+    "long": "^3 || ^4 || ^5"
   }
 }
