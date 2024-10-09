@@ -6129,6 +6129,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/chain-validator@workspace:packages/chain-validator":
+  version: 0.0.0-use.local
+  resolution: "@owallet/chain-validator@workspace:packages/chain-validator"
+  dependencies:
+    "@ethersproject/abi": ^5.7.0
+    "@owallet/cosmos": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/types": "*"
+    joi: ^17.5.0
+    utility-types: ^3.10.0
+  languageName: unknown
+  linkType: soft
+
 "@owallet/common@*, @owallet/common@0.9.10, @owallet/common@^0.9.10, @owallet/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@owallet/common@workspace:packages/common"
