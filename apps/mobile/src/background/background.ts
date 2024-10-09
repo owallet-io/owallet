@@ -15,7 +15,6 @@ import {
   setLastUsedLedgerDeviceId,
 } from "../utils/ledger";
 import { DAppInfos } from "../screens/web/config";
-import { InExtensionMessageRequester } from "@owallet/router-extension";
 
 // done polyfill
 const { webcrypto } = require("crypto");
