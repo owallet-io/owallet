@@ -22,8 +22,8 @@ export const MainTabHome: FC<{
     switch (activeTab.id) {
       case TabEnum.TOKEN:
         return <TokensCardAll dataTokens={dataTokens} />;
-      // case TabEnum.NFT:
-      //   return <NftCard />;
+      case TabEnum.NFT:
+        return <NftCard />;
       case TabEnum.History:
         return <HistoryCard />;
     }
