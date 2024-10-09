@@ -163,8 +163,7 @@ const TokenItem: FC<{
               className={styles.token}
               src={
                 item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                !item.token?.currency?.coinImageUrl ||
-                item.token?.currency?.coinImageUrl?.includes("missing.svg")
+                !item.token?.currency?.coinImageUrl
                   ? unknownToken.coinImageUrl
                   : item.token?.currency?.coinImageUrl
               }
