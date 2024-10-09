@@ -58,7 +58,9 @@ export function init(
     lastEmbedChainInfos: ChainInfoWithCoreTypes[]
   ) => void | Promise<void>,
   vaultAfterInitFn?: (service: Vault.VaultService) => void | Promise<void>
-) {
+): {
+  initFn: () => Promise<void>;
+} {
   container.register(TYPES.ChainsEmbedChainInfos, {
     useValue: embedChainInfos,
   });

@@ -38,7 +38,7 @@ LedgerInternal.transportIniters.ble = async (deviceId?: string) => {
   return await TransportBLE.open(deviceId);
 };
 
-init(
+const { initFn } = init(
   router,
   (prefix: string) => new AsyncKVStore(prefix),
   new RNMessageRequesterInternalToUI(),
@@ -79,4 +79,5 @@ init(
   }
 );
 
-router.listen(BACKGROUND_PORT);
+// router.listen(BACKGROUND_PORT);
+router.listen(BACKGROUND_PORT, initFn);
