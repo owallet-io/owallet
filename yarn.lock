@@ -6239,6 +6239,7 @@ __metadata:
     classnames: ^2.2.6
     clean-webpack-plugin: ^4.0.0
     copy-webpack-plugin: ^11.0.0
+    cross-env: =5.2.0
     crypto-browserify: ^3.12.0
     css-loader: ^3.2.0
     delay: ^4.4.0
