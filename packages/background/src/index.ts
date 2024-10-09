@@ -16,6 +16,7 @@ import * as Tokens from "./tokens/internal";
 import * as Interaction from "./interaction/internal";
 import * as Permission from "./permission/internal";
 import * as SidePanel from "./side-panel/internal";
+import * as Vault from "./vault/internal";
 
 export * from "./persistent-memory";
 export * from "./chains";
@@ -35,6 +36,7 @@ import { RNG } from "@owallet/crypto";
 import { CommonCrypto } from "./keyring";
 import { Notification } from "./tx";
 import { LedgerOptions, TransportIniter } from "./ledger/options";
+import { ChainInfoWithCoreTypes } from "./chains";
 
 export { TransportIniter };
 
@@ -50,7 +52,12 @@ export function init(
   rng: RNG,
   commonCrypto: CommonCrypto,
   notification: Notification,
-  ledgerOptions: Partial<LedgerOptions> = {}
+  ledgerOptions: Partial<LedgerOptions> = {},
+  chainsAfterInitFn?: (
+    service: Chains.ChainsService,
+    lastEmbedChainInfos: ChainInfoWithCoreTypes[]
+  ) => void | Promise<void>,
+  vaultAfterInitFn?: (service: Vault.VaultService) => void | Promise<void>
 ) {
   container.register(TYPES.ChainsEmbedChainInfos, {
     useValue: embedChainInfos,
