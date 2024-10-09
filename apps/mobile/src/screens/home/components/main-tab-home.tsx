@@ -153,10 +153,10 @@ const tabs = [
     name: "Tokens",
     id: TabEnum.TOKEN,
   },
-  // {
-  //   name: "NFT",
-  //   id: TabEnum.NFT,
-  // },
+  {
+    name: "NFT",
+    id: TabEnum.NFT,
+  },
   {
     name: "History",
     id: TabEnum.History,
