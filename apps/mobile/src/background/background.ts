@@ -42,8 +42,7 @@ init(
   router,
   (prefix: string) => new AsyncKVStore(prefix),
   new RNMessageRequesterInternalToUI(),
-  //@ts-ignore
-  "",
+  new RNMessageRequesterInternalToUI(),
   EmbedChainInfos,
   // allow all dApps
   DAppInfos.map((dApp) => dApp.uri),

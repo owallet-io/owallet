@@ -110,7 +110,16 @@ export function init(
   });
 
   const interactionService = container.resolve(Interaction.InteractionService);
+
+  // const interactionService = new Interaction.InteractionService(
+  //   eventMsgRequester,
+  //   sidePanelService,
+  //   extensionMessageRequesterToUI
+  // );
+
   Interaction.init(router, interactionService);
+
+  const vaultService = new Vault.VaultService(storeCreator("vault"));
 
   const persistentMemory = container.resolve(
     PersistentMemory.PersistentMemoryService
@@ -142,4 +151,17 @@ export function init(
     BackgroundTx.BackgroundTxService
   );
   BackgroundTx.init(router, backgroundTxService);
+
+  return {
+    initFn: async () => {
+      await sidePanelService.init();
+      await interactionService.init();
+      await vaultService.init();
+      await permissionService.init();
+
+      if (vaultAfterInitFn) {
+        await vaultAfterInitFn(vaultService);
+      }
+    },
+  };
 }
