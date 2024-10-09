@@ -209,36 +209,6 @@ export const ValidatorList: FunctionComponent = observer(() => {
           />
         </View>
       </View>
-      {chainStore.current.chainId !== ChainIdEnum.Oraichain ? (
-        <TouchableOpacity
-          style={{
-            flexDirection: "row",
-            borderRadius: 999,
-            width: metrics.screenWidth / 3,
-            alignItems: "center",
-            paddingHorizontal: 12,
-            justifyContent: "space-between",
-            alignSelf: "flex-end",
-            paddingTop: 16,
-          }}
-          onPress={() => {
-            if (sort === "Voting Power") {
-              setSort("Voting Power Increase");
-            } else {
-              setSort("Voting Power");
-            }
-          }}
-        >
-          <OWText weight="600">{"Voting Power"}</OWText>
-          <View>
-            <OWIcon
-              color={colors["neutral-icon-on-light"]}
-              name="double-arrow"
-              size={18}
-            />
-          </View>
-        </TouchableOpacity>
-      ) : null}
       {dataShuffle?.length <= 0 ? <OwEmpty /> : null}
       {dataShuffle.map((item, index) => renderItem({ item, index }))}
     </View>
