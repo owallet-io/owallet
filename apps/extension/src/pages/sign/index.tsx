@@ -516,7 +516,7 @@ export const SignPage: FunctionComponent = observer(() => {
                             }
                           }
                         );
-
+                        history.goBack();
                         if (
                           interactionInfo.interaction &&
                           !interactionInfo.interactionInternal
