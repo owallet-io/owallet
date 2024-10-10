@@ -10,7 +10,7 @@ import {
   PermissionOptions,
 } from "./types";
 import { KVStore } from "@owallet/common";
-import { ChainsService } from "../chains";
+import { ChainsService } from "../chains-v2";
 import { ChainInfo } from "@owallet/types";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { migrate } from "./migrate";

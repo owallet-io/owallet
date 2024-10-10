@@ -1,4 +1,4 @@
-import { ChainsService } from "../chains";
+import { ChainsService } from "../chains-v2";
 import {
   action,
   autorun,

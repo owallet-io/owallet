@@ -21,7 +21,10 @@ import {
   PingMsg,
 } from "./messages";
 import { ChainInfo } from "@owallet/types";
-import { getBasicAccessPermissionType, PermissionService } from "../permission";
+import {
+  getBasicAccessPermissionType,
+  PermissionService,
+} from "../permission-v2";
 import { PermissionInteractiveService } from "../permission-interactive";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };

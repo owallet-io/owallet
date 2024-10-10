@@ -16,7 +16,7 @@ import {
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
 import { ChainsService } from "./service";
-import { PermissionService } from "../permission";
+import { PermissionService } from "../permission-v2";
 import { PermissionInteractiveService } from "../permission-interactive";
 
 export function init(
