@@ -491,7 +491,7 @@ export const SignPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         if (needSetIsProcessing) {
                           setIsProcessing(true);
                         }
@@ -516,7 +516,7 @@ export const SignPage: FunctionComponent = observer(() => {
                             }
                           }
                         );
-                        history.goBack();
+
                         if (
                           interactionInfo.interaction &&
                           !interactionInfo.interactionInternal

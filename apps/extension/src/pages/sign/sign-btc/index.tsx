@@ -378,7 +378,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         await signInteractionStore.reject(
                           signInteractionStore.waitingBitcoinData.id,
                           async (proceedNext) => {

@@ -392,7 +392,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         if (needSetIsProcessing) {
                           setIsProcessing(true);
                         }
