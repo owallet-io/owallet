@@ -18,6 +18,9 @@ import { useStore } from "../../stores";
 import { metrics } from "../../themes";
 import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import OwButtonIcon from "@components/button/ow-button-icon";
+import { PageWithScrollView } from "@components/page";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const RegisterIntroScreen: FunctionComponent = observer((props) => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -25,7 +28,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
 
   const route = useRoute();
 
-  // const registerConfig = useRegisterConfig(keyRingStore, []);
+  const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
     analyticsStore.logEvent("Import account started", {
       registerType: "seed",
@@ -46,7 +49,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
   const styles = useStyles();
 
   return (
-    <View style={[styles.container]}>
+    <PageWithScrollView style={styles.container} disableSafeArea={true}>
       <View style={styles.containerCheck}>
         <Image
           style={{
@@ -58,7 +61,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
           fadeDuration={0}
         />
       </View>
-      <ScrollView style={styles.content}>
+      <SafeAreaView>
         {route.params?.canBeBack ? (
           <TouchableOpacity
             onPress={() => {
@@ -67,8 +70,8 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
             style={{
               backgroundColor: colors["neutral-surface-card"],
               borderRadius: 999,
-              width: 44,
-              height: 44,
+              width: 35,
+              height: 35,
               alignItems: "center",
               justifyContent: "center",
               marginHorizontal: 16,
@@ -156,8 +159,8 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
             size="default"
           />
         </View>
-      </ScrollView>
-    </View>
+      </SafeAreaView>
+    </PageWithScrollView>
   );
 });
 

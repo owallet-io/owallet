@@ -829,7 +829,7 @@ const styling = (colors) =>
     },
     buttonItemStyle: {
       backgroundColor: colors["neutral-surface-action3"],
-      width: 110,
+      width: metrics.screenWidth / 3.65,
       height: 80,
       borderRadius: 8,
     },
