@@ -954,18 +954,16 @@ export class OWallet implements IOWallet {
               owalletLogo.style.height = "3rem";
               owalletLogoWrap.appendChild(owalletLogo);
 
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              owalletLogoWrap.appendChild(logoClickCursor);
+              // const logoClickCursor = document.createElement('img');
+              // const logoClickCursorUrl = chrome.runtime.getURL('assets/icon-click-cursor.png');
+              // logoClickCursor.src = logoClickCursorUrl;
+              // logoClickCursor.style.boxSizing = 'border-box';
+              // logoClickCursor.style.position = 'absolute';
+              // logoClickCursor.style.right = '-0.2rem';
+              // logoClickCursor.style.bottom = '-0.2rem';
+              // logoClickCursor.style.aspectRatio = '78/98';
+              // logoClickCursor.style.height = '1.375rem';
+              // owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
@@ -980,15 +978,13 @@ export class OWallet implements IOWallet {
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
                 "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
@@ -1571,18 +1567,16 @@ export class Ethereum implements IEthereum {
               owalletLogo.style.height = "3rem";
               owalletLogoWrap.appendChild(owalletLogo);
 
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              owalletLogoWrap.appendChild(logoClickCursor);
+              // const logoClickCursor = document.createElement('img');
+              // const logoClickCursorUrl = chrome.runtime.getURL('assets/icon-click-cursor.png');
+              // logoClickCursor.src = logoClickCursorUrl;
+              // logoClickCursor.style.boxSizing = 'border-box';
+              // logoClickCursor.style.position = 'absolute';
+              // logoClickCursor.style.right = '-0.2rem';
+              // logoClickCursor.style.bottom = '-0.2rem';
+              // logoClickCursor.style.aspectRatio = '78/98';
+              // logoClickCursor.style.height = '1.375rem';
+              // owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
@@ -2072,18 +2066,18 @@ export class Bitcoin implements IBitcoin {
               owalletLogo.style.height = "3rem";
               owalletLogoWrap.appendChild(owalletLogo);
 
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              owalletLogoWrap.appendChild(logoClickCursor);
+              // const logoClickCursor = document.createElement("img");
+              // const logoClickCursorUrl = chrome.runtime.getURL(
+              //   "assets/icon-click-cursor.png"
+              // );
+              // logoClickCursor.src = logoClickCursorUrl;
+              // logoClickCursor.style.boxSizing = "border-box";
+              // logoClickCursor.style.position = "absolute";
+              // logoClickCursor.style.right = "-0.2rem";
+              // logoClickCursor.style.bottom = "-0.2rem";
+              // logoClickCursor.style.aspectRatio = "78/98";
+              // logoClickCursor.style.height = "1.375rem";
+              // owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
@@ -2357,18 +2351,16 @@ export class Oasis implements IOasis {
               owalletLogo.style.height = "3rem";
               owalletLogoWrap.appendChild(owalletLogo);
 
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              owalletLogoWrap.appendChild(logoClickCursor);
+              // const logoClickCursor = document.createElement('img');
+              // const logoClickCursorUrl = chrome.runtime.getURL('assets/icon-click-cursor.png');
+              // logoClickCursor.src = logoClickCursorUrl;
+              // logoClickCursor.style.boxSizing = 'border-box';
+              // logoClickCursor.style.position = 'absolute';
+              // logoClickCursor.style.right = '-0.2rem';
+              // logoClickCursor.style.bottom = '-0.2rem';
+              // logoClickCursor.style.aspectRatio = '78/98';
+              // logoClickCursor.style.height = '1.375rem';
+              // owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
