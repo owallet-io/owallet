@@ -874,7 +874,6 @@ export class OWallet implements IOWallet {
 
               const isLightMode = true;
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
               styleElement.appendChild(
                 document.createTextNode(fontFaceAndKeyFrames)
@@ -889,7 +888,7 @@ export class OWallet implements IOWallet {
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
               button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
               button.style.alignItems = "center";
@@ -948,7 +947,7 @@ export class OWallet implements IOWallet {
               owalletLogoWrap.style.marginRight = "1rem";
               const owalletLogo = document.createElement("img");
               const owalletLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
+                "https://play-lh.googleusercontent.com/6bFRl07spL_18Qq_ipWbiI_h22UvXYFRArDPd0W8SSfE0XCHlae8KH-XhVw1OopySnc=s96-rw";
               owalletLogo.src = owalletLogoUrl;
               owalletLogo.style.boxSizing = "border-box";
               owalletLogo.style.width = "3rem";
@@ -1565,7 +1564,7 @@ export class Ethereum implements IEthereum {
               owalletLogoWrap.style.marginRight = "1rem";
               const owalletLogo = document.createElement("img");
               const owalletLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
+                "https://play-lh.googleusercontent.com/6bFRl07spL_18Qq_ipWbiI_h22UvXYFRArDPd0W8SSfE0XCHlae8KH-XhVw1OopySnc=s96-rw";
               owalletLogo.src = owalletLogoUrl;
               owalletLogo.style.boxSizing = "border-box";
               owalletLogo.style.width = "3rem";
@@ -2066,7 +2065,7 @@ export class Bitcoin implements IBitcoin {
               owalletLogoWrap.style.marginRight = "1rem";
               const owalletLogo = document.createElement("img");
               const owalletLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
+                "https://play-lh.googleusercontent.com/6bFRl07spL_18Qq_ipWbiI_h22UvXYFRArDPd0W8SSfE0XCHlae8KH-XhVw1OopySnc=s96-rw";
               owalletLogo.src = owalletLogoUrl;
               owalletLogo.style.boxSizing = "border-box";
               owalletLogo.style.width = "3rem";
@@ -2278,7 +2277,6 @@ export class Oasis implements IOasis {
 
               const isLightMode = true;
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
               styleElement.appendChild(
                 document.createTextNode(fontFaceAndKeyFrames)
@@ -2352,7 +2350,7 @@ export class Oasis implements IOasis {
               owalletLogoWrap.style.marginRight = "1rem";
               const owalletLogo = document.createElement("img");
               const owalletLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
+                "https://play-lh.googleusercontent.com/6bFRl07spL_18Qq_ipWbiI_h22UvXYFRArDPd0W8SSfE0XCHlae8KH-XhVw1OopySnc=s96-rw";
               owalletLogo.src = owalletLogoUrl;
               owalletLogo.style.boxSizing = "border-box";
               owalletLogo.style.width = "3rem";
