@@ -135,16 +135,16 @@ export class PermissionService {
     this.interactionService.dispatchEvent(APP_PORT, "enable-access-end", {});
   }
 
-  private parseChainId({ chainId }: { chainId: string }): {
-    chainId: string;
-    isEvm: boolean;
-  } {
-    if (!chainId)
-      throw new Error("Invalid empty chain id when switching Ethereum chain");
-    if (chainId.substring(0, 2) === "0x")
-      return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
-    return { chainId, isEvm: false };
-  }
+  // private parseChainId({ chainId }: { chainId: string }): {
+  //   chainId: string;
+  //   isEvm: boolean;
+  // } {
+  //   if (!chainId)
+  //     throw new Error("Invalid empty chain id when switching Ethereum chain");
+  //   if (chainId.substring(0, 2) === "0x")
+  //     return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
+  //   return { chainId, isEvm: false };
+  // }
 
   async grantBasicAccessPermission(
     env: Env,

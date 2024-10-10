@@ -62,6 +62,7 @@ const SignTronContent: FunctionComponent = () => {
 
   const [txInfo, setTxInfo] = useState();
   const { waitingTronData } = signInteractionStore;
+
   const getDataTx = async () => {
     if (!waitingTronData) return;
     const kvStore = new ExtensionKVStore("keyring");
@@ -118,7 +119,6 @@ const SignTronContent: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    console.log(txInfo, "txInfo");
     if (txInfo && amountConfig) {
       //@ts-ignore
       const tx = txInfo?.parameters.find(
@@ -127,12 +127,16 @@ const SignTronContent: FunctionComponent = () => {
       amountConfig.setAmount(tx?.value);
     }
   }, [txInfo, amountConfig]);
-  useEffect(() => {
+
+  const onWaitTronData = async () => {
     if (dataSign) return;
 
-    if (waitingTronData) {
-      const dataTron = waitingTronData?.data;
+    if (signInteractionStore.waitingTronData) {
+      chainStore.selectChain(ChainIdEnum.TRON);
+
+      const dataTron = signInteractionStore.waitingTronData?.data;
       getDataTx();
+
       setDataSign(dataTron);
       if (dataTron?.recipient) {
         recipientConfig.setRawRecipient(dataTron?.recipient);
@@ -143,12 +147,16 @@ const SignTronContent: FunctionComponent = () => {
       if (dataTron?.currency) {
         amountConfig.setSendCurrency(dataTron?.currency);
       }
-
-      chainStore.selectChain(ChainIdEnum.TRON);
     }
-  }, [waitingTronData]);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      onWaitTronData();
+    }, 400);
+  }, [onWaitTronData]);
+
   const error = feeConfig.getError();
-  const txStateIsValid = error == null;
   if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
 
   const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
@@ -332,7 +340,7 @@ const SignTronContent: FunctionComponent = () => {
                     disabled={signInteractionStore.isLoading}
                     onClick={async (e) => {
                       e.preventDefault();
-
+                      history.goBack();
                       await signInteractionStore.reject(
                         signInteractionStore.waitingTronData.id,
                         async (proceedNext) => {
@@ -359,7 +367,6 @@ const SignTronContent: FunctionComponent = () => {
                       ) {
                         window.close();
                       }
-                      history.goBack();
                     }}
                   >
                     {intl.formatMessage({
@@ -398,6 +405,7 @@ const SignTronContent: FunctionComponent = () => {
                             }
                           }
                         );
+                        history.goBack();
                       } else {
                         //@ts-ignore
                         await signInteractionStore.approveTronAndWaitEnd(
@@ -425,6 +433,8 @@ const SignTronContent: FunctionComponent = () => {
                             }
                           }
                         );
+
+                        history.goBack();
                       }
                       if (
                         interactionInfo.interaction &&
