@@ -767,17 +767,11 @@ export class OWallet implements IOWallet {
     return enigmaUtils;
   }
 
-  // IMPORTANT: protected로 시작하는 method는 InjectedKeplr.startProxy()에서 injected 쪽에서 event system으로도 호출할 수 없도록 막혀있다.
-  //            protected로 시작하지 않는 method는 injected keplr에 없어도 event system을 통하면 호출 할 수 있다.
-  //            이를 막기 위해서 method 이름을 protected로 시작하게 한다.
   async protectedTryOpenSidePanelIfEnabled(
     ignoreGestureFailure: boolean = false
   ): Promise<void> {
     let isInContentScript = false;
-    // 이 provider가 content script 위에서 동작하고 있는지 아닌지 구분해야한다.
-    // content script일때만 side panel을 열도록 시도해볼 가치가 있다.
-    // 근데 js 자체적으로 api등을 통해서는 이를 알아낼 방법이 없다.
-    // extension 상에서 content script에서 keplr provider proxy를 시작하기 전에 window에 밑의 field를 알아서 주입하는 방식으로 처리한다.
+
     if (
       typeof window !== "undefined" &&
       (window as any).__keplr_content_script === true
@@ -814,7 +808,7 @@ export class OWallet implements IOWallet {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -829,7 +823,7 @@ export class OWallet implements IOWallet {
                 return;
               }
 
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
+              const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
                 "keyring",
@@ -843,7 +837,7 @@ export class OWallet implements IOWallet {
               );
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
+                  font-family: 'SpaceGrotesk-Regular';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -888,7 +882,7 @@ export class OWallet implements IOWallet {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
@@ -900,7 +894,7 @@ export class OWallet implements IOWallet {
               button.style.display = "flex";
               button.style.alignItems = "center";
 
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontFamily = "SpaceGrotesk-Regular";
               button.style.fontWeight = "600";
 
               // button.style.cursor = "pointer";
@@ -948,18 +942,18 @@ export class OWallet implements IOWallet {
                 </svg>
               `;
 
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
+              const owalletLogoWrap = document.createElement("div");
+              owalletLogoWrap.style.boxSizing = "border-box";
+              owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.marginRight = "1rem";
+              const owalletLogo = document.createElement("img");
+              const owalletLogoUrl =
                 "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
+              owalletLogo.src = owalletLogoUrl;
+              owalletLogo.style.boxSizing = "border-box";
+              owalletLogo.style.width = "3rem";
+              owalletLogo.style.height = "3rem";
+              owalletLogoWrap.appendChild(owalletLogo);
 
               const logoClickCursor = document.createElement("img");
               const logoClickCursorUrl = chrome.runtime.getURL(
@@ -972,50 +966,24 @@ export class OWallet implements IOWallet {
               logoClickCursor.style.bottom = "-0.2rem";
               logoClickCursor.style.aspectRatio = "78/98";
               logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
+              owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
-              // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
+              mainText.textContent = isOWalletLocked
+                ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
-              // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
+              button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
               // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
@@ -1457,7 +1425,7 @@ export class Ethereum implements IEthereum {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -1472,7 +1440,7 @@ export class Ethereum implements IEthereum {
                 return;
               }
 
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
+              const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
                 "keyring",
@@ -1486,7 +1454,7 @@ export class Ethereum implements IEthereum {
               );
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
+                  font-family: 'SpaceGrotesk-Regular';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -1531,7 +1499,7 @@ export class Ethereum implements IEthereum {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
@@ -1543,7 +1511,7 @@ export class Ethereum implements IEthereum {
               button.style.display = "flex";
               button.style.alignItems = "center";
 
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontFamily = "SpaceGrotesk-Regular";
               button.style.fontWeight = "600";
 
               // button.style.cursor = "pointer";
@@ -1591,18 +1559,18 @@ export class Ethereum implements IEthereum {
                 </svg>
               `;
 
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
+              const owalletLogoWrap = document.createElement("div");
+              owalletLogoWrap.style.boxSizing = "border-box";
+              owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.marginRight = "1rem";
+              const owalletLogo = document.createElement("img");
+              const owalletLogoUrl =
                 "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
+              owalletLogo.src = owalletLogoUrl;
+              owalletLogo.style.boxSizing = "border-box";
+              owalletLogo.style.width = "3rem";
+              owalletLogo.style.height = "3rem";
+              owalletLogoWrap.appendChild(owalletLogo);
 
               const logoClickCursor = document.createElement("img");
               const logoClickCursorUrl = chrome.runtime.getURL(
@@ -1615,15 +1583,15 @@ export class Ethereum implements IEthereum {
               logoClickCursor.style.bottom = "-0.2rem";
               logoClickCursor.style.aspectRatio = "78/98";
               logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
+              owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
               // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
+              mainText.textContent = isOWalletLocked
+                ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
@@ -1652,13 +1620,13 @@ export class Ethereum implements IEthereum {
 
               // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
+              button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
               // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
@@ -1993,7 +1961,7 @@ export class Bitcoin implements IBitcoin {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -2002,13 +1970,11 @@ export class Bitcoin implements IBitcoin {
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
 
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
+              const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
                 "keyring",
@@ -2016,13 +1982,12 @@ export class Bitcoin implements IBitcoin {
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
               );
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
+                  font-family: 'SpaceGrotesk-Regular';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -2059,7 +2024,6 @@ export class Bitcoin implements IBitcoin {
 
               const isLightMode = true;
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
               styleElement.appendChild(
                 document.createTextNode(fontFaceAndKeyFrames)
@@ -2067,53 +2031,22 @@ export class Bitcoin implements IBitcoin {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
               button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
               button.style.alignItems = "center";
 
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontFamily = "SpaceGrotesk-Regular";
               button.style.fontWeight = "600";
 
-              // button.style.cursor = "pointer";
               button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // if (isLightMode) {
-              //   button.style.boxShadow =
-              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
-              // }
-              // button.addEventListener("mouseover", () => {
-              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
-              // });
-              // button.addEventListener("mouseout", () => {
-              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // });
-
-              // const megaphoneWrapper = document.createElement("div");
-              // megaphoneWrapper.style.boxSizing = "border-box";
-              // megaphoneWrapper.style.display = "flex";
-              // megaphoneWrapper.style.position = "absolute";
-              // megaphoneWrapper.style.left = "-10px";
-              // megaphoneWrapper.style.top = "-10px";
-              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
-              // megaphoneWrapper.style.borderRadius = "255px";
-              // megaphoneWrapper.style.background = "#FC8441";
-              //
-              // const megaphone = document.createElement("img");
-              // const megaphoneUrl = chrome.runtime.getURL(
-              //   "/assets/megaphone.svg"
-              // );
-              // megaphone.src = megaphoneUrl;
-              // megaphone.style.width = "1.25rem";
-              // megaphone.style.height = "1.25rem";
-              // megaphone.style.animation = "tada 1s infinite";
-              // megaphoneWrapper.appendChild(megaphone);
 
               const arrowTop = document.createElement("div");
               arrowTop.style.boxSizing = "border-box";
@@ -2127,18 +2060,18 @@ export class Bitcoin implements IBitcoin {
                 </svg>
               `;
 
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
+              const owalletLogoWrap = document.createElement("div");
+              owalletLogoWrap.style.boxSizing = "border-box";
+              owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.marginRight = "1rem";
+              const owalletLogo = document.createElement("img");
+              const owalletLogoUrl =
                 "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
+              owalletLogo.src = owalletLogoUrl;
+              owalletLogo.style.boxSizing = "border-box";
+              owalletLogo.style.width = "3rem";
+              owalletLogo.style.height = "3rem";
+              owalletLogoWrap.appendChild(owalletLogo);
 
               const logoClickCursor = document.createElement("img");
               const logoClickCursorUrl = chrome.runtime.getURL(
@@ -2151,56 +2084,28 @@ export class Bitcoin implements IBitcoin {
               logoClickCursor.style.bottom = "-0.2rem";
               logoClickCursor.style.aspectRatio = "78/98";
               logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
+              owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
               // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
+              mainText.textContent = isOWalletLocked
+                ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
-              // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
+              button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
-              // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
@@ -2310,7 +2215,7 @@ export class Oasis implements IOasis {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -2319,13 +2224,11 @@ export class Oasis implements IOasis {
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
 
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
+              const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
                 "keyring",
@@ -2333,13 +2236,12 @@ export class Oasis implements IOasis {
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
               );
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
+                  font-family: 'SpaceGrotesk-Regular';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -2384,19 +2286,19 @@ export class Oasis implements IOasis {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
               button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
               button.style.alignItems = "center";
 
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontFamily = "SpaceGrotesk-Regular";
               button.style.fontWeight = "600";
 
               // button.style.cursor = "pointer";
@@ -2444,18 +2346,18 @@ export class Oasis implements IOasis {
                 </svg>
               `;
 
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
+              const owalletLogoWrap = document.createElement("div");
+              owalletLogoWrap.style.boxSizing = "border-box";
+              owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.marginRight = "1rem";
+              const owalletLogo = document.createElement("img");
+              const owalletLogoUrl =
                 "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
+              owalletLogo.src = owalletLogoUrl;
+              owalletLogo.style.boxSizing = "border-box";
+              owalletLogo.style.width = "3rem";
+              owalletLogo.style.height = "3rem";
+              owalletLogoWrap.appendChild(owalletLogo);
 
               const logoClickCursor = document.createElement("img");
               const logoClickCursorUrl = chrome.runtime.getURL(
@@ -2468,15 +2370,15 @@ export class Oasis implements IOasis {
               logoClickCursor.style.bottom = "-0.2rem";
               logoClickCursor.style.aspectRatio = "78/98";
               logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
+              owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
               // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
+              mainText.textContent = isOWalletLocked
+                ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
@@ -2505,19 +2407,17 @@ export class Oasis implements IOasis {
 
               // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
+              button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
