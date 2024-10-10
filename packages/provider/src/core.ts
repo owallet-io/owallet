@@ -792,8 +792,6 @@ export class OWallet implements IOWallet {
 
       if (isEnabled.enabled) {
         try {
-          // IMPORTANT: "tryOpenSidePanelIfEnabled"는 다른 msg system과 아예 분리되어있고 다르게 동작한다.
-          //            router-extension package의 src/router/extension.ts에 있는 주석을 참고할 것.
           return await sendSimpleMessage(
             this.requester,
             BACKGROUND_PORT,
@@ -817,8 +815,6 @@ export class OWallet implements IOWallet {
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
@@ -831,7 +827,6 @@ export class OWallet implements IOWallet {
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
               );
@@ -1429,8 +1424,6 @@ export class Ethereum implements IEthereum {
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
@@ -1443,7 +1436,6 @@ export class Ethereum implements IEthereum {
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
               );
@@ -1486,7 +1478,6 @@ export class Ethereum implements IEthereum {
 
               const isLightMode = true;
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
               styleElement.appendChild(
                 document.createTextNode(fontFaceAndKeyFrames)
@@ -1501,7 +1492,7 @@ export class Ethereum implements IEthereum {
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
               button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
               button.style.alignItems = "center";
@@ -1617,15 +1608,13 @@ export class Ethereum implements IEthereum {
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
                 "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
