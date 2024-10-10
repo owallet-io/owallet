@@ -816,7 +816,7 @@ const styling = (colors) =>
     },
     aic: {
       alignItems: "center",
-      paddingBottom: 20,
+      paddingBottom: 10,
     },
     rc: {
       flexDirection: "row",
@@ -837,7 +837,7 @@ const styling = (colors) =>
       backgroundColor: colors["neutral-surface-action3"],
       padding: 4,
       borderRadius: 999,
-      marginTop: 32,
+      marginTop: 12,
     },
     switchText: {
       paddingHorizontal: 24,
