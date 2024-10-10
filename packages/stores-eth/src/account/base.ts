@@ -1,0 +1,357 @@
+import { ChainGetter } from "@owallet/stores";
+import {
+  AppCurrency,
+  EthSignType,
+  EthTxReceipt,
+  OWallet,
+} from "@owallet/types";
+import { DenomHelper, retry } from "@owallet/common";
+import { erc20ContractInterface } from "../constants";
+import { hexValue } from "@ethersproject/bytes";
+import { parseUnits } from "@ethersproject/units";
+import {
+  TransactionTypes,
+  UnsignedTransaction,
+  serialize,
+} from "@ethersproject/transactions";
+import { getAddress as getEthAddress } from "@ethersproject/address";
+import { action, makeObservable, observable } from "mobx";
+import { Interface } from "@ethersproject/abi";
+
+const opStackGasPriceOracleProxyAddress =
+  "0x420000000000000000000000000000000000000F";
+const opStackGasPriceOracleProxyABI = new Interface([
+  {
+    constant: true,
+    inputs: [],
+    name: "implementation",
+    outputs: [
+      {
+        name: "",
+        type: "address",
+      },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+]);
+const opStackGasPriceOracleABI = new Interface([
+  {
+    inputs: [{ internalType: "bytes", name: "_data", type: "bytes" }],
+    name: "getL1Fee",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
+]);
+
+export class EthereumAccountBase {
+  @observable
+  protected _isSendingTx: boolean = false;
+
+  constructor(
+    protected readonly chainGetter: ChainGetter,
+    protected readonly chainId: string,
+    protected readonly getOWallet: () => Promise<OWallet | undefined>
+  ) {
+    makeObservable(this);
+  }
+
+  @action
+  setIsSendingTx(value: boolean) {
+    this._isSendingTx = value;
+  }
+
+  get isSendingTx(): boolean {
+    return this._isSendingTx;
+  }
+
+  async simulateGas(sender: string, unsignedTx: UnsignedTransaction) {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const evmInfo = chainInfo.evm;
+    if (!evmInfo) {
+      throw new Error("No EVM chain info provided");
+    }
+
+    const { to, value, data } = unsignedTx;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const owallet = (await this.getOWallet())!;
+    const gasEstimated = await owallet.ethereum.request<string>({
+      method: "eth_estimateGas",
+      params: [
+        {
+          from: sender,
+          to,
+          value,
+          data,
+        },
+      ],
+      chainId: this.chainId,
+    });
+
+    return {
+      gasUsed: parseInt(gasEstimated),
+    };
+  }
+
+  async simulateGasForSendTokenTx({
+    currency,
+    amount,
+    sender,
+    recipient,
+  }: {
+    currency: AppCurrency;
+    amount: string;
+    sender: string;
+    recipient: string;
+  }) {
+    // If the recipient address is invalid, the sender address will be used as the recipient for gas estimating gas.
+    const tempRecipient = EthereumAccountBase.isEthereumHexAddressWithChecksum(
+      recipient
+    )
+      ? recipient
+      : sender;
+
+    const parsedAmount = parseUnits(amount, currency.coinDecimals);
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+
+    const unsignedTx: UnsignedTransaction = (() => {
+      switch (denomHelper.type) {
+        case "erc20":
+          return {
+            to: denomHelper.contractAddress,
+            value: "0x0",
+            data: erc20ContractInterface.encodeFunctionData("transfer", [
+              tempRecipient,
+              hexValue(parsedAmount),
+            ]),
+          };
+        default:
+          return {
+            to: tempRecipient,
+            value: hexValue(parsedAmount),
+          };
+      }
+    })();
+
+    return this.simulateGas(sender, unsignedTx);
+  }
+
+  async simulateOpStackL1Fee(unsignedTx: UnsignedTransaction): Promise<string> {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    if (!chainInfo.features.includes("op-stack-l1-data-fee")) {
+      throw new Error("The chain isn't built with OP Stack");
+    }
+
+    const evmInfo = chainInfo.evm;
+    if (!evmInfo) {
+      throw new Error("No EVM chain info provided");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const owallet = (await this.getOWallet())!;
+    const implementationAddress = await owallet.ethereum.request<string>({
+      method: "eth_call",
+      params: [
+        {
+          to: opStackGasPriceOracleProxyAddress,
+          data: opStackGasPriceOracleProxyABI.encodeFunctionData(
+            "implementation"
+          ),
+        },
+      ],
+      chainId: this.chainId,
+    });
+    const gasPriceOracleContractAddress =
+      "0x" + implementationAddress.slice(26);
+
+    const l1Fee = await owallet.ethereum.request<string>({
+      method: "eth_call",
+      params: [
+        {
+          to: gasPriceOracleContractAddress,
+          data: opStackGasPriceOracleABI.encodeFunctionData("getL1Fee", [
+            serialize(unsignedTx),
+          ]),
+        },
+      ],
+      chainId: this.chainId,
+    });
+
+    return l1Fee;
+  }
+
+  makeSendTokenTx({
+    currency,
+    amount,
+    to,
+    gasLimit,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    gasPrice,
+  }: {
+    currency: AppCurrency;
+    amount: string;
+    to: string;
+    gasLimit: number;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+    gasPrice?: string;
+  }): UnsignedTransaction {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const evmInfo = chainInfo.evm;
+    if (!evmInfo) {
+      throw new Error("No EVM chain info provided");
+    }
+    const parsedAmount = parseUnits(amount, currency.coinDecimals);
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+    const feeObject =
+      maxFeePerGas && maxPriorityFeePerGas
+        ? {
+            maxFeePerGas: hexValue(Number(maxFeePerGas)),
+            maxPriorityFeePerGas: hexValue(Number(maxPriorityFeePerGas)),
+            gasLimit: hexValue(gasLimit),
+          }
+        : {
+            gasPrice: hexValue(Number(gasPrice ?? "0")),
+            gasLimit: hexValue(gasLimit),
+          };
+
+    // Support EIP-1559 transaction only.
+    const unsignedTx: UnsignedTransaction = (() => {
+      switch (denomHelper.type) {
+        case "erc20":
+          return {
+            chainId: evmInfo.chainId,
+            to: denomHelper.contractAddress,
+            value: "0x0",
+            data: erc20ContractInterface.encodeFunctionData("transfer", [
+              to,
+              hexValue(parsedAmount),
+            ]),
+            ...feeObject,
+          };
+        default:
+          return {
+            chainId: evmInfo.chainId,
+            to,
+            value: hexValue(parsedAmount),
+            ...feeObject,
+          };
+      }
+    })();
+
+    return unsignedTx;
+  }
+
+  async sendEthereumTx(
+    sender: string,
+    unsignedTx: UnsignedTransaction,
+    onTxEvents?: {
+      onBroadcastFailed?: (e?: Error) => void;
+      onBroadcasted?: (txHash: string) => void;
+      onFulfill?: (txReceipt: EthTxReceipt) => void;
+    }
+  ) {
+    try {
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      const evmInfo = chainInfo.evm;
+      if (!evmInfo) {
+        throw new Error("No EVM info provided");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const owallet = (await this.getOWallet())!;
+
+      const transactionCount = await owallet.ethereum.request<string>({
+        method: "eth_getTransactionCount",
+        params: [sender, "pending"],
+        chainId: this.chainId,
+      });
+      unsignedTx = {
+        ...unsignedTx,
+        nonce: parseInt(transactionCount),
+      };
+
+      const signEthereum = owallet.signEthereum.bind(owallet);
+
+      const signature = await signEthereum(
+        this.chainId,
+        sender,
+        JSON.stringify(unsignedTx),
+        EthSignType.TRANSACTION
+      );
+
+      const isEIP1559 =
+        !!unsignedTx.maxFeePerGas || !!unsignedTx.maxPriorityFeePerGas;
+      if (isEIP1559) {
+        unsignedTx.type = TransactionTypes.eip1559;
+      }
+
+      const signedTx = Buffer.from(
+        serialize(unsignedTx, signature).replace("0x", ""),
+        "hex"
+      );
+
+      const sendEthereumTx = owallet.sendEthereumTx.bind(owallet);
+      const txHash = await sendEthereumTx(this.chainId, signedTx);
+      if (!txHash) {
+        throw new Error("No tx hash responded");
+      }
+
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents.onBroadcasted(txHash);
+      }
+
+      retry(
+        () => {
+          return new Promise<void>(async (resolve, reject) => {
+            const txReceipt = await owallet.ethereum.request<EthTxReceipt>({
+              method: "eth_getTransactionReceipt",
+              params: [txHash],
+              chainId: this.chainId,
+            });
+            if (txReceipt) {
+              onTxEvents?.onFulfill?.(txReceipt);
+              resolve();
+            }
+
+            reject();
+          });
+        },
+        {
+          maxRetries: 10,
+          waitMsAfterError: 500,
+          maxWaitMsAfterError: 4000,
+        }
+      );
+
+      return txHash;
+    } catch (e) {
+      if (onTxEvents?.onBroadcastFailed) {
+        onTxEvents.onBroadcastFailed(e);
+      }
+
+      throw e;
+    }
+  }
+
+  static isEthereumHexAddressWithChecksum(hexAddress: string): boolean {
+    const isHexAddress = !!hexAddress.match(/^0x[0-9A-Fa-f]*$/);
+    const isChecksumAddress = !!hexAddress.match(
+      /([A-F].*[a-f])|([a-f].*[A-F])/
+    );
+    if (!isHexAddress || hexAddress.length !== 42) {
+      return false;
+    }
+
+    const checksumHexAddress = getEthAddress(hexAddress.toLowerCase());
+    if (isChecksumAddress && checksumHexAddress !== hexAddress) {
+      return false;
+    }
+
+    return true;
+  }
+}

@@ -1,9 +1,8 @@
 import { ObservableChainQuery } from "../../chain-query";
 import { StakingParams } from "./types";
-import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../../common";
+import { ChainGetter } from "../../../chain";
 import { computed, makeObservable } from "mobx";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../../common";
 
 export class ObservableQueryStakingParams extends ObservableChainQuery<StakingParams> {
   constructor(
@@ -17,8 +16,10 @@ export class ObservableQueryStakingParams extends ObservableChainQuery<StakingPa
       chainGetter,
       "/cosmos/staking/v1beta1/params"
     );
+
     makeObservable(this);
   }
+
   @computed
   get unbondingTimeSec(): number {
     if (!this.response) {

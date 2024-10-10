@@ -3,11 +3,10 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { UnbondingDelegation, UnbondingDelegations } from "./types";
-import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../../common";
-import { CoinPretty, Int } from "@owallet/unit";
+import { ChainGetter } from "../../../chain";
+import { CoinPretty, Int, Dec } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../../common";
 
 export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQuery<UnbondingDelegations> {
   protected bech32Address: string;
@@ -29,14 +28,21 @@ export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQue
     this.bech32Address = bech32Address;
   }
 
-  protected canFetch(): boolean {
+  protected override canFetch(): boolean {
+    if (!this.chainGetter.getChain(this.chainId).stakeCurrency) {
+      return false;
+    }
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address?.length > 0;
+    return this.bech32Address.length > 0;
   }
 
   @computed
-  get total(): CoinPretty {
+  get total(): CoinPretty | undefined {
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+    if (!stakeCurrency) {
+      return;
+    }
 
     if (!this.response) {
       return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
@@ -45,7 +51,10 @@ export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQue
     let totalBalance = new Int(0);
     for (const unbondingDelegation of this.response.data.unbonding_responses) {
       for (const entry of unbondingDelegation.entries) {
-        totalBalance = totalBalance.add(new Int(entry.balance));
+        const amount = new Int(entry.balance);
+        if (amount.gt(new Int(0))) {
+          totalBalance = totalBalance.add(amount);
+        }
       }
     }
 
@@ -65,21 +74,30 @@ export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQue
 
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
+    if (!stakeCurrency) {
+      return [];
+    }
+
     const result = [];
     for (const unbonding of unbondings) {
       const entries = [];
       for (const entry of unbonding.entries) {
-        entries.push({
-          creationHeight: new Int(entry.creation_height),
-          completionTime: entry.completion_time,
-          balance: new CoinPretty(stakeCurrency, new Int(entry.balance)),
-        });
+        const balance = new CoinPretty(stakeCurrency, new Int(entry.balance));
+        if (balance.toDec().gt(new Dec(0))) {
+          entries.push({
+            creationHeight: new Int(entry.creation_height),
+            completionTime: entry.completion_time,
+            balance,
+          });
+        }
       }
 
-      result.push({
-        validatorAddress: unbonding.validator_address,
-        entries,
-      });
+      if (entries.length > 0) {
+        result.push({
+          validatorAddress: unbonding.validator_address,
+          entries,
+        });
+      }
     }
 
     return result;
@@ -91,15 +109,27 @@ export class ObservableQueryUnbondingDelegationsInner extends ObservableChainQue
       return [];
     }
 
-    return this.response.data.unbonding_responses;
+    const res: UnbondingDelegation[] = [];
+
+    for (const unbonding of this.response.data.unbonding_responses) {
+      const u = {
+        ...unbonding,
+      };
+      u.entries = u.entries.filter((entry) => {
+        return new Int(entry.balance).gt(new Int(0));
+      });
+      res.push(u);
+    }
+
+    return res;
   }
 }
 
 export class ObservableQueryUnbondingDelegations extends ObservableChainQueryMap<UnbondingDelegations> {
   constructor(
-    protected readonly sharedContext: QuerySharedContext,
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
   ) {
     super(sharedContext, chainId, chainGetter, (bech32Address: string) => {
       return new ObservableQueryUnbondingDelegationsInner(

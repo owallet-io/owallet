@@ -1,50 +1,36 @@
-import { Currency, AppCurrency } from "./currency";
+import { Currency, AppCurrency, FeeCurrency } from "./currency";
 import { BIP44 } from "./bip44";
-import { AxiosRequestConfig } from "axios";
 import { Bech32Config } from "./bech32";
+import { EVMInfo } from "./ethereum";
 
-export type NetworkType = "cosmos" | "evm" | "bitcoin" | "evmos";
 export interface ChainInfo {
-  readonly rpc?: string;
-  readonly grpc?: string;
-  readonly evmRpc?: string;
-  readonly rpcConfig?: AxiosRequestConfig;
-  readonly chainSymbolImageUrl?: string;
+  readonly rpc: string;
   readonly rest: string;
-  readonly restConfig?: AxiosRequestConfig;
+  readonly nodeProvider?: {
+    readonly name: string;
+    readonly email?: string;
+    readonly discord?: string;
+    readonly website?: string;
+  };
   readonly chainId: string;
   readonly chainName: string;
-  readonly networkType?: NetworkType;
   /**
    * This indicates the type of coin that can be used for stake.
    * You can get actual currency information from Currencies.
    */
   readonly stakeCurrency?: Currency;
+  readonly walletUrl?: string;
+  readonly walletUrlForStaking?: string;
   readonly bip44: BIP44;
   readonly alternativeBIP44s?: BIP44[];
   readonly bech32Config?: Bech32Config;
+
   readonly currencies: AppCurrency[];
   /**
    * This indicates which coin or token can be used for fee to send transaction.
    * You can get actual currency information from Currencies.
    */
-  readonly feeCurrencies: Currency[];
-  /**
-   * This is the coin type in slip-044.
-   * This is used for fetching address from ENS if this field is set.
-   */
-  readonly coinType?: number;
-
-  /**
-   * This is used to set the fee of the transaction.
-   * If this field is empty, it just use the default gas price step (low: 0.01, average: 0.025, high: 0.04).
-   * And, set field's type as primitive number because it is hard to restore the prototype after deserialzing if field's type is `Dec`.
-   */
-  readonly gasPriceStep?: {
-    low: number;
-    average: number;
-    high: number;
-  };
+  readonly feeCurrencies: FeeCurrency[];
 
   /**
    * Indicate the features supported by this chain. Ex) cosmwasm, secretwasm ...
@@ -57,18 +43,22 @@ export interface ChainInfo {
    * If the blockchain is in an early stage, please set it as beta.
    */
   readonly beta?: boolean;
+
+  readonly chainSymbolImageUrl?: string;
+
+  readonly hideInUI?: boolean;
+
+  readonly evm?: EVMInfo;
 }
 
-export interface AppChainInfo extends ChainInfo {
-  readonly chainSymbolImageUrl?: string;
-  readonly hideInUI?: boolean;
-  readonly txExplorer?: {
-    readonly name: string;
-    readonly txUrl: string;
-    readonly accountUrl?: string;
-  };
-}
 export type ChainInfoWithoutEndpoints = Omit<
   ChainInfo,
-  "rest" | "rpc" | "nodeProvider"
->;
+  "rest" | "rpc" | "nodeProvider" | "evm"
+> & {
+  readonly rest: undefined;
+  readonly rpc: undefined;
+  readonly nodeProvider: undefined;
+  readonly evm?: Omit<EVMInfo, "rpc"> & {
+    readonly rpc: undefined;
+  };
+};

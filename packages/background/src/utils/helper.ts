@@ -9,13 +9,13 @@ import {
   typeBtcLedgerByAddress,
 } from "@owallet/common";
 import {
-  AddressBtcType,
-  AddressesLedger,
-  BIP44HDPath,
+  // AddressBtcType,
+  // AddressesLedger,
+  // BIP44HDPath,
   ChainInfoWithoutEndpoints,
 } from "@owallet/types";
 import Joi from "joi";
-import { ChainInfoWithEmbed } from "src/chains";
+// import { ChainInfoWithEmbed } from "src/chains";
 import * as oasis from "@oasisprotocol/client";
 
 export const EIP712DomainTypeValidator = Joi.array()
@@ -174,21 +174,21 @@ export function stringifyPath(paths: number[]): string {
   return stringPaths;
 }
 
-export const handleAddressLedgerByChainId = (
-  ledgerAppType: LedgerAppType,
-  address: string,
-  chainInfo: ChainInfoWithoutEndpoints
-): AddressesLedger => {
-  if (chainInfo.networkType !== "bitcoin") {
-    return {
-      [ledgerAppType]: address,
-    };
-  }
-  const addressType = getAddressTypeByAddress(address) as AddressBtcType;
-  return {
-    [typeBtcLedgerByAddress(chainInfo, addressType)]: address,
-  };
-};
+// export const handleAddressLedgerByChainId = (
+//   ledgerAppType: LedgerAppType,
+//   address: string,
+//   chainInfo: ChainInfoWithoutEndpoints
+// ): AddressesLedger => {
+//   if (chainInfo.networkType !== "bitcoin") {
+//     return {
+//       [ledgerAppType]: address,
+//     };
+//   }
+//   const addressType = getAddressTypeByAddress(address) as AddressBtcType;
+//   return {
+//     [typeBtcLedgerByAddress(chainInfo, addressType)]: address,
+//   };
+// };
 
 /**
  * Return a nic client for the specified network,

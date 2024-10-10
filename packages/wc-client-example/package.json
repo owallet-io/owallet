@@ -1,7 +1,7 @@
 {
   "name": "@owallet/wc-client-example",
   "version": "0.9.16",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {

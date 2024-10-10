@@ -1,4 +1,4 @@
-import { InteractionService } from "../interaction";
+import { InteractionService } from "../interaction-v2";
 import { Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
 import {
   AllPermissionDataPerOrigin,

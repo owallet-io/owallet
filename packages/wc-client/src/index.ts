@@ -3,11 +3,11 @@ import {
   BroadcastMode,
   ChainInfo,
   ChainInfoWithoutEndpoints,
-  // DirectAuxSignResponse,
+  DirectAuxSignResponse,
   DirectSignResponse,
-  // EthSignType,
-  // ICNSAdr36Signatures,
-  // IEthereumProvider,
+  EthSignType,
+  ICNSAdr36Signatures,
+  IEthereumProvider,
   OWallet,
   OWalletIntereactionOptions,
   OWalletMode,
@@ -16,10 +16,9 @@ import {
   OfflineAminoSigner,
   OfflineDirectSigner,
   SecretUtils,
-  // SettledResponses,
+  SettledResponses,
   StdSignature,
   StdSignDoc,
-  SettledResponses,
 } from "@owallet/types";
 import SignClient from "@walletconnect/sign-client";
 import {
@@ -29,7 +28,7 @@ import {
 import { Buffer } from "buffer/";
 import { ProposalTypes, SessionTypes } from "@walletconnect/types";
 import Long from "long";
-// import EventEmitter from "events";
+import EventEmitter from "events";
 
 interface RequestParams {
   topic: string;
@@ -48,14 +47,14 @@ interface OWalletGetKeyWalletConnectV2Response {
   readonly pubKey: string;
   readonly address: string;
   readonly bech32Address: string;
-  // readonly ethereumHexAddress: string;
+  readonly ethereumHexAddress: string;
   readonly isNanoLedger: boolean;
 }
 
 export class OWalletWalletConnectV2 implements OWallet {
   defaultOptions: OWalletIntereactionOptions = {};
 
-  readonly version: string = "0.9.16";
+  readonly version: string = "0.12.20";
   readonly mode: OWalletMode = "walletconnect";
   protected readonly storeKey = "owallet_wallet_connect_v2_key";
   protected readonly storeSuggestChainKey =
@@ -78,7 +77,7 @@ export class OWalletWalletConnectV2 implements OWallet {
       if (event.params.event.name === "owallet_accountsChanged") {
         this.saveKeys(event.params.event.data);
 
-        window.dispatchEvent(new Event("owallet_keystorechange"));
+        window.dispatchEvent(new Event("keplr_keystorechange"));
       }
     });
 
@@ -115,7 +114,7 @@ export class OWalletWalletConnectV2 implements OWallet {
       !data.hasOwnProperty("pubKey") ||
       !data.hasOwnProperty("address") ||
       !data.hasOwnProperty("bech32Address") ||
-      // !data.hasOwnProperty("ethereumHexAddress") ||
+      !data.hasOwnProperty("ethereumHexAddress") ||
       !data.hasOwnProperty("isNanoLedger")
     ) {
       throw new Error("Invalid data");
@@ -127,7 +126,7 @@ export class OWalletWalletConnectV2 implements OWallet {
       pubKey: data.pubKey as string,
       address: data.address as string,
       bech32Address: data.bech32Address as string,
-      // ethereumHexAddress: data.ethereumHexAddress as string,
+      ethereumHexAddress: data.ethereumHexAddress as string,
       isNanoLedger: data.isNanoLedger === "true",
     };
   }
@@ -508,12 +507,12 @@ export class OWalletWalletConnectV2 implements OWallet {
       return {
         algo: lastSeenKey.algo,
         bech32Address: lastSeenKey.bech32Address,
-        // ethereumHexAddress: lastSeenKey.ethereumHexAddress,
+        ethereumHexAddress: lastSeenKey.ethereumHexAddress,
         address: Buffer.from(lastSeenKey.address, "base64"),
         name: lastSeenKey.name,
         pubKey: Buffer.from(lastSeenKey.pubKey, "base64"),
         isNanoLedger: lastSeenKey.isNanoLedger,
-        // isKeystone: false
+        isKeystone: false,
       };
     }
 
@@ -526,7 +525,8 @@ export class OWalletWalletConnectV2 implements OWallet {
         return {
           algo: lastSession.sessionProperties["algo"],
           bech32Address: lastSession.sessionProperties["bech32Address"],
-          // ethereumHexAddress: lastSession.sessionProperties["ethereumHexAddress"],
+          ethereumHexAddress:
+            lastSession.sessionProperties["ethereumHexAddress"],
           address: Buffer.from(
             lastSession.sessionProperties["address"],
             "base64"
@@ -538,7 +538,7 @@ export class OWalletWalletConnectV2 implements OWallet {
           ),
           isNanoLedger:
             lastSession.sessionProperties["isNanoLedger"] === "true",
-          // isKeystone: false
+          isKeystone: false,
         };
       }
     }
@@ -570,7 +570,7 @@ export class OWalletWalletConnectV2 implements OWallet {
       ...response,
       pubKey: Buffer.from(response.pubKey, "base64"),
       address: Buffer.from(response.address, "base64"),
-      // isKeystone: false
+      isKeystone: false,
     };
   }
 
@@ -586,7 +586,7 @@ export class OWalletWalletConnectV2 implements OWallet {
     chainId: string,
     signOptions?: OWalletSignOptions
   ): OfflineAminoSigner & OfflineDirectSigner {
-    return new CosmJSOfflineSigner(chainId, this);
+    return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
   async getOfflineSignerAuto(
@@ -595,16 +595,16 @@ export class OWalletWalletConnectV2 implements OWallet {
   ): Promise<OfflineAminoSigner | OfflineDirectSigner> {
     const key = await this.getKey(chainId);
     if (key.isNanoLedger) {
-      return new CosmJSOfflineSignerOnlyAmino(chainId, this);
+      return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
     }
-    return new CosmJSOfflineSigner(chainId, this);
+    return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
   getOfflineSignerOnlyAmino(
     chainId: string,
     signOptions?: OWalletSignOptions
   ): OfflineAminoSigner {
-    return new CosmJSOfflineSignerOnlyAmino(chainId, this);
+    return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
   }
 
   getSecret20ViewingKey(
@@ -746,70 +746,70 @@ export class OWalletWalletConnectV2 implements OWallet {
     };
   }
 
-  // signDirectAux(
-  //   _chainId: string,
-  //   _signer: string,
-  //   _signDoc: {
-  //     bodyBytes?: Uint8Array | null;
-  //     publicKey?: {
-  //       typeUrl: string;
-  //       value: Uint8Array;
-  //     } | null;
-  //     chainId?: string | null;
-  //     accountNumber?: Long | null;
-  //     sequence?: Long | null;
-  //     tip?: {
-  //       amount: {
-  //         denom: string;
-  //         amount: string;
-  //       }[];
-  //       tipper: string;
-  //     } | null;
-  //   },
-  //   _signOptions?: Exclude<
-  //     OWalletSignOptions,
-  //     "preferNoSetFee" | "disableBalanceCheck"
-  //   >
-  // ): Promise<DirectAuxSignResponse> {
-  //   throw new Error("Not yet implemented");
-  // }
+  signDirectAux(
+    _chainId: string,
+    _signer: string,
+    _signDoc: {
+      bodyBytes?: Uint8Array | null;
+      publicKey?: {
+        typeUrl: string;
+        value: Uint8Array;
+      } | null;
+      chainId?: string | null;
+      accountNumber?: Long | null;
+      sequence?: Long | null;
+      tip?: {
+        amount: {
+          denom: string;
+          amount: string;
+        }[];
+        tipper: string;
+      } | null;
+    },
+    _signOptions?: Exclude<
+      OWalletSignOptions,
+      "preferNoSetFee" | "disableBalanceCheck"
+    >
+  ): Promise<DirectAuxSignResponse> {
+    throw new Error("Not yet implemented");
+  }
 
-  // async signEthereum(
-  //   chainId: string,
-  //   signer: string,
-  //   data: string | Uint8Array,
-  //   type: EthSignType
-  // ): Promise<Uint8Array> {
-  //   this.checkDeepLink();
+  async signEthereum(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: EthSignType
+  ): Promise<Uint8Array> {
+    this.checkDeepLink();
 
-  //   const topic = this.getCurrentTopic();
+    const topic = this.getCurrentTopic();
 
-  //   const param = {
-  //     topic,
-  //     chainId: this.getNamespaceChainId(),
-  //     request: {
-  //       method: "owallet_signEthereum",
-  //       params: {
-  //         chainId,
-  //         signer,
-  //         data,
-  //         type
-  //       }
-  //     }
-  //   };
+    const param = {
+      topic,
+      chainId: this.getNamespaceChainId(),
+      request: {
+        method: "owallet_signEthereum",
+        params: {
+          chainId,
+          signer,
+          data,
+          type,
+        },
+      },
+    };
 
-  //   return await this.sendCustomRequest<Uint8Array>(param);
-  // }
+    return await this.sendCustomRequest<Uint8Array>(param);
+  }
 
-  // signICNSAdr36(
-  //   _chainId: string,
-  //   _contractAddress: string,
-  //   _owner: string,
-  //   _username: string,
-  //   _addressChainIds: string[]
-  // ): Promise<ICNSAdr36Signatures> {
-  //   throw new Error("Not yet implemented");
-  // }
+  signICNSAdr36(
+    _chainId: string,
+    _contractAddress: string,
+    _owner: string,
+    _username: string,
+    _addressChainIds: string[]
+  ): Promise<ICNSAdr36Signatures> {
+    throw new Error("Not yet implemented");
+  }
 
   async suggestToken(
     _chainId: string,
@@ -851,43 +851,46 @@ export class OWalletWalletConnectV2 implements OWallet {
     throw new Error("Not yet implemented");
   }
 
-  // sendEthereumTx(_chainId: string, _tx: Uint8Array): Promise<string> {
-  //   throw new Error("Not yet implemented");
-  // }
+  sendEthereumTx(_chainId: string, _tx: Uint8Array): Promise<string> {
+    throw new Error("Not yet implemented");
+  }
 
-  // suggestERC20(_chainId: string, _contractAddress: string): Promise<void> {
-  //   throw new Error("Not yet implemented");
-  // }
+  suggestERC20(_chainId: string, _contractAddress: string): Promise<void> {
+    throw new Error("Not yet implemented");
+  }
 
-  // public readonly ethereum = new MockEthereumProvider();
+  public readonly ethereum = new MockEthereumProvider();
 }
 
-// class MockEthereumProvider extends EventEmitter implements IEthereumProvider {
-//   readonly chainId: string | null = null;
-//   readonly selectedAddress: string | null = null;
+class MockEthereumProvider extends EventEmitter implements IEthereumProvider {
+  readonly chainId: string | null = null;
+  readonly selectedAddress: string | null = null;
 
-//   readonly networkVersion: string | null = null;
+  readonly networkVersion: string | null = null;
 
-//   readonly isOWallet: boolean = true;
-//   readonly isMetaMask: boolean = true;
+  readonly isOWallet: boolean = true;
+  readonly isMetaMask: boolean = true;
 
-//   constructor() {
-//     super();
-//   }
+  constructor() {
+    super();
+  }
 
-//   isConnected(): boolean {
-//     throw new Error("Method not implemented.");
-//   }
+  isConnected(): boolean {
+    throw new Error("Method not implemented.");
+  }
 
-//   request<T>({}: { method: string; params?: unknown[] | Record<string, unknown> }): Promise<T> {
-//     throw new Error("Not yet implemented");
-//   }
+  request<T>({}: {
+    method: string;
+    params?: unknown[] | Record<string, unknown>;
+  }): Promise<T> {
+    throw new Error("Not yet implemented");
+  }
 
-//   enable(): Promise<string[]> {
-//     throw new Error("Method not implemented.");
-//   }
+  enable(): Promise<string[]> {
+    throw new Error("Method not implemented.");
+  }
 
-//   net_version(): Promise<string> {
-//     throw new Error("Method not implemented.");
-//   }
-// }
+  net_version(): Promise<string> {
+    throw new Error("Method not implemented.");
+  }
+}

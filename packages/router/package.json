@@ -1,17 +1,16 @@
 {
   "name": "@owallet/router",
-  "version": "0.9.6",
+  "version": "0.9.16",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""

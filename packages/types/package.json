@@ -2,26 +2,20 @@
   "name": "@owallet/types",
   "version": "0.9.13",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
-    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "publish": "yarn publish --access public"
+    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/proto-signing": "^0.29.3",
-    "axios": "^1.7.2",
-    "long": "^4.0.0",
-    "secretjs": "^1.12.5"
+    "long": "^4.0.0"
   }
 }

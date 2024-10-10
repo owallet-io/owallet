@@ -1,7 +1,8 @@
 import { ObservableChainQuery } from "../../../chain-query";
+import { ChainGetter } from "../../../../chain";
 import { makeObservable } from "mobx";
 import { BaseDenom } from "./types";
-import { ChainGetter, QuerySharedContext } from "../../../../common";
+import { QuerySharedContext } from "../../../../common";
 
 export class ObservableQueryTxFeesBaseDenom extends ObservableChainQuery<BaseDenom> {
   constructor(

@@ -1,20 +1,19 @@
 import { ObservableChainQuery } from "../chain-query";
 import { toGenerator } from "@owallet/common";
-import { ChainGetter } from "../../common";
+import { ChainGetter } from "../../chain";
 import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
-import { autorun, computed, flow, makeObservable, observable } from "mobx";
+import { computed, flow, makeObservable, observable } from "mobx";
 import { OWallet } from "@owallet/types";
-import Axios, { CancelToken } from "axios";
-import { QueryResponse } from "../../common";
+import { QuerySharedContext } from "../../common";
 
-import { Buffer } from "buffer";
-import { QuerySharedContext } from "src/common/query/context";
+import { Buffer } from "buffer/";
+import { makeURL } from "@owallet/simple-fetch";
 
 export class ObservableSecretContractChainQuery<
   T
 > extends ObservableChainQuery<T> {
   @observable.ref
-  protected owallet?: OWallet = undefined;
+  protected keplr?: OWallet = undefined;
 
   protected nonce?: Uint8Array;
 
@@ -34,69 +33,65 @@ export class ObservableSecretContractChainQuery<
     // Don't need to set the url initially because it can't request without encyption.
     super(sharedContext, chainId, chainGetter, ``);
     makeObservable(this);
-
-    // Try to get the owallet API.
-    this.initOWallet();
-
-    const disposer = autorun(() => {
-      // If the owallet API is ready and the contract code hash is fetched, try to init.
-      if (this.owallet && this.contractCodeHash) {
-        this.init();
-        disposer();
-      }
-    });
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  protected setObj(obj: object) {
-    this.obj = obj;
-    this.init();
+  protected override async onStart() {
+    super.onStart();
+
+    if (!this.keplr) {
+      await this.initOWallet();
+    }
+
+    if (!this.keplr) {
+      throw new Error("Failed to get keplr");
+    }
+
+    await this.querySecretContractCodeHash
+      .getQueryContract(this.contractAddress)
+      .waitResponse();
+
+    await this.init();
   }
 
-  get isFetching(): boolean {
+  override get isFetching(): boolean {
     return (
       this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
         .isFetching ||
-      this.owallet == null ||
+      this.keplr == null ||
       this._isIniting ||
       super.isFetching
     );
   }
 
-  protected canFetch(): boolean {
+  protected override canFetch(): boolean {
     if (
       !this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
-        ?.response
+        .response
     ) {
       return false;
     }
 
-    return this.contractAddress?.length !== 0 && this.nonce != null;
+    return this.contractAddress.length !== 0 && this.nonce != null;
   }
 
   @flow
   protected *initOWallet() {
-    this.owallet = yield* toGenerator(this.apiGetter());
+    this.keplr = yield* toGenerator(this.apiGetter());
   }
 
   @flow
   protected *init() {
     this._isIniting = true;
 
-    if (this.owallet && this.contractCodeHash) {
-      const enigmaUtils = this.owallet.getEnigmaUtils(this.chainId);
+    if (this.keplr && this.contractCodeHash) {
+      const enigmaUtils = this.keplr.getEnigmaUtils(this.chainId);
       const encrypted = yield* toGenerator(
         enigmaUtils.encrypt(this.contractCodeHash, this.obj)
       );
       this.nonce = encrypted.slice(0, 32);
 
-      const encoded = Buffer.from(
-        Buffer.from(encrypted).toString("base64")
-      ).toString("hex");
-
-      this.setUrl(
-        `/wasm/contract/${this.contractAddress}/query/${encoded}?encoding=hex`
-      );
+      const encoded = Buffer.from(encrypted).toString("base64");
+      this.setUrl(this.getSecretWasmUrl(this.contractAddress, encoded));
     }
 
     this._isIniting = false;
@@ -123,8 +118,8 @@ export class ObservableSecretContractChainQuery<
           const errorCipherB64 = rgxMatches[2];
           const errorCipherBz = Buffer.from(errorCipherB64, "base64");
 
-          if (this.owallet && this.nonce) {
-            const decrypted = await this.owallet
+          if (this.keplr && this.nonce) {
+            const decrypted = await this.keplr
               .getEnigmaUtils(this.chainId)
               .decrypt(errorCipherBz, this.nonce);
 
@@ -144,7 +139,7 @@ export class ObservableSecretContractChainQuery<
         }
       | undefined;
 
-    if (!this.owallet) {
+    if (!this.keplr) {
       throw new Error("OWallet API not initialized");
     }
 
@@ -156,7 +151,7 @@ export class ObservableSecretContractChainQuery<
       throw new Error("Failed to get the response from the contract");
     }
 
-    const decrypted = await this.owallet
+    const decrypted = await this.keplr
       .getEnigmaUtils(this.chainId)
       .decrypt(Buffer.from(encResult.data, "base64"), this.nonce);
 
@@ -172,8 +167,19 @@ export class ObservableSecretContractChainQuery<
     };
   }
 
+  protected getSecretWasmUrl(contractAddress: string, msg: string): string {
+    const queryParam = new URLSearchParams({ query: msg });
+    return `/compute/v1beta1/query/${contractAddress}?${queryParam.toString()}`;
+  }
+
   // Actually, the url of fetching the secret20 balance will be changed every time.
   // So, we should save it with deterministic key.
+  protected override getCacheKey(): string {
+    return makeURL(
+      this.baseURL,
+      this.getSecretWasmUrl(this.contractAddress, JSON.stringify(this.obj))
+    );
+  }
 
   @computed
   get contractCodeHash(): string | undefined {
@@ -187,6 +193,6 @@ export class ObservableSecretContractChainQuery<
 
     // Code hash is persistent, so it is safe not to consider that the response is from cache or network.
     // TODO: Handle the error case.
-    return queryCodeHash.response.data.result;
+    return queryCodeHash.response.data.code_hash;
   }
 }

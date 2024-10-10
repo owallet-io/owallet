@@ -1,10 +1,10 @@
 export * from "./queries";
 export * from "./chain-query";
 export * from "./balances";
-export * from "./evm";
-export * from "./bitcoin";
+
+export * from "./agoric";
 export * from "./cosmos";
 export * from "./cosmwasm";
-export * from "./tron";
 export * from "./secret-wasm";
 export * from "./osmosis";
+export * from "./icns";

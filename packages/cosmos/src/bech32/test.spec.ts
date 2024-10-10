@@ -18,19 +18,24 @@ describe("Test bech32", () => {
     );
   });
 
-  it("fromBech32Btc address", () => {
-    const address = Bech32Address.fromBech32Btc(
-      "tb1q55ddlnqp7spzeskdd82p5sseyqexy67s7esc3g"
+  it("test hex address", () => {
+    expect(() => {
+      const address = new Bech32Address(new Uint8Array(0));
+      address.toHex();
+    }).toThrow();
+
+    const address = Bech32Address.fromBech32(
+      "evmos1qstxmye74d0ums53ktkzrx7d3vrac077k2rv2v"
     );
-    expect(address.address).toEqual(
-      new Uint8Array([
-        165, 26, 223, 204, 1, 244, 2, 44, 194, 205, 105, 212, 26, 66, 25, 32,
-        50, 98, 107, 208,
-      ])
+
+    expect(address.toHex()).toStrictEqual(
+      "0x04166d933eab5fcDC291B2Ec219bCd8b07dC3fDE"
     );
-    expect(address.address.length).toBe(20);
-    expect(address.toBech32Btc("tb")).toBe(
-      "tb1q55ddlnqp7spzeskdd82p5sseyqexy67s7esc3g"
+    expect(address.toHex(true)).toStrictEqual(
+      "0x04166d933eab5fcDC291B2Ec219bCd8b07dC3fDE"
+    );
+    expect(address.toHex(false)).toStrictEqual(
+      "0x04166d933eab5fcdc291b2ec219bcd8b07dc3fde"
     );
   });
 });

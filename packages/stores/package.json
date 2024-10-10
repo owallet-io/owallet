@@ -2,43 +2,40 @@
   "name": "@owallet/stores",
   "version": "0.9.16",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
+  "devDependencies": {
+    "@owallet/provider-mock": "*"
+  },
   "dependencies": {
-    "@cosmjs/encoding": "^0.29.3",
-    "@cosmjs/launchpad": "^0.27.1",
-    "@cosmjs/tendermint-rpc": "^0.29.4",
-    "@hanchon/ethermint-address-converter": "^1.1.0",
-    "@owallet/background": "^0.9.16",
-    "@owallet/common": "^0.9.10",
-    "@owallet/cosmos": "^0.9.16",
-    "@owallet/crypto": "^0.9.10",
-    "@owallet/router": "^0.9.6",
+    "@owallet/common": "*",
+    "@owallet/cosmos": "*",
+    "@owallet/crypto": "*",
+    "@owallet/mobx-utils": "*",
+    "@owallet/proto-types": "*",
     "@owallet/simple-fetch": "*",
-    "@owallet/types": "^0.9.12",
-    "@owallet/unit": "^0.9.12",
-    "axios": "^1.7.2",
+    "@owallet/types": "*",
+    "@owallet/unit": "*",
     "buffer": "^6.0.3",
-    "cosmjs-types": "^0.6.1",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",
     "long": "^4.0.0",
-    "mobx": "^6.13.1",
-    "mobx-utils": "^6.0.8",
     "p-queue": "^6.6.2",
-    "utility-types": "^3.10.0",
-    "web3": "1.10.0"
+    "utility-types": "^3.10.0"
+  },
+  "peerDependencies": {
+    "mobx": "^6",
+    "mobx-utils": "^6"
   }
 }

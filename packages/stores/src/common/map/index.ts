@@ -1,4 +1,3 @@
-import { AddressBtcType } from "@owallet/types";
 import { makeObservable, observable, runInAction } from "mobx";
 
 export class HasMapStore<T> {
@@ -11,7 +10,8 @@ export class HasMapStore<T> {
 
   protected get(key: string): T {
     if (!this.map.has(key)) {
-      let query = this.creater(key);
+      const query = this.creater(key);
+
       runInAction(() => {
         this.map.set(key, query);
       });

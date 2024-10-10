@@ -2,7 +2,7 @@
   "name": "@owallet/common",
   "version": "0.9.10",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"

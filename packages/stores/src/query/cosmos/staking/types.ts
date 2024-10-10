@@ -12,58 +12,36 @@ export type DelegatorReward = {
 
 export type Delegations = {
   delegation_responses: Delegation[];
+  // pagination: {}
 };
 
 export type Delegation = {
-  delegator_address: string;
-  validator_address: string;
-  // Dec
-  shares: string;
-  // Int
-  balance:
-    | string
-    // There is difference according to the cosmos-sdk's version.
-    // But, latter is the latest version.
-    | {
-        denom: string;
-        amount: string;
-      };
-};
-
-export type DelegationsStargate = {
-  delegation_responses: DelegationStargate[];
-};
-
-export type DelegationStargate = {
   delegation: {
     delegator_address: string;
     validator_address: string;
     // Dec
     shares: string;
   };
-  balance:
-    | string
-    | {
-        denom: string;
-        amount: string;
-      };
+  balance: {
+    denom: string;
+    amount: string;
+  };
 };
 
 export type UnbondingDelegations = {
   unbonding_responses: UnbondingDelegation[];
+  // pagination: {}
 };
 
 export type UnbondingDelegation = {
   delegator_address: string;
   validator_address: string;
-  entries: [
-    {
-      creation_height: string;
-      completion_time: string;
-      initial_balance: string;
-      balance: string;
-    }
-  ];
+  entries: {
+    creation_height: string;
+    completion_time: string;
+    initial_balance: string;
+    balance: string;
+  }[];
 };
 
 export type Validator = {
@@ -74,7 +52,6 @@ export type Validator = {
     key: string;
   };
   jailed: boolean;
-  uptime?: string | number;
   status:
     | "BOND_STATUS_UNSPECIFIED"
     | "BOND_STATUS_UNBONDED"
@@ -110,6 +87,7 @@ export type Validator = {
 
 export type Validators = {
   validators: Validator[];
+  // pagination: {}
 };
 
 export enum BondStatus {

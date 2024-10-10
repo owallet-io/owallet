@@ -1,14 +1,15 @@
-import { KVStore, getUrlV1Beta } from "@owallet/common";
 import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { ChainGetter } from "../../../common";
+import { ChainGetter } from "../../../chain";
 import { ChannelResponse } from "./types";
 import { autorun } from "mobx";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../../common";
 
 export class ObservableChainQueryIBCChannel extends ObservableChainQuery<ChannelResponse> {
+  protected disposer?: () => void;
+
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
@@ -20,28 +21,37 @@ export class ObservableChainQueryIBCChannel extends ObservableChainQuery<Channel
       sharedContext,
       chainId,
       chainGetter,
-      `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}`
+      `/ibc/core/channel/v1beta1/channels/${channelId}/ports/${portId}`
     );
+  }
 
-    autorun(() => {
+  protected override onStart(): void {
+    super.onStart();
+
+    this.disposer = autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-
       if (chainInfo.features && chainInfo.features.includes("ibc-go")) {
         this.setUrl(
-          `/ibc/core/channel/${getUrlV1Beta(chainInfo.beta)}/channels/${
-            this.channelId
-          }/ports/${this.portId}`
+          `/ibc/core/channel/v1/channels/${this.channelId}/ports/${this.portId}`
         );
       }
     });
+  }
+
+  protected override onStop() {
+    if (this.disposer) {
+      this.disposer();
+      this.disposer = undefined;
+    }
+    super.onStop();
   }
 }
 
 export class ObservableQueryIBCChannel extends ObservableChainQueryMap<ChannelResponse> {
   constructor(
-    protected readonly sharedContext: QuerySharedContext,
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
   ) {
     super(sharedContext, chainId, chainGetter, (key: string) => {
       const params = JSON.parse(key);

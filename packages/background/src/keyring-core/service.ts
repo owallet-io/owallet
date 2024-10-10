@@ -12,7 +12,7 @@ import { ChainsService } from "../chains-v2";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { KVStore } from "@owallet/common";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
-import { InteractionService } from "../interaction";
+import { InteractionService } from "../interaction-v2";
 import { ChainInfo } from "@owallet/types";
 import { Buffer } from "buffer/";
 import * as Legacy from "./legacy";

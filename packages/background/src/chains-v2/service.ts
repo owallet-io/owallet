@@ -3,11 +3,7 @@ import {
   PrefixKVStore,
   sortedJsonByKeyStringify,
 } from "@owallet/common";
-import {
-  ChainInfo,
-  ChainInfoWithoutEndpoints,
-  // EVMInfo,
-} from "@owallet/types";
+import { ChainInfo, ChainInfoWithoutEndpoints, EVMInfo } from "@owallet/types";
 import {
   action,
   autorun,
@@ -24,7 +20,7 @@ import {
   validateBasicChainInfoType,
 } from "@owallet/chain-validator";
 import { simpleFetch } from "@owallet/simple-fetch";
-import { InteractionService } from "../interaction";
+import { InteractionService } from "../interaction-v2";
 import { Env } from "@owallet/router";
 import { SuggestChainInfoMsg } from "./messages";
 import { ChainInfoWithCoreTypes, ChainInfoWithSuggestedOptions } from "./types";
@@ -36,9 +32,9 @@ type ChainSuggestedHandler = (chainInfo: ChainInfo) => void | Promise<void>;
 type UpdatedChainInfo = Pick<ChainInfo, "chainId" | "features">;
 
 export class ChainsService {
-  // static getEVMInfo(chainInfo: ChainInfo): EVMInfo | undefined {
-  //   return chainInfo.evm;
-  // }
+  static getEVMInfo(chainInfo: ChainInfo): EVMInfo | undefined {
+    return chainInfo.evm;
+  }
 
   @observable.ref
   protected updatedChainInfos: UpdatedChainInfo[] = [];
@@ -320,13 +316,13 @@ export class ChainsService {
           nodeProvider: undefined,
           updateFromRepoDisabled: undefined,
           embedded: undefined,
-          // evm:
-          //   chainInfo.evm !== undefined
-          //     ? {
-          //         ...chainInfo.evm,
-          //         rpc: undefined,
-          //       }
-          //     : undefined,
+          evm:
+            chainInfo.evm !== undefined
+              ? {
+                  ...chainInfo.evm,
+                  rpc: undefined,
+                }
+              : undefined,
         };
       });
     },
@@ -355,16 +351,16 @@ export class ChainsService {
     }
   );
 
-  // getChainInfoByEVMChainId = computedFn(
-  //   (evmChainId: number): ChainInfo | undefined => {
-  //     return this.getChainInfos().find(
-  //       (chainInfo) => chainInfo.evm && chainInfo.evm.chainId === evmChainId
-  //     );
-  //   },
-  //   {
-  //     keepAlive: true,
-  //   }
-  // );
+  getChainInfoByEVMChainId = computedFn(
+    (evmChainId: number): ChainInfo | undefined => {
+      return this.getChainInfos().find(
+        (chainInfo) => chainInfo.evm && chainInfo.evm.chainId === evmChainId
+      );
+    },
+    {
+      keepAlive: true,
+    }
+  );
 
   hasChainInfo(chainId: string): boolean {
     return this.getChainInfo(chainId) != null;
@@ -415,52 +411,52 @@ export class ChainsService {
     }
   );
 
-  // async tryUpdateChainInfoFromRepo(chainId: string): Promise<boolean> {
-  //   if (!this.hasChainInfo(chainId)) {
-  //     throw new Error(`${chainId} is not registered`);
-  //   }
-  //
-  //   if (
-  //     (this.getChainInfoOrThrow(chainId) as ChainInfoWithCoreTypes)
-  //       .updateFromRepoDisabled
-  //   ) {
-  //     return false;
-  //   }
-  //
-  //   const isEvmOnlyChain = this.isEvmOnlyChain(chainId);
-  //   const chainInfo = await this.fetchFromRepo(chainId, isEvmOnlyChain);
-  //
-  //   if (!this.hasChainInfo(chainId)) {
-  //     throw new Error(`${chainId} became unregistered after fetching`);
-  //   }
-  //
-  //   const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
-  //   const prevChainInfoFromRepo = this.getRepoChainInfo(chainId);
-  //   if (
-  //     !prevChainInfoFromRepo ||
-  //     sortedJsonByKeyStringify(prevChainInfoFromRepo) !==
-  //       sortedJsonByKeyStringify(chainInfo)
-  //   ) {
-  //     const i = this.repoChainInfos.findIndex(
-  //       (c) => ChainIdHelper.parse(c.chainId).identifier === chainIdentifier
-  //     );
-  //     runInAction(() => {
-  //       if (i >= 0) {
-  //         const newChainInfos = this.repoChainInfos.slice();
-  //         newChainInfos[i] = chainInfo;
-  //         this.repoChainInfos = newChainInfos;
-  //       } else {
-  //         const newChainInfos = this.repoChainInfos.slice();
-  //         newChainInfos.push(chainInfo);
-  //         this.repoChainInfos = newChainInfos;
-  //       }
-  //     });
-  //
-  //     return true;
-  //   }
-  //
-  //   return false;
-  // }
+  async tryUpdateChainInfoFromRepo(chainId: string): Promise<boolean> {
+    if (!this.hasChainInfo(chainId)) {
+      throw new Error(`${chainId} is not registered`);
+    }
+
+    if (
+      (this.getChainInfoOrThrow(chainId) as ChainInfoWithCoreTypes)
+        .updateFromRepoDisabled
+    ) {
+      return false;
+    }
+
+    const isEvmOnlyChain = this.isEvmOnlyChain(chainId);
+    const chainInfo = await this.fetchFromRepo(chainId, isEvmOnlyChain);
+
+    if (!this.hasChainInfo(chainId)) {
+      throw new Error(`${chainId} became unregistered after fetching`);
+    }
+
+    const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+    const prevChainInfoFromRepo = this.getRepoChainInfo(chainId);
+    if (
+      !prevChainInfoFromRepo ||
+      sortedJsonByKeyStringify(prevChainInfoFromRepo) !==
+        sortedJsonByKeyStringify(chainInfo)
+    ) {
+      const i = this.repoChainInfos.findIndex(
+        (c) => ChainIdHelper.parse(c.chainId).identifier === chainIdentifier
+      );
+      runInAction(() => {
+        if (i >= 0) {
+          const newChainInfos = this.repoChainInfos.slice();
+          newChainInfos[i] = chainInfo;
+          this.repoChainInfos = newChainInfos;
+        } else {
+          const newChainInfos = this.repoChainInfos.slice();
+          newChainInfos.push(chainInfo);
+          this.repoChainInfos = newChainInfos;
+        }
+      });
+
+      return true;
+    }
+
+    return false;
+  }
 
   protected async fetchFromRepo(
     chainId: string,
@@ -487,11 +483,11 @@ export class ChainsService {
         : {
             ...res.data,
             rest: res.data.rpc,
-            // evm: {
-            //   chainId: parseInt(res.data.chainId.replace("eip155:", ""), 10),
-            //   rpc: res.data.rpc,
-            //   ...("websocket" in res.data && { websocket: res.data.websocket }),
-            // },
+            evm: {
+              chainId: parseInt(res.data.chainId.replace("eip155:", ""), 10),
+              rpc: res.data.rpc,
+              ...("websocket" in res.data && { websocket: res.data.websocket }),
+            },
             features: ["eth-address-gen", "eth-key-sign"].concat(
               res.data.features ?? []
             ),
@@ -518,10 +514,10 @@ export class ChainsService {
 
     const chainInfo = this.getChainInfoOrThrow(chainId);
 
-    // if (this.isEvmOnlyChain(chainInfo.chainId)) {
-    //   // TODO: evm 체인에서의 chain info 업데이트 로직에 대해서는 나중에 구현한다.
-    //   return false;
-    // }
+    if (this.isEvmOnlyChain(chainInfo.chainId)) {
+      // TODO: evm 체인에서의 chain info 업데이트 로직에 대해서는 나중에 구현한다.
+      return false;
+    }
 
     let chainIdUpdated = false;
     const statusResponse = await simpleFetch<
@@ -656,14 +652,14 @@ export class ChainsService {
     };
 
     if (this.suggestChainPrivilegedOrigins.includes(origin)) {
-      // try {
-      //   const isEvmOnlyChain =
-      //     chainInfo.evm !== undefined &&
-      //     chainInfo.chainId.split(":")[0] === "eip155";
-      //   chainInfo = await this.fetchFromRepo(chainInfo.chainId, isEvmOnlyChain);
-      // } catch (e) {
-      //   console.log(e);
-      // }
+      try {
+        const isEvmOnlyChain =
+          chainInfo.evm !== undefined &&
+          chainInfo.chainId.split(":")[0] === "eip155";
+        chainInfo = await this.fetchFromRepo(chainInfo.chainId, isEvmOnlyChain);
+      } catch (e) {
+        console.log(e);
+      }
       await onApprove(chainInfo);
     } else {
       await this.interactionService.waitApproveV2(
@@ -1081,21 +1077,21 @@ export class ChainsService {
     this.onChainSuggestedHandlers.push(handler);
   }
 
-  // isEvmChain(chainId: string): boolean {
-  //   const chainInfo = this.getChainInfoOrThrow(chainId);
-  //   return chainInfo.evm !== undefined;
-  // }
+  isEvmChain(chainId: string): boolean {
+    const chainInfo = this.getChainInfoOrThrow(chainId);
+    return chainInfo.evm !== undefined;
+  }
 
-  // isEvmOnlyChain(chainId: string): boolean {
-  //   return this.isEvmChain(chainId) && chainId.split(":")[0] === "eip155";
-  // }
+  isEvmOnlyChain(chainId: string): boolean {
+    return this.isEvmChain(chainId) && chainId.split(":")[0] === "eip155";
+  }
 
-  // getEVMInfoOrThrow(chainId: string): EVMInfo {
-  //   const chainInfo = this.getChainInfoOrThrow(chainId);
-  //   if (chainInfo.evm === undefined) {
-  //     throw new Error(`There is no EVM info for ${chainId}`);
-  //   }
-  //
-  //   return chainInfo.evm;
-  // }
+  getEVMInfoOrThrow(chainId: string): EVMInfo {
+    const chainInfo = this.getChainInfoOrThrow(chainId);
+    if (chainInfo.evm === undefined) {
+      throw new Error(`There is no EVM info for ${chainId}`);
+    }
+
+    return chainInfo.evm;
+  }
 }

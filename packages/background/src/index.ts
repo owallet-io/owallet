@@ -5,12 +5,12 @@ import * as KeyRingLegacy from "./keyring-core/legacy";
 import * as Chains from "./chains-v2/internal";
 import * as ChainsUI from "./chains-ui/internal";
 // import * as ChainsUpdate from "./chains-update/internal";
-import * as SecretWasm from "./secret-wasm/internal";
-import * as BackgroundTx from "./tx/internal";
+// import * as SecretWasm from "./secret-wasm/internal";
+// import * as BackgroundTx from "./tx/internal";
 // import * as BackgroundTxEthereum from "./tx-ethereum/internal";
-// import * as TokenCW20 from "./token-cw20/internal";
-// import * as TokenERC20 from "./token-erc20/internal";
-import * as Interaction from "./interaction/internal";
+import * as TokenCW20 from "./token-cw20/internal";
+import * as TokenERC20 from "./token-erc20/internal";
+import * as Interaction from "./interaction-v2/internal";
 import * as Permission from "./permission-v2/internal";
 // import * as PhishingList from "./phishing-list/internal";
 // import * as AutoLocker from "./auto-lock-account/internal";
@@ -21,7 +21,7 @@ import * as KeyRingV2 from "./keyring-core/internal";
 // import * as KeyRingLedger from "./keyring-ledger/internal";
 // import * as KeyRingKeystone from "./keyring-keystone/internal";
 // import * as KeyRingPrivateKey from "./keyring-private-key/internal";
-// import * as KeyRingCosmos from "./keyring-cosmos/internal";
+import * as KeyRingCosmos from "./keyring-cosmos/internal";
 // import * as KeyRingEthereum from "./keyring-ethereum/internal";
 import * as PermissionInteractive from "./permission-interactive/internal";
 // import * as TokenScan from "./token-scan/internal";
@@ -32,11 +32,11 @@ import * as SidePanel from "./side-panel/internal";
 export * from "./chains-v2";
 export * from "./chains-ui";
 // export * from "./chains-update";
-export * from "./secret-wasm";
-export * from "./tx";
-// export * from "./token-cw20";
-// export * from "./token-erc20";
-export * from "./interaction";
+// export * from "./secret-wasm";
+// export * from "./tx";
+export * from "./token-cw20";
+export * from "./token-erc20";
+export * from "./interaction-v2";
 export * from "./permission-v2";
 // export * from "./phishing-list";
 // export * from "./auto-lock-account";
@@ -44,7 +44,7 @@ export * from "./permission-v2";
 export * from "./permission-interactive";
 export * from "./keyring-core";
 export * from "./vault";
-// export * from "./keyring-cosmos";
+export * from "./keyring-cosmos";
 // export * from "./keyring-ethereum";
 // export * from "./keyring-keystone";
 // export * from "./token-scan";
@@ -54,7 +54,7 @@ export * from "./side-panel";
 
 import { KVStore } from "@owallet/common";
 import { ChainInfo } from "@owallet/types";
-import { Notification } from "./tx";
+// import { Notification } from "./tx";
 import { ChainInfoWithCoreTypes } from "./chains-v2";
 
 export function init(
@@ -75,7 +75,7 @@ export function init(
     readonly branchName: string;
     readonly alternativeURL?: string;
   },
-  notification: Notification,
+  // notification: Notification,
   addDeviceLockedListener: (callback: () => void) => void,
   blocklistPageURL: string,
   keyRingMigrations: {
@@ -128,17 +128,17 @@ export function init(
     chainsAfterInitFn
   );
 
-  // const tokenCW20Service = new TokenCW20.TokenCW20Service(
-  //     storeCreator("tokens"),
-  //     chainsService,
-  //     interactionService
-  // );
-  //
-  // const tokenERC20Service = new TokenERC20.TokenERC20Service(
-  //     storeCreator("tokens-erc20"),
-  //     chainsService,
-  //     interactionService
-  // );
+  const tokenCW20Service = new TokenCW20.TokenCW20Service(
+    storeCreator("tokens"),
+    chainsService,
+    interactionService
+  );
+
+  const tokenERC20Service = new TokenERC20.TokenERC20Service(
+    storeCreator("tokens-erc20"),
+    chainsService,
+    interactionService
+  );
 
   const permissionService = new Permission.PermissionService(
     storeCreator("permission"),
@@ -200,14 +200,14 @@ export function init(
       // new KeyRingKeystone.KeyRingKeystoneService(),
     ]
   );
-  // const keyRingCosmosService = new KeyRingCosmos.KeyRingCosmosService(
-  //     chainsService,
-  //     keyRingV2Service,
-  //     interactionService,
-  //     chainsUIService,
-  //     analyticsService,
-  //     msgPrivilegedOrigins
-  // );
+  const keyRingCosmosService = new KeyRingCosmos.KeyRingCosmosService(
+    chainsService,
+    keyRingV2Service,
+    interactionService,
+    chainsUIService,
+    // analyticsService,
+    msgPrivilegedOrigins
+  );
   // const autoLockAccountService = new AutoLocker.AutoLockAccountService(
   //     storeCreator("auto-lock-account"),
   //     keyRingV2Service,
@@ -284,11 +284,11 @@ export function init(
   // AutoLocker.init(router, autoLockAccountService);
   // Analytics.init(router, analyticsService);
   KeyRingV2.init(router, keyRingV2Service);
-  // KeyRingCosmos.init(
-  //     router,
-  //     keyRingCosmosService,
-  //     permissionInteractiveService
-  // );
+  KeyRingCosmos.init(
+    router,
+    keyRingCosmosService,
+    permissionInteractiveService
+  );
   // KeyRingEthereum.init(
   //     router,
   //     keyRingEthereumService,
@@ -297,13 +297,13 @@ export function init(
   PermissionInteractive.init(router, permissionInteractiveService);
   ChainsUI.init(router, chainsUIService);
   // ChainsUpdate.init(router, chainsUpdateService);
-  // TokenCW20.init(
-  //     router,
-  //     tokenCW20Service,
-  //     permissionInteractiveService,
-  //     keyRingCosmosService
-  // );
-  // TokenERC20.init(router, tokenERC20Service, permissionInteractiveService);
+  TokenCW20.init(
+    router,
+    tokenCW20Service,
+    permissionInteractiveService,
+    keyRingCosmosService
+  );
+  TokenERC20.init(router, tokenERC20Service, permissionInteractiveService);
   // SecretWasm.init(router, secretWasmService, permissionInteractiveService);
   // TokenScan.init(router, tokenScanService);
   // RecentSendHistory.init(router, recentSendHistoryService);
@@ -321,11 +321,11 @@ export function init(
       await chainsUIService.init();
       // await chainsUpdateService.init();
       await keyRingV2Service.init();
-      // await keyRingCosmosService.init();
+      await keyRingCosmosService.init();
       // await keyRingEthereumService.init();
       await permissionService.init();
-      // await tokenCW20Service.init();
-      // await tokenERC20Service.init();
+      await tokenCW20Service.init();
+      await tokenERC20Service.init();
       //
       // await backgroundTxService.init();
       // await backgroundTxEthereumService.init();

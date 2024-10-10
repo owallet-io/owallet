@@ -446,9 +446,9 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         // It's not that they can't query at all, it seems that they get weird response from time to time.
         // These causes are not clear.
         // To solve this problem, if this problem occurs, try the query again, and if that fails, an error is raised.
-        // https://github.com/chainapsis/keplr-wallet/issues/275
-        // https://github.com/chainapsis/keplr-wallet/issues/278
-        // https://github.com/chainapsis/keplr-wallet/issues/318
+        // https://github.com/chainapsis/owallet/issues/275
+        // https://github.com/chainapsis/owallet/issues/278
+        // https://github.com/chainapsis/owallet/issues/318
         if (abortController.signal.aborted) {
           // In this case, it is assumed that it is caused by cancel() and do nothing.
           return;

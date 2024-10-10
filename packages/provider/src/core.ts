@@ -1,81 +1,42 @@
 import {
   ChainInfo,
+  EthSignType,
   OWallet as IOWallet,
-  Ethereum as IEthereum,
-  TronWeb as ITronWeb,
-  Bitcoin as IBitcoin,
-  Oasis as IOasis,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
   Key,
-  EthereumMode,
-  RequestArguments,
-  TronWebMode,
-  BitcoinMode,
+  BroadcastMode,
+  AminoSignResponse,
+  StdSignDoc,
+  StdTx,
+  OfflineAminoSigner,
+  StdSignature,
+  DirectSignResponse,
+  OfflineDirectSigner,
+  ICNSAdr36Signatures,
   ChainInfoWithoutEndpoints,
-  DefaultMode,
+  SecretUtils,
   SettledResponses,
+  DirectAuxSignResponse,
+  IEthereumProvider,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
   MessageRequester,
   sendSimpleMessage,
 } from "@owallet/router";
-import {
-  BroadcastMode,
-  AminoSignResponse,
-  StdSignDoc,
-  StdTx,
-  OfflineSigner,
-  StdSignature,
-} from "@cosmjs/launchpad";
-
-import {
-  GetKeyMsg,
-  SuggestChainInfoMsg,
-  SuggestTokenMsg,
-  SendTxMsg,
-  RequestEthereumMsg,
-  GetSecret20ViewingKey,
-  RequestSignAminoMsg,
-  GetPubkeyMsg,
-  ReqeustEncryptMsg,
-  RequestDecryptMsg,
-  GetTxEncryptionKeyMsg,
-  RequestVerifyADR36AminoSignDoc,
-  RequestSignEthereumTypedDataMsg,
-  SignEthereumTypedDataObject,
-  RequestSignDecryptDataMsg,
-  RequestSignReEncryptDataMsg,
-  RequestPublicKeyMsg,
-  RequestSignEIP712CosmosTxMsg_v0,
-  GetKeySettledMsg,
-} from "@owallet/background";
-import { SecretUtils } from "@owallet/types";
 
 import { OWalletEnigmaUtils } from "./enigma";
-import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
 
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from "./cosmjs";
 import deepmerge from "deepmerge";
 import Long from "long";
-import { Buffer } from "buffer";
-import {
-  RequestSignBitcoinMsg,
-  GetChainInfosWithoutEndpointsMsg,
-  GetDefaultAddressTronMsg,
-  RequestSignDirectMsg,
-  RequestSignEthereumMsg,
-  RequestSignTronMsg,
-  RequestSendRawTransactionMsg,
-  TriggerSmartContractMsg,
-  RequestSignOasisMsg,
-} from "./msgs";
-import { ChainIdEnum } from "@owallet/common";
-// import { Signer } from '@oasisprotocol/client/dist/signature';
+import { Buffer } from "buffer/";
+import { OWalletCoreTypes } from "./core-types";
+import EventEmitter from "events";
 
-export class OWallet implements IOWallet {
+export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
   public defaultOptions: OWalletIntereactionOptions = {};
@@ -86,34 +47,17 @@ export class OWallet implements IOWallet {
     protected readonly requester: MessageRequester
   ) {}
 
-  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
-    const msg = new GetChainInfosWithoutEndpointsMsg();
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {}
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => {
-          f = true;
-        });
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    }) as any;
-
-    // return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).chainInfos;
+  async ping(): Promise<void> {
+    await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "chains",
+      "owallet-ping",
+      {}
+    );
   }
 
-  async enable(chainIds: string | string[]): Promise<void> {
+  enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === "string") {
       chainIds = [chainIds];
     }
@@ -123,7 +67,7 @@ export class OWallet implements IOWallet {
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        "permission",
+        "permission-interactive",
         "enable-access",
         {
           chainIds,
@@ -139,21 +83,39 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-
-    // await this.requester.sendMessage(BACKGROUND_PORT, new EnableAccessMsg(chainIds));
   }
 
-  async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
-    const msg = new SuggestChainInfoMsg(chainInfo);
+  // TODO: 웹페이지에서도 필요할수도 있을 것 같으니 나중에 owallet의 API로 추가해준다.
+  async isEnabled(chainIds: string | string[]): Promise<boolean> {
+    if (typeof chainIds === "string") {
+      chainIds = [chainIds];
+    }
+
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "permission-interactive",
+      "is-enabled-access",
+      {
+        chainIds,
+      }
+    );
+  }
+
+  async disable(chainIds?: string | string[]): Promise<void> {
+    if (typeof chainIds === "string") {
+      chainIds = [chainIds];
+    }
+
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "permission-interactive",
+        "disable-access",
         {
-          chainInfo,
+          chainIds: chainIds ?? [],
         }
       )
         .then(resolve)
@@ -166,18 +128,99 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async experimentalSuggestChain(
+    chainInfo: ChainInfo & {
+      // Legacy
+      gasPriceStep?: {
+        readonly low: number;
+        readonly average: number;
+        readonly high: number;
+      };
+    }
+  ): Promise<void> {
+    if (chainInfo.hideInUI) {
+      throw new Error("hideInUI is not allowed");
+    }
+
+    if (chainInfo.gasPriceStep) {
+      // Gas price step in ChainInfo is legacy format.
+      // Try to change the recent format for backward-compatibility.
+      const gasPriceStep = { ...chainInfo.gasPriceStep };
+      for (const feeCurrency of chainInfo.feeCurrencies) {
+        if (!feeCurrency.gasPriceStep) {
+          (
+            feeCurrency as {
+              gasPriceStep?: {
+                readonly low: number;
+                readonly average: number;
+                readonly high: number;
+              };
+            }
+          ).gasPriceStep = gasPriceStep;
+        }
+      }
+      delete chainInfo.gasPriceStep;
+
+      console.warn(
+        "The `gasPriceStep` field of the `ChainInfo` has been moved under `feeCurrencies`. This is automatically handled as of right now, but the upcoming update would potentially cause errors."
+      );
+    }
+
+    if ((chainInfo as any).coinType) {
+      console.warn(
+        "The `coinType` field of the `ChainInfo` is removed. This is automatically handled as of right now, but the upcoming update would potentially cause errors."
+      );
+      delete (chainInfo as any).coinType;
+    }
+
+    return new Promise((resolve, reject) => {
+      let f = false;
+
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "chains",
+        "need-suggest-chain-info-interaction",
+        {
+          chainInfo,
+        }
+      ).then((needInteraction) => {
+        if (!needInteraction) {
+          f = true;
+        }
+
+        sendSimpleMessage(
+          this.requester,
+          BACKGROUND_PORT,
+          "chains",
+          "suggest-chain-info",
+          {
+            chainInfo,
+          }
+        )
+          .then(resolve)
+          .catch(reject)
+          .finally(() => (f = true));
+
+        setTimeout(() => {
+          if (!f) {
+            this.protectedTryOpenSidePanelIfEnabled();
+          }
+        }, 100);
+      });
+    });
   }
 
   async getKey(chainId: string): Promise<Key> {
-    const msg = new GetKeyMsg(chainId);
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "keyring-cosmos",
+        "get-cosmos-key",
         {
           chainId,
         }
@@ -192,17 +235,16 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
-    const msg = new GetKeySettledMsg(chainIds);
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "keyring-cosmos",
+        "get-cosmos-keys-settled",
         {
           chainIds,
         }
@@ -217,28 +259,19 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
-  async sendTx(
-    chainId: string,
-    tx: StdTx | Uint8Array,
-    mode: BroadcastMode
-  ): Promise<Uint8Array> {
-    const msg = new SendTxMsg(chainId, tx, mode);
+
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          tx,
-          mode,
-        }
+        "chains",
+        "get-chain-infos-without-endpoints",
+        {}
       )
-        .then(resolve)
+        .then((r) => resolve(r.chainInfos))
         .catch(reject)
         .finally(() => (f = true));
 
@@ -248,7 +281,55 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async getChainInfoWithoutEndpoints(
+    chainId: string
+  ): Promise<ChainInfoWithoutEndpoints> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "chains",
+        "get-chain-info-without-endpoints",
+        {
+          chainId,
+        }
+      )
+        .then((r) => resolve(r.chainInfo))
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async sendTx(
+    chainId: string,
+    tx: StdTx | Uint8Array,
+    mode: BroadcastMode
+  ): Promise<Uint8Array> {
+    // XXX: 원래 enable을 미리하지 않아도 백그라운드에서 알아서 처리해주는 시스템이였는데...
+    //      side panel에서는 불가능하기 때문에 이젠 provider에서 permission도 관리해줘야한다...
+    //      sendTx의 경우는 일종의 쿼리이기 때문에 언제 결과가 올지 알 수 없다. 그러므로 미리 권한 처리를 해야한다.
+    await this.enable(chainId);
+
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "background-tx",
+      "send-tx-to-background",
+      {
+        chainId,
+        tx,
+        mode,
+      }
+    );
   }
 
   async signAmino(
@@ -257,19 +338,13 @@ export class OWallet implements IOWallet {
     signDoc: StdSignDoc,
     signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
-    const msg = new RequestSignAminoMsg(
-      chainId,
-      signer,
-      signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
-    );
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "keyring-cosmos",
+        "request-cosmos-sign-amino",
         {
           chainId,
           signer,
@@ -287,7 +362,474 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async signDirect(
+    chainId: string,
+    signer: string,
+    signDoc: {
+      bodyBytes?: Uint8Array | null;
+      authInfoBytes?: Uint8Array | null;
+      chainId?: string | null;
+      accountNumber?: Long | null;
+    },
+    signOptions: OWalletSignOptions = {}
+  ): Promise<DirectSignResponse> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-cosmos",
+        "request-cosmos-sign-direct",
+        {
+          chainId,
+          signer,
+          signDoc: {
+            bodyBytes: signDoc.bodyBytes,
+            authInfoBytes: signDoc.authInfoBytes,
+            chainId: signDoc.chainId,
+            accountNumber: signDoc.accountNumber
+              ? signDoc.accountNumber.toString()
+              : null,
+          },
+          signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+        }
+      )
+        .then((r) =>
+          resolve({
+            signed: {
+              bodyBytes: r.signed.bodyBytes,
+              authInfoBytes: r.signed.authInfoBytes,
+              chainId: r.signed.chainId,
+              accountNumber: Long.fromString(r.signed.accountNumber),
+            },
+            signature: r.signature,
+          })
+        )
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async signDirectAux(
+    chainId: string,
+    signer: string,
+    signDoc: {
+      bodyBytes?: Uint8Array | null;
+      publicKey?: {
+        typeUrl: string;
+        value: Uint8Array;
+      } | null;
+      chainId?: string | null;
+      accountNumber?: Long | null;
+      sequence?: Long | null;
+    },
+    signOptions: Exclude<
+      OWalletSignOptions,
+      "preferNoSetFee" | "disableBalanceCheck"
+    > = {}
+  ): Promise<DirectAuxSignResponse> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-cosmos",
+        "request-cosmos-sign-direct-aux",
+        {
+          chainId,
+          signer,
+          signDoc: {
+            bodyBytes: signDoc.bodyBytes,
+            publicKey: signDoc.publicKey,
+            chainId: signDoc.chainId,
+            accountNumber: signDoc.accountNumber
+              ? signDoc.accountNumber.toString()
+              : null,
+            sequence: signDoc.sequence ? signDoc.sequence.toString() : null,
+          },
+          signOptions: deepmerge(
+            {
+              preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo,
+            },
+            signOptions
+          ),
+        }
+      )
+        .then((r) =>
+          resolve({
+            signed: {
+              bodyBytes: r.signed.bodyBytes,
+              publicKey: r.signed.publicKey,
+              chainId: r.signed.chainId,
+              accountNumber: Long.fromString(r.signed.accountNumber),
+              sequence: Long.fromString(r.signed.sequence),
+            },
+            signature: r.signature,
+          })
+        )
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async signArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array
+  ): Promise<StdSignature> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-cosmos",
+        "request-cosmos-sign-amino-adr-36",
+        {
+          chainId,
+          signer,
+          data: typeof data === "string" ? Buffer.from(data) : data,
+          signOptions: {
+            isADR36WithString: typeof data === "string",
+          },
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async verifyArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean> {
+    if (typeof data === "string") {
+      data = Buffer.from(data);
+    }
+
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-cosmos",
+        "verify-cosmos-sign-amino-adr-36",
+        {
+          chainId,
+          signer,
+          data,
+          signature,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async signEthereum(
+    chainId: string,
+    signer: string,
+    message: string | Uint8Array,
+    signType: EthSignType
+  ): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-ethereum",
+        "request-sign-ethereum",
+        {
+          chainId,
+          signer,
+          message: typeof message === "string" ? Buffer.from(message) : message,
+          signType,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async signICNSAdr36(
+    chainId: string,
+    contractAddress: string,
+    owner: string,
+    username: string,
+    addressChainIds: string[]
+  ): Promise<ICNSAdr36Signatures> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-cosmos",
+        "request-icns-adr-36-signatures-v2",
+        {
+          chainId,
+          contractAddress,
+          owner,
+          username,
+          addressChainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  getOfflineSigner(
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): OfflineAminoSigner & OfflineDirectSigner {
+    return new CosmJSOfflineSigner(chainId, this, signOptions);
+  }
+
+  getOfflineSignerOnlyAmino(
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): OfflineAminoSigner {
+    return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
+  }
+
+  async getOfflineSignerAuto(
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): Promise<OfflineAminoSigner | OfflineDirectSigner> {
+    const key = await this.getKey(chainId);
+    if (key.isNanoLedger) {
+      return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
+    }
+    return new CosmJSOfflineSigner(chainId, this, signOptions);
+  }
+
+  async suggestToken(
+    chainId: string,
+    contractAddress: string,
+    viewingKey?: string
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "token-cw20",
+        "SuggestTokenMsg",
+        {
+          chainId,
+          contractAddress,
+          viewingKey,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async getSecret20ViewingKey(
+    chainId: string,
+    contractAddress: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "token-cw20",
+        "get-secret20-viewing-key",
+        {
+          chainId,
+          contractAddress,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "secret-wasm",
+        "get-pubkey-msg",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async getEnigmaTxEncryptionKey(
+    chainId: string,
+    nonce: Uint8Array
+  ): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "secret-wasm",
+        "get-tx-encryption-key-msg",
+        {
+          chainId,
+          nonce,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async enigmaEncrypt(
+    chainId: string,
+    contractCodeHash: string,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    msg: object
+  ): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "secret-wasm",
+        "request-encrypt-msg",
+        {
+          chainId,
+          contractCodeHash,
+          msg,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async enigmaDecrypt(
+    chainId: string,
+    cipherText: Uint8Array,
+    nonce: Uint8Array
+  ): Promise<Uint8Array> {
+    if (!cipherText || cipherText.length === 0) {
+      return new Uint8Array();
+    }
+
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "secret-wasm",
+        "request-decrypt-msg",
+        {
+          chainId,
+          cipherText,
+          nonce,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  getEnigmaUtils(chainId: string): SecretUtils {
+    if (this.enigmaUtils.has(chainId)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.enigmaUtils.get(chainId)!;
+    }
+
+    const enigmaUtils = new OWalletEnigmaUtils(chainId, this);
+    this.enigmaUtils.set(chainId, enigmaUtils);
+    return enigmaUtils;
   }
 
   async experimentalSignEIP712CosmosTx_v0(
@@ -299,22 +841,15 @@ export class OWallet implements IOWallet {
       primaryType: string;
     },
     signDoc: StdSignDoc,
-    signOptions?: OWalletSignOptions
+    signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
-    const msg = new RequestSignEIP712CosmosTxMsg_v0(
-      chainId,
-      signer,
-      eip712,
-      signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
-    );
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "keyring-cosmos",
+        "request-sign-eip-712-cosmos-tx-v0",
         {
           chainId,
           signer,
@@ -333,287 +868,111 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  // then here to sign
-  async signDirect(
+  async __core__getAnalyticsId(): Promise<string> {
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "analytics",
+      "get-analytics-id",
+      {}
+    );
+  }
+
+  async changeKeyRingName({
+    defaultName,
+    editable = true,
+  }: {
+    defaultName: string;
+    editable?: boolean;
+  }): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-v2",
+        "change-keyring-name-interactive",
+        {
+          defaultName,
+          editable,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async __core__privilageSignAminoWithdrawRewards(
     chainId: string,
     signer: string,
-    signDoc: {
-      bodyBytes?: Uint8Array | null;
-      authInfoBytes?: Uint8Array | null;
-      chainId?: string | null;
-      accountNumber?: Long | null;
-    },
-    signOptions: OWalletSignOptions = {}
-  ): Promise<DirectSignResponse> {
-    const msg = new RequestSignDirectMsg(
-      chainId,
-      signer,
+    signDoc: StdSignDoc
+  ): Promise<AminoSignResponse> {
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-cosmos",
+      "PrivilegeCosmosSignAminoWithdrawRewards",
       {
-        bodyBytes: signDoc.bodyBytes,
-        authInfoBytes: signDoc.authInfoBytes,
-        chainId: signDoc.chainId,
-        accountNumber: signDoc.accountNumber
-          ? signDoc.accountNumber.toString()
-          : null,
-      },
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
+        chainId,
+        signer,
+        signDoc,
+      }
     );
-
-    // const response = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    const response = new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          signer,
-          signDoc: {
-            bodyBytes: signDoc.bodyBytes,
-            authInfoBytes: signDoc.authInfoBytes,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber
-              ? signDoc.accountNumber.toString()
-              : null,
-          },
-          signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions),
-        }
-      )
-        .then((response) => {
-          if (!response) throw Error("Transaction Rejected!");
-          console.log("response 1", response);
-          const res = {
-            signed: {
-              bodyBytes: response.signed.bodyBytes,
-              authInfoBytes: response.signed.authInfoBytes,
-              chainId: response.signed.chainId,
-              accountNumber: Long.fromString(response.signed.accountNumber),
-            },
-            signature: response.signature,
-          };
-
-          console.log("res", res);
-
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    }) as any;
-    if (!response) throw Error("Transaction Rejected!");
-    console.log("response 2", response);
-    return response;
   }
 
-  async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
-    const msg = new RequestSignTronMsg(chainId, data);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signArbitrary(
+  async __core__privilageSignAminoDelegate(
     chainId: string,
     signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature> {
-    let isADR36WithString = false;
-    if (typeof data === "string") {
-      data = Buffer.from(data).toString("base64");
-      isADR36WithString = true;
-    } else {
-      data = Buffer.from(data).toString("base64");
-    }
-
-    const signDoc = {
-      chain_id: "",
-      account_number: "0",
-      sequence: "0",
-      fee: {
-        gas: "0",
-        amount: [],
-      },
-      msgs: [
-        {
-          type: "sign/MsgSignData",
-          value: {
-            signer,
-            data,
-          },
-        },
-      ],
-      memo: "",
-    };
-
-    const msg = new RequestSignAminoMsg(chainId, signer, signDoc, {
-      isADR36WithString,
-    });
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          signer,
-          signDoc,
-          signOptions: {
-            isADR36WithString,
-          },
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).signature;
-  }
-
-  async verifyArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    signature: StdSignature
-  ): Promise<boolean> {
-    if (typeof data === "string") {
-      data = Buffer.from(data);
-    }
-    const msg = new RequestVerifyADR36AminoSignDoc(
-      chainId,
-      signer,
-      data,
-      signature
+    signDoc: StdSignDoc
+  ): Promise<AminoSignResponse> {
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-cosmos",
+      "PrivilegeCosmosSignAminoDelegate",
+      {
+        chainId,
+        signer,
+        signDoc,
+      }
     );
+  }
+
+  async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
+    // XXX: 원래 enable을 미리하지 않아도 백그라운드에서 알아서 처리해주는 시스템이였는데...
+    //      side panel에서는 불가능하기 때문에 이젠 provider에서 permission도 관리해줘야한다...
+    //      sendTx의 경우는 일종의 쿼리이기 때문에 언제 결과가 올지 알 수 없다. 그러므로 미리 권한 처리를 해야한다.
+    await this.enable(chainId);
+
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "background-tx-ethereum",
+      "send-ethereum-tx-to-background",
+      {
+        chainId,
+        tx,
+      }
+    );
+  }
+
+  async suggestERC20(chainId: string, contractAddress: string): Promise<void> {
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          signer,
-          data,
-          signature,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(
-    //   BACKGROUND_PORT,
-    //   new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature)
-    // );
-  }
-
-  getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner {
-    return new CosmJSOfflineSigner(chainId, this);
-  }
-
-  getOfflineSignerOnlyAmino(chainId: string): OfflineSigner {
-    return new CosmJSOfflineSignerOnlyAmino(chainId, this);
-  }
-
-  async getOfflineSignerAuto(
-    chainId: string
-  ): Promise<OfflineSigner | OfflineDirectSigner> {
-    const key = await this.getKey(chainId);
-    if (key.isNanoLedger) {
-      return new CosmJSOfflineSignerOnlyAmino(chainId, this);
-    }
-    return new CosmJSOfflineSigner(chainId, this);
-  }
-
-  async suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void> {
-    const msg = new SuggestTokenMsg(chainId, contractAddress, viewingKey);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          contractAddress,
-          viewingKey,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string> {
-    const msg = new GetSecret20ViewingKey(chainId, contractAddress);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
+        "token-erc20",
+        "SuggestERC20TokenMsg",
         {
           chainId,
           contractAddress,
@@ -629,146 +988,20 @@ export class OWallet implements IOWallet {
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
-    const msg = new GetPubkeyMsg(chainId);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, new GetPubkeyMsg(chainId));
+  async __core__webpageClosed(): Promise<void> {
+    await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "interaction",
+      "injected-webpage-closed",
+      {}
+    );
   }
 
-  async getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
-    const msg = new GetTxEncryptionKeyMsg(chainId, nonce);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          nonce,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, new GetTxEncryptionKeyMsg(chainId, nonce));
-  }
-
-  async enigmaEncrypt(
-    chainId: string,
-    contractCodeHash: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    msg: object
-  ): Promise<Uint8Array> {
-    const msgs = new ReqeustEncryptMsg(chainId, contractCodeHash, msg);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msgs.route(),
-        msgs.type(),
-        {
-          chainId,
-          contractCodeHash,
-          msg,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, new ReqeustEncryptMsg(chainId, contractCodeHash, msg));
-  }
-
-  async enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
-    if (!ciphertext || ciphertext.length === 0) {
-      return new Uint8Array();
-    }
-    const msg = new RequestDecryptMsg(chainId, ciphertext, nonce);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          ciphertext,
-          nonce,
-        }
-      )
-        .then(resolve)
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, new RequestDecryptMsg(chainId, ciphertext, nonce));
-  }
-
-  getEnigmaUtils(chainId: string): SecretUtils {
-    if (this.enigmaUtils.has(chainId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.enigmaUtils.get(chainId)!;
-    }
-
-    const enigmaUtils = new OWalletEnigmaUtils(chainId, this);
-    this.enigmaUtils.set(chainId, enigmaUtils);
-    return enigmaUtils;
-  }
-
-  // IMPORTANT: protected로 시작하는 method는 InjectedKeplr.startProxy()에서 injected 쪽에서 event system으로도 호출할 수 없도록 막혀있다.
-  //            protected로 시작하지 않는 method는 injected keplr에 없어도 event system을 통하면 호출 할 수 있다.
+  // IMPORTANT: protected로 시작하는 method는 InjectedOWallet.startProxy()에서 injected 쪽에서 event system으로도 호출할 수 없도록 막혀있다.
+  //            protected로 시작하지 않는 method는 injected owallet에 없어도 event system을 통하면 호출 할 수 있다.
   //            이를 막기 위해서 method 이름을 protected로 시작하게 한다.
   async protectedTryOpenSidePanelIfEnabled(
     ignoreGestureFailure: boolean = false
@@ -777,10 +1010,10 @@ export class OWallet implements IOWallet {
     // 이 provider가 content script 위에서 동작하고 있는지 아닌지 구분해야한다.
     // content script일때만 side panel을 열도록 시도해볼 가치가 있다.
     // 근데 js 자체적으로 api등을 통해서는 이를 알아낼 방법이 없다.
-    // extension 상에서 content script에서 keplr provider proxy를 시작하기 전에 window에 밑의 field를 알아서 주입하는 방식으로 처리한다.
+    // extension 상에서 content script에서 owallet provider proxy를 시작하기 전에 window에 밑의 field를 알아서 주입하는 방식으로 처리한다.
     if (
       typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
+      (window as any).__owallet_content_script === true
     ) {
       isInContentScript = true;
     }
@@ -809,12 +1042,13 @@ export class OWallet implements IOWallet {
           );
         } catch (e) {
           console.log(e);
+
           if (
             !ignoreGestureFailure &&
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -829,11 +1063,21 @@ export class OWallet implements IOWallet {
                 return;
               }
 
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
+              const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
                 "keyring",
                 "GetIsLockedMsg",
+                {}
+              );
+
+              const owalletThemeOption = await sendSimpleMessage<
+                "light" | "dark" | "auto"
+              >(
+                this.requester,
+                BACKGROUND_PORT,
+                "settings",
+                "GetThemeOptionMsg",
                 {}
               );
 
@@ -843,7 +1087,7 @@ export class OWallet implements IOWallet {
               );
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
+                  font-family: 'Inter-SemiBold-OWallet';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -878,7 +1122,10 @@ export class OWallet implements IOWallet {
                   
             `;
 
-              const isLightMode = true;
+              const isLightMode =
+                owalletThemeOption === "auto"
+                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
+                  : owalletThemeOption === "light";
 
               // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
@@ -888,7 +1135,7 @@ export class OWallet implements IOWallet {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
@@ -900,7 +1147,7 @@ export class OWallet implements IOWallet {
               button.style.display = "flex";
               button.style.alignItems = "center";
 
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
+              button.style.fontFamily = "Inter-SemiBold-OWallet";
               button.style.fontWeight = "600";
 
               // button.style.cursor = "pointer";
@@ -948,18 +1195,21 @@ export class OWallet implements IOWallet {
                 </svg>
               `;
 
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
+              const owalletLogoWrap = document.createElement("div");
+              owalletLogoWrap.style.boxSizing = "border-box";
+              owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.marginRight = "1rem";
+              const owalletLogo = document.createElement("img");
+              const owalletLogoUrl = chrome.runtime.getURL(
+                `/assets/${
+                  isOWalletLocked ? "locked-owallet-logo" : "icon"
+                }-128.png`
+              );
+              owalletLogo.src = owalletLogoUrl;
+              owalletLogo.style.boxSizing = "border-box";
+              owalletLogo.style.width = "3rem";
+              owalletLogo.style.height = "3rem";
+              owalletLogoWrap.appendChild(owalletLogo);
 
               const logoClickCursor = document.createElement("img");
               const logoClickCursorUrl = chrome.runtime.getURL(
@@ -972,15 +1222,15 @@ export class OWallet implements IOWallet {
               logoClickCursor.style.bottom = "-0.2rem";
               logoClickCursor.style.aspectRatio = "78/98";
               logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
+              owalletLogoWrap.appendChild(logoClickCursor);
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
               // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
+              mainText.textContent = isOWalletLocked
+                ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
               // const arrowLeftOpenWrapper = document.createElement("div");
@@ -1009,13 +1259,13 @@ export class OWallet implements IOWallet {
 
               // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
+              button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
               // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
@@ -1040,7 +1290,20 @@ export class OWallet implements IOWallet {
                   });
                 }, 300);
 
+                // 버튼을 body에 추가
                 document.body.appendChild(button);
+
+                // XXX: 현재 크롬의 버그로 인해서 밑의 코드가 동작할 수 없기 때문에 일단 주석처리한다.
+                // 버튼 클릭 이벤트 추가 (필요한 동작을 정의)
+                // button.addEventListener("click", () => {
+                //   this.protectedTryOpenSidePanelIfEnabled(true);
+                //
+                //   clearInterval(intervalId);
+                //   if (!removed) {
+                //     button.remove();
+                //     removed = true;
+                //   }
+                // });
               }
             }
           }
@@ -1048,168 +1311,34 @@ export class OWallet implements IOWallet {
       }
     }
   }
-}
 
-export class Ethereum implements IEthereum {
+  public readonly ethereum = new EthereumProvider(this, this.requester);
+}
+class EthereumProvider extends EventEmitter implements IEthereumProvider {
+  chainId: string | null = null;
+  selectedAddress: string | null = null;
+  networkVersion: string | null = null;
+
+  isOWallet: boolean = true;
+  isMetaMask: boolean = true;
+
   constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    public initChainId: string,
+    protected readonly owallet: OWallet,
     protected readonly requester: MessageRequester
   ) {
-    this.initChainId = initChainId;
+    super();
   }
 
-  async request(args: RequestArguments): Promise<any> {
-    if (args.method === "wallet_switchEthereumChain") {
-      let tmpChainId = this.initChainId;
-      if (args.chainId === "0x1") {
-        // 0x1 is not valid chain id, so we set default chain id = 0x01 (eth)
-        tmpChainId = ChainIdEnum.Ethereum;
-      } else {
-        tmpChainId = args.chainId;
-      }
-      this.initChainId = tmpChainId;
-      const msg = new RequestEthereumMsg(tmpChainId, args.method, args.params);
-      return new Promise((resolve, reject) => {
-        let f = false;
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          msg.route(),
-          msg.type(),
-          {
-            chainId: args.chainId ?? this.initChainId,
-            method: args.method,
-            params: args.params,
-          }
-        )
-          .then((res) => {
-            resolve(res);
-          })
-          .catch(reject)
-          .finally(() => (f = true));
-
-        setTimeout(() => {
-          if (!f) {
-            this.protectedTryOpenSidePanelIfEnabled();
-          }
-        }, 100);
-      });
-      // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    } else if (args.method === "eth_sendTransaction") {
-      const msg = new RequestSignEthereumMsg(
-        args.chainId ?? this.initChainId,
-        args.params?.[0]
-      );
-      // const { rawTxHex } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      // return rawTxHex;
-
-      const response = new Promise((resolve, reject) => {
-        let f = false;
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          msg.route(),
-          msg.type(),
-          {
-            chainId: args.chainId ?? this.initChainId,
-            data: args.params?.[0],
-          }
-        )
-          .then((res) => {
-            resolve(res);
-          })
-          .catch(reject)
-          .finally(() => (f = true));
-
-        setTimeout(() => {
-          if (!f) {
-            this.protectedTryOpenSidePanelIfEnabled();
-          }
-        }, 100);
-      }) as any;
-      return response?.rawTxHex ?? "";
-    } else if (args.method === "eth_signTypedData_v4") {
-      // const msg = new RequestSignEthereumMsg(args.chainId ?? this.initChainId, args.params?.[0]);
-      const msg = new RequestSignEthereumTypedDataMsg(
-        args.chainId,
-        args.params
-      );
-      // const { result } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      const response = new Promise((resolve, reject) => {
-        let f = false;
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          msg.route(),
-          msg.type(),
-          {
-            chainId: args.chainId,
-            data: args.params,
-          }
-        )
-          .then((res) => {
-            resolve(res);
-          })
-          .catch(reject)
-          .finally(() => (f = true));
-
-        setTimeout(() => {
-          if (!f) {
-            this.protectedTryOpenSidePanelIfEnabled();
-          }
-        }, 100);
-      });
-      return response;
-    } else {
-      const msg = new RequestEthereumMsg(
-        args.chainId ?? this.initChainId,
-        args.method,
-        args.params
-      );
-      return new Promise((resolve, reject) => {
-        let f = false;
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          msg.route(),
-          msg.type(),
-          {
-            chainId: args.chainId ?? this.initChainId,
-            method: args.method,
-            params: args.params,
-          }
-        )
-          .then((res) => {
-            resolve(res);
-          })
-          .catch(reject)
-          .finally(() => (f = true));
-
-        setTimeout(() => {
-          if (!f) {
-            this.protectedTryOpenSidePanelIfEnabled();
-          }
-        }, 100);
-      });
-      // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    }
-  }
-
-  async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
-    const msg = new RequestSignTronMsg(chainId, data);
+  protected async protectedEnableAccess(): Promise<void> {
     return new Promise((resolve, reject) => {
       let f = false;
+
       sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data,
-        }
+        "permission-interactive",
+        "enable-access-for-evm",
+        {}
       )
         .then(resolve)
         .catch(reject)
@@ -1217,1331 +1346,84 @@ export class Ethereum implements IEthereum {
 
       setTimeout(() => {
         if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
         }
       }, 100);
     });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAndBroadcastEthereum(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
-    const msg = new RequestSignEthereumMsg(chainId, data);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data,
-        }
-      )
-        .then((res) => {
-          console.log("res", res);
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  isConnected(): boolean {
+    return true;
   }
 
-  async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
-    const msg = new SuggestChainInfoMsg(chainInfo);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainInfo,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signEthereumTypeData(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<any> {
-    try {
-      const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
-      // const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      const response = new Promise((resolve, reject) => {
-        let f = false;
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          msg.route(),
-          msg.type(),
-          {
-            chainId,
-            data,
-          }
-        )
-          .then((res) => {
-            resolve(res);
-          })
-          .catch(reject)
-          .finally(() => (f = true));
-
-        setTimeout(() => {
-          if (!f) {
-            this.protectedTryOpenSidePanelIfEnabled();
-          }
-        }, 100);
-      });
-      return response;
-      // return result;
-    } catch (error) {
-      console.log(error, "error on send message!!!!!!!!!!!!!!!");
-    }
-  }
-
-  async getPublicKey(chainId: string): Promise<object> {
-    const msg = new RequestPublicKeyMsg(chainId);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signDecryptData(chainId: string, data: object): Promise<object> {
-    const msg = new RequestSignDecryptDataMsg(chainId, data);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signReEncryptData(chainId: string, data: object): Promise<object> {
-    const msg = new RequestSignReEncryptDataMsg(chainId, data);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data: data,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  // async sign()
-  // async asyncRequest(): Promise<void> {
-  //   console.log('');
-  // }
-  // async getKey(chainId: string): Promise<Key> {
-  //   const msg = new GetKeyMsg(chainId);
-  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  // }
-
-  async protectedTryOpenSidePanelIfEnabled(
-    ignoreGestureFailure: boolean = false
-  ): Promise<void> {
-    let isInContentScript = false;
-
-    if (
-      typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
-    ) {
-      isInContentScript = true;
+  async request<T = unknown>({
+    method,
+    params,
+    providerId,
+    chainId,
+  }: {
+    method: string;
+    params?: readonly unknown[] | Record<string, unknown>;
+    providerId?: string;
+    chainId?: string;
+  }): Promise<T> {
+    if (typeof method !== "string") {
+      throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (isInContentScript) {
-      const isEnabled = await sendSimpleMessage<{
-        enabled: boolean;
-      }>(
+    // XXX: 원래 enable을 미리하지 않아도 백그라운드에서 알아서 처리해주는 시스템이였는데...
+    //      side panel에서는 불가능하기 때문에 이젠 provider에서 permission도 관리해줘야한다...
+    //      request의 경우는 일종의 쿼리이기 때문에 언제 결과가 올지 알 수 없다. 그러므로 미리 권한 처리를 해야한다.
+    if (method !== "owallet_initProviderState") {
+      await this.protectedEnableAccess();
+    }
+
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
         this.requester,
         BACKGROUND_PORT,
-        "side-panel",
-        "GetSidePanelEnabledMsg",
-        {}
-      );
-
-      if (isEnabled.enabled) {
-        try {
-          return await sendSimpleMessage(
-            this.requester,
-            BACKGROUND_PORT,
-            "router-extension/src/router/extension.ts",
-            "tryOpenSidePanelIfEnabled",
-            {}
-          );
-        } catch (e) {
-          console.log(e);
-          if (
-            !ignoreGestureFailure &&
-            e.message &&
-            e.message.includes("in response to a user gesture")
-          ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
-              const sidePanelPing = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "interaction",
-                "ping-content-script-tab-has-opened-side-panel",
-                {}
-              );
-
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
-              if (sidePanelPing) {
-                return;
-              }
-
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "keyring",
-                "GetIsLockedMsg",
-                {}
-              );
-
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
-              const fontUrl = chrome.runtime.getURL(
-                "/assets/Inter-SemiBold.ttf"
-              );
-              const fontFaceAndKeyFrames = `
-                @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
-                  src: url('${fontUrl}') format('truetype');
-                  font-weight: 600;
-                  font-style: normal;
-                }
-
-                @keyframes slide-left {
-                  0% {
-                    transform: translateY(0%) translateX(100%);
-                  }
-                  100% {
-                    transform: translateY(0%) translateX(0);
-                  }
-                }
-                    
-                @keyframes tada {
-                  0% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                  10%, 20% {
-                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
-                  }
-                  30%, 50%, 70%, 90% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
-                  }
-                  40%, 60%, 80% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
-                  }
-                  100% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                }
-                  
-            `;
-
-              const isLightMode = true;
-
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
-              const styleElement = document.createElement("style");
-              styleElement.appendChild(
-                document.createTextNode(fontFaceAndKeyFrames)
-              );
-              document.head.appendChild(styleElement);
-
-              const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
-              button.style.boxSizing = "border-box";
-              button.style.animation = "slide-left 0.5s forwards";
-              button.style.position = "fixed";
-              button.style.right = "1.5rem";
-              button.style.top = "1.5rem";
-              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
-              button.style.borderRadius = "1rem";
-              button.style.display = "flex";
-              button.style.alignItems = "center";
-
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
-              button.style.fontWeight = "600";
-
-              // button.style.cursor = "pointer";
-              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // if (isLightMode) {
-              //   button.style.boxShadow =
-              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
-              // }
-              // button.addEventListener("mouseover", () => {
-              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
-              // });
-              // button.addEventListener("mouseout", () => {
-              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // });
-
-              // const megaphoneWrapper = document.createElement("div");
-              // megaphoneWrapper.style.boxSizing = "border-box";
-              // megaphoneWrapper.style.display = "flex";
-              // megaphoneWrapper.style.position = "absolute";
-              // megaphoneWrapper.style.left = "-10px";
-              // megaphoneWrapper.style.top = "-10px";
-              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
-              // megaphoneWrapper.style.borderRadius = "255px";
-              // megaphoneWrapper.style.background = "#FC8441";
-              //
-              // const megaphone = document.createElement("img");
-              // const megaphoneUrl = chrome.runtime.getURL(
-              //   "/assets/megaphone.svg"
-              // );
-              // megaphone.src = megaphoneUrl;
-              // megaphone.style.width = "1.25rem";
-              // megaphone.style.height = "1.25rem";
-              // megaphone.style.animation = "tada 1s infinite";
-              // megaphoneWrapper.appendChild(megaphone);
-
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
-              arrowTop.innerHTML = `
-                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
-                    }"/>
-                </svg>
-              `;
-
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
-
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
-
-              const mainText = document.createElement("span");
-              mainText.style.boxSizing = "border-box";
-              // mainText.style.maxWidth = "9.125rem";
-              mainText.style.fontSize = "1rem";
-              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
-                : "Open OWallet to approve request(s)";
-
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
-              // button.appendChild(megaphoneWrapper);
-              button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
-              button.appendChild(mainText);
-              // button.appendChild(arrowLeftOpenWrapper);
-
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
-              const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
-              );
-
-              if (!hasAlready) {
-                let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
-                const intervalId = setInterval(() => {
-                  sendSimpleMessage<boolean>(
-                    this.requester,
-                    BACKGROUND_PORT,
-                    "interaction",
-                    "ping-content-script-tab-has-opened-side-panel",
-                    {}
-                  ).then((sidePanelPing) => {
-                    if (sidePanelPing) {
-                      clearInterval(intervalId);
-                      if (!removed) {
-                        button.remove();
-                        removed = true;
-                      }
-                    }
-                  });
-                }, 300);
-
-                document.body.appendChild(button);
-              }
-            }
-          }
+        "keyring-ethereum",
+        "request-json-rpc-to-evm",
+        {
+          method,
+          params,
+          providerId,
+          chainId,
         }
-      }
-    }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f && sidePanelOpenNeededJSONRPCMethods.includes(method)) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  /**
+   * Legacy methods
+   */
+
+  async enable(): Promise<string[]> {
+    return await this.request({ method: "eth_requestAccounts" });
+  }
+
+  async net_version(): Promise<string> {
+    return await this.request({ method: "net_version" });
   }
 }
 
-export class TronWeb implements ITronWeb {
-  constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
-    this.initChainId = initChainId;
-  }
-
-  async sign(transaction: object): Promise<object> {
-    const msg = new RequestSignTronMsg(ChainIdEnum.TRON, transaction);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId: ChainIdEnum.TRON,
-          data: transaction,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async sendRawTransaction(transaction: {
-    raw_data: any;
-    raw_data_hex: string;
-    txID: string;
-    visible?: boolean;
-  }): Promise<object> {
-    const msg = new RequestSendRawTransactionMsg(ChainIdEnum.TRON, transaction);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId: ChainIdEnum.TRON,
-          data: transaction,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async getDefaultAddress(): Promise<object> {
-    const msg = new GetDefaultAddressTronMsg(ChainIdEnum.TRON);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId: ChainIdEnum.TRON,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async triggerSmartContract(
-    address,
-    functionSelector,
-    options,
-    parameters,
-    issuerAddress
-  ): Promise<{
-    result: any;
-    transaction: {
-      raw_data: any;
-      raw_data_hex: string;
-      txID: string;
-      visible?: boolean;
-    };
-  }> {
-    const msg = new TriggerSmartContractMsg(ChainIdEnum.TRON, {
-      address,
-      functionSelector,
-      options,
-      parameters,
-      issuerAddress,
-    });
-
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId: ChainIdEnum.TRON,
-          data: {
-            address,
-            functionSelector,
-            options,
-            parameters,
-            issuerAddress,
-          },
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async protectedTryOpenSidePanelIfEnabled(
-    ignoreGestureFailure: boolean = false
-  ): Promise<void> {
-    let isInContentScript = false;
-
-    if (
-      typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
-    ) {
-      isInContentScript = true;
-    }
-
-    if (isInContentScript) {
-      const isEnabled = await sendSimpleMessage<{
-        enabled: boolean;
-      }>(
-        this.requester,
-        BACKGROUND_PORT,
-        "side-panel",
-        "GetSidePanelEnabledMsg",
-        {}
-      );
-
-      if (isEnabled.enabled) {
-        try {
-          return await sendSimpleMessage(
-            this.requester,
-            BACKGROUND_PORT,
-            "router-extension/src/router/extension.ts",
-            "tryOpenSidePanelIfEnabled",
-            {}
-          );
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    }
-  }
-}
-export class Bitcoin implements IBitcoin {
-  constructor(
-    public readonly version: string,
-    public readonly mode: BitcoinMode,
-    protected readonly requester: MessageRequester
-  ) {}
-  async signAndBroadcast(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
-    const msg = new RequestSignBitcoinMsg(chainId, data);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-          data,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-  async getKey(chainId: string): Promise<Key> {
-    const msg = new GetKeyMsg(chainId);
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId,
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async protectedTryOpenSidePanelIfEnabled(
-    ignoreGestureFailure: boolean = false
-  ): Promise<void> {
-    let isInContentScript = false;
-
-    if (
-      typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
-    ) {
-      isInContentScript = true;
-    }
-
-    if (isInContentScript) {
-      const isEnabled = await sendSimpleMessage<{
-        enabled: boolean;
-      }>(
-        this.requester,
-        BACKGROUND_PORT,
-        "side-panel",
-        "GetSidePanelEnabledMsg",
-        {}
-      );
-
-      if (isEnabled.enabled) {
-        try {
-          return await sendSimpleMessage(
-            this.requester,
-            BACKGROUND_PORT,
-            "router-extension/src/router/extension.ts",
-            "tryOpenSidePanelIfEnabled",
-            {}
-          );
-        } catch (e) {
-          console.log(e);
-          if (
-            !ignoreGestureFailure &&
-            e.message &&
-            e.message.includes("in response to a user gesture")
-          ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
-              const sidePanelPing = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "interaction",
-                "ping-content-script-tab-has-opened-side-panel",
-                {}
-              );
-
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
-              if (sidePanelPing) {
-                return;
-              }
-
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "keyring",
-                "GetIsLockedMsg",
-                {}
-              );
-
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
-              const fontUrl = chrome.runtime.getURL(
-                "/assets/Inter-SemiBold.ttf"
-              );
-              const fontFaceAndKeyFrames = `
-                @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
-                  src: url('${fontUrl}') format('truetype');
-                  font-weight: 600;
-                  font-style: normal;
-                }
-
-                @keyframes slide-left {
-                  0% {
-                    transform: translateY(0%) translateX(100%);
-                  }
-                  100% {
-                    transform: translateY(0%) translateX(0);
-                  }
-                }
-                    
-                @keyframes tada {
-                  0% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                  10%, 20% {
-                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
-                  }
-                  30%, 50%, 70%, 90% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
-                  }
-                  40%, 60%, 80% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
-                  }
-                  100% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                }
-                  
-            `;
-
-              const isLightMode = true;
-
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
-              const styleElement = document.createElement("style");
-              styleElement.appendChild(
-                document.createTextNode(fontFaceAndKeyFrames)
-              );
-              document.head.appendChild(styleElement);
-
-              const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
-              button.style.boxSizing = "border-box";
-              button.style.animation = "slide-left 0.5s forwards";
-              button.style.position = "fixed";
-              button.style.right = "1.5rem";
-              button.style.top = "1.5rem";
-              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
-              button.style.borderRadius = "1rem";
-              button.style.display = "flex";
-              button.style.alignItems = "center";
-
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
-              button.style.fontWeight = "600";
-
-              // button.style.cursor = "pointer";
-              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // if (isLightMode) {
-              //   button.style.boxShadow =
-              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
-              // }
-              // button.addEventListener("mouseover", () => {
-              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
-              // });
-              // button.addEventListener("mouseout", () => {
-              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // });
-
-              // const megaphoneWrapper = document.createElement("div");
-              // megaphoneWrapper.style.boxSizing = "border-box";
-              // megaphoneWrapper.style.display = "flex";
-              // megaphoneWrapper.style.position = "absolute";
-              // megaphoneWrapper.style.left = "-10px";
-              // megaphoneWrapper.style.top = "-10px";
-              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
-              // megaphoneWrapper.style.borderRadius = "255px";
-              // megaphoneWrapper.style.background = "#FC8441";
-              //
-              // const megaphone = document.createElement("img");
-              // const megaphoneUrl = chrome.runtime.getURL(
-              //   "/assets/megaphone.svg"
-              // );
-              // megaphone.src = megaphoneUrl;
-              // megaphone.style.width = "1.25rem";
-              // megaphone.style.height = "1.25rem";
-              // megaphone.style.animation = "tada 1s infinite";
-              // megaphoneWrapper.appendChild(megaphone);
-
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
-              arrowTop.innerHTML = `
-                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
-                    }"/>
-                </svg>
-              `;
-
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
-
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
-
-              const mainText = document.createElement("span");
-              mainText.style.boxSizing = "border-box";
-              // mainText.style.maxWidth = "9.125rem";
-              mainText.style.fontSize = "1rem";
-              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
-                : "Open OWallet to approve request(s)";
-
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
-              // button.appendChild(megaphoneWrapper);
-              button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
-              button.appendChild(mainText);
-              // button.appendChild(arrowLeftOpenWrapper);
-
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
-              const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
-              );
-
-              if (!hasAlready) {
-                let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
-                const intervalId = setInterval(() => {
-                  sendSimpleMessage<boolean>(
-                    this.requester,
-                    BACKGROUND_PORT,
-                    "interaction",
-                    "ping-content-script-tab-has-opened-side-panel",
-                    {}
-                  ).then((sidePanelPing) => {
-                    if (sidePanelPing) {
-                      clearInterval(intervalId);
-                      if (!removed) {
-                        button.remove();
-                        removed = true;
-                      }
-                    }
-                  });
-                }, 300);
-
-                document.body.appendChild(button);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-export class Oasis implements IOasis {
-  constructor(
-    public readonly version: string,
-    public readonly mode: DefaultMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
-    this.initChainId = initChainId;
-  }
-
-  async signOasis(amount: bigint, to: string): Promise<any> {
-    const msg = new RequestSignOasisMsg(ChainIdEnum.Oasis, { amount, to });
-    return new Promise((resolve, reject) => {
-      let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        msg.route(),
-        msg.type(),
-        {
-          chainId: ChainIdEnum.Oasis,
-          data: {
-            amount,
-            to,
-          },
-        }
-      )
-        .then((res) => {
-          resolve(res);
-        })
-        .catch(reject)
-        .finally(() => (f = true));
-
-      setTimeout(() => {
-        if (!f) {
-          this.protectedTryOpenSidePanelIfEnabled();
-        }
-      }, 100);
-    });
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async protectedTryOpenSidePanelIfEnabled(
-    ignoreGestureFailure: boolean = false
-  ): Promise<void> {
-    let isInContentScript = false;
-
-    if (
-      typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
-    ) {
-      isInContentScript = true;
-    }
-
-    if (isInContentScript) {
-      const isEnabled = await sendSimpleMessage<{
-        enabled: boolean;
-      }>(
-        this.requester,
-        BACKGROUND_PORT,
-        "side-panel",
-        "GetSidePanelEnabledMsg",
-        {}
-      );
-
-      if (isEnabled.enabled) {
-        try {
-          return await sendSimpleMessage(
-            this.requester,
-            BACKGROUND_PORT,
-            "router-extension/src/router/extension.ts",
-            "tryOpenSidePanelIfEnabled",
-            {}
-          );
-        } catch (e) {
-          console.log(e);
-          if (
-            !ignoreGestureFailure &&
-            e.message &&
-            e.message.includes("in response to a user gesture")
-          ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
-              const sidePanelPing = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "interaction",
-                "ping-content-script-tab-has-opened-side-panel",
-                {}
-              );
-
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
-              if (sidePanelPing) {
-                return;
-              }
-
-              const isKeplrLocked = await sendSimpleMessage<boolean>(
-                this.requester,
-                BACKGROUND_PORT,
-                "keyring",
-                "GetIsLockedMsg",
-                {}
-              );
-
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
-              const fontUrl = chrome.runtime.getURL(
-                "/assets/Inter-SemiBold.ttf"
-              );
-              const fontFaceAndKeyFrames = `
-                @font-face {
-                  font-family: 'Inter-SemiBold-Keplr';
-                  src: url('${fontUrl}') format('truetype');
-                  font-weight: 600;
-                  font-style: normal;
-                }
-
-                @keyframes slide-left {
-                  0% {
-                    transform: translateY(0%) translateX(100%);
-                  }
-                  100% {
-                    transform: translateY(0%) translateX(0);
-                  }
-                }
-                    
-                @keyframes tada {
-                  0% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                  10%, 20% {
-                    transform: scale3d(.9, .9, .9) rotate3d(0, 0, 1, -3deg);
-                  }
-                  30%, 50%, 70%, 90% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, 3deg);
-                  }
-                  40%, 60%, 80% {
-                    transform: scale3d(1.1, 1.1, 1.1) rotate3d(0, 0, 1, -3deg);
-                  }
-                  100% {
-                    transform: scale3d(1, 1, 1);
-                  }
-                }
-                  
-            `;
-
-              const isLightMode = true;
-
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
-              const styleElement = document.createElement("style");
-              styleElement.appendChild(
-                document.createTextNode(fontFaceAndKeyFrames)
-              );
-              document.head.appendChild(styleElement);
-
-              const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
-              button.style.boxSizing = "border-box";
-              button.style.animation = "slide-left 0.5s forwards";
-              button.style.position = "fixed";
-              button.style.right = "1.5rem";
-              button.style.top = "1.5rem";
-              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
-              button.style.borderRadius = "1rem";
-              button.style.display = "flex";
-              button.style.alignItems = "center";
-
-              button.style.fontFamily = "Inter-SemiBold-Keplr";
-              button.style.fontWeight = "600";
-
-              // button.style.cursor = "pointer";
-              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // if (isLightMode) {
-              //   button.style.boxShadow =
-              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
-              // }
-              // button.addEventListener("mouseover", () => {
-              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
-              // });
-              // button.addEventListener("mouseout", () => {
-              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // });
-
-              // const megaphoneWrapper = document.createElement("div");
-              // megaphoneWrapper.style.boxSizing = "border-box";
-              // megaphoneWrapper.style.display = "flex";
-              // megaphoneWrapper.style.position = "absolute";
-              // megaphoneWrapper.style.left = "-10px";
-              // megaphoneWrapper.style.top = "-10px";
-              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
-              // megaphoneWrapper.style.borderRadius = "255px";
-              // megaphoneWrapper.style.background = "#FC8441";
-              //
-              // const megaphone = document.createElement("img");
-              // const megaphoneUrl = chrome.runtime.getURL(
-              //   "/assets/megaphone.svg"
-              // );
-              // megaphone.src = megaphoneUrl;
-              // megaphone.style.width = "1.25rem";
-              // megaphone.style.height = "1.25rem";
-              // megaphone.style.animation = "tada 1s infinite";
-              // megaphoneWrapper.appendChild(megaphone);
-
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
-              arrowTop.innerHTML = `
-                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
-                    }"/>
-                </svg>
-              `;
-
-              const keplrLogoWrap = document.createElement("div");
-              keplrLogoWrap.style.boxSizing = "border-box";
-              keplrLogoWrap.style.position = "relative";
-              keplrLogoWrap.style.marginRight = "1rem";
-              const keplrLogo = document.createElement("img");
-              const keplrLogoUrl =
-                "https://play.google.com/store/apps/details?id=com.io.owallet&hl=en_ZA";
-              keplrLogo.src = keplrLogoUrl;
-              keplrLogo.style.boxSizing = "border-box";
-              keplrLogo.style.width = "3rem";
-              keplrLogo.style.height = "3rem";
-              keplrLogoWrap.appendChild(keplrLogo);
-
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              keplrLogoWrap.appendChild(logoClickCursor);
-
-              const mainText = document.createElement("span");
-              mainText.style.boxSizing = "border-box";
-              // mainText.style.maxWidth = "9.125rem";
-              mainText.style.fontSize = "1rem";
-              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
-              mainText.textContent = isKeplrLocked
-                ? "Unlock Keplr to proceed"
-                : "Open OWallet to approve request(s)";
-
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
-              // button.appendChild(megaphoneWrapper);
-              button.appendChild(arrowTop);
-              button.appendChild(keplrLogoWrap);
-              button.appendChild(mainText);
-              // button.appendChild(arrowLeftOpenWrapper);
-
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
-              const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
-              );
-
-              if (!hasAlready) {
-                let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
-                const intervalId = setInterval(() => {
-                  sendSimpleMessage<boolean>(
-                    this.requester,
-                    BACKGROUND_PORT,
-                    "interaction",
-                    "ping-content-script-tab-has-opened-side-panel",
-                    {}
-                  ).then((sidePanelPing) => {
-                    if (sidePanelPing) {
-                      clearInterval(intervalId);
-                      if (!removed) {
-                        button.remove();
-                        removed = true;
-                      }
-                    }
-                  });
-                }, 300);
-
-                document.body.appendChild(button);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+// IMPORTANT: 사이드 패널을 열어야하는 JSON-RPC 메소드들이 생길 때마다 여기에 추가해야한다.
+const sidePanelOpenNeededJSONRPCMethods = [
+  "eth_sendTransaction",
+  "personal_sign",
+  "eth_signTypedData_v3",
+  "eth_signTypedData_v4",
+  "wallet_addEthereumChain",
+  "wallet_switchEthereumChain",
+  "wallet_watchAsset",
+];

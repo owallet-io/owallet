@@ -3,6 +3,10 @@ import { OWallet } from "@owallet/types";
 export const getOWalletFromWindow: () => Promise<
   OWallet | undefined
 > = async () => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
   if (window.owallet) {
     return window.owallet;
   }

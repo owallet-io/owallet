@@ -2,7 +2,7 @@
   "name": "@owallet/hooks",
   "version": "0.9.16",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"

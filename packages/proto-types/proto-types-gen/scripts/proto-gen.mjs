@@ -1,19 +1,22 @@
 /* eslint-disable import/no-extraneous-dependencies, @typescript-eslint/no-var-requires */
 
-import 'zx/globals';
-import fs from 'fs';
-import FolderHash from 'folder-hash';
+import "zx/globals";
+import fs from "fs";
+import FolderHash from "folder-hash";
 
 async function calculateOutputHash(root) {
   const dirCandidates = fs.readdirSync(root, {
-    withFileTypes: true
+    withFileTypes: true,
   });
 
   let dirs = [];
 
   for (const candidate of dirCandidates) {
     if (candidate.isDirectory()) {
-      if (candidate.name !== 'node_modules' && candidate.name !== 'proto-types-gen') {
+      if (
+        candidate.name !== "node_modules" &&
+        candidate.name !== "proto-types-gen"
+      ) {
         dirs.push(candidate);
       }
     }
@@ -28,21 +31,29 @@ async function calculateOutputHash(root) {
   let hash = Buffer.alloc(0);
   for (const dir of dirs) {
     const p = path.join(root, dir.name);
-    const buf = Buffer.from((await FolderHash.hashElement(p)).hash, 'base64');
+    const buf = Buffer.from((await FolderHash.hashElement(p)).hash, "base64");
 
-    
+    console.log(p, buf.toString("base64"));
 
     hash = Buffer.concat([hash, buf]);
   }
 
-  return hash.toString('base64');
+  return hash.toString("base64");
+}
+
+function getOutputHash(root) {
+  return fs.readFileSync(path.join(root, "outputHash")).toString();
+}
+
+function setOutputHash(root, hash) {
+  return fs.writeFileSync(path.join(root, "outputHash"), hash, { mode: 0o600 });
 }
 
 (async () => {
   try {
-    const packageRoot = path.join(__dirname, '../..');
+    const packageRoot = path.join(__dirname, "../..");
 
-    const outDir = path.join(__dirname, '../src');
+    const outDir = path.join(__dirname, "../src");
     $.verbose = false;
 
     if (fs.existsSync(outDir)) {
@@ -52,47 +63,67 @@ async function calculateOutputHash(root) {
     await $`mkdir -p ${outDir}`;
     $.verbose = true;
 
+    // When executed in CI, the proto output should not be different with ones built locally.
+    let lastOutputHash = undefined;
+    if (process.env.CI === "true") {
+      console.log("You are ci runner");
+      lastOutputHash = getOutputHash(packageRoot);
+      console.log("Expected output hash is", lastOutputHash);
+    }
+
     const protoTsBinPath = (() => {
       try {
-        const binPath = path.join(__dirname, '../../node_modules/.bin/protoc-gen-ts_proto');
+        const binPath = path.join(
+          __dirname,
+          "../../node_modules/.bin/protoc-gen-ts_proto"
+        );
         fs.readFileSync(binPath);
         return binPath;
       } catch {
-        const binPath = path.join(__dirname, '../../../../node_modules/.bin/protoc-gen-ts_proto');
+        const binPath = path.join(
+          __dirname,
+          "../../../../node_modules/.bin/protoc-gen-ts_proto"
+        );
         fs.readFileSync(binPath);
         return binPath;
       }
     })();
 
-    const baseDirPath = path.join(__dirname, '..');
+    const baseDirPath = path.join(__dirname, "..");
 
-    const baseProtoPath = path.join(baseDirPath, 'proto');
-    const thirdPartyProtoPath = path.join(baseDirPath, 'third_party/proto');
+    const baseProtoPath = path.join(baseDirPath, "proto");
+    const thirdPartyProtoPath = path.join(baseDirPath, "third_party/proto");
 
     const inputs = [
-      'agoric/swingset/msgs.proto',
-      'cosmos/authz/v1beta1/tx.proto',
-      'cosmos/base/v1beta1/coin.proto',
-      'cosmos/bank/v1beta1/bank.proto',
-      'cosmos/bank/v1beta1/tx.proto',
-      'cosmos/bank/v1beta1/authz.proto',
-      'cosmos/staking/v1beta1/tx.proto',
-      'cosmos/staking/v1beta1/authz.proto',
-      'cosmos/gov/v1beta1/gov.proto',
-      'cosmos/gov/v1beta1/tx.proto',
-      'cosmos/distribution/v1beta1/tx.proto',
-      'cosmos/crypto/multisig/v1beta1/multisig.proto',
-      'cosmos/crypto/secp256k1/keys.proto',
-      'cosmos/tx/v1beta1/tx.proto',
-      'cosmos/tx/signing/v1beta1/signing.proto',
-      'cosmos/base/abci/v1beta1/abci.proto',
-      'cosmwasm/wasm/v1/tx.proto',
-      'ibc/applications/transfer/v1/tx.proto',
-      'secret/compute/v1beta1/msg.proto',
-      'ethermint/types/v1/web3.proto'
+      "agoric/swingset/msgs.proto",
+      "cosmos/authz/v1beta1/tx.proto",
+      "cosmos/base/v1beta1/coin.proto",
+      "cosmos/bank/v1beta1/bank.proto",
+      "cosmos/bank/v1beta1/tx.proto",
+      "cosmos/bank/v1beta1/authz.proto",
+      "cosmos/staking/v1beta1/tx.proto",
+      "cosmos/staking/v1beta1/authz.proto",
+      "cosmos/gov/v1beta1/gov.proto",
+      "cosmos/gov/v1beta1/tx.proto",
+      "cosmos/distribution/v1beta1/tx.proto",
+      "cosmos/crypto/multisig/v1beta1/multisig.proto",
+      "cosmos/crypto/secp256k1/keys.proto",
+      "cosmos/tx/v1beta1/tx.proto",
+      "cosmos/tx/signing/v1beta1/signing.proto",
+      "cosmos/base/abci/v1beta1/abci.proto",
+      "cosmwasm/wasm/v1/tx.proto",
+      "ibc/applications/transfer/v1/tx.proto",
+      "ibc/applications/fee/v1/fee.proto",
+      "ibc/applications/fee/v1/tx.proto",
+      "secret/compute/v1beta1/msg.proto",
+      "ethermint/types/v1/web3.proto",
+      "stride/stakeibc/validator.proto",
+      "stride/stakeibc/tx.proto",
+      "stride/staketia/tx.proto",
+      "stride/stakedym/tx.proto",
     ];
 
-    const thirdPartyInputs = ['tendermint/crypto/keys.proto'];
+    const thirdPartyInputs = ["tendermint/crypto/keys.proto"];
 
     await $`protoc \
       --plugin=${protoTsBinPath} \
@@ -118,8 +149,16 @@ async function calculateOutputHash(root) {
     await $`rm ${packageRoot}/tsconfig.json`;
 
     $.verbose = true;
+
+    const outputHash = await calculateOutputHash(outDir);
+    console.log("Output hash is", outputHash);
+    if (lastOutputHash && lastOutputHash !== outputHash) {
+      throw new Error("Output is different");
+    }
+
+    setOutputHash(packageRoot, outputHash);
   } catch (e) {
-    console.log('🚀 ~ file: proto-gen.mjs:146 ~ e:', e);
+    console.log(e);
     process.exit(1);
   }
 })();

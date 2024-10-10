@@ -81,15 +81,11 @@ export class ObservableJsonRPCQuery<
   }
 
   protected override getCacheKey(): string {
-    try {
-      if (!this.params) return;
-      const paramsHash = Buffer.from(
-        Hash.sha256(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
-      ).toString("hex");
-      return `${super.getCacheKey()}-${this.method}-${paramsHash}`;
-    } catch (e) {
-      console.error(e, "error for getCacheKey method at JSON RPC");
-    }
+    const paramsHash = Buffer.from(
+      Hash.sha256(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
+    ).toString("hex");
+
+    return `${super.getCacheKey()}-${this.method}-${paramsHash}`;
   }
 }
 

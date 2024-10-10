@@ -2131,16 +2131,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/json-rpc@npm:^0.29.5":
-  version: 0.29.5
-  resolution: "@cosmjs/json-rpc@npm:0.29.5"
-  dependencies:
-    "@cosmjs/stream": ^0.29.5
-    xstream: ^11.14.0
-  checksum: 2ba67f4ceeea2f04b50ed8ba3977ebeeaa2e6da82d7aa5bc1417b63245eaecf3411149e41fdbdcc8a789b83eea8b6d17570c2f6b8e06fd14f54c291592a06dfc
-  languageName: node
-  linkType: hard
-
 "@cosmjs/json-rpc@npm:^0.30.1":
   version: 0.30.1
   resolution: "@cosmjs/json-rpc@npm:0.30.1"
@@ -2266,18 +2256,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/socket@npm:^0.29.5":
-  version: 0.29.5
-  resolution: "@cosmjs/socket@npm:0.29.5"
-  dependencies:
-    "@cosmjs/stream": ^0.29.5
-    isomorphic-ws: ^4.0.1
-    ws: ^7
-    xstream: ^11.14.0
-  checksum: fb29e890df506fa10bba801e644f1ceed6342bc7d9c8366a04e5384e8dcb608a7e2a4cb5e86428c16f4d21193a7f9cac5fec26ad645422afe6c41a2b68fd5d7c
-  languageName: node
-  linkType: hard
-
 "@cosmjs/socket@npm:^0.30.1":
   version: 0.30.1
   resolution: "@cosmjs/socket@npm:0.30.1"
@@ -2342,15 +2320,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/stream@npm:^0.29.5":
-  version: 0.29.5
-  resolution: "@cosmjs/stream@npm:0.29.5"
-  dependencies:
-    xstream: ^11.14.0
-  checksum: 6b6d28f50bd3e51ec9fadf85a5f9a801e57de545b9aea770e0e29ef024dc346258e8a6809c0ad2350052538dd2ef2f3b324c491893eef044155cb3773aabab59
-  languageName: node
-  linkType: hard
-
 "@cosmjs/stream@npm:^0.30.1":
   version: 0.30.1
   resolution: "@cosmjs/stream@npm:0.30.1"
@@ -2384,24 +2353,6 @@ __metadata:
     readonly-date: ^1.0.0
     xstream: ^11.14.0
   checksum: 403e220ee4aeb65977a4416d48930d7381e3d4c10bf300fa6f07698c72b85a55f2314ba1a3d45849ce8549de2ff2005988188fc5fe60ac09188edbb89692115d
-  languageName: node
-  linkType: hard
-
-"@cosmjs/tendermint-rpc@npm:^0.29.4":
-  version: 0.29.5
-  resolution: "@cosmjs/tendermint-rpc@npm:0.29.5"
-  dependencies:
-    "@cosmjs/crypto": ^0.29.5
-    "@cosmjs/encoding": ^0.29.5
-    "@cosmjs/json-rpc": ^0.29.5
-    "@cosmjs/math": ^0.29.5
-    "@cosmjs/socket": ^0.29.5
-    "@cosmjs/stream": ^0.29.5
-    "@cosmjs/utils": ^0.29.5
-    axios: ^0.21.2
-    readonly-date: ^1.0.0
-    xstream: ^11.14.0
-  checksum: c9360ef837174e3b5429ffa991c4973e119dc5f97a355628fa387daa90ece7cf7152fe46deace7a0f37c76678d468d83828c1464d74e5cf8c0a0aee65e8761c5
   languageName: node
   linkType: hard
 
@@ -3280,7 +3231,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/units@npm:5.7.0":
+"@ethersproject/units@npm:5.7.0, @ethersproject/units@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/units@npm:5.7.0"
   dependencies:
@@ -4254,16 +4205,6 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 399c1b8a4627f93dc31660d9636ea6bf58be5675cc7581e3df56a249369e5be02c6cd0d642c5332b0d5673bc8621619bc06fb045aa3e8f57383737b5d35930dc
-  languageName: node
-  linkType: hard
-
-"@hanchon/ethermint-address-converter@npm:^1.1.0":
-  version: 1.1.1
-  resolution: "@hanchon/ethermint-address-converter@npm:1.1.1"
-  dependencies:
-    bech32: ^1.1.3
-    crypto-addr-codec: ^0.1.7
-  checksum: 2660a3001cb70e338107fc30e2650823b3df84308a8d871c1a45e71986f51bbfcc0bbfeea2117cc0f5d0d33657a11445249bf7214911df553ec78aa0492291ec
   languageName: node
   linkType: hard
 
@@ -6046,7 +5987,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/background@^0.9.16, @owallet/background@workspace:packages/background":
+"@owallet/background@*, @owallet/background@^0.9.16, @owallet/background@workspace:packages/background":
   version: 0.0.0-use.local
   resolution: "@owallet/background@workspace:packages/background"
   dependencies:
@@ -6160,29 +6101,33 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@owallet/cosmos@workspace:packages/cosmos"
   dependencies:
-    "@cosmjs/launchpad": ^0.27.1
-    "@owallet/crypto": ^0.9.10
+    "@ethersproject/address": ^5.6.0
+    "@owallet/common": "*"
+    "@owallet/crypto": "*"
+    "@owallet/proto-types": "*"
     "@owallet/simple-fetch": "*"
-    "@owallet/types": ^0.9.12
-    "@owallet/unit": ^0.9.12
-    axios: ^1.7.2
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
     bech32: ^1.1.4
     buffer: ^6.0.3
     long: ^4.0.0
+    protobufjs: ^6.11.2
   languageName: unknown
   linkType: soft
 
-"@owallet/crypto@^0.9.10, @owallet/crypto@workspace:packages/crypto":
+"@owallet/crypto@*, @owallet/crypto@^0.9.10, @owallet/crypto@workspace:packages/crypto":
   version: 0.0.0-use.local
   resolution: "@owallet/crypto@workspace:packages/crypto"
   dependencies:
-    "@types/crypto-js": ^4.2.0
+    "@ethersproject/keccak256": ^5.5.0
+    "@types/crypto-js": ^4.0.1
     "@types/elliptic": ^6.4.12
     "@types/sha.js": ^2.4.0
     bip32: ^2.0.6
     bip39: ^3.0.3
+    bs58check: ^2.1.2
     buffer: ^6.0.3
-    crypto-js: ^4.2.0
+    crypto-js: ^4.0.0
     elliptic: ^6.5.3
     sha.js: ^2.4.11
   languageName: unknown
@@ -6334,13 +6279,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/mobx-utils@*, @owallet/mobx-utils@workspace:packages/mobx-utils":
+  version: 0.0.0-use.local
+  resolution: "@owallet/mobx-utils@workspace:packages/mobx-utils"
+  dependencies:
+    "@owallet/types": "*"
+  peerDependencies:
+    mobx: ^6
+  languageName: unknown
+  linkType: soft
+
 "@owallet/popup@^0.9.6, @owallet/popup@workspace:packages/popup":
   version: 0.0.0-use.local
   resolution: "@owallet/popup@workspace:packages/popup"
   languageName: unknown
   linkType: soft
 
-"@owallet/proto-types@workspace:packages/proto-types":
+"@owallet/proto-types@*, @owallet/proto-types@workspace:packages/proto-types":
   version: 0.0.0-use.local
   resolution: "@owallet/proto-types@workspace:packages/proto-types"
   dependencies:
@@ -6350,19 +6305,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/provider-extension@workspace:packages/provider-extension":
+  version: 0.0.0-use.local
+  resolution: "@owallet/provider-extension@workspace:packages/provider-extension"
+  dependencies:
+    "@owallet/types": "*"
+    deepmerge: ^4.2.2
+    long: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@owallet/provider-mock@*, @owallet/provider-mock@workspace:packages/provider-mock":
+  version: 0.0.0-use.local
+  resolution: "@owallet/provider-mock@workspace:packages/provider-mock"
+  dependencies:
+    "@owallet/cosmos": "*"
+    "@owallet/crypto": "*"
+    "@owallet/proto-types": "*"
+    "@owallet/provider": "*"
+    "@owallet/router": "*"
+    "@owallet/types": "*"
+    buffer: ^6.0.3
+    deepmerge: ^4.2.2
+    long: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@owallet/provider@*, @owallet/provider@^0.9.12, @owallet/provider@workspace:packages/provider":
   version: 0.0.0-use.local
   resolution: "@owallet/provider@workspace:packages/provider"
   dependencies:
-    "@cosmjs/launchpad": ^0.27.1
-    "@cosmjs/proto-signing": ^0.29.3
-    "@owallet/background": ^0.9.16
-    "@owallet/router": ^0.9.6
-    "@owallet/types": ^0.9.12
+    "@owallet/router": "*"
+    "@owallet/types": "*"
     buffer: ^6.0.3
     deepmerge: ^4.2.2
     long: ^4.0.0
-    secretjs: ^1.12.5
   languageName: unknown
   linkType: soft
 
@@ -6384,7 +6361,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/router@^0.9.6, @owallet/router@workspace:packages/router":
+"@owallet/router@*, @owallet/router@^0.9.6, @owallet/router@workspace:packages/router":
   version: 0.0.0-use.local
   resolution: "@owallet/router@workspace:packages/router"
   languageName: unknown
@@ -6396,39 +6373,106 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/stores-core@workspace:packages/stores-core":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-core@workspace:packages/stores-core"
+  dependencies:
+    "@owallet/background": "*"
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/router": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/types": "*"
+    buffer: ^6.0.3
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
+"@owallet/stores-etc@workspace:packages/stores-etc":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-etc@workspace:packages/stores-etc"
+  dependencies:
+    "@ethersproject/abi": ^5.6.0
+    "@owallet/common": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    utility-types: ^3.10.0
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
+"@owallet/stores-eth@*, @owallet/stores-eth@workspace:packages/stores-eth":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-eth@workspace:packages/stores-eth"
+  dependencies:
+    "@ethersproject/abi": ^5.7.0
+    "@ethersproject/address": ^5.7.0
+    "@ethersproject/bytes": ^5.7.0
+    "@ethersproject/transactions": ^5.7.0
+    "@ethersproject/units": ^5.7.0
+    "@owallet/common": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    big-integer: ^1.6.48
+    utility-types: ^3.10.0
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
+"@owallet/stores-ibc@workspace:packages/stores-ibc":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-ibc@workspace:packages/stores-ibc"
+  dependencies:
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/stores": "*"
+    "@owallet/stores-eth": "*"
+    "@owallet/types": "*"
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
 "@owallet/stores@*, @owallet/stores@^0.9.16, @owallet/stores@workspace:packages/stores":
   version: 0.0.0-use.local
   resolution: "@owallet/stores@workspace:packages/stores"
   dependencies:
-    "@cosmjs/encoding": ^0.29.3
-    "@cosmjs/launchpad": ^0.27.1
-    "@cosmjs/tendermint-rpc": ^0.29.4
-    "@hanchon/ethermint-address-converter": ^1.1.0
-    "@owallet/background": ^0.9.16
-    "@owallet/common": ^0.9.10
-    "@owallet/cosmos": ^0.9.16
-    "@owallet/crypto": ^0.9.10
-    "@owallet/router": ^0.9.6
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/crypto": "*"
+    "@owallet/mobx-utils": "*"
+    "@owallet/proto-types": "*"
+    "@owallet/provider-mock": "*"
     "@owallet/simple-fetch": "*"
-    "@owallet/types": ^0.9.12
-    "@owallet/unit": ^0.9.12
-    axios: ^1.7.2
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
     buffer: ^6.0.3
-    cosmjs-types: ^0.6.1
     deepmerge: ^4.2.2
     eventemitter3: ^4.0.7
     long: ^4.0.0
-    mobx: ^6.13.1
-    mobx-utils: ^6.0.8
     p-queue: ^6.6.2
     utility-types: ^3.10.0
-    web3: 1.10.0
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
   languageName: unknown
   linkType: soft
 
-"@owallet/types@*, @owallet/types@^0.9.12, @owallet/types@workspace:packages/types":
+"@owallet/types-v2@workspace:packages/types-v2":
   version: 0.0.0-use.local
-  resolution: "@owallet/types@workspace:packages/types"
+  resolution: "@owallet/types-v2@workspace:packages/types-v2"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.29.3
@@ -6438,7 +6482,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/unit@^0.9.12, @owallet/unit@workspace:packages/unit":
+"@owallet/types@*, @owallet/types@^0.9.12, @owallet/types@workspace:packages/types":
+  version: 0.0.0-use.local
+  resolution: "@owallet/types@workspace:packages/types"
+  dependencies:
+    long: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
+"@owallet/unit@*, @owallet/unit@^0.9.12, @owallet/unit@workspace:packages/unit":
   version: 0.0.0-use.local
   resolution: "@owallet/unit@workspace:packages/unit"
   dependencies:
@@ -9237,7 +9289,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/crypto-js@npm:^4.2.0":
+"@types/crypto-js@npm:^4.0.1":
   version: 4.2.2
   resolution: "@types/crypto-js@npm:4.2.2"
   checksum: 727daa0d2db35f0abefbab865c23213b6ee6a270e27e177939bbe4b70d1e84c2202d9fac4ea84859c4b4d49a4ee50f948f601327a39b69ec013288018ba07ca5
@@ -12089,13 +12141,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"big-integer@npm:1.6.36":
-  version: 1.6.36
-  resolution: "big-integer@npm:1.6.36"
-  checksum: 8cb9366ab72975a94ace5a99f6f81e0624dc8a5d14349df1f331d75ceec405c9286ad04c2a1188bc4ec4aa65cbbf1f8065f5d6b529fdb4a9d9867bbdfa769306
-  languageName: node
-  linkType: hard
-
 "big-integer@npm:1.6.51":
   version: 1.6.51
   resolution: "big-integer@npm:1.6.51"
@@ -14299,16 +14344,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmjs-types@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "cosmjs-types@npm:0.6.1"
-  dependencies:
-    long: ^4.0.0
-    protobufjs: ~6.11.2
-  checksum: 479ca1b307db35c612a420b6b5d556e58c463478bf733a8328d83455e25dadfe0bc41623bb057040aabc532c4f0afb5475328179e9315419dd77439cb4431588
-  languageName: node
-  linkType: hard
-
 "cosmjs-types@npm:^0.7.1":
   version: 0.7.2
   resolution: "cosmjs-types@npm:0.7.2"
@@ -14476,21 +14511,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-addr-codec@npm:^0.1.7":
-  version: 0.1.8
-  resolution: "crypto-addr-codec@npm:0.1.8"
-  dependencies:
-    base-x: ^3.0.8
-    big-integer: 1.6.36
-    blakejs: ^1.1.0
-    bs58: ^4.0.1
-    ripemd160-min: 0.0.6
-    safe-buffer: ^5.2.0
-    sha3: ^2.1.1
-  checksum: c9d16a81eeb7cf6ac9392349dcf7d4bd5b9f3dd73c60e472fe6cba256dc2f9ba45b756f23b65a2e1abfe0612cfb4e85dd8e480783288bba239eade8abb4c4f43
-  languageName: node
-  linkType: hard
-
 "crypto-browserify@npm:3.12.0, crypto-browserify@npm:^3.12.0":
   version: 3.12.0
   resolution: "crypto-browserify@npm:3.12.0"
@@ -14510,7 +14530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.2.0":
+"crypto-js@npm:^4.0.0":
   version: 4.2.0
   resolution: "crypto-js@npm:4.2.0"
   checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
@@ -29423,13 +29443,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ripemd160-min@npm:0.0.6":
-  version: 0.0.6
-  resolution: "ripemd160-min@npm:0.0.6"
-  checksum: 3253fec273aee407e736df0baf69f90c65f56573d6fc537532041112e7c09a2f665ee2e618ef4a88eb494923d36614322eac26ddf35a504fcfedb422fd414c75
-  languageName: node
-  linkType: hard
-
 "ripemd160@npm:2, ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1, ripemd160@npm:^2.0.2":
   version: 2.0.2
   resolution: "ripemd160@npm:2.0.2"
@@ -29987,7 +30000,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sha3@npm:^2.1.1, sha3@npm:^2.1.4":
+"sha3@npm:^2.1.4":
   version: 2.1.4
   resolution: "sha3@npm:2.1.4"
   dependencies:
