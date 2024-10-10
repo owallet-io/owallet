@@ -231,8 +231,8 @@ export const StakeView: FunctionComponent = observer(() => {
             ) : null}
           </Text>
         </div>
-        <div style={{ flex: 1 }} />
         <Button
+          containerStyle={{ height: 32 }}
           size="small"
           className={styleStake.button}
           disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}

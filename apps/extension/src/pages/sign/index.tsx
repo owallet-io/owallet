@@ -533,7 +533,7 @@ export const SignPage: FunctionComponent = observer(() => {
                     </Button>
                     <Button
                       className={classnames(style.button, style.approveBtn)}
-                      // disabled={approveIsDisabled}
+                      disabled={approveIsDisabled}
                       data-loading={signInteractionStore.isLoading}
                       loading={signInteractionStore.isLoading}
                       onClick={async (e) => {
