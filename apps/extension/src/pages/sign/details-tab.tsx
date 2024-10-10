@@ -43,8 +43,7 @@ export const DetailsTab: FunctionComponent<{
     signDocJsonAll,
     setOpenSetting,
   }) => {
-    const { chainStore, accountStore, priceStore, signInteractionStore } =
-      useStore();
+    const { chainStore, accountStore, priceStore } = useStore();
     const intl = useIntl();
     const language = useLanguage();
 

@@ -223,6 +223,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
       style={{
         height: "100vh",
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
       <ModalFee

@@ -335,22 +335,11 @@ export const SignPage: FunctionComponent = observer(() => {
     : signDocJson;
 
   return (
-    // <HeaderLayout
-    //   showChainName={alternativeTitle == null}
-    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     interactionInfo.interactionInternal
-    //       ? () => {
-    //           history.goBack();
-    //         }
-    //       : undefined
-    //   }
-    // >
     <div
       style={{
         height: "100vh",
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
       <div
@@ -381,7 +370,6 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
-            {/* <div style={{ height: "75%", overflow: "scroll", padding: 16 }}> */}
             <div style={{ overflow: "scroll", padding: 16 }}>
               <div
                 className={classnames(style.tabs)}
@@ -410,7 +398,6 @@ export const SignPage: FunctionComponent = observer(() => {
                 </div>
               </div>
               <RenderTab
-                //@ts-ignore
                 signDocHelper={signDocHelper}
                 tab={tab}
                 isADR36WithString={isADR36WithString}
@@ -486,7 +473,6 @@ export const SignPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
                   </div>
                   <div
                     style={{
@@ -613,7 +599,6 @@ export const SignPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-      {/* </HeaderLayout> */}
     </div>
   );
 });

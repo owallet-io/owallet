@@ -220,6 +220,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
       style={{
         height: "100vh",
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
       {/* <div className={cx("setting", openSetting ? "activeSetting" : "", "modal")} ref={settingRef}>
