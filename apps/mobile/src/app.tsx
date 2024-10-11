@@ -4,7 +4,7 @@ import SplashScreen from "react-native-splash-screen";
 import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
 import { ModalsProvider } from "./modals/base";
-import { Platform, LogBox } from "react-native";
+import { LogBox } from "react-native";
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from "@owallet/common";
 import { InteractionModalsProivder } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -18,13 +18,11 @@ import FlashMessage from "react-native-flash-message";
 import { Root as PopupRootProvider } from "react-native-popup-confirm-toast";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import LottieView from "lottie-react-native";
-import { metrics } from "@src/themes";
 import ErrorBoundary from "react-native-error-boundary";
 import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
-import branch, { BranchEvent, BranchEventParams } from "react-native-branch";
+import branch from "react-native-branch";
 
 const queryClient = new QueryClient();
 // Call `setRequestMetadata` before `subscribe`
@@ -79,8 +77,6 @@ const AppIntlProviderWithStorage = ({ children }) => {
 };
 
 export const App = () => {
-  const [isInit, setIsInit] = useState(true);
-
   const enableAnalytics = async () => {
     await analytics().setAnalyticsCollectionEnabled(true);
   };
@@ -89,20 +85,7 @@ export const App = () => {
     enableAnalytics();
     return () => {};
   }, []);
-  if (isInit) {
-    return (
-      <LottieView
-        source={require("@src/assets/animations/splashscreen.json")}
-        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
-        resizeMode={"cover"}
-        autoPlay
-        loop={false}
-        onAnimationFinish={() => {
-          setIsInit(false);
-        }}
-      />
-    );
-  }
+
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <GestureHandlerRootView
