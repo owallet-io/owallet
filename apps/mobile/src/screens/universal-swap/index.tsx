@@ -80,6 +80,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import { tracking } from "@src/utils/tracking";
+import { SlippageConfirmModal } from "./modals/SlippageConfirmModal";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -324,6 +325,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
   const [selectToTokenModal, setSelectToTokenModal] = useState(false);
   const [sendToModal, setSendToModal] = useState(false);
+  const [slippageModal, setSlippageModal] = useState(false);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
@@ -1006,6 +1008,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleSendToAddress={handleSendToAddress}
           handleToggle={setToggle}
         />
+        <SlippageConfirmModal
+          close={() => {
+            setSlippageModal(false);
+          }}
+          isOpen={slippageModal}
+          //@ts-ignore
+          slippage={userSlippage}
+          handleConfirm={() => handleSubmit()}
+        />
       </>
     );
   };
@@ -1152,7 +1163,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.txtBtnSend}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          onPress={() => handleSubmit()}
+          onPress={() => {
+            if (userSlippage > 5) {
+              setSlippageModal(true);
+              return;
+            } else {
+              handleSubmit();
+            }
+          }}
         />
       }
     >
