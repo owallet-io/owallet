@@ -487,7 +487,7 @@ const useStyles = (colors) => {
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-icon-on-dark"],
+      backgroundColor: colors["neutral-icon-on-light"],
     },
     bottomBtn: {
       marginTop: 20,

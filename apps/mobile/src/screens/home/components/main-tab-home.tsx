@@ -41,7 +41,7 @@ export const MainTabHome: FC<{
                 ...styles.titleTab,
                 color:
                   activeTab.id === item.id
-                    ? colors["neutral-border-bold"]
+                    ? colors["neutral-text-title"]
                     : colors["neutral-text-body"],
               }}
               onPress={() => {
