@@ -61,9 +61,9 @@ import {
   handleErrorSwap,
   handleSaveTokenInfos,
   getSpecialCoingecko,
-  isAllowAlphaSmartRouter,
   isAllowIBCWasm,
   getProtocolsSmartRoute,
+  isAllowAlphaIbcWasm,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -267,13 +267,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter();
-  const protocols = getProtocolsSmartRoute(
+
+  const useAlphaIbcWasm = isAllowAlphaIbcWasm(
     originalFromToken,
-    originalToToken,
-    useIbcWasm
+    originalToToken
   );
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, {
+    useIbcWasm,
+    useAlphaIbcWasm,
+  });
+
+  const simulateOption = {
+    useAlphaIbcWasm,
+    useIbcWasm,
+    protocols,
+    maxSplits: useAlphaIbcWasm ? 1 : 10,
+    dontAllowSwapAfter: useAlphaIbcWasm ? [""] : undefined,
+  };
+
   const {
     minimumReceive,
     isWarningSlippage,
@@ -296,12 +308,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     client,
     setSwapAmount,
     handleErrorSwap,
-    {
-      useAlphaSmartRoute: useAlphaSmartRouter,
-      useIbcWasm: useIbcWasm,
-      protocols,
-    },
-    isAIRoute
+    simulateOption
   );
 
   const {
@@ -537,11 +544,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
       const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-      const IBC_DECIMALS = 18;
-      const fromTokenInOrai = getTokenOnOraichain(
-        tokenInfo.coinGeckoId,
-        IBC_DECIMALS
-      );
+      // const IBC_DECIMALS = 18;
+      const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
         client.queryContractSmart(tokenInfo.contractAddress, {
@@ -569,7 +573,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toAmount: `${toAmountToken}`,
       fromNetwork: originalFromToken.chainId,
       toNetwork: originalToToken.chainId,
-      useAlphaSmartRouter,
+      isAlphaIbcWasm: useAlphaIbcWasm,
       priceOfFromTokenInUsd: usdPriceShowFrom,
       priceOfToTokenInUsd: usdPriceShowTo,
     };
@@ -610,9 +614,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       ).toString();
     }
 
-    const alphaSmartRoutes = useAlphaSmartRouter
-      ? simulateData?.routes
-      : undefined;
+    const alphaSmartRoutes = simulateData?.routes;
 
     const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
@@ -649,7 +651,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       //@ts-ignore
       evmWallet,
       swapOptions: {
-        isAlphaSmartRouter: useAlphaSmartRouter,
+        isAlphaIbcWasm: useAlphaIbcWasm,
         isIbcWasm: useIbcWasm,
       },
     });
