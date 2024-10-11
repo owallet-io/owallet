@@ -35,6 +35,8 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     const chainInfo = chainStore.getChain(network);
     const chainIcon = chainIcons.find((c) => c.chainId === network);
 
+    console.log("chainIcon", chainIcon, chainInfo, network);
+
     return (
       <OWCard
         type="normal"
@@ -122,7 +124,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>
@@ -165,7 +169,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>
