@@ -2,7 +2,7 @@ import { Currency, AppCurrency, FeeCurrency } from "./currency";
 import { BIP44 } from "./bip44";
 import { Bech32Config } from "./bech32";
 import { EVMInfo } from "./ethereum";
-
+export type NetworkType = "cosmos" | "evm" | "bitcoin";
 export interface ChainInfo {
   readonly rpc: string;
   readonly rest: string;
@@ -12,6 +12,7 @@ export interface ChainInfo {
     readonly discord?: string;
     readonly website?: string;
   };
+  readonly networkType?: NetworkType;
   readonly chainId: string;
   readonly chainName: string;
   /**
@@ -49,6 +50,11 @@ export interface ChainInfo {
   readonly hideInUI?: boolean;
 
   readonly evm?: EVMInfo;
+  readonly txExplorer?: {
+    readonly name: string;
+    readonly txUrl: string;
+    readonly accountUrl?: string;
+  };
 }
 
 export type ChainInfoWithoutEndpoints = Omit<

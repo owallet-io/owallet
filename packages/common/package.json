@@ -8,23 +8,17 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/cosmos": "^0.9.16",
-    "@owallet/crypto": "^0.9.10",
-    "@owallet/types": "^0.9.12",
-    "axios": "^1.7.2",
+    "@owallet/crypto": "*",
+    "@owallet/types": "*",
     "buffer": "^6.0.3",
     "delay": "^4.4.0"
-  },
-  "devDependencies": {
-    "@types/axios": "^0.14.0"
   }
 }

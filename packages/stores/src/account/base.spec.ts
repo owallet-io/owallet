@@ -1,6 +1,6 @@
 import { AccountSetBase, WalletStatus } from "./base";
 import { ChainStore } from "../chain";
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency, ChainInfo } from "@owallet/types";
 import { MockOWallet } from "@owallet/provider-mock";
 import { AccountSharedContext } from "./context";
 

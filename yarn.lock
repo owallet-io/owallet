@@ -2870,7 +2870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethereumjs/common@npm:^2.5.0, @ethereumjs/common@npm:^2.6.4":
+"@ethereumjs/common@npm:^2.5.0, @ethereumjs/common@npm:^2.6.4, @ethereumjs/common@npm:^2.6.5":
   version: 2.6.5
   resolution: "@ethereumjs/common@npm:2.6.5"
   dependencies:
@@ -2880,7 +2880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethereumjs/tx@npm:3.5.2, @ethereumjs/tx@npm:^3.3.2":
+"@ethereumjs/tx@npm:3.5.2, @ethereumjs/tx@npm:^3.3.2, @ethereumjs/tx@npm:^3.5.2":
   version: 3.5.2
   resolution: "@ethereumjs/tx@npm:3.5.2"
   dependencies:
@@ -3116,7 +3116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/providers@npm:5.7.2, @ethersproject/providers@npm:^5.0.10":
+"@ethersproject/providers@npm:5.7.2, @ethersproject/providers@npm:^5.0.10, @ethersproject/providers@npm:^5.7.0":
   version: 5.7.2
   resolution: "@ethersproject/providers@npm:5.7.2"
   dependencies:
@@ -3265,7 +3265,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/wallet@npm:5.7.0":
+"@ethersproject/wallet@npm:5.7.0, @ethersproject/wallet@npm:^5.7.0":
   version: 5.7.0
   resolution: "@ethersproject/wallet@npm:5.7.0"
   dependencies:
@@ -4853,22 +4853,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keplr-wallet/types@npm:^0.11.38":
-  version: 0.11.64
-  resolution: "@keplr-wallet/types@npm:0.11.64"
-  dependencies:
-    axios: ^0.27.2
-    long: ^4.0.0
-  checksum: d1d281cdb4c2f61ad46cad158559746927a65a4274170208c3ed712dd550bd623c058fea5cd08d0c1f7806c9856f3c901807f8946cd6cbc99f871b4ce03f94a9
-  languageName: node
-  linkType: hard
-
 "@kiruse/serde@npm:^0.8.0-rc.6":
   version: 0.8.0-rc.6
   resolution: "@kiruse/serde@npm:0.8.0-rc.6"
   dependencies:
     hash-sum: ^2.0.0
   checksum: 17fdeb078e62dbe03fb13e48201dcb2823632ac9eb715fac5cf44a3fc1f1fe3a4e351063dc3721f342432aed087a41ff90b0b1da5ad83b25f33eed0f3ba45e53
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/cryptoassets-evm-signatures@npm:^13.5.0":
+  version: 13.5.0
+  resolution: "@ledgerhq/cryptoassets-evm-signatures@npm:13.5.0"
+  dependencies:
+    "@ledgerhq/live-env": ^2.3.0
+    axios: 1.7.7
+  checksum: 0317a2702e125d1fc9d6318515c0a52016d26a8717f75e5c0a58f5778397e68751063e8fa5e54a7db9ed8f076b27ec59ff83bf9a213e2345a660ac019cb49a73
   languageName: node
   linkType: hard
 
@@ -4893,6 +4893,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/domain-service@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@ledgerhq/domain-service@npm:1.2.6"
+  dependencies:
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/logs": ^6.12.0
+    "@ledgerhq/types-live": ^6.52.0
+    axios: 1.7.7
+    eip55: ^2.1.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: abfb73673e290dc793b9b595d5e0f66017685300dd1d4b0ea55bc3229e35baf1d1ec178788c51d923c39c2d6f60d60598fcff02cbec27334299d722aec13d6c3
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/errors@npm:^5.26.0":
   version: 5.50.0
   resolution: "@ledgerhq/errors@npm:5.50.0"
@@ -4900,10 +4915,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/errors@npm:^6.10.1, @ledgerhq/errors@npm:^6.12.3, @ledgerhq/errors@npm:^6.12.5":
+"@ledgerhq/errors@npm:^6.10.1, @ledgerhq/errors@npm:^6.12.3, @ledgerhq/errors@npm:^6.12.5, @ledgerhq/errors@npm:^6.19.1":
   version: 6.19.1
   resolution: "@ledgerhq/errors@npm:6.19.1"
   checksum: f4e1cf0d6a5808c58235c54e2a1565556de8e683552bd94d97609f790e8c25226114bfa2af9914bb329c3e7c314585b60c66ddac8d8f8f1d072b7e791a889ad8
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/evm-tools@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@ledgerhq/evm-tools@npm:1.2.3"
+  dependencies:
+    "@ledgerhq/cryptoassets-evm-signatures": ^13.5.0
+    "@ledgerhq/live-env": ^2.3.0
+    axios: 1.7.7
+    crypto-js: 4.2.0
+    ethers: 5.7.2
+  checksum: d11bf7d18761bdbf934f3500d1f248eac7b40bd247193665ad82c1e1d9b9828d808b0b961507eb6059ccce50eeb97aa14ad056d8d0e32026c585443ca7d8092d
   languageName: node
   linkType: hard
 
@@ -4950,6 +4978,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-app-eth@npm:^6.29.3":
+  version: 6.39.0
+  resolution: "@ledgerhq/hw-app-eth@npm:6.39.0"
+  dependencies:
+    "@ethersproject/abi": ^5.5.0
+    "@ethersproject/rlp": ^5.5.0
+    "@ledgerhq/cryptoassets-evm-signatures": ^13.5.0
+    "@ledgerhq/domain-service": ^1.2.6
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/evm-tools": ^1.2.3
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/hw-transport-mocker": ^6.29.4
+    "@ledgerhq/logs": ^6.12.0
+    "@ledgerhq/types-live": ^6.52.0
+    axios: 1.7.7
+    bignumber.js: ^9.1.2
+    semver: ^7.3.5
+  checksum: bc32e94f9005c33f134f0e6cb0187af79631474ace1f6f690d85ea01d1f778a3bf441e27cf923e1a68114326ed3f054c2efbe44165fb18579b4067597b9bcafb
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-app-trx@npm:6.27.14":
   version: 6.27.14
   resolution: "@ledgerhq/hw-app-trx@npm:6.27.14"
@@ -4960,7 +5009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/hw-transport-mocker@npm:^6.27.12":
+"@ledgerhq/hw-transport-mocker@npm:^6.27.12, @ledgerhq/hw-transport-mocker@npm:^6.29.4":
   version: 6.29.4
   resolution: "@ledgerhq/hw-transport-mocker@npm:6.29.4"
   dependencies:
@@ -4983,6 +5032,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-transport-webhid@npm:^6.20.0":
+  version: 6.29.4
+  resolution: "@ledgerhq/hw-transport-webhid@npm:6.29.4"
+  dependencies:
+    "@ledgerhq/devices": ^8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/logs": ^6.12.0
+  checksum: 3aab5ee821a2b9cf7c15f967e51413708d70178514b6d1684206c5038a08cb95ed654d9ca2a7260bde5e50d53729272957aabb5779beb004aeef48de487a27ae
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-transport-webusb@npm:=6.27.12":
   version: 6.27.12
   resolution: "@ledgerhq/hw-transport-webusb@npm:6.27.12"
@@ -4995,6 +5056,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-transport-webusb@npm:^6.20.0":
+  version: 6.29.4
+  resolution: "@ledgerhq/hw-transport-webusb@npm:6.29.4"
+  dependencies:
+    "@ledgerhq/devices": ^8.4.4
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    "@ledgerhq/logs": ^6.12.0
+  checksum: 430afb3b71a3225438c3420c29c43945a38d9c8fef1aade7cd844e37d22ae981da7d0f11c75794e2a478cae4a2984cd41b249b674087b566124111d245fdfb75
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-transport@npm:6.27.2":
   version: 6.27.2
   resolution: "@ledgerhq/hw-transport@npm:6.27.2"
@@ -5003,6 +5076,16 @@ __metadata:
     "@ledgerhq/errors": ^6.10.1
     events: ^3.3.0
   checksum: ab0acb420493bafeb55351adf8f294f04765e2ab8f81507018e418cab2129530389720ba200488e80fed975319042832c82b852bd521ad872b539ac05bf11473
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/live-env@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@ledgerhq/live-env@npm:2.3.0"
+  dependencies:
+    rxjs: ^7.8.1
+    utility-types: ^3.10.0
+  checksum: da90ad707792be4c37c7d9fbc2535e8c4f26fba142ad6ee0b6d3ff8d2b455ba4b6a3ba84d8975530cf8487f8cf59a0630f728c4e91f01aa856381a37524c8873
   languageName: node
   linkType: hard
 
@@ -5026,6 +5109,16 @@ __metadata:
     rxjs: 6
     uuid: ^3.4.0
   checksum: 8f874e529b6346f9f430a323a68187be03e001bec9e4c5622b5bd3658dbc024e7b73495f34814ba927d71e843ed0fe6948eb30898e1860213b1f11a02de8ce29
+  languageName: node
+  linkType: hard
+
+"@ledgerhq/types-live@npm:^6.52.0":
+  version: 6.52.0
+  resolution: "@ledgerhq/types-live@npm:6.52.0"
+  dependencies:
+    bignumber.js: ^9.1.2
+    rxjs: ^7.8.1
+  checksum: 52df6e69d8bb0776fe62a371db16373c9a7287708d777d1e956b3b2ebdd224bc20fe6f543f2a77b8db002c988996fe4b931ba4300a2867040ff892356757abef
   languageName: node
   linkType: hard
 
@@ -5928,8 +6021,8 @@ __metadata:
     "@cosmjs/tendermint-rpc": 0.31.3
     "@ethersproject/providers": ^5.0.10
     "@injectivelabs/sdk-ts": 1.12.1
-    "@keplr-wallet/types": ^0.11.38
     "@oraichain/oraidex-contracts-sdk": latest
+    "@owallet/types": ^0.9.13
     axios: 1.7.2
     axios-extensions: 3.1.7
     bignumber.js: ^9.1.2
@@ -5987,9 +6080,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/background@*, @owallet/background@^0.9.16, @owallet/background@workspace:packages/background":
+"@owallet/background-legacy@workspace:packages/background-legacy":
   version: 0.0.0-use.local
-  resolution: "@owallet/background@workspace:packages/background"
+  resolution: "@owallet/background-legacy@workspace:packages/background-legacy"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.29.3
@@ -6040,6 +6133,54 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/background@*, @owallet/background@^0.9.16, @owallet/background@workspace:packages/background":
+  version: 0.0.0-use.local
+  resolution: "@owallet/background@workspace:packages/background"
+  dependencies:
+    "@ethereumjs/common": ^2.6.5
+    "@ethereumjs/tx": ^3.5.2
+    "@ethersproject/address": ^5.7.0
+    "@ethersproject/hash": ^5.7.0
+    "@ethersproject/transactions": ^5.7.0
+    "@ethersproject/wallet": ^5.7.0
+    "@ledgerhq/hw-app-eth": ^6.29.3
+    "@ledgerhq/hw-transport": ^6.20.0
+    "@ledgerhq/hw-transport-webhid": ^6.20.0
+    "@ledgerhq/hw-transport-webusb": ^6.20.0
+    "@noble/hashes": 1.0.0
+    "@owallet/chain-validator": "*"
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/crypto": "*"
+    "@owallet/ledger-cosmos": "*"
+    "@owallet/popup": "*"
+    "@owallet/proto-types": "*"
+    "@owallet/router": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    "@types/aes-js": ^3.1.0
+    "@types/ledgerhq__hw-transport-webusb": ^4.70.1
+    "@types/secp256k1": ^4.0.1
+    "@types/w3c-web-hid": ^1.0.2
+    "@types/w3c-web-usb": ^1.0.5
+    aes-js: ^3.1.2
+    big-integer: ^1.6.48
+    bip39: ^3.0.2
+    buffer: ^6.0.3
+    curve25519-js: 0.0.4
+    delay: ^4.4.0
+    joi: ^17.5.0
+    long: ^4.0.0
+    miscreant: 0.3.2
+    pbkdf2: ^3.1.2
+    utility-types: ^3.10.0
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
 "@owallet/bitcoin@workspace:packages/bitcoin":
   version: 0.0.0-use.local
   resolution: "@owallet/bitcoin@workspace:packages/bitcoin"
@@ -6070,7 +6211,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/chain-validator@workspace:packages/chain-validator":
+"@owallet/chain-validator@*, @owallet/chain-validator@workspace:packages/chain-validator":
   version: 0.0.0-use.local
   resolution: "@owallet/chain-validator@workspace:packages/chain-validator"
   dependencies:
@@ -6083,15 +6224,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/common@*, @owallet/common@0.9.10, @owallet/common@^0.9.10, @owallet/common@workspace:packages/common":
+"@owallet/common-legacy@workspace:packages/common-legacy":
   version: 0.0.0-use.local
-  resolution: "@owallet/common@workspace:packages/common"
+  resolution: "@owallet/common-legacy@workspace:packages/common-legacy"
   dependencies:
     "@owallet/cosmos": ^0.9.16
     "@owallet/crypto": ^0.9.10
     "@owallet/types": ^0.9.12
     "@types/axios": ^0.14.0
     axios: ^1.7.2
+    buffer: ^6.0.3
+    delay: ^4.4.0
+  languageName: unknown
+  linkType: soft
+
+"@owallet/common@*, @owallet/common@0.9.10, @owallet/common@^0.9.10, @owallet/common@workspace:packages/common":
+  version: 0.0.0-use.local
+  resolution: "@owallet/common@workspace:packages/common"
+  dependencies:
+    "@owallet/crypto": "*"
+    "@owallet/types": "*"
     buffer: ^6.0.3
     delay: ^4.4.0
   languageName: unknown
@@ -6252,9 +6404,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/hooks@^0.9.16, @owallet/hooks@workspace:packages/hooks":
+"@owallet/hooks-legacy@workspace:packages/hooks-legacy":
   version: 0.0.0-use.local
-  resolution: "@owallet/hooks@workspace:packages/hooks"
+  resolution: "@owallet/hooks-legacy@workspace:packages/hooks-legacy"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@oraichain/ethereum-multicall": ^1.0.2
@@ -6279,6 +6431,41 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/hooks@^0.9.16, @owallet/hooks@workspace:packages/hooks":
+  version: 0.0.0-use.local
+  resolution: "@owallet/hooks@workspace:packages/hooks"
+  dependencies:
+    "@ethersproject/address": ^5.7.0
+    "@ethersproject/providers": ^5.7.0
+    "@owallet/background": "*"
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/crypto": "*"
+    "@owallet/proto-types": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/stores-etc": "*"
+    "@owallet/stores-eth": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    buffer: ^6.0.3
+    long: ^4.0.0
+    utility-types: ^3.10.0
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+    react: ^16.8.0 || ^17 || ^18
+  languageName: unknown
+  linkType: soft
+
+"@owallet/ledger-cosmos@*, @owallet/ledger-cosmos@workspace:packages/ledger-cosmos":
+  version: 0.0.0-use.local
+  resolution: "@owallet/ledger-cosmos@workspace:packages/ledger-cosmos"
+  dependencies:
+    buffer: ^6.0.3
+  languageName: unknown
+  linkType: soft
+
 "@owallet/mobx-utils@*, @owallet/mobx-utils@workspace:packages/mobx-utils":
   version: 0.0.0-use.local
   resolution: "@owallet/mobx-utils@workspace:packages/mobx-utils"
@@ -6289,7 +6476,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/popup@^0.9.6, @owallet/popup@workspace:packages/popup":
+"@owallet/popup@*, @owallet/popup@^0.9.6, @owallet/popup@workspace:packages/popup":
   version: 0.0.0-use.local
   resolution: "@owallet/popup@workspace:packages/popup"
   languageName: unknown
@@ -6391,7 +6578,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/stores-etc@workspace:packages/stores-etc":
+"@owallet/stores-etc@*, @owallet/stores-etc@workspace:packages/stores-etc":
   version: 0.0.0-use.local
   resolution: "@owallet/stores-etc@workspace:packages/stores-etc"
   dependencies:
@@ -6470,9 +6657,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/types-v2@workspace:packages/types-v2":
+"@owallet/types-legacy@workspace:packages/types-legacy":
   version: 0.0.0-use.local
-  resolution: "@owallet/types-v2@workspace:packages/types-v2"
+  resolution: "@owallet/types-legacy@workspace:packages/types-legacy"
   dependencies:
     "@cosmjs/launchpad": ^0.27.1
     "@cosmjs/proto-signing": ^0.29.3
@@ -6490,11 +6677,34 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@owallet/types@npm:^0.9.13":
+  version: 0.9.13
+  resolution: "@owallet/types@npm:0.9.13"
+  dependencies:
+    "@cosmjs/launchpad": ^0.27.1
+    "@cosmjs/proto-signing": ^0.29.3
+    axios: ^1.7.2
+    long: ^4.0.0
+    secretjs: ^1.12.5
+  checksum: 3cc11f751f2035c4b336cb830bb8c9987fc1cd83d703ec624c34f52c6d90ead11168b754593712dff8ddc956609126ccd9db6af240d9ae6e7013d3a603a24901
+  languageName: node
+  linkType: hard
+
+"@owallet/unit-legacy@workspace:packages/unit-legacy":
+  version: 0.0.0-use.local
+  resolution: "@owallet/unit-legacy@workspace:packages/unit-legacy"
+  dependencies:
+    "@owallet/types": ^0.9.12
+    big-integer: ^1.6.48
+    utility-types: ^3.10.0
+  languageName: unknown
+  linkType: soft
+
 "@owallet/unit@*, @owallet/unit@^0.9.12, @owallet/unit@workspace:packages/unit":
   version: 0.0.0-use.local
   resolution: "@owallet/unit@workspace:packages/unit"
   dependencies:
-    "@owallet/types": ^0.9.12
+    "@owallet/types": "*"
     big-integer: ^1.6.48
     utility-types: ^3.10.0
   languageName: unknown
@@ -9796,7 +10006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/w3c-web-hid@npm:^1.0.3":
+"@types/w3c-web-hid@npm:^1.0.2, @types/w3c-web-hid@npm:^1.0.3":
   version: 1.0.6
   resolution: "@types/w3c-web-hid@npm:1.0.6"
   checksum: 14773befa9c458b3459cdb530a8269937e623e6b72c6bd2d7f88b42f8d47c02d8a64ddc98f79c81c930b6eadf1dc1c94917b553ead72acc13c8406f65310c85d
@@ -14530,7 +14740,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0":
+"crypto-js@npm:4.2.0, crypto-js@npm:^4.0.0":
   version: 4.2.0
   resolution: "crypto-js@npm:4.2.0"
   checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
@@ -15645,6 +15855,15 @@ __metadata:
   version: 1.1.1
   resolution: "ee-first@npm:1.1.1"
   checksum: 1b4cac778d64ce3b582a7e26b218afe07e207a0f9bfe13cc7395a6d307849cfe361e65033c3251e00c27dd060cab43014c2d6b2647676135e18b77d2d05b3f4f
+  languageName: node
+  linkType: hard
+
+"eip55@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "eip55@npm:2.1.1"
+  dependencies:
+    keccak: ^3.0.3
+  checksum: 512d319e4f91ab0c33b514f371206956521dcdcdd23e8eb4d6f9c21e3be9f72287c0b82feb854d3a1eec91805804d13c31e7a1a7dafd37f69eb9994a9c6c8f32
   languageName: node
   linkType: hard
 
@@ -21962,7 +22181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keccak@npm:^3.0.0, keccak@npm:^3.0.2":
+"keccak@npm:^3.0.0, keccak@npm:^3.0.2, keccak@npm:^3.0.3":
   version: 3.0.4
   resolution: "keccak@npm:3.0.4"
   dependencies:

@@ -1,4 +1,4 @@
-import { ChainsService } from "../chains-v2";
+import { ChainsService } from "../chains";
 import {
   action,
   autorun,
@@ -62,7 +62,7 @@ export class ChainsUIService {
       this.kvStore.set("enabledChainIdentifiesMap", obj);
     });
 
-    // this.chainsService.addChainRemovedHandler(this.onChainRemoved);
+    this.chainsService.addChainRemovedHandler(this.onChainRemoved);
     this.vaultService.addVaultRemovedHandler(this.onVaultRemoved);
   }
 

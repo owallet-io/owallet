@@ -1,14 +1,16 @@
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { isServiceWorker, KVStore } from "@owallet/common";
-import { singleton } from "tsyringe";
-@singleton()
+import { AnalyticsService } from "../analytics";
+
 export class SidePanelService {
   @observable
   protected _isEnabled: boolean = false;
 
-  constructor(protected readonly kvStore: KVStore) {
+  constructor(
+    protected readonly kvStore: KVStore,
+    protected readonly analyticsService: AnalyticsService
+  ) {
     makeObservable(this);
-    this.init();
   }
 
   async init(): Promise<void> {
@@ -27,7 +29,6 @@ export class SidePanelService {
       autorun(() => {
         // XXX: setPanelBehavior() 안에서 this._isEnabled를 사용하고 this._isEnabled는 observable이기 때문에
         //      알아서 반응해서 처리된다는 점을 참고...
-
         this.setPanelBehavior().catch(console.log);
       });
     }
@@ -51,6 +52,9 @@ export class SidePanelService {
         }
 
         if (!skip) {
+          this.analyticsService.logEventIgnoreError("side_panel", {
+            enabled,
+          });
           if (isServiceWorker()) {
             await browser.storage.session.set({
               ["side_panel_analytics"]: enabled,

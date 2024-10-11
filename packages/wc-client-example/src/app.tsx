@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores";
-// import { EthSignType } from "@keplr-wallet/types";
+// import { EthSignType } from "@owallet/types";
 
 const IBCChannel = "channel-141";
 const CounterpartyIBCChannel = "channel-0";

@@ -1,5 +1,5 @@
-import { ChainsService } from "../chains-v2";
-import { KeyRingService } from "../keyring-core";
+import { ChainsService } from "../chains";
+import { KeyRingService } from "../keyring";
 import {
   AminoSignResponse,
   ChainInfo,
@@ -22,7 +22,7 @@ import {
 } from "@owallet/cosmos";
 import { escapeHTML, sortObjectByKey } from "@owallet/common";
 import { trimAminoSignDoc } from "./amino-sign-doc";
-import { InteractionService } from "../interaction-v2";
+import { InteractionService } from "../interaction";
 import { Buffer } from "buffer/";
 import {
   SignDoc,
@@ -31,7 +31,7 @@ import {
 } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import Long from "long";
 import { PubKeySecp256k1 } from "@owallet/crypto";
-// import { AnalyticsService } from "../analytics";
+import { AnalyticsService } from "../analytics";
 import { ChainsUIService } from "../chains-ui";
 
 export class KeyRingCosmosService {
@@ -40,7 +40,7 @@ export class KeyRingCosmosService {
     public readonly keyRingService: KeyRingService,
     protected readonly interactionService: InteractionService,
     protected readonly chainsUIService: ChainsUIService,
-    // protected readonly analyticsService: AnalyticsService,
+    protected readonly analyticsService: AnalyticsService,
     protected readonly msgPrivilegedOrigins: string[]
   ) {}
 
@@ -320,14 +320,14 @@ export class KeyRingCosmosService {
           .filter((msg) => msg.type)
           .map((msg) => msg.type);
 
-        // this.analyticsService.logEventIgnoreError("tx_signed", {
-        //   chainId,
-        //   isInternal: env.isInternalMsg,
-        //   origin,
-        //   signMode: "amino",
-        //   msgTypes,
-        //   isADR36SignDoc: false,
-        // });
+        this.analyticsService.logEventIgnoreError("tx_signed", {
+          chainId,
+          isInternal: env.isInternalMsg,
+          origin,
+          signMode: "amino",
+          msgTypes,
+          isADR36SignDoc: false,
+        });
 
         return {
           signed: newSignDoc,
@@ -420,13 +420,13 @@ export class KeyRingCosmosService {
       );
       const signature = new Uint8Array([..._sig.r, ..._sig.s]);
 
-      // this.analyticsService.logEventIgnoreError("tx_signed", {
-      //   chainId,
-      //   isInternal: env.isInternalMsg,
-      //   origin,
-      //   signMode: "amino",
-      //   privileged: "withdrawRewards",
-      // });
+      this.analyticsService.logEventIgnoreError("tx_signed", {
+        chainId,
+        isInternal: env.isInternalMsg,
+        origin,
+        signMode: "amino",
+        privileged: "withdrawRewards",
+      });
 
       return {
         signed: signDoc,
@@ -520,13 +520,13 @@ export class KeyRingCosmosService {
       );
       const signature = new Uint8Array([..._sig.r, ..._sig.s]);
 
-      // this.analyticsService.logEventIgnoreError("tx_signed", {
-      //   chainId,
-      //   isInternal: env.isInternalMsg,
-      //   origin,
-      //   signMode: "amino",
-      //   privileged: "delegate",
-      // });
+      this.analyticsService.logEventIgnoreError("tx_signed", {
+        chainId,
+        isInternal: env.isInternalMsg,
+        origin,
+        signMode: "amino",
+        privileged: "delegate",
+      });
 
       return {
         signed: signDoc,
@@ -641,14 +641,14 @@ export class KeyRingCosmosService {
           .filter((msg) => msg.type)
           .map((msg) => msg.type);
 
-        // this.analyticsService.logEventIgnoreError("tx_signed", {
-        //   chainId,
-        //   isInternal: env.isInternalMsg,
-        //   origin,
-        //   signMode: "amino",
-        //   msgTypes,
-        //   isADR36SignDoc: true,
-        // });
+        this.analyticsService.logEventIgnoreError("tx_signed", {
+          chainId,
+          isInternal: env.isInternalMsg,
+          origin,
+          signMode: "amino",
+          msgTypes,
+          isADR36SignDoc: true,
+        });
 
         return {
           signed: newSignDoc,
@@ -734,13 +734,13 @@ export class KeyRingCosmosService {
           (msg) => msg.typeUrl
         );
 
-        // this.analyticsService.logEventIgnoreError("tx_signed", {
-        //   chainId,
-        //   isInternal: env.isInternalMsg,
-        //   origin,
-        //   signMode: "direct",
-        //   msgTypes,
-        // });
+        this.analyticsService.logEventIgnoreError("tx_signed", {
+          chainId,
+          isInternal: env.isInternalMsg,
+          origin,
+          signMode: "direct",
+          msgTypes,
+        });
 
         return {
           signed: {
@@ -857,14 +857,14 @@ export class KeyRingCosmosService {
           (msg) => msg.typeUrl
         );
 
-        // this.analyticsService.logEventIgnoreError("tx_signed", {
-        //   chainId,
-        //   isInternal: env.isInternalMsg,
-        //   origin,
-        //   signMode: "direct",
-        //   isDirectAux: true,
-        //   msgTypes,
-        // });
+        this.analyticsService.logEventIgnoreError("tx_signed", {
+          chainId,
+          isInternal: env.isInternalMsg,
+          origin,
+          signMode: "direct",
+          isDirectAux: true,
+          msgTypes,
+        });
 
         return {
           signed: {
@@ -1065,13 +1065,13 @@ export class KeyRingCosmosService {
           .filter((msg) => msg.type)
           .map((msg) => msg.type);
 
-        // this.analyticsService.logEventIgnoreError("tx_signed", {
-        //   chainId,
-        //   isInternal: env.isInternalMsg,
-        //   origin,
-        //   ethSignType: "eip-712",
-        //   msgTypes,
-        // });
+        this.analyticsService.logEventIgnoreError("tx_signed", {
+          chainId,
+          isInternal: env.isInternalMsg,
+          origin,
+          ethSignType: "eip-712",
+          msgTypes,
+        });
 
         return {
           signed: newSignDoc,

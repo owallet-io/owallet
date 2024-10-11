@@ -1,12 +1,14 @@
-import { IMemoConfig } from "./types";
-import { action, makeObservable, observable } from "mobx";
+import { IMemoConfig, UIProperties } from "./types";
+import { action, computed, makeObservable, observable } from "mobx";
 import { ChainGetter } from "@owallet/stores";
 import { TxChainSetter } from "./chain";
 import { useState } from "react";
+import { MemoSuspectMnemonicInclusion } from "./errors";
+import { isMnemonicWord } from "@owallet/common";
 
 export class MemoConfig extends TxChainSetter implements IMemoConfig {
   @observable
-  protected _memo: string = "";
+  protected _value: string = "";
 
   constructor(chainGetter: ChainGetter, initialChainId: string) {
     super(chainGetter, initialChainId);
@@ -14,16 +16,45 @@ export class MemoConfig extends TxChainSetter implements IMemoConfig {
   }
 
   get memo(): string {
-    return this._memo;
+    return this._value;
+  }
+
+  get value(): string {
+    return this._value;
   }
 
   @action
-  setMemo(memo: string) {
-    this._memo = memo;
+  setValue(value: string) {
+    this._value = value;
   }
 
-  getError(): Error | undefined {
-    return undefined;
+  @computed
+  get uiProperties(): UIProperties {
+    const words = this.memo
+      .trim()
+      .split(" ")
+      .map((w) => w.trim())
+      .filter((w) => w.length > 0);
+    // If it suspects that user entered mnemonic in memo, treat it as an error.
+    // If more than 3/4 of the words are mnemonic words, an error is returned.
+    if (words.length >= 8 && words.length <= 32) {
+      const n = (words.length / 4) * 3;
+
+      let numMnemonics = 0;
+      for (const word of words) {
+        if (isMnemonicWord(word.toLowerCase())) {
+          numMnemonics++;
+        }
+      }
+
+      if (numMnemonics >= n) {
+        return {
+          error: new MemoSuspectMnemonicInclusion("Memo contains mnemonic"),
+        };
+      }
+    }
+
+    return {};
   }
 }
 

@@ -9,47 +9,36 @@ describe("Test DecUtils", () => {
     expect(DecUtils.trim("-0.00")).toBe("-0");
   });
 
-  it("getTenExponentNInPrecisionRange should return the (10^precision)", () => {
-    expect(DecUtils.getTenExponentNInPrecisionRange(-1).toString()).toBe(
+  it("getPrecisionDec should return the (10^precision)", () => {
+    expect(DecUtils.getPrecisionDec(-1).toString()).toBe(
       new Dec("0.1").toString()
     );
-    expect(DecUtils.getTenExponentNInPrecisionRange(-5).toString()).toBe(
+    expect(DecUtils.getPrecisionDec(-5).toString()).toBe(
       new Dec("0.00001").toString()
     );
 
-    expect(DecUtils.getTenExponentNInPrecisionRange(0).toString()).toBe(
-      new Dec(1).toString()
-    );
-    expect(DecUtils.getTenExponentNInPrecisionRange(1).toString()).toBe(
-      new Dec(10).toString()
-    );
-    expect(DecUtils.getTenExponentNInPrecisionRange(2).toString()).toBe(
-      new Dec(100).toString()
-    );
-    console.log(
-      "🚀 ~ file: dec-utils.spec.ts:19 ~ it ~ new Dec(100).toString():",
-      new Dec(100).toString()
-    );
-    expect(DecUtils.getTenExponentNInPrecisionRange(5).toString()).toBe(
+    expect(DecUtils.getPrecisionDec(0).toString()).toBe(new Dec(1).toString());
+    expect(DecUtils.getPrecisionDec(1).toString()).toBe(new Dec(10).toString());
+    expect(DecUtils.getPrecisionDec(5).toString()).toBe(
       new Dec(100000).toString()
     );
   });
 
-  it("getTenExponentNInPrecisionRange can have maximum 18 precision", () => {
+  it("getPrecisionDec can have maximum 18 precision", () => {
     expect(() => {
-      DecUtils.getTenExponentNInPrecisionRange(18);
+      DecUtils.getPrecisionDec(18);
     }).not.toThrow();
 
     expect(() => {
-      DecUtils.getTenExponentNInPrecisionRange(19);
+      DecUtils.getPrecisionDec(19);
     }).toThrow();
 
     expect(() => {
-      DecUtils.getTenExponentNInPrecisionRange(-18);
+      DecUtils.getPrecisionDec(-18);
     }).not.toThrow();
 
     expect(() => {
-      DecUtils.getTenExponentNInPrecisionRange(-19);
+      DecUtils.getPrecisionDec(-19);
     }).toThrow();
   });
 

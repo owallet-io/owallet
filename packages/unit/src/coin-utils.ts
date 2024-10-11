@@ -2,9 +2,8 @@ import { Coin } from "./coin";
 import { Int } from "./int";
 import { Dec } from "./decimal";
 import { DecUtils } from "./dec-utils";
-import { AppCurrency, Currency } from "@owallet/types";
-import { CoinPretty } from "./coin-pretty";
-import bigInteger from "big-integer";
+import { Currency } from "@owallet/types";
+import { integerStringToUSLocaleString } from "./utils";
 
 export class CoinUtils {
   static createCoinsFromPrimitives(
@@ -90,7 +89,7 @@ export class CoinUtils {
   static parseDecAndDenomFromCoin(
     currencies: Currency[],
     coin: Coin
-  ): { amount: string; denom: string; currency?: Currency } {
+  ): { amount: string; denom: string } {
     let currency = currencies.find((currency) => {
       return currency.coinMinimalDenom === coin.denom;
     });
@@ -112,7 +111,6 @@ export class CoinUtils {
     return {
       amount: decAmount.toString(currency.coinDecimals),
       denom: currency.coinDenom,
-      currency,
     };
   }
 
@@ -151,30 +149,7 @@ export class CoinUtils {
     );
   }
 
-  /**
-   * Change the non-locale integer string to locale string.
-   * Only support en-US format.
-   * This method uses the BigInt if the environment supports the BigInt.
-   * @param numberStr
-   */
-  static integerStringToUSLocaleString(numberStr: string): string {
-    if (numberStr.indexOf(".") >= 0) {
-      throw new Error(`${numberStr} is not integer`);
-    }
-
-    if (typeof BigInt !== "undefined") {
-      return BigInt(numberStr).toLocaleString("en-US");
-    }
-
-    const integer = numberStr;
-
-    const chunks: string[] = [];
-    for (let i = integer.length; i > 0; i -= 3) {
-      chunks.push(integer.slice(Math.max(0, i - 3), i));
-    }
-
-    return chunks.reverse().join(",");
-  }
+  static integerStringToUSLocaleString = integerStringToUSLocaleString;
 
   static coinToTrimmedString(
     coin: Coin,
@@ -182,33 +157,9 @@ export class CoinUtils {
     separator: string = " "
   ): string {
     const dec = new Dec(coin.amount).quoTruncate(
-      DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+      DecUtils.getPrecisionDec(currency.coinDecimals)
     );
 
     return `${DecUtils.trim(dec)}${separator}${currency.coinDenom}`;
-  }
-
-  static convertCoinPrimitiveToCoinPretty(
-    currencies: AppCurrency[],
-    denom: string,
-    amount:
-      | Dec
-      | {
-          toDec(): Dec;
-        }
-      | bigInteger.BigNumber
-  ) {
-    let currency = currencies.find((currency) => {
-      return currency.coinMinimalDenom?.toLowerCase()?.includes(denom);
-    });
-    if (!currency) {
-      // If the currency is unknown, just use the raw currency.
-      currency = {
-        coinDecimals: 0,
-        coinDenom: denom,
-        coinMinimalDenom: denom,
-      };
-    }
-    return new CoinPretty(currency, amount);
   }
 }

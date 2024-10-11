@@ -8,7 +8,7 @@ import {
   AccountWithAll,
 } from "@owallet/stores";
 import { IndexedDBKVStore } from "@owallet/common";
-import { ChainInfo } from "@keplr-wallet/types";
+import { ChainInfo } from "@owallet/types";
 import { EmbedChainInfos } from "../config";
 import { getWCOWallet } from "../get-wc-owallet";
 import { OWallet } from "@owallet/provider";

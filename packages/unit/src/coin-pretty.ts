@@ -10,6 +10,7 @@ export type CoinPrettyOptions = {
   upperCase: boolean;
   lowerCase: boolean;
   hideDenom: boolean;
+  hideIBCMetadata: boolean;
 };
 
 export class CoinPretty {
@@ -20,20 +21,21 @@ export class CoinPretty {
     upperCase: false,
     lowerCase: false,
     hideDenom: false,
+    hideIBCMetadata: false,
   };
 
   constructor(
     protected _currency: AppCurrency,
-    protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
+    amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
   ) {
-    if (typeof this.amount === "object" && "toDec" in this.amount) {
-      this.amount = this.amount.toDec();
-    } else if (!(this.amount instanceof Dec)) {
-      this.amount = new Dec(this.amount);
+    if (typeof amount === "object" && "toDec" in amount) {
+      amount = amount.toDec();
+    } else if (!(amount instanceof Dec)) {
+      amount = new Dec(amount);
     }
 
     this.intPretty = new IntPretty(
-      this.amount.quoTruncate(
+      amount.quoTruncate(
         DecUtils.getTenExponentNInPrecisionRange(_currency.coinDecimals)
       )
     ).maxDecimals(_currency.coinDecimals);
@@ -86,6 +88,12 @@ export class CoinPretty {
   hideDenom(bool: boolean): CoinPretty {
     const pretty = this.clone();
     pretty._options.hideDenom = bool;
+    return pretty;
+  }
+
+  hideIBCMetadata(bool: boolean): CoinPretty {
+    const pretty = this.clone();
+    pretty._options.hideIBCMetadata = bool;
     return pretty;
   }
 
@@ -148,6 +156,12 @@ export class CoinPretty {
   locale(locale: boolean): CoinPretty {
     const pretty = this.clone();
     pretty.intPretty = pretty.intPretty.locale(locale);
+    return pretty;
+  }
+
+  roundTo(roundTo: number | undefined): CoinPretty {
+    const pretty = this.clone();
+    pretty.intPretty = pretty.intPretty.roundTo(roundTo);
     return pretty;
   }
 
@@ -260,6 +274,13 @@ export class CoinPretty {
 
   toString(): string {
     let denom = this.denom;
+    if (
+      this._options.hideIBCMetadata &&
+      "originCurrency" in this.currency &&
+      this.currency.originCurrency
+    ) {
+      denom = this.currency.originCurrency.coinDenom;
+    }
     if (this._options.upperCase) {
       denom = denom.toUpperCase();
     }
@@ -278,7 +299,7 @@ export class CoinPretty {
   }
 
   clone(): CoinPretty {
-    const pretty = new CoinPretty(this._currency, this.amount);
+    const pretty = new CoinPretty(this._currency, 0);
     pretty._options = {
       ...this._options,
     };

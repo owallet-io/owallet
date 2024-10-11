@@ -1,7 +1,7 @@
-import { KeyRingService } from "../keyring-core";
+import { KeyRingService } from "../keyring";
 import { Env } from "@owallet/router";
-import { PermissionService } from "../permission-v2";
-import { ChainsService } from "../chains-v2";
+import { PermissionService } from "../permission";
+import { ChainsService } from "../chains";
 import { KVStore } from "@owallet/common";
 import { autorun, makeObservable, observable, runInAction } from "mobx";
 
@@ -77,31 +77,31 @@ export class PermissionInteractiveService {
   async ensureEnabledForEVM(env: Env, origin: string): Promise<void> {
     await this.keyRingService.ensureUnlockInteractive(env);
 
-    // const currentChainIdForEVM =
-    //   this.permissionService.getCurrentChainIdForEVM(origin) ??
-    //   (() => {
-    //     const chainInfos = this.chainsService.getChainInfos();
-    //     // If currentChainId is not saved, Make Ethereum current chain.
-    //     const ethereumChainId = chainInfos.find(
-    //       (chainInfo) =>
-    //         chainInfo.evm !== undefined && chainInfo.chainId === "eip155:1"
-    //     )?.chainId;
-    //
-    //     if (!ethereumChainId) {
-    //       throw new Error("The Ethereum chain info is not found");
-    //     }
-    //
-    //     return ethereumChainId;
-    //   })();
-    //
-    // await this.permissionService.checkOrGrantBasicAccessPermission(
-    //   env,
-    //   [currentChainIdForEVM],
-    //   origin,
-    //   {
-    //     isForEVM: true,
-    //   }
-    // );
+    const currentChainIdForEVM =
+      this.permissionService.getCurrentChainIdForEVM(origin) ??
+      (() => {
+        const chainInfos = this.chainsService.getChainInfos();
+        // If currentChainId is not saved, Make Ethereum current chain.
+        const ethereumChainId = chainInfos.find(
+          (chainInfo) =>
+            chainInfo.evm !== undefined && chainInfo.chainId === "eip155:1"
+        )?.chainId;
+
+        if (!ethereumChainId) {
+          throw new Error("The Ethereum chain info is not found");
+        }
+
+        return ethereumChainId;
+      })();
+
+    await this.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      [currentChainIdForEVM],
+      origin,
+      {
+        isForEVM: true,
+      }
+    );
   }
 
   disable(chainIds: string[], origin: string) {

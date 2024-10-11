@@ -10,9 +10,9 @@ import {
   Secret20CurrencySchema,
 } from "@owallet/chain-validator";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
-import { ChainsService } from "../chains-v2";
+import { ChainsService } from "../chains";
 import { KVStore, PrefixKVStore } from "@owallet/common";
-import { InteractionService } from "../interaction-v2";
+import { InteractionService } from "../interaction";
 import {
   action,
   autorun,

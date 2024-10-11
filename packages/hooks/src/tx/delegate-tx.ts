@@ -1,76 +1,50 @@
 import { ChainGetter } from "@owallet/stores";
-import { ObservableQueryBalances } from "@owallet/stores";
-import { useFeeConfig } from "./fee";
-import { AmountConfig } from "./amount";
-import { useGasConfig } from "./gas";
-import { useMemoConfig } from "./memo";
-import { useRecipientConfig } from "./recipient";
-import { AppCurrency } from "@owallet/types";
-import { useState } from "react";
+import {
+  useAmountConfig,
+  useFeeConfig,
+  useGasConfig,
+  useMemoConfig,
+  useRecipientConfig,
+  useSenderConfig,
+} from "./index";
 
-export class DelegateAmountConfig extends AmountConfig {
-  get sendableCurrencies(): AppCurrency[] {
-    return [this.chainInfo.stakeCurrency];
-  }
-}
-
-export const useDelegateAmountConfig = (
-  chainGetter: ChainGetter,
-  chainId: string,
-  sender: string,
-  queryBalances: ObservableQueryBalances
-) => {
-  const [txConfig] = useState(
-    () =>
-      new DelegateAmountConfig(
-        chainGetter,
-        chainId,
-        sender,
-        undefined,
-        queryBalances
-      )
-  );
-  txConfig.setChain(chainId);
-  txConfig.setQueryBalances(queryBalances);
-  txConfig.setSender(sender);
-
-  return txConfig;
-};
+import { QueriesStore } from "./internal";
 
 export const useDelegateTxConfig = (
   chainGetter: ChainGetter,
+  queriesStore: QueriesStore,
   chainId: string,
-  gas: number,
   sender: string,
-  queryBalances: ObservableQueryBalances,
-  ensEndpoint?: string
+  validatorAddress: string,
+  initialGas: number
 ) => {
-  const amountConfig = useDelegateAmountConfig(
+  const senderConfig = useSenderConfig(chainGetter, chainId, sender);
+  const amountConfig = useAmountConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryBalances
+    senderConfig
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useGasConfig(chainGetter, chainId, gas);
-  gasConfig.setGas(gas);
+  const gasConfig = useGasConfig(chainGetter, chainId, initialGas);
   const feeConfig = useFeeConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryBalances,
+    senderConfig,
     amountConfig,
     gasConfig
   );
-  // Due to the circular references between the amount config and gas/fee configs,
-  // set the fee config of the amount config after initing the gas/fee configs.
   amountConfig.setFeeConfig(feeConfig);
 
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
-  recipientConfig.setBech32Prefix(
-    chainGetter.getChain(chainId).bech32Config.bech32PrefixValAddr
-  );
+  const recipientConfig = useRecipientConfig(chainGetter, chainId);
+  const chainInfo = chainGetter.getChain(chainId);
+  if (chainInfo.bech32Config) {
+    recipientConfig.setBech32Prefix(chainInfo.bech32Config.bech32PrefixValAddr);
+  }
+  recipientConfig.setValue(validatorAddress);
+  amountConfig.setCurrency(chainGetter.getChain(chainId).stakeCurrency);
 
   return {
     amountConfig,
@@ -78,5 +52,6 @@ export const useDelegateTxConfig = (
     gasConfig,
     feeConfig,
     recipientConfig,
+    senderConfig,
   };
 };
