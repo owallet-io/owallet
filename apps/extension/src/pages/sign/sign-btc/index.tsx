@@ -223,9 +223,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
         paddingBottom: 160,
       }}
     >
-      {/* <div className={cx("setting", openSetting ? "activeSetting" : "", "modal")} ref={settingRef}>
-        <FeeModal onClose={() => setOpenSetting(false)} feeConfig={feeConfig} gasConfig={gasConfig} />
-      </div> */}
       <div
         className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
         ref={dataRef}
@@ -360,7 +357,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
                   </div>
                   <div
                     style={{
@@ -420,7 +416,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       onClick={async (e) => {
                         e.preventDefault();
 
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
                         await signInteractionStore.approveBitcoinAndWaitEnd(
                           {
