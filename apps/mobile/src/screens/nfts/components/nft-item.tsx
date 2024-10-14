@@ -81,10 +81,6 @@ export const NftItem = ({ item }: { item: IItemNft }) => {
             size={16}
             style={{
               borderRadius: 999,
-              tintColor:
-                coinDenom === "ORAI" || coinDenom === "AIRI"
-                  ? colors["neutral-text-title"]
-                  : null,
             }}
           />
           <Text style={styles.title}>

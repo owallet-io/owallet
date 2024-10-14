@@ -8,7 +8,8 @@
   "scripts": {
     "clean": "rimraf ios/Podfile.lock",
     "android": "react-native run-android",
-    "ios": "react-native run-ios --simulator='iPhone 15 Pro'",
+    "ios": "react-native run-ios --simulator='iPhone 15 Pro Max'",
+    "ios-se": "react-native run-ios --simulator='iPhone SE (3rd generation)'",
     "release": "cd android && ./gradlew clean && cd ../ && npx react-native run-android --mode release",
     "release-ios": "react-native run-ios --mode Release --simulator='iPhone 15 Pro Max'",
     "fastlane-ios:release": "cd ios && bundle exec fastlane release",

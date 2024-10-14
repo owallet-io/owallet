@@ -214,12 +214,12 @@ export const useNfts = (
     [TALIS_COLLECTIONS.KRANIA_ORCHA]: handleNftsForTalis(
       TALIS_NFT_CONTRACT.KraniaOrcha
     ),
-    [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: handleNftsForOraichain(),
+    // [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: handleNftsForOraichain(),
     [ECOSYSTEM_NFT_CHAIN.STARGAZE]: handleNftsForStargaze(),
   };
   const mapTitle = {
     [ECOSYSTEM_NFT_CHAIN.TALIS]: "Talis",
-    [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: "Airight",
+    // [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: "Airight",
     [ECOSYSTEM_NFT_CHAIN.STARGAZE]: "Stargaze",
   };
   const allChainNfts = {
@@ -264,14 +264,14 @@ export const useNfts = (
         ecosystem: ECOSYSTEM_NFT_CHAIN.TALIS,
         contractAddress: TALIS_NFT_CONTRACT.RugLeopoords,
       },
-      {
-        chainInfo: chainInfoOrai,
-        title: mapTitle[ECOSYSTEM_NFT_CHAIN.AIRIGHT],
-        data: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.data || [],
-        count: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.total,
-        ecosystem: ECOSYSTEM_NFT_CHAIN.AIRIGHT,
-        contractAddress: "",
-      },
+      // {
+      //   chainInfo: chainInfoOrai,
+      //   title: mapTitle[ECOSYSTEM_NFT_CHAIN.AIRIGHT],
+      //   data: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.data || [],
+      //   count: nfts[ECOSYSTEM_NFT_CHAIN.AIRIGHT]?.total,
+      //   ecosystem: ECOSYSTEM_NFT_CHAIN.AIRIGHT,
+      //   contractAddress: "",
+      // },
     ],
     [ChainIdEnum.Stargaze]: [
       {

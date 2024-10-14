@@ -580,52 +580,52 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: "https://scanium.io/osmosis/tx/{txHash}",
     },
   },
-  // {
-  //   rpc: "https://rpc-celestia.keplr.app",
-  //   rest: "https://lcd-celestia.keplr.app",
-  //   chainSymbolImageUrl:
-  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/celestia/chain.png",
-  //   chainId: "celestia",
-  //   networkType: "cosmos",
-  //   chainName: "Celestia",
-  //   stakeCurrency: {
-  //     coinDenom: "TIA",
-  //     coinDecimals: 6,
-  //     coinMinimalDenom: "utia",
-  //     coinImageUrl:
-  //       "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-  //     coinGeckoId: "celestia",
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("celestia"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //       coinImageUrl:
-  //         "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-  //       coinGeckoId: "celestia",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //       coinImageUrl:
-  //         "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
-  //       coinGeckoId: "celestia",
-  //     },
-  //   ],
-  //   features: ["no-legacy-stdTx"],
-  //   txExplorer: {
-  //     name: "Scanium",
-  //     txUrl: "https://scanium.io/celestia/tx/{txHash}",
-  //   },
-  // },
+  {
+    rpc: "https://rpc-celestia.keplr.app",
+    rest: "https://lcd-celestia.keplr.app",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/celestia/chain.png",
+    chainId: "celestia",
+    networkType: "cosmos",
+    chainName: "Celestia",
+    stakeCurrency: {
+      coinDenom: "TIA",
+      coinDecimals: 6,
+      coinMinimalDenom: "utia",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+      coinGeckoId: "celestia",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("celestia"),
+    currencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        coinGeckoId: "celestia",
+      },
+    ],
+    features: ["no-legacy-stdTx"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/celestia/tx/{txHash}",
+    },
+  },
   {
     rpc: "https://rpc-akash.keplr.app",
     rest: "https://lcd-akash.keplr.app",

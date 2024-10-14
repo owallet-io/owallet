@@ -341,7 +341,9 @@ export const AccountBoxAll: FunctionComponent<{
         staked = priceStore.calculatePrice(delegated)?.toString();
       } else {
         let tmpStaked = 0;
-        for (const chainInfo of chainStore.chainInfosInUI) {
+        for (const chainInfo of chainStore.chainInfosInUI.filter(
+          (item) => !item.chainId?.includes("test")
+        )) {
           const chainId = chainInfo.chainId;
           if (chainInfo.networkType !== "cosmos") continue;
           const accountAddress = accountStore.getAccount(chainId).bech32Address;

@@ -3,7 +3,7 @@ import { Text } from "@src/components/text";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { PageWithView } from "../../components/page";
+import { PageWithScrollView, PageWithView } from "../../components/page";
 import { Toggle } from "../../components/toggle";
 
 import { useStore } from "../../stores";
@@ -78,10 +78,7 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
             <Image
               style={{
                 width: metrics.screenWidth,
-                height:
-                  metrics.screenHeight < 844
-                    ? metrics.screenHeight / 2.5
-                    : metrics.screenWidth,
+                height: metrics.screenHeight,
               }}
               source={require("../../assets/image/img-bg.png")}
               resizeMode="contain"
@@ -92,10 +89,10 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
             <Image
               style={{
                 width: metrics.screenWidth,
-                height: metrics.screenWidth,
+                height: metrics.screenHeight / 2.2,
               }}
               source={require("../../assets/image/img-all-done.png")}
-              resizeMode="contain"
+              resizeMode="cover"
               fadeDuration={0}
             />
           </View>
