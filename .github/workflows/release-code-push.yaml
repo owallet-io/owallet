@@ -46,7 +46,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
+        run: yarn --ignore-scripts
 
       - name: Install mobile packages
         working-directory: apps/mobile
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build provider
         working-directory: apps/mobile
-        run: yarn build:provider
+        run: yarn build:providergit push origin mobile/v1.6.1-cp.31
         env:
           CI: false
       - name: Deploy on AppCenter
