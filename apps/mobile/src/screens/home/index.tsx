@@ -936,7 +936,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
-      paddingBottom: 12,
+      paddingBottom: 4,
       backgroundColor: colors["neutral-surface-bg"],
     },
     containerEarnStyle: {

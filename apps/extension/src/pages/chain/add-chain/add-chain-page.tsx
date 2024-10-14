@@ -113,7 +113,7 @@ export const AddChainPage = observer(() => {
         },
         // beta: true // use v1beta1
       };
-
+      //@ts-ignore
       await chainStore.addChain(infoConfig);
       toast("Add chain success", {
         type: "success",
@@ -122,6 +122,9 @@ export const AddChainPage = observer(() => {
       return;
     } catch (e) {
       console.log(e, "errr");
+      toast(e?.message || JSON.stringify(e), {
+        type: "error",
+      });
     } finally {
       // setIsLoading(false);
       loading.setIsLoading("addChain", false);

@@ -30,8 +30,6 @@ export const SelectNetworkModal: FunctionComponent<{
   isOpen?: boolean;
 }> = registerModal(
   ({ close, selectedChainFilter, setChainFilter, tokenList }) => {
-    console.log("tokenList", tokenList);
-
     const safeAreaInsets = useSafeAreaInsets();
 
     const { colors } = useTheme();
@@ -147,14 +145,20 @@ export const SelectNetworkModal: FunctionComponent<{
       if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
         selected = true;
       }
-
       let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
 
       // Hardcode for Oasis because oraidex-common does not have icon yet
-      if (item.chainName.includes("Oasis")) {
+      if (item.chainName.toLowerCase().includes("oasis")) {
         chainIcon = {
           chainId: item.chainId,
           Icon: "https://s2.coinmarketcap.com/static/img/coins/200x200/7653.png",
+        };
+      }
+
+      if (item.chainName.toLowerCase().includes("celestia")) {
+        chainIcon = {
+          chainId: item.chainId,
+          Icon: "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
         };
       }
 
@@ -200,6 +204,7 @@ export const SelectNetworkModal: FunctionComponent<{
               {chainIcon ? (
                 <OWIcon
                   type="images"
+                  style={{ borderRadius: 999 }}
                   source={{ uri: chainIcon.Icon }}
                   size={28}
                 />

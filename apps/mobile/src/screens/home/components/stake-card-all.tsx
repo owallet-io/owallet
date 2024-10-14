@@ -109,7 +109,9 @@ export const StakeCardAll = observer(({}) => {
 
   const viewTokens: StakeViewToken[] = (() => {
     const res: StakeViewToken[] = [];
-    for (const chainInfo of chainStore.chainInfosInUI) {
+    for (const chainInfo of chainStore.chainInfosInUI.filter(
+      (item) => !item.chainId?.includes("test")
+    )) {
       const chainId = chainInfo.chainId;
       const accountAddress = accountStore.getAccount(chainId).bech32Address;
       const queries = queriesStore.get(chainId);
@@ -709,7 +711,9 @@ export const StakeCardAll = observer(({}) => {
   })();
 
   const claimAllIsLoading = (() => {
-    for (const chainInfo of chainStore.chainInfosInUI) {
+    for (const chainInfo of chainStore.chainInfosInUI.filter(
+      (item) => !item.chainId?.includes("test")
+    )) {
       const state = getClaimAllEachState(chainInfo.chainId);
       if (state.isLoading) {
         return true;
