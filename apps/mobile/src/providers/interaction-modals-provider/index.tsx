@@ -13,7 +13,7 @@ import { SignBitcoinModal } from "@src/modals/sign/sign-bitcoin";
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
-      ledgerInitStore,
+      // ledgerInitStore,
       permissionStore,
       signInteractionStore,
       modalStore,
@@ -29,31 +29,31 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     //     // }
     //   }
     // }, [permissionStore, permissionStore.waitingDatas]);
-
-    const renderAccessModal = () => {
-      if (permissionStore.waitingDatas) {
-        return permissionStore.waitingDatas.map((wd) => {
-          return (
-            <AccessModal
-              waitingData={wd}
-              isOpen={true}
-              close={() => permissionStore.rejectAll()}
-            />
-          );
-        });
-      }
-    };
+    //
+    // const renderAccessModal = () => {
+    //   if (permissionStore.waitingDatas) {
+    //     return permissionStore.waitingDatas.map((wd) => {
+    //       return (
+    //         <AccessModal
+    //           waitingData={wd}
+    //           isOpen={true}
+    //           close={() => permissionStore.rejectAll()}
+    //         />
+    //       );
+    //     });
+    //   }
+    // };
 
     return (
       <React.Fragment>
-        {ledgerInitStore.isInitNeeded ? (
-          <LedgerGranterModal
-            isOpen={true}
-            close={() => ledgerInitStore.abortAll()}
-          />
-        ) : null}
+        {/*{ledgerInitStore.isInitNeeded ? (*/}
+        {/*  <LedgerGranterModal*/}
+        {/*    isOpen={true}*/}
+        {/*    close={() => ledgerInitStore.abortAll()}*/}
+        {/*  />*/}
+        {/*) : null}*/}
 
-        {renderAccessModal()}
+        {/*{renderAccessModal()}*/}
 
         {signInteractionStore.waitingData ? (
           <SignModal
@@ -61,27 +61,27 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {signInteractionStore.waitingEthereumData ? (
-          <SignEthereumModal
-            isOpen={true}
-            close={() => {
-              signInteractionStore.rejectAll();
-            }}
-          />
-        ) : null}
-        {signInteractionStore.waitingTronData ? (
-          <SignTronModal
-            isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
-          />
-        ) : null}
+        {/*{signInteractionStore.waitingEthereumData ? (*/}
+        {/*  <SignEthereumModal*/}
+        {/*    isOpen={true}*/}
+        {/*    close={() => {*/}
+        {/*      signInteractionStore.rejectAll();*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*) : null}*/}
+        {/*{signInteractionStore.waitingTronData ? (*/}
+        {/*  <SignTronModal*/}
+        {/*    isOpen={true}*/}
+        {/*    close={() => signInteractionStore.rejectAll()}*/}
+        {/*  />*/}
+        {/*) : null}*/}
 
-        {signInteractionStore.waitingBitcoinData ? (
-          <SignBitcoinModal
-            isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
-          />
-        ) : null}
+        {/*{signInteractionStore.waitingBitcoinData ? (*/}
+        {/*  <SignBitcoinModal*/}
+        {/*    isOpen={true}*/}
+        {/*    close={() => signInteractionStore.rejectAll()}*/}
+        {/*  />*/}
+        {/*) : null}*/}
 
         {modalStore.getOptions?.isOpen ? (
           <HomeBaseModal

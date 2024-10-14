@@ -7,6 +7,11 @@ export class ChainIdHelper {
     identifier: string;
     version: number;
   } {
+    if (!chainId)
+      return {
+        identifier: "all",
+        version: 0,
+      };
     // In the case of injective dev/testnet, there is a difficult problem to deal with keplr's chain identifier system...
     // Fundamentally, keplr's chain identifier system started when the app was created, so too mnay logic depends on chain identifier.
     // Temporarily deal with it in the way below.

@@ -77,7 +77,7 @@ export const AccountBoxAll: FunctionComponent<{
   ({ totalPriceBalance, totalBalanceByChain, isLoading, dataBalances }) => {
     const {
       accountStore,
-      modalStore,
+      // modalStore,
       chainStore,
       appInitStore,
       queriesStore,

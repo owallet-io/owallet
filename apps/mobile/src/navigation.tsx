@@ -85,7 +85,7 @@ import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-netwo
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, deepLinkUriStore, appInitStore } = useStore();
+  const { keyRingStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const handleScreenOptions = ({ route, navigation }) => {
     const headerOptions = useHeaderOptions(
@@ -116,9 +116,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
         >
           <Stack.Navigator
             initialRouteName={
-              keyRingStore.status !== KeyRingStatus.UNLOCKED
-                ? SCREENS.STACK.PincodeUnlock
-                : SCREENS.STACK.MainTab
+              // keyRingStore.status !== KeyRingStatus.UNLOCKED
+              //   ? SCREENS.STACK.PincodeUnlock
+              //   : SCREENS.STACK.MainTab
+              SCREENS.STACK.PincodeUnlock
             }
             screenOptions={handleScreenOptions}
           >
@@ -126,239 +127,239 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.STACK.PincodeUnlock}
               component={PincodeUnlockScreen}
             />
-            <Stack.Screen
-              name={SCREENS.RegisterRecoverPhrase}
-              component={RecoverPhraseScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterIntro}
-              component={
-                appInitStore.getInitApp.status
-                  ? OnboardingIntroScreen
-                  : RegisterIntroScreen
-              }
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterRecoverPhrase}*/}
+            {/*    component={RecoverPhraseScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterIntro}*/}
+            {/*    component={*/}
+            {/*      appInitStore.getInitApp.status*/}
+            {/*        ? OnboardingIntroScreen*/}
+            {/*        : RegisterIntroScreen*/}
+            {/*    }*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.RegisterNewPincode}
-              component={NewPincodeScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.ManageWalletConnect}
-              component={ManageWalletConnectScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterNewPincode}*/}
+            {/*    component={NewPincodeScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.ManageWalletConnect}*/}
+            {/*    component={ManageWalletConnectScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.SettingSelectAccount}
-              options={{
-                headerRight: () => (
-                  <HeaderRightButton
-                    onPress={() => {
-                      // analyticsStore.logEvent("Add additional account started");
-                      navigate(SCREENS.RegisterIntro, {
-                        canBeBack: true,
-                      });
-                    }}
-                  >
-                    <HeaderAddIcon />
-                  </HeaderRightButton>
-                ),
-              }}
-              component={SettingSelectAccountScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.SettingSelectAccount}*/}
+            {/*    options={{*/}
+            {/*      headerRight: () => (*/}
+            {/*        <HeaderRightButton*/}
+            {/*          onPress={() => {*/}
+            {/*            // analyticsStore.logEvent("Add additional account started");*/}
+            {/*            navigate(SCREENS.RegisterIntro, {*/}
+            {/*              canBeBack: true,*/}
+            {/*            });*/}
+            {/*          }}*/}
+            {/*        >*/}
+            {/*          <HeaderAddIcon />*/}
+            {/*        </HeaderRightButton>*/}
+            {/*      ),*/}
+            {/*    }}*/}
+            {/*    component={SettingSelectAccountScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.SettingViewPrivateData}
-              component={ViewPrivateDataScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.SettingViewPrivateData}*/}
+            {/*    component={ViewPrivateDataScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.SettingVersion}
-              component={OWalletVersionScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.DetailsBrowser}
-              component={DetailsBrowserScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.BookMarks}
-              component={BookmarksScreen}
-            />
-            <Stack.Screen
-              options={{ headerShown: false }}
-              name={SCREENS.WebIntro}
-              component={WebScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.AddressBook}
-              component={AddressBookScreen}
-            />
-            <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.SettingVersion}*/}
+            {/*    component={OWalletVersionScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.DetailsBrowser}*/}
+            {/*    component={DetailsBrowserScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.BookMarks}*/}
+            {/*    component={BookmarksScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    options={{ headerShown: false }}*/}
+            {/*    name={SCREENS.WebIntro}*/}
+            {/*    component={WebScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.AddressBook}*/}
+            {/*    component={AddressBookScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />*/}
 
-            <Stack.Screen
-              options={{
-                headerRight: () => {
-                  return (
-                    <OWButtonIcon
-                      name={"tdesignadd"}
-                      sizeIcon={24}
-                      onPress={() => navigate(SCREENS.AddChain)}
-                      fullWidth={false}
-                      style={{
-                        backgroundColor: colors["neutral-surface-card"],
-                        height: 40,
-                        width: 40,
-                        borderRadius: 99,
-                        marginRight: 16,
-                      }}
-                      colorIcon={colors["neutral-text-action-on-light-bg"]}
-                    />
-                  );
-                },
-              }}
-              name={SCREENS.ManageChain}
-              component={SelectChainsScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    options={{*/}
+            {/*      headerRight: () => {*/}
+            {/*        return (*/}
+            {/*          <OWButtonIcon*/}
+            {/*            name={"tdesignadd"}*/}
+            {/*            sizeIcon={24}*/}
+            {/*            onPress={() => navigate(SCREENS.AddChain)}*/}
+            {/*            fullWidth={false}*/}
+            {/*            style={{*/}
+            {/*              backgroundColor: colors["neutral-surface-card"],*/}
+            {/*              height: 40,*/}
+            {/*              width: 40,*/}
+            {/*              borderRadius: 99,*/}
+            {/*              marginRight: 16,*/}
+            {/*            }}*/}
+            {/*            colorIcon={colors["neutral-text-action-on-light-bg"]}*/}
+            {/*          />*/}
+            {/*        );*/}
+            {/*      },*/}
+            {/*    }}*/}
+            {/*    name={SCREENS.ManageChain}*/}
+            {/*    component={SelectChainsScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.AddAddressBook}
-              component={AddAddressBookScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.AddAddressBook}*/}
+            {/*    component={AddAddressBookScreen}*/}
+            {/*  />*/}
             <Stack.Screen
               name={SCREENS.STACK.MainTab}
               component={MainTabNavigation}
             />
-            <Stack.Screen
-              name={SCREENS.TokenDetails}
-              component={TokenDetailsScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.BackupMnemonic}
-              component={BackupMnemonicScreen}
-            />
-            <Stack.Screen
-              options={{
-                headerShown: false,
-              }}
-              name={SCREENS.RegisterMain}
-              component={NewMnemonicScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.TokenDetails}*/}
+            {/*    component={TokenDetailsScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.BackupMnemonic}*/}
+            {/*    component={BackupMnemonicScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    options={{*/}
+            {/*      headerShown: false,*/}
+            {/*    }}*/}
+            {/*    name={SCREENS.RegisterMain}*/}
+            {/*    component={NewMnemonicScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.RegisterVerifyMnemonic}
-              component={VerifyMnemonicScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterEnd}
-              component={RegisterEndScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterDone}
-              component={RegisterDoneScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterRecoverMnemonicMain}
-              component={RecoverMnemonicScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterNewMnemonic}
-              component={NewMnemonicScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterRecoverPhraseMain}
-              component={RecoverPhraseScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterNewLedger}
-              component={NewLedgerScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.RegisterNewLedgerMain}
-              component={NewLedgerScreen}
-            />
-            <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />
-            <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
-            <Stack.Screen
-              name={SCREENS.NftsDetail}
-              component={NftDetailScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.ValidatorList}
-              component={ValidatorListScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.ValidatorDetails}
-              component={ValidatorDetailsScreen}
-            />
-            <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />
-            <Stack.Screen
-              name={SCREENS.DelegateDetail}
-              component={DelegateDetailScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.Redelegate}
-              component={RedelegateScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.Undelegate}
-              component={UndelegateScreen}
-            />
-            <Stack.Screen name={SCREENS.Send} component={SendScreen} />
-            <Stack.Screen
-              name={SCREENS.PincodeScreen}
-              component={PincodeScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterVerifyMnemonic}*/}
+            {/*    component={VerifyMnemonicScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterEnd}*/}
+            {/*    component={RegisterEndScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterDone}*/}
+            {/*    component={RegisterDoneScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterRecoverMnemonicMain}*/}
+            {/*    component={RecoverMnemonicScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterNewMnemonic}*/}
+            {/*    component={NewMnemonicScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterRecoverPhraseMain}*/}
+            {/*    component={RecoverPhraseScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterNewLedger}*/}
+            {/*    component={NewLedgerScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.RegisterNewLedgerMain}*/}
+            {/*    component={NewLedgerScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />*/}
+            {/*  <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.NftsDetail}*/}
+            {/*    component={NftDetailScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.ValidatorList}*/}
+            {/*    component={ValidatorListScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.ValidatorDetails}*/}
+            {/*    component={ValidatorDetailsScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.DelegateDetail}*/}
+            {/*    component={DelegateDetailScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.Redelegate}*/}
+            {/*    component={RedelegateScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.Undelegate}*/}
+            {/*    component={UndelegateScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen name={SCREENS.Send} component={SendScreen} />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.PincodeScreen}*/}
+            {/*    component={PincodeScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.SettingBackupMnemonic}
-              component={BackupMnemonicScreen}
-            />
-            {/*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
-            <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />
-            <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />
-            <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />
-            <Stack.Screen
-              name={SCREENS.Transactions}
-              component={TxTransactionsScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.HistoryDetail}
-              component={HistoryDetail}
-            />
-            <Stack.Screen
-              options={{
-                headerShown: false,
-              }}
-              name={SCREENS.Camera}
-              component={CameraScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.SettingBackupMnemonic}*/}
+            {/*    component={BackupMnemonicScreen}*/}
+            {/*  />*/}
+            {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*!/*/}
+            {/*  <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
+            {/*  <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />*/}
+            {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.Transactions}*/}
+            {/*    component={TxTransactionsScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.HistoryDetail}*/}
+            {/*    component={HistoryDetail}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    options={{*/}
+            {/*      headerShown: false,*/}
+            {/*    }}*/}
+            {/*    name={SCREENS.Camera}*/}
+            {/*    component={CameraScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />
+            {/*  <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />*/}
 
-            <Stack.Screen
-              name={SCREENS.NetworkSelect}
-              component={SelectNetworkScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.NetworkToken}
-              component={AddTokenScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.NetworkSelect}*/}
+            {/*    component={SelectNetworkScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.NetworkToken}*/}
+            {/*    component={AddTokenScreen}*/}
+            {/*  />*/}
 
-            <Stack.Screen
-              name={SCREENS.TxPendingResult}
-              component={TxPendingResultScreen}
-            />
-            <Stack.Screen
-              name={SCREENS.TxSuccessResult}
-              component={TxSuccessResultScreen}
-            />
-            <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
-            <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
-            <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />
-            <Stack.Screen
-              name={SCREENS.TxFailedResult}
-              component={TxFailedResultScreen}
-            />
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.TxPendingResult}*/}
+            {/*    component={TxPendingResultScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.TxSuccessResult}*/}
+            {/*    component={TxSuccessResultScreen}*/}
+            {/*  />*/}
+            {/*  <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />*/}
+            {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
+            {/*  <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />*/}
+            {/*  <Stack.Screen*/}
+            {/*    name={SCREENS.TxFailedResult}*/}
+            {/*    component={TxFailedResultScreen}*/}
+            {/*  />*/}
           </Stack.Navigator>
         </NavigationContainer>
       </FocusedScreenProvider>

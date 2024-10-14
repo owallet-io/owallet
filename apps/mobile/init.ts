@@ -1,8 +1,8 @@
 import "./src/background/background";
 
 import { version } from "./package.json";
-import { ChainIdEnum } from "@owallet/common";
-import { Ethereum, OWallet, TronWeb } from "@owallet/provider";
+// import { ChainIdEnum } from "@owallet/common";
+import { OWallet } from "@owallet/provider";
 import { RNMessageRequesterInternal } from "./src/router";
 
 import { Mixpanel } from "mixpanel-react-native";
@@ -27,16 +27,16 @@ window.owallet = new OWallet(version, "core", new RNMessageRequesterInternal());
 //   new RNMessageRequesterInternal()
 // );
 //@ts-ignore
-window.ethereum = new Ethereum(
-  version,
-  "core",
-  ChainIdEnum.Ethereum,
-  new RNMessageRequesterInternal()
-);
-//@ts-ignore
-window.tronWeb = new TronWeb(
-  version,
-  "core",
-  ChainIdEnum.TRON,
-  new RNMessageRequesterInternal()
-);
+// window.ethereum = new Ethereum(
+//   version,
+//   "core",
+//   ChainIdEnum.Ethereum,
+//   new RNMessageRequesterInternal()
+// );
+// //@ts-ignore
+// window.tronWeb = new TronWeb(
+//   version,
+//   "core",
+//   ChainIdEnum.TRON,
+//   new RNMessageRequesterInternal()
+// );

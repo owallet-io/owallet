@@ -24,12 +24,19 @@ import { unknownToken } from "@owallet/common";
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
-import { ViewToken } from "@src/stores/huge-queries";
+// import { ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
-
+import { ChainInfo } from "@owallet/types";
+import { QueryError } from "@owallet/stores";
+export interface ViewToken {
+  token: CoinPretty;
+  chainInfo: ChainInfo;
+  isFetching: boolean;
+  error: QueryError<any> | undefined;
+}
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   dataTokens: ViewToken[];
@@ -195,9 +202,9 @@ const TokenItem: FC<{
     });
     return;
   };
-  const price24h = item.token?.currency?.coinGeckoId
-    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
-    : 0;
+  // const price24h = item.token?.currency?.coinGeckoId
+  //   ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+  //   : 0;
   return (
     <TouchableOpacity
       onPress={() => {
@@ -217,7 +224,7 @@ const TokenItem: FC<{
                   item.token?.currency?.coinImageUrl?.includes("missing.png") ||
                   !item.token?.currency?.coinImageUrl ||
                   item.token?.currency?.coinImageUrl?.includes("missing.svg")
-                    ? unknownToken.coinImageUrl
+                    ? unknownToken?.coinImageUrl
                     : item.token?.currency?.coinImageUrl,
               }}
               size={32}
@@ -232,7 +239,7 @@ const TokenItem: FC<{
               source={{
                 uri:
                   item?.chainInfo?.chainSymbolImageUrl ||
-                  unknownToken.coinImageUrl,
+                  unknownToken?.coinImageUrl,
               }}
               size={16}
             />
@@ -241,33 +248,33 @@ const TokenItem: FC<{
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
               {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
-              <Text
-                size={12}
-                color={
-                  price24h < 0
-                    ? colors["error-text-body"]
-                    : colors["success-text-body"]
-                }
-                style={styles.profit}
-              >
-                {price24h > 0 ? "+" : ""}
-                {maskedNumber(price24h, 2, 2)}%
-              </Text>
+              {/*<Text*/}
+              {/*  size={12}*/}
+              {/*  color={*/}
+              {/*    price24h < 0*/}
+              {/*      ? colors["error-text-body"]*/}
+              {/*      : colors["success-text-body"]*/}
+              {/*  }*/}
+              {/*  style={styles.profit}*/}
+              {/*>*/}
+              {/*  {price24h > 0 ? "+" : ""}*/}
+              {/*  {maskedNumber(price24h, 2, 2)}%*/}
+              {/*</Text>*/}
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
             </Text>
-            {item.typeAddress && (
-              <View style={styles.type}>
-                <Text
-                  weight="400"
-                  size={12}
-                  color={colors["neutral-text-body-2"]}
-                >
-                  {capitalizedText(item.typeAddress)}
-                </Text>
-              </View>
-            )}
+            {/*{item.typeAddress && (*/}
+            {/*  <View style={styles.type}>*/}
+            {/*    <Text*/}
+            {/*      weight="400"*/}
+            {/*      size={12}*/}
+            {/*      color={colors["neutral-text-body-2"]}*/}
+            {/*    >*/}
+            {/*      {capitalizedText(item.typeAddress)}*/}
+            {/*    </Text>*/}
+            {/*  </View>*/}
+            {/*)}*/}
           </View>
         </View>
         <View style={styles.rightBoxItem}>

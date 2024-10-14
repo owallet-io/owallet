@@ -10,7 +10,7 @@ import { InteractionModalsProivder } from "./providers/interaction-modals-provid
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
-import { AppIntlProvider } from "@owallet/common/src/languages";
+// import { AppIntlProvider } from "@owallet/common/src/languages";
 import { IntlProvider } from "react-intl";
 import ThemeProvider from "./themes/theme-provider";
 import analytics from "@react-native-firebase/analytics";
@@ -40,43 +40,43 @@ branch.subscribe({
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
 
-const AppIntlProviderWithStorage = ({ children }) => {
-  const store = useStore();
-
-  return (
-    <AppIntlProvider
-      additionalMessages={AdditonalIntlMessages}
-      languageToFiatCurrency={LanguageToFiatCurrency}
-      storage={store.uiConfigStore.Storage}
-    >
-      {({ language, messages, automatic }) => (
-        <IntlProvider
-          locale={language}
-          messages={messages}
-          key={`${language}${automatic ? "-auto" : ""}`}
-          formats={{
-            date: {
-              en: {
-                // Prefer not showing the year.
-                // If the year is different with current time, recommend to show the year.
-                // However, this recomendation should be handled in the component logic.
-                // year: "numeric",
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
-                hour12: false,
-                minute: "2-digit",
-                timeZoneName: "short",
-              },
-            },
-          }}
-        >
-          {children}
-        </IntlProvider>
-      )}
-    </AppIntlProvider>
-  );
-};
+// const AppIntlProviderWithStorage = ({ children }) => {
+//   const store = useStore();
+//
+//   return (
+//     <AppIntlProvider
+//       additionalMessages={AdditonalIntlMessages}
+//       languageToFiatCurrency={LanguageToFiatCurrency}
+//       storage={store.uiConfigStore.Storage}
+//     >
+//       {({ language, messages, automatic }) => (
+//         <IntlProvider
+//           locale={language}
+//           messages={messages}
+//           key={`${language}${automatic ? "-auto" : ""}`}
+//           formats={{
+//             date: {
+//               en: {
+//                 // Prefer not showing the year.
+//                 // If the year is different with current time, recommend to show the year.
+//                 // However, this recomendation should be handled in the component logic.
+//                 // year: "numeric",
+//                 month: "short",
+//                 day: "2-digit",
+//                 hour: "2-digit",
+//                 hour12: false,
+//                 minute: "2-digit",
+//                 timeZoneName: "short",
+//               },
+//             },
+//           }}
+//         >
+//           {children}
+//         </IntlProvider>
+//       )}
+//     </AppIntlProvider>
+//   );
+// };
 
 export const App = () => {
   const [isInit, setIsInit] = useState(true);
@@ -114,23 +114,23 @@ export const App = () => {
           <StyleProvider>
             <StoreProvider>
               <ThemeProvider>
-                <AppIntlProviderWithStorage>
-                  <SafeAreaProvider>
-                    <ModalsProvider>
-                      <PopupRootProvider>
-                        <LoadingScreenProvider>
-                          <ConfirmModalProvider>
-                            <InteractionModalsProivder>
-                              <QueryClientProvider client={queryClient}>
-                                <AppNavigation />
-                              </QueryClientProvider>
-                            </InteractionModalsProivder>
-                          </ConfirmModalProvider>
-                        </LoadingScreenProvider>
-                      </PopupRootProvider>
-                    </ModalsProvider>
-                  </SafeAreaProvider>
-                </AppIntlProviderWithStorage>
+                {/*<AppIntlProviderWithStorage>*/}
+                <SafeAreaProvider>
+                  <ModalsProvider>
+                    <PopupRootProvider>
+                      <LoadingScreenProvider>
+                        <ConfirmModalProvider>
+                          <InteractionModalsProivder>
+                            <QueryClientProvider client={queryClient}>
+                              <AppNavigation />
+                            </QueryClientProvider>
+                          </InteractionModalsProivder>
+                        </ConfirmModalProvider>
+                      </LoadingScreenProvider>
+                    </PopupRootProvider>
+                  </ModalsProvider>
+                </SafeAreaProvider>
+                {/*</AppIntlProviderWithStorage>*/}
                 <FlashMessage position="top" />
               </ThemeProvider>
             </StoreProvider>
