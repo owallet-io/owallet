@@ -39,16 +39,16 @@ export class DeepLinkStore {
       this.processDeepLinkURL(event.url);
     });
 
-    AppState.addEventListener("change", (state) => {
-      if (state === "active") {
-        if (this.walletConnectStore.isAndroidActivityKilled) {
-          // If the android activity restored, the deep link url handler will not work.
-          // We should recheck the initial URL()
-          this.checkInitialURL();
-        }
-        this.walletConnectStore.setAndroidActivityKilled(false);
-      }
-    });
+    // AppState.addEventListener("change", (state) => {
+    //   if (state === "active") {
+    //     if (this.walletConnectStore.isAndroidActivityKilled) {
+    //       // If the android activity restored, the deep link url handler will not work.
+    //       // We should recheck the initial URL()
+    //       this.checkInitialURL();
+    //     }
+    //     this.walletConnectStore.setAndroidActivityKilled(false);
+    //   }
+    // });
   }
 
   protected async checkInitialURL() {
