@@ -57,7 +57,7 @@ jobs:
 
       - name: Build provider
         working-directory: apps/mobile
-        run: yarn build:providergit push origin mobile/v1.6.1-cp.31
+        run: yarn build:provider
         env:
           CI: false
       - name: Deploy on AppCenter
