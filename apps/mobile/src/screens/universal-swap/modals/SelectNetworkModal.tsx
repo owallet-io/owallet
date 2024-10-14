@@ -158,7 +158,7 @@ export const SelectNetworkModal: FunctionComponent<{
       if (item.chainName.toLowerCase().includes("celestia")) {
         chainIcon = {
           chainId: item.chainId,
-          Icon: "https://img.cryptorank.io/coins/celestia1666255234398.png",
+          Icon: "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
         };
       }
 
