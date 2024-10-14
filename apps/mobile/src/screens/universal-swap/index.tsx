@@ -61,9 +61,9 @@ import {
   handleErrorSwap,
   handleSaveTokenInfos,
   getSpecialCoingecko,
-  isAllowAlphaSmartRouter,
   isAllowIBCWasm,
   getProtocolsSmartRoute,
+  isAllowAlphaIbcWasm,
 } from "./helpers";
 import { Mixpanel } from "mixpanel-react-native";
 import { metrics } from "@src/themes";
@@ -80,6 +80,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import { tracking } from "@src/utils/tracking";
+import { SlippageConfirmModal } from "./modals/SlippageConfirmModal";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -266,13 +267,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
-  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter();
-  const protocols = getProtocolsSmartRoute(
+
+  const useAlphaIbcWasm = isAllowAlphaIbcWasm(
     originalFromToken,
-    originalToToken,
-    useIbcWasm
+    originalToToken
   );
+  const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
+  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, {
+    useIbcWasm,
+    useAlphaIbcWasm,
+  });
+
+  const simulateOption = {
+    useAlphaIbcWasm,
+    useIbcWasm,
+    protocols,
+    maxSplits: useAlphaIbcWasm ? 1 : 10,
+    dontAllowSwapAfter: useAlphaIbcWasm ? [""] : undefined,
+  };
+
   const {
     minimumReceive,
     isWarningSlippage,
@@ -295,12 +308,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     client,
     setSwapAmount,
     handleErrorSwap,
-    {
-      useAlphaSmartRoute: useAlphaSmartRouter,
-      useIbcWasm: useIbcWasm,
-      protocols,
-    },
-    isAIRoute
+    simulateOption
   );
 
   const {
@@ -324,6 +332,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
   const [selectToTokenModal, setSelectToTokenModal] = useState(false);
   const [sendToModal, setSendToModal] = useState(false);
+  const [slippageModal, setSlippageModal] = useState(false);
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
@@ -535,11 +544,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
       const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-      const IBC_DECIMALS = 18;
-      const fromTokenInOrai = getTokenOnOraichain(
-        tokenInfo.coinGeckoId,
-        IBC_DECIMALS
-      );
+      // const IBC_DECIMALS = 18;
+      const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
         client.queryContractSmart(tokenInfo.contractAddress, {
@@ -567,7 +573,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toAmount: `${toAmountToken}`,
       fromNetwork: originalFromToken.chainId,
       toNetwork: originalToToken.chainId,
-      useAlphaSmartRouter,
+      isAlphaIbcWasm: useAlphaIbcWasm,
       priceOfFromTokenInUsd: usdPriceShowFrom,
       priceOfToTokenInUsd: usdPriceShowTo,
     };
@@ -608,9 +614,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       ).toString();
     }
 
-    const alphaSmartRoutes = useAlphaSmartRouter
-      ? simulateData?.routes
-      : undefined;
+    const alphaSmartRoutes = simulateData?.routes;
 
     const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
@@ -647,7 +651,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       //@ts-ignore
       evmWallet,
       swapOptions: {
-        isAlphaSmartRouter: useAlphaSmartRouter,
+        isAlphaIbcWasm: useAlphaIbcWasm,
         isIbcWasm: useIbcWasm,
       },
     });
@@ -686,31 +690,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleSwapError = async (error, retryCount) => {
     console.log("error handleSubmit", error);
-    if (
-      error.message.includes("of undefined") ||
-      error.message.includes("Rejected")
-    ) {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
-      return;
-    }
-
+    handleErrorSwap(error?.message ?? error?.ex?.message);
+    setSwapLoading(false);
     if (
       error.message.includes("Bad status on response") ||
       error.message.includes("403") ||
       originalFromToken.chainId === ChainIdEnum.Injective
     ) {
       let retry = retryCount + 1;
-      console.log("error.message", error.message, retry);
       if (retry < 4) {
         await handleSubmit(retry);
       } else {
         handleErrorSwap(error?.message ?? error?.ex?.message);
         setSwapLoading(false);
       }
-    } else {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
     }
   };
 
@@ -756,17 +749,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
   };
-
-  useEffect(() => {
-    const fromChain = chainInfos.find((chain) => chain.chainId === fromNetwork);
-
-    if (
-      fromChain?.networkType === "evm" &&
-      toNetwork === ChainIdEnum.Injective
-    ) {
-      setFromNetwork(ChainIdEnum.Oraichain);
-    }
-  }, [fromNetwork, toNetwork]);
 
   const handleActiveAmount = (percent) => {
     const coeff = Number(percent) / 100;
@@ -1006,6 +988,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           handleSendToAddress={handleSendToAddress}
           handleToggle={setToggle}
         />
+        <SlippageConfirmModal
+          close={() => {
+            setSlippageModal(false);
+          }}
+          isOpen={slippageModal}
+          //@ts-ignore
+          impactWarning={impactWarning}
+          handleConfirm={() => handleSubmit()}
+        />
       </>
     );
   };
@@ -1152,7 +1143,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.txtBtnSend}
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
-          onPress={() => handleSubmit()}
+          onPress={() => {
+            if (impactWarning > 5) {
+              setSlippageModal(true);
+              return;
+            } else {
+              handleSubmit();
+            }
+          }}
         />
       }
     >

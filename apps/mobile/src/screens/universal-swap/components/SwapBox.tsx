@@ -122,7 +122,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>
@@ -165,7 +167,9 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>

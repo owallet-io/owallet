@@ -5991,7 +5991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.11, @oraichain/oraidex-universal-swap@npm:^1.1.12":
+"@oraichain/oraidex-universal-swap@npm:^1.1.12":
   version: 1.1.12
   resolution: "@oraichain/oraidex-universal-swap@npm:1.1.12"
   dependencies:
@@ -6003,6 +6003,34 @@ __metadata:
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
   checksum: e6a82324001c83f5da70f919c7969e94a2806b04271dac1726903f707ffe0860337173b1fa8f0d788719574894e34462b4895218bf12d9053cb9e4c77bc233f1
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-universal-swap@npm:^1.1.14":
+  version: 1.1.14
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.14"
+  dependencies:
+    "@oraichain/common": ^1.0.3
+    "@oraichain/oraidex-common": ^1.1.21
+    "@oraichain/oraidex-contracts-sdk": ^1.0.49
+    "@oraichain/osor-api-contracts-sdk": ^1.0.2
+    bech32: 1.1.4
+    ethers: ^5.0.15
+    tronweb: 5.3.2
+    ts-protoc-gen: ^0.15.0
+  checksum: 7a5849259f83e67e80762ab7e06ca135a4dfcf176e23e072cb7d60d930cae1328ce853c13c0fe1a3d9d73ff1a2d44b1297b94ec72eca95e7ba5820cb0575be50
+  languageName: node
+  linkType: hard
+
+"@oraichain/osor-api-contracts-sdk@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@oraichain/osor-api-contracts-sdk@npm:1.0.2"
+  dependencies:
+    "@cosmjs/amino": 0.31.3
+    "@cosmjs/cosmwasm-stargate": 0.31.3
+    "@cosmjs/crypto": 0.31.3
+    "@cosmjs/proto-signing": 0.31.3
+  checksum: f1e96016b17e9daf73ad45f69e0fdb4802a02aa5a375c9a91c481200d4c858e5503a8fd3510540c72dd6818b03fb323b2dd4214082afeb9bd1369a24a8d57bb5
   languageName: node
   linkType: hard
 
@@ -24817,10 +24845,10 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.21
+    "@oraichain/oraidex-common": ^1.1.23
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.11
+    "@oraichain/oraidex-universal-swap": ^1.1.14
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-community/blur": 4.3.2
     "@react-native-community/netinfo": 9.4.1
