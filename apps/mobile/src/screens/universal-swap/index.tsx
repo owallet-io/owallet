@@ -690,31 +690,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleSwapError = async (error, retryCount) => {
     console.log("error handleSubmit", error);
-    if (
-      error.message.includes("of undefined") ||
-      error.message.includes("Rejected")
-    ) {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
-      return;
-    }
-
+    handleErrorSwap(error?.message ?? error?.ex?.message);
+    setSwapLoading(false);
     if (
       error.message.includes("Bad status on response") ||
       error.message.includes("403") ||
       originalFromToken.chainId === ChainIdEnum.Injective
     ) {
       let retry = retryCount + 1;
-      console.log("error.message", error.message, retry);
       if (retry < 4) {
         await handleSubmit(retry);
       } else {
         handleErrorSwap(error?.message ?? error?.ex?.message);
         setSwapLoading(false);
       }
-    } else {
-      handleErrorSwap(error?.message ?? error?.ex?.message);
-      setSwapLoading(false);
     }
   };
 
