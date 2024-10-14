@@ -128,6 +128,19 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
     this._chainInfo = chainInfo;
   }
 
+  @computed
+  get chainIdentifier(): string {
+    return ChainIdHelper.parse(this.chainId).identifier;
+  }
+
+  get hideInUI(): boolean | undefined {
+    return this.hideInUI;
+  }
+
+  hasFeature(feature: string): boolean {
+    return !!(this.features && this.features.includes(feature));
+  }
+
   get raw(): C {
     return this._chainInfo;
   }
@@ -308,6 +321,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     return this._chainInfos;
   }
 
+  //@ts-ignore
   getChain(chainId: string): ChainInfoInner<C> {
     if (chainId === "" || !chainId) {
       chainId = "Oraichain";

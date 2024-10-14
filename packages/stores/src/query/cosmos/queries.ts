@@ -35,6 +35,8 @@ import {
   ObservableQueryOsmosisMintParmas,
 } from "./supply/osmosis";
 import { QuerySharedContext } from "src/common/query/context";
+import { ObservableQueryFeeMarketGasPrices } from "./feemarket";
+import { ObservableQueryBaseFee } from "../osmosis";
 
 export interface HasCosmosQueries {
   cosmos: CosmosQueries;
@@ -77,6 +79,10 @@ export class CosmosQueries {
   public readonly queryIBCDenomTrace: DeepReadonly<ObservableQueryDenomTrace>;
 
   public readonly querySifchainAPY: DeepReadonly<ObservableQuerySifchainLiquidityAPY>;
+
+  public readonly queryFeeMarketGasPrices: DeepReadonly<ObservableQueryFeeMarketGasPrices>;
+
+  public readonly queryBaseFee: DeepReadonly<ObservableQueryBaseFee>;
 
   constructor(
     base: QueriesSetBase,
@@ -194,6 +200,18 @@ export class CosmosQueries {
       chainGetter
     );
     this.queryIBCDenomTrace = new ObservableQueryDenomTrace(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
+
+    this.queryFeeMarketGasPrices = new ObservableQueryFeeMarketGasPrices(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
+
+    this.queryBaseFee = new ObservableQueryBaseFee(
       sharedContext,
       chainId,
       chainGetter

@@ -362,7 +362,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
               alignItems: "center",
               justifyContent: "center",
               overflow: "hidden",
-              backgroundColor: colors["neutral-icon-on-dark"],
+              backgroundColor: colors["neutral-surface-action"],
             }}
           >
             <OWIcon

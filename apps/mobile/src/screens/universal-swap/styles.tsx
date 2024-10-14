@@ -177,6 +177,7 @@ export const styling = (colors: TypeTheme["colors"]) =>
       borderRadius: 24,
       marginTop: 4,
       width: "100%",
+      backgroundColor: colors["neutral-surface-card"],
     },
     flr: {
       flexDirection: "row",

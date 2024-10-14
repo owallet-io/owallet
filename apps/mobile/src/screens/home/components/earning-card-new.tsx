@@ -1,30 +1,30 @@
 import { CoinPretty, Dec } from "@owallet/unit";
-import {
-  RouteProp,
-  StackActions,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
 import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
-import { checkRouter, navigate } from "@src/router/root";
+import { navigate } from "@src/router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { convertArrToObject, showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { OWBox } from "../../../components/card";
-
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
 import { DenomDydx, removeDataInParentheses } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
+import { QueryError } from "@owallet/stores";
+
+export interface ViewToken {
+  token: CoinPretty;
+  chainInfo: ChainInfo;
+  isFetching: boolean;
+  error: QueryError<any> | undefined;
+}
 
 export const EarningCardNew = observer(({}) => {
-  const route = useRoute<RouteProp<Record<string, {}>, string>>();
-
   const {
     chainStore,
     accountStore,
@@ -39,7 +39,6 @@ export const EarningCardNew = observer(({}) => {
     appInitStore.getInitApp.isAllNetworks
   )
     return;
-  const navigation = useNavigation();
 
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
@@ -74,18 +73,7 @@ export const EarningCardNew = observer(({}) => {
   })();
 
   const totalStakingReward = priceStore.calculatePrice(stakingRewards);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-  const delegated = queryDelegated.total;
-  const totalPrice = priceStore.calculatePrice(delegated);
 
-  const _onPressStake = () => {
-    if (checkRouter(route?.name, SCREENS.Invest)) {
-      return;
-    }
-    navigate(SCREENS.TABS.Invest);
-  };
   const isDydx = chainId?.includes("dydx-mainnet");
   const _onPressCompound = async () => {
     try {
@@ -217,6 +205,7 @@ export const EarningCardNew = observer(({}) => {
     !account.isReadyToSendMsgs ||
     stakingRewards?.toDec().equals(new Dec(0)) ||
     queryRewards.pendingRewardValidatorAddresses.length === 0;
+
   return (
     <OWBox
       style={{
@@ -322,11 +311,11 @@ export const EarningCardNew = observer(({}) => {
                 textStyle={{
                   fontSize: 16,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-light-bg"],
+                  color: colors["neutral-icon-on-light"],
                 }}
                 iconRight={
                   <OWIcon
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                     name={"tdesigngift"}
                     size={20}
                   />

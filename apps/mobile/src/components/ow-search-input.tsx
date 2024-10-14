@@ -27,7 +27,7 @@ export const OWSearchInput: FC<{
           }}
         >
           <OWIcon
-            color={colors["neutral-text-action-on-light-bg"]}
+            color={colors["neutral-icon-on-light"]}
             name={"tdesignsearch"}
             size={20}
           />

@@ -349,7 +349,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         {
           <View>
             {srcValidator ? (
-              <OWCard>
+              <OWCard
+                style={{
+                  backgroundColor: colors["neutral-surface-card"],
+                }}
+              >
                 <OWText
                   style={{ paddingBottom: 8 }}
                   color={colors["neutral-text-title"]}
@@ -399,7 +403,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             </View>
 
             {
-              <OWCard>
+              <OWCard
+                style={{
+                  backgroundColor: colors["neutral-surface-card"],
+                }}
+              >
                 {dstValidatorAddress ? (
                   <TouchableOpacity
                     style={{
@@ -493,7 +501,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             }
             {dstValidatorAddress ? (
               <View>
-                <OWCard style={{ paddingTop: 22 }} type="normal">
+                <OWCard
+                  style={{
+                    paddingTop: 22,
+                    backgroundColor: colors["neutral-surface-bg2"],
+                  }}
+                  type="normal"
+                >
                   <View
                     style={{
                       flexDirection: "row",
@@ -621,7 +635,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     </OWText>
                   </View>
                 </OWCard>
-                <OWCard>
+                <OWCard
+                  style={{
+                    backgroundColor: colors["neutral-surface-card"],
+                  }}
+                >
                   <View
                     style={{
                       flexDirection: "row",

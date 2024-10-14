@@ -293,7 +293,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                     handlePressStake(chainInfo, item.validator);
                   }}
                   style={{
-                    backgroundColor: colors["neutral-surface-card-brutal"],
+                    backgroundColor: colors["neutral-surface-card"],
                     borderRadius: 16,
                     borderWidth: 2,
                     borderColor: colors["neutral-border-brutal"],
@@ -636,7 +636,7 @@ const styling = (colors) =>
       marginTop: spacing["16"],
       borderRadius: 16,
       padding: 16,
-      // justifyContent: "center",
+      backgroundColor: colors["neutral-surface-card"],
     },
     row: {
       flexDirection: "row",

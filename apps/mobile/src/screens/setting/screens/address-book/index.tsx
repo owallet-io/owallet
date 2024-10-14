@@ -293,7 +293,10 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
         />
       </View>
 
-      <OWCard type="normal">
+      <OWCard
+        style={{ backgroundColor: colors["neutral-surface-card"] }}
+        type="normal"
+      >
         {contractData?.length > 0 ? (
           contractData.map((data, i) => {
             return (

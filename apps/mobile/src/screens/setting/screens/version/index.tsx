@@ -86,6 +86,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       <OWCard
         style={{
           marginBottom: spacing["12"],
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <TouchableWithoutFeedback
@@ -126,6 +127,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
         style={{
           marginTop: spacing["32"],
           marginBottom: spacing["12"],
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <TouchableWithoutFeedback>

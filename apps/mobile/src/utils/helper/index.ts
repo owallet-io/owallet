@@ -117,6 +117,10 @@ export function splitAndSortChains(data) {
   return { testChains, mainChains };
 }
 
+export function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export const handleDeepLink = async ({ url }) => {
   if (url) {
     const path = url.replace(SCHEME_ANDROID, "").replace(SCHEME_IOS, "");

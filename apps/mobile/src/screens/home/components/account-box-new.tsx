@@ -633,7 +633,7 @@ export const AccountBoxAll: FunctionComponent<{
                   <OWIcon
                     size={18}
                     name="tdesignchart-pie"
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -647,7 +647,7 @@ export const AccountBoxAll: FunctionComponent<{
                   <OWIcon
                     size={18}
                     name="copy"
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                   />
                 </TouchableOpacity>
               </View>
@@ -657,7 +657,7 @@ export const AccountBoxAll: FunctionComponent<{
                 textStyle={{
                   fontSize: 14,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-light-bg"],
+                  color: colors["neutral-icon-on-light"],
                 }}
                 iconRight={
                   isTimedOut ? (
@@ -666,7 +666,7 @@ export const AccountBoxAll: FunctionComponent<{
                     <OWIcon
                       size={18}
                       name="tdesigncopy"
-                      color={colors["neutral-text-action-on-light-bg"]}
+                      color={colors["neutral-icon-on-light"]}
                     />
                   )
                 }
@@ -704,11 +704,11 @@ export const AccountBoxAll: FunctionComponent<{
                 textStyle={{
                   fontSize: 15,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-light-bg"],
+                  color: colors["neutral-icon-on-light"],
                 }}
                 icon={
                   <OWIcon
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                     name={
                       appInitStore.getInitApp.isAllNetworks
                         ? "tdesigncreditcard"
@@ -755,7 +755,7 @@ export const AccountBoxAll: FunctionComponent<{
                 style={styles.getStarted}
                 icon={
                   <OWIcon
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                     name={"tdesignqrcode"}
                     size={20}
                   />
@@ -764,7 +764,7 @@ export const AccountBoxAll: FunctionComponent<{
                 textStyle={{
                   fontSize: 15,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-light-bg"],
+                  color: colors["neutral-icon-on-light"],
                 }}
                 label="Receive"
                 onPress={() => {
@@ -783,11 +783,11 @@ export const AccountBoxAll: FunctionComponent<{
                 textStyle={{
                   fontSize: 15,
                   fontWeight: "600",
-                  color: colors["neutral-text-action-on-light-bg"],
+                  color: colors["neutral-icon-on-light"],
                 }}
                 icon={
                   <OWIcon
-                    color={colors["neutral-text-action-on-light-bg"]}
+                    color={colors["neutral-icon-on-light"]}
                     name={"tdesignellipsis"}
                     size={20}
                   />
@@ -813,6 +813,7 @@ const styling = (colors) =>
       marginHorizontal: 16,
       marginTop: 0,
       width: metrics.screenWidth - 32,
+      backgroundColor: colors["neutral-surface-card"],
       padding: spacing["16"],
       borderBottomLeftRadius: 6,
       borderBottomRightRadius: 6,

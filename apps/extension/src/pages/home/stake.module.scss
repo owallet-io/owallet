@@ -1,4 +1,4 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .container-stake-card {
   background-color: $neutral-surface-card;
@@ -10,9 +10,7 @@
 .container-inner {
   display: flex;
   flex-direction: row;
-
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
 
   .paragraph-main {
     line-height: 1.35;

@@ -288,14 +288,367 @@ const modeColors = {
   "success-text-action": ["#00AD26", "#00AD26"],
   "success-text-body": ["#00AD26", "#00AD26"],
 };
+
+//item 1:Dark, item 2: Light
+const osmosisColors = {
+  //old colors
+  primary: ["#1A1D25", "#fff"],
+  "primary-text": ["#E2DEEB", "#1C1C1E"],
+  "icon-text": ["#E2DEEB", "#8C93A7"],
+  border: ["#83838F", "#E2DEEB"],
+  "border-network-modal": ["#111111", colorsCode["blue/Border-50"]],
+  "border-gray": ["#111", "#C6C6CD"],
+  "border-input-slippage": ["#83838F", colorsCode["gray-300"]],
+  //splash-background
+  "splash-background": ["#1E1E1E", "#FBF8FF"],
+  "sub-primary": ["#434762", "#F3F1F5"],
+  "sub-primary-text": ["#E2DEEB", "#3A3A3C"],
+  //background
+  background: ["#01040D", "#F5F5F5"],
+  "box-nft": ["#2B2D3B", "#F6F6F9"],
+  "sub-background": ["#2B2D3B", "#F8EFFF"],
+  "background-light-gray": ["#EBEDF2", "#EBEDF2"],
+  "background-light": ["#F5F5F7", "#F5F5F7"],
+  "card-background": ["#0E121D", "#fff"],
+  "input-background": ["#2B2D3B", "#fff"],
+  "primary-background": ["#5C00A3", "#F3F1F5"],
+  "plain-background": ["#01040D", "#fff"],
+  "btn-primary-background": ["#5C00A3", "#5C00A3"],
+  "btn-disable-background": [colorsCode["blue-600"], colorsCode["gray-300"]],
+  // border
+  "border-purple-100-gray-800": [
+    colorsCode["gray-800"],
+    colorsCode["purple-100"],
+  ],
+  // item
+  item: ["#2B2D3B", "#fff"],
+  icon: ["#E2DEEB", "#5F5E77"],
+  "icon-primary-default-gray": ["#717177", colorsCode["primary-default"]],
+  // text
+  label: ["#fff", "#3A3A3C"],
+  "colored-label": ["#fff", "#945EF8"],
+  "sub-text": ["#8C93A7", "#5F5E77"],
+  "text-title": [colorsCode["white"], colorsCode["gray-900"]],
+  "text-btn-disable-color": [colorsCode["gray-500"], colorsCode["white"]],
+  "text-gray-900-primary-default": [
+    colorsCode["primary-default"],
+    colorsCode["gray-900"],
+  ],
+
+  //onBoarding page
+  "background-container": ["#01040D", "#FFFFFF"], //
+  "text-title-sub-onBoarding": ["#7E58EA", "#1C1C1E"], //2 gray-900
+  "text-content-onBoarding": ["#C7C7CC", "#5F5E77"], //1:gray-300, 2: Blue-600
+  "background-btn-primary": ["#945EF8", "#8B1BFB"], //1: Purple/900, 2: Purple/900
+  // 'text-btn-primary':["#FFFFFF","#FFFFFF"], //1: Purple/900, 2: Purple/900
+
+  //Login page
+  "text-title-login": ["#FFFFFF", "#1C1C1E"], // 2 gray-900
+  // 'text-btn-secondary':["#8B1BFB","#8B1BFB"], //1:Purple/900  2 gray-900
+  "background-btn-secondary": ["#F3F1F5", "#F3F1F5"], //1: 2 Purple/10
+  "text-placeholder-input-login": ["#717177", "#AEAEB2"],
+  "text-label-transaction-detail": ["#AEAEB2", "#636366"],
+  "background-btn-disable-primary": ["#5F5E77", colorsCode["gray-300"]],
+  "background-btn-disable-danger": ["#5F5E77", "#D1D1D6"],
+  "text-btn-disable-danger": ["#8E8E93", "#FFFFFF"],
+  "text-btn-disabled-primary": ["#8E8E93", colorsCode["white"]],
+  "border-input-login": ["#3A3A3C", "#E2DEEB"],
+  "on-bg": ["#232125", "#232125"],
+  "background-input-modal": ["#0E121D", "#FFFFFF"],
+  "text-value-input-login": ["#E2DEEB", "#1C1C1E"], //icon input eyes
+  "text-label-input": ["#C7C7CC", "#48484A"], //note under input
+  "text-dashboard": [colorsCode["blue-300"], "#48484A"], //note under input
+  //login-success
+  "text-content-success": ["#E2DEEB", "#5F5E77"],
+  "text-btn-link": ["#945EF8", "#8B1BFB"],
+  //modal-login-fail
+  "title-modal-login-failed": ["#FFFFFF", "#000000"], //content-modal-login-fail
+  "btn-icon": ["#945EF8", "#8B1BFB"],
+  "btn-mnemonic": ["#945EF8", "#8B1BFB"], //border and text same color
+  "background-btn-mnemonic-active": ["rgba(148, 94, 248, 0.25)", "#F3F1F5"],
+  "text-btn-advance-options": ["#945EF8", "#8B1BFB"],
+  //transaction progress
+  "background-btn-input-modal": ["#0E121D", "#F3F1F5"],
+  "text-value-input-modal": ["#8C93A7", "#636366"],
+  "background-box": ["#0E121D", "#fff"],
+  "background-item-list": ["#2B2D3B", "#F3F1F5"],
+  "text-place-holder": ["#717177", "#8C93A7"],
+  "background-box-shadow": ["#2B2D3B", "#FFFFFF"],
+  "text-label-list": [colorsCode["gray-300"], colorsCode["blue-300"]],
+  "label-bottom-bar": ["#E2DEEB", "#5F5E77"],
+  "border-bottom-tab": ["#3B2368", "#F0F0F0"],
+  "on-background-toggle": ["#90B51B", "#90B51B"],
+  "off-background-toggle": ["#6F6F76", "#E9E9EA"],
+  "bg-icon-token": ["#E5E5EA", "#F3F1F5"],
+  "bg-circle-select-modal": [colorsCode["gray-400"], colorsCode["purple-100"]],
+  "divided-border-transaction-detail": ["#2B2D3B", "#EDEDF8"],
+  skeleton: ["#36384a", "#f3f2f2"],
+  "bg-tonner": ["#191B21", "#F6EDFF"],
+  "bg-swap-box": ["#1E1E21", "#F6F9FF"],
+  "bg-btn-select-token": ["#333339", "#EAF1FF"],
+  "icon-primary-surface-default-gray": ["#A22DFF", "#5C00A3"],
+  // New UI Colors(28.12.2023)
+  // We gonna use this colors from now on
+  // I.Neutral
+  "neutral-surface-bg": ["#080522", "#F5F5F7"],
+  "neutral-surface-bg2": ["#2D2855", "#F5F5F7"],
+  "neutral-surface-card": ["#1F1B41", "#FFFFFF"],
+  "neutral-surface-card-brutal": ["#242325", "#FCFCFC"],
+  "neutral-surface-action": ["#3B3569", "#EBEDF2"],
+  "neutral-surface-action2": ["#3B3569", "#EBEDF2"],
+  "neutral-surface-action3": ["#3B3569", "#F5F5F7"],
+  "neutral-surface-toggle-active": ["#AFAAD8", "#fff"],
+  "neutral-surface-pressed": ["#AFAAD8", "#D4D7E1"],
+  "neutral-surface-disable": ["#3B3569", "#EBEDF2"],
+  "neutral-border-default": ["#2D2855", "#EBEDF2"],
+  "neutral-border-brutal": ["#3B3569", "#FFF"],
+  "neutral-border-strong": ["#3B3569", "#242325"],
+  "neutral-border-bold": ["#909298", "#242325"],
+  "neutral-border-disable": ["#2D2855", "#F5F5F7"],
+  "neutral-text-heading": ["#F3F2F4", "#242325"],
+  "neutral-text-title": ["#EBEDF2", "#242325"],
+  "neutral-text-body": ["#AFAAD8", "#6A6B71"],
+  "neutral-text-body2": ["#615D85", "#494949"],
+  "neutral-text-body3": ["#615D85", "#909298"],
+  "neutral-text-action-on-dark-bg": ["#F3F2F4", "#FBFBFB"],
+  "neutral-text-action-on-light-bg": ["#080522", "#242325"],
+  "neutral-text-disable": ["#615D85", "#C6C8CE"],
+  "neutral-icon-on-dark": ["#080522", "#FBFBFB"],
+  "neutral-icon-on-light": ["#FBFBFB", "#242325"],
+  "neutral-icon-disable": ["#615D85", "#C6C8CE"],
+  // II.Primary
+  "primary-surface-disable": ["#2D1F8F", "#EBD1FF"],
+  "primary-surface-subtle": ["#3B3569", "#F4E5FF"],
+  "primary-surface-active": ["#2D1F8F", "#C170FF"],
+  "primary-surface-default": ["#422BD6", "#5C00A3"],
+  "primary-surface-pressed": ["#5238F4", "#7C00DB"],
+  "primary-text-action": ["#5238F4", "#7C00DB"],
+  "primary-text-pressed": ["#422BD6", "#A22DFF"],
+  // III.Highlight
+  "highlight-surface-subtle": ["#142924", "#E4F5B0"],
+  "highlight-surface-active": ["#89DBC9", "#90B51B"],
+  "highlight-text-title": ["#ACE6D9", "#46580B"],
+  // IV.Error
+  "error-surface-subtle": ["#321D15", "#FFEDEB"],
+  "error-surface-active": ["#C98E75", "#FFACA3"],
+  "error-surface-default": ["#F98F68", "#A81100"],
+  "error-surface-pressed": ["#EB9A7C", "#E01600"],
+  "error-border-disable": ["#321D15", "#FFD6D1"],
+  "error-border-default": ["#F98F68", "#A81100"],
+  "error-border-pressed": ["#EB9A7C", "#E01600"],
+  "error-text-action": ["#EB9A7C", "#E01600"],
+  "error-text-body": ["#EB9A7C", "#E01600"],
+  // V.Warning
+  "warning-surface-subtle": ["#322A15", "#FFF8EB"],
+  "warning-surface-active": ["#C7A653", "#FFE1AD"],
+  "warning-surface-default": ["#F9D068", "#B87500"],
+  "warning-surface-pressed": ["#FBDE95", "#F29900"],
+  "warning-border-disable": ["#322A15", "#FFF0D6"],
+  "warning-border-default": ["#F9D068", "#B87500"],
+  "warning-border-pressed": ["#FBDE95", "#F29900"],
+  "warning-text-action": ["#E0BB5E", "#F29900"],
+  "warning-text-body": ["#E0BB5E", "#F29900"],
+  // VI.Success
+  "success-surface-subtle": ["#142924", "#ECFEEE"],
+  "success-surface-active": ["#47907D", "#D3FDD7"],
+  "success-surface-default": ["#65CDB3", "#007018"],
+  "success-surface-pressed": ["#93DCCA", "#00AD26"],
+  "success-border-disable": ["#47907D", "#D3FDD7"],
+  "success-border-default": ["#65CDB3", "#007018"],
+  "success-border-pressed": ["#93DCCA", "#00AD26"],
+  "success-text-action": ["#65CDB3", "#00AD26"],
+  "success-text-body": ["#65CDB3", "#00AD26"],
+};
+
+//item 1:Dark, item 2: Light
+const injectiveColors = {
+  //old colors
+  primary: ["#1A1D25", "#fff"],
+  "primary-text": ["#E2DEEB", "#1C1C1E"],
+  "icon-text": ["#E2DEEB", "#8C93A7"],
+  border: ["#83838F", "#E2DEEB"],
+  "border-network-modal": ["#111111", colorsCode["blue/Border-50"]],
+  "border-gray": ["#111", "#C6C6CD"],
+  "border-input-slippage": ["#83838F", colorsCode["gray-300"]],
+  //splash-background
+  "splash-background": ["#1E1E1E", "#FBF8FF"],
+  "sub-primary": ["#434762", "#F3F1F5"],
+  "sub-primary-text": ["#E2DEEB", "#3A3A3C"],
+  //background
+  background: ["#01040D", "#F5F5F5"],
+  "box-nft": ["#2B2D3B", "#F6F6F9"],
+  "sub-background": ["#2B2D3B", "#F8EFFF"],
+  "background-light-gray": ["#EBEDF2", "#EBEDF2"],
+  "background-light": ["#F5F5F7", "#F5F5F7"],
+  "card-background": ["#0E121D", "#fff"],
+  "input-background": ["#2B2D3B", "#fff"],
+  "primary-background": ["#5C00A3", "#F3F1F5"],
+  "plain-background": ["#01040D", "#fff"],
+  "btn-primary-background": ["#5C00A3", "#5C00A3"],
+  "btn-disable-background": [colorsCode["blue-600"], colorsCode["gray-300"]],
+  // border
+  "border-purple-100-gray-800": [
+    colorsCode["gray-800"],
+    colorsCode["purple-100"],
+  ],
+  // item
+  item: ["#2B2D3B", "#fff"],
+  icon: ["#E2DEEB", "#5F5E77"],
+  "icon-primary-default-gray": ["#717177", colorsCode["primary-default"]],
+  // text
+  label: ["#fff", "#3A3A3C"],
+  "colored-label": ["#fff", "#945EF8"],
+  "sub-text": ["#8C93A7", "#5F5E77"],
+  "text-title": [colorsCode["white"], colorsCode["gray-900"]],
+  "text-btn-disable-color": [colorsCode["gray-500"], colorsCode["white"]],
+  "text-gray-900-primary-default": [
+    colorsCode["primary-default"],
+    colorsCode["gray-900"],
+  ],
+
+  //onBoarding page
+  "background-container": ["#01040D", "#FFFFFF"], //
+  "text-title-sub-onBoarding": ["#7E58EA", "#1C1C1E"], //2 gray-900
+  "text-content-onBoarding": ["#C7C7CC", "#5F5E77"], //1:gray-300, 2: Blue-600
+  "background-btn-primary": ["#945EF8", "#8B1BFB"], //1: Purple/900, 2: Purple/900
+  // 'text-btn-primary':["#FFFFFF","#FFFFFF"], //1: Purple/900, 2: Purple/900
+
+  //Login page
+  "text-title-login": ["#FFFFFF", "#1C1C1E"], // 2 gray-900
+  // 'text-btn-secondary':["#8B1BFB","#8B1BFB"], //1:Purple/900  2 gray-900
+  "background-btn-secondary": ["#F3F1F5", "#F3F1F5"], //1: 2 Purple/10
+  "text-placeholder-input-login": ["#717177", "#AEAEB2"],
+  "text-label-transaction-detail": ["#AEAEB2", "#636366"],
+  "background-btn-disable-primary": ["#5F5E77", colorsCode["gray-300"]],
+  "background-btn-disable-danger": ["#5F5E77", "#D1D1D6"],
+  "text-btn-disable-danger": ["#8E8E93", "#FFFFFF"],
+  "text-btn-disabled-primary": ["#8E8E93", colorsCode["white"]],
+  "border-input-login": ["#3A3A3C", "#E2DEEB"],
+  "on-bg": ["#232125", "#232125"],
+  "background-input-modal": ["#0E121D", "#FFFFFF"],
+  "text-value-input-login": ["#E2DEEB", "#1C1C1E"], //icon input eyes
+  "text-label-input": ["#C7C7CC", "#48484A"], //note under input
+  "text-dashboard": [colorsCode["blue-300"], "#48484A"], //note under input
+  //login-success
+  "text-content-success": ["#E2DEEB", "#5F5E77"],
+  "text-btn-link": ["#945EF8", "#8B1BFB"],
+  //modal-login-fail
+  "title-modal-login-failed": ["#FFFFFF", "#000000"], //content-modal-login-fail
+  "btn-icon": ["#945EF8", "#8B1BFB"],
+  "btn-mnemonic": ["#945EF8", "#8B1BFB"], //border and text same color
+  "background-btn-mnemonic-active": ["rgba(148, 94, 248, 0.25)", "#F3F1F5"],
+  "text-btn-advance-options": ["#945EF8", "#8B1BFB"],
+  //transaction progress
+  "background-btn-input-modal": ["#0E121D", "#F3F1F5"],
+  "text-value-input-modal": ["#8C93A7", "#636366"],
+  "background-box": ["#0E121D", "#fff"],
+  "background-item-list": ["#2B2D3B", "#F3F1F5"],
+  "text-place-holder": ["#717177", "#8C93A7"],
+  "background-box-shadow": ["#2B2D3B", "#FFFFFF"],
+  "text-label-list": [colorsCode["gray-300"], colorsCode["blue-300"]],
+  "label-bottom-bar": ["#E2DEEB", "#5F5E77"],
+  "border-bottom-tab": ["#3B2368", "#F0F0F0"],
+  "on-background-toggle": ["#90B51B", "#90B51B"],
+  "off-background-toggle": ["#6F6F76", "#E9E9EA"],
+  "bg-icon-token": ["#E5E5EA", "#F3F1F5"],
+  "bg-circle-select-modal": [colorsCode["gray-400"], colorsCode["purple-100"]],
+  "divided-border-transaction-detail": ["#2B2D3B", "#EDEDF8"],
+  skeleton: ["#36384a", "#f3f2f2"],
+  "bg-tonner": ["#191B21", "#F6EDFF"],
+  "bg-swap-box": ["#1E1E21", "#F6F9FF"],
+  "bg-btn-select-token": ["#333339", "#EAF1FF"],
+  "icon-primary-surface-default-gray": ["#A22DFF", "#5C00A3"],
+  // New UI Colors(28.12.2023)
+  // We gonna use this colors from now on
+  // I.Neutral
+  "neutral-surface-bg": ["#14151A", "#F5F5F7"],
+  "neutral-surface-bg2": ["#222531", "#F5F5F7"],
+  "neutral-surface-card": ["#1B1D23", "#FFFFFF"],
+  "neutral-surface-card-brutal": ["#1B1D23", "#FCFCFC"],
+  "neutral-surface-action": ["#282C3E", "#EBEDF2"],
+  "neutral-surface-action2": ["#282C3E", "#EBEDF2"],
+  "neutral-surface-action3": ["#282C3E", "#F5F5F7"],
+  "neutral-surface-toggle-active": ["#4E5364", "#fff"],
+  "neutral-surface-pressed": ["#4E5364", "#D4D7E1"],
+  "neutral-surface-disable": ["#1B1D23", "#EBEDF2"],
+  "neutral-border-default": ["#222531", "#EBEDF2"],
+  "neutral-border-brutal": ["#282C3E", "#FFF"],
+  "neutral-border-strong": ["#282C3E", "#242325"],
+  "neutral-border-bold": ["#282C3E", "#242325"],
+  "neutral-border-disable": ["#1B1D23", "#F5F5F7"],
+  "neutral-text-heading": ["#F2F2F4", "#242325"],
+  "neutral-text-title": ["#EBEDF2", "#242325"],
+  "neutral-text-body": ["#727583", "#6A6B71"],
+  "neutral-text-body2": ["#4E5364", "#494949"],
+  "neutral-text-body3": ["#4E5364", "#909298"],
+  "neutral-text-action-on-dark-bg": ["#FBFBFB", "#FBFBFB"],
+  "neutral-text-action-on-light-bg": ["#14151A", "#242325"],
+  "neutral-text-disable": ["#4E5364", "#C6C8CE"],
+  "neutral-icon-on-dark": ["#F2F2F4", "#FBFBFB"],
+  "neutral-icon-on-light": ["#F2F2F4", "#242325"],
+  "neutral-icon-disable": ["#1B1D23", "#C6C8CE"],
+  // II.Primary
+  "primary-surface-disable": ["#163032", "#EBD1FF"],
+  "primary-surface-subtle": ["#2C5F64", "#F4E5FF"],
+  "primary-surface-active": ["#59BEC9", "#C170FF"],
+  "primary-surface-default": ["#6FEEFB", "#5C00A3"],
+  "primary-surface-pressed": ["#52DAE8", "#7C00DB"],
+  "primary-text-action": ["#6FEEFB", "#7C00DB"],
+  "primary-text-pressed": ["#52DAE8", "#A22DFF"],
+  // III.Highlight
+  "highlight-surface-subtle": ["#122A49", "#E4F5B0"],
+  "highlight-surface-active": ["#3D8BF3", "#90B51B"],
+  "highlight-text-title": ["#64A2F5", "#46580B"],
+  // IV.Error
+  "error-surface-subtle": ["#431019", "#FFEDEB"],
+  "error-surface-active": ["#DF3652", "#FFACA3"],
+  "error-surface-default": ["#DF3652", "#A81100"],
+  "error-surface-pressed": ["#E55E75", "#E01600"],
+  "error-border-disable": ["#9C2639", "#FFD6D1"],
+  "error-border-default": ["#DF3652", "#A81100"],
+  "error-border-pressed": ["#E55E75", "#E01600"],
+  "error-text-action": ["#DF3652", "#E01600"],
+  "error-text-body": ["#DF3652", "#E01600"],
+  // V.Warning
+  "warning-surface-subtle": ["#2D2B15", "#FFF8EB"],
+  "warning-surface-active": ["#9C9549", "#FFE1AD"],
+  "warning-surface-default": ["#DFD568", "#B87500"],
+  "warning-surface-pressed": ["#FBDE95", "#F29900"],
+  "warning-border-disable": ["#9C9549", "#FFF0D6"],
+  "warning-border-default": ["#DFD568", "#B87500"],
+  "warning-border-pressed": ["#E9E295", "#F29900"],
+  "warning-text-action": ["#DFD568", "#F29900"],
+  "warning-text-body": ["#DFD568", "#F29900"],
+  // VI.Success
+  "success-surface-subtle": ["#1F4330", "#ECFEEE"],
+  "success-surface-active": ["#47907D", "#D3FDD7"],
+  "success-surface-default": ["#68DFA0", "#007018"],
+  "success-surface-pressed": ["#86E5B3", "#00AD26"],
+  "success-border-disable": ["#47907D", "#D3FDD7"],
+  "success-border-default": ["#68DFA0", "#007018"],
+  "success-border-pressed": ["#86E5B3", "#00AD26"],
+  "success-text-action": ["#65CDB3", "#00AD26"],
+  "success-text-body": ["#65CDB3", "#00AD26"],
+};
+
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
 
-const handleMode = (isDark): TypeTheme => {
+const handleMode = (isDark, walletTheme?): TypeTheme => {
   let data: any = {};
   if (isDark) {
-    for (const property in modeColors) {
-      data[property] = modeColors[property][0];
+    if (walletTheme === "osmosis") {
+      for (const property in osmosisColors) {
+        data[property] = osmosisColors[property][0];
+      }
+    } else if (walletTheme === "injective") {
+      for (const property in injectiveColors) {
+        data[property] = injectiveColors[property][0];
+      }
+    } else {
+      for (const property in modeColors) {
+        data[property] = modeColors[property][0];
+      }
     }
   } else {
     for (const property in modeColors) {
@@ -306,4 +659,10 @@ const handleMode = (isDark): TypeTheme => {
 };
 
 export const DarkModeColorsTheme: TypeTheme = { ...handleMode(true) };
+export const OsmosisModeColorsTheme: TypeTheme = {
+  ...handleMode(true, "osmosis"),
+};
+export const InjectiveColorsTheme: TypeTheme = {
+  ...handleMode(true, "injective"),
+};
 export const LightModeColorsTheme: TypeTheme = { ...handleMode(false) };
