@@ -49,8 +49,8 @@ export const SlippageConfirmModal = registerModal(
             weight="500"
             size={14}
           >
-            This swap has price impact over {impactWarning}% , Are you sure you
-            have reviewed the swap detail ?
+            This swap has price impact over {impactWarning}%. Are you sure you
+            have reviewed the swap details ?
           </OWText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

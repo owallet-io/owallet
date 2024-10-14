@@ -204,6 +204,7 @@ export const SelectNetworkModal: FunctionComponent<{
               {chainIcon ? (
                 <OWIcon
                   type="images"
+                  style={{ borderRadius: 999 }}
                   source={{ uri: chainIcon.Icon }}
                   size={28}
                 />
