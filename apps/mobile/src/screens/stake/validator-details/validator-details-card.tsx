@@ -332,7 +332,11 @@ export const ValidatorDetailsCard: FunctionComponent<{
       >
         {validator ? (
           <View>
-            <OWCard>
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+            >
               <View
                 style={{
                   alignItems: "center",
@@ -377,7 +381,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 </View>
               </View>
             </OWCard>
-            <OWCard style={{ paddingTop: 0 }} type="normal">
+            <OWCard
+              style={{
+                paddingTop: 0,
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
               <View>
                 {isStakedValidator ? (
                   <View
@@ -465,7 +475,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 )}
               </View>
             </OWCard>
-            <OWCard style={{ marginTop: spacing["16"] }} type="normal">
+            <OWCard
+              style={{
+                marginTop: spacing["16"],
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
               <View
                 style={{
                   marginBottom: spacing["14"],

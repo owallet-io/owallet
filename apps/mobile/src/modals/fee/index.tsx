@@ -3,13 +3,9 @@ import { View } from "react-native";
 import { useStore } from "../../stores";
 import { FeeButtons, TextInput } from "@src/components/input";
 import OWText from "@src/components/text/ow-text";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Toggle } from "@src/components/toggle";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { metrics } from "@src/themes";
 import { OWButton } from "@src/components/button";
-import { toAmount } from "@owallet/common";
-import { CardModal } from "@src/modals/card";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
 
@@ -144,7 +140,7 @@ export const FeeModal: FunctionComponent<{
             fontSize: 14,
             fontWeight: "500",
             lineHeight: 20,
-            color: colors["neutral-Text-body"],
+            color: colors["neutral-text-body"],
           }}
         />
         <OWButton

@@ -64,7 +64,7 @@ export const CustomAddressCopyable: FunctionComponent<{
             width: 44,
             height: 44,
             borderRadius: 44,
-            backgroundColor: colors["neutral-icon-on-dark"],
+            backgroundColor: colors["neutral-surface-action"],
             marginRight: 16,
           }}
         >

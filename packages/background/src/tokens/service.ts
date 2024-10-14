@@ -194,16 +194,17 @@ export class TokensService {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
 
-      currency = await TokensService.validateCurrency(chainInfo, currency);
-
       // Update coinMinimalDenom here ?
       currency = {
         ...currency,
         coinMinimalDenom: `${"type" in currency && currency.type}:${
           "contractAddress" in currency && currency.contractAddress
         }:${currency.coinDenom}`,
+        coinImageUrl: currency.coinImageUrl.startsWith("https")
+          ? currency.coinImageUrl
+          : "https://www.svgrepo.com/show/451667/image-missing.svg",
       };
-
+      currency = await TokensService.validateCurrency(chainInfo, currency);
       const chainCurrencies = await this.getTokens(chainId);
 
       const isTokenForAccount =
@@ -521,7 +522,7 @@ export class TokensService {
     if (!this.permissionService.hasPermisson(chainId, type, origin)) {
       await this.permissionService.grantPermission(
         env,
-        "/access/viewing-key",
+        "/permission/viewing-key",
         [chainId],
         type,
         [origin]

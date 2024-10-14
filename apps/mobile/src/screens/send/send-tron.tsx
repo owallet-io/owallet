@@ -295,7 +295,12 @@ export const SendTronScreen: FunctionComponent = observer(() => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
             <AddressInput
@@ -315,7 +320,13 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               }}
             />
           </OWCard>
-          <OWCard style={{ paddingTop: 22 }} type="normal">
+          <OWCard
+            style={{
+              paddingTop: 22,
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",
@@ -377,7 +388,12 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               </OWText>
             </View>
           </OWCard>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

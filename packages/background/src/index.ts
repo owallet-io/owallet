@@ -15,6 +15,8 @@ import * as Updater from "./updater/internal";
 import * as Tokens from "./tokens/internal";
 import * as Interaction from "./interaction/internal";
 import * as Permission from "./permission/internal";
+import * as SidePanel from "./side-panel/internal";
+import * as Vault from "./vault/internal";
 
 export * from "./persistent-memory";
 export * from "./chains";
@@ -26,6 +28,7 @@ export * from "./updater";
 export * from "./tokens";
 export * from "./interaction";
 export * from "./permission";
+export * from "./side-panel";
 
 import { KVStore } from "@owallet/common";
 import { ChainInfo } from "@owallet/types";
@@ -33,6 +36,7 @@ import { RNG } from "@owallet/crypto";
 import { CommonCrypto } from "./keyring";
 import { Notification } from "./tx";
 import { LedgerOptions, TransportIniter } from "./ledger/options";
+import { ChainInfoWithCoreTypes } from "./chains";
 
 export { TransportIniter };
 
@@ -41,14 +45,22 @@ export function init(
   storeCreator: (prefix: string) => KVStore,
   // Message requester to the content script.
   eventMsgRequester: MessageRequester,
+  extensionMessageRequesterToUI: MessageRequester | undefined,
   embedChainInfos: ChainInfo[],
   // The origins that are able to pass any permission.
   privilegedOrigins: string[],
   rng: RNG,
   commonCrypto: CommonCrypto,
   notification: Notification,
-  ledgerOptions: Partial<LedgerOptions> = {}
-) {
+  ledgerOptions: Partial<LedgerOptions> = {},
+  chainsAfterInitFn?: (
+    service: Chains.ChainsService,
+    lastEmbedChainInfos: ChainInfoWithCoreTypes[]
+  ) => void | Promise<void>,
+  vaultAfterInitFn?: (service: Vault.VaultService) => void | Promise<void>
+): {
+  initFn: () => Promise<void>;
+} {
   container.register(TYPES.ChainsEmbedChainInfos, {
     useValue: embedChainInfos,
   });
@@ -56,6 +68,7 @@ export function init(
   container.register(TYPES.EventMsgRequester, {
     useValue: eventMsgRequester,
   });
+
   container.register(TYPES.RNG, { useValue: rng });
   container.register(TYPES.CommonCrypto, { useValue: commonCrypto });
   container.register(TYPES.Notification, { useValue: notification });
@@ -86,8 +99,29 @@ export function init(
   });
   container.register(TYPES.UpdaterStore, { useValue: storeCreator("updator") });
 
+  const sidePanelService = new SidePanel.SidePanelService(
+    storeCreator("side-panel")
+  );
+  SidePanel.init(router, sidePanelService);
+
+  container.register(TYPES.SidePanelService, {
+    useValue: sidePanelService,
+  });
+  container.register(TYPES.ExtensionMessageRequesterToUI, {
+    useValue: extensionMessageRequesterToUI,
+  });
+
   const interactionService = container.resolve(Interaction.InteractionService);
+
+  // const interactionService = new Interaction.InteractionService(
+  //   eventMsgRequester,
+  //   sidePanelService,
+  //   extensionMessageRequesterToUI
+  // );
+
   Interaction.init(router, interactionService);
+
+  const vaultService = new Vault.VaultService(storeCreator("vault"));
 
   const persistentMemory = container.resolve(
     PersistentMemory.PersistentMemoryService
@@ -119,4 +153,17 @@ export function init(
     BackgroundTx.BackgroundTxService
   );
   BackgroundTx.init(router, backgroundTxService);
+
+  return {
+    initFn: async () => {
+      await sidePanelService.init();
+      await interactionService.init();
+      await vaultService.init();
+      await permissionService.init();
+
+      if (vaultAfterInitFn) {
+        await vaultAfterInitFn(vaultService);
+      }
+    },
+  };
 }

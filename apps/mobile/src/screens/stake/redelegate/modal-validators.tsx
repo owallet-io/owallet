@@ -1,13 +1,12 @@
-import { ValidatorThumbnails } from "@owallet/common";
 import { BondStatus } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import React from "react";
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import { RectButton } from "../../../components/rect-button";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
 import { useStore } from "../../../stores";
-import { colors, metrics, spacing, typography } from "../../../themes";
+import { metrics, spacing, typography } from "../../../themes";
 import { _keyExtract } from "../../../utils/helper";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
@@ -15,8 +14,9 @@ const Validators = ({
   onPressSelectValidator,
   styles,
   dstValidatorAddress,
+  colors,
 }) => {
-  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
+  const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -29,6 +29,7 @@ const Validators = ({
       <RectButton
         style={{
           ...styles.containerAccount,
+          backgroundColor: colors["neutral-surface-bg2"],
         }}
         onPress={() =>
           onPressSelectValidator(

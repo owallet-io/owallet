@@ -315,7 +315,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         {/*/>*/}
         {validator ? (
           <View>
-            <OWCard>
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+            >
               <OWText
                 style={{ paddingBottom: 8 }}
                 color={colors["neutral-text-title"]}
@@ -345,7 +349,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 </OWText>
               </View>
             </OWCard>
-            <OWCard style={{ paddingTop: 22 }} type="normal">
+            <OWCard
+              style={{
+                paddingTop: 22,
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
               <View
                 style={{
                   flexDirection: "row",
@@ -448,7 +458,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 </OWText>
               </View>
             </OWCard>
-            <OWCard>
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+            >
               <View
                 style={{
                   flexDirection: "row",

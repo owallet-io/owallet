@@ -59,6 +59,7 @@ export const TokensCardAll: FunctionComponent<{
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.hideTokensWithoutBalance
   );
+  const [openSide, setOpenSide] = useState(false);
   useEffect(() => {
     appInitStore.updateHideTokensWithoutBalance(toggle);
   }, [toggle]);
@@ -214,7 +215,8 @@ const TokenItem: FC<{
               source={{
                 uri:
                   item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                  !item.token?.currency?.coinImageUrl
+                  !item.token?.currency?.coinImageUrl ||
+                  item.token?.currency?.coinImageUrl?.includes("missing.svg")
                     ? unknownToken.coinImageUrl
                     : item.token?.currency?.coinImageUrl,
               }}
@@ -339,7 +341,7 @@ const styling = (colors) =>
       alignItems: "center",
       justifyContent: "center",
       overflow: "hidden",
-      backgroundColor: colors["neutral-icon-on-dark"],
+      backgroundColor: colors["neutral-surface-action"],
     },
     chainWrap: {
       width: 22,
@@ -347,7 +349,7 @@ const styling = (colors) =>
       borderRadius: 32,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: colors["neutral-icon-on-dark"],
+      backgroundColor: colors["neutral-surface-action"],
       position: "absolute",
       bottom: -6,
       left: 26,

@@ -381,7 +381,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         showsVerticalScrollIndicator={false}
       >
         <View>
-          <OWCard>
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+          >
             <TouchableOpacity
               style={{
                 flexDirection: "row",
@@ -420,7 +424,12 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               <DownArrowIcon height={15} color={colors["gray-150"]} />
             </TouchableOpacity>
           </OWCard>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
             <AddressInput
@@ -440,7 +449,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               }}
             />
           </OWCard>
-          <OWCard style={{ paddingTop: 22 }} type="normal">
+          <OWCard
+            style={{
+              paddingTop: 22,
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",
@@ -503,7 +518,12 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               </OWText>
             </View>
           </OWCard>
-          <OWCard type="normal">
+          <OWCard
+            style={{
+              backgroundColor: colors["neutral-surface-card"],
+            }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

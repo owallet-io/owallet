@@ -1,7 +1,6 @@
-import React, { FunctionComponent, useCallback, useMemo } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import { BasicSettingItem, renderFlag } from "./components";
-
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import {
@@ -16,10 +15,8 @@ import { metrics } from "../../themes";
 import { CountryModal } from "./components/country-modal";
 import { SettingBiometricLockItem } from "./items/biometric-lock";
 import { SettingRemoveAccountItem } from "./items/remove-account";
-import { SettingSwitchModeItem } from "./items/switch-mode";
 import { SettingViewPrivateDataItem } from "./items/view-private-data";
 import { canShowPrivateData } from "./screens/view-private-data";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWCard from "@src/components/card/ow-card";
@@ -29,11 +26,17 @@ import Rate, { AndroidMarket } from "react-native-rate";
 import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { ThemeModal } from "./components/theme-modal";
 
-export const NewSettingScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, priceStore, modalStore, accountStore } =
-    useStore();
-  const safeAreaInsets = useSafeAreaInsets();
+export const NewSettingScreen: FunctionComponent = observer((props) => {
+  const {
+    keychainStore,
+    keyRingStore,
+    priceStore,
+    modalStore,
+    accountStore,
+    appInitStore,
+  } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { colors } = useTheme();
@@ -69,6 +72,31 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const _onPressThemeModal = () => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+
+    modalStore.setChildren(
+      ThemeModal({
+        modalStore,
+        appInitStore,
+        colors,
+      })
+    );
+  };
+
+  useEffect(() => {
+    //@ts-ignore
+    if (props.route?.params?.isOpenTheme) {
+      _onPressThemeModal();
+    }
+    //@ts-ignore
+  }, [props.route?.params?.isOpenTheme]);
+
   const onRatingApp = () => {
     const options = {
       AppleAppID: "id1626035069",
@@ -91,9 +119,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
     });
   };
 
-  const renderRating = useCallback(() => {
+  const renderRating = () => {
     return (
-      <OWCard style={{ marginBottom: 16 }}>
+      <OWCard
+        style={{
+          marginBottom: 16,
+          backgroundColor: colors["neutral-surface-card"],
+        }}
+      >
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
@@ -175,7 +208,7 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </View>
       </OWCard>
     );
-  }, []);
+  };
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -183,7 +216,13 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
       backgroundColor={colors["neutral-surface-bg"]}
     >
       <View>
-        <OWCard style={{ marginBottom: 16 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <BasicSettingItem
             left={
               <View style={{ paddingRight: 12 }}>
@@ -215,9 +254,35 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
           <SettingRemoveAccountItem />
         </OWCard>
 
-        <OWCard style={{ marginBottom: 16 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <SettingSwitchHideTestnet />
-          <SettingSwitchModeItem />
+          <BasicSettingItem
+            icon="tdesign_moon"
+            paragraph="Theme"
+            onPress={_onPressThemeModal}
+            right={
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
+              </View>
+            }
+          />
+          {/* <SettingSwitchModeItem /> */}
 
           <BasicSettingItem
             icon="tdesign_money"
@@ -271,7 +336,14 @@ export const NewSettingScreen: FunctionComponent = observer(() => {
         </OWCard>
 
         {renderRating()}
-        <OWCard style={{ marginBottom: 16, paddingBottom: 0 }} type="normal">
+        <OWCard
+          style={{
+            marginBottom: 16,
+            paddingBottom: 0,
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+          type="normal"
+        >
           <BasicSettingItem
             typeLeftIcon={"images"}
             source={require("../../assets/image/logo_owallet.png")}

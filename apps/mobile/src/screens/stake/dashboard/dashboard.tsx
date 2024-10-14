@@ -58,6 +58,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               padding: 24,
               borderBottomLeftRadius: 8,
               borderBottomRightRadius: 8,
+              backgroundColor: colors["neutral-surface-card"],
             }}
           >
             <View

@@ -1,5 +1,5 @@
 import { EthermintChainIdHelper } from "@owallet/cosmos";
-import { Message, OWalletError } from "@owallet/router";
+import { Env, Message, MessageSender, OWalletError } from "@owallet/router";
 import { ROUTE } from "./constants";
 import {
   KeyRing,
@@ -7,7 +7,6 @@ import {
   MultiKeyStoreInfoWithSelected,
 } from "./keyring";
 import { ExportKeyRingData, SignEthereumTypedDataObject } from "./types";
-
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
@@ -17,20 +16,41 @@ import {
   OWalletSignOptions,
   Key,
   BIP44HDPath,
-  AppCurrency,
   SettledResponses,
 } from "@owallet/types";
-import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 import { StdSignDoc } from "@owallet/types";
 import Long from "long";
 import { Int } from "@owallet/unit";
 import bigInteger from "big-integer";
-
-const bip39 = require("bip39");
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { schemaRequestSignBitcoin } from "./validates";
-import { ISimulateSignTron } from "@owallet/types";
+const bip39 = require("bip39");
+export class GetIsLockedMsg extends Message<boolean> {
+  public static type() {
+    return "GetIsLockedMsg";
+  }
+
+  constructor() {
+    super();
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return GetIsLockedMsg.type();
+  }
+}
 
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
@@ -872,6 +892,10 @@ export class GetDefaultAddressTronMsg extends Message<{
     super();
   }
 
+  override approveExternal(): boolean {
+    return true;
+  }
+
   validateBasic(): void {
     if (!this.chainId) {
       throw new OWalletError("keyring", 270, "chain id not set");
@@ -913,6 +937,10 @@ export class TriggerSmartContractMsg extends Message<{}> {
     if (!this.data) {
       throw new OWalletError("keyring", 231, "data not set");
     }
+  }
+
+  approveExternal(): boolean {
+    return true;
   }
 
   route(): string {
@@ -1570,5 +1598,59 @@ export class RequestSignOasisMsg extends Message<{}> {
 
   type(): string {
     return RequestSignOasisMsg.type();
+  }
+}
+
+export class PrivilegeCosmosSignAminoWithdrawRewardsMsg extends Message<AminoSignResponse> {
+  public static type() {
+    return "PrivilegeCosmosSignAminoWithdrawRewards";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly signDoc: StdSignDoc,
+    public readonly signOptions: OWalletSignOptions = {}
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new OWalletError("keyring", 230, "signer not set");
+    }
+
+    // Validate bech32 address.
+    Bech32Address.validate(this.signer);
+
+    // Check and validate the ADR-36 sign doc.
+    // ADR-36 sign doc doesn't have the chain id
+    if (!checkAndValidateADR36AminoSignDoc(this.signDoc)) {
+      if (this.signDoc.chain_id !== this.chainId) {
+        throw new OWalletError(
+          "keyring",
+          234,
+          "Chain id in the message is not matched with the requested chain id"
+        );
+      }
+    } else {
+      throw new Error("Can't use ADR-36 sign doc");
+    }
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return PrivilegeCosmosSignAminoWithdrawRewardsMsg.type();
   }
 }

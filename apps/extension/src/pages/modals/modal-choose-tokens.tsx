@@ -67,7 +67,7 @@ const TokenItem: FC<{
             <img
               className={styles.token}
               src={
-                !image || image === "missing.png"
+                !image || image === "missing.png" || image === "missing.svg"
                   ? unknownToken.coinImageUrl
                   : image
               }

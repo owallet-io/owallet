@@ -1,12 +1,12 @@
 PODS:
-  - appcenter-analytics (5.0.1):
+  - appcenter-analytics (5.0.2):
     - AppCenter/Analytics (~> 5.0)
     - AppCenterReactNativeShared (~> 5.0)
     - React-Core
-  - appcenter-core (5.0.1):
+  - appcenter-core (5.0.2):
     - AppCenterReactNativeShared (~> 5.0)
     - React-Core
-  - appcenter-crashes (5.0.1):
+  - appcenter-crashes (5.0.2):
     - AppCenter/Crashes (~> 5.0)
     - AppCenterReactNativeShared (~> 5.0)
     - React-Core
@@ -19,7 +19,7 @@ PODS:
     - AppCenter/Core (= 5.0.4)
   - Base64 (1.1.2)
   - boost (1.76.0)
-  - BranchSDK (3.4.4)
+  - BranchSDK (3.6.3)
   - BVLinearGradient (2.7.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
@@ -580,8 +580,8 @@ PODS:
     - React-Core
   - react-native-blur (4.3.2):
     - React-Core
-  - react-native-branch (6.2.2):
-    - BranchSDK (= 3.4.4)
+  - react-native-branch (6.3.0):
+    - BranchSDK (= 3.6.3)
     - React-Core
   - react-native-bytebrew-sdk (0.1.5):
     - React-Core
@@ -607,14 +607,14 @@ PODS:
     - React-Core
   - react-native-safe-area-context (4.7.3):
     - React-Core
-  - react-native-skia (1.3.13):
+  - react-native-skia (1.4.2):
     - RCT-Folly (= 2021.07.22.00)
     - React
     - React-callinvoker
     - React-Core
   - react-native-splash-screen (3.3.0):
     - React-Core
-  - react-native-webview (13.12.2):
+  - react-native-webview (13.12.3):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - React-NativeModulesApple (0.72.15):
@@ -754,7 +754,7 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.19.0):
+  - RNGestureHandler (2.20.0):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNInAppBrowser (3.7.0):
@@ -777,7 +777,7 @@ PODS:
     - React-Core
   - RNScrypt (1.2.1):
     - React
-  - RNSentry (5.33.1):
+  - RNSentry (5.33.2):
     - hermes-engine
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -1122,13 +1122,13 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppCenter: 85c92db0759d2792a65eb61d6842d2e86611a49a
-  appcenter-analytics: b3a60e025b8db7013a71053c1ced96bcf7acba75
-  appcenter-core: 53cc7b5d9a2cdd6a484cae8e50977bab91e0780e
-  appcenter-crashes: 9cb825ee8f89715a1b0a7164a71fc8c582b0e796
+  appcenter-analytics: b90b12a9357d8e3f6174ac761f00c70d95a137ee
+  appcenter-core: 711583753e9b44d3a9c75f8f78baa23804be3e40
+  appcenter-crashes: be716cca49539023ab5778502230098dd4b41d54
   AppCenterReactNativeShared: 22aea9046e80c449137f4e574ae1f229616e2358
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 7dcd2de282d72e344012f7d6564d024930a6a440
-  BranchSDK: 28bec34fb99c53ab8e86b7bf69cc55a4505fe0b3
+  BranchSDK: a5418b5fde1b837567cf00a4a7f2ed45abf2e26c
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: d892f13c5012e9e2cb36640f4929654b7be21fe5
@@ -1188,7 +1188,7 @@ SPEC CHECKSUMS:
   React-logger: ed7c9e01e58529065e7da6bf8318baf15024283e
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
-  react-native-branch: 1a3a65b8902fcb988c110a60b0dcb56595db7077
+  react-native-branch: 2d064d63b23ea395bc3ee187faadfc8937d791fd
   react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-compat: 1990fd875b148f268cf762ce6edf96cb273036bb
@@ -1197,9 +1197,9 @@ SPEC CHECKSUMS:
   react-native-pager-view: 4be639d9742fb683ea538b69a8855f9239ea72c6
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 238cd8b619e05cb904ccad97ef42e84d1b5ae6ec
-  react-native-skia: c0d99aa1fb10f6d97627c1dc018c0ab269439a76
+  react-native-skia: c995f905e86f093cec5a0f68c858e3974649a300
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
-  react-native-webview: 9db6df097df63b622302c5eec85f07bec1387930
+  react-native-webview: 670ee27ecc5d11a56e82ce6f03182896b368d37c
   React-NativeModulesApple: ee36a33f5ad8d80487c43e6b4370ea2eaaa81750
   React-perflogger: 6acc671f527e69c0cd93b8e62821d33d3ddf25ca
   React-RCTActionSheet: 569bb9db46d85565d14697e15ecf2166e035eb07
@@ -1225,7 +1225,7 @@ SPEC CHECKSUMS:
   RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
   RNFBCrashlytics: a4a66785997e629313ec8005a0811765738239fd
   RNFBMessaging: b82ef70d252500d3ad104284c0c7f8e1cd22b51e
-  RNGestureHandler: 22d513d69ddc0b80430375c11f7c7cb4fabd8ffe
+  RNGestureHandler: fc9b83c69a222770e07bef8a6f6c47d9ebfcd336
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
@@ -1234,7 +1234,7 @@ SPEC CHECKSUMS:
   RNReanimated: e71a1d6bb6427f45ea57c5e23f99030129b6db62
   RNScreens: bea7b9767050d69e4b9da14639cdd5c8f5a37881
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
-  RNSentry: d059115a1ee0a77087030e141a1b0aa4983ef9bc
+  RNSentry: cb7a8c8529832736cf800632de745e7fd65ad6b9
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d

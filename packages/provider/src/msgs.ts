@@ -47,6 +47,10 @@ export class RequestSignDirectMsg extends Message<{
     return "keyring";
   }
 
+  approveExternal(): boolean {
+    return true;
+  }
+
   type(): string {
     return RequestSignDirectMsg.type();
   }
@@ -303,6 +307,10 @@ export class GetChainInfosWithoutEndpointsMsg extends Message<{
 }> {
   public static type() {
     return "get-chain-infos-without-endpoints";
+  }
+
+  override approveExternal(): boolean {
+    return true;
   }
 
   validateBasic(): void {

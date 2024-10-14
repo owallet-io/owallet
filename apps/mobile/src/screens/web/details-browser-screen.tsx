@@ -406,7 +406,7 @@ export const DetailsBrowserScreen = observer((props) => {
               inputRight={
                 <OWButtonIcon
                   onPress={onReload}
-                  colorIcon={colors["neutral-text-action-on-light-bg"]}
+                  colorIcon={colors["neutral-text-title"]}
                   fullWidth={false}
                   name={"tdesignrefresh"}
                   sizeIcon={18}
@@ -422,7 +422,7 @@ export const DetailsBrowserScreen = observer((props) => {
             colorIcon={
               isActiveBoorkmark(currentURL)
                 ? colors["primary-surface-pressed"]
-                : colors["neutral-text-action-on-light-bg"]
+                : colors["neutral-text-title"]
             }
             name={"tdesignbookmark"}
             sizeIcon={18}
@@ -431,7 +431,7 @@ export const DetailsBrowserScreen = observer((props) => {
             size={"medium"}
             onPress={onHomeBrowser}
             style={styles.icon}
-            colorIcon={colors["neutral-text-action-on-light-bg"]}
+            colorIcon={colors["neutral-text-title"]}
             fullWidth={false}
             name={"tdesignhome"}
             sizeIcon={18}

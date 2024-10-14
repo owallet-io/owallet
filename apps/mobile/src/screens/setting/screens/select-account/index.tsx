@@ -164,7 +164,13 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
   ) => {
     return keyStores.length > 0 ? (
-      <OWCard style={{ marginBottom: 12 }} type="normal">
+      <OWCard
+        style={{
+          marginBottom: 12,
+          backgroundColor: colors["neutral-surface-card"],
+        }}
+        type="normal"
+      >
         {keyStores.length > 0 ? (
           <React.Fragment>
             <OWText

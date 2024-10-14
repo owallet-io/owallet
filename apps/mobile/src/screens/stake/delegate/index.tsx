@@ -358,7 +358,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         {/*/>*/}
         {validator ? (
           <View>
-            <OWCard>
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+            >
               <OWText
                 style={{ paddingBottom: 8 }}
                 color={colors["neutral-text-title"]}
@@ -388,7 +392,13 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 </OWText>
               </View>
             </OWCard>
-            <OWCard style={{ paddingTop: 22 }} type="normal">
+            <OWCard
+              style={{
+                paddingTop: 22,
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
               <View
                 style={{
                   flexDirection: "row",
@@ -418,7 +428,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   >
                     <View
                       style={{
-                        backgroundColor: colors["neutral-icon-on-dark"],
+                        backgroundColor: colors["neutral-surface-action"],
                         borderRadius: 999,
                       }}
                     >
@@ -514,7 +524,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 </View>
               ) : null}
             </OWCard>
-            <OWCard type="normal">
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
               <View
                 style={{
                   flexDirection: "row",

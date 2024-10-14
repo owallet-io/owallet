@@ -60,7 +60,9 @@ export function renderDirectMessage(
         let codeId: string | any = instantiateContractMsg.codeId;
         if (typeof instantiateContractMsg.codeId == "object") {
           codeId =
+            //@ts-ignore
             instantiateContractMsg.codeId?.low?.toString() ||
+            //@ts-ignore
             instantiateContractMsg.codeId?.high?.toString();
         }
         return renderMsgInstantiateContract(

@@ -5,8 +5,7 @@ import { spacing, typography } from "../../../themes";
 import Validators from "./modal-validators";
 import { useTheme } from "@src/themes/theme-provider";
 
-const styling = () => {
-  const { colors } = useTheme();
+const styling = (colors) => {
   return StyleSheet.create({
     containerAccount: {
       backgroundColor: colors["background-item-list"],
@@ -23,7 +22,8 @@ const styling = () => {
 };
 
 const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
-  const styles = styling();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   return (
     <View
       style={{
@@ -45,6 +45,7 @@ const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
         onPressSelectValidator={onPressSelectValidator}
         dstValidatorAddress={dstValidatorAddress}
         styles={styles}
+        colors={colors}
       />
     </View>
   );

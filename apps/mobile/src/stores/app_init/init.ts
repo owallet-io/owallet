@@ -1,11 +1,8 @@
 import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CoinGeckoPrices, TokenItemType } from "@oraichain/oraidex-common";
-import {
-  IMultipleAsset,
-  initPrice,
-} from "@src/screens/home/hooks/use-multiple-assets";
+import { CoinGeckoPrices } from "@oraichain/oraidex-common";
+import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
 
 export class AppInit {
   @persist("object")
@@ -14,8 +11,10 @@ export class AppInit {
     status: boolean;
     passcodeType: "numeric" | "alphabet";
     isAllNetworks: boolean;
+    isSelectTheme: boolean;
     date_updated: null | number;
     theme: "dark" | "light";
+    wallet: "owallet" | "injective" | "osmosis";
     hideTestnet: boolean;
     hideTokensWithoutBalance: boolean;
     visibleTabBar?: string;
@@ -41,6 +40,8 @@ export class AppInit {
       date_updated: null,
       theme: "light",
       hideTestnet: true,
+      wallet: "owallet",
+      isSelectTheme: false,
       hideTokensWithoutBalance: true,
       feeOption: "average",
       isAllNetworks: false,
@@ -69,6 +70,10 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+  @action
+  updateSelectTheme() {
+    this.initApp = { ...this.initApp, isSelectTheme: true };
   }
   @action
   updateMultipleAssets(data: IMultipleAsset) {
@@ -108,6 +113,11 @@ export class AppInit {
   @action
   updateTheme(theme) {
     this.initApp = { ...this.initApp, theme };
+  }
+
+  @action
+  updateWalletTheme(wallet) {
+    this.initApp = { ...this.initApp, wallet };
   }
 
   @action

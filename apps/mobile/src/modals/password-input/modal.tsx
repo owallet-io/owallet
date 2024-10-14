@@ -3,19 +3,14 @@ import { registerModal } from "../base";
 import { Text } from "@src/components/text";
 import { CardModal } from "../card";
 import { TextInput } from "../../components/input";
-import { Button } from "../../components/button";
 import {
-  ActivityIndicator,
   InteractionManager,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   TextStyle,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { metrics, typography } from "../../themes";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { useStore } from "../../stores";
 import { useTheme } from "@src/themes/theme-provider";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";

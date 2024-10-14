@@ -38,12 +38,15 @@ import {
   RequestSendRawTransactionMsg,
   SimulateSignTronMsg,
   GetKeySettledMsg,
+  GetIsLockedMsg,
+  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
 import { KeyRingService } from "./service";
 
 export function init(router: Router, service: KeyRingService): void {
+  router.registerMessage(GetIsLockedMsg);
   router.registerMessage(RestoreKeyRingMsg);
   router.registerMessage(DeleteKeyRingMsg);
   router.registerMessage(UpdateNameKeyRingMsg);
@@ -82,5 +85,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(ExportKeyRingDatasMsg);
   router.registerMessage(RequestSignEIP712CosmosTxMsg_v0);
   router.registerMessage(ChangeChainMsg);
+  router.registerMessage(PrivilegeCosmosSignAminoWithdrawRewardsMsg);
+
   router.addHandler(ROUTE, getHandler(service));
 }

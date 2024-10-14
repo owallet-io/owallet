@@ -25,6 +25,8 @@ import { Button } from "../../../components/common/button";
 import cn from "classnames/bind";
 import useOnClickOutside from "../../../hooks/use-click-outside";
 import withErrorBoundary from "../hoc/withErrorBoundary";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 enum Tab {
   Details,
@@ -60,6 +62,7 @@ const SignTronContent: FunctionComponent = () => {
 
   const [txInfo, setTxInfo] = useState();
   const { waitingTronData } = signInteractionStore;
+
   const getDataTx = async () => {
     if (!waitingTronData) return;
     const kvStore = new ExtensionKVStore("keyring");
@@ -90,6 +93,22 @@ const SignTronContent: FunctionComponent = () => {
     queries
   );
 
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
+
   useOnClickOutside(dataRef, () => {
     handleCloseDataModal();
   });
@@ -100,7 +119,6 @@ const SignTronContent: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    console.log(txInfo, "txInfo");
     if (txInfo && amountConfig) {
       //@ts-ignore
       const tx = txInfo?.parameters.find(
@@ -109,12 +127,16 @@ const SignTronContent: FunctionComponent = () => {
       amountConfig.setAmount(tx?.value);
     }
   }, [txInfo, amountConfig]);
-  useEffect(() => {
+
+  const onWaitTronData = async () => {
     if (dataSign) return;
 
-    if (waitingTronData) {
-      const dataTron = waitingTronData?.data;
+    if (signInteractionStore.waitingTronData) {
+      chainStore.selectChain(ChainIdEnum.TRON);
+
+      const dataTron = signInteractionStore.waitingTronData?.data;
       getDataTx();
+
       setDataSign(dataTron);
       if (dataTron?.recipient) {
         recipientConfig.setRawRecipient(dataTron?.recipient);
@@ -125,12 +147,16 @@ const SignTronContent: FunctionComponent = () => {
       if (dataTron?.currency) {
         amountConfig.setSendCurrency(dataTron?.currency);
       }
-
-      chainStore.selectChain(ChainIdEnum.TRON);
     }
-  }, [waitingTronData]);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      onWaitTronData();
+    }, 400);
+  }, [onWaitTronData]);
+
   const error = feeConfig.getError();
-  const txStateIsValid = error == null;
   if (chainStore?.selectedChainId !== ChainIdEnum.TRON) return;
 
   const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } = useGetFeeTron(
@@ -156,8 +182,7 @@ const SignTronContent: FunctionComponent = () => {
   return (
     <div
       style={{
-        height: "100%",
-        width: "100vw",
+        height: "100vh",
         overflowX: "auto",
       }}
     >
@@ -180,7 +205,7 @@ const SignTronContent: FunctionComponent = () => {
         <div className={style.container}>
           <div
             style={{
-              height: "75%",
+              // height: '75%',
               overflowY: "scroll",
               overflowX: "hidden",
               padding: 16,
@@ -239,7 +264,7 @@ const SignTronContent: FunctionComponent = () => {
               position: "absolute",
               bottom: 0,
               width: "100%",
-              height: "25%",
+              height: 160,
               backgroundColor: colors["neutral-surface-card"],
               borderTop: "1px solid" + colors["neutral-border-default"],
             }}
@@ -315,15 +340,33 @@ const SignTronContent: FunctionComponent = () => {
                     disabled={signInteractionStore.isLoading}
                     onClick={async (e) => {
                       e.preventDefault();
+                      history.goBack();
+                      await signInteractionStore.reject(
+                        signInteractionStore.waitingTronData.id,
+                        async (proceedNext) => {
+                          if (!proceedNext) {
+                            if (
+                              interactionInfo.interaction &&
+                              !interactionInfo.interactionInternal
+                            ) {
+                              handleExternalInteractionWithNoProceedNext();
+                            }
+                          }
 
-                      await signInteractionStore.reject();
+                          if (
+                            interactionInfo.interaction &&
+                            interactionInfo.interactionInternal
+                          ) {
+                            await unmountPromise.promise;
+                          }
+                        }
+                      );
                       if (
                         interactionInfo.interaction &&
                         !interactionInfo.interactionInternal
                       ) {
                         window.close();
                       }
-                      history.goBack();
                     }}
                   >
                     {intl.formatMessage({
@@ -339,16 +382,59 @@ const SignTronContent: FunctionComponent = () => {
                       e.preventDefault();
                       //@ts-ignore
                       if (txInfo?.functionSelector) {
-                        await signInteractionStore.approveTronAndWaitEnd({
-                          ...waitingTronData?.data,
-                        });
+                        await signInteractionStore.approveTronAndWaitEnd(
+                          {
+                            ...waitingTronData?.data,
+                          },
+                          signInteractionStore.waitingTronData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
+                        history.goBack();
                       } else {
                         //@ts-ignore
-                        await signInteractionStore.approveTronAndWaitEnd({
-                          ...waitingTronData?.data,
-                          amount: amountConfig?.getAmountPrimitive()?.amount,
-                          feeLimit: feeLimitData,
-                        });
+                        await signInteractionStore.approveTronAndWaitEnd(
+                          {
+                            ...waitingTronData?.data,
+                            amount: amountConfig?.getAmountPrimitive()?.amount,
+                            feeLimit: feeLimitData,
+                          },
+                          signInteractionStore.waitingTronData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
+
+                        history.goBack();
                       }
                       if (
                         interactionInfo.interaction &&
@@ -380,6 +466,22 @@ export const SignTronPage: FunctionComponent = observer(() => {
 
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
+  });
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
   });
 
   const selectTronNetwork = async () => {
@@ -473,7 +575,27 @@ export const SignTronPage: FunctionComponent = observer(() => {
                     onClick={async (e) => {
                       e.preventDefault();
 
-                      await signInteractionStore.reject();
+                      await signInteractionStore.reject(
+                        signInteractionStore.waitingTronData.id,
+                        async (proceedNext) => {
+                          if (!proceedNext) {
+                            if (
+                              interactionInfo.interaction &&
+                              !interactionInfo.interactionInternal
+                            ) {
+                              handleExternalInteractionWithNoProceedNext();
+                            }
+                          }
+
+                          if (
+                            interactionInfo.interaction &&
+                            interactionInfo.interactionInternal
+                          ) {
+                            await unmountPromise.promise;
+                          }
+                        }
+                      );
+
                       if (
                         interactionInfo.interaction &&
                         !interactionInfo.interactionInternal

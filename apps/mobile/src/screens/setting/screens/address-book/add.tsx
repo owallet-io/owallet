@@ -148,7 +148,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         contentContainerStyle={{ height: metrics.screenHeight }}
         showsVerticalScrollIndicator={false}
       >
-        <OWBox>
+        <OWBox style={{ backgroundColor: colors["neutral-surface-card"] }}>
           <TextInput
             label=""
             topInInputContainer={

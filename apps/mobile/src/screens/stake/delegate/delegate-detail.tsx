@@ -18,6 +18,7 @@ import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
+import OWCard from "@src/components/card/ow-card";
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -89,7 +90,11 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     return (
       <PageWithView>
         <OWSubTitleHeader title="Staking detail" />
-        <OWBox>
+        <OWCard
+          style={{
+            backgroundColor: colors["neutral-surface-card"],
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
@@ -218,7 +223,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               >{`Validator details`}</Text>
             </TouchableOpacity>
           </View>
-        </OWBox>
+        </OWCard>
 
         <View style={styles.containerAllBtn}>
           <OWButton

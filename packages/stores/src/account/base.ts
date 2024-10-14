@@ -163,6 +163,9 @@ export class AccountSetBase<MsgOpts, Queries> {
   protected _name: string = "";
 
   @observable
+  protected _txTypeInProgress: string = "";
+
+  @observable
   protected _bech32Address: string = "";
   @observable
   protected _legacyAddress: string = "";
@@ -1108,6 +1111,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         ],
         fee: Fee.fromPartial({
           amount: signResponse.signed.fee.amount as Coin[],
+          //@ts-ignore
           gasLimit: Long.fromString(signResponse.signed.fee.gas),
           payer:
             eip712Signing && !chainIsInjective
@@ -1311,6 +1315,10 @@ export class AccountSetBase<MsgOpts, Queries> {
     return this._addressType;
   }
 
+  get _pubKey(): Uint8Array {
+    return this.pubKey.slice();
+  }
+
   @computed
   get btcAddress(): string {
     if (this._addressType === AddressBtcType.Legacy) {
@@ -1356,5 +1364,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       chainInfo.features != null &&
       chainInfo.features.includes("no-legacy-stdTx")
     );
+  }
+
+  @action
+  setTxTypeInProgress(type: string): void {
+    this._txTypeInProgress = type;
   }
 }

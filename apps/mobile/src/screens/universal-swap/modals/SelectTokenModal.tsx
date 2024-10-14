@@ -176,7 +176,7 @@ export const SelectTokenModal: FunctionComponent<{
                       alignItems: "center",
                       justifyContent: "center",
                       overflow: "hidden",
-                      backgroundColor: colors["neutral-icon-on-dark"],
+                      backgroundColor: colors["neutral-surface-action"],
                       padding: 4,
                     }}
                   >

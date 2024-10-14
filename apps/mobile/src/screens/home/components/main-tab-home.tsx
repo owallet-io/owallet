@@ -15,7 +15,6 @@ export const MainTabHome: FC<{
   dataTokens: readonly ViewToken[];
 }> = observer(({ dataTokens }) => {
   const { colors } = useTheme();
-  const { chainStore, appInitStore } = useStore();
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
@@ -41,7 +40,7 @@ export const MainTabHome: FC<{
                 ...styles.titleTab,
                 color:
                   activeTab.id === item.id
-                    ? colors["neutral-border-bold"]
+                    ? colors["neutral-text-title"]
                     : colors["neutral-text-body"],
               }}
               onPress={() => {

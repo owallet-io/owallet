@@ -20,6 +20,7 @@ import {
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
+import { StakeAll } from "./stake-all";
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
 export const HomePage = observer(() => {
@@ -203,6 +204,7 @@ export const HomePage = observer(() => {
 
       {/*TODO:// need check again Claim reward */}
       {/* <ClaimReward /> */}
+      {chainStore.isAllNetwork ? <StakeAll /> : null}
       {chainStore.isAllNetwork ||
       chainStore.current.networkType !== "cosmos" ? null : (
         <StakeView />

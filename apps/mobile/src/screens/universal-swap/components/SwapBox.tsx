@@ -116,7 +116,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <View
                   style={{
                     marginRight: 4,
-                    backgroundColor: colors["neutral-icon-on-dark"],
+                    backgroundColor: colors["neutral-surface-action"],
                     borderRadius: 99,
                   }}
                 >
@@ -129,7 +129,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <OWText
                   weight="600"
                   size={16}
-                  color={colors["neutral-text-action-on-light-bg"]}
+                  color={colors["neutral-text-title"]}
                 >
                   {chainInfo?.chainName}
                 </OWText>
@@ -159,7 +159,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <View
                   style={{
                     marginRight: 4,
-                    backgroundColor: colors["neutral-icon-on-dark"],
+                    backgroundColor: colors["neutral-surface-action"],
                     borderRadius: 99,
                   }}
                 >
@@ -172,7 +172,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <OWText
                   weight="600"
                   size={16}
-                  color={colors["neutral-text-action-on-light-bg"]}
+                  color={colors["neutral-text-title"]}
                 >
                   {chainInfo?.chainName}
                 </OWText>

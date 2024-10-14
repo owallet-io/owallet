@@ -28,7 +28,14 @@ const OWEmpty = ({
   };
 
   return (
-    <View style={[styles.container, style]} {...props}>
+    <View
+      style={[
+        styles.container,
+        style,
+        { backgroundColor: colors["neutral-surface-card"] },
+      ]}
+      {...props}
+    >
       <FastImage
         source={imgList[type]}
         style={{

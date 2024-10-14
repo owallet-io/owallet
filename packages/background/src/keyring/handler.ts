@@ -6,6 +6,7 @@ import {
   getBase58Address,
 } from "@owallet/common";
 import {
+  GetIsLockedMsg,
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   GetKeyMsg,
@@ -46,8 +47,10 @@ import {
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
   GetKeySettledMsg,
+  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
+import { KeyRingStatus } from "./keyring";
 import { Bech32Address } from "@owallet/cosmos";
 
 import Long from "long";
@@ -57,6 +60,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
 ) => {
   return (env: Env, msg: Message<unknown>) => {
     switch (msg.constructor) {
+      case GetIsLockedMsg:
+        return handleGetIsLockedMsg(service)(env, msg as GetIsLockedMsg);
       case RestoreKeyRingMsg:
         return handleRestoreKeyRingMsg(service)(env, msg as RestoreKeyRingMsg);
       case DeleteKeyRingMsg:
@@ -207,9 +212,23 @@ export const getHandler: (service: KeyRingService) => Handler = (
         );
       case ChangeChainMsg:
         return handleChangeChainMsg(service)(env, msg as ChangeChainMsg);
+
+      case PrivilegeCosmosSignAminoWithdrawRewardsMsg:
+        return handlePrivilegeCosmosSignAminoWithdrawRewardsMsg(service)(
+          env,
+          msg as PrivilegeCosmosSignAminoWithdrawRewardsMsg
+        );
       default:
         throw new Error("Unknown msg type");
     }
+  };
+};
+
+const handleGetIsLockedMsg: (
+  service: KeyRingService
+) => InternalHandler<GetIsLockedMsg> = (service) => {
+  return () => {
+    return service.keyRingStatus === KeyRingStatus.LOCKED;
   };
 };
 
@@ -467,6 +486,7 @@ const handleRequestSignDirectMsg: (
       msg.chainId,
       msg.origin
     );
+    console.log("msg.signDoc handleRequestSignDirectMsg", msg.signDoc);
 
     const signDoc = SignDoc.create({
       bodyBytes: msg.signDoc.bodyBytes,
@@ -728,6 +748,23 @@ const handleTriggerSmartContractMsg: (
       msg.data
     );
     return { ...response };
+  };
+};
+
+const handlePrivilegeCosmosSignAminoWithdrawRewardsMsg: (
+  service: KeyRingService
+) => InternalHandler<PrivilegeCosmosSignAminoWithdrawRewardsMsg> = (
+  service
+) => {
+  return async (env, msg) => {
+    return await service.privilegeSignAminoWithdrawRewards(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.signDoc,
+      msg.signOptions
+    );
   };
 };
 

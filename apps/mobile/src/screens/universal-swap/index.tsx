@@ -80,6 +80,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
 import { flatten } from "lodash";
 import { tracking } from "@src/utils/tracking";
+import { AFFILIATE_ADDRESS } from "@src/common/constants";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -535,10 +536,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
       const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
-      const IBC_DECIMALS = 18;
+      // const IBC_DECIMALS = 18;
       const fromTokenInOrai = getTokenOnOraichain(
         tokenInfo.coinGeckoId,
-        IBC_DECIMALS
+        true
+        // IBC_DECIMALS
       );
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
@@ -612,7 +614,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       ? simulateData?.routes
       : undefined;
 
-    const affiliateAddress = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
       originalFromToken: originalFromToken,
@@ -628,7 +629,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: fromAmountToken,
       relayerFee,
       alphaSmartRoutes,
-      affiliates: [{ address: affiliateAddress, basis_points_fee: "25" }],
+      affiliates: [{ address: AFFILIATE_ADDRESS, basis_points_fee: "25" }],
     } as UniversalSwapData;
 
     let compileSwapData = sendToAddress
@@ -1019,6 +1020,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           marginTop: 16,
           borderColor: colors["neutral-border-bold"],
           borderWidth: 2,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         {amountLoading ? (
@@ -1213,7 +1215,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
 
           {renderSwapInfo()}
-          <OWCard type="normal">
+          <OWCard
+            style={{ backgroundColor: colors["neutral-surface-card"] }}
+            type="normal"
+          >
             <View
               style={{
                 flexDirection: "row",

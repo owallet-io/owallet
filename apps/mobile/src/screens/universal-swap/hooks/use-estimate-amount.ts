@@ -126,7 +126,11 @@ const useEstimateAmount = (
           routerConfig: {
             url: "https://osor.oraidex.io",
             path: "/smart-router/alpha-router",
-            protocols: simulateOption?.protocols ?? ["Oraidex", "OraidexV3"],
+            protocols: simulateOption?.protocols ?? [
+              "Oraidex",
+              "OraidexV3",
+              "Osmosis",
+            ],
             dontAllowSwapAfter: ["Oraidex", "OraidexV3"],
           },
         });

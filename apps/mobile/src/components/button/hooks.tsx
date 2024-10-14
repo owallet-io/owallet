@@ -117,7 +117,7 @@ export const useMapStyles = ({
       case "secondary":
         return disabled
           ? colors["text-btn-disable-color"]
-          : colors["neutral-text-action-on-light-bg"];
+          : colors["neutral-icon-on-light"];
       case "link":
         return disabled
           ? colors["text-btn-disable-color"]
