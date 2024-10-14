@@ -11,7 +11,7 @@ import OWText from "@src/components/text/ow-text";
 
 export const SlippageConfirmModal = registerModal(
   //@ts-ignore
-  ({ close, slippage, handleConfirm }) => {
+  ({ close, impactWarning, handleConfirm }) => {
     const safeAreaInsets = useSafeAreaInsets();
 
     const { colors } = useTheme();
@@ -43,22 +43,14 @@ export const SlippageConfirmModal = registerModal(
               color={colors["warning-text-body"]}
               size={16}
             />
-            <OWText
-              style={{ paddingLeft: 8 }}
-              color={colors["warning-border-default"]}
-              weight="500"
-              size={14}
-            >
-              Slippage are to high!
-            </OWText>
           </View>
           <OWText
             color={colors["warning-border-default"]}
             weight="500"
             size={14}
           >
-            This swap has price impact over {slippage}% , Are you sure you have
-            reviewed the swap detail ?
+            This swap has price impact over {impactWarning}% , Are you sure you
+            have reviewed the swap detail ?
           </OWText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

@@ -35,8 +35,6 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     const chainInfo = chainStore.getChain(network);
     const chainIcon = chainIcons.find((c) => c.chainId === network);
 
-    console.log("chainIcon", chainIcon, chainInfo, network);
-
     return (
       <OWCard
         type="normal"

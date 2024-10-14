@@ -761,17 +761,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([0, 0]);
   };
 
-  useEffect(() => {
-    const fromChain = chainInfos.find((chain) => chain.chainId === fromNetwork);
-
-    if (
-      fromChain?.networkType === "evm" &&
-      toNetwork === ChainIdEnum.Injective
-    ) {
-      setFromNetwork(ChainIdEnum.Oraichain);
-    }
-  }, [fromNetwork, toNetwork]);
-
   const handleActiveAmount = (percent) => {
     const coeff = Number(percent) / 100;
     const finalAmount = calcMaxAmount({
@@ -1016,7 +1005,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           isOpen={slippageModal}
           //@ts-ignore
-          slippage={userSlippage}
+          impactWarning={impactWarning}
           handleConfirm={() => handleSubmit()}
         />
       </>
@@ -1166,7 +1155,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
           onPress={() => {
-            if (userSlippage > 5) {
+            if (impactWarning > 5) {
               setSlippageModal(true);
               return;
             } else {
