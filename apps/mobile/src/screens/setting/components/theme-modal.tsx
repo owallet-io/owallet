@@ -13,7 +13,7 @@ import OWText from "@src/components/text/ow-text";
 
 interface ThemeModalProps {
   modalStore: ModalStore;
-  chainStore: any;
+  onSelectChain: Function;
   appInitStore: AppInit;
   colors: object;
 }
@@ -28,11 +28,10 @@ const themes = [
 export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
   appInitStore,
   modalStore,
-  chainStore,
+  onSelectChain,
   colors,
 }) => {
   const onChooseTheme = async (item) => {
-    console.log("item.label", item.label);
     if (item.label !== "light" && item.label !== "dark") {
       appInitStore.updateTheme("dark");
       appInitStore.updateWalletTheme(item.label);
@@ -40,13 +39,11 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
       appInitStore.updateTheme(item.label);
       appInitStore.updateWalletTheme("owallet");
       if (item.label === "osmosis") {
-        chainStore.selectChain(ChainIdEnum.Osmosis);
+        onSelectChain(ChainIdEnum.Osmosis);
       } else if (item.label === "injective") {
-        chainStore.selectChain(ChainIdEnum.Injective);
+        onSelectChain(ChainIdEnum.Injective);
       }
     }
-    await chainStore.saveLastViewChainId();
-    appInitStore.selectAllNetworks(false);
     modalStore.close();
   };
 
@@ -70,10 +67,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            style={{
-              width: metrics.screenWidth / 2.3,
-              height: metrics.screenWidth / 2.3,
-            }}
+            style={styles.img}
             source={require("@src/assets/images/theme-light.png")}
           />
         );
@@ -82,10 +76,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            style={{
-              width: metrics.screenWidth / 2.3,
-              height: metrics.screenWidth / 2.3,
-            }}
+            style={styles.img}
             source={require("@src/assets/images/theme-dark.png")}
           />
         );
@@ -94,10 +85,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            style={{
-              width: metrics.screenWidth / 2.3,
-              height: metrics.screenWidth / 2.3,
-            }}
+            style={styles.img}
             source={require("@src/assets/images/theme-osmo.png")}
           />
         );
@@ -106,10 +94,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            style={{
-              width: metrics.screenWidth / 2.3,
-              height: metrics.screenWidth / 2.6,
-            }}
+            style={styles.img}
             source={require("@src/assets/images/theme-inj.png")}
           />
         );
@@ -205,5 +190,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     padding: 24,
     alignItems: "center",
+  },
+  img: {
+    width: metrics.screenWidth / 2.4,
+    height: metrics.screenWidth / 2.3,
   },
 });
