@@ -36,6 +36,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
     modalStore,
     accountStore,
     appInitStore,
+    chainStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
@@ -83,6 +84,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
     modalStore.setChildren(
       ThemeModal({
         modalStore,
+        chainStore,
         appInitStore,
         colors,
       })
