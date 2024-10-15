@@ -409,6 +409,7 @@ const styling = (colors: TypeTheme["colors"]) =>
     txtBtn: {
       fontWeight: "700",
       fontSize: 16,
+      color: colors["neutral-text-action-on-dark-bg"],
     },
     confirmBtn: {
       height: 48,
