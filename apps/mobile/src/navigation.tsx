@@ -133,24 +133,24 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={ManageWalletConnectScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.SettingSelectAccount}*/}
-            {/*    options={{*/}
-            {/*      headerRight: () => (*/}
-            {/*        <HeaderRightButton*/}
-            {/*          onPress={() => {*/}
-            {/*            // analyticsStore.logEvent("Add additional account started");*/}
-            {/*            navigate(SCREENS.RegisterIntro, {*/}
-            {/*              canBeBack: true,*/}
-            {/*            });*/}
-            {/*          }}*/}
-            {/*        >*/}
-            {/*          <HeaderAddIcon />*/}
-            {/*        </HeaderRightButton>*/}
-            {/*      ),*/}
-            {/*    }}*/}
-            {/*    component={SettingSelectAccountScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.SettingSelectAccount}
+              options={{
+                headerRight: () => (
+                  <HeaderRightButton
+                    onPress={() => {
+                      // analyticsStore.logEvent("Add additional account started");
+                      navigate(SCREENS.RegisterIntro, {
+                        canBeBack: true,
+                      });
+                    }}
+                  >
+                    <HeaderAddIcon />
+                  </HeaderRightButton>
+                ),
+              }}
+              component={SettingSelectAccountScreen}
+            />
 
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.SettingViewPrivateData}*/}

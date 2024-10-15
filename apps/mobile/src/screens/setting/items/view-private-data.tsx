@@ -32,7 +32,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
         );
         navigate(SCREENS.SettingBackupMnemonic, {
           privateData,
-          privateDataType: isPrivateKey ? "privateKey" : "mnemonic",
+          privateDataType: isPrivateKey ? "private-key" : "mnemonic",
         });
       }
       modalStore.close();

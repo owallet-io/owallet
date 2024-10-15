@@ -71,6 +71,7 @@ import { DeepLinkStore } from "./deep-link";
 import { EthereumQueries, EthereumAccountStore } from "@owallet/stores-eth";
 import { AppInit, appInit } from "@stores/app_init";
 import { ModalStore } from "@stores/modal";
+import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -90,7 +91,7 @@ export class RootStore {
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
-
+  public readonly universalSwapStore: UniversalSwapStore;
   // public readonly webpageStore: WebpageStore;
 
   public readonly queriesStore: QueriesStore<
@@ -157,7 +158,7 @@ export class RootStore {
       this.keyRingStore,
       new RNMessageRequesterInternal()
     );
-
+    this.universalSwapStore = universalSwapStore;
     this.ibcChannelStore = new IBCChannelStore(
       new AsyncKVStore("store_ibc_channel"),
       this.chainStore
