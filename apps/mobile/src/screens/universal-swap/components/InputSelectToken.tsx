@@ -85,7 +85,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             width: 33,
             height: 33,
             borderRadius: 999,
-            backgroundColor: colors["neutral-surface-action"],
+            backgroundColor: colors["icon"],
             alignItems: "center",
             justifyContent: "center",
           }}

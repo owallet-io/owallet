@@ -151,7 +151,7 @@ const modeColors = {
   ],
   // item
   item: ["#2B2D3B", "#fff"],
-  icon: ["#E2DEEB", "#5F5E77"],
+  icon: ["#E2DEEB", "#E2DEEB"],
   "icon-primary-default-gray": ["#717177", colorsCode["primary-default"]],
   // text
   label: ["#fff", "#3A3A3C"],

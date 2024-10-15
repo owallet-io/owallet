@@ -230,8 +230,7 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor:
-                                  colors["neutral-surface-action"],
+                                backgroundColor: colors["neutral-text-heading"],
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
@@ -253,8 +252,7 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor:
-                                  colors["neutral-surface-action"],
+                                backgroundColor: colors["neutral-text-heading"],
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
@@ -415,21 +413,22 @@ const styling = (colors: TypeTheme["colors"]) =>
     confirmBtn: {
       height: 48,
       borderRadius: 999,
+      color: colors["neutral-text-action-on-dark-bg"],
     },
     txtSlippgaePercentInActive: {
       color: "#7C8397",
     },
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 5 - 24,
-      backgroundColor: colors["background-item-list"],
+      backgroundColor: colors["neutral-surface-bg"],
       height: 44,
     },
     txtSlippgaePercentActive: {
-      color: colors["neutral-border-bold"],
+      color: colors["neutral-text-action-on-dark-bg"],
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 5 - 24,
-      backgroundColor: colors["background-item-list"],
+      backgroundColor: colors["primary-surface-default"],
       height: 44,
       borderWidth: 1,
       borderColor: colors["neutral-border-bold"],

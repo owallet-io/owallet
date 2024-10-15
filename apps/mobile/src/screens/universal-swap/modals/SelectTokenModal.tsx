@@ -176,7 +176,7 @@ export const SelectTokenModal: FunctionComponent<{
                       alignItems: "center",
                       justifyContent: "center",
                       overflow: "hidden",
-                      backgroundColor: colors["neutral-surface-action"],
+                      backgroundColor: colors["icon"],
                       padding: 4,
                     }}
                   >
@@ -233,7 +233,11 @@ export const SelectTokenModal: FunctionComponent<{
           );
         }
       },
-      [universalSwapStore?.getAmount]
+      [
+        universalSwapStore?.getAmount,
+        appInitStore.getInitApp.theme,
+        appInitStore.getInitApp.wallet,
+      ]
     );
 
     return (
