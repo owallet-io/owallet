@@ -49,10 +49,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
       };
     });
   }, [priceStore.supportedVsCurrencies]);
-  const selected = keyRingStore.multiKeyStoreInfo.find(
-    (keyStore) => keyStore.selected
-  );
-
+  // const selected = keyRingStore.multiKeyStoreInfo.find(
+  //   (keyStore) => keyStore.selected
+  // );
+  const selectedKeyInfo = keyRingStore.selectedKeyInfo;
+  console.log(selectedKeyInfo.name, "selectedKeyInfo");
   const _onPressCountryModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -236,7 +237,9 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
             }
             icon="owallet"
             paragraph={
-              selected ? selected.meta?.name || "OWallet Account" : "No Account"
+              selectedKeyInfo
+                ? selectedKeyInfo.name || "OWallet Account"
+                : "No Account"
             }
             subtitle={Bech32Address.shortenAddress(
               accountOrai.bech32Address,
@@ -248,9 +251,9 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
             <SettingBiometricLockItem />
           ) : null}
-          {canShowPrivateData(keyRingStore.keyRingType) && (
-            <SettingViewPrivateDataItem />
-          )}
+          {/*{canShowPrivateData(keyRingStore.keyRingType) && (*/}
+          {/*  <SettingViewPrivateDataItem />*/}
+          {/*)}*/}
           <SettingRemoveAccountItem />
         </OWCard>
 

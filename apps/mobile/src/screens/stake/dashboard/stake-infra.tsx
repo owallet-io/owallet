@@ -5,6 +5,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -17,25 +18,14 @@ import {
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { API } from "@src/common/api";
-import {
-  AprByChain,
-  ChainIdEnum,
-  COINTYPE_NETWORK,
-  fetchRetry,
-  getKeyDerivationFromAddressType,
-} from "@owallet/common";
-import axios from "axios";
+import { ChainIdEnum, formatAprString, zeroDec } from "@owallet/common";
 import { Popup } from "react-native-popup-confirm-toast";
-import { tracking } from "@src/utils/tracking";
-import { showToast } from "@src/utils/helper";
 import { useBIP44Option } from "@src/screens/register/bip44";
 import { OWBox } from "@src/components/card";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@common/constants";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { Dec, IntPretty } from "@owallet/unit";
 import { ScrollView } from "react-native-gesture-handler";
+import { AprItem } from "@stores/aprs";
 
 const dataOWalletStake = [
   {
@@ -104,139 +94,92 @@ async function getBlockTime(lcdEndpoint, blockHeightDiff = 100) {
 
 const fetchValidatorByApr = async () => {
   try {
-    const res = await fetchRetry(
+    const res = await simpleFetch(
       "https://api.scan.orai.io/v1/validators?page_id=1"
     );
-    console.log(res, "res");
-    if (!res.data) return [];
-    return res.data;
+
+    if (!res.data?.data) return [];
+    return res.data?.data;
   } catch (e) {
     console.log(e, "err for fetch Validator oraichain");
   }
 };
 
-async function fetchChainData(chainInfo, validatorAddress) {
-  try {
-    const [
-      totalSupplyResponse,
-      paramsResponse,
-      inflationResponse,
-      validatorInfoResponse,
-      blockTimeResponse,
-    ] = await Promise.all([
-      axios.get(
-        `${chainInfo.rest}/cosmos/bank/v1beta1/supply${
-          chainInfo.stakeCurrency.coinMinimalDenom === "orai"
-            ? ""
-            : `/by_denom?denom=${chainInfo.stakeCurrency.coinMinimalDenom}`
-        }`
-      ),
-      axios.get(`${chainInfo.rest}/cosmos/distribution/v1beta1/params`),
-      axios.get(`${chainInfo.rest}/cosmos/mint/v1beta1/inflation`),
-      API.getValidatorInfo(chainInfo.rest, validatorAddress),
-      getBlockTime(chainInfo.rest),
-    ]);
-
-    const totalSupply =
-      chainInfo.stakeCurrency.coinMinimalDenom === "orai"
-        ? totalSupplyResponse.data.supply?.find((s) => s.denom === "orai")
-            ?.amount
-        : totalSupplyResponse.data?.amount?.amount;
-
-    return {
-      totalSupply,
-      params: paramsResponse.data?.params,
-      inflationRate: inflationResponse.data?.inflation,
-      validator: validatorInfoResponse.validator,
-      blockTime: blockTimeResponse,
-    };
-  } catch (error) {
-    console.error("Error fetching chain data:", error);
-    throw error;
-  }
-}
+// async function fetchChainData(chainInfo, validatorAddress) {
+//   try {
+//     const [
+//       totalSupplyResponse,
+//       paramsResponse,
+//       inflationResponse,
+//       validatorInfoResponse,
+//       blockTimeResponse,
+//     ] = await Promise.all([
+//       axios.get(
+//         `${chainInfo.rest}/cosmos/bank/v1beta1/supply${
+//           chainInfo.stakeCurrency.coinMinimalDenom === "orai"
+//             ? ""
+//             : `/by_denom?denom=${chainInfo.stakeCurrency.coinMinimalDenom}`
+//         }`
+//       ),
+//       axios.get(`${chainInfo.rest}/cosmos/distribution/v1beta1/params`),
+//       axios.get(`${chainInfo.rest}/cosmos/mint/v1beta1/inflation`),
+//       API.getValidatorInfo(chainInfo.rest, validatorAddress),
+//       getBlockTime(chainInfo.rest),
+//     ]);
+//
+//     const totalSupply =
+//       chainInfo.stakeCurrency.coinMinimalDenom === "orai"
+//         ? totalSupplyResponse.data.supply?.find((s) => s.denom === "orai")
+//             ?.amount
+//         : totalSupplyResponse.data?.amount?.amount;
+//
+//     return {
+//       totalSupply,
+//       params: paramsResponse.data?.params,
+//       inflationRate: inflationResponse.data?.inflation,
+//       validator: validatorInfoResponse.validator,
+//       blockTime: blockTimeResponse,
+//     };
+//   } catch (error) {
+//     console.error("Error fetching chain data:", error);
+//     throw error;
+//   }
+// }
 
 export interface AprItemInner {
   apr?: number;
 }
 
 export const StakingInfraScreen: FunctionComponent = observer(() => {
-  const { chainStore, keyRingStore, appInitStore, modalStore, accountStore } =
-    useStore();
+  const {
+    chainStore,
+    keyRingStore,
+    queriesStore,
+    appInitStore,
+    hugeQueriesStore,
+    modalStore,
+    accountStore,
+  } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [search, setSearch] = useState("");
+  const [oraichainApr, setOraichainApr] = useState<AprItem>({
+    chainId: ChainIdEnum.Oraichain,
+    apr: new IntPretty(zeroDec),
+  });
 
-  const [listAprByChain, setListApr] = useState([
-    {
-      chainId: ChainIdEnum.Stargaze,
-      apr: "13.65",
-    },
-  ]);
-
-  const fetchAllApr = async () => {
-    for (const chainInfo of chainStore.chainInfosInUI.filter(
-      (item) =>
-        !item.chainName.toLowerCase().includes("test") &&
-        item?.networkType === "cosmos"
-    )) {
-      if (chainInfo.chainId === ChainIdEnum.Oraichain) continue;
-      try {
-        const response = await simpleFetch<AprItemInner>(
-          `${AprByChain}/apr/${chainInfo.chainId}`
-        );
-        if (!response.data?.apr) continue;
-        setListApr((prev) => [
-          ...prev,
-          {
-            chainId: chainInfo.chainId,
-            apr: new IntPretty(new Dec(response.data.apr))
-              .moveDecimalPointRight(2)
-              .maxDecimals(2)
-              .toString(),
-          },
-        ]);
-      } catch (error) {
-        console.log(error, `error fetch apr for ${chainInfo?.chainId}`);
-      }
+  const stakablesTokenList = hugeQueriesStore.stakables;
+  useMemo(() => {
+    return stakablesTokenList.filter((token) => {
+      return token.token.toDec().gt(zeroDec) && token.chainInfo.stakeCurrency;
+    });
+  }, [stakablesTokenList]);
+  const aprList = stakablesTokenList.map((viewToken) => {
+    if (viewToken.chainInfo.chainId === ChainIdEnum.Oraichain) {
+      return oraichainApr;
     }
-  };
-  const bip44Option = useBIP44Option();
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  // const calculateAPRByChain = async (chainInfo, validatorAddress) => {
-  //   try {
-  //     const start = new Date();
-  //
-  //     const {
-  //       totalSupply,
-  //       params: { community_tax, base_proposer_reward, bonus_proposer_reward },
-  //       inflationRate,
-  //       validator,
-  //       blockTime
-  //     } = await fetchChainData(chainInfo, validatorAddress);
-  //
-  //     const blocksPerYear = (60 * 60 * 24 * 365) / blockTime;
-  //     const totalDelegatedTokens = parseFloat(validator.tokens);
-  //     const votingPower = Math.max(valVotingPower, totalDelegatedTokens);
-  //
-  //     const blockProvision = (parseFloat(inflationRate) * totalSupply) / blocksPerYear;
-  //     const voteMultiplier = 1 - community_tax - base_proposer_reward - bonus_proposer_reward;
-  //     const valRewardPerBlock = votingPower > 0 ? ((blockProvision * votingPower) / votingPower) * voteMultiplier : 0;
-  //
-  //     const delegatorsRewardPerBlock = valRewardPerBlock * (1 - validator.commission.commission_rates.rate);
-  //     const numBlocksPerDay = blockTime > 0 ? (60 / blockTime) * 60 * 24 : 0;
-  //
-  //     const delegatorsRewardPerDay = delegatorsRewardPerBlock * numBlocksPerDay;
-  //     const apr = (delegatorsRewardPerDay * daysInYears) / totalDelegatedTokens;
-  //
-  //     const end = new Date() - start;
-  //     console.log(end, "end time");
-  //     return apr;
-  //   } catch (err) {
-  //     console.log("error calculateAPRByChain", err);
-  //     return 0;
-  //   }
-  // };
+    return queriesStore.get(viewToken.chainInfo.chainId).apr.queryApr.apr;
+  });
   const getOWalletOraichainAPR = async () => {
     const validators = await fetchValidatorByApr();
     const totalAPR = validators.reduce(
@@ -244,17 +187,14 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       0
     );
     const averageAPR = totalAPR / validators.length;
-    setListApr((prevApr) => [
-      ...prevApr,
-      {
-        chainId: ChainIdEnum.Oraichain,
-        apr: (averageAPR || 0).toFixed(2),
-      },
-    ]);
+    // @ts-ignore
+    setOraichainApr({
+      chainId: ChainIdEnum.Oraichain,
+      apr: new IntPretty(new Dec(averageAPR || 0)),
+    });
   };
   useEffect(() => {
     getOWalletOraichainAPR();
-    fetchAllApr();
   }, []);
 
   const renderOWalletValidators = () => {
@@ -282,15 +222,14 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
           >
             {dataOWalletStake.map((item, index) => {
               const chainInfo = chainStore.getChain(item.chainId);
-              const chainAPR =
-                listAprByChain.find(
-                  (aprItem) => aprItem.chainId === item.chainId
-                )?.apr ?? "0.00";
+              const chainAPR = aprList.filter(
+                ({ chainId }) => chainId === item.chainId
+              )[0]?.apr;
               return (
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    handlePressStake(chainInfo, item.validator);
+                    // handlePressStake(chainInfo, item.validator);
                   }}
                   style={{
                     backgroundColor: colors["neutral-surface-card"],
@@ -327,10 +266,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                       size={32}
                       style={{
                         borderRadius: 999,
-                        tintColor:
-                          item.chainId === ChainIdEnum.Oraichain
-                            ? colors["neutral-text-title"]
-                            : null,
                       }}
                       source={{
                         uri: chainInfo.stakeCurrency.coinImageUrl,
@@ -348,7 +283,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                       size={16}
                       weight="500"
                     >
-                      APR: {chainAPR ?? "0.00"}%
+                      APR: {formatAprString(chainAPR, 2) ?? "0.00"}%
                     </OWText>
                   </View>
                 </TouchableOpacity>
@@ -398,103 +333,103 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const onConfirm = async (item: any) => {
-    const { networkType } = chainStore.getChain(item?.chainId);
-    const keyDerivation = (() => {
-      const keyMain = getKeyDerivationFromAddressType(account.addressType);
-      if (networkType === "bitcoin") {
-        return keyMain;
-      }
-      return "44";
-    })();
-    chainStore.selectChain(item?.chainId);
-    await chainStore.saveLastViewChainId();
-    appInitStore.selectAllNetworks(false);
-    modalStore.close();
-    Popup.hide();
+  // const onConfirm = async (item: any) => {
+  //   const { networkType } = chainStore.getChain(item?.chainId);
+  //   const keyDerivation = (() => {
+  //     const keyMain = getKeyDerivationFromAddressType(account.addressType);
+  //     if (networkType === "bitcoin") {
+  //       return keyMain;
+  //     }
+  //     return "44";
+  //   })();
+  //   chainStore.selectChain(item?.chainId);
+  //   await chainStore.saveLastViewChainId();
+  //   appInitStore.selectAllNetworks(false);
+  //   modalStore.close();
+  //   Popup.hide();
+  //
+  //   await keyRingStore.setKeyStoreLedgerAddress(
+  //     `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
+  //       bip44Option.bip44HDPath.account
+  //     }'/${bip44Option.bip44HDPath.change}/${
+  //       bip44Option.bip44HDPath.addressIndex
+  //     }`,
+  //     item?.chainId
+  //   );
+  // };
 
-    await keyRingStore.setKeyStoreLedgerAddress(
-      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
-        bip44Option.bip44HDPath.account
-      }'/${bip44Option.bip44HDPath.change}/${
-        bip44Option.bip44HDPath.addressIndex
-      }`,
-      item?.chainId
-    );
-  };
+  // const handleSwitchNetwork = useCallback(async (item) => {
+  //   try {
+  //     if (account.isNanoLedger) {
+  //       if (!item.isAll) {
+  //         Popup.show({
+  //           type: "confirm",
+  //           title: "Switch network!",
+  //           textBody: `You are switching to ${
+  //             COINTYPE_NETWORK[item.bip44.coinType]
+  //           } network. Please confirm that you have ${
+  //             COINTYPE_NETWORK[item.bip44.coinType]
+  //           } App opened before switch network`,
+  //           buttonText: `I have switched ${
+  //             COINTYPE_NETWORK[item.bip44.coinType]
+  //           } App`,
+  //           confirmText: "Cancel",
+  //           okButtonStyle: {
+  //             backgroundColor: colors["orange-800"],
+  //           },
+  //           callback: () => onConfirm(item),
+  //           cancelCallback: () => {
+  //             Popup.hide();
+  //           },
+  //           bounciness: 0,
+  //           duration: 10,
+  //         });
+  //         return;
+  //       } else {
+  //         appInitStore.selectAllNetworks(true);
+  //       }
+  //     } else {
+  //       modalStore.close();
+  //       if (!item.isAll) {
+  //         tracking(`Select ${item?.chainName} Network`);
+  //         chainStore.selectChain(item?.chainId);
+  //         await chainStore.saveLastViewChainId();
+  //         appInitStore.selectAllNetworks(false);
+  //         modalStore.close();
+  //       } else {
+  //         tracking("Select All Network");
+  //         appInitStore.selectAllNetworks(true);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     showToast({
+  //       type: "danger",
+  //       message: JSON.stringify(error),
+  //     });
+  //   }
+  // }, []);
 
-  const handleSwitchNetwork = useCallback(async (item) => {
-    try {
-      if (account.isNanoLedger) {
-        if (!item.isAll) {
-          Popup.show({
-            type: "confirm",
-            title: "Switch network!",
-            textBody: `You are switching to ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } network. Please confirm that you have ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App opened before switch network`,
-            buttonText: `I have switched ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App`,
-            confirmText: "Cancel",
-            okButtonStyle: {
-              backgroundColor: colors["orange-800"],
-            },
-            callback: () => onConfirm(item),
-            cancelCallback: () => {
-              Popup.hide();
-            },
-            bounciness: 0,
-            duration: 10,
-          });
-          return;
-        } else {
-          appInitStore.selectAllNetworks(true);
-        }
-      } else {
-        modalStore.close();
-        if (!item.isAll) {
-          tracking(`Select ${item?.chainName} Network`);
-          chainStore.selectChain(item?.chainId);
-          await chainStore.saveLastViewChainId();
-          appInitStore.selectAllNetworks(false);
-          modalStore.close();
-        } else {
-          tracking("Select All Network");
-          appInitStore.selectAllNetworks(true);
-        }
-      }
-    } catch (error) {
-      showToast({
-        type: "danger",
-        message: JSON.stringify(error),
-      });
-    }
-  }, []);
-
-  const handlePressStake = useCallback(
-    (chain, validatorAddress) => {
-      handleSwitchNetwork(chain);
-      navigate(SCREENS.Delegate, {
-        validatorAddress,
-      });
-    },
-    [handleSwitchNetwork]
-  );
+  // const handlePressStake = useCallback(
+  //   (chain, validatorAddress) => {
+  //     handleSwitchNetwork(chain);
+  //     navigate(SCREENS.Delegate, {
+  //       validatorAddress,
+  //     });
+  //   },
+  //   [handleSwitchNetwork]
+  // );
 
   const renderNetworkItem = useCallback(
     (chain) => {
       if (chain) {
-        const chainAPR =
-          listAprByChain.find((item) => item.chainId === chain.chainId)?.apr ??
-          "0.00";
+        const chainAPR = aprList.filter(
+          ({ chainId }) => chainId === chain.chainId
+        )[0]?.apr;
         return (
           <TouchableOpacity
             key={chain.chainId}
             onPress={() => {
-              handleSwitchNetwork(chain);
+              // handleSwitchNetwork(chain);
             }}
             style={styles.networkItem}
           >
@@ -515,7 +450,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 weight="500"
                 color={colors["success-text-body"]}
               >
-                {chainAPR + "%"}
+                {formatAprString(chainAPR, 2) + "%"}
               </OWText>
             </View>
             <View style={styles.borderBottom} />
@@ -523,13 +458,13 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
         );
       }
     },
-    [handleSwitchNetwork, colors, listAprByChain]
+    [aprList, colors]
   );
 
   const renderNetworks = () => {
     const stakeableChainsInfo = chainStore.chainInfos.filter((chain) => {
       if (
-        chain.networkType === "cosmos" &&
+        // chain.networkType === "cosmos" &&
         !chain.chainName.toLowerCase().includes("test") &&
         !chain.chainName.toLowerCase().includes("bridge") &&
         !chain.chainName.toLowerCase().includes("kawai") &&

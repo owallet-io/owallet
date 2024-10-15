@@ -9,6 +9,8 @@ import {
 
 import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
+import { IntPretty } from "@owallet/unit";
+
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
 import { ethers } from "ethers";
@@ -21,6 +23,14 @@ export const getFavicon = (url) => {
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
   if (!url) return serviceGG + "https://orai.io";
   return serviceGG + url;
+};
+export const formatAprString = (apr?: IntPretty, maxDecimals?: number) => {
+  if (apr === undefined) {
+    return "0.00";
+  }
+
+  const aprRate = apr?.maxDecimals(maxDecimals ?? 2).toString() ?? "0";
+  return Number(aprRate) === 0 ? "0.00" : aprRate;
 };
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {

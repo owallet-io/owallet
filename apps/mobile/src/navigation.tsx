@@ -213,10 +213,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.STACK.MainTab}
               component={MainTabNavigation}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TokenDetails}*/}
-            {/*    component={TokenDetailsScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.TokenDetails}
+              component={TokenDetailsScreen}
+            />
 
             <Stack.Screen
               name={SCREENS.RegisterIntro}

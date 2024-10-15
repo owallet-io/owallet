@@ -97,7 +97,7 @@ export const AccountBoxAll: FunctionComponent<{
     const { colors } = useTheme();
     const styles = styling(colors);
 
-    // const [isOpen, setModalOpen] = useState(false);
+    const [isOpen, setModalOpen] = useState(false);
     // const [isMoreOpen, setMoreModalOpen] = useState(false);
     // const [showChart, setShowChart] = useState(true);
     // const [chainListWithBalance, setChainListWithBalance] = useState([]);
@@ -546,14 +546,14 @@ export const AccountBoxAll: FunctionComponent<{
 
     return (
       <View>
-        {/*<CopyAddressModal*/}
-        {/*  close={() => setModalOpen(false)}*/}
-        {/*  isOpen={isOpen}*/}
-        {/*  bottomSheetModalConfig={{*/}
-        {/*    enablePanDownToClose: false,*/}
-        {/*    enableOverDrag: false,*/}
-        {/*  }}*/}
-        {/*/>*/}
+        <CopyAddressModal
+          close={() => setModalOpen(false)}
+          isOpen={isOpen}
+          bottomSheetModalConfig={{
+            enablePanDownToClose: false,
+            enableOverDrag: false,
+          }}
+        />
         {/*<MoreModal*/}
         {/*  close={() => setMoreModalOpen(false)}*/}
         {/*  isOpen={isMoreOpen}*/}
@@ -604,9 +604,7 @@ export const AccountBoxAll: FunctionComponent<{
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    // startTransition(() => {
-                    //   setModalOpen(true);
-                    // });
+                    setModalOpen(true);
                   }}
                   style={styles.button}
                 >

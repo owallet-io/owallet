@@ -27,32 +27,26 @@ interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
 
 const OWHeaderTitle = observer(
   ({ title, subTitle, chainData, ...props }: IOWHeaderTitle) => {
-    const {
-      chainStore,
-      // modalStore,
-      appInitStore,
-    } = useStore();
+    const { chainStore, modalStore, appInitStore } = useStore();
     const { colors } = useTheme();
-    // const chainInfo = chainStore.getChain(chainStore.current.chainId);
+    const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
-    // const navigation = useNavigation();
-    // const currentTab = navigation.getState().routeNames[navigation.getState().index];
+    const navigation = useNavigation();
+    const currentTab =
+      navigation.getState().routeNames[navigation.getState().index];
 
-    // const _onPressNetworkModal = () => {
-    //   modalStore.setOptions({
-    //     bottomSheetModalConfig: {
-    //       enablePanDownToClose: false,
-    //       enableOverDrag: false,
-    //     },
-    //   });
-    //   modalStore.setChildren(<NetworkModal />);
-    // };
+    const _onPressNetworkModal = () => {
+      modalStore.setOptions({
+        bottomSheetModalConfig: {
+          enablePanDownToClose: false,
+          enableOverDrag: false,
+        },
+      });
+      modalStore.setChildren(<NetworkModal />);
+    };
     if (title === HEADER_KEY.showNetworkHeader)
       return (
-        <TouchableOpacity
-          // onPress={_onPressNetworkModal}
-          {...props}
-        >
+        <TouchableOpacity onPress={_onPressNetworkModal} {...props}>
           <View style={styles.containerTitle}>
             <View
               style={{
@@ -75,16 +69,16 @@ const OWHeaderTitle = observer(
                     backgroundColor: colors["neutral-icon-on-dark"],
                   }}
                 >
-                  {/*<OWIcon*/}
-                  {/*  type="images"*/}
-                  {/*  source={{*/}
-                  {/*    uri: chainInfo?.chainSymbolImageUrl,*/}
-                  {/*  }}*/}
-                  {/*  style={{*/}
-                  {/*    borderRadius: 999,*/}
-                  {/*  }}*/}
-                  {/*  size={20}*/}
-                  {/*/>*/}
+                  <OWIcon
+                    type="images"
+                    source={{
+                      uri: chainInfo?.chainSymbolImageUrl,
+                    }}
+                    style={{
+                      borderRadius: 999,
+                    }}
+                    size={20}
+                  />
                 </View>
               )}
               <Text
@@ -121,17 +115,17 @@ const OWHeaderTitle = observer(
                 backgroundColor: colors["neutral-icon-on-dark"],
               }}
             >
-              {/*<OWIcon*/}
-              {/*  type="images"*/}
-              {/*  source={{*/}
-              {/*    uri:*/}
-              {/*      chainData?.chainSymbolImageUrl || unknownToken.coinImageUrl,*/}
-              {/*  }}*/}
-              {/*  style={{*/}
-              {/*    borderRadius: 999,*/}
-              {/*  }}*/}
-              {/*  size={20}*/}
-              {/*/>*/}
+              <OWIcon
+                type="images"
+                source={{
+                  uri:
+                    chainData?.chainSymbolImageUrl || unknownToken.coinImageUrl,
+                }}
+                style={{
+                  borderRadius: 999,
+                }}
+                size={20}
+              />
             </View>
             <Text
               style={{ marginHorizontal: 6 }}

@@ -72,6 +72,7 @@ export const TokenChart: FC<{
   coinGeckoId: string;
   denom?: string;
 }> = observer(({ coinGeckoId, denom }) => {
+  console.log(denom, coinGeckoId, "coinGeckoId");
   const { colors } = useTheme();
   const { priceStore } = useStore();
   const [typeActive, setTypeActive] = useState(ranges[1]);
