@@ -13,7 +13,7 @@ import { DenomHelper } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "@stores/huge-queries/sort";
 
-interface ViewToken {
+export interface ViewToken {
   readonly chainInfo: IChainInfoImpl;
   readonly token: CoinPretty;
   readonly price: PricePretty | undefined;

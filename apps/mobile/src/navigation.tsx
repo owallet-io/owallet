@@ -116,10 +116,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
         >
           <Stack.Navigator
             initialRouteName={
-              // keyRingStore.status !== KeyRingStatus.UNLOCKED
-              //   ? SCREENS.STACK.PincodeUnlock
-              //   : SCREENS.STACK.MainTab
-              SCREENS.STACK.PincodeUnlock
+              keyRingStore.status !== "unlocked"
+                ? SCREENS.STACK.PincodeUnlock
+                : SCREENS.STACK.MainTab
+              // SCREENS.STACK.PincodeUnlock
             }
             screenOptions={handleScreenOptions}
           >
@@ -127,46 +127,30 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.STACK.PincodeUnlock}
               component={PincodeUnlockScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterRecoverPhrase}*/}
-            {/*    component={RecoverPhraseScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterIntro}*/}
-            {/*    component={*/}
-            {/*      appInitStore.getInitApp.status*/}
-            {/*        ? OnboardingIntroScreen*/}
-            {/*        : RegisterIntroScreen*/}
-            {/*    }*/}
-            {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterNewPincode}*/}
-            {/*    component={NewPincodeScreen}*/}
-            {/*  />*/}
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.ManageWalletConnect}*/}
             {/*    component={ManageWalletConnectScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.SettingSelectAccount}*/}
-            {/*    options={{*/}
-            {/*      headerRight: () => (*/}
-            {/*        <HeaderRightButton*/}
-            {/*          onPress={() => {*/}
-            {/*            // analyticsStore.logEvent("Add additional account started");*/}
-            {/*            navigate(SCREENS.RegisterIntro, {*/}
-            {/*              canBeBack: true,*/}
-            {/*            });*/}
-            {/*          }}*/}
-            {/*        >*/}
-            {/*          <HeaderAddIcon />*/}
-            {/*        </HeaderRightButton>*/}
-            {/*      ),*/}
-            {/*    }}*/}
-            {/*    component={SettingSelectAccountScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.SettingSelectAccount}
+              options={{
+                headerRight: () => (
+                  <HeaderRightButton
+                    onPress={() => {
+                      // analyticsStore.logEvent("Add additional account started");
+                      navigate(SCREENS.RegisterIntro, {
+                        canBeBack: true,
+                      });
+                    }}
+                  >
+                    <HeaderAddIcon />
+                  </HeaderRightButton>
+                ),
+              }}
+              component={SettingSelectAccountScreen}
+            />
 
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.SettingViewPrivateData}*/}
@@ -229,10 +213,27 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.STACK.MainTab}
               component={MainTabNavigation}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TokenDetails}*/}
-            {/*    component={TokenDetailsScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.TokenDetails}
+              component={TokenDetailsScreen}
+            />
+
+            <Stack.Screen
+              name={SCREENS.RegisterIntro}
+              component={
+                appInitStore.getInitApp.status
+                  ? OnboardingIntroScreen
+                  : RegisterIntroScreen
+              }
+            />
+            <Stack.Screen
+              name={SCREENS.RegisterRecoverPhrase}
+              component={RecoverPhraseScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.RegisterNewPincode}
+              component={NewPincodeScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.BackupMnemonic}*/}
             {/*    component={BackupMnemonicScreen}*/}
@@ -245,26 +246,26 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={NewMnemonicScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterVerifyMnemonic}*/}
-            {/*    component={VerifyMnemonicScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.RegisterVerifyMnemonic}
+              component={VerifyMnemonicScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.RegisterEnd}*/}
             {/*    component={RegisterEndScreen}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterDone}*/}
-            {/*    component={RegisterDoneScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.RegisterDone}
+              component={RegisterDoneScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.RegisterRecoverMnemonicMain}*/}
             {/*    component={RecoverMnemonicScreen}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterNewMnemonic}*/}
-            {/*    component={NewMnemonicScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.RegisterNewMnemonic}
+              component={NewMnemonicScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.RegisterRecoverPhraseMain}*/}
             {/*    component={RecoverPhraseScreen}*/}

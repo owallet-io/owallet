@@ -15,8 +15,8 @@ import { Text } from "@src/components/text";
 import { BackupWordChip } from "../../../components/mnemonic";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { NewMnemonicConfig } from "./hook";
-import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+// import { NewMnemonicConfig } from "./hook";
+// import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { RectButton } from "../../../components/rect-button";
 import { BIP44HDPath } from "@owallet/types";
@@ -35,8 +35,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          registerConfig: RegisterConfig;
-          newMnemonicConfig: NewMnemonicConfig;
+          // registerConfig: RegisterConfig;
+          // newMnemonicConfig: NewMnemonicConfig;
+          mnemonic: string;
           bip44HDPath: BIP44HDPath;
           walletName?: string;
         }
@@ -49,9 +50,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   // const registerConfig = route.params.registerConfig;
   const { keyRingStore } = useStore();
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const walletName = route.params.walletName;
-  const newMnemonicConfig = route.params.newMnemonicConfig;
+  const mnemonic = route.params.mnemonic;
 
   const [candidateWords, setCandidateWords] = useState<
     {
@@ -62,7 +63,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const [wordSet, setWordSet] = useState<(string | undefined)[]>([]);
 
   useEffect(() => {
-    const words = newMnemonicConfig.mnemonic.split(" ");
+    const words = mnemonic.split(" ");
     const randomSortedWords = words.slice().sort(() => {
       return Math.random() > 0.5 ? 1 : -1;
     });
@@ -75,11 +76,11 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       })
     );
     setWordSet(
-      newMnemonicConfig.mnemonic.split(" ").map(() => {
+      mnemonic.split(" ").map(() => {
         return undefined;
       })
     );
-  }, [newMnemonicConfig.mnemonic]);
+  }, [mnemonic]);
 
   const firstEmptyWordSetIndex = wordSet.findIndex(
     (word) => word === undefined
@@ -88,11 +89,10 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const styles = useStyles();
 
   const onVerifyMnemonic = async () => {
-    if (wordSet.join(" ") === newMnemonicConfig.mnemonic) {
+    if (wordSet.join(" ") === mnemonic) {
       navigate(SCREENS.RegisterNewPincode, {
-        registerConfig,
         walletName: walletName,
-        words: newMnemonicConfig.mnemonic,
+        words: mnemonic,
       });
     } else {
       showToast({

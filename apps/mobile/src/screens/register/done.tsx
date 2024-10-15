@@ -205,12 +205,12 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                   await keychainStore.turnOnBiometry(password);
                 }
                 // Definetly, the last key is newest keyring.
-                if (keyRingStore.multiKeyStoreInfo.length > 0) {
-                  await keyRingStore.changeKeyRing(
-                    keyRingStore.multiKeyStoreInfo.length - 1
-                  );
-                }
-                await waitAccountInit(chainStore, accountStore, keyRingStore);
+                // if (keyRingStore.multiKeyStoreInfo.length > 0) {
+                //   await keyRingStore.changeKeyRing(
+                //     keyRingStore.multiKeyStoreInfo.length - 1
+                //   );
+                // }
+                // await waitAccountInit(chainStore, accountStore, keyRingStore);
 
                 resetTo(SCREENS.STACK.MainTab);
               } catch (e) {

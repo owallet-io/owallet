@@ -1,4 +1,3 @@
-import { useRegisterConfig } from "@owallet/hooks";
 import { useRoute } from "@react-navigation/native";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
@@ -20,27 +19,19 @@ import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 
 export const RegisterIntroScreen: FunctionComponent = observer((props) => {
-  const { keyRingStore, analyticsStore } = useStore();
+  const { keyRingStore } = useStore();
   const { colors } = useTheme();
 
   const route = useRoute();
 
   // const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
-    analyticsStore.logEvent("Import account started", {
-      registerType: "seed",
-    });
-
     navigate(SCREENS.RegisterRecoverPhrase);
   };
   const handleImportLedgerNanoX = () => {
     navigate(SCREENS.RegisterNewLedger);
   };
   const handleCreateANewWallet = () => {
-    analyticsStore.logEvent("Create account started", {
-      registerType: "seed",
-    });
-
     navigate(SCREENS.RegisterNewMnemonic);
   };
   const styles = useStyles();

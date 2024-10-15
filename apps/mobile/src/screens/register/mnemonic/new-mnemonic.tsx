@@ -14,7 +14,8 @@ import {
 import { observer } from "mobx-react-lite";
 import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+// import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+import { Mnemonic } from "@owallet/crypto";
 import { useNewMnemonicConfig } from "./hook";
 import { CheckIcon } from "../../../components/icon";
 import { BackupWordChip } from "../../../components/mnemonic";
@@ -31,7 +32,7 @@ import OWText from "@src/components/text/ow-text";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
 import { useStore } from "@src/stores";
-
+type WordsType = "12words" | "24words";
 interface FormData {
   name: string;
   password: string;
@@ -39,17 +40,17 @@ interface FormData {
 }
 
 export const NewMnemonicScreen: FunctionComponent = observer((props) => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          registerConfig: RegisterConfig;
-        }
-      >,
-      string
-    >
-  >();
+  // const route = useRoute<
+  //   RouteProp<
+  //     Record<
+  //       string,
+  //       {
+  //         registerConfig: RegisterConfig;
+  //       }
+  //     >,
+  //     string
+  //   >
+  // >();
   useEffect(() => {
     tracking(`Create Wallet Screen`);
     return () => {};
@@ -57,14 +58,28 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
   const { keyRingStore } = useStore();
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   // const registerConfig: RegisterConfig = route.params.registerConfig;
   const bip44Option = useBIP44Option();
 
-  const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  const [mode] = useState(registerConfig.mode);
+  // const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
+  // const [mode] = useState(registerConfig.mode);
+  const [words, setWords] = useState<string[]>([]);
+  const [wordsType, setWordsType] = useState<WordsType>("12words");
 
-  const words = newMnemonicConfig.mnemonic.split(" ");
+  useEffect(() => {
+    const rng = (array: any) => {
+      return Promise.resolve(window.crypto.getRandomValues(array));
+    };
+
+    if (wordsType === "12words") {
+      Mnemonic.generateSeed(rng, 128).then((str) => setWords(str.split(" ")));
+    } else if (wordsType === "24words") {
+      Mnemonic.generateSeed(rng, 256).then((str) => setWords(str.split(" ")));
+    } else {
+      throw new Error(`Unknown words type: ${wordsType}`);
+    }
+  }, [wordsType]);
 
   const {
     control,
@@ -84,8 +99,9 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
     //
     // }
     navigate(SCREENS.RegisterVerifyMnemonic, {
-      registerConfig,
-      newMnemonicConfig,
+      // registerConfig,
+      // newMnemonicConfig,
+      mnemonic: words.join(" "),
       bip44HDPath: bip44Option.bip44HDPath,
       walletName: getValues("name"),
     });
@@ -175,7 +191,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             style={{
               borderRadius: 32,
             }}
-            label={mode === "add" ? "Import" : " Next"}
+            label={"Next"}
             onPress={submit}
           />
         </View>

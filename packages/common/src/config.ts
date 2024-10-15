@@ -1,14 +1,21 @@
 import { Bech32Address } from "@owallet/cosmos";
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo, Currency } from "@owallet/types";
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
 
 export const HelpDeskUrl = "https://help.keplr.app";
 export const TermsOfUseUrl = "https://terms-of-use.keplr.app";
-
+export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
   process.env["KEPLR_EXT_COINGECKO_ENDPOINT"] ||
   "https://api.coingecko.com/api/v3";
+export const unknownToken: Currency = {
+  coinDecimals: 6,
+  coinImageUrl: "https://img.icons8.com/pulsar-gradient/96/help.png",
+  coinGeckoId: "unknown",
+  coinMinimalDenom: "unknown",
+  coinDenom: "UNKNOWN",
+};
 export const CoinGeckoGetPrice =
   process.env["KEPLR_EXT_COINGECKO_GETPRICE"] || "/simple/price";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min

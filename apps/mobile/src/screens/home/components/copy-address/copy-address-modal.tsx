@@ -41,15 +41,15 @@ export const CopyAddressModal: FunctionComponent<{
   const styles = styling(colors);
 
   const { accountStore, keyRingStore, chainStore } = useStore();
-  const btcLegacyChain = chainStore.chainInfos.find(
-    (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
-  );
-  const chains = chainStore.chainInfos.filter(
+  // const btcLegacyChain = chainStore.chainInfos.find(
+  //   (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
+  // );
+  const chainsData = chainStore.chainInfos.filter(
     (item, index) =>
       item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
       !item?.chainName?.toLowerCase()?.includes("test")
   );
-  const chainsData = btcLegacyChain ? [...chains, btcLegacyChain] : [...chains];
+  // const chainsData = chains;
 
   return (
     <View>
@@ -87,14 +87,12 @@ export const CopyAddressModal: FunctionComponent<{
       >
         {chainsData?.length > 0 &&
           chainsData.map((item, index) => {
-            let address;
-            if (index === chainsData.length - 1) {
-              address = accountStore.getAccount(item.chainId).legacyAddress;
-            } else {
-              address = accountStore
-                .getAccount(item.chainId)
-                .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
-            }
+            let address = accountStore.getAccount(item.chainId).addressDisplay;
+            // if (index === chainsData.length - 1) {
+            //   address = accountStore.getAccount(item.chainId).legacyAddress;
+            // } else {
+            //   address = ;
+            // }
             return (
               <CustomAddressCopyable
                 copyable={copyable}
@@ -114,11 +112,7 @@ export const CopyAddressModal: FunctionComponent<{
                     size={28}
                   />
                 }
-                chain={`${
-                  index === chainsData.length - 1
-                    ? item.chainName + " Legacy"
-                    : item.chainName
-                }`}
+                chain={`${item.chainName}`}
                 address={address}
                 maxCharacters={22}
               />

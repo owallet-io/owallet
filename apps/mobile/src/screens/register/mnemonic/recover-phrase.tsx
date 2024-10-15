@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+// import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 
 import { Controller, useForm } from "react-hook-form";
 import { TextInput } from "../../../components/input";
@@ -34,24 +34,24 @@ interface FormData {
 }
 
 export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          registerConfig: RegisterConfig;
-        }
-      >,
-      string
-    >
-  >();
+  // const route = useRoute<
+  //   RouteProp<
+  //     Record<
+  //       string,
+  //       {
+  //         registerConfig: RegisterConfig;
+  //       }
+  //     >,
+  //     string
+  //   >
+  // >();
 
-  const { analyticsStore, universalSwapStore, keyRingStore } = useStore();
+  const { keyRingStore } = useStore();
 
   // const registerConfig: RegisterConfig = route.params.registerConfig;
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option();
-  const [mode] = useState(registerConfig.mode);
+  // const [mode] = useState(registerConfig.mode);
 
   const {
     control,
@@ -72,41 +72,42 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     const walletName = getValues("name");
     if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        walletName,
+      await keyRingStore.newMnemonicKey(
         mnemonic,
-        getValues("password"),
-        bip44Option.bip44HDPath
-      );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "mnemonic",
-      });
-    } else {
-      const privateKey = Buffer.from(mnemonic.trim().replace("0x", ""), "hex");
-      await registerConfig.createPrivateKey(
-        getValues("name"),
-        privateKey,
+        bip44Option.bip44HDPath,
+        walletName,
         getValues("password")
       );
-      analyticsStore.setUserProperties({
-        registerType: "seed",
-        accountType: "privateKey",
-      });
-    }
-    if (checkRouter(route?.name, "RegisterRecoverPhraseMain")) {
-      navigate(SCREENS.RegisterDone, {
-        password: getValues("password"),
-        type: "recover",
-        walletName: walletName,
-      });
+      // analyticsStore.setUserProperties({
+      //   registerType: "seed",
+      //   accountType: "mnemonic",
+      // });
     } else {
-      resetTo(SCREENS.RegisterDone, {
-        password: getValues("password"),
-        type: "recover",
-        walletName: walletName,
-      });
+      const privateKey = Buffer.from(mnemonic.trim().replace("0x", ""), "hex");
+      await keyRingStore.newPrivateKeyKey(
+        privateKey,
+        {},
+        getValues("name"),
+        getValues("password")
+      );
+      // analyticsStore.setUserProperties({
+      //   registerType: "seed",
+      //   accountType: "privateKey",
+      // });
     }
+    // if (checkRouter(route?.name, "RegisterRecoverPhraseMain")) {
+    //   navigate(SCREENS.RegisterDone, {
+    //     password: getValues("password"),
+    //     type: "recover",
+    //     walletName: walletName,
+    //   });
+    // } else {
+    resetTo(SCREENS.RegisterDone, {
+      password: getValues("password"),
+      type: "recover",
+      walletName: walletName,
+    });
+    // }
   });
 
   const handleCreateWithMnemonic = () => {
@@ -114,7 +115,7 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
     // create - do the flowing process below
     const mnemonic = trimWordsStr(getValues("mnemonic"));
     navigate(SCREENS.RegisterNewPincode, {
-      registerConfig,
+      // registerConfig,
       words: mnemonic,
       walletName: getValues("name"),
     });
@@ -327,19 +328,20 @@ export const RecoverPhraseScreen: FunctionComponent = observer((props) => {
             style={{
               borderRadius: 32,
             }}
-            label={mode === "add" ? "Import" : " Next"}
+            label={"Import"}
             loading={isCreating}
             disabled={isCreating}
             onPress={() => {
-              universalSwapStore.clearAmounts();
+              // universalSwapStore.clearAmounts();
               if (!handleValidate()) {
                 return;
               }
-              if (mode === "add") {
-                submit();
-              } else {
-                handleCreateWithMnemonic();
-              }
+              // if (mode === "add") {
+              //   submit();
+              // } else {
+              //
+              // }
+              handleCreateWithMnemonic();
             }}
           />
         </View>

@@ -44,7 +44,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @observable.ref
   protected _enabledChainIdentifiers: string[] = [];
   @observable
-  protected selectedChainId: string;
+  protected selectedChainId: string = "";
 
   @observable
   protected deferChainIdSelect: string = "";

@@ -2,7 +2,7 @@ import React, {
   FunctionComponent,
   useState,
   useEffect,
-  useTransition,
+  // useTransition,
 } from "react";
 import { observer } from "mobx-react-lite";
 import { OWBox } from "@components/card";
@@ -72,12 +72,21 @@ export const AccountBoxAll: FunctionComponent<{
   totalPriceBalance: PricePretty;
   totalBalanceByChain: PricePretty;
   dataBalances: ViewToken[];
+  stakedTotalPrice: PricePretty;
+  availableTotalPrice: PricePretty;
   isLoading: boolean;
 }> = observer(
-  ({ totalPriceBalance, totalBalanceByChain, isLoading, dataBalances }) => {
+  ({
+    totalPriceBalance,
+    stakedTotalPrice,
+    availableTotalPrice,
+    totalBalanceByChain,
+    isLoading,
+    dataBalances,
+  }) => {
     const {
       accountStore,
-      // modalStore,
+      modalStore,
       chainStore,
       appInitStore,
       queriesStore,
@@ -89,137 +98,137 @@ export const AccountBoxAll: FunctionComponent<{
     const styles = styling(colors);
 
     const [isOpen, setModalOpen] = useState(false);
-    const [isMoreOpen, setMoreModalOpen] = useState(false);
-    const [showChart, setShowChart] = useState(true);
-    const [chainListWithBalance, setChainListWithBalance] = useState([]);
-    const [series, setSeries] = useState([]);
-    const [sliceColor, setSliceColor] = useState([]);
-    const [isPending, startTransition] = useTransition();
+    // const [isMoreOpen, setMoreModalOpen] = useState(false);
+    // const [showChart, setShowChart] = useState(true);
+    // const [chainListWithBalance, setChainListWithBalance] = useState([]);
+    // const [series, setSeries] = useState([]);
+    // const [sliceColor, setSliceColor] = useState([]);
+    // const [isPending, startTransition] = useTransition();
 
-    const fiatCurrency = priceStore.getFiatCurrency(
-      priceStore.defaultVsCurrency
-    );
-
-    const queries = queriesStore.get(chainStore.current.chainId);
-
-    const account = accountStore.getAccount(chainStore.current.chainId);
+    // const fiatCurrency = priceStore.getFiatCurrency(
+    //   priceStore.defaultVsCurrency
+    // );
+    //
+    // const queries = queriesStore.get(chainStore.current.chainId);
+    //
+    // const account = accountStore.getAccount(chainStore.current.chainId);
     const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-    const address = account.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-    const accountTronInfo =
-      chainStore.current.chainId === ChainIdEnum.TRON
-        ? queries.tron.queryAccount.getQueryWalletAddress(address)
-        : null;
+    // const address = account.getAddressDisplay(
+    //   keyRingStore.keyRingLedgerAddresses
+    // );
+    // const accountTronInfo =
+    //   chainStore.current.chainId === ChainIdEnum.TRON
+    //     ? queries.tron.queryAccount.getQueryWalletAddress(address)
+    //     : null;
 
-    const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-      account.bech32Address
-    );
+    // const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
+    //   account.bech32Address
+    // );
     // const stakingReward = queryReward.stakableReward;
-    const stakingRewards = (() => {
-      const isDydx = chainStore.current.chainId?.includes("dydx");
-      const targetDenom = (() => {
-        if (isDydx) {
-          return DenomDydx;
-        }
+    // const stakingRewards = (() => {
+    //   const isDydx = chainStore.current.chainId?.includes("dydx");
+    //   const targetDenom = (() => {
+    //     if (isDydx) {
+    //       return DenomDydx;
+    //     }
+    //
+    //     return chainStore.current.stakeCurrency?.coinMinimalDenom;
+    //   })();
+    //   if (targetDenom) {
+    //     const currency = chainStore.current.findCurrency(targetDenom);
+    //     if (currency) {
+    //       const reward = queryReward.rewards.find(
+    //         (r) => r.currency.coinMinimalDenom === targetDenom
+    //       );
+    //       if (!reward) {
+    //         if (isDydx) return new CoinPretty(currency, 0);
+    //         return queryReward.stakableReward;
+    //       }
+    //       return reward;
+    //     }
+    //   }
+    // })();
 
-        return chainStore.current.stakeCurrency?.coinMinimalDenom;
-      })();
-      if (targetDenom) {
-        const currency = chainStore.current.findCurrency(targetDenom);
-        if (currency) {
-          const reward = queryReward.rewards.find(
-            (r) => r.currency.coinMinimalDenom === targetDenom
-          );
-          if (!reward) {
-            if (isDydx) return new CoinPretty(currency, 0);
-            return queryReward.stakableReward;
-          }
-          return reward;
-        }
-      }
-    })();
+    // const totalStakingReward = priceStore.calculatePrice(stakingRewards);
+    // const queryDelegated =
+    //   queries.cosmos.queryDelegations.getQueryBech32Address(
+    //     account.bech32Address
+    //   );
+    // const delegated = queryDelegated.total;
+    // const totalPrice = priceStore.calculatePrice(delegated);
 
-    const totalStakingReward = priceStore.calculatePrice(stakingRewards);
-    const queryDelegated =
-      queries.cosmos.queryDelegations.getQueryBech32Address(
-        account.bech32Address
-      );
-    const delegated = queryDelegated.total;
-    const totalPrice = priceStore.calculatePrice(delegated);
-
-    useEffect(() => {
-      const tmpChain = [];
-      const tmpSeries = [];
-      const tmpSliceColor = [];
-      let otherValue = 0;
-
-      const minimumPrice =
-        (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
-
-      const chainsInfoWithBalance = chainStore.chainInfos.map((item) => {
-        let balances = dataBalances.filter(
-          (token) => token.chainInfo.chainId === item.chainId
-        );
-        let result: PricePretty | undefined;
-        for (const bal of balances) {
-          if (bal.price) {
-            if (!result) {
-              result = bal.price;
-            } else {
-              result = result.add(bal.price);
-            }
-          }
-        }
-        //@ts-ignore
-        item.balance = result || initPrice;
-        return item;
-      });
-
-      const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
-        (c) =>
-          !c.chainName.toLowerCase().includes("test") &&
-          c.chainName.toLowerCase()
-      );
-
-      dataMainnet.map((data) => {
-        const chainName = data._chainInfo.chainName;
-        const chainId = data._chainInfo.chainId;
-        const chainBalance = Number(data.balance?.toDec().toString());
-
-        if (chainBalance > minimumPrice) {
-          const colorKey = Object.values(ChainIdEnum).indexOf(
-            chainId as ChainIdEnum
-          );
-          const color = randomColors[colorKey];
-
-          tmpChain.push({
-            color,
-            totalBalance: chainBalance,
-            name: chainName,
-          });
-          tmpSeries.push(chainBalance);
-          tmpSliceColor.push(color);
-        } else {
-          otherValue += chainBalance;
-        }
-      });
-
-      tmpChain.push({
-        color: "#494949",
-        totalBalance: otherValue,
-        name: "Other",
-      });
-      setChainListWithBalance(tmpChain);
-      setSeries([...tmpSeries, otherValue]);
-      setSliceColor([...tmpSliceColor, "#494949"]);
-    }, [dataBalances, accountOrai.bech32Address]);
+    // useEffect(() => {
+    //   const tmpChain = [];
+    //   const tmpSeries = [];
+    //   const tmpSliceColor = [];
+    //   let otherValue = 0;
+    //
+    //   const minimumPrice =
+    //     (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
+    //
+    //   const chainsInfoWithBalance = chainStore.chainInfos.map((item) => {
+    //     let balances = dataBalances.filter(
+    //       (token) => token.chainInfo.chainId === item.chainId
+    //     );
+    //     let result: PricePretty | undefined;
+    //     for (const bal of balances) {
+    //       if (bal.price) {
+    //         if (!result) {
+    //           result = bal.price;
+    //         } else {
+    //           result = result.add(bal.price);
+    //         }
+    //       }
+    //     }
+    //     //@ts-ignore
+    //     item.balance = result || initPrice;
+    //     return item;
+    //   });
+    //
+    //   const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
+    //     (c) =>
+    //       !c.chainName.toLowerCase().includes("test") &&
+    //       c.chainName.toLowerCase()
+    //   );
+    //
+    //   dataMainnet.map((data) => {
+    //     const chainName = data._chainInfo.chainName;
+    //     const chainId = data._chainInfo.chainId;
+    //     const chainBalance = Number(data.balance?.toDec().toString());
+    //
+    //     if (chainBalance > minimumPrice) {
+    //       const colorKey = Object.values(ChainIdEnum).indexOf(
+    //         chainId as ChainIdEnum
+    //       );
+    //       const color = randomColors[colorKey];
+    //
+    //       tmpChain.push({
+    //         color,
+    //         totalBalance: chainBalance,
+    //         name: chainName,
+    //       });
+    //       tmpSeries.push(chainBalance);
+    //       tmpSliceColor.push(color);
+    //     } else {
+    //       otherValue += chainBalance;
+    //     }
+    //   });
+    //
+    //   tmpChain.push({
+    //     color: "#494949",
+    //     totalBalance: otherValue,
+    //     name: "Other",
+    //   });
+    //   setChainListWithBalance(tmpChain);
+    //   setSeries([...tmpSeries, otherValue]);
+    //   setSliceColor([...tmpSliceColor, "#494949"]);
+    // }, [dataBalances, accountOrai.bech32Address]);
 
     const { isTimedOut, setTimer } = useSimpleTimer();
-    const chainAddress = account.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-
+    // const chainAddress = account.getAddressDisplay(
+    //   keyRingStore.keyRingLedgerAddresses
+    // );
+    const chainAddress = "";
     const _onPressMyWallet = () => {
       modalStore.setOptions({
         bottomSheetModalConfig: {
@@ -250,135 +259,93 @@ export const AccountBoxAll: FunctionComponent<{
       );
     };
 
-    const renderPieChartPortfolio = () => {
-      if (series.length > 0 && series[0] > 0) {
-        return (
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {series.length > 0 && series[0] > 0 ? (
-              <View
-                style={{
-                  padding: 16,
-                }}
-              >
-                <PieChart
-                  widthAndHeight={widthAndHeight}
-                  series={series}
-                  sliceColor={sliceColor}
-                  coverRadius={0.75}
-                  coverFill={colors["neutral-surface-card"]}
-                />
-              </View>
-            ) : null}
-            <View style={{ width: "60%" }}>
-              {chainListWithBalance
-                .sort((a, b) => {
-                  return Number(b.totalBalance) - Number(a.totalBalance);
-                })
-                .map((chain) => {
-                  return (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        marginBottom: 8,
-                      }}
-                    >
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <View
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 2,
-                            backgroundColor: chain.color,
-                            marginRight: 4,
-                          }}
-                        />
-                        <Text size={13} color={colors["neutral-text-body"]}>
-                          {chain.name}
-                        </Text>
-                      </View>
-                      <View
-                        style={{
-                          backgroundColor: colors["neutral-surface-bg2"],
-                          borderRadius: 999,
-                          paddingHorizontal: 4,
-                        }}
-                      >
-                        <Text>
-                          {(
-                            (Number(chain.totalBalance) /
-                              Number(totalPriceBalance.toDec().toString())) *
-                            100
-                          ).toFixed(2)}
-                          %
-                        </Text>
-                      </View>
-                    </View>
-                  );
-                })}
-            </View>
-          </View>
-        );
-      }
-    };
+    // const renderPieChartPortfolio = () => {
+    //   if (series.length > 0 && series[0] > 0) {
+    //     return (
+    //       <View style={{ flexDirection: "row", alignItems: "center" }}>
+    //         {series.length > 0 && series[0] > 0 ? (
+    //           <View
+    //             style={{
+    //               padding: 16,
+    //             }}
+    //           >
+    //             <PieChart
+    //               widthAndHeight={widthAndHeight}
+    //               series={series}
+    //               sliceColor={sliceColor}
+    //               coverRadius={0.75}
+    //               coverFill={colors["neutral-surface-card"]}
+    //             />
+    //           </View>
+    //         ) : null}
+    //         <View style={{ width: "60%" }}>
+    //           {chainListWithBalance
+    //             .sort((a, b) => {
+    //               return Number(b.totalBalance) - Number(a.totalBalance);
+    //             })
+    //             .map((chain) => {
+    //               return (
+    //                 <View
+    //                   style={{
+    //                     flexDirection: "row",
+    //                     justifyContent: "space-between",
+    //                     marginBottom: 8,
+    //                   }}
+    //                 >
+    //                   <View
+    //                     style={{ flexDirection: "row", alignItems: "center" }}
+    //                   >
+    //                     <View
+    //                       style={{
+    //                         width: 8,
+    //                         height: 8,
+    //                         borderRadius: 2,
+    //                         backgroundColor: chain.color,
+    //                         marginRight: 4,
+    //                       }}
+    //                     />
+    //                     <Text size={13} color={colors["neutral-text-body"]}>
+    //                       {chain.name}
+    //                     </Text>
+    //                   </View>
+    //                   <View
+    //                     style={{
+    //                       backgroundColor: colors["neutral-surface-bg2"],
+    //                       borderRadius: 999,
+    //                       paddingHorizontal: 4,
+    //                     }}
+    //                   >
+    //                     <Text>
+    //                       {(
+    //                         (Number(chain.totalBalance) /
+    //                           Number(totalPriceBalance.toDec().toString())) *
+    //                         100
+    //                       ).toFixed(2)}
+    //                       %
+    //                     </Text>
+    //                   </View>
+    //                 </View>
+    //               );
+    //             })}
+    //         </View>
+    //       </View>
+    //     );
+    //   }
+    // };
 
     const renderAvailableperStaked = () => {
-      let availablePercent = 0;
-      let stakedPercent = 0;
-      let staked = "0";
-      let totalAllChainStaked = 0;
-      const available = appInitStore.getInitApp.isAllNetworks
-        ? totalPriceBalance?.toString()
-        : totalBalanceByChain?.toString();
-      const queryDelegated =
-        queries.cosmos.queryDelegations.getQueryBech32Address(
-          account.bech32Address
-        );
-      const delegated = queryDelegated.total;
-      if (!appInitStore.getInitApp.isAllNetworks) {
-        staked = priceStore.calculatePrice(delegated)?.toString();
-      } else {
-        let tmpStaked = 0;
-        for (const chainInfo of chainStore.chainInfosInUI) {
-          const chainId = chainInfo.chainId;
-          if (chainInfo.networkType !== "cosmos") continue;
-          const accountAddress = accountStore.getAccount(chainId).bech32Address;
-          const queries = queriesStore.get(chainId);
-          const queryDelegated =
-            queries.cosmos.queryDelegations.getQueryBech32Address(
-              accountAddress
-            );
-          const delegated = queryDelegated.total;
-
-          tmpStaked += priceStore.calculatePrice(delegated)?.toDec().toString()
-            ? Number(priceStore.calculatePrice(delegated)?.toDec().toString())
-            : 0;
-        }
-
-        staked = `${fiatCurrency.symbol}` + tmpStaked.toFixed(2);
-        totalAllChainStaked = tmpStaked;
-      }
-
-      if (!appInitStore.getInitApp.isAllNetworks) {
-        const total =
-          Number(priceStore.calculatePrice(delegated)?.toDec().toString()) +
-          Number(totalBalanceByChain?.toDec().toString());
-
-        availablePercent =
-          (Number(totalBalanceByChain?.toDec().toString()) / total) * 100;
-        stakedPercent = 100 - availablePercent;
-      } else {
-        const total =
-          Number(totalAllChainStaked) +
-          Number(totalPriceBalance?.toDec().toString());
-
-        availablePercent =
-          (Number(totalPriceBalance?.toDec().toString()) / total) * 100;
-        stakedPercent = 100 - availablePercent;
-      }
-
+      if (!availableTotalPrice?.toDec() || !stakedTotalPrice?.toDec()) return;
+      const totalNum =
+        stakedTotalPrice?.toDec()?.add(availableTotalPrice?.toDec()) ||
+        new Dec(0);
+      if (!totalNum || totalNum.lte(new Dec(0))) return;
+      const percentAvailable = availableTotalPrice
+        ?.toDec()
+        ?.quo(totalNum)
+        ?.mul(new Dec(100))
+        ?.roundUp()
+        ?.toString();
+      const stakedPercent = 100 - Number(percentAvailable || 0);
       return (
         <View style={{ marginVertical: 16 }}>
           <View
@@ -391,14 +358,15 @@ export const AccountBoxAll: FunctionComponent<{
           >
             <Text color={colors["neutral-text-body"]}>Available/Staked</Text>
             <Text color={colors["neutral-text-body"]}>
-              {available} / <Text>{staked}</Text>
+              {availableTotalPrice?.toString()} /{" "}
+              <Text>{stakedTotalPrice?.toString()}</Text>
             </Text>
           </View>
           <View style={{ width: "100%", flexDirection: "row" }}>
             <View
               style={{
                 backgroundColor: colors["primary-surface-default"],
-                width: `${availablePercent}%`,
+                width: `${Number(percentAvailable) || 0}%`,
                 height: 12,
                 borderTopLeftRadius: 8,
                 borderBottomLeftRadius: 8,
@@ -412,8 +380,8 @@ export const AccountBoxAll: FunctionComponent<{
                 backgroundColor: colors["highlight-surface-active"],
                 width: `${stakedPercent}%`,
                 height: 12,
-                borderTopLeftRadius: availablePercent <= 0.1 ? 8 : 0,
-                borderBottomLeftRadius: availablePercent <= 0.1 ? 8 : 0,
+                borderTopLeftRadius: Number(percentAvailable) <= 0.1 ? 8 : 0,
+                borderBottomLeftRadius: Number(percentAvailable) <= 0.1 ? 8 : 0,
                 borderTopRightRadius: 8,
                 borderBottomRightRadius: 8,
               }}
@@ -423,158 +391,158 @@ export const AccountBoxAll: FunctionComponent<{
       );
     };
 
-    const renderAssetsByChain = () => {
-      if (
-        (chainStore.current.networkType !== "cosmos" &&
-          !appInitStore.getInitApp.isAllNetworks) ||
-        appInitStore.getInitApp.isAllNetworks
-      )
-        return;
-      const available = appInitStore.getInitApp.isAllNetworks
-        ? totalPriceBalance?.toString()
-        : totalBalanceByChain?.toString();
-
-      return (
-        <View
-          style={{
-            paddingTop: 12,
-            paddingBottom: 6,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <OWText color={colors["neutral-text-body"]}>
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 2,
-                  backgroundColor: colors["primary-surface-default"],
-                }}
-              />
-              {"  "}
-              Available
-            </OWText>
-            <OWText size={14} weight="500">{`${available}`}</OWText>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 8,
-            }}
-          >
-            <OWText color={colors["neutral-text-body"]}>
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: 2,
-                  backgroundColor: colors["highlight-surface-active"],
-                }}
-              />
-              {"  "}
-              Staked:{" "}
-              {delegated
-                .shrink(true)
-                .maxDecimals(4)
-                .trim(true)
-                .upperCase(true)
-                .toString()}
-            </OWText>
-            <OWText size={14} weight="500">
-              {totalPrice
-                ? totalPrice.toString()
-                : delegated.shrink(true).maxDecimals(6).toString()}
-            </OWText>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginTop: 8,
-            }}
-          >
-            <OWText color={colors["neutral-text-body"]}>
-              <OWIcon
-                name={"trending-outline"}
-                size={14}
-                color={colors["neutral-text-title"]}
-              />
-              {"  "}
-              Rewards:{" "}
-              {stakingRewards
-                ? removeDataInParentheses(
-                    stakingRewards
-                      .shrink(true)
-                      .maxDecimals(6)
-                      .trim(true)
-                      .upperCase(true)
-                      .toString()
-                  )
-                : ""}
-            </OWText>
-            <OWText size={14} weight="500" color={colors["success-text-body"]}>
-              {" "}
-              {totalStakingReward
-                ? totalStakingReward.toString()
-                : stakingRewards?.shrink(true).maxDecimals(6).toString()}
-            </OWText>
-          </View>
-          {chainStore.current.chainId === ChainIdEnum.TRON && (
-            <View style={{ paddingBottom: 8 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <OWText
-                  size={15}
-                  weight="600"
-                  color={colors["neutral-text-title"]}
-                >
-                  My Energy:
-                </OWText>
-                <OWText
-                  size={14}
-                  weight="600"
-                  color={colors["neutral-text-body"]}
-                >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <OWText
-                  size={15}
-                  weight="600"
-                  color={colors["neutral-text-title"]}
-                >
-                  My Bandwidth:
-                </OWText>
-                <OWText
-                  size={14}
-                  weight="600"
-                  color={colors["neutral-text-body"]}
-                >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>
-              </View>
-            </View>
-          )}
-        </View>
-      );
-    };
+    // const renderAssetsByChain = () => {
+    //   // if (
+    //   //   (chainStore.current.networkType !== "cosmos" &&
+    //   //     !appInitStore.getInitApp.isAllNetworks) ||
+    //   //   appInitStore.getInitApp.isAllNetworks
+    //   // )
+    //   //   return;
+    //   const available = appInitStore.getInitApp.isAllNetworks
+    //     ? totalPriceBalance?.toString()
+    //     : totalBalanceByChain?.toString();
+    //
+    //   return (
+    //     <View
+    //       style={{
+    //         paddingTop: 12,
+    //         paddingBottom: 6,
+    //       }}
+    //     >
+    //       <View
+    //         style={{
+    //           flexDirection: "row",
+    //           justifyContent: "space-between",
+    //           alignItems: "center",
+    //         }}
+    //       >
+    //         <OWText color={colors["neutral-text-body"]}>
+    //           <View
+    //             style={{
+    //               width: 12,
+    //               height: 12,
+    //               borderRadius: 2,
+    //               backgroundColor: colors["primary-surface-default"],
+    //             }}
+    //           />
+    //           {"  "}
+    //           Available
+    //         </OWText>
+    //         <OWText size={14} weight="500">{`${available}`}</OWText>
+    //       </View>
+    //       <View
+    //         style={{
+    //           flexDirection: "row",
+    //           justifyContent: "space-between",
+    //           alignItems: "center",
+    //           marginTop: 8,
+    //         }}
+    //       >
+    //         <OWText color={colors["neutral-text-body"]}>
+    //           <View
+    //             style={{
+    //               width: 12,
+    //               height: 12,
+    //               borderRadius: 2,
+    //               backgroundColor: colors["highlight-surface-active"],
+    //             }}
+    //           />
+    //           {"  "}
+    //           Staked:{" "}
+    //           {/*{delegated*/}
+    //           {/*  .shrink(true)*/}
+    //           {/*  .maxDecimals(4)*/}
+    //           {/*  .trim(true)*/}
+    //           {/*  .upperCase(true)*/}
+    //           {/*  .toString()}*/}
+    //         </OWText>
+    //         <OWText size={14} weight="500">
+    //           {/*{totalPrice*/}
+    //           {/*  ? totalPrice.toString()*/}
+    //           {/*  : delegated.shrink(true).maxDecimals(6).toString()}*/}
+    //         </OWText>
+    //       </View>
+    //       <View
+    //         style={{
+    //           flexDirection: "row",
+    //           justifyContent: "space-between",
+    //           alignItems: "center",
+    //           marginTop: 8,
+    //         }}
+    //       >
+    //         <OWText color={colors["neutral-text-body"]}>
+    //           <OWIcon
+    //             name={"trending-outline"}
+    //             size={14}
+    //             color={colors["neutral-text-title"]}
+    //           />
+    //           {"  "}
+    //           Rewards:{" "}
+    //           {/*{stakingRewards*/}
+    //           {/*  ? removeDataInParentheses(*/}
+    //           {/*      stakingRewards*/}
+    //           {/*        .shrink(true)*/}
+    //           {/*        .maxDecimals(6)*/}
+    //           {/*        .trim(true)*/}
+    //           {/*        .upperCase(true)*/}
+    //           {/*        .toString()*/}
+    //           {/*    )*/}
+    //           {/*  : ""}*/}
+    //         </OWText>
+    //         <OWText size={14} weight="500" color={colors["success-text-body"]}>
+    //           {" "}
+    //           {/*{totalStakingReward*/}
+    //           {/*  ? totalStakingReward.toString()*/}
+    //           {/*  : stakingRewards?.shrink(true).maxDecimals(6).toString()}*/}
+    //         </OWText>
+    //       </View>
+    //       {/*{chainStore.current.chainId === ChainIdEnum.TRON && (*/}
+    //       {/*  <View style={{ paddingBottom: 8 }}>*/}
+    //       {/*    <View*/}
+    //       {/*      style={{*/}
+    //       {/*        flexDirection: "row",*/}
+    //       {/*        justifyContent: "space-between",*/}
+    //       {/*        alignItems: "center",*/}
+    //       {/*      }}*/}
+    //       {/*    >*/}
+    //       {/*      <OWText*/}
+    //       {/*        size={15}*/}
+    //       {/*        weight="600"*/}
+    //       {/*        color={colors["neutral-text-title"]}*/}
+    //       {/*      >*/}
+    //       {/*        My Energy:*/}
+    //       {/*      </OWText>*/}
+    //       {/*      <OWText*/}
+    //       {/*        size={14}*/}
+    //       {/*        weight="600"*/}
+    //       {/*        color={colors["neutral-text-body"]}*/}
+    //       {/*      >{`${accountTronInfo?.energyRemaining?.toString()}/${accountTronInfo?.energyLimit?.toString()}`}</OWText>*/}
+    //       {/*    </View>*/}
+    //       {/*    <View*/}
+    //       {/*      style={{*/}
+    //       {/*        flexDirection: "row",*/}
+    //       {/*        justifyContent: "space-between",*/}
+    //       {/*        alignItems: "center",*/}
+    //       {/*      }}*/}
+    //       {/*    >*/}
+    //       {/*      <OWText*/}
+    //       {/*        size={15}*/}
+    //       {/*        weight="600"*/}
+    //       {/*        color={colors["neutral-text-title"]}*/}
+    //       {/*      >*/}
+    //       {/*        My Bandwidth:*/}
+    //       {/*      </OWText>*/}
+    //       {/*      <OWText*/}
+    //       {/*        size={14}*/}
+    //       {/*        weight="600"*/}
+    //       {/*        color={colors["neutral-text-body"]}*/}
+    //       {/*      >{`${accountTronInfo?.bandwidthRemaining?.toString()}/${accountTronInfo?.bandwidthLimit?.toString()}`}</OWText>*/}
+    //       {/*    </View>*/}
+    //       {/*  </View>*/}
+    //       {/*)}*/}
+    //     </View>
+    //   );
+    // };
 
     return (
       <View>
@@ -586,14 +554,14 @@ export const AccountBoxAll: FunctionComponent<{
             enableOverDrag: false,
           }}
         />
-        <MoreModal
-          close={() => setMoreModalOpen(false)}
-          isOpen={isMoreOpen}
-          bottomSheetModalConfig={{
-            enablePanDownToClose: false,
-            enableOverDrag: false,
-          }}
-        />
+        {/*<MoreModal*/}
+        {/*  close={() => setMoreModalOpen(false)}*/}
+        {/*  isOpen={isMoreOpen}*/}
+        {/*  bottomSheetModalConfig={{*/}
+        {/*    enablePanDownToClose: false,*/}
+        {/*    enableOverDrag: false,*/}
+        {/*  }}*/}
+        {/*/>*/}
         <OWBox style={[styles.containerOWBox]}>
           <View style={styles.containerInfoAccount}>
             <TouchableOpacity
@@ -622,9 +590,9 @@ export const AccountBoxAll: FunctionComponent<{
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
                   onPress={() => {
-                    startTransition(() => {
-                      setShowChart(!showChart);
-                    });
+                    // startTransition(() => {
+                    //   setShowChart(!showChart);
+                    // });
                   }}
                   style={styles.button}
                 >
@@ -636,9 +604,7 @@ export const AccountBoxAll: FunctionComponent<{
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    startTransition(() => {
-                      setModalOpen(true);
-                    });
+                    setModalOpen(true);
                   }}
                   style={styles.button}
                 >
@@ -678,8 +644,7 @@ export const AccountBoxAll: FunctionComponent<{
             )}
           </View>
           <View style={styles.overview}>{renderTotalBalance()}</View>
-          {(chainStore.current.networkType === "cosmos" &&
-            !appInitStore.getInitApp.isAllNetworks) ||
+          {!appInitStore.getInitApp.isAllNetworks ||
           appInitStore.getInitApp.isAllNetworks ? (
             <View
               style={{
@@ -689,13 +654,14 @@ export const AccountBoxAll: FunctionComponent<{
               }}
             />
           ) : null}
-          {appInitStore.getInitApp.isAllNetworks
-            ? renderAvailableperStaked()
-            : renderAssetsByChain()}
+          {/*{appInitStore.getInitApp.isAllNetworks*/}
+          {/*  ? renderAvailableperStaked()*/}
+          {/*  : renderAssetsByChain()}*/}
 
-          {appInitStore.getInitApp.isAllNetworks && showChart
-            ? renderPieChartPortfolio()
-            : null}
+          {/*{appInitStore.getInitApp.isAllNetworks && showChart*/}
+          {/*  ? renderPieChartPortfolio()*/}
+          {/*  : null}*/}
+          {renderAvailableperStaked()}
           {!appInitStore.getInitApp.isAllNetworks ? (
             <View style={styles.btnGroup}>
               <OWButton
@@ -723,23 +689,23 @@ export const AccountBoxAll: FunctionComponent<{
                     navigate(SCREENS.BuyFiat);
                     return;
                   }
-                  if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                    navigate(SCREENS.SendTron, {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
-                  } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                    navigate(SCREENS.SendOasis, {
-                      currency:
-                        chainStore.current.stakeCurrency.coinMinimalDenom,
-                    });
-                  } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.SendBtc);
-                  } else if (chainStore.current.networkType === "evm") {
-                    navigate(SCREENS.SendEvm);
-                  } else {
-                    navigate(SCREENS.NewSend);
-                  }
+                  // if (chainStore.current.chainId === ChainIdEnum.TRON) {
+                  //   navigate(SCREENS.SendTron, {
+                  //     currency:
+                  //       chainStore.current.stakeCurrency.coinMinimalDenom,
+                  //   });
+                  // } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
+                  //   navigate(SCREENS.SendOasis, {
+                  //     currency:
+                  //       chainStore.current.stakeCurrency.coinMinimalDenom,
+                  //   });
+                  // } else if (chainStore.current.networkType === "bitcoin") {
+                  //   navigate(SCREENS.SendBtc);
+                  // } else if (chainStore.current.networkType === "evm") {
+                  //   navigate(SCREENS.SendEvm);
+                  // } else {
+                  //   navigate(SCREENS.NewSend);
+                  // }
                 }}
               />
               <View
@@ -793,9 +759,9 @@ export const AccountBoxAll: FunctionComponent<{
                 type="link"
                 style={styles.getStarted}
                 label={"More"}
-                onPress={() => {
-                  setMoreModalOpen(true);
-                }}
+                // onPress={() => {
+                //   setMoreModalOpen(true);
+                // }}
               />
             </View>
           ) : null}

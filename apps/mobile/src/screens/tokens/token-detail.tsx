@@ -28,7 +28,7 @@ import {
 } from "@src/utils/helper";
 import { CheckIcon } from "@src/components/icon";
 import { TokenChart } from "@src/screens/home/components/token-chart";
-import { ViewRawToken } from "@src/stores/huge-queries";
+import { ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
@@ -48,7 +48,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const styles = useStyles(colors);
   const navigation = useNavigation();
 
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  // const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
 
   const [isMoreOpen, setMoreModalOpen] = useState(false);
 
@@ -57,7 +57,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          item: ViewRawToken;
+          item: ViewToken;
         }
       >,
       string
@@ -70,82 +70,80 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
 
   const [tronTokens, setTronTokens] = useState([]);
 
-  useEffect(() => {
-    tracking("Token Detail Screen");
-    InteractionManager.runAfterInteractions(() => {
-      (async function get() {
-        try {
-          if (accountTron.evmosHexAddress) {
-            const res = await API.getTronAccountInfo(
-              {
-                address: getBase58Address(accountTron.evmosHexAddress),
-              },
-              {
-                baseURL: chainStore.current.rpc,
-              }
-            );
+  // useEffect(() => {
+  //   tracking("Token Detail Screen");
+  //   InteractionManager.runAfterInteractions(() => {
+  //     (async function get() {
+  //       try {
+  //         if (accountTron.evmosHexAddress) {
+  //           const res = await API.getTronAccountInfo(
+  //             {
+  //               address: getBase58Address(accountTron.evmosHexAddress),
+  //             },
+  //             {
+  //               baseURL: chainStore.current.rpc,
+  //             }
+  //           );
+  //
+  //           if (res.data?.data?.length > 0) {
+  //             if (res.data?.data[0].trc20) {
+  //               const tokenArr = [];
+  //               TRC20_LIST.map((tk) => {
+  //                 let token = res.data?.data[0].trc20.find(
+  //                   (t) => tk.contractAddress in t
+  //                 );
+  //                 if (token) {
+  //                   tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+  //                 }
+  //               });
+  //
+  //               setTronTokens(tokenArr);
+  //             }
+  //           }
+  //         }
+  //       } catch (error) {}
+  //     })();
+  //   });
+  // }, [accountTron.evmosHexAddress]);
 
-            if (res.data?.data?.length > 0) {
-              if (res.data?.data[0].trc20) {
-                const tokenArr = [];
-                TRC20_LIST.map((tk) => {
-                  let token = res.data?.data[0].trc20.find(
-                    (t) => tk.contractAddress in t
-                  );
-                  if (token) {
-                    tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-                  }
-                });
-
-                setTronTokens(tokenArr);
-              }
-            }
-          }
-        } catch (error) {}
-      })();
-    });
-  }, [accountTron.evmosHexAddress]);
-
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
+  const address = account.addressDisplay;
   const onPressToken = async () => {
-    chainStore.selectChain(item.chainInfo.chainId);
-    await chainStore.saveLastViewChainId();
+    // chainStore.selectChain(item.chainInfo.chainId);
+    // await chainStore.saveLastViewChainId();
 
-    if (chainStore.current.networkType === "bitcoin") {
-      navigate(SCREENS.SendBtc);
-      return;
-    }
-    if (chainStore.current.networkType === "evm") {
-      if (item.chainInfo.chainId === ChainIdEnum.TRON) {
-        const itemTron = tronTokens?.find((t) => {
-          return t.coinGeckoId === item.token.currency.coinGeckoId;
-        });
-
-        navigate(SCREENS.SendTron, {
-          item: itemTron,
-          currency: item.token.currency.coinDenom,
-          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-            .contractAddress,
-        });
-
-        return;
-      }
-      if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
-        navigate(SCREENS.SendOasis, {
-          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-        });
-        return;
-      }
-      navigate(SCREENS.SendEvm, {
-        currency: item.token.currency.coinDenom,
-        contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-          .contractAddress,
-        coinGeckoId: item.token.currency.coinGeckoId,
-      });
-      return;
-    }
+    // if (chainStore.current.networkType === "bitcoin") {
+    //   navigate(SCREENS.SendBtc);
+    //   return;
+    // }
+    // if (chainStore.current.networkType === "evm") {
+    //   if (item.chainInfo.chainId === ChainIdEnum.TRON) {
+    //     const itemTron = tronTokens?.find((t) => {
+    //       return t.coinGeckoId === item.token.currency.coinGeckoId;
+    //     });
+    //
+    //     navigate(SCREENS.SendTron, {
+    //       item: itemTron,
+    //       currency: item.token.currency.coinDenom,
+    //       contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+    //         .contractAddress,
+    //     });
+    //
+    //     return;
+    //   }
+    //   if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
+    //     navigate(SCREENS.SendOasis, {
+    //       currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+    //     });
+    //     return;
+    //   }
+    //   navigate(SCREENS.SendEvm, {
+    //     currency: item.token.currency.coinDenom,
+    //     contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
+    //       .contractAddress,
+    //     coinGeckoId: item.token.currency.coinGeckoId,
+    //   });
+    //   return;
+    // }
 
     try {
       // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
@@ -165,6 +163,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       headerTitle: () => <OWHeaderTitle chainData={item.chainInfo} />,
     });
   }, [item.chainInfo]);
+  console.log(item.token.toCoin().amount, "item.token");
   return (
     <>
       <MoreModal
@@ -236,7 +235,10 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               <OWText variant="bigText" style={styles.labelTotalAmount}>
                 {" "}
                 {maskedNumber(
-                  new CoinPretty(item.token.currency, item.token.amount)
+                  new CoinPretty(
+                    item.token.currency,
+                    item.token.toCoin().amount
+                  )
                     .hideDenom(true)
                     .trim(true)
                     .toString()
@@ -366,10 +368,10 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               History
             </OWText>
           </View>
-          <HistoryByToken
-            tokenAddr={denomHelper.contractAddress || denomHelper.denom}
-            chainId={item.chainInfo.chainId}
-          />
+          {/*<HistoryByToken*/}
+          {/*  tokenAddr={denomHelper.contractAddress || denomHelper.denom}*/}
+          {/*  chainId={item.chainInfo.chainId}*/}
+          {/*/>*/}
         </OWBox>
       </PageWithScrollView>
       <View

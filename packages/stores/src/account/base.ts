@@ -261,6 +261,10 @@ export class AccountSetBase {
   get bech32Address(): string {
     return this._bech32Address;
   }
+  get addressDisplay(): string {
+    if (this.chainId?.includes("eip155")) return this._ethereumHexAddress;
+    return this._bech32Address;
+  }
 
   get pubKey(): Uint8Array {
     return this._pubKey.slice();

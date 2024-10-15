@@ -10,72 +10,58 @@ import { useTheme } from "@src/themes/theme-provider";
 import { useStyleMyWallet } from "./styles";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
-import { ChainIdEnum } from "@oraichain/oraidex-common";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
-import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ViewToken } from "@src/stores/huge-queries";
-import { initPrice } from "../../hooks/use-multiple-assets";
+import { KeyInfo } from "@owallet/background";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    keyRingStore,
-    analyticsStore,
-    chainStore,
-    modalStore,
-    universalSwapStore,
-    appInitStore,
-    priceStore,
-    accountStore,
-  } = useStore();
+  const { keyRingStore, chainStore, modalStore, universalSwapStore } =
+    useStore();
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
+    return keyRingStore.keyInfos.filter(
       (keyStore) => !keyStore.type || keyStore.type === "mnemonic"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
   const privateKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "privateKey" && !keyStore.meta?.email
+    return keyRingStore.keyInfos.filter(
+      (keyStore) => keyStore.type === "private-key"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
   const ledgerKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
+    return keyRingStore.keyInfos.filter(
       (keyStore) => keyStore.type === "ledger"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
-  const selectKeyStore = useCallback(async (keyStore: any) => {
-    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-    if (index >= 0) {
-      universalSwapStore.setLoaded(false);
-      await keyRingStore.changeKeyRing(index);
-      await waitAccountInit(chainStore, accountStore, keyRingStore);
+  const selectKeyStore = async (keyStore: KeyInfo) => {
+    universalSwapStore.setLoaded(false);
+    await keyRingStore.selectKeyRing(keyStore.id);
+    await chainStore.waitSyncedEnabledChains();
+  };
+  const onSwitchWallet = useCallback(async (item) => {
+    if (keyRingStore.selectedKeyInfo.id === item.id) {
+      return;
     }
+    // setIsLoading(true);
+    await selectKeyStore(item);
+    await modalStore.close();
+    universalSwapStore.clearAmounts();
+    // setIsLoading(false);
   }, []);
-
   const renderItem = ({ item }) => {
     return (
       <>
         <RectButton
           style={{
             ...styles.containerAccount,
-            backgroundColor: item.selected
+            backgroundColor: item.isSelected
               ? colors["neutral-surface-bg2"]
               : null,
           }}
-          onPress={async () => {
-            setIsLoading(true);
-            analyticsStore.logEvent("Account changed");
-            await selectKeyStore(item);
-            await modalStore.close();
-            universalSwapStore.clearAmounts();
-            setIsLoading(false);
-          }}
+          onPress={() => onSwitchWallet(item)}
         >
           <View
             style={{
@@ -98,7 +84,7 @@ const MnemonicSeed = () => {
               }}
             >
               <Text weight="600" size={16} numberOfLines={1}>
-                {item.meta?.name}
+                {item?.name}
               </Text>
             </View>
           </View>
@@ -113,7 +99,11 @@ const MnemonicSeed = () => {
       </>
     );
   };
-  const data = [...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores];
+  const data: Array<KeyInfo> = [
+    ...mnemonicKeyStores,
+    ...privateKeyStores,
+    ...ledgerKeyStores,
+  ];
   return (
     <View
       style={{
