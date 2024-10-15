@@ -164,6 +164,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               borderRadius: 99,
               backgroundColor: colors["neutral-surface-action3"],
             }}
+            textStyleApprove={{
+              color: colors["neutral-text-action-on-dark-bg"],
+            }}
           />
         </View>
       }
