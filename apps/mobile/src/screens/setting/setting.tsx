@@ -81,18 +81,9 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
       },
     });
 
-    const onSelectChain = async (chainId) => {
-      chainStore.selectChain(chainId);
-      console.log("select chain", chainId);
-
-      await chainStore.saveLastViewChainId();
-      appInitStore.selectAllNetworks(false);
-    };
-
     modalStore.setChildren(
       ThemeModal({
         modalStore,
-        onSelectChain,
         appInitStore,
         colors,
       })

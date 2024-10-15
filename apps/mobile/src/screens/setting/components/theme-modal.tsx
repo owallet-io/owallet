@@ -13,7 +13,6 @@ import OWText from "@src/components/text/ow-text";
 
 interface ThemeModalProps {
   modalStore: ModalStore;
-  onSelectChain: Function;
   appInitStore: AppInit;
   colors: object;
 }
@@ -28,7 +27,6 @@ const themes = [
 export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
   appInitStore,
   modalStore,
-  onSelectChain,
   colors,
 }) => {
   const onChooseTheme = async (item) => {
@@ -38,11 +36,6 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
     } else {
       appInitStore.updateTheme(item.label);
       appInitStore.updateWalletTheme("owallet");
-      if (item.label === "osmosis") {
-        onSelectChain(ChainIdEnum.Osmosis);
-      } else if (item.label === "injective") {
-        onSelectChain(ChainIdEnum.Injective);
-      }
     }
     modalStore.close();
   };
