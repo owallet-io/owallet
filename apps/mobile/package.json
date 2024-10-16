@@ -65,7 +65,7 @@
     "@tanstack/react-query": "^5.14.6",
     "@tatumio/tatum": "^4.2.24",
     "@walletconnect/react-native-compat": "2.15.1",
-    "@walletconnect/sign-client": "2.15.1",
+    "@walletconnect/sign-client": "^2.13.3",
     "@walletconnect/types": "2.15.1",
     "appcenter": "^5.0.1",
     "appcenter-analytics": "^5.0.1",
