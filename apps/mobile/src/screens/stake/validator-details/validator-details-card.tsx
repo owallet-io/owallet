@@ -1,4 +1,7 @@
-import { BondStatus } from "@owallet/stores";
+import {
+  Staking,
+  // BondStatus
+} from "@owallet/stores";
 import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
@@ -15,7 +18,7 @@ import { useStore } from "@src/stores";
 import {
   DenomDydx,
   removeDataInParentheses,
-  ValidatorThumbnails,
+  // ValidatorThumbnails,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
@@ -109,13 +112,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
   const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonding
+    Staking.BondStatus.Unbonding
   );
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonded
+    Staking.BondStatus.Unbonded
   );
   const navigation = useNavigation();
 
@@ -134,8 +137,9 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress) ||
-    ValidatorThumbnails[validatorAddress];
+    unbondedValidators.getValidatorThumbnail(validatorAddress);
+  // ||
+  // ValidatorThumbnails[validatorAddress];
   const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );

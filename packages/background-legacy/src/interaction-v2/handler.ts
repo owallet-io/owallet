@@ -114,12 +114,12 @@ const handlePingContentScriptTabHasOpenedSidePanelMsg: (
   service: InteractionService
 ) => InternalHandler<PingContentScriptTabHasOpenedSidePanelMsg> = (service) => {
   return async (env) => {
-    if (!env.sender.tab || env.sender.tab.id == null) {
+    if (!env.sender?.tab || env.sender?.tab.id == null) {
       return false;
     }
 
     return await service.pingContentScriptTabHasOpenedSidePanel(
-      env.sender.tab.id
+      env.sender?.tab.id
     );
   };
 };

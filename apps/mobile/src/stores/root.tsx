@@ -72,6 +72,7 @@ import { EthereumQueries, EthereumAccountStore } from "@owallet/stores-eth";
 import { AppInit, appInit } from "@stores/app_init";
 import { ModalStore } from "@stores/modal";
 import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
+import { UIConfigStore } from "@stores/ui-config";
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -87,6 +88,7 @@ export class RootStore {
   public readonly tokensStore: TokensStore;
   public readonly appInitStore: AppInit;
   public readonly interactionStore: InteractionStore;
+  public readonly uiConfigStore: UIConfigStore;
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
@@ -448,7 +450,17 @@ export class RootStore {
     //     this.priceStore,
     //     ICNSInfo,
     // );
-
+    this.uiConfigStore = new UIConfigStore(
+      {
+        kvStore: new AsyncKVStore("store_ui_config"),
+        addressBookKVStore: new AsyncKVStore("address_book"),
+      },
+      new RNMessageRequesterInternal(),
+      this.chainStore,
+      this.keyRingStore,
+      this.priceStore,
+      ICNSInfo
+    );
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {

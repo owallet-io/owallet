@@ -1,6 +1,6 @@
 import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import { useDelegateTxConfig } from "@owallet/hooks";
-import { BondStatus } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
@@ -57,7 +57,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
+    // analyticsStore,
     priceStore,
     modalStore,
     keyRingStore,
@@ -167,7 +167,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);

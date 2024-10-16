@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
 import { useStyle } from "../../../styles";
-import { BondStatus } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { useRedelegateTxConfig } from "@owallet/hooks";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { PageWithScrollView } from "../../../components/page";
@@ -30,7 +30,7 @@ import {
   ChainIdEnum,
   toAmount,
   unknownToken,
-  ValidatorThumbnails,
+  // ValidatorThumbnails,
 } from "@owallet/common";
 import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
@@ -89,24 +89,24 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const srcValidator =
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Bonded)
+      .getQueryStatus(Staking.BondStatus.Bonded)
       .getValidator(validatorAddress) ||
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonding)
+      .getQueryStatus(Staking.BondStatus.Unbonding)
       .getValidator(validatorAddress) ||
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonded)
+      .getQueryStatus(Staking.BondStatus.Unbonded)
       .getValidator(validatorAddress);
 
   const srcValidatorThumbnail = srcValidator
     ? queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Bonded)
+        .getQueryStatus(Staking.BondStatus.Bonded)
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonding)
+        .getQueryStatus(Staking.BondStatus.Unbonding)
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonded)
+        .getQueryStatus(Staking.BondStatus.Unbonded)
         .getValidatorThumbnail(validatorAddress)
     : undefined;
 
@@ -161,13 +161,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const dstValidator =
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Bonded)
+      .getQueryStatus(Staking.BondStatus.Bonded)
       .getValidator(dstValidatorAddress) ||
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonding)
+      .getQueryStatus(Staking.BondStatus.Unbonding)
       .getValidator(dstValidatorAddress) ||
     queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonded)
+      .getQueryStatus(Staking.BondStatus.Unbonded)
       .getValidator(dstValidatorAddress);
 
   useEffect(() => {

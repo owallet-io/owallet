@@ -1,5 +1,5 @@
-import { ValidatorThumbnails } from "@owallet/common";
-import { BondStatus } from "@owallet/stores";
+// import { ValidatorThumbnails } from "@owallet/common";
+import { Staking } from "@owallet/stores";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import { OWBox } from "@src/components/card";
@@ -52,13 +52,13 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       .getStakableRewardOf(validatorAddress);
 
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Bonded
+      Staking.BondStatus.Bonded
     );
     const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Unbonding
+      Staking.BondStatus.Unbonding
     );
     const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Unbonded
+      Staking.BondStatus.Unbonded
     );
     const thumbnail =
       bondedValidators.getValidatorThumbnail(validatorAddress) ||

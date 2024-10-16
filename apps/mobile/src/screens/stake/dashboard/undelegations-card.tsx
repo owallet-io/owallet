@@ -1,4 +1,4 @@
-import { BondStatus } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
@@ -26,13 +26,13 @@ export const UndelegationsCard: FunctionComponent<{
     ).unbondingBalances;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
   const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonding
+    Staking.BondStatus.Unbonding
   );
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonded
+    Staking.BondStatus.Unbonded
   );
   const stakingParams = queries.cosmos.queryStakingParams;
 

@@ -5,7 +5,7 @@ import { StyleProvider } from "./styles";
 import { AppNavigation } from "./navigation";
 import { ModalsProvider } from "./modals/base";
 import { Platform, LogBox } from "react-native";
-import { AdditonalIntlMessages, LanguageToFiatCurrency } from "@owallet/common";
+import { AppIntlProvider } from "./languages";
 import { InteractionModalsProivder } from "./providers/interaction-modals-provider";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
@@ -39,44 +39,6 @@ branch.subscribe({
 
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
-
-// const AppIntlProviderWithStorage = ({ children }) => {
-//   const store = useStore();
-//
-//   return (
-//     <AppIntlProvider
-//       additionalMessages={AdditonalIntlMessages}
-//       languageToFiatCurrency={LanguageToFiatCurrency}
-//       storage={store.uiConfigStore.Storage}
-//     >
-//       {({ language, messages, automatic }) => (
-//         <IntlProvider
-//           locale={language}
-//           messages={messages}
-//           key={`${language}${automatic ? "-auto" : ""}`}
-//           formats={{
-//             date: {
-//               en: {
-//                 // Prefer not showing the year.
-//                 // If the year is different with current time, recommend to show the year.
-//                 // However, this recomendation should be handled in the component logic.
-//                 // year: "numeric",
-//                 month: "short",
-//                 day: "2-digit",
-//                 hour: "2-digit",
-//                 hour12: false,
-//                 minute: "2-digit",
-//                 timeZoneName: "short",
-//               },
-//             },
-//           }}
-//         >
-//           {children}
-//         </IntlProvider>
-//       )}
-//     </AppIntlProvider>
-//   );
-// };
 
 export const App = () => {
   const [isInit, setIsInit] = useState(true);
@@ -114,23 +76,23 @@ export const App = () => {
           <StyleProvider>
             <StoreProvider>
               <ThemeProvider>
-                {/*<AppIntlProviderWithStorage>*/}
-                <SafeAreaProvider>
-                  <ModalsProvider>
-                    <PopupRootProvider>
-                      <LoadingScreenProvider>
-                        <ConfirmModalProvider>
-                          <InteractionModalsProivder>
-                            <QueryClientProvider client={queryClient}>
-                              <AppNavigation />
-                            </QueryClientProvider>
-                          </InteractionModalsProivder>
-                        </ConfirmModalProvider>
-                      </LoadingScreenProvider>
-                    </PopupRootProvider>
-                  </ModalsProvider>
-                </SafeAreaProvider>
-                {/*</AppIntlProviderWithStorage>*/}
+                <AppIntlProvider>
+                  <SafeAreaProvider>
+                    <ModalsProvider>
+                      <PopupRootProvider>
+                        <LoadingScreenProvider>
+                          <ConfirmModalProvider>
+                            <InteractionModalsProivder>
+                              <QueryClientProvider client={queryClient}>
+                                <AppNavigation />
+                              </QueryClientProvider>
+                            </InteractionModalsProivder>
+                          </ConfirmModalProvider>
+                        </LoadingScreenProvider>
+                      </PopupRootProvider>
+                    </ModalsProvider>
+                  </SafeAreaProvider>
+                </AppIntlProvider>
                 <FlashMessage position="top" />
               </ThemeProvider>
             </StoreProvider>

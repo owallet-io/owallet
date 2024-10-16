@@ -36,6 +36,7 @@ import { NewLedgerScreen } from "./screens/register/ledger";
 import { NftDetailScreen, NftsScreen } from "./screens/nfts";
 import {
   DelegateScreen,
+  StakingDashboardScreen,
   ValidatorDetailsScreen,
   ValidatorListScreen,
 } from "./screens/stake";
@@ -128,10 +129,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={PincodeUnlockScreen}
             />
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ManageWalletConnect}*/}
-            {/*    component={ManageWalletConnectScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.ManageWalletConnect}
+              component={ManageWalletConnectScreen}
+            />
 
             <Stack.Screen
               name={SCREENS.SettingSelectAccount}
@@ -157,10 +158,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={ViewPrivateDataScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.SettingVersion}*/}
-            {/*    component={OWalletVersionScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.SettingVersion}
+              component={OWalletVersionScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.DetailsBrowser}*/}
             {/*    component={DetailsBrowserScreen}*/}
@@ -174,41 +175,41 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.WebIntro}*/}
             {/*    component={WebScreen}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.AddressBook}*/}
-            {/*    component={AddressBookScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />*/}
+            <Stack.Screen
+              name={SCREENS.AddressBook}
+              component={AddressBookScreen}
+            />
+            <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />
 
-            {/*  <Stack.Screen*/}
-            {/*    options={{*/}
-            {/*      headerRight: () => {*/}
-            {/*        return (*/}
-            {/*          <OWButtonIcon*/}
-            {/*            name={"tdesignadd"}*/}
-            {/*            sizeIcon={24}*/}
-            {/*            onPress={() => navigate(SCREENS.AddChain)}*/}
-            {/*            fullWidth={false}*/}
-            {/*            style={{*/}
-            {/*              backgroundColor: colors["neutral-surface-card"],*/}
-            {/*              height: 40,*/}
-            {/*              width: 40,*/}
-            {/*              borderRadius: 99,*/}
-            {/*              marginRight: 16,*/}
-            {/*            }}*/}
-            {/*            colorIcon={colors["neutral-text-action-on-light-bg"]}*/}
-            {/*          />*/}
-            {/*        );*/}
-            {/*      },*/}
-            {/*    }}*/}
-            {/*    name={SCREENS.ManageChain}*/}
-            {/*    component={SelectChainsScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              options={{
+                headerRight: () => {
+                  return (
+                    <OWButtonIcon
+                      name={"tdesignadd"}
+                      sizeIcon={24}
+                      onPress={() => navigate(SCREENS.AddChain)}
+                      fullWidth={false}
+                      style={{
+                        backgroundColor: colors["neutral-surface-card"],
+                        height: 40,
+                        width: 40,
+                        borderRadius: 99,
+                        marginRight: 16,
+                      }}
+                      colorIcon={colors["neutral-text-action-on-light-bg"]}
+                    />
+                  );
+                },
+              }}
+              name={SCREENS.ManageChain}
+              component={SelectChainsScreen}
+            />
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.AddAddressBook}*/}
-            {/*    component={AddAddressBookScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.AddAddressBook}
+              component={AddAddressBookScreen}
+            />
             <Stack.Screen
               name={SCREENS.STACK.MainTab}
               component={MainTabNavigation}
@@ -279,32 +280,33 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={NewLedgerScreen}*/}
             {/*  />*/}
             {/*  <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />*/}
-            {/*  <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.NftsDetail}*/}
-            {/*    component={NftDetailScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ValidatorList}*/}
-            {/*    component={ValidatorListScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ValidatorDetails}*/}
-            {/*    component={ValidatorDetailsScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.DelegateDetail}*/}
-            {/*    component={DelegateDetailScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Redelegate}*/}
-            {/*    component={RedelegateScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Undelegate}*/}
-            {/*    component={UndelegateScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
+            <Stack.Screen
+              name={SCREENS.NftsDetail}
+              component={NftDetailScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.ValidatorList}
+              component={ValidatorListScreen}
+            />
+
+            <Stack.Screen
+              name={SCREENS.ValidatorDetails}
+              component={ValidatorDetailsScreen}
+            />
+            <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />
+            <Stack.Screen
+              name={SCREENS.DelegateDetail}
+              component={DelegateDetailScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.Redelegate}
+              component={RedelegateScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.Undelegate}
+              component={UndelegateScreen}
+            />
             {/*  <Stack.Screen name={SCREENS.Send} component={SendScreen} />*/}
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.PincodeScreen}*/}

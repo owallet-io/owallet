@@ -47,10 +47,16 @@ export const FeeModal: FunctionComponent<{
   const [customGas, setCustomGas] = useState(false);
   const { colors } = useTheme();
   const { modalStore, chainStore, appInitStore } = useStore();
-
+  const feeCurrency =
+    sendConfigs.feeConfig.fees.length > 0
+      ? sendConfigs.feeConfig.fees[0].currency
+      : sendConfigs.feeConfig.selectableFeeCurrencies[0];
   useEffect(() => {
     if (appInitStore.getInitApp.feeOption) {
-      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      sendConfigs.feeConfig.setFee({
+        type: appInitStore.getInitApp.feeOption,
+        currency: feeCurrency,
+      });
     }
   }, [appInitStore.getInitApp.feeOption]);
 
@@ -64,69 +70,69 @@ export const FeeModal: FunctionComponent<{
       subTitle={"The fee required to successfully conduct a transaction"}
     >
       <View>
-        {chainStore.current.networkType !== "bitcoin" && (
-          <View
-            style={{
-              flexDirection: "row",
-              paddingBottom: 16,
-              alignItems: "center",
-              justifyContent: "space-between",
-              borderBottomColor: colors["neutral-border-default"],
-              borderBottomWidth: 1,
-              marginBottom: 8,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <View
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 44,
-                  backgroundColor: colors["neutral-surface-action"],
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <OWIcon
-                  name={"wrench"}
-                  color={colors["neutral-icon-on-light"]}
-                  size={16}
-                />
-              </View>
+        {/*{chainStore.current.networkType !== "bitcoin" && (*/}
+        {/*  <View*/}
+        {/*    style={{*/}
+        {/*      flexDirection: "row",*/}
+        {/*      paddingBottom: 16,*/}
+        {/*      alignItems: "center",*/}
+        {/*      justifyContent: "space-between",*/}
+        {/*      borderBottomColor: colors["neutral-border-default"],*/}
+        {/*      borderBottomWidth: 1,*/}
+        {/*      marginBottom: 8,*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <View*/}
+        {/*      style={{*/}
+        {/*        flexDirection: "row",*/}
+        {/*        alignItems: "center",*/}
+        {/*      }}*/}
+        {/*    >*/}
+        {/*      <View*/}
+        {/*        style={{*/}
+        {/*          width: 44,*/}
+        {/*          height: 44,*/}
+        {/*          borderRadius: 44,*/}
+        {/*          backgroundColor: colors["neutral-surface-action"],*/}
+        {/*          justifyContent: "center",*/}
+        {/*          alignItems: "center",*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        <OWIcon*/}
+        {/*          name={"wrench"}*/}
+        {/*          color={colors["neutral-icon-on-light"]}*/}
+        {/*          size={16}*/}
+        {/*        />*/}
+        {/*      </View>*/}
 
-              <OWText
-                style={{
-                  fontWeight: "700",
-                  fontSize: 16,
-                  lineHeight: 34,
-                  paddingHorizontal: 8,
-                  color: colors["neutral-text-title"],
-                }}
-              >
-                Custom Gas
-              </OWText>
-            </View>
-            <Toggle
-              on={customGas}
-              onChange={(value) => {
-                setCustomGas(value);
-                if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
-                    sendConfigs.feeConfig.setFeeType("average");
-                  }
-                }
-              }}
-            />
-          </View>
-        )}
+        {/*      <OWText*/}
+        {/*        style={{*/}
+        {/*          fontWeight: "700",*/}
+        {/*          fontSize: 16,*/}
+        {/*          lineHeight: 34,*/}
+        {/*          paddingHorizontal: 8,*/}
+        {/*          color: colors["neutral-text-title"],*/}
+        {/*        }}*/}
+        {/*      >*/}
+        {/*        Custom Gas*/}
+        {/*      </OWText>*/}
+        {/*    </View>*/}
+        {/*    <Toggle*/}
+        {/*      on={customGas}*/}
+        {/*      onChange={(value) => {*/}
+        {/*        setCustomGas(value);*/}
+        {/*        if (!value) {*/}
+        {/*          if (*/}
+        {/*            sendConfigs.feeConfig.feeCurrency &&*/}
+        {/*            !sendConfigs.feeConfig.fee*/}
+        {/*          ) {*/}
+        {/*            sendConfigs.feeConfig.setFeeType("average");*/}
+        {/*          }*/}
+        {/*        }*/}
+        {/*      }}*/}
+        {/*    />*/}
+        {/*  </View>*/}
+        {/*)}*/}
         {customGas && (
           <CustomFee gasConfig={sendConfigs.gasConfig} colors={colors} />
         )}
