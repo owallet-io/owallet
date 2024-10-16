@@ -1,8 +1,4 @@
-import {
-  APR_API_URL,
-  CommunityChainInfoRepo,
-  EmbedChainInfos,
-} from "@owallet/common";
+import { APR_API_URL, CommunityChainInfoRepo, EmbedChainInfos } from '@owallet/common';
 
 import {
   AccountStore,
@@ -20,9 +16,9 @@ import {
   LSMCurrencyRegistrar,
   AgoricQueries,
   CosmwasmAccount,
-  TokenFactoryCurrencyRegistrar,
-} from "@owallet/stores";
-import { IBCChannelStore, IBCCurrencyRegistrar } from "@owallet/stores-ibc";
+  TokenFactoryCurrencyRegistrar
+} from '@owallet/stores';
+import { IBCChannelStore, IBCCurrencyRegistrar } from '@owallet/stores-ibc';
 import {
   ChainSuggestStore,
   InteractionStore,
@@ -31,15 +27,15 @@ import {
   PermissionStore,
   SignEthereumInteractionStore,
   SignInteractionStore,
-  TokensStore,
-} from "@owallet/stores-core";
-import { AsyncKVStore } from "../common";
-import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
-import { APP_PORT } from "@owallet/router";
-import EventEmitter from "eventemitter3";
-import { HugeQueriesStore } from "./huge-queries";
-import { ChainStore } from "./chain";
-import { FiatCurrency } from "@owallet/types";
+  TokensStore
+} from '@owallet/stores-core';
+import { AsyncKVStore } from '../common';
+import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
+import { APP_PORT } from '@owallet/router';
+import EventEmitter from 'eventemitter3';
+import { HugeQueriesStore } from './huge-queries';
+import { ChainStore } from './chain';
+import { FiatCurrency } from '@owallet/types';
 // import {UIConfigStore} from './ui-config';
 import {
   ICNSInfo,
@@ -48,33 +44,36 @@ import {
   FiatCurrencies,
   TokenContractListURL,
   EthereumEndpoint,
-  SwapVenue,
-} from "@owallet/common";
-import { TokenContractsQueries } from "./token-contracts";
-import { AprQueries } from "./aprs";
+  SwapVenue
+} from '@owallet/common';
+import { TokenContractsQueries } from './token-contracts';
+import { AprQueries } from './aprs';
 // import {CosmosGovernanceQueries} from './governance/quries';
 // import {CosmosGovernanceQueriesV1} from './governance/v1/quries';
 // import {ScamProposalStore} from './scam-proposal';
-import { KeychainStore } from "./keychain";
-import { WalletConnectStore } from "./wallet-connect";
+import { KeychainStore } from './keychain';
+import { WalletConnectStore } from './wallet-connect';
 import {
   AxelarEVMBridgeCurrencyRegistrar,
   GravityBridgeCurrencyRegistrar,
-  OWalletETCQueries,
-} from "@owallet/stores-etc";
+  OWalletETCQueries
+} from '@owallet/stores-etc';
 // import {
 //     SkipQueries,
 //     SwapUsageQueries,
 //     Price24HChangesStore,
 // } from '@owallet/stores-internal';
-import { DeepLinkStore } from "./deep-link";
-import { EthereumQueries, EthereumAccountStore } from "@owallet/stores-eth";
-import { AppInit, appInit } from "@stores/app_init";
-import { ModalStore } from "@stores/modal";
-import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
+import { DeepLinkStore } from './deep-link';
+import { EthereumQueries, EthereumAccountStore } from '@owallet/stores-eth';
+import { AppInit, appInit } from '@stores/app_init';
+import { ModalStore } from '@stores/modal';
+import { UniversalSwapStore, universalSwapStore } from '@stores/universal_swap';
+import { UIConfigStore } from './ui-config';
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
+  public readonly uiConfigStore: UIConfigStore;
+
   public readonly keyRingStore: KeyRingStore;
   public readonly chainStore: ChainStore;
   public readonly ibcChannelStore: IBCChannelStore;
@@ -112,9 +111,7 @@ export class RootStore {
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
   // public readonly skipQueriesStore: SkipQueries;
-  public readonly accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, SecretAccount]
-  >;
+  public readonly accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
   public readonly ethereumAccountStore: EthereumAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
 
@@ -135,34 +132,22 @@ export class RootStore {
     const eventEmitter = new EventEmitter();
 
     // Order is important.
-    this.interactionStore = new InteractionStore(
-      router,
-      new RNMessageRequesterInternal()
-    );
+    this.interactionStore = new InteractionStore(router, new RNMessageRequesterInternal());
 
-    this.permissionManagerStore = new PermissionManagerStore(
-      new RNMessageRequesterInternal()
-    );
+    this.permissionManagerStore = new PermissionManagerStore(new RNMessageRequesterInternal());
 
     this.keyRingStore = new KeyRingStore(
       {
         dispatchEvent: (type: string) => {
           eventEmitter.emit(type);
-        },
+        }
       },
       new RNMessageRequesterInternal()
     );
     this.appInitStore = appInit;
-    this.chainStore = new ChainStore(
-      EmbedChainInfos,
-      this.keyRingStore,
-      new RNMessageRequesterInternal()
-    );
+    this.chainStore = new ChainStore(EmbedChainInfos, this.keyRingStore, new RNMessageRequesterInternal());
     this.universalSwapStore = universalSwapStore;
-    this.ibcChannelStore = new IBCChannelStore(
-      new AsyncKVStore("store_ibc_channel"),
-      this.chainStore
-    );
+    this.ibcChannelStore = new IBCChannelStore(new AsyncKVStore('store_ibc_channel'), this.chainStore);
 
     this.permissionStore = new PermissionStore(
       this.interactionStore,
@@ -170,43 +155,38 @@ export class RootStore {
       new RNMessageRequesterInternal()
     );
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
-    this.signEthereumInteractionStore = new SignEthereumInteractionStore(
-      this.interactionStore
-    );
-    this.chainSuggestStore = new ChainSuggestStore(
-      this.interactionStore,
-      CommunityChainInfoRepo
-    );
+    this.signEthereumInteractionStore = new SignEthereumInteractionStore(this.interactionStore);
+    this.chainSuggestStore = new ChainSuggestStore(this.interactionStore, CommunityChainInfoRepo);
 
     //FIXME - @owallet/stores를 최신 버전으로 업데이트를 해야함
     this.queriesStore = new QueriesStore(
-      new AsyncKVStore("store_queries"),
+      new AsyncKVStore('store_queries'),
       this.chainStore,
       {
-        responseDebounceMs: 75,
+        responseDebounceMs: 75
       },
       AgoricQueries.use(),
       CosmosQueries.use(),
       CosmwasmQueries.use(),
       SecretQueries.use({
-        apiGetter: getOWalletFromWindow,
+        apiGetter: getOWalletFromWindow
       }),
       OsmosisQueries.use(),
       OWalletETCQueries.use({
-        ethereumURL: EthereumEndpoint,
+        ethereumURL: EthereumEndpoint
       }),
       ICNSQueries.use(),
       TokenContractsQueries.use({
-        tokenContractListURL: TokenContractListURL,
+        tokenContractListURL: TokenContractListURL
       }),
       AprQueries.use({
-        aprBaseUrl: APR_API_URL,
+        aprBaseUrl: APR_API_URL
       }),
       // CosmosGovernanceQueries.use(),
       // CosmosGovernanceQueriesV1.use(),
       EthereumQueries.use({
-        coingeckoAPIBaseURL: "",
-        coingeckoAPIURI: "",
+        coingeckoAPIBaseURL: '',
+        coingeckoAPIURI: ''
       })
     );
 
@@ -228,162 +208,153 @@ export class RootStore {
         },
         removeEventListener: (type: string, fn: () => void) => {
           eventEmitter.removeListener(type, fn);
-        },
+        }
       },
       this.chainStore,
       getOWalletFromWindow,
       () => {
         return {
           suggestChain: false,
-          autoInit: true,
+          autoInit: true
         };
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
+        msgOptsCreator: chainId => {
           // In certik, change the msg type of the MsgSend to "bank/MsgSend"
-          if (chainId.startsWith("shentu-")) {
+          if (chainId.startsWith('shentu-')) {
             return {
               send: {
                 native: {
-                  type: "bank/MsgSend",
-                },
-              },
+                  type: 'bank/MsgSend'
+                }
+              }
             };
           }
 
           // In akash or sifchain, increase the default gas for sending
-          if (
-            chainId.startsWith("akashnet-") ||
-            chainId.startsWith("sifchain")
-          ) {
+          if (chainId.startsWith('akashnet-') || chainId.startsWith('sifchain')) {
             return {
               send: {
                 native: {
-                  gas: 120000,
-                },
-              },
+                  gas: 120000
+                }
+              }
             };
           }
 
-          if (chainId.startsWith("secret-")) {
+          if (chainId.startsWith('secret-')) {
             return {
               send: {
                 native: {
-                  gas: 20000,
-                },
+                  gas: 20000
+                }
               },
               withdrawRewards: {
-                gas: 25000,
-              },
+                gas: 25000
+              }
             };
           }
 
           // For terra related chains
-          if (
-            chainId.startsWith("bombay-") ||
-            chainId.startsWith("columbus-")
-          ) {
+          if (chainId.startsWith('bombay-') || chainId.startsWith('columbus-')) {
             return {
               send: {
                 native: {
-                  type: "bank/MsgSend",
-                },
+                  type: 'bank/MsgSend'
+                }
               },
               withdrawRewards: {
-                type: "distribution/MsgWithdrawDelegationReward",
+                type: 'distribution/MsgWithdrawDelegationReward'
               },
               delegate: {
-                type: "staking/MsgDelegate",
+                type: 'staking/MsgDelegate'
               },
               undelegate: {
-                type: "staking/MsgUndelegate",
+                type: 'staking/MsgUndelegate'
               },
               redelegate: {
-                type: "staking/MsgBeginRedelegate",
-              },
+                type: 'staking/MsgBeginRedelegate'
+              }
             };
           }
 
-          if (chainId.startsWith("evmos_") || chainId.startsWith("planq_")) {
+          if (chainId.startsWith('evmos_') || chainId.startsWith('planq_')) {
             return {
               send: {
                 native: {
-                  gas: 140000,
-                },
+                  gas: 140000
+                }
               },
               withdrawRewards: {
-                gas: 200000,
-              },
+                gas: 200000
+              }
             };
           }
 
-          if (chainId.startsWith("osmosis")) {
+          if (chainId.startsWith('osmosis')) {
             return {
               send: {
                 native: {
-                  gas: 100000,
-                },
+                  gas: 100000
+                }
               },
               withdrawRewards: {
-                gas: 300000,
-              },
+                gas: 300000
+              }
             };
           }
 
-          if (chainId.startsWith("stargaze-")) {
+          if (chainId.startsWith('stargaze-')) {
             return {
               send: {
                 native: {
-                  gas: 100000,
-                },
+                  gas: 100000
+                }
               },
               withdrawRewards: {
-                gas: 200000,
-              },
+                gas: 200000
+              }
             };
           }
-        },
+        }
       }),
       CosmwasmAccount.use({
-        queriesStore: this.queriesStore,
+        queriesStore: this.queriesStore
       }),
       SecretAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
-          if (chainId.startsWith("secret-")) {
+        msgOptsCreator: chainId => {
+          if (chainId.startsWith('secret-')) {
             return {
               send: {
                 secret20: {
-                  gas: 175000,
-                },
+                  gas: 175000
+                }
               },
               createSecret20ViewingKey: {
-                gas: 175000,
-              },
+                gas: 175000
+              }
             };
           }
-        },
+        }
       })
     );
 
-    this.ethereumAccountStore = new EthereumAccountStore(
-      this.chainStore,
-      getOWalletFromWindow
-    );
+    this.ethereumAccountStore = new EthereumAccountStore(this.chainStore, getOWalletFromWindow);
 
     this.priceStore = new CoinGeckoPriceStore(
-      new AsyncKVStore("store_prices"),
+      new AsyncKVStore('store_prices'),
       FiatCurrencies.reduce<{
         [vsCurrency: string]: FiatCurrency;
       }>((obj, fiat) => {
         obj[fiat.currency] = fiat;
         return obj;
       }, {}),
-      "usd",
+      'usd',
       {
         baseURL: CoinGeckoAPIEndPoint,
-        uri: CoinGeckoGetPrice,
+        uri: CoinGeckoGetPrice
       }
     );
     // this.price24HChangesStore = new Price24HChangesStore(
@@ -402,28 +373,28 @@ export class RootStore {
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
-      new AsyncKVStore("store_token_factory_currency_registrar"),
+      new AsyncKVStore('store_token_factory_currency_registrar'),
       7 * 24 * 3600 * 1000,
-      process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
-      process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
+      process.env['KEPLR_EXT_TOKEN_FACTORY_BASE_URL'] || '',
+      process.env['KEPLR_EXT_TOKEN_FACTORY_URI'] || '',
       this.chainStore,
       this.queriesStore
     );
     this.ibcCurrencyRegistrar = new IBCCurrencyRegistrar(
-      new AsyncKVStore("store_ibc_curreny_registrar"),
+      new AsyncKVStore('store_ibc_curreny_registrar'),
       7 * 24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
       this.queriesStore
     );
     this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
-      new AsyncKVStore("store_lsm_currency_registrar"),
+      new AsyncKVStore('store_lsm_currency_registrar'),
       7 * 24 * 3600 * 1000,
       this.chainStore,
       this.queriesStore
     );
     this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegistrar(
-      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+      new AsyncKVStore('store_gravity_bridge_currency_registrar'),
       7 * 24 * 3600 * 1000,
       this.chainStore,
       this.queriesStore
@@ -453,7 +424,7 @@ export class RootStore {
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
-        },
+        }
       },
       new RNMessageRequesterInternal(),
       this.chainStore,
@@ -468,10 +439,7 @@ export class RootStore {
     //     }),
     // );
 
-    this.keychainStore = new KeychainStore(
-      new AsyncKVStore("store_keychain"),
-      this.keyRingStore
-    );
+    this.keychainStore = new KeychainStore(new AsyncKVStore('store_keychain'), this.keyRingStore);
 
     // this.webpageStore = new WebpageStore(new AsyncKVStore('store_webpage'), {
     //     kvStore: new AsyncKVStore('store_favorite_url'),
