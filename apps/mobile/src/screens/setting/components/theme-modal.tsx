@@ -106,6 +106,8 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         style={{
           width: metrics.screenWidth / 2.3,
           height: metrics.screenWidth / 2,
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         {icon}

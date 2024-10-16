@@ -60,6 +60,7 @@ import { ViewToken } from "@src/stores/huge-queries";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AddressBtcType } from "@owallet/types";
 import { CONTRACT_WETH } from "@src/common/constants";
+import { NewThemeModal } from "@src/modals/theme-modal/theme";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
@@ -903,6 +904,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
+      <NewThemeModal
+        isOpen={isThemOpen}
+        close={() => {
+          setThemeOpen(false);
+          appInitStore.updateSelectTheme();
+        }}
+        colors={colors}
+      />
       <AccountBoxAll
         isLoading={isLoading}
         totalBalanceByChain={availableTotalPriceByChain || initPrice}

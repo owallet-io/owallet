@@ -391,7 +391,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: "oraichain-token",
           coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
         },
         {
           coinDenom: "BEP20 AIRI",
