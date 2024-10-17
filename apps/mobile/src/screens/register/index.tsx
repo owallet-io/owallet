@@ -137,6 +137,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
         <View style={{ paddingHorizontal: 42 }}>
           <OWButton
             style={styles.btnOW}
+            textStyle={{ color: colors["neutral-text-action-on-dark-bg"] }}
             size="default"
             label="Create a new wallet"
             onPress={handleCreateANewWallet}
