@@ -171,6 +171,80 @@ export const SwapFeeBps = {
 
 export const EmbedChainInfos: ChainInfo[] = [
   {
+    rpc: "https://evm-1.keplr.app",
+    rest: "https://evm-1.keplr.app",
+    evm: {
+      chainId: 1,
+      rpc: "https://evm-1.keplr.app",
+      websocket: "wss://evm-1.keplr.app/websocket",
+    },
+    chainId: "eip155:1",
+    chainName: "Ethereum",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
+    bip44: {
+      coinType: 60,
+    },
+    currencies: [
+      {
+        coinDenom: "ETH",
+        coinMinimalDenom: "ethereum-native",
+        coinDecimals: 18,
+        coinGeckoId: "ethereum",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "ETH",
+        coinMinimalDenom: "ethereum-native",
+        coinDecimals: 18,
+        coinGeckoId: "ethereum",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
+      },
+    ],
+    features: [],
+  },
+  {
+    rpc: "https://evm-56.keplr.app",
+    rest: "https://evm-56.keplr.app",
+    evm: {
+      chainId: 56,
+      rpc: "https://evm-56.keplr.app",
+      websocket: "wss://evm-56.keplr.app/websocket",
+    },
+    chainId: "eip155:56",
+    chainName: "BNB Smart Chain",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
+    bip44: {
+      coinType: 60,
+    },
+    currencies: [
+      {
+        coinDenom: "BNB",
+        coinMinimalDenom: "binance-native",
+        coinDecimals: 18,
+        coinGeckoId: "binancecoin",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "BNB",
+        coinMinimalDenom: "binance-native",
+        coinDecimals: 18,
+        coinGeckoId: "binancecoin",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
+      },
+    ],
+    features: [],
+  },
+  {
     rpc: "https://rpc-cosmoshub.keplr.app",
     rest: "https://lcd-cosmoshub.keplr.app",
     chainId: "cosmoshub-4",

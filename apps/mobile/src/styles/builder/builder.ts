@@ -1,38 +1,57 @@
 import { StyleBuilderDefinitions, StaticStyles } from "./types";
 import { StyleSheet } from "react-native";
-import { UnionToIntersection } from "utility-types";
+import { UnionToIntersection, DeepPartial } from "utility-types";
+import deepmerge from "deepmerge";
+import Color from "color";
+import { StyledDimension } from "./types";
 
 export class DefinitionKebabCase {
   protected startIndex: number = -1;
 
-  constructor(protected readonly definition: string) {}
+  protected _theme: string | undefined;
+
+  constructor(protected readonly _definition: string) {
+    const themeColonIndex = this._definition.indexOf(":");
+    if (themeColonIndex >= 0) {
+      this._theme = this._definition.slice(0, themeColonIndex);
+      this._definition = this._definition.slice(themeColonIndex + 1);
+    }
+  }
+
+  get theme(): string | undefined {
+    return this._theme;
+  }
+
+  get definition(): string {
+    return this._definition;
+  }
 
   peek(): string {
-    const index = this.definition.indexOf("-", this.startIndex + 1);
+    const index = this._definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
-      return this.definition.slice(this.startIndex + 1);
+      return this._definition.slice(this.startIndex + 1);
     }
-    return this.definition.slice(this.startIndex + 1, index);
+    return this._definition.slice(this.startIndex + 1, index);
   }
 
   read(): string {
-    const index = this.definition.indexOf("-", this.startIndex + 1);
+    const index = this._definition.indexOf("-", this.startIndex + 1);
     if (index < 0) {
       return this.flush();
     }
-    const result = this.definition.slice(this.startIndex + 1, index);
+    const result = this._definition.slice(this.startIndex + 1, index);
     this.startIndex = index;
     return result;
   }
 
   flush(): string {
-    const result = this.definition.slice(this.startIndex + 1);
-    this.startIndex = this.definition.length - 1;
+    const result = this._definition.slice(this.startIndex + 1);
+    this.startIndex = this._definition.length - 1;
     return result;
   }
 
   segments(): string[] {
-    return this.definition.split("-");
+    return this._definition.split("-");
   }
 
   reset() {
@@ -40,16 +59,22 @@ export class DefinitionKebabCase {
   }
 }
 
+export type DefinitionsWithThemes<T extends ReadonlyArray<string>, S> = S & {
+  [K in keyof S as `${T[number]}:${string & K}`]: Partial<S[K]>;
+};
+
 export class StyleBuilder<
+  Themes extends ReadonlyArray<string>,
   Custom extends Record<string, unknown>,
   Colors extends Record<string, string>,
-  Widths extends Record<string, string | number>,
-  Heights extends Record<string, string | number>,
-  PaddingSizes extends Record<string, string | number>,
-  MarginSizes extends Record<string, string | number>,
+  Widths extends Record<string, StyledDimension>,
+  Heights extends Record<string, StyledDimension>,
+  PaddingSizes extends Record<string, StyledDimension>,
+  MarginSizes extends Record<string, StyledDimension>,
   BorderWidths extends Record<string, number>,
   BorderRadiuses extends Record<string, number>,
-  Opacities extends Record<string, number>
+  Opacities extends Record<string, number>,
+  Gaps extends Record<string, number>
 > {
   protected static readonly ReservedWords: {
     [word: string]: boolean | undefined;
@@ -73,12 +98,21 @@ export class StyleBuilder<
     solid: true,
     dotted: true,
     dashed: true,
+    gap: true,
   };
 
   static readonly checkReservedWord = (config: Record<string, any>) => {
     for (const key in config) {
       const segments = new DefinitionKebabCase(key).segments();
       for (const segment of segments) {
+        if (segment.includes("/")) {
+          throw new Error(`Confg (${key}) has slash (${segment})`);
+        }
+
+        if (segment.includes(":")) {
+          throw new Error(`Confg (${key}) has colon (${segment})`);
+        }
+
         if (StyleBuilder.ReservedWords[segment]) {
           throw new Error(`Confg (${key}) has reserved word (${segment})`);
         }
@@ -86,12 +120,27 @@ export class StyleBuilder<
     }
   };
 
-  protected readonly staticStyles: Record<string, unknown>;
+  protected currentConfig: {
+    custom: Custom;
+    colors: Colors;
+    widths: Widths;
+    heights: Heights;
+    paddingSizes: PaddingSizes;
+    marginSizes: MarginSizes;
+    borderWidths: BorderWidths;
+    borderRadiuses: BorderRadiuses;
+    opacities: Opacities;
+    gaps: Gaps;
+  };
+  protected currentStaticStyles: Record<string, unknown>;
 
-  protected readonly cached: Map<string, any> = new Map();
+  protected currentTheme: Themes[number] | undefined;
+
+  protected cached: Map<string, any> = new Map();
 
   constructor(
-    protected readonly configs: {
+    protected readonly config: {
+      themes: Themes;
       custom: Custom;
       colors: Colors;
       widths: Widths;
@@ -101,71 +150,147 @@ export class StyleBuilder<
       borderWidths: BorderWidths;
       borderRadiuses: BorderRadiuses;
       opacities: Opacities;
+      gaps: Gaps;
+    },
+    protected readonly themeConfigs?: {
+      [K in Themes[number]]?: DeepPartial<{
+        custom: Custom;
+        colors: Colors;
+        widths: Widths;
+        heights: Heights;
+        paddingSizes: PaddingSizes;
+        marginSizes: MarginSizes;
+        borderWidths: BorderWidths;
+        borderRadiuses: BorderRadiuses;
+        opacities: Opacities;
+        gaps: Gaps;
+      }>;
     }
   ) {
     // Don't need to check the static styles because it is prioritized than dynamic styles.
     if (__DEV__) {
-      StyleBuilder.checkReservedWord(configs.colors);
-      StyleBuilder.checkReservedWord(configs.widths);
-      StyleBuilder.checkReservedWord(configs.heights);
-      StyleBuilder.checkReservedWord(configs.paddingSizes);
-      StyleBuilder.checkReservedWord(configs.marginSizes);
-      StyleBuilder.checkReservedWord(configs.borderWidths);
-      StyleBuilder.checkReservedWord(configs.borderRadiuses);
-      StyleBuilder.checkReservedWord(configs.opacities);
+      StyleBuilder.checkReservedWord(config.colors);
+      StyleBuilder.checkReservedWord(config.widths);
+      StyleBuilder.checkReservedWord(config.heights);
+      StyleBuilder.checkReservedWord(config.paddingSizes);
+      StyleBuilder.checkReservedWord(config.marginSizes);
+      StyleBuilder.checkReservedWord(config.borderWidths);
+      StyleBuilder.checkReservedWord(config.borderRadiuses);
+      StyleBuilder.checkReservedWord(config.opacities);
+      StyleBuilder.checkReservedWord(config.gaps);
+
+      if (themeConfigs) {
+        for (const theme of Object.keys(themeConfigs)) {
+          const themeConfig = themeConfigs[theme as Themes[number]];
+          if (themeConfig) {
+            StyleBuilder.checkReservedWord(themeConfig.colors ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.widths ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.heights ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.paddingSizes ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.marginSizes ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.borderWidths ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.borderRadiuses ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.opacities ?? {});
+            StyleBuilder.checkReservedWord(themeConfig.gaps ?? {});
+          }
+        }
+      }
     }
 
-    this.staticStyles = {
-      ...configs.custom,
+    // Initially, no theme is set.
+    this.currentStaticStyles = {
+      ...config.custom,
       ...StaticStyles,
     };
+
+    // Initially, no theme is set.
+    this.currentConfig = config;
+  }
+
+  get theme(): Themes[number] | undefined {
+    return this.currentTheme;
+  }
+
+  setTheme(theme: Themes[number] | undefined) {
+    if (this.currentTheme !== theme) {
+      // When the theme changes, clear all caches and others should be reinitialized.
+      this.cached = new Map();
+
+      const themeConfig =
+        this.themeConfigs && theme ? this.themeConfigs[theme] : {};
+
+      const config = deepmerge(this.config, themeConfig ?? {}, {
+        arrayMerge: (_, source) => source,
+      });
+
+      this.currentStaticStyles = {
+        ...config.custom,
+        ...StaticStyles,
+      };
+
+      this.currentConfig = config;
+
+      this.currentTheme = theme;
+    }
   }
 
   flatten<
-    D extends StyleBuilderDefinitions<
-      Custom,
-      Colors,
-      Widths,
-      Heights,
-      PaddingSizes,
-      MarginSizes,
-      BorderWidths,
-      BorderRadiuses,
-      Opacities
+    D extends DefinitionsWithThemes<
+      Themes,
+      StyleBuilderDefinitions<
+        Custom,
+        Colors,
+        Widths,
+        Heights,
+        PaddingSizes,
+        MarginSizes,
+        BorderWidths,
+        BorderRadiuses,
+        Opacities,
+        Gaps
+      >
     >,
     K extends keyof D
   >(definitions: K[]): UnionToIntersection<D[K]>;
 
   flatten<
-    D extends StyleBuilderDefinitions<
-      Custom,
-      Colors,
-      Widths,
-      Heights,
-      PaddingSizes,
-      MarginSizes,
-      BorderWidths,
-      BorderRadiuses,
-      Opacities
+    D extends DefinitionsWithThemes<
+      Themes,
+      StyleBuilderDefinitions<
+        Custom,
+        Colors,
+        Widths,
+        Heights,
+        PaddingSizes,
+        MarginSizes,
+        BorderWidths,
+        BorderRadiuses,
+        Opacities,
+        Gaps
+      >
     >,
     K extends keyof D,
     ConditionalK extends keyof D
   >(
     definitions: K[],
-    conditionalDefinitions: (ConditionalK | null | undefined | boolean | "")[]
+    conditionalDefinitions: (ConditionalK | null | undefined | boolean)[]
   ): UnionToIntersection<D[K]> & Partial<UnionToIntersection<D[ConditionalK]>>;
 
   flatten<
-    D extends StyleBuilderDefinitions<
-      Custom,
-      Colors,
-      Widths,
-      Heights,
-      PaddingSizes,
-      MarginSizes,
-      BorderWidths,
-      BorderRadiuses,
-      Opacities
+    D extends DefinitionsWithThemes<
+      Themes,
+      StyleBuilderDefinitions<
+        Custom,
+        Colors,
+        Widths,
+        Heights,
+        PaddingSizes,
+        MarginSizes,
+        BorderWidths,
+        BorderRadiuses,
+        Opacities,
+        Gaps
+      >
     >,
     K extends keyof D,
     ConditionalK extends keyof D
@@ -173,6 +298,22 @@ export class StyleBuilder<
     definitions: K[],
     conditionalDefinitions: (ConditionalK | null | undefined | boolean)[] = []
   ): UnionToIntersection<D[K]> & Partial<UnionToIntersection<D[ConditionalK]>> {
+    const cacheKeys: string[] = ["flatten"];
+    for (const definition of definitions) {
+      cacheKeys.push(definition.toString());
+    }
+    for (const definition of conditionalDefinitions) {
+      if (definition && definition !== true) {
+        cacheKeys.push(definition.toString());
+      }
+    }
+
+    const cacheKey = cacheKeys.join(" ");
+    const cached = this.cached.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const styles: any[] = [];
     for (const definition of definitions) {
       styles.push(this.get<D, K>(definition));
@@ -182,20 +323,53 @@ export class StyleBuilder<
         styles.push(this.get<D, K>(definition as unknown as K));
       }
     }
-    return StyleSheet.flatten(styles);
+    const flattened = StyleSheet.flatten(styles);
+    this.cached.set(cacheKey, flattened);
+    return flattened;
+  }
+
+  protected calculateColorDefinition(definition: string): string {
+    const index = definition.indexOf("@");
+    if (index >= 0) {
+      const str = definition.slice(index + 1);
+      if (str.length === 0 || str[str.length - 1] !== "%") {
+        throw new Error(`Invalid color definition with alpha: ${definition}`);
+      }
+
+      const alpha = parseFloat(str.slice(0, str.length - 1));
+      if (Number.isNaN(alpha)) {
+        throw new Error(`Invalid color definition with alpha: ${definition}`);
+      }
+
+      if (alpha < 0 || alpha > 100) {
+        throw new Error(`Alpha is out of range: ${definition}`);
+      }
+
+      const color = definition.slice(0, index);
+
+      return Color(this.currentConfig.colors[color])
+        .alpha(alpha / 100)
+        .toString();
+    }
+
+    return this.currentConfig.colors[definition];
   }
 
   get<
-    D extends StyleBuilderDefinitions<
-      Custom,
-      Colors,
-      Widths,
-      Heights,
-      PaddingSizes,
-      MarginSizes,
-      BorderWidths,
-      BorderRadiuses,
-      Opacities
+    D extends DefinitionsWithThemes<
+      Themes,
+      StyleBuilderDefinitions<
+        Custom,
+        Colors,
+        Widths,
+        Heights,
+        PaddingSizes,
+        MarginSizes,
+        BorderWidths,
+        BorderRadiuses,
+        Opacities,
+        Gaps
+      >
     >,
     K extends keyof D
   >(definition: K): D[K] {
@@ -203,43 +377,50 @@ export class StyleBuilder<
   }
 
   protected readonly compute = (definition: string): any => {
-    if (definition in this.staticStyles) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return this.staticStyles[definition];
+    const segment = new DefinitionKebabCase(definition as string);
+
+    if (segment.theme && segment.theme !== this.theme) {
+      return {};
     }
 
-    const segment = new DefinitionKebabCase(definition as string);
+    if (segment.definition in this.currentStaticStyles) {
+      // @ts-ignore
+      return this.currentStaticStyles[segment.definition];
+    }
 
     switch (segment.read()) {
       case "color":
         return {
-          color: this.configs.colors[segment.flush()],
+          color: this.calculateColorDefinition(segment.flush()),
         };
       case "background":
         if (segment.read() === "color") {
           return {
-            backgroundColor: this.configs.colors[segment.flush()],
+            backgroundColor: this.calculateColorDefinition(segment.flush()),
           };
         }
         throw new Error(`Failed to get style of ${definition}`);
       case "width":
         return {
-          width: this.configs.widths[segment.flush()],
+          width: this.currentConfig.widths[segment.flush()],
+        };
+      case "gap":
+        return {
+          gap: this.currentConfig.gaps[segment.flush()],
         };
       case "height":
         return {
-          height: this.configs.heights[segment.flush()],
+          height: this.currentConfig.heights[segment.flush()],
         };
       case "min":
         switch (segment.read()) {
           case "width":
             return {
-              minWidth: this.configs.widths[segment.flush()],
+              minWidth: this.currentConfig.widths[segment.flush()],
             };
           case "height":
             return {
-              minHeight: this.configs.heights[segment.flush()],
+              minHeight: this.currentConfig.heights[segment.flush()],
             };
         }
         throw new Error(`Failed to get style of ${definition}`);
@@ -247,11 +428,11 @@ export class StyleBuilder<
         switch (segment.read()) {
           case "width":
             return {
-              maxWidth: this.configs.widths[segment.flush()],
+              maxWidth: this.currentConfig.widths[segment.flush()],
             };
           case "height":
             return {
-              maxHeight: this.configs.heights[segment.flush()],
+              maxHeight: this.currentConfig.heights[segment.flush()],
             };
         }
         throw new Error(`Failed to get style of ${definition}`);
@@ -259,34 +440,38 @@ export class StyleBuilder<
         switch (segment.read()) {
           case "color":
             return {
-              borderColor: this.configs.colors[segment.flush()],
+              borderColor: this.calculateColorDefinition(segment.flush()),
             };
           case "width":
             switch (segment.peek()) {
               case "left":
                 segment.read();
                 return {
-                  borderLeftWidth: this.configs.borderWidths[segment.flush()],
+                  borderLeftWidth:
+                    this.currentConfig.borderWidths[segment.flush()],
                 };
               case "right":
                 segment.read();
                 return {
-                  borderRightWidth: this.configs.borderWidths[segment.flush()],
+                  borderRightWidth:
+                    this.currentConfig.borderWidths[segment.flush()],
                 };
               case "top":
                 segment.read();
                 return {
-                  borderTopWidth: this.configs.borderWidths[segment.flush()],
+                  borderTopWidth:
+                    this.currentConfig.borderWidths[segment.flush()],
                 };
               case "bottom":
                 segment.read();
                 return {
-                  borderBottomWidth: this.configs.borderWidths[segment.flush()],
+                  borderBottomWidth:
+                    this.currentConfig.borderWidths[segment.flush()],
                 };
             }
 
             return {
-              borderWidth: this.configs.borderWidths[segment.flush()],
+              borderWidth: this.currentConfig.borderWidths[segment.flush()],
             };
           case "radius":
             switch (segment.peek()) {
@@ -296,13 +481,13 @@ export class StyleBuilder<
                   case "left": {
                     return {
                       borderTopLeftRadius:
-                        this.configs.borderRadiuses[segment.flush()],
+                        this.currentConfig.borderRadiuses[segment.flush()],
                     };
                   }
                   case "right": {
                     return {
                       borderTopRightRadius:
-                        this.configs.borderRadiuses[segment.flush()],
+                        this.currentConfig.borderRadiuses[segment.flush()],
                     };
                   }
                 }
@@ -313,20 +498,21 @@ export class StyleBuilder<
                   case "left": {
                     return {
                       borderBottomLeftRadius:
-                        this.configs.borderRadiuses[segment.flush()],
+                        this.currentConfig.borderRadiuses[segment.flush()],
                     };
                   }
                   case "right": {
                     return {
                       borderBottomRightRadius:
-                        this.configs.borderRadiuses[segment.flush()],
+                        this.currentConfig.borderRadiuses[segment.flush()],
                     };
                   }
                 }
                 throw new Error(`Failed to get style of ${definition}`);
             }
 
-            const borderRadius = this.configs.borderRadiuses[segment.flush()];
+            const borderRadius =
+              this.currentConfig.borderRadiuses[segment.flush()];
             return {
               borderTopLeftRadius: borderRadius,
               borderTopRightRadius: borderRadius,
@@ -341,40 +527,40 @@ export class StyleBuilder<
           case "left":
             segment.read();
             return {
-              paddingLeft: this.configs.paddingSizes[segment.flush()],
+              paddingLeft: this.currentConfig.paddingSizes[segment.flush()],
             };
           case "right":
             segment.read();
             return {
-              paddingRight: this.configs.paddingSizes[segment.flush()],
+              paddingRight: this.currentConfig.paddingSizes[segment.flush()],
             };
           case "top":
             segment.read();
             return {
-              paddingTop: this.configs.paddingSizes[segment.flush()],
+              paddingTop: this.currentConfig.paddingSizes[segment.flush()],
             };
           case "bottom":
             segment.read();
             return {
-              paddingBottom: this.configs.paddingSizes[segment.flush()],
+              paddingBottom: this.currentConfig.paddingSizes[segment.flush()],
             };
           case "x":
             segment.read();
             const keyX = segment.flush();
             return {
-              paddingLeft: this.configs.paddingSizes[keyX],
-              paddingRight: this.configs.paddingSizes[keyX],
+              paddingLeft: this.currentConfig.paddingSizes[keyX],
+              paddingRight: this.currentConfig.paddingSizes[keyX],
             };
           case "y":
             segment.read();
             const keyY = segment.flush();
             return {
-              paddingTop: this.configs.paddingSizes[keyY],
-              paddingBottom: this.configs.paddingSizes[keyY],
+              paddingTop: this.currentConfig.paddingSizes[keyY],
+              paddingBottom: this.currentConfig.paddingSizes[keyY],
             };
         }
 
-        const padding = this.configs.paddingSizes[segment.flush()];
+        const padding = this.currentConfig.paddingSizes[segment.flush()];
         return {
           paddingTop: padding,
           paddingBottom: padding,
@@ -386,40 +572,40 @@ export class StyleBuilder<
           case "left":
             segment.read();
             return {
-              marginLeft: this.configs.marginSizes[segment.flush()],
+              marginLeft: this.currentConfig.marginSizes[segment.flush()],
             };
           case "right":
             segment.read();
             return {
-              marginRight: this.configs.marginSizes[segment.flush()],
+              marginRight: this.currentConfig.marginSizes[segment.flush()],
             };
           case "top":
             segment.read();
             return {
-              marginTop: this.configs.marginSizes[segment.flush()],
+              marginTop: this.currentConfig.marginSizes[segment.flush()],
             };
           case "bottom":
             segment.read();
             return {
-              marginBottom: this.configs.marginSizes[segment.flush()],
+              marginBottom: this.currentConfig.marginSizes[segment.flush()],
             };
           case "x":
             segment.read();
             const keyX = segment.flush();
             return {
-              marginLeft: this.configs.marginSizes[keyX],
-              marginRight: this.configs.marginSizes[keyX],
+              marginLeft: this.currentConfig.marginSizes[keyX],
+              marginRight: this.currentConfig.marginSizes[keyX],
             };
           case "y":
             segment.read();
             const keyY = segment.flush();
             return {
-              marginTop: this.configs.marginSizes[keyY],
-              marginBottom: this.configs.marginSizes[keyY],
+              marginTop: this.currentConfig.marginSizes[keyY],
+              marginBottom: this.currentConfig.marginSizes[keyY],
             };
         }
 
-        const margin = this.configs.marginSizes[segment.flush()];
+        const margin = this.currentConfig.marginSizes[segment.flush()];
         return {
           marginTop: margin,
           marginBottom: margin,
@@ -428,7 +614,7 @@ export class StyleBuilder<
         };
       case "opacity":
         return {
-          opacity: this.configs.opacities[segment.flush()],
+          opacity: this.currentConfig.opacities[segment.flush()],
         };
     }
 

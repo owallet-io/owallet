@@ -329,13 +329,13 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.HistoryDetail}*/}
             {/*    component={HistoryDetail}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    options={{*/}
-            {/*      headerShown: false,*/}
-            {/*    }}*/}
-            {/*    name={SCREENS.Camera}*/}
-            {/*    component={CameraScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              options={{
+                headerShown: false,
+              }}
+              name={SCREENS.Camera}
+              component={CameraScreen}
+            />
 
             {/*  <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />*/}
 
@@ -348,21 +348,21 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={AddTokenScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxPendingResult}*/}
-            {/*    component={TxPendingResultScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxSuccessResult}*/}
-            {/*    component={TxSuccessResultScreen}*/}
-            {/*  />*/}
             {/*  <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />*/}
             {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxFailedResult}*/}
-            {/*    component={TxFailedResultScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.TxFailedResult}
+              component={TxFailedResultScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.TxPendingResult}
+              component={TxPendingResultScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.TxSuccessResult}
+              component={TxSuccessResultScreen}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </FocusedScreenProvider>

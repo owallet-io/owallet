@@ -33,7 +33,7 @@
     "@ledgerhq/devices": "^8.0.0",
     "@ledgerhq/hw-app-btc": "6.27.1",
     "@ledgerhq/hw-app-cosmos": "6.27.2",
-    "@ledgerhq/hw-app-eth": "5.27.2",
+    "@ledgerhq/hw-app-eth": "^6.29.3",
     "@ledgerhq/hw-app-trx": "6.27.14",
     "@ledgerhq/hw-transport": "6.27.2",
     "@ledgerhq/hw-transport-webhid": "=6.27.12",

@@ -37,6 +37,7 @@ import { OWHeaderTitle } from "@components/header";
 import { AsyncKVStore } from "@src/common";
 import window from "@react-navigation/native/lib/typescript/src/__mocks__/window";
 import { LoadingSpinner } from "@components/spinner";
+import { initPrice } from "@screens/home/hooks/use-multiple-assets";
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -93,7 +94,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       });
     }
   }, [chainInfo.stakeCurrency]);
-  console.log(chainInfo);
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
@@ -140,7 +141,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     300000
   );
   const amount = new CoinPretty(
-    chainStore.current.feeCurrencies[0],
+    chainInfo.stakeCurrency || chainInfo.currencies[0],
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
   );
 
@@ -178,7 +179,6 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     ...sendConfigs,
     gasSimulator,
   });
-  console.log(txConfigsValidate, "txConfigsValidate");
   const txStateIsValid =
     chainId === "oraibtc-mainnet-1"
       ? null
@@ -309,7 +309,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           type: "unstake",
                           wallet: account.bech32Address,
                           validator: sendConfigs.recipientConfig.recipient,
-                          amount: sendConfigs.amountConfig.amount,
+                          amount: sendConfigs.amountConfig.amount[0],
                           fee: sendConfigs.feeConfig.toStdFee(),
                           currency: sendConfigs.amountConfig.sendCurrency,
                         },
@@ -477,13 +477,22 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   alignItems: "center",
                 }}
               >
-                <OWIcon name="tdesign_swap" size={16} />
+                <OWIcon
+                  name="tdesign_swap"
+                  size={16}
+                  color={colors["neutral-text-body"]}
+                />
                 <OWText
                   style={{ paddingLeft: 4 }}
                   color={colors["neutral-text-body"]}
                   size={14}
                 >
-                  {priceStore.calculatePrice(amount)?.toString()}
+                  {(sendConfigs.amountConfig.amount[0]
+                    ? priceStore.calculatePrice(
+                        sendConfigs.amountConfig.amount[0]
+                      )
+                    : initPrice
+                  )?.toString()}
                 </OWText>
               </View>
               <View

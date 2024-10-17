@@ -54,11 +54,17 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         {/*) : null}*/}
 
         {/*{renderAccessModal()}*/}
-
-        {signInteractionStore.waitingData ? (
+        {signInteractionStore.waitingData &&
+        !signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
           <SignModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            close={() => {
+              signInteractionStore.rejectWithProceedNext(
+                signInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signInteractionStore.waitingData}
           />
         ) : null}
         {/*{signInteractionStore.waitingEthereumData ? (*/}

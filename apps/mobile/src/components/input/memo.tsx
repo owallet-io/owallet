@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
-import { IMemoConfig } from "@owallet/hooks";
+import { IMemoConfig, MemoConfig } from "@owallet/hooks";
 import { TextStyle, ViewStyle } from "react-native";
 import { TextInput } from "./input";
 
@@ -14,7 +14,7 @@ export const MemoInput: FunctionComponent<{
   label: string;
   inputLeft?: React.ReactNode;
   placeholderTextColor?: string;
-  memoConfig: IMemoConfig;
+  memoConfig: MemoConfig;
   multiline?: boolean;
   editable?: boolean;
   topInInputContainer?: React.ReactNode;

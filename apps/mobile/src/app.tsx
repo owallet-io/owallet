@@ -25,6 +25,7 @@ import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
 import branch, { BranchEvent, BranchEventParams } from "react-native-branch";
+import { LedgerBLEProvider } from "@src/providers/ledger-ble";
 
 const queryClient = new QueryClient();
 // Call `setRequestMetadata` before `subscribe`
@@ -77,21 +78,23 @@ export const App = () => {
             <StoreProvider>
               <ThemeProvider>
                 <AppIntlProvider>
-                  <SafeAreaProvider>
-                    <ModalsProvider>
-                      <PopupRootProvider>
-                        <LoadingScreenProvider>
-                          <ConfirmModalProvider>
-                            <InteractionModalsProivder>
-                              <QueryClientProvider client={queryClient}>
-                                <AppNavigation />
-                              </QueryClientProvider>
-                            </InteractionModalsProivder>
-                          </ConfirmModalProvider>
-                        </LoadingScreenProvider>
-                      </PopupRootProvider>
-                    </ModalsProvider>
-                  </SafeAreaProvider>
+                  <LedgerBLEProvider>
+                    <SafeAreaProvider>
+                      <ModalsProvider>
+                        <PopupRootProvider>
+                          <LoadingScreenProvider>
+                            <ConfirmModalProvider>
+                              <InteractionModalsProivder>
+                                <QueryClientProvider client={queryClient}>
+                                  <AppNavigation />
+                                </QueryClientProvider>
+                              </InteractionModalsProivder>
+                            </ConfirmModalProvider>
+                          </LoadingScreenProvider>
+                        </PopupRootProvider>
+                      </ModalsProvider>
+                    </SafeAreaProvider>
+                  </LedgerBLEProvider>
                 </AppIntlProvider>
                 <FlashMessage position="top" />
               </ThemeProvider>

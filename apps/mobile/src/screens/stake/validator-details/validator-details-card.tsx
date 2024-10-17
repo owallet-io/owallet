@@ -22,6 +22,7 @@ import {
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
+  AlertIcon,
   ValidatorAPYIcon,
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
@@ -40,6 +41,7 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useNavigation } from "@react-navigation/native";
 import { OWHeaderTitle } from "@components/header";
+import { OWBox } from "@components/card";
 
 const renderIconValidator = (
   label: string,
@@ -122,17 +124,22 @@ export const ValidatorDetailsCard: FunctionComponent<{
   );
   const navigation = useNavigation();
 
-  const validator = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators)
+  const [validator, isJailed] = (() => {
+    const bondedValidator = bondedValidators.validators
+      .sort((a, b) => Number(b.tokens) - Number(a.tokens))
+      .map((validator, i) => ({ ...validator, rank: i + 1 }))
       .find((val) => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress,
-  ]);
+    if (bondedValidator) {
+      return [bondedValidator, false];
+    }
+
+    const validator = unbondingValidators.validators
+      .concat(unbondedValidators.validators)
+      .sort((a, b) => Number(b.tokens) - Number(a.tokens))
+      .map((validator, i) => ({ ...validator, rank: i + 1 }))
+      .find((val) => val.operator_address === validatorAddress);
+    return [validator, validator?.jailed === true];
+  })();
 
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
@@ -271,7 +278,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       },
     });
   }, [isStakedValidator, chainStore.current.chainName]);
-
+  const isTop10Validator = validator?.rank ? validator.rank <= 10 : false;
   return (
     <PageWithBottom
       bottomGroup={
@@ -334,6 +341,33 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
+        {isTop10Validator ? (
+          <OWCard>
+            <View
+              style={{
+                flexDirection: "row",
+                borderRadius: 12,
+                backgroundColor: colors["warning-surface-subtle"],
+                padding: 12,
+              }}
+            >
+              <AlertIcon color={colors["warning-text-body"]} size={16} />
+              <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+                <OWText
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  You're about to stake with top 10 validators {"\n"}
+                </OWText>
+                <OWText weight="400">
+                  Consider staking with other validators to improve network
+                  decentralization
+                </OWText>
+              </OWText>
+            </View>
+          </OWCard>
+        ) : null}
         {validator ? (
           <View>
             <OWCard

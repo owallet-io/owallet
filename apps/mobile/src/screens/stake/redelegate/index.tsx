@@ -2,58 +2,42 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
 import { Staking } from "@owallet/stores";
-import { useRedelegateTxConfig } from "@owallet/hooks";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { PageWithScrollView } from "../../../components/page";
+import {
+  useGasSimulator,
+  useRedelegateTxConfig,
+  useTxConfigsValidate,
+} from "@owallet/hooks";
+import { CoinPretty, Dec } from "@owallet/unit";
 import {
   Image,
   View,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  InteractionManager,
 } from "react-native";
-import { Text } from "@src/components/text";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput,
-} from "../../../components/input";
 import { OWButton } from "../../../components/button";
 
 import { metrics, spacing } from "../../../themes";
-import {
-  ChainIdEnum,
-  toAmount,
-  unknownToken,
-  // ValidatorThumbnails,
-} from "@owallet/common";
+import { unknownToken } from "@owallet/common";
 import ValidatorsList from "./validators-list";
 import { AlertIcon, DownArrowIcon } from "../../../components/icon";
-import { Toggle } from "../../../components/toggle";
 import { useTheme } from "@src/themes/theme-provider";
-import { OWHeaderTitle, OWSubTitleHeader } from "@src/components/header";
-import {
-  capitalizedText,
-  computeTotalVotingPower,
-  formatPercentage,
-  showToast,
-} from "@src/utils/helper";
+import { OWHeaderTitle } from "@src/components/header";
+import { capitalizedText, showToast } from "@src/utils/helper";
 import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 
 import OWCard from "@src/components/card/ow-card";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { API } from "@src/common/api";
 import { tracking } from "@src/utils/tracking";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { FeeModal } from "@src/modals/fee";
+import { AsyncKVStore } from "@src/common";
+import { LoadingSpinner } from "@components/spinner";
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -69,23 +53,71 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   >();
   tracking(`Switch Validator Screen`);
   const validatorAddress = route.params.validatorAddress;
-
-  const [validatorDetail, setValidatorDetail] = useState();
-  const [validators, setValidators] = useState([]);
   const { colors } = useTheme();
   const {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
     modalStore,
     priceStore,
     appInitStore,
   } = useStore();
 
   const styles = styling(colors);
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+
+  const initialChainId =
+    route.params["chainId"] || chainStore.current["chainId"];
+  const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
+
+  useEffect(() => {
+    if (!initialChainId) {
+      navigation.goBack();
+    }
+  }, [initialChainId]);
+
+  const account = accountStore.getAccount(chainId);
+  const sender = account.bech32Address;
+  const queries = queriesStore.get(chainId);
+  const chainInfo = chainStore.getChain(chainId);
+  const [dstValidatorInfo, setDstValidatorInfo] = useState({
+    address: "",
+    name: "",
+  });
+
+  const sendConfigs = useRedelegateTxConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    sender,
+    validatorAddress,
+    300000
+  );
+  sendConfigs.amountConfig.setCurrency(chainInfo.stakeCurrency);
+
+  useEffect(() => {
+    sendConfigs.recipientConfig.setValue(dstValidatorInfo.address);
+  }, [dstValidatorInfo.address, sendConfigs.recipientConfig]);
+
+  const gasSimulator = useGasSimulator(
+    new AsyncKVStore("gas-simulator.screen.stake.redelegate/redelegate"),
+    chainStore,
+    chainId,
+    sendConfigs.gasConfig,
+    sendConfigs.feeConfig,
+    "native",
+    () => {
+      return account.cosmos.makeBeginRedelegateTx(
+        sendConfigs.amountConfig.amount[0].toDec().toString(),
+        validatorAddress,
+        dstValidatorInfo.address
+      );
+    }
+  );
+
+  const txConfigsValidate = useTxConfigsValidate({
+    ...sendConfigs,
+    gasSimulator,
+  });
 
   const srcValidator =
     queries.cosmos.queryValidators
@@ -114,163 +146,69 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
-  const sendConfigs = useRedelegateTxConfig(
-    chainStore,
-    chainStore.current.chainId,
-    account.msgOpts["undelegate"].gas,
-    account.bech32Address,
-    queries.queryBalances,
-    queries.cosmos.queryDelegations,
-    validatorAddress
-  );
-
-  const [dstValidatorAddress, setDstValidatorAddress] = useState("");
   const [switchValidator, setSwitchValidator] = useState({
     avatar: "",
     moniker: "",
   });
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
-      (async () => {
-        try {
-          const res = await Promise.all([
-            API.getValidatorOraichainDetail(
-              {
-                validatorAddress: dstValidatorAddress,
-              },
-              {
-                baseURL: "https://api.scan.orai.io",
-              }
-            ),
-            API.getValidatorList(
-              {},
-              {
-                baseURL: "https://api.scan.orai.io",
-              }
-            ),
-          ]);
-          if (res[0].status !== 200) return;
-          setValidatorDetail(res[0].data);
-          if (res[1].status !== 200) return;
-          setValidators(res[1].data.data);
-        } catch (error) {}
-      })();
-    });
-  }, [chainStore.current.chainId, dstValidatorAddress]);
-
-  const dstValidator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidator(dstValidatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidator(dstValidatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidator(dstValidatorAddress);
+  const unbondingPeriodDay = queries.cosmos.queryStakingParams.response
+    ? queries.cosmos.queryStakingParams.unbondingTimeSec / (3600 * 24)
+    : 21;
 
   useEffect(() => {
-    sendConfigs.recipientConfig.setRawRecipient(dstValidatorAddress);
-  }, [dstValidatorAddress, sendConfigs.recipientConfig]);
-  const stakedDst = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(dstValidatorAddress);
-
-  useEffect(() => {
-    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-      sendConfigs.feeConfig.setFeeType("average");
-    }
     if (appInitStore.getInitApp.feeOption) {
-      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      const feeCurrency =
+        sendConfigs.feeConfig.fees.length > 0
+          ? sendConfigs.feeConfig.fees[0].currency
+          : sendConfigs.feeConfig.selectableFeeCurrencies[0];
+      sendConfigs.feeConfig.setFee({
+        type: appInitStore.getInitApp.feeOption,
+        currency: feeCurrency,
+      });
     }
   }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
 
-  const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError();
-  console.log(sendConfigError, "sendConfigError");
-  const txStateIsValid = sendConfigError == null;
+  const txStateIsValid = txConfigsValidate.interactionBlocked;
 
-  const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
-
-  const amount = new CoinPretty(
-    chainStore.current.feeCurrencies[0],
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  );
-
-  const handleError = (e) => {
-    if (e?.message.toLowerCase().includes("rejected")) {
-      return;
-    } else if (e?.message.includes("Cannot read properties of undefined")) {
-      return;
-    } else {
-      console.log(e);
-      showToast({
-        message: `Failed to Redelegate: ${e?.message || JSON.stringify(e)}`,
-        type: "danger",
-      });
-    }
-
-    if (e?.response && e?.response?.data?.message) {
-      const inputString = e?.response?.data?.message;
-      const regex =
-        /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
-      const match = inputString.match(regex);
-      if (match && match?.length > 0) {
-        const reason = match[0];
-        showToast({
-          message: (reason && capitalizedText(reason)) || "Transaction Failed",
-          type: "warning",
-        });
-        return;
-      }
-      showToast({
-        message: "Transaction Failed",
-        type: "warning",
-      });
-      return;
-    }
-
-    console.log(e);
-  };
+  const isDisable = !account.isReadyToSendMsgs || txStateIsValid;
 
   const _onPressSwitchValidator = async () => {
-    if (account.isReadyToSendMsgs && txStateIsValid) {
+    if (!txConfigsValidate.interactionBlocked) {
+      const tx = account.cosmos.makeBeginRedelegateTx(
+        sendConfigs.amountConfig.amount[0].toDec().toString(),
+        validatorAddress,
+        dstValidatorInfo.address
+      );
       try {
-        await account.cosmos.sendBeginRedelegateMsg(
-          sendConfigs.amountConfig.amount,
-          sendConfigs.srcValidatorAddress,
-          sendConfigs.dstValidatorAddress,
-          sendConfigs.memoConfig.memo,
+        await tx.send(
           sendConfigs.feeConfig.toStdFee(),
+          sendConfigs.memoConfig.memo,
           {
-            preferNoSetMemo: true,
             preferNoSetFee: true,
+            preferNoSetMemo: true,
           },
           {
-            onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("Redelgate tx broadcasted", {
-                chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName,
-                validatorName: srcValidator?.description.moniker,
-                toValidatorName: dstValidator?.description.moniker,
-                feeType: sendConfigs.feeConfig.feeType,
+            onFulfill: (tx: any) => {
+              if (tx.code != null && tx.code !== 0) {
+                console.log(tx);
+                showToast({
+                  type: "danger",
+                  message: "Your transaction Failed",
+                });
+                return;
+              }
+              showToast({
+                type: "success",
+                message: "Transaction Successful",
               });
-              tracking(
-                `Switch Validator`,
-                `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
-              );
+            },
+            onBroadcasted: (txHash) => {
               navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString("hex"),
                 data: {
                   type: "redelegate",
                   wallet: account.bech32Address,
                   validator: sendConfigs.recipientConfig.recipient,
-                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                  amount: sendConfigs.amountConfig.amount[0],
                   fee: sendConfigs.feeConfig.toStdFee(),
                   currency: sendConfigs.amountConfig.sendCurrency,
                 },
@@ -279,28 +217,33 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
-        handleError(e);
+        if (e?.message.toLowerCase().includes("rejected")) {
+          return;
+        } else if (e?.message.includes("Cannot read properties of undefined")) {
+          return;
+        } else {
+          console.log(e);
+
+          showToast({
+            message: JSON.stringify(e),
+            type: "danger",
+          });
+        }
       }
     }
   };
 
   const onPressSelectValidator = (address, avatar, moniker) => {
-    setDstValidatorAddress(address);
+    setDstValidatorInfo({
+      address,
+      name: moniker,
+    });
     setSwitchValidator({
       avatar,
       moniker,
     });
     modalStore.close();
   };
-  const totalVotingPower = useMemo(
-    () => computeTotalVotingPower(validators),
-    [validators]
-  );
-  const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
-  const percentage =
-    chainStore.current.chainId === ChainIdEnum.Oraichain
-      ? formatPercentage(currentVotingPower / totalVotingPower, 2)
-      : 0;
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
@@ -329,7 +272,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Switch"
           disabled={isDisable}
-          loading={account.isSendingMsg === "redelegate"}
+          loading={account.isSendingMsg === "send"}
           onPress={_onPressSwitchValidator}
           style={[
             styles.bottomBtn,
@@ -408,7 +351,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   backgroundColor: colors["neutral-surface-card"],
                 }}
               >
-                {dstValidatorAddress ? (
+                {dstValidatorInfo?.address ? (
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
@@ -420,7 +363,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       modalStore.setChildren(
                         <ValidatorsList
                           onPressSelectValidator={onPressSelectValidator}
-                          dstValidatorAddress={dstValidatorAddress}
+                          dstValidatorAddress={dstValidatorInfo.address}
                         />
                       );
                     }}
@@ -464,7 +407,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       modalStore.setChildren(
                         <ValidatorsList
                           onPressSelectValidator={onPressSelectValidator}
-                          dstValidatorAddress={dstValidatorAddress}
+                          dstValidatorAddress={dstValidatorInfo.address}
                         />
                       );
                     }}
@@ -499,12 +442,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 )}
               </OWCard>
             }
-            {dstValidatorAddress ? (
+            {dstValidatorInfo?.address ? (
               <View>
                 <OWCard
                   style={{
                     paddingTop: 22,
-                    backgroundColor: colors["neutral-surface-bg2"],
+                    backgroundColor: colors["neutral-surface-card"],
                   }}
                   type="normal"
                 >
@@ -595,13 +538,19 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       alignItems: "center",
                     }}
                   >
-                    <OWIcon name="tdesign_swap" size={16} />
+                    <OWIcon
+                      name="tdesign_swap"
+                      size={16}
+                      color={colors["neutral-text-body"]}
+                    />
                     <OWText
                       style={{ paddingLeft: 4 }}
                       color={colors["neutral-text-body"]}
                       size={14}
                     >
-                      {priceStore.calculatePrice(amount).toString()}
+                      {priceStore
+                        .calculatePrice(sendConfigs.amountConfig.amount[0])
+                        .toString()}
                     </OWText>
                   </View>
                   <View
@@ -615,23 +564,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   >
                     <AlertIcon color={colors["warning-text-body"]} size={16} />
                     <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                      {Number(percentage) > 5 ? (
-                        <>
-                          <OWText
-                            style={{
-                              fontWeight: "bold",
-                            }}
-                          >
-                            You're about to stake with top 10 validators {"\n"}
-                          </OWText>
-                          <OWText weight="400">
-                            Consider staking with other validators to improve
-                            network decentralization
-                          </OWText>
-                        </>
-                      ) : (
-                        `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`
-                      )}
+                      {`When you unstake, a ${unbondingPeriodDay}-day cooldown period is required before your stake returns to your wallet.`}
                     </OWText>
                   </View>
                 </OWCard>
@@ -647,37 +580,82 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       borderBottomColor: colors["neutral-border-default"],
                       borderBottomWidth: 1,
                       paddingVertical: 16,
+                      marginBottom: 8,
+                      alignItems: "center",
                     }}
                   >
-                    <OWText color={colors["neutral-text-title"]} weight="600">
+                    <OWText
+                      color={colors["neutral-text-title"]}
+                      weight="600"
+                      size={16}
+                    >
                       Transaction fee
                     </OWText>
                     <TouchableOpacity
-                      style={{ flexDirection: "row" }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                       onPress={_onPressFee}
                     >
-                      <OWText
-                        color={colors["primary-text-action"]}
-                        weight="600"
-                        size={16}
+                      <View
+                        style={{
+                          alignItems: "center",
+                          paddingRight: 8,
+                        }}
                       >
-                        {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
-                        {priceStore
-                          .calculatePrice(sendConfigs.feeConfig.fee)
-                          ?.toString()}{" "}
-                      </OWText>
-                      <DownArrowIcon
-                        height={11}
-                        color={colors["primary-text-action"]}
-                      />
+                        <OWText
+                          color={colors["primary-text-action"]}
+                          weight="600"
+                          size={14}
+                        >
+                          {capitalizedText(sendConfigs.feeConfig.type)}
+                        </OWText>
+                        <OWText
+                          color={colors["primary-text-action"]}
+                          weight="500"
+                          size={12}
+                        >
+                          {(() => {
+                            if (sendConfigs.feeConfig.fees.length > 0) {
+                              return sendConfigs.feeConfig.fees;
+                            }
+                            const chainInfo = chainStore.getChain(
+                              sendConfigs.feeConfig.chainId
+                            );
+
+                            return [
+                              new CoinPretty(
+                                chainInfo.stakeCurrency ||
+                                  chainInfo.currencies[0],
+                                new Dec(0)
+                              ),
+                            ];
+                          })()
+                            .map((fee) =>
+                              fee
+                                .maxDecimals(6)
+                                .inequalitySymbol(true)
+                                .trim(true)
+                                .shrink(true)
+                                .hideIBCMetadata(true)
+                                .toString()
+                            )
+                            .join("+")}
+                        </OWText>
+                      </View>
+
+                      {sendConfigs.feeConfig.uiProperties.loadingState ||
+                      gasSimulator?.uiProperties.loadingState ? (
+                        <LoadingSpinner
+                          size={14}
+                          color={colors["background-btn-primary"]}
+                        />
+                      ) : (
+                        <DownArrowIcon
+                          height={11}
+                          color={colors["primary-text-action"]}
+                        />
+                      )}
                     </TouchableOpacity>
                   </View>
-                  {/*<FeeButtons*/}
-                  {/*  label=""*/}
-                  {/*  gasLabel="gas"*/}
-                  {/*  feeConfig={sendConfigs.feeConfig}*/}
-                  {/*  gasConfig={sendConfigs.gasConfig}*/}
-                  {/*/>*/}
                 </OWCard>
               </View>
             ) : null}
