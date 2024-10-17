@@ -47,14 +47,14 @@ jobs:
         run: yarn
 
       - name: Install extension packages
-        working-directory: packages/extension
+        working-directory: apps/extension
         run: yarn --silent
 
       - name: Build Libs
-        run: yarn build:libs
+        run: yarn build
 
       - name: Build extension
-        working-directory: packages/extension
+        working-directory: apps/extension
         run: yarn build
         env:
           REACT_APP_MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
         uses: mnao305/chrome-extension-upload@v4.0.1
         if: ${{ (env.PRERELEASE == '') }}
         with:
-          file-path: packages/extension/owallet-extension-${{ github.ref_name }}.zip
+          file-path: apps/extension/owallet-extension-${{ github.ref_name }}.zip
           extension-id: ${{ secrets.EXT_ID }}
           client-id: ${{ secrets.EXT_CLIENT_ID }}
           client-secret: ${{ secrets.EXT_CLIENT_SECRET }}
