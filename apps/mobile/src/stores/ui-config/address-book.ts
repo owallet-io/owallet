@@ -51,6 +51,7 @@ export class AddressBookConfig {
     }
     autorun(() => {
       const js = toJS(this.addressBookMap);
+      // @ts-ignore
       const obj = Object.fromEntries(js);
       this.kvStore.set<Record<string, AddressBookData[]>>('addressBook', obj);
     });

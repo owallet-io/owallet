@@ -94,7 +94,7 @@ export class InteractionService {
     const interactionWaitingData = this.addDataToMap(
       type,
       env.isInternalMsg,
-      env.sender.tab?.id,
+      env.sender?.tab?.id,
       await this.getWindowIdFromEnvOrCurrentWindowId(env),
       uri,
       data
@@ -119,7 +119,7 @@ export class InteractionService {
     const interactionWaitingData = this.addDataToMap(
       type,
       env.isInternalMsg,
-      env.sender.tab?.id,
+      env.sender?.tab?.id,
       await this.getWindowIdFromEnvOrCurrentWindowId(env),
       uri,
       data
@@ -434,10 +434,10 @@ export class InteractionService {
   // UI가 열리지 않아 아직 pending 상태면서 interaction할 기회도 없었던 경우 자동으로 reject한다.
   // UI가 열렸다면 UI에서 알아서 reject한다.
   onInjectedWebpageClosed(env: Env) {
-    if (env.sender.tab?.id && this.sidePanelService.getIsEnabled()) {
+    if (env.sender?.tab?.id && this.sidePanelService.getIsEnabled()) {
       for (const interaction of this.waitingMap.values()) {
         if (
-          interaction.tabId === env.sender.tab.id &&
+          interaction.tabId === env.sender?.tab.id &&
           !this.isUIOpenedOnSidePanelMap.get(interaction.id)
         ) {
           this.rejectV2(interaction.id);
@@ -501,11 +501,11 @@ export class InteractionService {
     }
 
     const current = (await browser.windows.getCurrent()).id;
-    if (!env.sender.tab || !env.sender.tab.id) {
+    if (!env.sender?.tab || !env.sender?.tab.id) {
       return current;
     }
 
-    const tab = await browser.tabs.get(env.sender.tab.id);
+    const tab = await browser.tabs.get(env.sender?.tab.id);
     return tab.windowId || current;
   }
 

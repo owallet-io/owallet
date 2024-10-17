@@ -28,6 +28,7 @@ export class CopyAddressConfig {
     }
     autorun(() => {
       const js = toJS(this.vaultToConfigMap);
+      // @ts-ignore
       const obj = Object.fromEntries(js);
       this.kvStore.set<Record<string, string[]>>('vault-to-config-map', obj);
     });

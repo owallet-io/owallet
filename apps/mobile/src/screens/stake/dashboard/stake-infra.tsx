@@ -26,6 +26,9 @@ import { simpleFetch } from "@owallet/simple-fetch";
 import { Dec, IntPretty } from "@owallet/unit";
 import { ScrollView } from "react-native-gesture-handler";
 import { AprItem } from "@stores/aprs";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { PageWithScrollViewInBottomTabView } from "@components/page";
 
 const dataOWalletStake = [
   {
@@ -229,6 +232,8 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
+                    // navigate(SCREENS.StakeDashboard,{chainId:chainInfo.chainId});
+                    // return;
                     // handlePressStake(chainInfo, item.validator);
                   }}
                   style={{
@@ -429,6 +434,9 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
           <TouchableOpacity
             key={chain.chainId}
             onPress={() => {
+              chainStore.selectChain(chain.chainId);
+              navigate(SCREENS.StakeDashboard, { chainId: chain.chainId });
+              return;
               // handleSwitchNetwork(chain);
             }}
             style={styles.networkItem}
@@ -543,7 +551,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <View>
+    <PageWithScrollViewInBottomTabView
+      showsVerticalScrollIndicator={false}
+      backgroundColor={colors["neutral-surface-bg"]}
+    >
       <View
         style={{
           position: "relative",
@@ -561,7 +572,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
       </View>
       {renderOWalletValidators()}
       {renderNetworks()}
-    </View>
+    </PageWithScrollViewInBottomTabView>
   );
 });
 

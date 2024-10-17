@@ -6,6 +6,7 @@ import { StakingDashboardScreen } from "@src/screens/stake";
 
 import { useStore } from "@src/stores";
 import { observer } from "mobx-react-lite";
+import { StakingInfraScreen } from "@screens/stake/dashboard/stake-infra";
 const Stack = createStackNavigator();
 export const InvestNavigation: FC = observer(() => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -25,6 +26,10 @@ export const InvestNavigation: FC = observer(() => {
         //   headerLeft: null,
         // }}
         name={SCREENS.Invest}
+        component={StakingInfraScreen}
+      />
+      <Stack.Screen
+        name={SCREENS.StakeDashboard}
         component={StakingDashboardScreen}
       />
     </Stack.Navigator>

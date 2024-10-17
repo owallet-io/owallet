@@ -25,6 +25,7 @@ export class SelectWalletConfig {
     }
     autorun(() => {
       const js = toJS(this.keyToSortVaultIdsMap);
+      // @ts-ignore
       const obj = Object.fromEntries(js);
       this.kvStore.set<Record<string, string[]>>('keyToSortVaultIdsMap', obj);
     });

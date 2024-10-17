@@ -14,9 +14,8 @@ import { AutoLockConfig } from './auto-lock';
 import { IBCSwapConfig } from './ibc-swap';
 import { SelectWalletConfig } from './select-wallet';
 import { ChangelogConfig } from './changelog';
+// import {APP_VERSION} from '../../../constants';
 import { NewChainSuggestionConfig } from './new-chain';
-
-export const APP_VERSION: string = '2.0.0';
 
 export interface UIConfigOptions {
   isDeveloperMode: boolean;
@@ -107,7 +106,7 @@ export class UIConfigStore {
     this.ibcSwapConfig = new IBCSwapConfig(kvStores.kvStore, chainStore);
     this.selectWalletConfig = new SelectWalletConfig(kvStores.kvStore);
     this.changelogConfig = new ChangelogConfig(kvStores.kvStore);
-    this.newChainSuggestionConfig = new NewChainSuggestionConfig(kvStores.kvStore, chainStore);
+    this.newChainSuggestionConfig = new NewChainSuggestionConfig(kvStores.kvStore, chainStore, this.changelogConfig);
 
     this._icnsInfo = _icnsInfo;
 
@@ -130,7 +129,7 @@ export class UIConfigStore {
       lastVersion = '2.0.0';
     }
     {
-      this._currentVersion = APP_VERSION;
+      this._currentVersion = '2.0.0';
 
       const installedVersion = await this.kvStore.get<string>('installedVersion');
       if (!installedVersion) {

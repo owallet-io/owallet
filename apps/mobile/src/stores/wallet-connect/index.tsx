@@ -143,7 +143,7 @@ export class WalletConnectStore {
       metadata: {
         name: "OWallet",
         description: "Your Wallet for the Interchain",
-        url: "https://www.keplr.app",
+        url: "https://owallet.io",
         icons: ["https://asset-icons.s3.us-west-2.amazonaws.com/keplr_512.png"],
       },
     });

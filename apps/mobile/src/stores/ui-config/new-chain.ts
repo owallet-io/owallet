@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { KVStore, PrefixKVStore, sortedJsonByKeyStringify } from '@owallet/common';
 import { action, autorun, computed, makeObservable, observable, runInAction, toJS } from 'mobx';
+import { ChangelogConfig } from './changelog';
 import { ChainStore } from '../chain';
 import { simpleFetch } from '@owallet/simple-fetch';
 import semver from 'semver';
@@ -36,7 +37,11 @@ export class NewChainSuggestionConfig {
   @observable.ref
   protected _remote: Remote[] = [];
 
-  constructor(kvStore: KVStore, protected readonly chainStore: ChainStore) {
+  constructor(
+    kvStore: KVStore,
+    protected readonly chainStore: ChainStore,
+    public readonly changelogConfig: ChangelogConfig
+  ) {
     this.kvStore = new PrefixKVStore(kvStore, 'new-chain-suggestion');
 
     makeObservable(this);
@@ -97,6 +102,9 @@ export class NewChainSuggestionConfig {
   @computed
   get newSuggestionChains(): string[] {
     // UI 디자인상 changelog가 보여지는 경우에는 new chain noti(?)를 보여주지 않는다.
+    if (this.changelogConfig.showingInfo.length > 0) {
+      return [];
+    }
 
     const res = [];
 

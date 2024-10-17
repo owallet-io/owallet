@@ -23,6 +23,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
   const percentageVote = route.params.percentageVote;
+
   tracking(`Validator Detail Screen`);
   return (
     <View>

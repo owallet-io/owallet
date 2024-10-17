@@ -1,54 +1,56 @@
+import { StyledDimension } from "./dimension";
+
 export type StyleBuilderWidthDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `width-${string & K}`]: {
-    width: string | number;
+    width: StyledDimension;
   };
 };
 
 export type StyleBuilderMinWidthDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `min-width-${string & K}`]: {
-    minWidth: string | number;
+    minWidth: StyledDimension;
   };
 };
 
 export type StyleBuilderMaxWidthDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `max-width-${string & K}`]: {
-    maxWidth: string | number;
+    maxWidth: StyledDimension;
   };
 };
 
 export type StyleBuilderHeightDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `height-${string & K}`]: {
-    height: string | number;
+    height: StyledDimension;
   };
 };
 
 export type StyleBuilderMinHeightDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `min-height-${string & K}`]: {
-    minHeight: string | number;
+    minHeight: StyledDimension;
   };
 };
 
 export type StyleBuilderMaxHeightDefinitions<
-  Sizes extends Record<string, string | number>
+  Sizes extends Record<string, StyledDimension>
 > = {
   [K in keyof Sizes as `max-height-${string & K}`]: {
-    maxHeight: string | number;
+    maxHeight: StyledDimension;
   };
 };
 
 export type StyleBuilderSizeDefinitions<
-  Widths extends Record<string, string | number>,
-  Heights extends Record<string, string | number>
+  Widths extends Record<string, StyledDimension>,
+  Heights extends Record<string, StyledDimension>
 > = StyleBuilderWidthDefinitions<Widths> &
   StyleBuilderMinWidthDefinitions<Widths> &
   StyleBuilderMaxWidthDefinitions<Widths> &

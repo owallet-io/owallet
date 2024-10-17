@@ -87,6 +87,7 @@ export const SCREENS = {
   WebDApp: "Web.dApp",
   Invest: "Invest",
   Delegate: "Delegate",
+  StakeDashboard: "StakeDashboard",
   NewSend: "NewSend",
   SendTron: "SendTron",
   SendBtc: "SendBtc",
@@ -248,6 +249,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.NetworkSelect]: {
+    title: HEADER_KEY.showNetworkHeader,
+  },
+  [SCREENS.StakeDashboard]: {
     title: HEADER_KEY.showNetworkHeader,
   },
   [SCREENS.NetworkToken]: {

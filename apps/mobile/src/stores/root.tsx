@@ -64,11 +64,11 @@ import {
 //     Price24HChangesStore,
 // } from '@owallet/stores-internal';
 import { DeepLinkStore } from './deep-link';
-import { EthereumQueries, EthereumAccountStore } from '@owallet/stores-eth';
+import { EthereumQueries, EthereumAccountStore, ERC20CurrencyRegistrar } from '@owallet/stores-eth';
 import { AppInit, appInit } from '@stores/app_init';
 import { ModalStore } from '@stores/modal';
 import { UniversalSwapStore, universalSwapStore } from '@stores/universal_swap';
-import { UIConfigStore } from './ui-config';
+import { UIConfigStore } from '@stores/ui-config';
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -125,6 +125,7 @@ export class RootStore {
   public readonly keychainStore: KeychainStore;
   public readonly walletConnectStore: WalletConnectStore;
   public readonly deepLinkStore: DeepLinkStore;
+  public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -200,7 +201,12 @@ export class RootStore {
     //     this.swapUsageQueries,
     //     SwapVenue,
     // );
-
+    this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
+      new AsyncKVStore('store_erc20_currency_registrar'),
+      24 * 3600 * 1000,
+      this.chainStore,
+      this.queriesStore
+    );
     this.accountStore = new AccountStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -419,7 +425,17 @@ export class RootStore {
     //     this.priceStore,
     //     ICNSInfo,
     // );
-
+    this.uiConfigStore = new UIConfigStore(
+      {
+        kvStore: new AsyncKVStore('store_ui_config'),
+        addressBookKVStore: new AsyncKVStore('address_book')
+      },
+      new RNMessageRequesterInternal(),
+      this.chainStore,
+      this.keyRingStore,
+      this.priceStore,
+      ICNSInfo
+    );
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {

@@ -27,7 +27,7 @@ import { RegisterEndScreen } from './screens/register/end';
 import { RegisterDoneScreen } from './screens/register/done';
 import { NewLedgerScreen } from './screens/register/ledger';
 import { NftDetailScreen, NftsScreen } from './screens/nfts';
-import { DelegateScreen, ValidatorDetailsScreen, ValidatorListScreen } from './screens/stake';
+import { DelegateScreen, StakingDashboardScreen, ValidatorDetailsScreen, ValidatorListScreen } from './screens/stake';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { RedelegateScreen } from './screens/stake/redelegate';
 import { UndelegateScreen } from './screens/stake/undelegate';
@@ -64,7 +64,6 @@ import { OWButton } from '@components/button';
 import OWButtonIcon from '@components/button/ow-button-icon';
 import OWIcon from '@components/ow-icon/ow-icon';
 import { AddChainScreen } from '@screens/setting/screens/manage-chains/add-network';
-import { SendEvmNewScreen } from './screens/send/send-evm-new';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -103,10 +102,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           >
             <Stack.Screen name={SCREENS.STACK.PincodeUnlock} component={PincodeUnlockScreen} />
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ManageWalletConnect}*/}
-            {/*    component={ManageWalletConnectScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.ManageWalletConnect} component={ManageWalletConnectScreen} />
 
             <Stack.Screen
               name={SCREENS.SettingSelectAccount}
@@ -132,10 +128,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={ViewPrivateDataScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.SettingVersion}*/}
-            {/*    component={OWalletVersionScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.SettingVersion} component={OWalletVersionScreen} />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.DetailsBrowser}*/}
             {/*    component={DetailsBrowserScreen}*/}
@@ -149,41 +142,35 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.WebIntro}*/}
             {/*    component={WebScreen}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.AddressBook}*/}
-            {/*    component={AddressBookScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />*/}
+            <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />
+            <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />
 
-            {/*  <Stack.Screen*/}
-            {/*    options={{*/}
-            {/*      headerRight: () => {*/}
-            {/*        return (*/}
-            {/*          <OWButtonIcon*/}
-            {/*            name={"tdesignadd"}*/}
-            {/*            sizeIcon={24}*/}
-            {/*            onPress={() => navigate(SCREENS.AddChain)}*/}
-            {/*            fullWidth={false}*/}
-            {/*            style={{*/}
-            {/*              backgroundColor: colors["neutral-surface-card"],*/}
-            {/*              height: 40,*/}
-            {/*              width: 40,*/}
-            {/*              borderRadius: 99,*/}
-            {/*              marginRight: 16,*/}
-            {/*            }}*/}
-            {/*            colorIcon={colors["neutral-text-action-on-light-bg"]}*/}
-            {/*          />*/}
-            {/*        );*/}
-            {/*      },*/}
-            {/*    }}*/}
-            {/*    name={SCREENS.ManageChain}*/}
-            {/*    component={SelectChainsScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              options={{
+                headerRight: () => {
+                  return (
+                    <OWButtonIcon
+                      name={'tdesignadd'}
+                      sizeIcon={24}
+                      onPress={() => navigate(SCREENS.AddChain)}
+                      fullWidth={false}
+                      style={{
+                        backgroundColor: colors['neutral-surface-card'],
+                        height: 40,
+                        width: 40,
+                        borderRadius: 99,
+                        marginRight: 16
+                      }}
+                      colorIcon={colors['neutral-text-action-on-light-bg']}
+                    />
+                  );
+                }
+              }}
+              name={SCREENS.ManageChain}
+              component={SelectChainsScreen}
+            />
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.AddAddressBook}*/}
-            {/*    component={AddAddressBookScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.AddAddressBook} component={AddAddressBookScreen} />
             <Stack.Screen name={SCREENS.STACK.MainTab} component={MainTabNavigation} />
             <Stack.Screen name={SCREENS.TokenDetails} component={TokenDetailsScreen} />
 
@@ -229,32 +216,15 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={NewLedgerScreen}*/}
             {/*  />*/}
             {/*  <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />*/}
-            {/*  <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.NftsDetail}*/}
-            {/*    component={NftDetailScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ValidatorList}*/}
-            {/*    component={ValidatorListScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.ValidatorDetails}*/}
-            {/*    component={ValidatorDetailsScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.DelegateDetail}*/}
-            {/*    component={DelegateDetailScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Redelegate}*/}
-            {/*    component={RedelegateScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Undelegate}*/}
-            {/*    component={UndelegateScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
+            <Stack.Screen name={SCREENS.NftsDetail} component={NftDetailScreen} />
+            <Stack.Screen name={SCREENS.ValidatorList} component={ValidatorListScreen} />
+
+            <Stack.Screen name={SCREENS.ValidatorDetails} component={ValidatorDetailsScreen} />
+            <Stack.Screen name={SCREENS.Delegate} component={DelegateScreen} />
+            <Stack.Screen name={SCREENS.DelegateDetail} component={DelegateDetailScreen} />
+            <Stack.Screen name={SCREENS.Redelegate} component={RedelegateScreen} />
+            <Stack.Screen name={SCREENS.Undelegate} component={UndelegateScreen} />
             {/*  <Stack.Screen name={SCREENS.Send} component={SendScreen} />*/}
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.PincodeScreen}*/}
@@ -277,13 +247,13 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.HistoryDetail}*/}
             {/*    component={HistoryDetail}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    options={{*/}
-            {/*      headerShown: false,*/}
-            {/*    }}*/}
-            {/*    name={SCREENS.Camera}*/}
-            {/*    component={CameraScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              options={{
+                headerShown: false
+              }}
+              name={SCREENS.Camera}
+              component={CameraScreen}
+            />
 
             {/*  <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />*/}
 
@@ -296,21 +266,12 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={AddTokenScreen}*/}
             {/*  />*/}
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxPendingResult}*/}
-            {/*    component={TxPendingResultScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxSuccessResult}*/}
-            {/*    component={TxSuccessResultScreen}*/}
-            {/*  />*/}
             {/*  <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />*/}
             {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.TxFailedResult}*/}
-            {/*    component={TxFailedResultScreen}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.TxFailedResult} component={TxFailedResultScreen} />
+            <Stack.Screen name={SCREENS.TxPendingResult} component={TxPendingResultScreen} />
+            <Stack.Screen name={SCREENS.TxSuccessResult} component={TxSuccessResultScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </FocusedScreenProvider>

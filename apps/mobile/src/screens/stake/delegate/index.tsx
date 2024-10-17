@@ -1,6 +1,10 @@
 import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
-import { useDelegateTxConfig } from "@owallet/hooks";
-import { BondStatus } from "@owallet/stores";
+import {
+  useDelegateTxConfig,
+  useGasSimulator,
+  useTxConfigsValidate,
+} from "@owallet/hooks";
+import { Staking } from "@owallet/stores";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
 import { AlertIcon, DownArrowIcon } from "@src/components/icon";
@@ -30,15 +34,17 @@ import { metrics, spacing, typography } from "../../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
-import { CoinPretty, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { API } from "@src/common/api";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { tracking } from "@src/utils/tracking";
 import { makeStdTx } from "@cosmjs/amino";
 import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-import { navigate } from "@src/router/root";
+import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
+import { AsyncKVStore } from "@src/common";
+import { LoadingSpinner } from "@components/spinner";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -57,7 +63,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     chainStore,
     accountStore,
     queriesStore,
-    analyticsStore,
+    // analyticsStore,
     priceStore,
     modalStore,
     keyRingStore,
@@ -65,19 +71,34 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const [validatorDetail, setValidatorDetail] = useState();
-  const [validators, setValidators] = useState([]);
+  const initialChainId =
+    route.params["chainId"] || chainStore.current["chainId"];
+  const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
+  const account = accountStore.getAccount(chainId);
+  const queries = queriesStore.get(chainId);
+  // const [validatorDetail, setValidatorDetail] = useState();
+  // const [validators, setValidators] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  // const sendConfigs = useDelegateTxConfig(
+  //   chainStore,
+  //   chainId,
+  //   account.msgOpts["delegate"].gas,
+  //   account.bech32Address,
+  //   queries.queryBalances,
+  //   EthereumEndpoint
+  // );
+  const sender = account.bech32Address;
+  const unbondingPeriodDay = queries.cosmos.queryStakingParams.response
+    ? queries.cosmos.queryStakingParams.unbondingTimeSec / (3600 * 24)
+    : 21;
+  const chainInfo = chainStore.getChain(chainId);
   const sendConfigs = useDelegateTxConfig(
     chainStore,
-    chainStore.current.chainId,
-    account.msgOpts["delegate"].gas,
-    account.bech32Address,
-    queries.queryBalances,
-    EthereumEndpoint
+    queriesStore,
+    chainId,
+    sender,
+    validatorAddress,
+    300000
   );
   const navigation = useNavigation();
   useEffect(() => {
@@ -91,89 +112,128 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     });
   }, [chainStore.current?.chainName]);
   useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return;
-      (async () => {
-        try {
-          const res = await Promise.all([
-            API.getValidatorOraichainDetail(
-              {
-                validatorAddress: validatorAddress,
-              },
-              {
-                baseURL: "https://api.scan.orai.io",
-              }
-            ),
-            API.getValidatorList(
-              {},
-              {
-                baseURL: "https://api.scan.orai.io",
-              }
-            ),
-          ]);
-          if (res[0].status !== 200) return;
-          setValidatorDetail(res[0].data);
-          if (res[1].status !== 200) return;
-          setValidators(res[1].data.data);
-        } catch (error) {}
-      })();
-    });
-  }, [chainStore.current.chainId, validatorAddress]);
-  useEffect(() => {
-    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-      sendConfigs.feeConfig.setFeeType("average");
+    if (!initialChainId) {
+      goBack();
     }
-    return;
-  }, [sendConfigs.feeConfig]);
-  const [balance, setBalance] = useState<CoinPretty>(null);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
+  }, [initialChainId]);
+  useEffect(() => {
+    if (sendConfigs.feeConfig.type !== "manual") {
+      sendConfigs.feeConfig.setFee({
+        type: sendConfigs.feeConfig.type,
+        currency: chainInfo.stakeCurrency,
+      });
+    } else {
+      sendConfigs.feeConfig.setFee({
+        type: "average",
+        currency: chainInfo.stakeCurrency,
+      });
+    }
+  }, [chainInfo.stakeCurrency]);
+  // useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     if (chainId !== ChainIdEnum.Oraichain) return;
+  //     (async () => {
+  //       try {
+  //         const res = await Promise.all([
+  //           API.getValidatorOraichainDetail(
+  //             {
+  //               validatorAddress: validatorAddress,
+  //             },
+  //             {
+  //               baseURL: "https://api.scan.orai.io",
+  //             }
+  //           ),
+  //           API.getValidatorList(
+  //             {},
+  //             {
+  //               baseURL: "https://api.scan.orai.io",
+  //             }
+  //           ),
+  //         ]);
+  //         if (res[0].status !== 200) return;
+  //         setValidatorDetail(res[0].data);
+  //         if (res[1].status !== 200) return;
+  //         setValidators(res[1].data.data);
+  //       } catch (error) {}
+  //     })();
+  //   });
+  // }, [chainId, validatorAddress]);
+  // useEffect(() => {
+  //   if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+  //     sendConfigs.feeConfig.setFeeType("average");
+  //   }
+  //   return;
+  // }, [sendConfigs.feeConfig]);
+  // const [balance, setBalance] = useState<CoinPretty>(null);
+  // const address = account.getAddressDisplay(
+  //   keyRingStore.keyRingLedgerAddresses
+  // );
+  // const isReadyBalance = queries.queryBalances
+  //   .getQueryBech32Address(address)
+  //   .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
+  // useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
+  //       const balance = queries.queryBalances
+  //         .getQueryBech32Address(address)
+  //         .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
+  //       setBalance(balance);
+  //     }
+  //   });
+  // }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
+
+  // useEffect(() => {
+  //   sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
+  // }, [sendConfigs.recipientConfig, validatorAddress]);
+
+  // useEffect(() => {
+  //   if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+  //     sendConfigs.feeConfig.setFeeType("average");
+  //   }
+  //   if (appInitStore.getInitApp.feeOption) {
+  //     sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+  //   }
+  // }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
+
+  // const sendConfigError =
+  //   (chainId === "oraibtc-mainnet-1"
+  //     ? null
+  //     : sendConfigs.recipientConfig.getError()) ??
+  //   sendConfigs.amountConfig.getError() ??
+  //   sendConfigs.memoConfig.getError() ??
+  //   sendConfigs.gasConfig.getError() ??
+  //   sendConfigs.feeConfig.getError();
+  const gasSimulator = useGasSimulator(
+    new AsyncKVStore("gas-simulator.screen.stake.delegate/delegate"),
+    chainStore,
+    chainId,
+    sendConfigs.gasConfig,
+    sendConfigs.feeConfig,
+    "native",
+    () => {
+      return account.cosmos.makeDelegateTx(
+        sendConfigs.amountConfig.amount[0].toDec().toString(),
+        sendConfigs.recipientConfig.recipient
+      );
+    }
   );
-  const isReadyBalance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
-        const balance = queries.queryBalances
-          .getQueryBech32Address(address)
-          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-        setBalance(balance);
-      }
-    });
-  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
 
-  useEffect(() => {
-    sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
-  }, [sendConfigs.recipientConfig, validatorAddress]);
-
-  useEffect(() => {
-    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-      sendConfigs.feeConfig.setFeeType("average");
-    }
-    if (appInitStore.getInitApp.feeOption) {
-      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
-    }
-  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
-
-  const sendConfigError =
-    (chainStore.current.chainId === "oraibtc-mainnet-1"
-      ? null
-      : sendConfigs.recipientConfig.getError()) ??
-    sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError();
-  const txStateIsValid = sendConfigError == null;
+  const txConfigsValidate = useTxConfigsValidate({
+    ...sendConfigs,
+    gasSimulator,
+  });
+  const txStateIsValid = txConfigsValidate.interactionBlocked;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);
 
   const thumbnail = bondedValidators.getValidatorThumbnail(validatorAddress);
-
+  const balance = queries.queryBalances
+    .getQueryBech32Address(sender)
+    .getBalanceFromCurrency(chainInfo.stakeCurrency);
   const _onPressFee = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -186,132 +246,135 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const totalVotingPower = useMemo(
-    () => computeTotalVotingPower(validators),
-    [validators]
-  );
-  const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
-  const percentage =
-    chainStore.current.chainId === ChainIdEnum.Oraichain
-      ? formatPercentage(currentVotingPower / totalVotingPower, 2)
-      : 0;
-  const amount = new CoinPretty(
-    sendConfigs.amountConfig.sendCurrency,
-    new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
-  );
+  // const totalVotingPower = useMemo(
+  //   () => computeTotalVotingPower(validators),
+  //   [validators]
+  // );
+  // const currentVotingPower = parseFloat(validatorDetail?.voting_power || 0);
+  // const percentage =
+  //   chainId === ChainIdEnum.Oraichain
+  //     ? formatPercentage(currentVotingPower / totalVotingPower, 2)
+  //     : 0;
+  // const amount = new CoinPretty(
+  //     chainInfo.stakeCurrency || chainInfo.currencies[0],
+  //   new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
+  // );
 
-  const stakeOraiBtc = async () => {
-    try {
-      setIsLoading(true);
-      const res = await API.getInfoAccOraiBtc(
-        { address: account.bech32Address },
-        { baseURL: chainStore.current.rest }
-      );
-      const sequence = res.data.result.value.sequence;
-      const signDoc = {
-        account_number: "0",
-        chain_id: chainStore.current.chainId,
-        fee: {
-          gas: "10000",
-          amount: [{ amount: "0", denom: "uoraibtc" }],
-        },
-        memo: "",
-        msgs: [
-          {
-            type: "cosmos-sdk/MsgDelegate",
-            value: {
-              amount: sendConfigs.amountConfig.getAmountPrimitive(),
-              delegator_address: address,
-              validator_address: sendConfigs.recipientConfig.recipient,
-            },
-          },
-        ],
-        sequence: sequence,
-      };
-      //@ts-ignore
-      const signature = await window.owallet.signAmino(
-        chainStore.current.chainId,
-        account.bech32Address,
-        signDoc
-      );
-      const tx = makeStdTx(signDoc, signature.signature);
-      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
-      const result = await tmClient.broadcastTxSync({
-        tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
-      });
-      if (result?.code === 0 || result?.code == null) {
-        setIsLoading(false);
-        navigate(SCREENS.TxPendingResult, {
-          txHash: Buffer.from(result?.hash).toString("hex"),
-          data: {
-            type: "stake",
-            wallet: account.bech32Address,
-            validator: sendConfigs.recipientConfig.recipient,
-            amount: sendConfigs.amountConfig.getAmountPrimitive(),
-            fee: sendConfigs.feeConfig.toStdFee(),
-            currency: sendConfigs.amountConfig.sendCurrency,
-          },
-        });
-      }
-    } catch (error) {
-      if (error?.message?.includes("'signature' of undefined")) return;
-      showToast({
-        type: "danger",
-        message: `Failed to Stake: ${error?.message || JSON.stringify(error)}`,
-      });
-      console.log(error, "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const stakeOraiBtc = async () => {
+  //   try {
+  //     setIsLoading(true);
+  //     const res = await API.getInfoAccOraiBtc(
+  //       { address: account.bech32Address },
+  //       { baseURL: chainStore.current.rest }
+  //     );
+  //     const sequence = res.data.result.value.sequence;
+  //     const signDoc = {
+  //       account_number: "0",
+  //       chain_id: chainId,
+  //       fee: {
+  //         gas: "10000",
+  //         amount: [{ amount: "0", denom: "uoraibtc" }],
+  //       },
+  //       memo: "",
+  //       msgs: [
+  //         {
+  //           type: "cosmos-sdk/MsgDelegate",
+  //           value: {
+  //             amount: sendConfigs.amountConfig.getAmountPrimitive(),
+  //             delegator_address: address,
+  //             validator_address: sendConfigs.recipientConfig.recipient,
+  //           },
+  //         },
+  //       ],
+  //       sequence: sequence,
+  //     };
+  //     //@ts-ignore
+  //     const signature = await window.owallet.signAmino(
+  //       chainId,
+  //       account.bech32Address,
+  //       signDoc
+  //     );
+  //     const tx = makeStdTx(signDoc, signature.signature);
+  //     const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
+  //     const result = await tmClient.broadcastTxSync({
+  //       tx: Uint8Array.from(Buffer.from(JSON.stringify(tx))),
+  //     });
+  //     if (result?.code === 0 || result?.code == null) {
+  //       setIsLoading(false);
+  //       navigate(SCREENS.TxPendingResult, {
+  //         txHash: Buffer.from(result?.hash).toString("hex"),
+  //         data: {
+  //           type: "stake",
+  //           wallet: account.bech32Address,
+  //           validator: sendConfigs.recipientConfig.recipient,
+  //           amount: sendConfigs.amountConfig.getAmountPrimitive(),
+  //           fee: sendConfigs.feeConfig.toStdFee(),
+  //           currency: sendConfigs.amountConfig.sendCurrency,
+  //         },
+  //       });
+  //     }
+  //   } catch (error) {
+  //     if (error?.message?.includes("'signature' of undefined")) return;
+  //     showToast({
+  //       type: "danger",
+  //       message: `Failed to Stake: ${error?.message || JSON.stringify(error)}`,
+  //     });
+  //     console.log(error, "error");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   return (
     <PageWithBottom
       bottomGroup={
         <OWButton
           label="Stake"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid || isLoading}
-          loading={account.isSendingMsg === "delegate" || isLoading}
+          disabled={!account.isReadyToSendMsgs || txStateIsValid}
+          loading={account.isSendingMsg === "send"}
           onPress={async () => {
-            if (account.isReadyToSendMsgs && txStateIsValid) {
+            if (!txConfigsValidate.interactionBlocked) {
+              const tx = account.cosmos.makeDelegateTx(
+                sendConfigs.amountConfig.amount[0].toDec().toString(),
+                sendConfigs.recipientConfig.recipient
+              );
               try {
-                if (chainStore.current.chainId === "oraibtc-mainnet-1") {
-                  stakeOraiBtc();
-                  return;
-                }
-                await account.cosmos.sendDelegateMsg(
-                  sendConfigs.amountConfig.amount,
-                  sendConfigs.recipientConfig.recipient,
-                  sendConfigs.memoConfig.memo,
+                // if (chainId === "oraibtc-mainnet-1") {
+                //   stakeOraiBtc();
+                //   return;
+                // }
+
+                await tx.send(
                   sendConfigs.feeConfig.toStdFee(),
+                  sendConfigs.memoConfig.memo,
                   {
-                    preferNoSetMemo: true,
                     preferNoSetFee: true,
+                    preferNoSetMemo: true,
                   },
                   {
-                    onBroadcasted: (txHash) => {
-                      analyticsStore.logEvent("Delegate tx broadcasted", {
-                        chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName,
-                        validatorName: validator?.description.moniker ?? "...",
-                        feeType: sendConfigs.feeConfig.feeType,
+                    onFulfill: (tx: any) => {
+                      if (tx.code != null && tx.code !== 0) {
+                        console.log(tx);
+                        showToast({
+                          type: "danger",
+                          message: "Your transaction Failed",
+                        });
+                        return;
+                      }
+                      showToast({
+                        type: "success",
+                        message: "Transaction Successful",
                       });
-                      tracking(
-                        `Delegate`,
-                        `chainName=${
-                          chainStore.current.chainName
-                        };validatorName=${
-                          validator?.description.moniker ?? "..."
-                        };`
-                      );
+                    },
+                    onBroadcasted: (txHash) => {
                       navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "stake",
                           wallet: account.bech32Address,
                           validator: sendConfigs.recipientConfig.recipient,
-                          amount: sendConfigs.amountConfig.getAmountPrimitive(),
+                          amount: sendConfigs.amountConfig.amount[0],
                           fee: sendConfigs.feeConfig.toStdFee(),
-                          currency: sendConfigs.amountConfig.sendCurrency,
+                          currency: chainInfo.stakeCurrency,
                         },
                       });
                     },
@@ -350,12 +413,6 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/*<PageHeader*/}
-        {/*  title="Stake"*/}
-        {/*  subtitle={chainStore.current.chainName}*/}
-        {/*  colors={colors}*/}
-        {/*  onPress={async () => {}}*/}
-        {/*/>*/}
         {validator ? (
           <View>
             <OWCard
@@ -479,50 +536,39 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   alignItems: "center",
                 }}
               >
-                <OWIcon name="tdesign_swap" size={16} />
+                <OWIcon
+                  name="tdesign_swap"
+                  size={16}
+                  color={colors["neutral-text-body"]}
+                />
                 <OWText
                   style={{ paddingLeft: 4 }}
                   color={colors["neutral-text-body"]}
                   size={14}
                 >
-                  {(amount
-                    ? priceStore.calculatePrice(amount)
+                  {(sendConfigs.amountConfig.amount[0]
+                    ? priceStore.calculatePrice(
+                        sendConfigs.amountConfig.amount[0]
+                      )
                     : initPrice
                   )?.toString()}
                 </OWText>
               </View>
-              {validatorDetail ? (
-                <View
-                  style={{
-                    flexDirection: "row",
-                    borderRadius: 12,
-                    backgroundColor: colors["warning-surface-subtle"],
-                    padding: 12,
-                    marginTop: 8,
-                  }}
-                >
-                  <AlertIcon color={colors["warning-text-body"]} size={16} />
-                  <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
-                    {Number(percentage) > 5 ? (
-                      <>
-                        <OWText
-                          style={{
-                            fontWeight: "bold",
-                          }}
-                        >
-                          You're about to stake with top 10 validators {"\n"}
-                        </OWText>
-                        <OWText weight="400">
-                          Consider staking with other validators to improve
-                          network decentralization
-                        </OWText>
-                      </>
-                    ) : (
-                      `When you unstake, a 14-day cooldown period is required before your stake returns to your wallet.`
-                    )}
-                  </OWText>
-                </View>
-              ) : null}
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  borderRadius: 12,
+                  backgroundColor: colors["warning-surface-subtle"],
+                  padding: 12,
+                  marginTop: 8,
+                }}
+              >
+                <AlertIcon color={colors["warning-text-body"]} size={16} />
+                <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+                  {`When you unstake, a ${unbondingPeriodDay}-day cooldown period is required before your stake returns to your wallet.`}
+                </OWText>
+              </View>
             </OWCard>
             <OWCard
               style={{
@@ -538,6 +584,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   borderBottomWidth: 1,
                   paddingVertical: 16,
                   marginBottom: 8,
+                  alignItems: "center",
                 }}
               >
                 <OWText
@@ -548,23 +595,67 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   Transaction fee
                 </OWText>
                 <TouchableOpacity
-                  style={{ flexDirection: "row" }}
+                  style={{ flexDirection: "row", alignItems: "center" }}
                   onPress={_onPressFee}
                 >
-                  <OWText
-                    color={colors["primary-text-action"]}
-                    weight="600"
-                    size={16}
+                  <View
+                    style={{
+                      alignItems: "center",
+                      paddingRight: 8,
+                    }}
                   >
-                    {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
-                    {priceStore
-                      .calculatePrice(sendConfigs.feeConfig.fee)
-                      ?.toString()}{" "}
-                  </OWText>
-                  <DownArrowIcon
-                    height={11}
-                    color={colors["primary-text-action"]}
-                  />
+                    <OWText
+                      color={colors["primary-text-action"]}
+                      weight="600"
+                      size={14}
+                    >
+                      {capitalizedText(sendConfigs.feeConfig.type)}
+                    </OWText>
+                    <OWText
+                      color={colors["primary-text-action"]}
+                      weight="500"
+                      size={12}
+                    >
+                      {(() => {
+                        if (sendConfigs.feeConfig.fees.length > 0) {
+                          return sendConfigs.feeConfig.fees;
+                        }
+                        const chainInfo = chainStore.getChain(
+                          sendConfigs.feeConfig.chainId
+                        );
+
+                        return [
+                          new CoinPretty(
+                            chainInfo.stakeCurrency || chainInfo.currencies[0],
+                            new Dec(0)
+                          ),
+                        ];
+                      })()
+                        .map((fee) =>
+                          fee
+                            .maxDecimals(6)
+                            .inequalitySymbol(true)
+                            .trim(true)
+                            .shrink(true)
+                            .hideIBCMetadata(true)
+                            .toString()
+                        )
+                        .join("+")}
+                    </OWText>
+                  </View>
+
+                  {sendConfigs.feeConfig.uiProperties.loadingState ||
+                  gasSimulator?.uiProperties.loadingState ? (
+                    <LoadingSpinner
+                      size={14}
+                      color={colors["background-btn-primary"]}
+                    />
+                  ) : (
+                    <DownArrowIcon
+                      height={11}
+                      color={colors["primary-text-action"]}
+                    />
+                  )}
                 </TouchableOpacity>
               </View>
             </OWCard>

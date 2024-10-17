@@ -64,10 +64,14 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
+    const feeCurrency =
+      props.feeConfig.fees.length > 0
+        ? props.feeConfig.fees[0].currency
+        : props.feeConfig.selectableFeeCurrencies[0];
     return (
       <React.Fragment>
-        {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
-        {props?.isGasInputOpen || !props.feeConfig.feeCurrency ? (
+        {feeCurrency ? <FeeButtonsInner {...props} /> : null}
+        {props?.isGasInputOpen || !feeCurrency ? (
           <GasInput
             labelStyle={props.labelStyle}
             label={props.gasLabel}
@@ -104,13 +108,30 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     const style = useStyle();
     const { colors } = useTheme();
     const styles = styling(colors);
-
+    const feeCurrency =
+      feeConfig.fees.length > 0
+        ? feeConfig.fees[0].currency
+        : feeConfig.selectableFeeCurrencies[0];
     useEffect(() => {
-      if (feeConfig.feeCurrency && !feeConfig.fee) {
-        feeConfig.setFeeType("average");
-      }
-      if (appInitStore.getInitApp.feeOption) {
-        feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
+      if (feeCurrency) {
+        if (appInitStore.getInitApp.feeOption) {
+          feeConfig.setFee({
+            type: appInitStore.getInitApp.feeOption,
+            currency: feeCurrency,
+          });
+        } else {
+          if (feeConfig.type !== "manual") {
+            feeConfig.setFee({
+              type: feeConfig.type,
+              currency: feeCurrency,
+            });
+          } else {
+            feeConfig.setFee({
+              type: "average",
+              currency: feeCurrency,
+            });
+          }
+        }
       }
     }, [feeConfig, appInitStore.getInitApp.feeOption]);
 
@@ -122,26 +143,33 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     // Therefore, this line double checks to ensure that the fee buttons is not rendered if fee currency doesn’t exist.
     // But because this component uses hooks, using a hook in the line below can cause an error.
     // Note that hooks should be used above this line, and only rendering-related logic should exist below this line.
-    if (!feeConfig.feeCurrency) {
+    if (!feeCurrency) {
       return <React.Fragment />;
     }
 
-    const lowFee = feeConfig.getFeeTypePretty("low");
+    const lowFee = feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, "low");
     const lowFeePrice = priceStore.calculatePrice(lowFee);
 
-    const averageFee = feeConfig.getFeeTypePretty("average");
+    const averageFee = feeConfig.getFeeTypePrettyForFeeCurrency(
+      feeCurrency,
+      "average"
+    );
     const averageFeePrice = priceStore.calculatePrice(averageFee);
 
-    const highFee = feeConfig.getFeeTypePretty("high");
+    const highFee = feeConfig.getFeeTypePrettyForFeeCurrency(
+      feeCurrency,
+      "high"
+    );
     const highFeePrice = priceStore.calculatePrice(highFee);
 
-    let isFeeLoading = false;
+    let isFeeLoading = feeConfig.uiProperties.loadingState;
+    // || gasSimulator?.uiProperties.loadingState;
 
-    const error = feeConfig.getError();
+    const error = feeConfig.uiProperties.error;
     const errorText: string | undefined = (() => {
       if (error) {
         if (error.constructor === NotLoadedFeeError) {
-          isFeeLoading = true;
+          isFeeLoading = "loading";
         }
 
         return getFeeErrorText(error);
@@ -260,7 +288,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               color: colors["sub-primary-text"],
             }}
           >
-            {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+            {/*{chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}*/}
             {amount.maxDecimals(6).trim(true).separator(" ").toString()}
           </OWText>
           {price ? (
@@ -271,7 +299,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                 color: colors["sub-primary-text"],
               }}
             >
-              {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+              {/*{chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}*/}
               {price.toString()}
             </OWText>
           ) : null}
@@ -323,7 +351,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                   color: colors["neutral-text-body"],
                 }}
               >
-                {chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+                {/*{chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}*/}
                 {amount.maxDecimals(6).trim(true).separator(" ").toString()}
                 {price ? (
                   <OWText
@@ -331,7 +359,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                       color: colors["neutral-text-body"],
                     }}
                   >
-                    ({chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}
+                    {/*({chainStore.current.networkType === "bitcoin" ? "≤" : null}{" "}*/}
                     {price.toString()})
                   </OWText>
                 ) : null}
@@ -355,15 +383,18 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       );
     };
 
-    return vertical ? (
+    return (
       <View style={{}}>
         {renderVerticalButton(
           "Slow",
           lowFeePrice,
           lowFee,
-          feeConfig.feeType === "low",
+          feeConfig.type === "low",
           () => {
-            feeConfig.setFeeType("low");
+            feeConfig.setFee({
+              type: "low",
+              currency: feeCurrency,
+            });
             appInitStore.updateFeeOption("low");
           }
         )}
@@ -371,9 +402,12 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           "Average",
           averageFeePrice,
           averageFee,
-          feeConfig.feeType === "average",
+          feeConfig.type === "average",
           () => {
-            feeConfig.setFeeType("average");
+            feeConfig.setFee({
+              type: "average",
+              currency: feeCurrency,
+            });
             appInitStore.updateFeeOption("average");
           }
         )}
@@ -381,71 +415,15 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           "Fast",
           highFeePrice,
           highFee,
-          feeConfig.feeType === "high",
+          feeConfig.type === "high",
           () => {
-            feeConfig.setFeeType("high");
+            feeConfig.setFee({
+              type: "high",
+              currency: feeCurrency,
+            });
             appInitStore.updateFeeOption("high");
           }
         )}
-      </View>
-    ) : (
-      <View
-        style={{
-          paddingBottom: spacing["28"],
-          ...containerStyle,
-        }}
-      >
-        <Text
-          style={[
-            StyleSheet.flatten([
-              style.flatten([
-                "subtitle3",
-                "color-text-black-medium",
-                "margin-bottom-3",
-              ]),
-              labelStyle,
-            ]),
-            { color: colors["sub-primary-text"] },
-          ]}
-        >
-          {label}
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-          }}
-        >
-          {renderButton(
-            "Slow",
-            lowFeePrice,
-            lowFee,
-            feeConfig.feeType === "low",
-            () => {
-              feeConfig.setFeeType("low");
-              appInitStore.updateFeeOption("low");
-            }
-          )}
-          {renderButton(
-            "Average",
-            averageFeePrice,
-            averageFee,
-            feeConfig.feeType === "average",
-            () => {
-              feeConfig.setFeeType("average");
-              appInitStore.updateFeeOption("average");
-            }
-          )}
-          {renderButton(
-            "Fast",
-            highFeePrice,
-            highFee,
-            feeConfig.feeType === "high",
-            () => {
-              feeConfig.setFeeType("high");
-              appInitStore.updateFeeOption("high");
-            }
-          )}
-        </View>
         {isFeeLoading ? (
           <View>
             <View

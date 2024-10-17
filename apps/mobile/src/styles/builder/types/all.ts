@@ -8,6 +8,8 @@ import { StaticImageStyles, StyleBuilderImageDefinitions } from "./image";
 import { StaticTextStyles, StyleBuilderTextDefinitions } from "./text";
 import { StaticStylesDefinitions } from "./common";
 import { StyleBuilderSizeDefinitions } from "./size";
+import { StyledDimension } from "./dimension";
+import { StyleBuilderGapDefinitions } from "./gap";
 
 export const StaticStyles = {
   ...StaticLayouts,
@@ -19,13 +21,14 @@ export const StaticStyles = {
 export type StyleBuilderDefinitions<
   Custom extends Record<string, unknown>,
   Colors extends Record<string, string>,
-  Widths extends Record<string, string | number>,
-  Heights extends Record<string, string | number>,
-  PaddingSizes extends Record<string, string | number>,
-  MarginSizes extends Record<string, string | number>,
+  Widths extends Record<string, StyledDimension>,
+  Heights extends Record<string, StyledDimension>,
+  PaddingSizes extends Record<string, StyledDimension>,
+  MarginSizes extends Record<string, StyledDimension>,
   BorderWidths extends Record<string, number>,
   BorderRadiuses extends Record<string, number>,
-  Opacities extends Record<string, number>
+  Opacities extends Record<string, number>,
+  Gaps extends Record<string, number>
 > = StaticStylesDefinitions<Custom> &
   StyleBuilderLayoutDefinitions &
   StyleBuilderColorDefinitions<Colors> &
@@ -34,5 +37,6 @@ export type StyleBuilderDefinitions<
   StyleBuilderMarginDefinitions<MarginSizes> &
   StyleBuilderBorderDefinitions<BorderWidths, BorderRadiuses> &
   StyleBuilderOpacityDefinitions<Opacities> &
+  StyleBuilderGapDefinitions<Gaps> &
   StyleBuilderImageDefinitions &
   StyleBuilderTextDefinitions;
