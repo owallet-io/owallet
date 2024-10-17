@@ -96,7 +96,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
     } else if (appInitStore.getInitApp.wallet === "injective") {
       return (
         <LottieView
-          source={require("@src/assets/animations/injective.json")}
+          source={require("@src/assets/animations/inj-animate.json")}
           style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
           resizeMode={"cover"}
           autoPlay
