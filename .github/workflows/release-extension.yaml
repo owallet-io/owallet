@@ -44,7 +44,7 @@ jobs:
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
+        run: yarn
 
       - name: Install extension packages
         working-directory: packages/extension
