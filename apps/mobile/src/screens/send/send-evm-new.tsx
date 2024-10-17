@@ -32,7 +32,7 @@ enum EthTxStatus {
   Failure = '0x0'
 }
 
-export const SendEvmScreen: FunctionComponent = observer(() => {
+export const SendEvmNewScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, ethereumAccountStore, queriesStore, priceStore } = useStore();
   const route = useRoute<
     RouteProp<
@@ -272,6 +272,7 @@ export const SendEvmScreen: FunctionComponent = observer(() => {
           const unsignedTx = await ethereumAccount.makeSendTokenTx({
             currency: sendConfigs.amountConfig.amount[0].currency,
             amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
+            //@ts-ignore
             from: sender,
             to: sendConfigs.recipientConfig.recipient,
             gasLimit: sendConfigs.gasConfig.gas,
