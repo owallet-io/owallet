@@ -23,42 +23,34 @@ import {
   removeDataInParentheses,
 } from "@src/utils/helper";
 import { AppCurrency } from "@owallet/types";
+import { ViewToken } from "@stores/huge-queries";
 
 export const TokenView: FunctionComponent<{
-  balance: ObservableQueryBalanceInner;
+  balance: ViewToken;
   onClick: () => void;
   coinMinimalDenom: string;
 }> = observer(({ coinMinimalDenom, onClick, balance }) => {
-  const { priceStore, chainStore } = useStore();
+  // const { priceStore, chainStore } = useStore();
   const { colors } = useTheme();
 
-  const name = balance?.currency?.coinDenom;
+  const name = balance.token?.currency?.coinDenom;
   const getName = () => {
     return removeDataInParentheses(name);
   };
-  const image = balance.currency?.coinImageUrl;
-  let contractAddress: string = "";
-  let amount = balance?.balance
+  const image = balance.token.currency?.coinImageUrl;
+  let contractAddress: string = "Native";
+  let amount = balance.token
     ?.trim(true)
     ?.shrink(true)
     ?.maxDecimals(6)
     ?.hideDenom(true);
-
-  // If the currency is the IBC Currency.
-  // Show the amount as slightly different with other currencies.
-  // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
-  if ("originCurrency" in amount.currency && amount.currency.originCurrency) {
-    amount = amount.setCurrency(amount.currency.originCurrency);
-  } else {
-    const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
-    if (denomHelper.contractAddress) {
-      contractAddress = formatAddress(denomHelper.contractAddress, 8);
-    }
+  if (name.includes("factory")) {
+    contractAddress = "Factory";
   }
   if (extractDataInParentheses(name)) {
     contractAddress = extractDataInParentheses(name);
   }
-  const tokenPrice = priceStore.calculatePrice(amount);
+  // const tokenPrice = priceStore.calculatePrice(amount);
   return (
     <View
       style={{
@@ -67,7 +59,7 @@ export const TokenView: FunctionComponent<{
         marginHorizontal: 8,
         borderRadius: 12,
         backgroundColor:
-          coinMinimalDenom === balance.currency?.coinMinimalDenom
+          coinMinimalDenom === balance.token.currency?.coinMinimalDenom
             ? colors["neutral-surface-action2"]
             : colors["neutral-surface-background2"],
       }}
@@ -106,7 +98,14 @@ export const TokenView: FunctionComponent<{
           </View>
           <View>
             <OWText size={16} weight="500">
-              {getName()}
+              {getName()}{" "}
+              <OWText
+                size={12}
+                color={colors["neutral-text-body"]}
+                weight={"500"}
+              >
+                ({balance.chainInfo?.chainName})
+              </OWText>
             </OWText>
             {contractAddress ? (
               <OWText
@@ -138,7 +137,7 @@ export const TokenView: FunctionComponent<{
               textAlign: "right",
             }}
           >
-            {tokenPrice?.toString()}
+            {balance.price?.toString()}
           </Text>
         </View>
       </RectButton>
@@ -149,7 +148,7 @@ export const TokenSelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
-  items: ObservableQueryBalanceInner[];
+  items: ViewToken[];
   maxItemsToShow?: number;
   selectedKey: string | undefined;
   setSelectedKey: (key: string | undefined) => void;
@@ -161,7 +160,7 @@ export const TokenSelectorModal: FunctionComponent<{
     selectedKey,
     setSelectedKey,
     maxItemsToShow,
-    modalPersistent,
+    // modalPersistent,
   }) => {
     const { colors } = useTheme();
 
@@ -213,16 +212,10 @@ export const TokenSelectorModal: FunctionComponent<{
           {items
             .filter(
               (token) =>
-                token?.currency?.coinMinimalDenom?.includes(
+                token.token.currency.coinMinimalDenom.includes(
                   search.toUpperCase()
                 ) ||
-                token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
-                token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
-                token?.currency?.coinMinimalDenom?.includes(
-                  search.toLowerCase()
-                ) ||
-                token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
-                token?.currency?.coinGeckoId?.includes(search.toLowerCase())
+                token.token.currency.coinDenom.includes(search.toUpperCase())
             )
             .map((token, i) => {
               return (
@@ -231,8 +224,8 @@ export const TokenSelectorModal: FunctionComponent<{
                   balance={token}
                   coinMinimalDenom={selectedKey}
                   onClick={() => {
-                    if (!token?.currency?.coinMinimalDenom) return;
-                    setSelectedKey(token.currency.coinMinimalDenom);
+                    if (!token.token.currency?.coinMinimalDenom) return;
+                    setSelectedKey(token.token.currency.coinMinimalDenom);
                     close();
                   }}
                 />
