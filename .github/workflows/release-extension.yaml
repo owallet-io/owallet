@@ -51,7 +51,7 @@ jobs:
         run: yarn --silent
 
       - name: Build Libs
-        run: yarn build
+        run: yarn build:libs
 
       - name: Build extension
         working-directory: apps/extension
