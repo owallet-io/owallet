@@ -367,6 +367,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     },
                     onBroadcasted: (txHash) => {
                       navigate(SCREENS.TxPendingResult, {
+                        chainId: initialChainId,
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "stake",

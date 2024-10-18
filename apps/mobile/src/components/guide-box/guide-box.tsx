@@ -2,12 +2,11 @@ import React, { FunctionComponent } from "react";
 import { GuideBoxProps } from "./types";
 import { Column, Columns } from "../column";
 import { Box } from "../box";
-// import {InformationIcon} from '../icon/information';
+import { InformationIcon } from "../icon/information";
 import { useStyle } from "../../styles";
 import { Stack } from "../stack";
 import { StyleSheet, Text } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
-import { useTheme } from "@src/themes/theme-provider";
 
 export const GuideBox: FunctionComponent<GuideBoxProps> = ({
   title,
@@ -20,29 +19,28 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
   backgroundColor,
 }) => {
   const style = useStyle();
-  const { colors } = useTheme();
   const paragraphColor = (() => {
     switch (color) {
       case "safe":
-        return colors["highlight-surface-active"];
+        return style.get("color-green-400").color;
       case "warning":
-        return colors["warning-surface-default"];
+        return style.get("color-yellow-500").color;
       case "danger":
-        return colors["error-surface-default"];
+        return style.get("color-red-300").color;
       default:
-        return colors["highlight-surface-active"];
+        return style.get("color-gray-300").color;
     }
   })();
   const titleColor = (() => {
     switch (color) {
       case "safe":
-        return colors["highlight-surface-active"];
+        return style.get("color-green-400").color;
       case "warning":
-        return colors["warning-surface-default"];
+        return style.get("color-yellow-400").color;
       case "danger":
-        return colors["error-surface-default"];
+        return style.get("color-red-300").color;
       default:
-        return colors["highlight-surface-active"];
+        return style.get("color-gray-100").color;
     }
   })();
   const innerBackgroundColor = (() => {
@@ -52,13 +50,13 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
 
     switch (color) {
       case "safe":
-        return colors["highlight-surface-active"];
+        return style.get("color-green-800").color;
       case "warning":
-        return colors["warning-surface-default"];
+        return style.get("color-yellow-800").color;
       case "danger":
-        return colors["error-surface-default"];
+        return style.get("color-red-800").color;
       default:
-        return colors["highlight-surface-active"];
+        return style.get("color-gray-600").color;
     }
   })();
 

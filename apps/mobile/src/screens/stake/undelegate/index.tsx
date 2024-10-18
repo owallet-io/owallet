@@ -304,6 +304,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                     },
                     onBroadcasted: (txHash) => {
                       navigate(SCREENS.TxPendingResult, {
+                        chainId: initialChainId,
                         txHash: Buffer.from(txHash).toString("hex"),
                         data: {
                           type: "unstake",

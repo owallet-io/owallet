@@ -30,15 +30,15 @@ export const EarningCardNew = observer(({}) => {
     accountStore,
     queriesStore,
     priceStore,
-    analyticsStore,
+    // analyticsStore,
     appInitStore,
   } = useStore();
-  if (
-    (chainStore.current.networkType !== "cosmos" &&
-      !appInitStore.getInitApp.isAllNetworks) ||
-    appInitStore.getInitApp.isAllNetworks
-  )
-    return;
+  // if (
+  //   (chainStore.current.networkType !== "cosmos" &&
+  //     !appInitStore.getInitApp.isAllNetworks) ||
+  //   appInitStore.getInitApp.isAllNetworks
+  // )
+  //   return;
 
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
@@ -104,10 +104,10 @@ export const EarningCardNew = observer(({}) => {
           {},
           {
             onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("Compound reward tx broadcasted", {
-                chainId: chainId,
-                chainName: chainStore.current.chainName,
-              });
+              // analyticsStore.logEvent("Compound reward tx broadcasted", {
+              //   chainId: chainId,
+              //   chainName: chainStore.current.chainName,
+              // });
 
               const validatorObject = convertArrToObject(
                 queryRewards.pendingRewardValidatorAddresses
@@ -162,10 +162,10 @@ export const EarningCardNew = observer(({}) => {
         {},
         {
           onBroadcasted: (txHash) => {
-            analyticsStore.logEvent("Claim reward tx broadcasted", {
-              chainId: chainId,
-              chainName: chainStore.current.chainName,
-            });
+            // analyticsStore.logEvent("Claim reward tx broadcasted", {
+            //   chainId: chainId,
+            //   chainName: chainStore.current.chainName,
+            // });
 
             const validatorObject = convertArrToObject(
               queryRewards.pendingRewardValidatorAddresses

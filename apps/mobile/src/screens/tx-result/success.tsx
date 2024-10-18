@@ -34,10 +34,10 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { initPrice } from "@screens/home/hooks/use-multiple-assets";
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
-  const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
-    useStore();
+  const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
   const { colors, images } = useTheme();
   const route = useRoute<
     RouteProp<
@@ -52,7 +52,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             fee: StdFee;
             fromAddress: string;
             toAddress: string;
-            amount: CoinPrimitive;
+            amount: CoinPretty;
             currency: AppCurrency;
           };
         }
@@ -61,51 +61,48 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
-  const { current } = chainStore;
-  const chainId = current.chainId;
+  // const chainTxs =
+  //   chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+  //     ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+  //     : chainStore.current;
+  // const { current } = chainStore;
+  const chainId = route.params["chainId"];
 
   const { params } = route;
   const txHash = params?.txHash;
-  const [data, setData] = useState<Partial<ResTxsInfo>>();
+  // const [data, setData] = useState<Partial<ResTxsInfo>>();
   const account = accountStore.getAccount(chainStore?.current?.chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
-  const txs = txsStore(chainTxs);
+  // const address = account.getAddressDisplay(
+  //   keyRingStore.keyRingLedgerAddresses,
+  //   false
+  // );
+  // const txs = txsStore(chainTxs);
 
   const chainInfo = chainStore.getChain(chainId);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash?.toLowerCase()
-        : txHash?.toUpperCase()
-    );
-  };
-  const handleOnExplorer = async () => {
-    if (chainInfo.raw?.txExplorer && txHash) {
-      const url = handleUrl(txHash);
-      await openLink(url);
-    }
-  };
-
+  // const handleUrl = (txHash) => {
+  //   return chainInfo.raw.txExplorer.txUrl.replace(
+  //     "{txHash}",
+  //     chainInfo.chainId === TRON_ID ||
+  //       chainInfo.networkType === "bitcoin" ||
+  //       chainInfo.chainId === ChainIdEnum.OasisSapphire ||
+  //       chainInfo.chainId === ChainIdEnum.OasisEmerald ||
+  //       chainInfo.chainId === ChainIdEnum.Oasis ||
+  //       chainInfo.chainId === ChainIdEnum.BNBChain
+  //       ? txHash?.toLowerCase()
+  //       : txHash?.toUpperCase()
+  //   );
+  // };
+  // const handleOnExplorer = async () => {
+  //   if (chainInfo.raw?.txExplorer && txHash) {
+  //     const url = handleUrl(txHash);
+  //     await openLink(url);
+  //   }
+  // };
+  const data = params.data;
   const onDone = () => {
     resetTo(SCREENS.STACK.MainTab);
   };
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
+  const amount = params["data"]["amount"];
 
   const fee = () => {
     if (params?.data?.fee) {
@@ -123,21 +120,21 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
       return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
     }
   };
-  const getDetailByHash = async (txHash) => {
-    try {
-      const tx = await txs.getTxsByHash(txHash, address);
-      setData(tx);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-  useEffect(() => {
-    if (txHash) {
-      InteractionManager.runAfterInteractions(() => {
-        getDetailByHash(txHash);
-      });
-    }
-  }, [txHash]);
+  // const getDetailByHash = async (txHash) => {
+  //   try {
+  //     const tx = await txs.getTxsByHash(txHash, address);
+  //     setData(tx);
+  //   } catch (error) {
+  //     console.log("error: ", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   if (txHash) {
+  //     InteractionManager.runAfterInteractions(() => {
+  //       getDetailByHash(txHash);
+  //     });
+  //   }
+  // }, [txHash]);
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -158,7 +155,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             labelApprove={"Done"}
             labelClose={"View on Explorer"}
             styleApprove={styles.btnApprove}
-            onPressClose={handleOnExplorer}
+            // onPressClose={handleOnExplorer}
             onPressApprove={onDone}
             styleClose={{
               borderRadius: 99,
@@ -188,7 +185,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               ?.shrink(true)
               ?.trim(true)
               ?.toString()}`}
-            price={priceStore.calculatePrice(amount)?.toString()}
+            price={(amount
+              ? priceStore.calculatePrice(amount)
+              : initPrice
+            )?.toString()}
           />
           <View style={styles.cardBody}>
             {dataItem &&
@@ -258,7 +258,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                     name="tdesignjump"
                     sizeIcon={20}
                     fullWidth={false}
-                    onPress={handleOnExplorer}
+                    // onPress={handleOnExplorer}
                     colorIcon={colors["neutral-text-action-on-light-bg"]}
                   />
                 </View>

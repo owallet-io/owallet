@@ -49,6 +49,7 @@ import { MemoInput } from "@components/input";
 import CheckBox from "react-native-check-box";
 import { OWButton } from "@components/button";
 import OWIcon from "@components/ow-icon/ow-icon";
+import { FeeControl } from "@components/input/fee-control";
 
 export const SignModal = registerModal(
   observer<{
@@ -480,13 +481,13 @@ export const SignModal = registerModal(
           }
 
           return (
-            // <FeeControl
-            //     feeConfig={feeConfig}
-            //     senderConfig={senderConfig}
-            //     gasConfig={gasConfig}
-            //     disableAutomaticFeeSet={preferNoSetFee}
-            // />
-            <></>
+            <FeeControl
+              feeConfig={feeConfig}
+              senderConfig={senderConfig}
+              gasConfig={gasConfig}
+              disableAutomaticFeeSet={preferNoSetFee}
+            />
+            // <></>
           );
         })()}
 

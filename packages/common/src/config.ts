@@ -27,7 +27,7 @@ export const DefaultGasMsgWithdrawRewards = 240000; // Gas per messages.
 // Endpoint for Ethereum node.
 // This is used for ENS.
 export const EthereumEndpoint =
-  process.env["KEPLR_EXT_ETHEREUM_ENDPOINT"] || "";
+  process.env["KEPLR_EXT_ETHEREUM_ENDPOINT"] || "https://evm-1.keplr.app";
 
 export const TokenContractListURL =
   "https://opbaqquqruxn7fdsgcncrtfrwa0qxnoj.lambda-url.us-west-2.on.aws/";

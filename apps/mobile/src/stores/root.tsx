@@ -440,14 +440,14 @@ export class RootStore {
       this.chainStore,
       this.queriesStore
     );
-    // this.axelarEVMBridgeCurrencyRegistrar =
-    //     new AxelarEVMBridgeCurrencyRegistrar(
-    //         new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
-    //         7 * 24 * 3600 * 1000,
-    //         this.chainStore,
-    //         this.queriesStore,
-    //         'ethereum',
-    //     );
+    this.axelarEVMBridgeCurrencyRegistrar =
+      new AxelarEVMBridgeCurrencyRegistrar(
+        new AsyncKVStore("store_axelar_evm_bridge_currency_registrar"),
+        7 * 24 * 3600 * 1000,
+        this.chainStore,
+        this.queriesStore,
+        "ethereum"
+      );
 
     // this.uiConfigStore = new UIConfigStore(
     //     {
@@ -499,21 +499,21 @@ export class RootStore {
     //     kvStore: new AsyncKVStore('store_favorite_url'),
     // });
 
-    // this.walletConnectStore = new WalletConnectStore(
-    //     new AsyncKVStore('store_wallet_connect_v2'),
-    //     {
-    //         addEventListener: (type: string, fn: () => void) => {
-    //             eventEmitter.addListener(type, fn);
-    //         },
-    //         removeEventListener: (type: string, fn: () => void) => {
-    //             eventEmitter.removeListener(type, fn);
-    //         },
-    //     },
-    //     this.chainStore,
-    //     this.keyRingStore,
-    //     this.permissionStore,
-    //     this.permissionManagerStore,
-    // );
+    this.walletConnectStore = new WalletConnectStore(
+      new AsyncKVStore("store_wallet_connect_v2"),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      this.keyRingStore,
+      this.permissionStore,
+      this.permissionManagerStore
+    );
 
     this.deepLinkStore = new DeepLinkStore(this.walletConnectStore);
 

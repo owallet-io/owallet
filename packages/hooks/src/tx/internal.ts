@@ -14,7 +14,7 @@ export type QueriesStore = IQueriesStore<
         "queryDelegations" | "queryFeeMarketGasPrices"
       >;
     } & {
-      keplrETC?: Pick<
+      owalletETC?: Pick<
         OWalletETCQueriesImpl,
         "queryTerraClassicTaxRate" | "queryTerraClassicTaxCaps"
       >;
