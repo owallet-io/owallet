@@ -112,7 +112,6 @@ export const SignPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
-    priceStore,
   } = useStore();
 
   const [signer, setSigner] = useState("");

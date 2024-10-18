@@ -18,6 +18,7 @@ import { BACKGROUND_PORT } from "@owallet/router";
 import { MessageRequester } from "@owallet/router";
 import { toGenerator } from "@owallet/common";
 import { makePersistable } from "mobx-persist-store";
+
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
   protected _selectedChainId: string;
@@ -88,17 +89,21 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   get selectedFee(): string {
     return this._selectedFee;
   }
+
   get multipleAssets(): IMultipleAsset {
     return this._multipleAssets;
   }
+
   get isHideDust(): boolean {
     return this._hideDust;
   }
+
   get chainInfosInUI() {
     return this.chainInfos.filter((chainInfo) => {
       return !chainInfo.raw.hideInUI;
     });
   }
+
   get selectedChainId(): string {
     return this._selectedChainId;
   }
@@ -107,14 +112,17 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   setIsAllNetwork(isAll: boolean) {
     this._isAllNetwork = isAll;
   }
+
   @action
   setSelectedFee(fee: string) {
     this._selectedFee = fee;
   }
+
   @action
   setIsHideDust(isHide: boolean) {
     this._hideDust = isHide;
   }
+
   @action
   setIsSidePanel(isOpen: boolean) {
     this._isSidePanel = isOpen;
@@ -123,6 +131,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   setMultipleAsset(data: IMultipleAsset) {
     this._multipleAssets = data;
   }
+
   @action
   selectChain(chainId: string) {
     if (this._isInitializing) {
@@ -193,19 +202,23 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   }
 
   @flow
-  *addChain(chainInfo) {
+  *addChain(chainInfo: ChainInfo) {
+    if (!chainInfo) throw Error("Chain Info must not be empty.");
     const msg = new GetChainInfosMsg();
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
-    const chainInfos = yield this.requester.sendMessage(
-      BACKGROUND_PORT,
-      msgAddchain
+    const chainExisted = result.chainInfos.find(
+      (item) => item.chainId === chainInfo.chainId
     );
-    console.log(chainInfos, "chainInfos");
+    if (chainExisted)
+      throw Error("The chain already exists and cannot be added.");
+    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
+    yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
+
     yield this.setChainInfos([...result.chainInfos, chainInfo]);
   }
+
   @flow
   *tryUpdateChain(chainId: string) {
     const msg = new TryUpdateChainMsg(chainId);
