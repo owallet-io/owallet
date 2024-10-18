@@ -181,6 +181,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
   const [toNetwork, setToNetwork] = useState(ChainIdEnum.Oraichain);
 
+  useEffect(() => {
+    if (appInitStore.getInitApp.wallet === "osmosis") {
+      setFromNetwork(ChainIdEnum.Osmosis);
+    } else if (appInitStore.getInitApp.wallet === "injective") {
+      setFromNetwork(ChainIdEnum.Injective);
+    }
+  }, [appInitStore.getInitApp.wallet]);
+
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(["orai", "usdt"]);

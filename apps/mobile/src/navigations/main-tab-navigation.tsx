@@ -17,10 +17,13 @@ import { BlurView } from "@react-native-community/blur";
 import { NewSettingScreen } from "@src/screens/setting/setting";
 import OWHeaderTitle from "../components/header/ow-header-title";
 import { useGetNewHeaderHeight } from "@src/hooks";
+import { useStore } from "@src/stores";
 
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { colors, dark } = useTheme();
+
+  const { appInitStore } = useStore();
 
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
@@ -31,11 +34,37 @@ export const MainTabNavigation: FC = observer(() => {
         return {
           tabBarIcon: ({ color, focused }) => {
             if (route?.name === SCREENS.TABS.SendNavigation) {
-              return (
-                <View style={styles.paddingIcon}>
-                  <OWIcon type="images" source={imagesGlobal.swap} size={50} />
-                </View>
-              );
+              if (appInitStore.getInitApp.wallet === "osmosis") {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <OWIcon
+                      type="images"
+                      source={imagesGlobal.osmo_swap}
+                      size={50}
+                    />
+                  </View>
+                );
+              } else if (appInitStore.getInitApp.wallet === "injective") {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <OWIcon
+                      type="images"
+                      source={imagesGlobal.inj_swap}
+                      size={50}
+                    />
+                  </View>
+                );
+              } else {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <OWIcon
+                      type="images"
+                      source={imagesGlobal.swap}
+                      size={50}
+                    />
+                  </View>
+                );
+              }
             }
             return (
               <OWIcon

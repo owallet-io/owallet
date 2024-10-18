@@ -23,8 +23,7 @@ import moment from "moment";
 
 const owalletOraichainAddress =
   "oraivaloper1q53ujvvrcd0t543dsh5445lu6ar0qr2zv4yhhp";
-const owalletOsmosisAddress =
-  "osmovaloper1zqevmn000unnjj709akc8p86f9jc4xevf8f8g3";
+// const owalletOsmosisAddress = 'osmovaloper1zqevmn000unnjj709akc8p86f9jc4xevf8f8g3';
 
 const valVotingPower = 1000;
 const daysInYears = 365.2425;
@@ -231,8 +230,8 @@ export const StakeView: FunctionComponent = observer(() => {
             ) : null}
           </Text>
         </div>
-        <div style={{ flex: 1 }} />
         <Button
+          containerStyle={{ height: 32 }}
           size="small"
           className={styleStake.button}
           disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
@@ -374,7 +373,7 @@ export const LinkStakeView: FunctionComponent = observer(() => {
       }
     } catch (error) {
       console.error(
-        "Error fgetOWalletOsmosisAPR:",
+        "Error getOWalletOsmosisAPR:",
         `https://www.datalenses.zone/numia/osmosis/lenses/apr?start_date=${pastDate.format(
           "YYYY-MM-DD"
         )}&end_date=${moment().format("YYYY-MM-DD")}`,

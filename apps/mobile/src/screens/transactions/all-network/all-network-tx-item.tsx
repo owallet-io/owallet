@@ -16,7 +16,8 @@ import { AllNetworkItemTx } from "@owallet/types";
 
 const getCurrencyImage = (currency) => {
   return currency?.coinImageUrl?.includes("missing.png") ||
-    !currency?.coinImageUrl
+    !currency?.coinImageUrl ||
+    currency?.coinImageUrl?.includes("missing.svg")
     ? unknownToken.coinImageUrl
     : currency?.coinImageUrl;
 };

@@ -145,18 +145,20 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     const estimatePrice = priceStore.calculatePrice(amount)?.toString();
 
     return (
-      <Card
-        containerStyle={{
-          backgroundColor: colors["neutral-surface-card"],
-          padding: 16,
-          borderRadius: 24,
-          marginTop: 1,
-          marginBottom: 1,
+      <div
+        style={{
+          paddingBottom: 8,
         }}
       >
         <div className={className}>
           {!disableAllBalance ? (
-            <div className={styleCoinInput.row}>
+            <div
+              className={styleCoinInput.row}
+              style={{
+                paddingLeft: 8,
+                paddingRight: 8,
+              }}
+            >
               <div>
                 <Text>{`Balance: ${
                   reduceStringAssets(
@@ -178,89 +180,117 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                   size={"small"}
                   containerStyle={{
                     marginRight: 4,
+                    backgroundColor: colors["neutral-surface-card"],
                   }}
                 >
-                  50%
+                  <Text
+                    color={colors["neutral-text-action-on-light-bg"]}
+                    size={13}
+                  >
+                    50%
+                  </Text>
                 </Button>
                 <Button
+                  containerStyle={{
+                    backgroundColor: colors["neutral-surface-card"],
+                  }}
                   onClick={(e) => {
                     e.preventDefault();
                     amountConfig.toggleIsMax();
                   }}
                   size={"small"}
                 >
-                  100%
+                  <Text
+                    color={colors["neutral-text-action-on-light-bg"]}
+                    size={13}
+                  >
+                    100%
+                  </Text>
                 </Button>
               </div>
             </div>
           ) : null}
-          <div className={styleCoinInput.row}>
-            <div
-              onClick={openSelectToken}
-              style={{
-                backgroundColor: colors["neutral-surface-action3"],
-                borderRadius: 999,
-                padding: "16px 12px",
-                display: "flex",
-                flexDirection: "row",
-                cursor: "pointer",
-                alignItems: "center",
-              }}
-            >
-              {amountConfig.sendCurrency.coinImageUrl ? (
+          <Card
+            containerStyle={{
+              backgroundColor: colors["neutral-surface-card"],
+              borderRadius: 12,
+              paddingLeft: 16,
+              paddingRight: 16,
+              paddingTop: 8,
+              paddingBottom: 8,
+            }}
+          >
+            <div className={styleCoinInput.row}>
+              <div
+                onClick={openSelectToken}
+                style={{
+                  backgroundColor: colors["neutral-surface-action3"],
+                  borderRadius: 999,
+                  padding: "12px 16px",
+                  display: "flex",
+                  flexDirection: "row",
+                  cursor: "pointer",
+                  alignItems: "center",
+                }}
+              >
+                {amountConfig.sendCurrency.coinImageUrl ? (
+                  <img
+                    style={{ width: 20, height: 20, borderRadius: 20 }}
+                    src={amountConfig.sendCurrency.coinImageUrl}
+                    alt="logo"
+                  />
+                ) : null}
+
+                <Text
+                  containerStyle={{ marginRight: 4, marginLeft: 4 }}
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  size={16}
+                  weight="600"
+                >
+                  {getName(amountConfig?.sendCurrency?.coinDenom)}
+                </Text>
                 <img
-                  style={{ width: 20, height: 20, borderRadius: 20 }}
-                  src={amountConfig.sendCurrency.coinImageUrl}
+                  src={require("assets/icon/tdesign_chevron-down.svg")}
                   alt="logo"
                 />
-              ) : null}
+              </div>
 
-              <Text
-                containerStyle={{ marginRight: 4, marginLeft: 4 }}
-                color={colors["neutral-text-action-on-light-bg"]}
-                size={16}
-                weight="600"
-              >
-                {getName(amountConfig?.sendCurrency?.coinDenom)}
-              </Text>
-              <img
-                src={require("assets/icon/tdesign_chevron-down.svg")}
-                alt="logo"
+              <Input
+                border={"none"}
+                styleTextInput={{
+                  textAlign: "right",
+                  fontSize: 28,
+                  fontWeight: "500",
+                }}
+                className={styleCoinInput.input}
+                id={`input-${randomId}`}
+                type="number"
+                value={amountConfig.amount}
+                onChange={(e) => {
+                  e.preventDefault();
+                  amountConfig.setAmount(e.target.value);
+                }}
+                step={new Dec(1)
+                  .quo(
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      amountConfig.sendCurrency?.coinDecimals ?? 0
+                    )
+                  )
+                  .toString(amountConfig.sendCurrency?.coinDecimals ?? 0)}
+                min={0}
+                // disabled={amountConfig.isMax}
+                autoComplete="off"
+                placeHolder="0"
               />
             </div>
-            <Input
-              border={"none"}
-              styleTextInput={{
-                textAlign: "right",
-                fontSize: 28,
-                fontWeight: "500",
-              }}
-              className={styleCoinInput.input}
-              id={`input-${randomId}`}
-              type="number"
-              value={amountConfig.amount}
-              onChange={(e) => {
-                e.preventDefault();
-                amountConfig.setAmount(e.target.value);
-              }}
-              step={new Dec(1)
-                .quo(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    amountConfig.sendCurrency?.coinDecimals ?? 0
-                  )
-                )
-                .toString(amountConfig.sendCurrency?.coinDecimals ?? 0)}
-              min={0}
-              // disabled={amountConfig.isMax}
-              autoComplete="off"
-              placeHolder="0"
-            />
-          </div>
+          </Card>
           <div
             style={{
               alignItems: "center",
               justifyContent: "flex-end",
               display: "flex",
+              marginTop: 8,
+              marginBottom: 8,
             }}
           >
             <img src={require("assets/icon/tdesign_swap.svg")} alt="logo" />
@@ -277,7 +307,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             </FormFeedback>
           ) : null}
         </div>
-      </Card>
+      </div>
     );
   }
 );

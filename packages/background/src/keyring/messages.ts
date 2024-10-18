@@ -1,5 +1,5 @@
 import { EthermintChainIdHelper } from "@owallet/cosmos";
-import { Message, OWalletError } from "@owallet/router";
+import { Env, Message, MessageSender, OWalletError } from "@owallet/router";
 import { ROUTE } from "./constants";
 import {
   KeyRing,
@@ -7,7 +7,6 @@ import {
   MultiKeyStoreInfoWithSelected,
 } from "./keyring";
 import { ExportKeyRingData, SignEthereumTypedDataObject } from "./types";
-
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
@@ -19,16 +18,39 @@ import {
   BIP44HDPath,
   SettledResponses,
 } from "@owallet/types";
-import Joi from "joi";
 import { AminoSignResponse, StdSignature } from "@cosmjs/launchpad";
 import { StdSignDoc } from "@owallet/types";
 import Long from "long";
 import { Int } from "@owallet/unit";
 import bigInteger from "big-integer";
-
-const bip39 = require("bip39");
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { schemaRequestSignBitcoin } from "./validates";
+const bip39 = require("bip39");
+export class GetIsLockedMsg extends Message<boolean> {
+  public static type() {
+    return "GetIsLockedMsg";
+  }
+
+  constructor() {
+    super();
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return GetIsLockedMsg.type();
+  }
+}
 
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
@@ -870,6 +892,10 @@ export class GetDefaultAddressTronMsg extends Message<{
     super();
   }
 
+  override approveExternal(): boolean {
+    return true;
+  }
+
   validateBasic(): void {
     if (!this.chainId) {
       throw new OWalletError("keyring", 270, "chain id not set");
@@ -911,6 +937,10 @@ export class TriggerSmartContractMsg extends Message<{}> {
     if (!this.data) {
       throw new OWalletError("keyring", 231, "data not set");
     }
+  }
+
+  approveExternal(): boolean {
+    return true;
   }
 
   route(): string {

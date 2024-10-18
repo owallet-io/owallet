@@ -18,6 +18,7 @@ import {
 import { initEvents } from "./events";
 
 import manifest from "../manifest.json";
+(window as any).__keplr_content_script = true;
 
 InjectedOWallet.startProxy(
   new OWallet(manifest.version, "core", new InExtensionMessageRequester())

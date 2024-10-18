@@ -225,6 +225,7 @@ export class CosmosAccount {
           amount: fee.amount.map((amount) => {
             return { amount: amount.amount, denom: amount.denom };
           }),
+          //@ts-ignore
           gasLimit: Long.fromString("500000"),
         }),
       }).finish(),
@@ -1162,9 +1163,11 @@ export class CosmosAccount {
             sender: msg.value.sender,
             receiver: msg.value.receiver,
             timeoutHeight: {
+              //@ts-ignore
               revisionNumber: msg.value.timeout_height.revision_number
                 ? Long.fromString(msg.value.timeout_height.revision_number)
                 : null,
+              //@ts-ignore
               revisionHeight: Long.fromString(
                 msg.value.timeout_height.revision_height
               ),
@@ -1229,9 +1232,11 @@ export class CosmosAccount {
                 sender: msg.value.sender,
                 receiver: msg.value.receiver,
                 timeoutHeight: {
+                  //@ts-ignore
                   revisionNumber: msg.value.timeout_height.revision_number
                     ? Long.fromString(msg.value.timeout_height.revision_number)
                     : null,
+                  //@ts-ignore
                   revisionHeight: Long.fromString(
                     msg.value.timeout_height.revision_height
                   ),

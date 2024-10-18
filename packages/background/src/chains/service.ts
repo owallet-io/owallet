@@ -104,6 +104,15 @@ export class ChainsService {
     this.cachedChainInfos = chainInfos;
   }
 
+  getChainInfoOrThrow(chainId: string): ChainInfo {
+    const chainInfo = this.getChainInfo(chainId);
+    if (!chainInfo) {
+      throw new Error(`There is no chain info for ${chainId}`);
+    }
+    //@ts-ignore
+    return chainInfo;
+  }
+
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     return (await this.getChainInfos()).map<ChainInfoWithoutEndpoints>(
       (chainInfo) => {

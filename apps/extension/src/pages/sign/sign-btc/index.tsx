@@ -33,6 +33,8 @@ import cn from "classnames/bind";
 import { WalletStatus } from "@owallet/stores";
 import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
 
 const cx = cn.bind(style);
 
@@ -63,6 +65,22 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   const [dataSetting, setDataSetting] = useState(false);
   const settingRef = useRef();
   const dataRef = useRef();
+
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
 
   useOnClickOutside(dataRef, () => {
     handleCloseDataModal();
@@ -200,14 +218,11 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100%",
-        width: "100vw",
+        height: "100vh",
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
-      {/* <div className={cx("setting", openSetting ? "activeSetting" : "", "modal")} ref={settingRef}>
-        <FeeModal onClose={() => setOpenSetting(false)} feeConfig={feeConfig} gasConfig={gasConfig} />
-      </div> */}
       <div
         className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
         ref={dataRef}
@@ -228,7 +243,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
           <div className={style.container}>
             <div
               style={{
-                height: "75%",
+                // height: '75%',
                 overflowY: "scroll",
                 overflowX: "hidden",
                 padding: 16,
@@ -284,7 +299,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                 position: "absolute",
                 bottom: 0,
                 width: "100%",
-                height: "25%",
+                height: 160,
                 backgroundColor: colors["neutral-surface-card"],
                 borderTop: "1px solid" + colors["neutral-border-default"],
               }}
@@ -342,7 +357,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
                   </div>
                   <div
                     style={{
@@ -360,8 +374,27 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
+                        history.goBack();
+                        await signInteractionStore.reject(
+                          signInteractionStore.waitingBitcoinData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
 
-                        await signInteractionStore.reject();
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
                         if (
                           interactionInfo.interaction &&
                           !interactionInfo.interactionInternal
@@ -383,11 +416,30 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       onClick={async (e) => {
                         e.preventDefault();
 
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
-                        await signInteractionStore.approveBitcoinAndWaitEnd({
-                          ...lastestData.data.data,
-                        });
+                        await signInteractionStore.approveBitcoinAndWaitEnd(
+                          {
+                            ...lastestData.data.data,
+                          },
+                          signInteractionStore.waitingBitcoinData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
 
                         if (
                           interactionInfo.interaction &&
