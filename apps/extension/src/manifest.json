@@ -17,8 +17,6 @@
   "permissions": [
     "storage",
     "alarms",
-    "identity",
-    "idle",
     "notifications",
     "https://tx-history-backend.oraidex.io/*",
     "unlimitedStorage",
