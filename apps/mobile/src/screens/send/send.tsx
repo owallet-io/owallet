@@ -35,7 +35,7 @@ import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
 
 export const SendCosmosScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, appInitStore } = useStore();
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -59,18 +59,25 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
   const initialChainId = route.params["chainId"];
   const initialCoinMinimalDenom = route.params["coinMinimalDenom"];
   const initialRecipientAddress = route.params["recipientAddress"];
-  const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
+  const chainIdInit = initialChainId || chainStore.chainInfosInUI[0].chainId;
+  const [chainId, setChainId] = useState(chainIdInit);
+  console.log(chainId, "chainId");
   const chainInfo = chainStore.getChain(chainId);
-  const navigation = useNavigation();
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName} />
-      ),
-    });
-  }, [chainId]);
-  const coinMinimalDenom =
+  const coinMinimalDenomInit =
     initialCoinMinimalDenom || chainInfo.currencies[0].coinMinimalDenom;
+  const [coinMinimalDenom, setCoinMinimalDenom] =
+    useState(coinMinimalDenomInit);
+  console.log(coinMinimalDenom, "coinMinimalDenom");
+  const navigation = useNavigation();
+  // useEffect(() => {
+  //     if (appInitStore.getInitApp.isAllNetworks) return;
+  //     navigation.setOptions({
+  //         headerTitle: () => (
+  //             <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName}/>
+  //         ),
+  //     });
+  // }, [chainId]);
+
   const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
   useEffect(() => {
     if (!initialChainId || !initialCoinMinimalDenom) {
@@ -100,8 +107,8 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
       computeTerraClassicTax: true,
     }
   );
-  sendConfigs.amountConfig.setCurrency(currency);
 
+  sendConfigs.amountConfig.setCurrency(currency);
   useEffect(() => {
     sendConfigs.recipientConfig.setValue(initialRecipientAddress || "");
   }, [initialRecipientAddress, sendConfigs.recipientConfig]);
@@ -376,6 +383,17 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
                 <CurrencySelector
                   chainId={chainId}
                   // type="new"
+                  selectedKey={coinMinimalDenom}
+                  setSelectedKey={(key) => {
+                    if (!key) return;
+
+                    const [chainId, coinMinimalDenom] = key.split("|");
+                    if (!chainId || !coinMinimalDenom) return;
+                    // sendConfigs.feeConfig.setChain(chainId);
+                    // sendConfigs.feeConfig.setFee(chainId);
+                    setChainId(chainId);
+                    setCoinMinimalDenom(coinMinimalDenom);
+                  }}
                   label="Select a token"
                   placeHolder="Select Token"
                   amountConfig={sendConfigs.amountConfig}

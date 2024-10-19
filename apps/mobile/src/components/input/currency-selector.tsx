@@ -15,7 +15,8 @@ export const CurrencySelector: FunctionComponent<{
   label: string;
   chainId: string;
   placeHolder?: string;
-
+  setSelectedKey: (key: string | undefined) => void;
+  selectedKey: string;
   amountConfig: IAmountConfig;
 }> = observer(
   ({
@@ -27,96 +28,10 @@ export const CurrencySelector: FunctionComponent<{
     placeHolder,
     chainId,
     amountConfig,
+    setSelectedKey,
+    selectedKey,
   }) => {
-    const {
-      queriesStore,
-      accountStore,
-      keyRingStore,
-      hugeQueriesStore,
-      appInitStore,
-    } = useStore();
-    // const [displayTokens, setDisplayTokens] = useState<
-    //   ObservableQueryBalanceInner[]
-    // >([]);
-    // const accountInfo = accountStore.getAccount(chainId);
-    // const addressToFetch = accountInfo.getAddressDisplay(
-    //   keyRingStore.keyRingLedgerAddresses,
-    //   false
-    // );
-    //
-    // const items = amountConfig.sendableCurrencies.map((currency) => {
-    //   let label = currency.coinDenom;
-    //
-    //   // if is cw20 contract
-    //   if ("originCurrency" in currency === false) {
-    //     // show address if needed, maybe erc20 address so need check networkType later
-    //     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-    //     if (denomHelper.contractAddress) {
-    //       label += ` (${Bech32Address.shortenAddress(
-    //         denomHelper.contractAddress,
-    //         24
-    //       )})`;
-    //     }
-    //   }
-    //
-    //   return {
-    //     key: currency.coinMinimalDenom,
-    //     label,
-    //   };
-    // });
-    //
-    // function filterTokens(tokens) {
-    //   return tokens.filter(isUniqueToken);
-    // }
-    //
-    // function isUniqueToken(token, index, tokens) {
-    //   return (
-    //     token?.balance && tokens.findIndex(hasMatchingDenom(token)) === index
-    //   );
-    // }
-    //
-    // function hasMatchingDenom(token) {
-    //   return (token2) =>
-    //     token2.balance.currency?.coinDenom ===
-    //     token.balance.currency?.coinDenom;
-    // }
-    //
-    // function sortTokens(tokens) {
-    //   return tokens.sort(compareTokens);
-    // }
-    //
-    // function compareTokens(a, b) {
-    //   const aDecIsZero = isDecZero(a.balance);
-    //   const bDecIsZero = isDecZero(b.balance);
-    //
-    //   if (aDecIsZero && !bDecIsZero) {
-    //     return 1;
-    //   }
-    //   if (!aDecIsZero && bDecIsZero) {
-    //     return -1;
-    //   }
-    //
-    //   return compareByDenom(a, b);
-    // }
-    //
-    // function isDecZero(balance) {
-    //   return balance?.toDec()?.isZero();
-    // }
-    //
-    // function compareByDenom(a, b) {
-    //   return a.currency.coinDenom < b.currency.coinDenom ? -1 : 1;
-    // }
-    //
-    // useEffect(() => {
-    //   const queryBalances = queriesStore
-    //     .get(chainId)
-    //     .queryBalances.getQueryBech32Address(addressToFetch);
-    //   const tokens = queryBalances.balances;
-    //   const displayTokens = sortTokens(filterTokens(tokens));
-    //
-    //   setDisplayTokens(displayTokens);
-    // }, [chainId, addressToFetch]);
-    //
+    const { hugeQueriesStore } = useStore();
 
     const tokens = hugeQueriesStore.getAllBalances(true);
 
@@ -127,16 +42,16 @@ export const CurrencySelector: FunctionComponent<{
       });
     }, [tokens]);
 
-    const selectedKey = amountConfig.currency.coinMinimalDenom;
-    console.log(selectedKey, "selectedKey");
-    const setSelectedKey = (key: string | undefined) => {
-      // console.log(key,"key kaka");
-      const token = tokens.find(
-        (cur) => cur.token.currency.coinMinimalDenom === key
-      );
-      // console.log(token.token.currency,"token kaka2")
-      amountConfig.setCurrency(token.token.currency);
-    };
+    // const selectedKey = amountConfig.currency.coinMinimalDenom;
+    // console.log(selectedKey, "selectedKey");
+    // const setSelectedKey = (key: string | undefined) => {
+    //   // console.log(key,"key kaka");
+    //   const token = tokens.find(
+    //     (cur) => cur.token.currency.coinMinimalDenom === key
+    //   );
+    //   console.log(token.token.currency,"token kaka2")
+    //   amountConfig.setCurrency(token.token.currency);
+    // };
     return (
       <TokensSelector
         chainId={chainId}

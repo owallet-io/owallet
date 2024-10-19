@@ -168,12 +168,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     {
       setRecipient: (recipient: string) => {
         if (recipientConfig) {
-          recipientConfig.setRawRecipient(recipient);
+          recipientConfig.setValue(recipient);
         }
       },
       setMemo: (memo: string) => {
         if (memoConfig) {
-          memoConfig.setMemo(memo);
+          memoConfig.setValue(memo);
         }
       },
     }

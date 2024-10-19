@@ -225,7 +225,9 @@ export const TokenSelectorModal: FunctionComponent<{
                   coinMinimalDenom={selectedKey}
                   onClick={() => {
                     if (!token.token.currency?.coinMinimalDenom) return;
-                    setSelectedKey(token.token.currency.coinMinimalDenom);
+                    setSelectedKey(
+                      `${token.chainInfo.chainId}|${token.token.currency.coinMinimalDenom}`
+                    );
                     close();
                   }}
                 />

@@ -96,7 +96,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
       if (
         !skip &&
         feeConfig.type !== "manual" &&
-        feeConfig.selectableFeeCurrencies.length > 1 &&
+        feeConfig.selectableFeeCurrencies.length > 0 &&
         feeConfig.fees.length > 0
       ) {
         const queryBalances = queriesStore
@@ -190,7 +190,10 @@ export const FeeControl: FunctionComponent<{
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const hasError =
       feeConfig.uiProperties.error || feeConfig.uiProperties.warning;
-
+    console.log(
+      feeConfig.selectableFeeCurrencies,
+      "feeConfig.selectableFeeCurrencies"
+    );
     useFeeOptionSelectionOnInit(
       uiConfigStore,
       feeConfig,

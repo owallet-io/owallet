@@ -319,6 +319,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*  />*/}
             {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*!/*/}
             <Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />
+
             {/*  <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
             {/*  <Stack.Screen*/}
