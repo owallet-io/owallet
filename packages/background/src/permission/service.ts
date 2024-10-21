@@ -43,33 +43,40 @@ export class PermissionService {
   }
 
   async init() {
+    const migration = await migrate(this.kvStore);
+
     if (!this.permissionMap) {
       this.permissionMap = new Map();
     }
-    const migration = await migrate(this.kvStore);
+    const isMap = this.permissionMap instanceof Map;
+    if (!isMap) {
+      this.permissionMap = new Map();
+    }
 
-    if (migration) {
-      runInAction(() => {
-        for (const key of Object.keys(migration)) {
-          const granted = migration[key];
-          if (granted && this.permissionMap) {
-            this.permissionMap.set(key, true);
-          }
-        }
-      });
-    } else {
-      const savedPermissionMap = await this.kvStore.get<
-        Record<string, true | undefined>
-      >("permissionMap/v1");
-      if (savedPermissionMap) {
+    if (this.permissionMap instanceof Map) {
+      if (migration) {
         runInAction(() => {
-          for (const key of Object.keys(savedPermissionMap)) {
-            const granted = savedPermissionMap[key];
+          for (const key of Object.keys(migration)) {
+            const granted = migration[key];
             if (granted && this.permissionMap) {
               this.permissionMap.set(key, true);
             }
           }
         });
+      } else {
+        const savedPermissionMap = await this.kvStore.get<
+          Record<string, true | undefined>
+        >("permissionMap/v1");
+        if (savedPermissionMap) {
+          runInAction(() => {
+            for (const key of Object.keys(savedPermissionMap)) {
+              const granted = savedPermissionMap[key];
+              if (granted && this.permissionMap) {
+                this.permissionMap.set(key, true);
+              }
+            }
+          });
+        }
       }
     }
 
