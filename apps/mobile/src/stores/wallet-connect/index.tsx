@@ -144,7 +144,9 @@ export class WalletConnectStore {
         name: "OWallet",
         description: "Your Wallet for the Interchain",
         url: "https://owallet.io",
-        icons: ["https://asset-icons.s3.us-west-2.amazonaws.com/keplr_512.png"],
+        icons: [
+          "https://asset-icons.s3.us-west-2.amazonaws.com/owallet_512.png",
+        ],
       },
     });
 
@@ -420,11 +422,11 @@ export class WalletConnectStore {
             getBasicAccessPermissionType()
           );
 
-        const keplr = this.createOWalletAPI(randomId);
+        const owallet = this.createOWalletAPI(randomId);
 
         for (const chain of permittedChains) {
           if (this.chainStore.hasChain(chain)) {
-            const key = await keplr.getKey(chain);
+            const key = await owallet.getKey(chain);
             const chainInfo = this.chainStore.getChain(chain);
 
             const account = `cosmos:${chainInfo.chainId}:${key.bech32Address}`;
@@ -470,7 +472,7 @@ export class WalletConnectStore {
         signClient.emit({
           topic,
           event: {
-            name: "keplr_accountsChanged",
+            name: "owallet_accountsChanged",
             data: {
               keys: JSON.stringify(
                 keys.map((key) => {
@@ -560,13 +562,13 @@ export class WalletConnectStore {
         (chainId: string) => chainId.replace("cosmos:", "")
       );
 
-      const keplr = this.createOWalletAPI(randomId);
-      await keplr.enable(chainIds);
+      const owallet = this.createOWalletAPI(randomId);
+      await owallet.enable(chainIds);
 
       const accounts: string[] = [];
       const keys = [];
       for (const chainId of chainIds) {
-        const key = await keplr.getKey(chainId);
+        const key = await owallet.getKey(chainId);
         keys.push({ chainId, ...key });
         accounts.push(`cosmos:${chainId}:${key.bech32Address}`);
       }
@@ -673,12 +675,12 @@ export class WalletConnectStore {
           getBasicAccessPermissionType()
         );
 
-      const keplr = this.createOWalletAPI(reqId);
+      const owallet = this.createOWalletAPI(reqId);
 
       const params = event.params.request.params;
       switch (event.params.request.method) {
         case "cosmos_getAccounts": {
-          const key = await keplr.getKey(chainId);
+          const key = await owallet.getKey(chainId);
           await signClient.respond({
             topic,
             response: {
@@ -697,7 +699,7 @@ export class WalletConnectStore {
         }
         case "cosmos_signAmino": {
           interactionNeeded = true;
-          const res = await keplr.signAmino(
+          const res = await owallet.signAmino(
             chainId,
             params.signerAddress,
             params.signDoc,
@@ -718,7 +720,7 @@ export class WalletConnectStore {
         }
         case "cosmos_signDirect": {
           interactionNeeded = true;
-          const res = await keplr.signDirect(chainId, params.signerAddress, {
+          const res = await owallet.signDirect(chainId, params.signerAddress, {
             bodyBytes: Buffer.from(params.signDoc.bodyBytes, "base64"),
             authInfoBytes: Buffer.from(params.signDoc.authInfoBytes, "base64"),
             chainId: params.signDoc.chainId,
@@ -746,8 +748,8 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_getKey": {
-          const res = await keplr.getKey(params.chainId);
+        case "owallet_getKey": {
+          const res = await owallet.getKey(params.chainId);
           await signClient.respond({
             topic,
             response: {
@@ -765,9 +767,9 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_signAmino": {
+        case "owallet_signAmino": {
           interactionNeeded = true;
-          const res = await keplr.signAmino(
+          const res = await owallet.signAmino(
             params.chainId,
             params.signer,
             params.signDoc,
@@ -785,9 +787,9 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_signDirect": {
+        case "owallet_signDirect": {
           interactionNeeded = true;
-          const res = await keplr.signDirect(params.chainId, params.signer, {
+          const res = await owallet.signDirect(params.chainId, params.signer, {
             bodyBytes: Buffer.from(params.signDoc.bodyBytes, "base64"),
             authInfoBytes: Buffer.from(params.signDoc.authInfoBytes, "base64"),
             chainId: params.signDoc.chainId,
@@ -816,9 +818,9 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_signArbitrary": {
+        case "owallet_signArbitrary": {
           interactionNeeded = true;
-          const res = await keplr.signArbitrary(
+          const res = await owallet.signArbitrary(
             params.chainId,
             params.signer,
             params.type === "string"
@@ -838,8 +840,8 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_enable": {
-          await keplr.enable(params.chainId);
+        case "owallet_enable": {
+          await owallet.enable(params.chainId);
           await signClient.respond({
             topic,
             response: {
@@ -850,9 +852,9 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_signEthereum": {
+        case "owallet_signEthereum": {
           interactionNeeded = true;
-          const res = await keplr.signEthereum(
+          const res = await owallet.signEthereum(
             params.chainId,
             params.signer,
             params.data,
@@ -871,10 +873,10 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_experimentalSuggestChain": {
+        case "owallet_experimentalSuggestChain": {
           interactionNeeded = true;
 
-          await keplr.experimentalSuggestChain(params.chainInfo);
+          await owallet.experimentalSuggestChain(params.chainInfo);
           await signClient.respond({
             topic,
             response: {
@@ -885,10 +887,10 @@ export class WalletConnectStore {
           });
           break;
         }
-        case "keplr_suggestToken": {
+        case "owallet_suggestToken": {
           interactionNeeded = true;
 
-          await keplr.suggestToken(params.chainId, params.contractAddress);
+          await owallet.suggestToken(params.chainId, params.contractAddress);
           await signClient.respond({
             topic,
             response: {

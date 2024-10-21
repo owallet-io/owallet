@@ -69,9 +69,7 @@ import { HeaderAddIcon } from "./components/header/icon";
 import { SettingSelectAccountScreen } from "./screens/setting/screens/select-account";
 import { ViewPrivateDataScreen } from "./screens/setting/screens/view-private-data";
 import { OWalletVersionScreen } from "./screens/setting/screens/version";
-import { DetailsBrowserScreen } from "./screens/web/details-browser-screen";
-import { BookmarksScreen } from "./screens/web/bookmarks-screen";
-import { WebScreen } from "./screens/web";
+
 import {
   AddAddressBookScreen,
   AddressBookScreen,
@@ -162,19 +160,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.SettingVersion}
               component={OWalletVersionScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.DetailsBrowser}*/}
-            {/*    component={DetailsBrowserScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.BookMarks}*/}
-            {/*    component={BookmarksScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    options={{ headerShown: false }}*/}
-            {/*    name={SCREENS.WebIntro}*/}
-            {/*    component={WebScreen}*/}
-            {/*  />*/}
+
             <Stack.Screen
               name={SCREENS.AddressBook}
               component={AddressBookScreen}

@@ -44,6 +44,7 @@ export const BrowserScreen = observer(() => {
     // { key: "ai", title: "AI" },
     { key: "explorer", title: "Explorer" },
   ]);
+  console.log(window.owallet, "window.owallet");
   const renderTabBar = (props) => (
     <TabBar
       {...props}

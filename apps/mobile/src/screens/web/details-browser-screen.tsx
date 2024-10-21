@@ -22,13 +22,17 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import { version, name } from "../../../package.json";
 import {
-  RNInjectedBitcoin,
-  RNInjectedEthereum,
+  // RNInjectedBitcoin,
+  // RNInjectedEthereum,
   RNInjectedOWallet,
-  RNInjectedTronWeb,
+  // RNInjectedTronWeb,
 } from "@src/injected/injected-provider";
-import { Bitcoin, Ethereum, OWallet, TronWeb } from "@owallet/provider";
-import { RNMessageRequesterExternal } from "@src/router";
+// import { Bitcoin, Ethereum, OWallet, TronWeb } from "@owallet/provider";
+import { OWallet } from "@owallet/provider";
+import {
+  RNMessageRequesterExternal,
+  RNMessageRequesterInternal,
+} from "@src/router";
 import { URL } from "react-native-url-polyfill";
 import DeviceInfo from "react-native-device-info";
 import { SCREENS } from "@src/common/constants";
@@ -37,6 +41,8 @@ import { LoadingBar } from "@src/screens/web/components/loadingBar";
 import get from "lodash/get";
 import { tracking } from "@src/utils/tracking";
 import { navigate, popTo, popToTop } from "@src/router/root";
+import { BACKGROUND_PORT } from "@owallet/router";
+import { URLTempAllowOnMobileMsg } from "@owallet/background";
 
 export const DetailsBrowserScreen = observer((props) => {
   const { top } = useSafeAreaInsets();
@@ -65,156 +71,239 @@ export const DetailsBrowserScreen = observer((props) => {
   });
   const { inject } = browserStore;
   const sourceCode = inject;
-  const [owallet] = useState(
-    () =>
-      new OWallet(
-        `${name}-${version}`,
-        "core",
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error("Webview not initialized yet");
-          }
+  // const [owallet] = useState(
+  //   () =>
+  //     new OWallet(
+  //       `${name}-${version}`,
+  //       "core",
+  //       new RNMessageRequesterExternal(() => {
+  //         if (!webviewRef.current) {
+  //           throw new Error("Webview not initialized yet");
+  //         }
+  //
+  //         if (!currentURL) {
+  //           throw new Error("Current URL is empty");
+  //         }
+  //
+  //         return {
+  //           url: currentURL,
+  //           origin: new URL(currentURL).origin,
+  //         };
+  //       })
+  //     )
+  // );
+  // const [eventEmitter] = useState(() => new EventEmitter());
+  const onMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      eventEmitter.emit("message", event.nativeEvent);
 
-          if (!currentURL) {
-            throw new Error("Current URL is empty");
-          }
-
-          return {
-            url: currentURL,
-            origin: new URL(currentURL).origin,
-          };
-        })
-      )
-  );
-  const [bitcoin] = useState(
-    () =>
-      new Bitcoin(
-        version,
-        "core",
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error("Webview not initialized yet");
-          }
-
-          if (!currentURL) {
-            throw new Error("Current URL is empty");
-          }
-
-          return {
-            url: currentURL,
-            origin: new URL(currentURL).origin,
-          };
-        })
-      )
-  );
-
-  const [ethereum] = useState(
-    () =>
-      new Ethereum(
-        DeviceInfo.getVersion(),
-        "core",
-        chainStore.current.chainId,
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error("Webview not initialized yet");
-          }
-
-          if (!currentURL) {
-            throw new Error("Current URL is empty");
-          }
-
-          return {
-            url: currentURL,
-            origin: new URL(currentURL).origin,
-          };
-        })
-      )
-  );
-
-  const [tronWeb] = useState(
-    () =>
-      new TronWeb(
-        version,
-        "core",
-        chainStore.current.chainId,
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error("Webview not initialized yet");
-          }
-
-          if (!currentURL) {
-            throw new Error("Current URL is empty");
-          }
-
-          return {
-            url: currentURL,
-            origin: new URL(currentURL).origin,
-          };
-        })
-      )
-  );
-  const eventListener = {
-    addMessageListener: (fn: any) => {
-      eventEmitter.addListener("message", fn);
-    },
-    postMessage: (message: any) => {
-      webviewRef.current?.injectJavaScript(
-        `
-            window.postMessage(${JSON.stringify(
-              message
-            )}, window.location.origin);
-            true; // note: this is required, or you'll sometimes get silent failures
-          `
+      const data: { message: string; origin: string } = JSON.parse(
+        event.nativeEvent.data
       );
+
+      if (data.message === "allow-temp-blocklist-url") {
+        try {
+          new RNMessageRequesterInternal()
+            .sendMessage(
+              BACKGROUND_PORT,
+              new URLTempAllowOnMobileMsg(
+                new URL(currentURL).href,
+                new URL(data.origin).href
+              )
+            )
+            .then(() => {
+              setCurrentURL(data.origin);
+            })
+            .catch((e) => {
+              console.log(e);
+              // ignore error
+            });
+        } catch (e) {
+          // noop
+          console.log(e);
+        }
+      }
+
+      // if (data.message === 'download-image') {
+      //   setImageData(data.origin);
+      //   setIsSaveImageModalOpen(true);
+      // }
     },
-  };
+    [eventEmitter, currentURL]
+  );
+
+  // const [bitcoin] = useState(
+  //   () =>
+  //     new Bitcoin(
+  //       version,
+  //       "core",
+  //       new RNMessageRequesterExternal(() => {
+  //         if (!webviewRef.current) {
+  //           throw new Error("Webview not initialized yet");
+  //         }
+  //
+  //         if (!currentURL) {
+  //           throw new Error("Current URL is empty");
+  //         }
+  //
+  //         return {
+  //           url: currentURL,
+  //           origin: new URL(currentURL).origin,
+  //         };
+  //       })
+  //     )
+  // );
+  //
+  // const [ethereum] = useState(
+  //   () =>
+  //     new Ethereum(
+  //       DeviceInfo.getVersion(),
+  //       "core",
+  //       chainStore.current.chainId,
+  //       new RNMessageRequesterExternal(() => {
+  //         if (!webviewRef.current) {
+  //           throw new Error("Webview not initialized yet");
+  //         }
+  //
+  //         if (!currentURL) {
+  //           throw new Error("Current URL is empty");
+  //         }
+  //
+  //         return {
+  //           url: currentURL,
+  //           origin: new URL(currentURL).origin,
+  //         };
+  //       })
+  //     )
+  // );
+  //
+  // const [tronWeb] = useState(
+  //   () =>
+  //     new TronWeb(
+  //       version,
+  //       "core",
+  //       chainStore.current.chainId,
+  //       new RNMessageRequesterExternal(() => {
+  //         if (!webviewRef.current) {
+  //           throw new Error("Webview not initialized yet");
+  //         }
+  //
+  //         if (!currentURL) {
+  //           throw new Error("Current URL is empty");
+  //         }
+  //
+  //         return {
+  //           url: currentURL,
+  //           origin: new URL(currentURL).origin,
+  //         };
+  //       })
+  //     )
+  // );
+  // const eventListener = {
+  //   addMessageListener: (fn: any) => {
+  //     eventEmitter.addListener("message", fn);
+  //   },
+  //   postMessage: (message: any) => {
+  //     webviewRef.current?.injectJavaScript(
+  //       `
+  //           window.postMessage(${JSON.stringify(
+  //             message
+  //           )}, window.location.origin);
+  //           true; // note: this is required, or you'll sometimes get silent failures
+  //         `
+  //     );
+  //   },
+  // };
   // Start proxy for webview
+  // useEffect(() => {
+  //   RNInjectedOWallet.startProxy(
+  //     owallet,
+  //     eventListener,
+  //     RNInjectedOWallet.parseWebviewMessage
+  //   );
+  // }, [eventEmitter, owallet]);
   useEffect(() => {
-    RNInjectedOWallet.startProxy(
-      owallet,
-      eventListener,
+    const unlisten = RNInjectedOWallet.startProxy(
+      new OWallet(
+        version,
+        "core",
+        new RNMessageRequesterExternal(() => {
+          // const url = (() => {
+          //   return recentUrl.current.startsWith('http://') ||
+          //   recentUrl.current.startsWith('https://')
+          //       ? recentUrl.current
+          //       : uri;
+          // })();
+          return {
+            url: currentURL,
+            origin: new URL(currentURL).origin,
+          };
+        })
+      ),
+      {
+        addMessageListener: (fn) => {
+          eventEmitter.addListener("message", fn);
+        },
+        removeMessageListener: (fn) => {
+          eventEmitter.removeListener("message", fn);
+        },
+        postMessage: (message) => {
+          webviewRef.current?.injectJavaScript(
+            `
+                window.postMessage(${JSON.stringify(
+                  message
+                )}, window.location.origin);
+                true; // note: this is required, or you'll sometimes get silent failures
+              `
+          );
+        },
+      },
       RNInjectedOWallet.parseWebviewMessage
     );
-  }, [eventEmitter, owallet]);
-
-  useEffect(() => {
-    RNInjectedBitcoin.startProxy(
-      bitcoin,
-      eventListener,
-      RNInjectedBitcoin.parseWebviewMessage
-    );
-  }, [eventEmitter, bitcoin]);
-  useEffect(() => {
-    RNInjectedEthereum.startProxy(
-      ethereum,
-      eventListener,
-      RNInjectedEthereum.parseWebviewMessage
-    );
-  }, [eventEmitter, ethereum]);
-
-  useEffect(() => {
-    RNInjectedTronWeb.startProxy(
-      tronWeb,
-      eventListener,
-      RNInjectedTronWeb.parseWebviewMessage
-    );
-  }, [eventEmitter, tronWeb]);
-  useEffect(() => {
-    const keyStoreChangedListener = () => {
-      webviewRef.current?.injectJavaScript(
-        `
-            window.dispatchEvent(new Event("keplr_keystorechange"));
-            true; // note: this is required, or you'll sometimes get silent failures
-          `
-      );
-    };
-
-    keyRingStore.addKeyStoreChangedListener(keyStoreChangedListener);
 
     return () => {
-      keyRingStore.removeKeyStoreChangedListener(keyStoreChangedListener);
+      unlisten();
     };
-  }, [keyRingStore]);
+  }, [chainStore, currentURL, eventEmitter]);
+
+  // useEffect(() => {
+  //   RNInjectedBitcoin.startProxy(
+  //     bitcoin,
+  //     eventListener,
+  //     RNInjectedBitcoin.parseWebviewMessage
+  //   );
+  // }, [eventEmitter, bitcoin]);
+  // useEffect(() => {
+  //   RNInjectedEthereum.startProxy(
+  //     ethereum,
+  //     eventListener,
+  //     RNInjectedEthereum.parseWebviewMessage
+  //   );
+  // }, [eventEmitter, ethereum]);
+  //
+  // useEffect(() => {
+  //   RNInjectedTronWeb.startProxy(
+  //     tronWeb,
+  //     eventListener,
+  //     RNInjectedTronWeb.parseWebviewMessage
+  //   );
+  // }, [eventEmitter, tronWeb]);
+  // useEffect(() => {
+  //   const keyStoreChangedListener = () => {
+  //     webviewRef.current?.injectJavaScript(
+  //       `
+  //           window.dispatchEvent(new Event("keplr_keystorechange"));
+  //           true; // note: this is required, or you'll sometimes get silent failures
+  //         `
+  //     );
+  //   };
+  //
+  //   keyRingStore.addKeyStoreChangedListener(keyStoreChangedListener);
+  //
+  //   return () => {
+  //     keyRingStore.removeKeyStoreChangedListener(keyStoreChangedListener);
+  //   };
+  // }, [keyRingStore]);
   useEffect(() => {
     // Handle the hardware back button on the android.
     const backHandler = () => {
@@ -238,12 +327,12 @@ export const DetailsBrowserScreen = observer((props) => {
       BackHandler.removeEventListener("hardwareBackPress", backHandler);
     };
   }, [canGoBack, isFocused]);
-  const onMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      eventEmitter.emit("message", event.nativeEvent);
-    },
-    [eventEmitter]
-  );
+  // const onMessage = useCallback(
+  //   (event: WebViewMessageEvent) => {
+  //     eventEmitter.emit("message", event.nativeEvent);
+  //   },
+  //   [eventEmitter]
+  // );
 
   useEffect(() => {
     // Android disables the gesture by default.

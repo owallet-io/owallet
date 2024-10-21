@@ -18,7 +18,7 @@ import {
 } from "@src/utils/helper";
 import moment from "moment";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
+// import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { Text } from "@src/components/text";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
@@ -135,48 +135,48 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
           }
           showsVerticalScrollIndicator={false}
         >
-          <HeaderTx
-            type={!isSent ? "Received" : "Sent"}
-            colorAmount={
-              new Dec(amountRaw).gt(new Dec(0))
-                ? colors["success-text-body"]
-                : colors["error-text-body"]
-            }
-            imageType={
-              <View
-                style={[
-                  styles.containerSuccess,
-                  {
-                    backgroundColor: detail.status
-                      ? colors["highlight-surface-subtle"]
-                      : colors["error-surface-subtle"],
-                  },
-                ]}
-              >
-                <OWText
-                  weight={"500"}
-                  size={14}
-                  color={
-                    detail.status
-                      ? colors["highlight-text-title"]
-                      : colors["error-text-body"]
-                  }
-                >
-                  {detail.status ? "Success" : "Failed"}
-                </OWText>
-              </View>
-            }
-            amount={`${
-              new Dec(amountRaw).gt(new Dec(0)) ? "+" : ""
-            }${maskedNumber(amount.hideDenom(true)?.toString())} ${
-              currency.coinDenom
-            }`}
-            toAmount={null}
-            price={priceStore
-              .calculatePrice(amount)
-              ?.toString()
-              ?.replace("-", "")}
-          />
+          {/*<HeaderTx*/}
+          {/*  type={!isSent ? "Received" : "Sent"}*/}
+          {/*  colorAmount={*/}
+          {/*    new Dec(amountRaw).gt(new Dec(0))*/}
+          {/*      ? colors["success-text-body"]*/}
+          {/*      : colors["error-text-body"]*/}
+          {/*  }*/}
+          {/*  imageType={*/}
+          {/*    <View*/}
+          {/*      style={[*/}
+          {/*        styles.containerSuccess,*/}
+          {/*        {*/}
+          {/*          backgroundColor: detail.status*/}
+          {/*            ? colors["highlight-surface-subtle"]*/}
+          {/*            : colors["error-surface-subtle"],*/}
+          {/*        },*/}
+          {/*      ]}*/}
+          {/*    >*/}
+          {/*      <OWText*/}
+          {/*        weight={"500"}*/}
+          {/*        size={14}*/}
+          {/*        color={*/}
+          {/*          detail.status*/}
+          {/*            ? colors["highlight-text-title"]*/}
+          {/*            : colors["error-text-body"]*/}
+          {/*        }*/}
+          {/*      >*/}
+          {/*        {detail.status ? "Success" : "Failed"}*/}
+          {/*      </OWText>*/}
+          {/*    </View>*/}
+          {/*  }*/}
+          {/*  amount={`${*/}
+          {/*    new Dec(amountRaw).gt(new Dec(0)) ? "+" : ""*/}
+          {/*  }${maskedNumber(amount.hideDenom(true)?.toString())} ${*/}
+          {/*    currency.coinDenom*/}
+          {/*  }`}*/}
+          {/*  toAmount={null}*/}
+          {/*  price={priceStore*/}
+          {/*    .calculatePrice(amount)*/}
+          {/*    ?.toString()*/}
+          {/*    ?.replace("-", "")}*/}
+          {/*/>*/}
           <View style={styles.cardBody}>
             <ItemReceivedToken
               label={capitalizedText("From")}

@@ -77,6 +77,7 @@ import { AppInit, appInit } from "@stores/app_init";
 import { ModalStore } from "@stores/modal";
 import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 import { UIConfigStore } from "@stores/ui-config";
+import { BrowserStore } from "@stores/browser";
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -135,7 +136,7 @@ export class RootStore {
   public readonly walletConnectStore: WalletConnectStore;
   public readonly deepLinkStore: DeepLinkStore;
   public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
-
+  public readonly browserStore: BrowserStore;
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -216,7 +217,7 @@ export class RootStore {
         coingeckoAPIURI: "",
       })
     );
-
+    this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
     //     this.queriesStore.sharedContext,
     //     process.env['KEPLR_EXT_TX_HISTORY_BASE_URL'] || '',
