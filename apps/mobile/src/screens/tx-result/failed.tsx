@@ -1,204 +1,203 @@
-import React, { FunctionComponent, useEffect } from "react";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import _ from "lodash";
-import { View, Image, ScrollView, StyleSheet } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
+import { Button } from "../../components/button";
+import { useStyle } from "../../styles";
+import LottieView from "lottie-react-native";
+// import * as WebBrowser from 'expo-web-browser';
+// import {SimpleGradient} from '../../components/svg';
+import { Box } from "../../components/box";
+// import {ChainIdentifierToTxExplorerMap} from '../../config';
+// import {ArrowRightIcon} from '../../components/icon/arrow-right';
+// import {StackNavProp} from '../../navigation';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+// import {TextButton} from '../../components/text-button';
+// import {useNotification} from '../../hooks/notification';
+import { FormattedMessage, useIntl } from "react-intl";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { SCREENS } from "@common/constants";
+import { navigate, resetTo } from "@src/router/root";
+import { ChainIdentifierToTxExplorerMap } from "@owallet/common";
 
-import { useTheme } from "@src/themes/theme-provider";
-import { capitalizedText, formatContractAddress } from "@src/utils/helper";
-
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import OWText from "@src/components/text/ow-text";
-import OWButtonGroup from "@src/components/button/OWButtonGroup";
-
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { AppCurrency, StdFee } from "@owallet/types";
-import { CoinPrimitive } from "@owallet/stores";
-import { CoinPretty, Dec } from "@owallet/unit";
-import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
-import { goBack, resetTo } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { OWButton } from "@components/button";
+const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
-  const { chainStore, priceStore } = useStore();
+  const animationRef = useRef<LottieView>(null);
+  const failedAnimProgress = useSharedValue(0);
+  // const notification = useNotification();
+  const intl = useIntl();
 
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      progress: failedAnimProgress.value,
+    };
+  });
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          chainId?: string;
-          // Hex encoded bytes.
+          chainId: string;
           txHash: string;
-          data?: {
-            memo: string;
-            fee: StdFee;
-            fromAddress: string;
-            toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
-          };
+          isEvmTx?: boolean;
         }
       >,
       string
     >
   >();
 
-  const { current } = chainStore;
-  const chainId = current.chainId;
-  const { params } = route;
+  const chainId = route.params.chainId;
+  const txExplorer = useMemo(() => {
+    return ChainIdentifierToTxExplorerMap[
+      ChainIdHelper.parse(chainId).identifier
+    ];
+  }, [chainId]);
+  const txHash = route.params.txHash;
+  const isEvmTx = route.params.isEvmTx;
 
-  const { colors, images } = useTheme();
+  const style = useStyle();
+  const navigation = useNavigation();
 
-  const chainInfo = chainStore.getChain(chainId);
+  // useEffect(() => {
+  //   notification.disable(true);
+  //   return () => {
+  //     //NOTE setTimeout을 건이유는 해당 페이지가 보이자 말자 바로 main으로 이동하면 토스트가 보임해서
+  //     //해당 토스트가 사라지는 시간을 대강 계산해서 800밀리초 후 disable을 false로 설정
+  //     setTimeout(() => notification.disable(false), 800);
+  //   };
+  // }, [notification]);
 
-  const onRetry = () => {
-    resetTo(SCREENS.STACK.MainTab);
-    return;
-  };
+  useEffect(() => {
+    const animateLottie = () => {
+      animationRef.current?.play();
+      failedAnimProgress.value = withTiming(1, { duration: 500 });
+    };
 
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-  const fee = params?.data?.fee?.amount?.[0]?.amount
-    ? new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee?.amount?.[0]?.amount)
-      )
-    : new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
-  const dataItem =
-    params?.data &&
-    _.pickBy(params?.data, function (value, key) {
-      return (
-        key !== "memo" &&
-        key !== "fee" &&
-        key !== "amount" &&
-        key !== "currency" &&
-        key !== "type"
-      );
-    });
-  const styles = styling(colors);
+    const timeoutId = setTimeout(animateLottie, 500);
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <PageWithBottom
-      bottomGroup={
-        <View style={styles.containerBottomButton}>
-          <OWButton
-            label={"Retry"}
-            style={{
-              borderRadius: 99,
-              backgroundColor: colors["primary-surface-default"],
+    <Box style={style.flatten(["flex-grow-1", "items-center"])}>
+      <View style={style.flatten(["absolute-fill"])}>
+        {/*<SimpleGradient*/}
+        {/*  degree={*/}
+        {/*    style.get('tx-result-screen-failed-gradient-background').degree*/}
+        {/*  }*/}
+        {/*  stops={style.get('tx-result-screen-failed-gradient-background').stops}*/}
+        {/*  fallbackAndroidImage={*/}
+        {/*    style.get('tx-result-screen-failed-gradient-background')*/}
+        {/*      .fallbackAndroidImage*/}
+        {/*  }*/}
+        {/*/>*/}
+      </View>
+      <View style={style.flatten(["flex-2"])} />
+      <View style={style.flatten(["width-122", "height-122"])}>
+        <View
+          style={{
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            ...style.flatten(["absolute", "justify-center", "items-center"]),
+          }}
+        >
+          {/*<AnimatedLottieView*/}
+          {/*  source={require('../../public/assets/lottie/tx/failed.json')}*/}
+          {/*  colorFilters={[*/}
+          {/*    {*/}
+          {/*      keypath: 'Error Icon',*/}
+          {/*      color: style.flatten(['color-red-400']).color,*/}
+          {/*    },*/}
+          {/*  ]}*/}
+          {/*  animatedProps={animatedProps}*/}
+          {/*  loop={false}*/}
+          {/*  //NOTE 정상작동 되는 타입인데 타입에러가 떠서 일단은 any로 처리후 나중애 한번더 봐야함*/}
+          {/*  ref={animationRef as any}*/}
+          {/*  style={{width: 150, height: 150}}*/}
+          {/*/>*/}
+        </View>
+      </View>
+
+      <Text
+        style={style.flatten([
+          "mobile-h3",
+          "color-text-high",
+          "margin-top-82",
+          "margin-bottom-32",
+        ])}
+      >
+        <FormattedMessage id="page.tx-result-fail.title" />
+      </Text>
+
+      {/* To match the height of text with other tx result screens,
+         set the explicit height to upper view*/}
+      <View
+        style={StyleSheet.flatten([
+          style.flatten(["padding-x-36"]),
+          {
+            overflow: "visible",
+          },
+        ])}
+      >
+        <Text
+          style={style.flatten([
+            "subtitle2",
+            "text-center",
+            "color-text-middle",
+          ])}
+        >
+          <FormattedMessage id="page.tx-result-fail.paragraph" />
+        </Text>
+      </View>
+      <Box paddingX={48} height={116} marginTop={78} alignX="center">
+        <View style={style.flatten(["flex-row", "width-full"])}>
+          <Button
+            containerStyle={style.flatten(["flex-1"])}
+            size="large"
+            text={intl.formatMessage({ id: "button.done" })}
+            onPress={() => {
+              // navigate(SCREENS.Home);
+              resetTo(SCREENS.STACK.MainTab);
             }}
-            onPress={onRetry}
           />
         </View>
-      }
-    >
-      <View style={styles.containerBox}>
-        {/*<PageHeader title={"Transaction details"} />*/}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <HeaderTx
-            type={capitalizedText(params?.data?.type) || "Send"}
-            imageType={
-              <View style={styles.containerFailed}>
-                <OWText
-                  weight={"500"}
-                  size={14}
-                  color={colors["error-text-body"]}
-                >
-                  Failed
-                </OWText>
-              </View>
-            }
-            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
-              ?.shrink(true)
-              ?.trim(true)
-              ?.toString()}`}
-            price={priceStore.calculatePrice(amount)?.toString()}
-          />
-          <View style={styles.cardBody}>
-            {dataItem &&
-              Object.keys(dataItem).map(function (key) {
-                return (
-                  <ItemReceivedToken
-                    label={capitalizedText(key)}
-                    valueDisplay={
-                      dataItem?.[key] &&
-                      formatContractAddress(dataItem?.[key], 20)
-                    }
-                    value={dataItem?.[key]}
-                  />
-                );
-              })}
-            <ItemReceivedToken
-              label={"Fee"}
-              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
-                priceStore.calculatePrice(fee) || "$0"
-              })`}
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Memo"}
-              valueDisplay={params?.data?.memo || "-"}
-              btnCopy={false}
-            />
-          </View>
-        </ScrollView>
-      </View>
-    </PageWithBottom>
+        {/*{!!txExplorer && !isEvmTx ? (*/}
+        {/*  <TextButton*/}
+        {/*    containerStyle={style.flatten(['margin-top-16'])}*/}
+        {/*    size="large"*/}
+        {/*    text={intl.formatMessage(*/}
+        {/*      {*/}
+        {/*        id: 'page.tx-result.components.go-to-explorer',*/}
+        {/*      },*/}
+        {/*      {*/}
+        {/*        name: txExplorer.name,*/}
+        {/*      },*/}
+        {/*    )}*/}
+        {/*    rightIcon={color => (*/}
+        {/*      <View style={style.flatten(['margin-left-8'])}>*/}
+        {/*        <ArrowRightIcon color={color} size={18} />*/}
+        {/*      </View>*/}
+        {/*    )}*/}
+        {/*    onPress={() => {*/}
+        {/*      if (txExplorer) {*/}
+        {/*        WebBrowser.openBrowserAsync(*/}
+        {/*          txExplorer.txUrl.replace('{txHash}', txHash.toUpperCase()),*/}
+        {/*        );*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*) : null}*/}
+      </Box>
+
+      <View style={style.flatten(["flex-2"])} />
+    </Box>
   );
 });
-const styling = (colors) => {
-  return StyleSheet.create({
-    containerFailed: {
-      backgroundColor: colors["error-surface-subtle"],
-      width: "100%",
-      paddingHorizontal: 12,
-      paddingVertical: 2,
-      borderRadius: 99,
-      alignSelf: "center",
-    },
-    containerBottomButton: {
-      width: "100%",
-      paddingHorizontal: 16,
-      paddingTop: 16,
-    },
-    btnApprove: {
-      borderRadius: 99,
-      backgroundColor: colors["primary-surface-default"],
-    },
-    cardBody: {
-      padding: 16,
-      borderRadius: 24,
-      marginHorizontal: 16,
-      backgroundColor: colors["neutral-surface-card"],
-    },
-    viewNetwork: {
-      flexDirection: "row",
-      paddingTop: 6,
-    },
-    imgNetwork: {
-      height: 20,
-      width: 20,
-      backgroundColor: colors["neutral-icon-on-dark"],
-    },
-    containerBox: {
-      flex: 1,
-    },
-    txtPending: {
-      textAlign: "center",
-      paddingVertical: 16,
-    },
-    txtViewOnExplorer: {
-      fontSize: 14,
-      fontWeight: "600",
-      color: colors["neutral-text-action-on-dark-bg"],
-    },
-    btnExplorer: {
-      borderRadius: 99,
-    },
-  });
-};

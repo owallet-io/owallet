@@ -33,7 +33,7 @@ import { RedelegateScreen } from './screens/stake/redelegate';
 import { UndelegateScreen } from './screens/stake/undelegate';
 import { SendScreen } from './screens/send';
 import { PincodeScreen } from './screens/pincode/pincode';
-import { NewSendScreen } from './screens/send/send';
+import { SendCosmosScreen } from './screens/send/send';
 import { SendEvmScreen } from './screens/send/send-evm';
 import TxTransactionsScreen from './screens/transactions/tx-transaction-screen';
 import { HistoryDetail } from './screens/transactions/history-detail';
@@ -53,9 +53,7 @@ import { HeaderAddIcon } from './components/header/icon';
 import { SettingSelectAccountScreen } from './screens/setting/screens/select-account';
 import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-data';
 import { OWalletVersionScreen } from './screens/setting/screens/version';
-import { DetailsBrowserScreen } from './screens/web/details-browser-screen';
-import { BookmarksScreen } from './screens/web/bookmarks-screen';
-import { WebScreen } from './screens/web';
+
 import { AddAddressBookScreen, AddressBookScreen } from './screens/setting/screens/address-book';
 import useHeaderOptions from './hooks/use-header';
 import { ManageWalletConnectScreen } from '@screens/setting/screens/manage-walletconnect/ManageWalletConnectScreen';
@@ -130,19 +128,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*  />*/}
 
             <Stack.Screen name={SCREENS.SettingVersion} component={OWalletVersionScreen} />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.DetailsBrowser}*/}
-            {/*    component={DetailsBrowserScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.BookMarks}*/}
-            {/*    component={BookmarksScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    options={{ headerShown: false }}*/}
-            {/*    name={SCREENS.WebIntro}*/}
-            {/*    component={WebScreen}*/}
-            {/*  />*/}
+
             <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />
             <Stack.Screen name={SCREENS.AddChain} component={AddChainScreen} />
 
@@ -236,18 +222,13 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.SettingBackupMnemonic}*/}
             {/*    component={BackupMnemonicScreen}*/}
             {/*  />*/}
-            {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*!/*/}
-            {/*  <Stack.Screen name={SCREENS.NewSend} component={NewSendScreen} />*/}
+            {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*!/*/}
+            <Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />
+
             <Stack.Screen name={SCREENS.SendEvm} component={SendEvmNewScreen} />
             {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Transactions}*/}
-            {/*    component={TxTransactionsScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.HistoryDetail}*/}
-            {/*    component={HistoryDetail}*/}
-            {/*  />*/}
+            <Stack.Screen name={SCREENS.Transactions} component={TxTransactionsScreen} />
+            <Stack.Screen name={SCREENS.HistoryDetail} component={HistoryDetail} />
             <Stack.Screen
               options={{
                 headerShown: false

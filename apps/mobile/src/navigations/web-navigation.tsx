@@ -29,10 +29,10 @@ export const WebNavigation: FC = observer(() => {
       }}
     >
       <Stack.Screen name={SCREENS.Browser} component={BrowserScreen} />
-      {/*<Stack.Screen*/}
-      {/*  name={SCREENS.DetailsBrowser}*/}
-      {/*  component={DetailsBrowserScreen}*/}
-      {/*/>*/}
+      <Stack.Screen
+        name={SCREENS.DetailsBrowser}
+        component={DetailsBrowserScreen}
+      />
       <Stack.Screen
         options={({ route }) => ({
           headerShown: true,

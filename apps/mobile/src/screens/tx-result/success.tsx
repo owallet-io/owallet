@@ -1,313 +1,222 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import {
-  View,
-  Image,
-  ScrollView,
-  InteractionManager,
-  StyleSheet,
-} from "react-native";
-import { Text } from "@src/components/text";
+import { Text, View, StyleSheet } from "react-native";
+// import {Button} from '../../components/button';
+import { useStyle } from "../../styles";
+import LottieView from "lottie-react-native";
+// import * as WebBrowser from 'expo-web-browser';
+// import {SimpleGradient} from '../../components/svg';
+import { Box } from "../../components/box";
+// import {ArrowRightIcon} from '../../components/icon/arrow-right';
+// import {StackNavProp} from '../../navigation';
+// import {ChainIdentifierToTxExplorerMap} from '../../config';
+// import {TextButton} from '../../components/text-button';
+import Animated, {
+  useAnimatedProps,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+// import {useNotification} from '../../hooks/notification';
+import { FormattedMessage, useIntl } from "react-intl";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { OWButton } from "@components/button";
 
-import { CommonActions } from "@react-navigation/native";
-import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  formatContractAddress,
-  openLink,
-} from "../../utils/helper";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
-import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import OWButtonGroup from "@src/components/button/OWButtonGroup";
-
-import image from "@src/assets/images";
-import OWCard from "@src/components/card/ow-card";
-import OWText from "@src/components/text/ow-text";
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { CoinPretty, Dec } from "@owallet/unit";
-import { AppCurrency, StdFee } from "@owallet/types";
-import { CoinPrimitive } from "@owallet/stores";
-import _ from "lodash";
-import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { resetTo } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
+const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
-  const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
-    useStore();
-  const { colors, images } = useTheme();
+  const successAnimProgress = useSharedValue(0);
+  const animationRef = useRef<LottieView>(null);
+  const intl = useIntl();
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      progress: successAnimProgress.value,
+    };
+  });
+  // const notification = useNotification();
+
+  useEffect(() => {
+    const animateLottie = () => {
+      animationRef.current?.play();
+      successAnimProgress.value = withTiming(1, { duration: 1000 });
+    };
+
+    const timeoutId = setTimeout(animateLottie, 200);
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useEffect(() => {
+  //   notification.disable(true);
+  //
+  //   return () => {
+  //     //NOTE setTimeout을 건이유는 해당 페이지가 보이자 말자 바로 main으로 이동하면 토스트가 보임해서
+  //     //해당 토스트가 사라지는 시간을 대강 계산해서 800밀리초 후 disable을 false로 설정
+  //     setTimeout(() => {
+  //       notification.disable(false);
+  //     }, 800);
+  //   };
+  // }, [notification]);
+
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          chainId?: string;
-          // Hex encoded bytes.
-          txHash?: string;
-          data?: {
-            memo: string;
-            fee: StdFee;
-            fromAddress: string;
-            toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
-          };
+          chainId: string;
+          txHash: string;
+          isEvmTx?: boolean;
         }
       >,
       string
     >
   >();
 
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
-  const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId;
+  // const txExplorer = useMemo(() => {
+  //   return ChainIdentifierToTxExplorerMap[
+  //     ChainIdHelper.parse(chainId).identifier
+  //   ];
+  // }, [chainId]);
+  const txHash = route.params.txHash;
+  const isEvmTx = route.params.isEvmTx;
 
-  const { params } = route;
-  const txHash = params?.txHash;
-  const [data, setData] = useState<Partial<ResTxsInfo>>();
-  const account = accountStore.getAccount(chainStore?.current?.chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
-  const txs = txsStore(chainTxs);
+  const style = useStyle();
+  // const navigation = useNavigation();
 
-  const chainInfo = chainStore.getChain(chainId);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash?.toLowerCase()
-        : txHash?.toUpperCase()
-    );
-  };
-  const handleOnExplorer = async () => {
-    if (chainInfo.raw?.txExplorer && txHash) {
-      const url = handleUrl(txHash);
-      await openLink(url);
-    }
-  };
-
-  const onDone = () => {
-    resetTo(SCREENS.STACK.MainTab);
-  };
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-
-  const fee = () => {
-    if (params?.data?.fee) {
-      return new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee.amount?.[0]?.amount)
-      );
-    } else {
-      if (data?.stdFee?.amount?.[0]?.amount) {
-        return new CoinPretty(
-          chainInfo.feeCurrencies?.[0],
-          new Dec(data?.stdFee?.amount?.[0]?.amount)
-        );
-      }
-      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
-    }
-  };
-  const getDetailByHash = async (txHash) => {
-    try {
-      const tx = await txs.getTxsByHash(txHash, address);
-      setData(tx);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-  useEffect(() => {
-    if (txHash) {
-      InteractionManager.runAfterInteractions(() => {
-        getDetailByHash(txHash);
-      });
-    }
-  }, [txHash]);
-  const dataItem =
-    params?.data &&
-    _.pickBy(params?.data, function (value, key) {
-      return (
-        key !== "memo" &&
-        key !== "fee" &&
-        key !== "amount" &&
-        key !== "currency" &&
-        key !== "type"
-      );
-    });
-  const styles = styling(colors);
   return (
-    <PageWithBottom
-      bottomGroup={
-        <View style={styles.containerBottomButton}>
-          <OWButtonGroup
-            labelApprove={"Done"}
-            labelClose={"View on Explorer"}
-            styleApprove={styles.btnApprove}
-            onPressClose={handleOnExplorer}
-            onPressApprove={onDone}
-            styleClose={{
-              borderRadius: 99,
-              backgroundColor: colors["neutral-surface-action3"],
+    <Box style={style.flatten(["flex-grow-1", "items-center"])}>
+      <View style={style.flatten(["absolute-fill"])}>
+        {/*<SimpleGradient*/}
+        {/*  degree={*/}
+        {/*    style.get('tx-result-screen-success-gradient-background').degree*/}
+        {/*  }*/}
+        {/*  stops={*/}
+        {/*    style.get('tx-result-screen-success-gradient-background').stops*/}
+        {/*  }*/}
+        {/*  fallbackAndroidImage={*/}
+        {/*    style.get('tx-result-screen-success-gradient-background')*/}
+        {/*      .fallbackAndroidImage*/}
+        {/*  }*/}
+        {/*/>*/}
+      </View>
+      <View style={style.flatten(["flex-2"])} />
+      <View
+        style={style.flatten([
+          "width-122",
+          "height-122",
+          "justify-center",
+          "items-center",
+        ])}
+      >
+        <View
+          style={{
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            ...style.flatten(["absolute", "justify-center", "items-center"]),
+          }}
+        >
+          {/*<AnimatedLottieView*/}
+          {/*  source={require('')}*/}
+          {/*  colorFilters={[*/}
+          {/*    {*/}
+          {/*      keypath: 'Success Icon',*/}
+          {/*      color: style.flatten(['color-green-400']).color,*/}
+          {/*    },*/}
+          {/*  ]}*/}
+          {/*  //NOTE 정상작동 되는 타입인데 타입에러가 떠서 일단은 any로 처리후 나중애 한번더 봐야함*/}
+          {/*  ref={animationRef as any}*/}
+          {/*  animatedProps={animatedProps}*/}
+          {/*  loop={false}*/}
+          {/*  style={{width: 150, height: 150}}*/}
+          {/*/>*/}
+        </View>
+      </View>
+
+      <Text
+        style={style.flatten([
+          "mobile-h3",
+          "color-text-high",
+          "margin-top-82",
+          "margin-bottom-32",
+        ])}
+      >
+        <FormattedMessage id="page.tx-result-success.title" />
+      </Text>
+
+      {/* To match the height of text with other tx result screens,
+         set the explicit height to upper view*/}
+      <View
+        style={StyleSheet.flatten([
+          style.flatten(["padding-x-36"]),
+          {
+            overflow: "visible",
+          },
+        ])}
+      >
+        <Text
+          style={style.flatten([
+            "subtitle2",
+            "text-center",
+            "color-text-middle",
+          ])}
+        >
+          <FormattedMessage id="page.tx-result-success.paragraph-1" />
+        </Text>
+        <Text
+          style={style.flatten([
+            "subtitle2",
+            "text-center",
+            "color-text-middle",
+          ])}
+        >
+          <FormattedMessage id="page.tx-result-success.paragraph-2" />
+        </Text>
+      </View>
+
+      <Box paddingX={48} height={116} marginTop={58} alignX="center">
+        <View style={style.flatten(["flex-row", "width-full"])}>
+          <OWButton
+            style={style.flatten(["flex-1"])}
+            size="large"
+            label={intl.formatMessage({ id: "button.done" })}
+            onPress={() => {
+              resetTo(SCREENS.STACK.MainTab);
             }}
           />
         </View>
-      }
-    >
-      <View style={styles.containerBox}>
-        {/*<PageHeader title={"Transaction details"} />*/}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <HeaderTx
-            type={capitalizedText(params?.data?.type) || "Send"}
-            imageType={
-              <View style={styles.containerSuccess}>
-                <OWText
-                  weight={"500"}
-                  size={14}
-                  color={colors["highlight-text-title"]}
-                >
-                  Success
-                </OWText>
-              </View>
-            }
-            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
-              ?.shrink(true)
-              ?.trim(true)
-              ?.toString()}`}
-            price={priceStore.calculatePrice(amount)?.toString()}
-          />
-          <View style={styles.cardBody}>
-            {dataItem &&
-              Object.keys(dataItem).map(function (key) {
-                return (
-                  <ItemReceivedToken
-                    label={capitalizedText(key)}
-                    valueDisplay={
-                      dataItem?.[key] &&
-                      formatContractAddress(dataItem?.[key], 20)
-                    }
-                    value={dataItem?.[key]}
-                  />
-                );
-              })}
-            <ItemReceivedToken
-              label={"Network"}
-              valueDisplay={
-                <View style={styles.viewNetwork}>
-                  {chainInfo?.raw?.chainSymbolImageUrl && (
-                    <Image
-                      style={styles.imgNetwork}
-                      source={{
-                        uri: chainInfo?.raw?.chainSymbolImageUrl,
-                      }}
-                    />
-                  )}
-                  <Text
-                    size={16}
-                    color={colors["neutral-text-body"]}
-                    weight={"400"}
-                    style={{
-                      paddingLeft: 3,
-                    }}
-                  >
-                    {chainInfo?.chainName}
-                  </Text>
-                </View>
-              }
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Fee"}
-              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
-                priceStore.calculatePrice(fee()) || "$0"
-              })`}
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Time"}
-              valueDisplay={data?.time?.timeLong}
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Memo"}
-              valueDisplay={params?.data?.memo || "-"}
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Hash"}
-              valueDisplay={formatContractAddress(txHash)}
-              value={txHash}
-              btnCopy={false}
-              IconRightComponent={
-                <View>
-                  <OWButtonIcon
-                    name="tdesignjump"
-                    sizeIcon={20}
-                    fullWidth={false}
-                    onPress={handleOnExplorer}
-                    colorIcon={colors["neutral-text-action-on-light-bg"]}
-                  />
-                </View>
-              }
-            />
-          </View>
-        </ScrollView>
-      </View>
-    </PageWithBottom>
+        {/*{!!txExplorer && !isEvmTx ? (*/}
+        {/*  <TextButton*/}
+        {/*    containerStyle={style.flatten(['margin-top-16'])}*/}
+        {/*    size="large"*/}
+        {/*    text={intl.formatMessage(*/}
+        {/*      {*/}
+        {/*        id: 'page.tx-result.components.go-to-explorer',*/}
+        {/*      },*/}
+        {/*      {*/}
+        {/*        name: txExplorer.name,*/}
+        {/*      },*/}
+        {/*    )}*/}
+        {/*    rightIcon={color => (*/}
+        {/*      <View style={style.flatten(['margin-left-8'])}>*/}
+        {/*        <ArrowRightIcon color={color} size={18} />*/}
+        {/*      </View>*/}
+        {/*    )}*/}
+        {/*    onPress={() => {*/}
+        {/*      if (txExplorer) {*/}
+        {/*        WebBrowser.openBrowserAsync(*/}
+        {/*          txExplorer.txUrl.replace('{txHash}', txHash.toUpperCase()),*/}
+        {/*        );*/}
+        {/*      }*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*) : null}*/}
+      </Box>
+      <View style={style.flatten(["flex-2"])} />
+    </Box>
   );
 });
-
-const styling = (colors) => {
-  return StyleSheet.create({
-    containerSuccess: {
-      backgroundColor: colors["highlight-surface-subtle"],
-      width: "100%",
-      paddingHorizontal: 12,
-      paddingVertical: 2,
-      borderRadius: 99,
-      alignSelf: "center",
-    },
-    containerBottomButton: {
-      width: "100%",
-      paddingHorizontal: 16,
-      paddingTop: 16,
-    },
-    btnApprove: {
-      borderRadius: 99,
-      backgroundColor: colors["primary-surface-default"],
-    },
-    cardBody: {
-      padding: 16,
-      borderRadius: 24,
-      marginHorizontal: 16,
-      backgroundColor: colors["neutral-surface-card"],
-    },
-    viewNetwork: {
-      flexDirection: "row",
-      paddingTop: 6,
-    },
-    imgNetwork: {
-      height: 20,
-      width: 20,
-      borderRadius: 20,
-      backgroundColor: colors["neutral-icon-on-dark"],
-    },
-    containerBox: {
-      flex: 1,
-    },
-  });
-};

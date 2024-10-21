@@ -25,7 +25,7 @@ export class AxelarEVMBridgeCurrencyRegistrar {
     protected readonly cacheDuration: number = 24 * 3600 * 1000, // 1 days
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: IQueriesStore<{
-      keplrETC: {
+      owalletETC: {
         readonly queryEVMTokenInfo: DeepReadonly<ObservableQueryEVMTokenInfo>;
       };
     }>,
@@ -128,7 +128,7 @@ export class AxelarEVMBridgeCurrencyRegistrar {
 
     const queries = this.queriesStore.get(chainId);
 
-    const tokenInfo = queries.keplrETC.queryEVMTokenInfo.getAsset(
+    const tokenInfo = queries.owalletETC.queryEVMTokenInfo.getAsset(
       this.mainChain,
       coinMinimalDenom
     );

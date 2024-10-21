@@ -2,7 +2,7 @@ import {
   Staking,
   // BondStatus
 } from "@owallet/stores";
-import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
+import { CoinPretty, Dec, Int, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
@@ -43,6 +43,7 @@ import { useNavigation } from "@react-navigation/native";
 import { OWHeaderTitle } from "@components/header";
 import { OWBox } from "@components/card";
 
+const defaultGasPerDelegation = 140000;
 const renderIconValidator = (
   label: string,
   size?: number,
@@ -113,6 +114,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const initialChainId = chainStore.current["chainId"];
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     Staking.BondStatus.Bonded
   );
@@ -150,6 +152,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
+
   const rewards = (() => {
     let reward: CoinPretty | undefined;
     const isDydx = chainStore.current.chainId?.includes("dydx-mainnet");
@@ -210,31 +213,65 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        [validatorAddress],
+      const tx = account.cosmos.makeWithdrawDelegationRewardTx([
+        validatorAddress,
+      ]);
+      let gas = new Int([validatorAddress].length * defaultGasPerDelegation);
+      try {
+        // setIsSimulating(true);
+
+        const simulated = await tx.simulate();
+        console.log(simulated, "simulated");
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gas = new Dec(simulated.gasUsed * 1.5).truncate();
+      } catch (e) {
+        console.log(e, "err high gas");
+      }
+
+      await tx.send(
+        {
+          gas: gas.toString(),
+          amount: [],
+        },
         "",
-        {},
         {},
         {
           onBroadcasted: (txHash) => {
+            // analyticsStore.logEvent('complete_claim', {
+            //   chainId: viewToken.chainInfo.chainId,
+            //   chainName: viewToken.chainInfo.chainName,
+            // });
+            // navigation.navigate('TxPending', {
+            //   chainId,
+            //   txHash: Buffer.from(txHash).toString('hex'),
+            // });
             const validatorObject = convertArrToObject([validatorAddress]);
-            tracking(`Claim ${rewards?.currency.coinDenom}`);
+            // tracking(`Claim ${rewards?.currency.coinDenom}`);
             navigate(SCREENS.TxPendingResult, {
+              chainId: initialChainId,
               txHash: Buffer.from(txHash).toString("hex"),
               data: {
                 ...validatorObject,
                 type: "claim",
-                amount: rewards?.toCoin(),
+                amount: rewards,
                 currency: rewards?.currency,
               },
             });
           },
-        },
-        rewards?.currency.coinMinimalDenom
+          onFulfill: (tx: any) => {
+            if (tx.code != null && tx.code !== 0) {
+              console.log(tx.log ?? tx.raw_log);
+
+              return;
+            }
+          },
+        }
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
+      if (!e?.message?.includes("rejected")) {
         showToast({
           message:
             e?.message ?? "Something went wrong! Please try again later.",

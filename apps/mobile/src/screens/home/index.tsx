@@ -79,6 +79,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     keyRingStore,
     // modalStore,
+    browserStore,
     hugeQueriesStore,
   } = useStore();
 
@@ -101,19 +102,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     true
   );
 
-  // useEffect(() => {
-  //   tracking("Home Screen");
-  //   InteractionManager.runAfterInteractions(() => {
-  //     fetch(InjectedProviderUrl)
-  //       .then((res) => {
-  //         return res.text();
-  //       })
-  //       .then((res) => {
-  //         browserStore.update_inject(res);
-  //       })
-  //       .catch((err) => console.log(err));
-  //   });
-  // }, []);
+  useEffect(() => {
+    tracking("Home Screen");
+    InteractionManager.runAfterInteractions(() => {
+      fetch(InjectedProviderUrl)
+        .then((res) => {
+          return res.text();
+        })
+        .then((res) => {
+          browserStore.update_inject(res);
+        })
+        .catch((err) => console.log(err));
+    });
+  }, []);
 
   // const checkAndUpdateChainInfo = useCallback(() => {
   //   if (!chainStoreIsInitializing) {

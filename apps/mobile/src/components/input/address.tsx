@@ -2,9 +2,9 @@ import React, { FunctionComponent, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
-  ENSFailedToFetchError,
-  ENSIsFetchingError,
-  ENSNotSupportedError,
+  // ENSFailedToFetchError,
+  // ENSIsFetchingError,
+  // ENSNotSupportedError,
   IMemoConfig,
   InvalidBech32Error,
   IRecipientConfig,
@@ -76,11 +76,11 @@ export const AddressInput: FunctionComponent<{
   }) => {
     const style = useStyle();
 
-    const isENSAddress = ObservableEnsFetcher.isValidENS(
-      recipientConfig.rawRecipient
-    );
+    // const isENSAddress = ObservableEnsFetcher.isValidENS(
+    //   recipientConfig.rawRecipient
+    // );
 
-    const error = recipientConfig.getError();
+    const error = recipientConfig.uiProperties.error;
 
     const errorText: string | undefined = useMemo(() => {
       if (error) {
@@ -90,19 +90,19 @@ export const AddressInput: FunctionComponent<{
             return;
           case InvalidBech32Error:
             return "Invalid address";
-          case ENSNotSupportedError:
-            return "ENS not supported";
-          case ENSFailedToFetchError:
-            return "Failed to fetch the address from ENS";
-          case ENSIsFetchingError:
-            return;
+          // case ENSNotSupportedError:
+          //     return "ENS not supported";
+          // case ENSFailedToFetchError:
+          //     return "Failed to fetch the address from ENS";
+          // case ENSIsFetchingError:
+          //     return;
           default:
             return "Unknown error";
         }
       }
     }, [error]);
 
-    const isENSLoading: boolean = error instanceof ENSIsFetchingError;
+    // const isENSLoading: boolean = error instanceof ENSIsFetchingError;
 
     return (
       <TextInput
@@ -118,35 +118,16 @@ export const AddressInput: FunctionComponent<{
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         error={errorText}
-        value={recipientConfig.rawRecipient}
+        value={recipientConfig.value}
         onChangeText={(text) => {
-          recipientConfig.setRawRecipient(text.replace(/\s/g, ""));
+          recipientConfig.setValue(text.replace(/\s/g, ""));
         }}
         style={{
           fontSize: 16,
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
-        paragraph={
-          isENSAddress ? (
-            isENSLoading ? (
-              <View>
-                <View
-                  style={[
-                    styles["absolute"],
-                    styles["height-16"],
-                    styles["justify-center"],
-                    styles["margin-top-2"],
-                  ]}
-                >
-                  <LoadingSpinner size={14} color={"#83838F"} />
-                </View>
-              </View>
-            ) : (
-              recipientConfig.recipient
-            )
-          ) : undefined
-        }
+        paragraph={recipientConfig.value}
         inputLeft={inputLeft}
         inputRight={
           disableAddressBook ? null : (
@@ -180,7 +161,7 @@ export const AddressInput: FunctionComponent<{
         }
         autoCorrect={false}
         autoCapitalize="none"
-        autoCompleteType="off"
+        // autoCompleteType="off"
       />
     );
   }

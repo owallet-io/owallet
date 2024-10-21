@@ -1,24 +1,13 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
-  EmptyAddressError,
-  EmptyAmountError,
-  useSendTxConfig,
+  useGasSimulator,
+  useSendMixedIBCTransferConfig,
+  useTxConfigsValidate,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import {
-  EthereumEndpoint,
-  OwalletEvent,
-  toAmount,
-  TxRestCosmosClient,
-} from "@owallet/common";
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  InteractionManager,
-} from "react-native";
+import { DenomHelper, ICNSInfo } from "@owallet/common";
+import { StyleSheet, View, ScrollView } from "react-native";
 import {
   AddressInput,
   CurrencySelector,
@@ -33,55 +22,24 @@ import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { fromBase64 } from "@cosmjs/encoding";
-import { FeeModal } from "@src/modals/fee";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
-import { DownArrowIcon } from "@src/components/icon";
-import { capitalizedText, showToast } from "@src/utils/helper";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Buffer } from "buffer";
-import { tracking } from "@src/utils/tracking";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-import { coin, StdFee } from "@cosmjs/amino";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
-import { API } from "@src/common/api";
-const { coins } = require("@cosmjs/amino");
-import {
-  encodePubkey,
-  makeAuthInfoBytes,
-  makeSignDoc,
-  TxBodyEncodeObject,
-} from "@cosmjs/proto-signing";
-import {
-  encodeSecp256k1Pubkey,
-  makeSignDoc as makeSignDocAmino,
-} from "@cosmjs/amino";
-import { TxBody } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
-import { Any } from "@owallet/proto-types/google/protobuf/any";
-import { TendermintTxTracer } from "@owallet/cosmos";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
-import { CosmosMsgOpts } from "@owallet/stores";
+import { AsyncKVStore } from "@src/common";
+import { useIntl } from "react-intl";
+import { BACKGROUND_PORT, Message } from "@owallet/router";
+import { SendTxAndRecordMsg } from "@owallet/background";
+import { RNMessageRequesterInternal } from "@src/router";
+import { FeeControl } from "@components/input/fee-control";
 
-export const NewSendScreen: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    analyticsStore,
-    keyRingStore,
-    modalStore,
-    priceStore,
-    universalSwapStore,
-    appInitStore,
-  } = useStore();
+export const SendCosmosScreen: FunctionComponent = observer(() => {
+  const { chainStore, accountStore, queriesStore, appInitStore } = useStore();
 
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [balance, setBalance] = useState<CoinPretty>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [gasMsgSend, setGasMsgSend] = useState<CosmosMsgOpts["send"]>();
+
   const route = useRoute<
     RouteProp<
       Record<
@@ -90,269 +48,250 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           chainId?: string;
           currency?: string;
           recipient?: string;
-          contractAddress?: string;
-          denom?: string;
+          recipientAddress?: string;
+          coinMinimalDenom?: string;
         }
       >,
       string
     >
   >();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const initialChainId = route.params["chainId"];
+  const initialCoinMinimalDenom = route.params["coinMinimalDenom"];
+  const initialRecipientAddress = route.params["recipientAddress"];
+  const chainIdInit = initialChainId || chainStore.chainInfosInUI[0].chainId;
+  const [chainId, setChainId] = useState(chainIdInit);
+  console.log(chainId, "chainId");
+  const chainInfo = chainStore.getChain(chainId);
+  const coinMinimalDenomInit =
+    initialCoinMinimalDenom || chainInfo.currencies[0].coinMinimalDenom;
+  const [coinMinimalDenom, setCoinMinimalDenom] =
+    useState(coinMinimalDenomInit);
+  console.log(coinMinimalDenom, "coinMinimalDenom");
+  const navigation = useNavigation();
+  // useEffect(() => {
+  //     if (appInitStore.getInitApp.isAllNetworks) return;
+  //     navigation.setOptions({
+  //         headerTitle: () => (
+  //             <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName}/>
+  //         ),
+  //     });
+  // }, [chainId]);
 
+  const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
+  useEffect(() => {
+    if (!initialChainId || !initialCoinMinimalDenom) {
+      navigation.goBack();
+    }
+  }, [navigation, initialChainId, initialCoinMinimalDenom]);
   const account = accountStore.getAccount(chainId);
-  const queries = queriesStore.get(chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
+  const queryBalances = queriesStore.get(chainId).queryBalances;
+  const sender = account.bech32Address;
+  const balance = queryBalances
+    .getQueryBech32Address(sender)
+    .getBalance(currency);
+  const sendConfigs = useSendMixedIBCTransferConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    sender,
+    // TODO: 이 값을 config 밑으로 빼자
+    300000,
+    false,
+    {
+      allowHexAddressToBech32Address: !chainStore
+        .getChain(chainId)
+        .chainId.startsWith("injective"),
+      allowHexAddressOnly: false,
+      icns: ICNSInfo,
+      computeTerraClassicTax: true,
+    }
   );
-  const sendConfigs = useSendTxConfig(
+
+  sendConfigs.amountConfig.setCurrency(currency);
+  useEffect(() => {
+    sendConfigs.recipientConfig.setValue(initialRecipientAddress || "");
+  }, [initialRecipientAddress, sendConfigs.recipientConfig]);
+
+  const gasSimulatorKey = useMemo(() => {
+    const txType: "evm" | "cosmos" = "cosmos";
+
+    if (sendConfigs.amountConfig.currency) {
+      const denomHelper = new DenomHelper(
+        sendConfigs.amountConfig.currency.coinMinimalDenom
+      );
+
+      if (denomHelper.type !== "native") {
+        if (denomHelper.type === "cw20") {
+          // Probably, the gas can be different per cw20 according to how the contract implemented.
+          return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}`;
+        }
+
+        return `${txType}/${denomHelper.type}`;
+      }
+    }
+
+    return `${txType}/native`;
+  }, [sendConfigs.amountConfig.currency]);
+  const intl = useIntl();
+  const gasSimulator = useGasSimulator(
+    new AsyncKVStore("gas-simulator.screen.send/send"),
     chainStore,
     chainId,
-    //@ts-ignore
-    gasMsgSend || account.msgOpts.send,
-    address,
-    queries.queryBalances,
-    EthereumEndpoint
+    sendConfigs.gasConfig,
+    sendConfigs.feeConfig,
+    gasSimulatorKey,
+    () => {
+      if (!sendConfigs.amountConfig.currency) {
+        throw new Error(
+          intl.formatMessage({ id: "error.send-currency-not-set" })
+        );
+      }
+
+      // Prefer not to use the gas config or fee config,
+      // because gas simulator can change the gas config and fee config from the result of reaction,
+      // and it can make repeated reaction.
+      if (
+        sendConfigs.amountConfig.uiProperties.loadingState ===
+          "loading-block" ||
+        sendConfigs.amountConfig.uiProperties.error != null ||
+        sendConfigs.recipientConfig.uiProperties.loadingState ===
+          "loading-block" ||
+        sendConfigs.recipientConfig.uiProperties.error != null
+      ) {
+        throw new Error(
+          intl.formatMessage({ id: "error.not-read-simulate-tx" })
+        );
+      }
+
+      const denomHelper = new DenomHelper(
+        sendConfigs.amountConfig.currency.coinMinimalDenom
+      );
+      // I don't know why, but simulation does not work for secret20
+      if (denomHelper.type === "secret20") {
+        throw new Error(
+          intl.formatMessage({
+            id: "error.simulating-secret-wasm-not-supported",
+          })
+        );
+      }
+      return account.makeSendTokenTx(
+        sendConfigs.amountConfig.amount[0].toDec().toString(),
+        sendConfigs.amountConfig.amount[0].currency,
+        sendConfigs.recipientConfig.recipient
+      );
+    }
   );
 
   useEffect(() => {
-    tracking(`Send ${chainStore.current.chainName} Screen`);
-    if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-        (cur) => {
-          if (
-            cur?.coinMinimalDenom
-              ?.toLowerCase()
-              ?.includes(
-                route?.params?.contractAddress?.toLowerCase() ||
-                  route?.params?.denom?.toLowerCase()
-              )
-          )
-            return true;
-          if (
-            cur.coinDenom?.toLowerCase() ===
-            route.params.currency?.toLowerCase()
-          ) {
-            return true;
-          }
-          //@ts-ignore
-          if (
-            cur?.coinGeckoId
-              ?.toLowerCase()
-              ?.includes(route?.params?.coinGeckoId?.toLowerCase())
-          )
-            return true;
-          return (
-            cur.coinMinimalDenom?.toLowerCase() ==
-            route.params.currency?.toLowerCase()
-          );
-        }
+    // To simulate secretwasm, we need to include the signature in the tx.
+    // With the current structure, this approach is not possible.
+    if (
+      sendConfigs.amountConfig.currency &&
+      new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom)
+        .type === "secret20"
+    ) {
+      gasSimulator.forceDisable(
+        new Error(
+          intl.formatMessage({
+            id: "error.simulating-secret-20-not-supported",
+          })
+        )
       );
-
-      if (currency) {
-        sendConfigs.amountConfig.setSendCurrency(currency);
-      }
+      sendConfigs.gasConfig.setValue(
+        // TODO: 이 값을 config 밑으로 빼자
+        250000
+      );
+    } else {
+      gasSimulator.forceDisable(false);
+      gasSimulator.setEnabled(true);
     }
   }, [
-    route?.params?.currency,
-    sendConfigs.amountConfig,
-    route?.params?.contractAddress,
+    gasSimulator,
+    intl,
+    sendConfigs.amountConfig.currency,
+    sendConfigs.gasConfig,
   ]);
 
-  const amount = new CoinPretty(
-    sendConfigs.amountConfig.sendCurrency,
-    new Dec(sendConfigs.amountConfig.getAmountPrimitive().amount)
-  );
+  const txConfigsValidate = useTxConfigsValidate({
+    ...sendConfigs,
+    gasSimulator,
+  });
 
-  useEffect(() => {
-    if (route?.params?.recipient) {
-      sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-    }
-  }, [route?.params?.recipient, sendConfigs.recipientConfig]);
+  const historyType = "basic-send";
 
-  useEffect(() => {
-    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-      sendConfigs.feeConfig.setFeeType("average");
-    }
-    if (appInitStore.getInitApp.feeOption) {
-      sendConfigs.feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
-    }
-  }, [sendConfigs.feeConfig, appInitStore.getInitApp.feeOption]);
-
-  const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError();
-  const txStateIsValid = sendConfigError == null;
-
-  const _onPressFee = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    modalStore.setChildren(
-      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
-    );
-  };
-  const recipientError = sendConfigs.recipientConfig.getError();
-  const isRecipientError: boolean = useMemo(() => {
-    if (recipientError) {
-      if (recipientError.constructor == EmptyAddressError) return false;
-      return true;
-    }
-  }, [recipientError]);
-
-  const amountError = sendConfigs.amountConfig.getError();
-  const isAmountError: boolean = useMemo(() => {
-    if (amountError) {
-      if (amountError.constructor == EmptyAmountError) return false;
-      return true;
-    }
-  }, [amountError]);
-  const sendOraiBtc = async () => {
-    try {
-      setIsLoading(true);
-      // @ts-ignore
-      const signer = await window.owallet.getOfflineSignerAuto(
-        chainStore.current.chainId
-      );
-      const [{ address, pubkey }] = await signer.getAccounts();
-      const res = await API.getInfoAccOraiBtc(
-        { address: account.bech32Address },
-        { baseURL: chainStore.current.rest }
-      );
-      const sequence = res.data.result.value.sequence;
-
-      const msgSend = MsgSend.fromPartial({
-        fromAddress: address,
-        toAddress: sendConfigs.recipientConfig.recipient,
-        amount: [sendConfigs.amountConfig.getAmountPrimitive()],
-      });
-      const msgAny = Any.fromPartial({
-        typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-        value: MsgSend.encode(msgSend).finish(),
-      });
-      const fee: StdFee = {
-        amount: coins(0, "uoraibtc"),
-        gas: "200000",
-      };
-      const authInfoBytes = makeAuthInfoBytes(
-        [{ pubkey: encodePubkey(encodeSecp256k1Pubkey(pubkey)), sequence }],
-        fee.amount,
-        Number(fee.gas),
-        undefined,
-        undefined
-      );
-      const txBody = TxBody.fromPartial({
-        messages: [msgAny],
-        memo: "",
-      });
-
-      const txBodyBytes = TxBody.encode(txBody).finish();
-      const accountNumber = 0;
-      const signDoc = makeSignDoc(
-        txBodyBytes,
-        authInfoBytes,
-        chainId,
-        accountNumber
-      );
-
-      const { signature, signed } = await (
-        await account.getOWallet()
-      ).signDirect(chainId, address, signDoc);
-
-      const txRaw = TxRaw.fromPartial({
-        bodyBytes: signed.bodyBytes,
-        authInfoBytes: signed.authInfoBytes,
-        signatures: [fromBase64(signature.signature)],
-      });
-      const txBytes = TxRaw.encode(txRaw).finish();
-      const tmClient = await Tendermint37Client.connect(chainStore.current.rpc);
-      const result = await tmClient.broadcastTxSync({
-        tx: txBytes,
-      });
-      if (result?.code == 0) {
-        setIsLoading(false);
-        navigate(SCREENS.TxPendingResult, {
-          txHash: Buffer.from(result?.hash).toString("hex"),
-          data: {
-            memo: sendConfigs.memoConfig.memo,
-            from: address,
-            type: "send",
-            to: sendConfigs.recipientConfig.recipient,
-            amount: sendConfigs.amountConfig.getAmountPrimitive(),
-            fee: sendConfigs.feeConfig.toStdFee(),
-            currency: sendConfigs.amountConfig.sendCurrency,
-          },
-        });
-      }
-    } catch (error) {
-      if (error?.message?.includes("'signature' of undefined")) return;
-      showToast({
-        type: "danger",
-        message: error?.message || JSON.stringify(error),
-      });
-      console.log("[ERR]", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const submitSend = async () => {
-    if (account.isReadyToSendMsgs && txStateIsValid) {
+    if (!txConfigsValidate.interactionBlocked) {
       try {
-        if (chainStore?.current?.chainId === "oraibtc-mainnet-1") {
-          sendOraiBtc();
-          return;
-        }
-        await account.sendToken(
-          sendConfigs.amountConfig.amount,
-          sendConfigs.amountConfig.sendCurrency,
-          sendConfigs.recipientConfig.recipient,
-          sendConfigs.memoConfig.memo,
+        const tx = accountStore
+          .getAccount(chainId)
+          .makeSendTokenTx(
+            sendConfigs.amountConfig.amount[0].toDec().toString(),
+            sendConfigs.amountConfig.amount[0].currency,
+            sendConfigs.recipientConfig.recipient
+          );
+        await tx.send(
           sendConfigs.feeConfig.toStdFee(),
+          sendConfigs.memoConfig.memo,
           {
             preferNoSetFee: true,
             preferNoSetMemo: true,
-            networkType: chainStore.current.networkType,
-            chainId: chainStore.current.chainId,
-          },
-
-          {
-            onFulfill: (tx) => {},
-            onBroadcasted: async (txHash) => {
-              analyticsStore.logEvent("Send token tx broadcasted", {
-                chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName,
-                feeType: sendConfigs.feeConfig.feeType,
-              });
-              tracking(
-                `Send ${sendConfigs.amountConfig.sendCurrency} - ${chainStore.current.chainName}`
+            sendTx: async (chainId, tx, mode) => {
+              let msg: Message<Uint8Array> = new SendTxAndRecordMsg(
+                historyType,
+                chainId,
+                sendConfigs.recipientConfig.chainId,
+                tx,
+                mode,
+                false,
+                sendConfigs.senderConfig.sender,
+                sendConfigs.recipientConfig.recipient,
+                sendConfigs.amountConfig.amount.map((amount) => {
+                  return {
+                    amount: DecUtils.getTenExponentN(
+                      amount.currency.coinDecimals
+                    )
+                      .mul(amount.toDec())
+                      .toString(),
+                    denom: amount.currency.coinMinimalDenom,
+                  };
+                }),
+                sendConfigs.memoConfig.memo
               );
-              universalSwapStore.updateTokenReload([
-                {
-                  ...sendConfigs.amountConfig.sendCurrency,
-                  chainId: chainStore.current.chainId,
-                  networkType: "cosmos",
-                },
-              ]);
+
+              return await new RNMessageRequesterInternal().sendMessage(
+                BACKGROUND_PORT,
+                msg
+              );
+            },
+          },
+          {
+            onBroadcasted: async (txHash) => {
+              chainStore.enableVaultsWithCosmosAddress(
+                sendConfigs.recipientConfig.chainId,
+                sendConfigs.recipientConfig.recipient
+              );
               navigate(SCREENS.TxPendingResult, {
+                chainId,
                 txHash: Buffer.from(txHash).toString("hex"),
-                data: {
-                  memo: sendConfigs.memoConfig.memo,
-                  from: address,
-                  type: "send",
-                  to: sendConfigs.recipientConfig.recipient,
-                  amount: sendConfigs.amountConfig.getAmountPrimitive(),
-                  fee: sendConfigs.feeConfig.toStdFee(),
-                  currency: sendConfigs.amountConfig.sendCurrency,
-                },
               });
+            },
+            onFulfill: (tx: any) => {
+              if (tx.code != null && tx.code !== 0) {
+                console.log(tx);
+                // notification.show(
+                //     'failed',
+                //     intl.formatMessage({id: 'error.transaction-failed'}),
+                // );
+                return;
+              }
+
+              // notification.show(
+              //     'success',
+              //     intl.formatMessage({
+              //       id: 'notification.transaction-success',
+              //     }),
+              // );
             },
           }
         );
@@ -360,91 +299,22 @@ export const NewSendScreen: FunctionComponent = observer(() => {
         if (e?.message === "Request rejected") {
           return;
         }
-      }
-    }
-  };
-  useEffect(() => {
-    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
-      sendConfigs.feeConfig.setFeeType("average");
-    }
-    return;
-  }, [sendConfigs.feeConfig]);
 
-  const isReadyBalance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency).isReady;
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      if (isReadyBalance && sendConfigs.amountConfig.sendCurrency && address) {
-        const balance = queries.queryBalances
-          .getQueryBech32Address(address)
-          .getBalanceFromCurrency(sendConfigs.amountConfig.sendCurrency);
-        setBalance(balance);
+        // notification.show(
+        //     'failed',
+        //     intl.formatMessage({id: 'error.transaction-failed'}),
+        // );
       }
-    });
-  }, [isReadyBalance, address, sendConfigs.amountConfig.sendCurrency]);
-  const navigation = useNavigation();
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: () => (
-        <OWHeaderTitle
-          title={"Send"}
-          subTitle={chainStore.current?.chainName}
-        />
-      ),
-    });
-  }, [chainStore.current?.chainName]);
-  const estimatePrice = priceStore.calculatePrice(amount)?.toString();
-  const simulateTx = async () => {
-    try {
-      const simulateTx = await account.cosmos.simulateTx(
-        [
-          {
-            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-            value: MsgSend.encode({
-              fromAddress: account.bech32Address,
-              toAddress: sendConfigs.recipientConfig.recipient,
-              amount: [sendConfigs.amountConfig.getAmountPrimitive()],
-            }).finish(),
-          },
-        ],
-        {
-          amount: sendConfigs.feeConfig.toStdFee()?.amount ?? [],
-        },
-        sendConfigs.memoConfig.memo
-      );
-      console.log(simulateTx, "simulateTx");
-      if (!simulateTx?.gasUsed) {
-        setGasMsgSend(null);
-        return;
-      }
-      setGasMsgSend({
-        native: {
-          type: "cosmos-sdk/MsgSend",
-          gas: Math.floor(simulateTx?.gasUsed * 1.3),
-        },
-      });
-    } catch (error) {
-      setGasMsgSend(null);
-      console.error("SimulateTx Estimate Error", error);
     }
   };
-  useEffect(() => {
-    if (!txStateIsValid) return;
-    simulateTx();
-    return () => {};
-  }, [
-    sendConfigs.amountConfig.amount,
-    sendConfigs.recipientConfig.recipient,
-    txStateIsValid,
-  ]);
+
   return (
     <PageWithBottom
       bottomGroup={
         <OWButton
           label="Send"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid || isLoading}
-          loading={account.isSendingMsg === "send" || isLoading}
+          disabled={txConfigsValidate.interactionBlocked}
+          loading={accountStore.getAccount(chainId).isSendingMsg === "send"}
           onPress={submitSend}
           style={[
             styles.bottomBtn,
@@ -464,7 +334,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
           <OWCard
             type="normal"
             style={[
-              isRecipientError ? styles.errorBorder : null,
+              // isRecipientError ? styles.errorBorder : null,
               {
                 backgroundColor: colors["neutral-surface-card"],
               },
@@ -491,7 +361,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 paddingTop: 22,
                 backgroundColor: colors["neutral-surface-card"],
               },
-              isAmountError && styles.errorBorder,
+              // isAmountError && styles.errorBorder,
             ]}
             type="normal"
           >
@@ -504,15 +374,26 @@ export const NewSendScreen: FunctionComponent = observer(() => {
               <View>
                 <OWText style={{ paddingTop: 8 }}>
                   Balance:{" "}
-                  {balance
+                  {(balance?.balance ?? new CoinPretty(currency, "0"))
                     ?.trim(true)
                     ?.maxDecimals(6)
                     ?.hideDenom(true)
                     ?.toString() || "0"}
                 </OWText>
                 <CurrencySelector
-                  chainId={chainStore.current.chainId}
-                  type="new"
+                  chainId={chainId}
+                  // type="new"
+                  selectedKey={coinMinimalDenom}
+                  setSelectedKey={(key) => {
+                    if (!key) return;
+
+                    const [chainId, coinMinimalDenom] = key.split("|");
+                    if (!chainId || !coinMinimalDenom) return;
+                    // sendConfigs.feeConfig.setChain(chainId);
+                    // sendConfigs.feeConfig.setFee(chainId);
+                    setChainId(chainId);
+                    setCoinMinimalDenom(coinMinimalDenom);
+                  }}
                   label="Select a token"
                   placeHolder="Select Token"
                   amountConfig={sendConfigs.amountConfig}
@@ -546,7 +427,7 @@ export const NewSendScreen: FunctionComponent = observer(() => {
                 style={{ paddingLeft: 4 }}
                 color={colors["neutral-text-body"]}
               >
-                {estimatePrice}
+                {/*{estimatePrice}*/}
               </OWText>
             </View>
           </OWCard>
@@ -556,34 +437,40 @@ export const NewSendScreen: FunctionComponent = observer(() => {
             }}
             type="normal"
           >
-            <View style={styles.containerFee}>
-              <OWText
-                color={colors["neutral-text-title"]}
-                weight="600"
-                size={16}
-              >
-                Transaction fee
-              </OWText>
-              <TouchableOpacity
-                style={{ flexDirection: "row" }}
-                onPress={_onPressFee}
-              >
-                <OWText
-                  color={colors["primary-text-action"]}
-                  weight="600"
-                  size={16}
-                >
-                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}
-                  {priceStore
-                    .calculatePrice(sendConfigs.feeConfig.fee)
-                    ?.toString()}{" "}
-                </OWText>
-                <DownArrowIcon
-                  height={11}
-                  color={colors["primary-text-action"]}
-                />
-              </TouchableOpacity>
-            </View>
+            <FeeControl
+              senderConfig={sendConfigs.senderConfig}
+              feeConfig={sendConfigs.feeConfig}
+              gasConfig={sendConfigs.gasConfig}
+              gasSimulator={gasSimulator}
+            />
+            {/*<View style={styles.containerFee}>*/}
+            {/*  <OWText*/}
+            {/*    color={colors["neutral-text-title"]}*/}
+            {/*    weight="600"*/}
+            {/*    size={16}*/}
+            {/*  >*/}
+            {/*    Transaction fee*/}
+            {/*  </OWText>*/}
+            {/*  <TouchableOpacity*/}
+            {/*    style={{ flexDirection: "row" }}*/}
+            {/*    onPress={_onPressFee}*/}
+            {/*  >*/}
+            {/*    <OWText*/}
+            {/*      color={colors["primary-text-action"]}*/}
+            {/*      weight="600"*/}
+            {/*      size={16}*/}
+            {/*    >*/}
+            {/*      {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}*/}
+            {/*      {priceStore*/}
+            {/*        .calculatePrice(sendConfigs.feeConfig.fee)*/}
+            {/*        ?.toString()}{" "}*/}
+            {/*    </OWText>*/}
+            {/*    <DownArrowIcon*/}
+            {/*      height={11}*/}
+            {/*      color={colors["primary-text-action"]}*/}
+            {/*    />*/}
+            {/*  </TouchableOpacity>*/}
+            {/*</View>*/}
 
             <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 

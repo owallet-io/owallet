@@ -52,7 +52,7 @@ export const MemoInput: FunctionComponent<{
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         onChangeText={(text) => {
-          memoConfig.setMemo(text);
+          memoConfig.setValue(text);
         }}
         inputLeft={inputLeft}
       />

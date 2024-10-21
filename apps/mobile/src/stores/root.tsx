@@ -69,6 +69,7 @@ import { AppInit, appInit } from '@stores/app_init';
 import { ModalStore } from '@stores/modal';
 import { UniversalSwapStore, universalSwapStore } from '@stores/universal_swap';
 import { UIConfigStore } from '@stores/ui-config';
+import { BrowserStore } from '@stores/browser';
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -126,7 +127,7 @@ export class RootStore {
   public readonly walletConnectStore: WalletConnectStore;
   public readonly deepLinkStore: DeepLinkStore;
   public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
-
+  public readonly browserStore: BrowserStore;
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -190,7 +191,7 @@ export class RootStore {
         coingeckoAPIURI: ''
       })
     );
-
+    this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
     //     this.queriesStore.sharedContext,
     //     process.env['KEPLR_EXT_TX_HISTORY_BASE_URL'] || '',
@@ -405,14 +406,13 @@ export class RootStore {
       this.chainStore,
       this.queriesStore
     );
-    // this.axelarEVMBridgeCurrencyRegistrar =
-    //     new AxelarEVMBridgeCurrencyRegistrar(
-    //         new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
-    //         7 * 24 * 3600 * 1000,
-    //         this.chainStore,
-    //         this.queriesStore,
-    //         'ethereum',
-    //     );
+    // this.axelarEVMBridgeCurrencyRegistrar = new AxelarEVMBridgeCurrencyRegistrar(
+    //   new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore,
+    //   'ethereum'
+    // );
 
     // this.uiConfigStore = new UIConfigStore(
     //     {
@@ -461,21 +461,21 @@ export class RootStore {
     //     kvStore: new AsyncKVStore('store_favorite_url'),
     // });
 
-    // this.walletConnectStore = new WalletConnectStore(
-    //     new AsyncKVStore('store_wallet_connect_v2'),
-    //     {
-    //         addEventListener: (type: string, fn: () => void) => {
-    //             eventEmitter.addListener(type, fn);
-    //         },
-    //         removeEventListener: (type: string, fn: () => void) => {
-    //             eventEmitter.removeListener(type, fn);
-    //         },
-    //     },
-    //     this.chainStore,
-    //     this.keyRingStore,
-    //     this.permissionStore,
-    //     this.permissionManagerStore,
-    // );
+    this.walletConnectStore = new WalletConnectStore(
+      new AsyncKVStore('store_wallet_connect_v2'),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        }
+      },
+      this.chainStore,
+      this.keyRingStore,
+      this.permissionStore,
+      this.permissionManagerStore
+    );
 
     this.deepLinkStore = new DeepLinkStore(this.walletConnectStore);
 

@@ -343,7 +343,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       this.chainInfo.features &&
       this.chainInfo.features.includes("terra-classic-fee")
     ) {
-      const etcQueries = this.queriesStore.get(this.chainId).keplrETC;
+      const etcQueries = this.queriesStore.get(this.chainId).owalletETC;
       if (
         etcQueries &&
         etcQueries.queryTerraClassicTaxRate.response &&
@@ -892,7 +892,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       this.chainInfo.features &&
       this.chainInfo.features.includes("terra-classic-fee")
     ) {
-      const etcQueries = this.queriesStore.get(this.chainId).keplrETC;
+      const etcQueries = this.queriesStore.get(this.chainId).owalletETC;
       if (etcQueries) {
         if (
           etcQueries.queryTerraClassicTaxRate.error ||

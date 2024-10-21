@@ -26,6 +26,7 @@ export const AFFILIATE_ADDRESS = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
 
 export const SCREENS = {
   Home: "Home",
+  SelectAsset: "SelectAsset",
   TransactionDetail: "Transactions.Detail",
   BackupMnemonic: "BackupMnemonic",
   RecoveryPhrase: "RecoveryPhrase",
@@ -174,6 +175,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.ManageWalletConnect]: {
     title: "Manage Wallet Connect",
+  },
+  [SCREENS.SelectAsset]: {
+    title: "Select Asset",
   },
   [SCREENS.Tokens]: {
     title: HEADER_KEY.showNetworkHeader,

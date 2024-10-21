@@ -1,365 +1,295 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useEffect, useRef } from "react";
+import {
+  RouteProp,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import {
-  View,
-  Image,
-  ScrollView,
-  InteractionManager,
-  StyleSheet,
-} from "react-native";
-import { Text } from "@src/components/text";
-
-import { metrics } from "../../themes";
-import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  formatContractAddress,
-  openLink,
-} from "../../utils/helper";
-import { ChainIdEnum } from "@owallet/common";
-import { API } from "@src/common/api";
-import { OwalletEvent, TRON_ID } from "@owallet/common";
-import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { OWButton } from "@src/components/button";
-
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { CoinPretty, Dec } from "@owallet/unit";
-import { AppCurrency, StdFee } from "@owallet/types";
-import { BondStatus, CoinPrimitive } from "@owallet/stores";
-import _ from "lodash";
-import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
+import { Text, View, StyleSheet } from "react-native";
+import { useStyle } from "../../styles";
 import { TendermintTxTracer } from "@owallet/cosmos";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
+import { Buffer } from "buffer/";
+import LottieView from "lottie-react-native";
+// import {SimpleGradient} from '../../components/svg';
+// import {ArrowRightIcon} from '../../components/icon/arrow-right';
+// import {StackNavProp} from '../../navigation';
+import { Box } from "../../components/box";
+// import {TextButton} from '../../components/text-button';
+// import {useNotification} from '../../hooks/notification';
+import { FormattedMessage, useIntl } from "react-intl";
+// import {EthTxReceipt, EthTxStatus} from '@owallet/types';
+import { simpleFetch } from "@owallet/simple-fetch";
+import { retry } from "@owallet/common";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { OWButton } from "@components/button";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { EthTxReceipt, EthTxStatus } from "@owallet/types";
+import { notification } from "@stores/notification";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    txsStore,
-    accountStore,
-    keyRingStore,
-    priceStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore } = useStore();
+  // const notification = useNotification();
+  const intl = useIntl();
 
-  const [retry] = useState(3);
-  const { colors } = useTheme();
-  const [data, setData] = useState<Partial<any>>();
+  const isPendingGoToResult = useRef(false);
+  //NOTE home으로 갈 때 home이 다 렌더링이 안될 때 tx에 성공되면 tx tracer에 의해서 success로 이동됨
+  //해서 해당 값을 통해서 home으로 갈 경우 success로 이동 안될 수 있게 함
+  const isPendingGotoHome = useRef(false);
+
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          chainId?: string;
-          // Hex encoded bytes.
+          chainId: string;
           txHash: string;
-          tronWeb?: any;
-          title: string;
-          data?: {
-            memo: string;
-            fee: StdFee;
-            fromAddress: string;
-            toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
-          };
+          isEvmTx?: boolean;
         }
       >,
       string
     >
   >();
 
-  const { current } = chainStore;
-  const chainId = current.chainId;
-  const queries = queriesStore.get(chainId);
-  const { params } = route;
-  const accountAddress = accountStore
-    .getAccount(chainId)
-    .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
-  const txHash = params?.txHash;
-  const chainInfo = chainStore.getChain(chainId);
+  const chainId = route.params.chainId;
+
+  const style = useStyle();
+  const navigation = useNavigation();
 
   const isFocused = useIsFocused();
+
+  // useEffect(() => {
+  //   notification.disable(true);
+  //   return () => {
+  //     //NOTE 성공 또는 실패로 라우팅될때 해당 페이지가 렌더링된후 현재 pending페이지의 useEffect return 이 실행됨
+  //     //그래서 성공페이지에서 disable(true)로 설정된후 이후 여기의 disable(false)가 실행됨
+  //     //해서 홈으로 만 갈때만 disable을 false로 설정함
+  //     if (!isPendingGoToResult.current) {
+  //       notification.disable(false);
+  //     }
+  //   };
+  // }, [notification]);
+
   useEffect(() => {
-    // let txTracer: TendermintTxTracer | undefined;
-    if (isFocused && chainId && chainInfo) {
-      if (chainId === ChainIdEnum.Bitcoin) {
-        API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
-          .then((res: any) => {
-            if (res?.confirmed) {
-              navigate(SCREENS.TxSuccessResult, {
-                txHash: txHash,
+    if (isFocused) {
+      const txHash = route.params.txHash;
+      const isEvmTx = route.params.isEvmTx;
+      const chainInfo = chainStore.getChain(chainId);
+
+      if (isEvmTx) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              if (chainInfo.evm === undefined) {
+                return reject();
+              }
+
+              const txReceiptResponse = await simpleFetch<{
+                result: EthTxReceipt | null;
+                error?: Error;
+              }>(chainInfo.evm.rpc, {
+                method: "POST",
+                headers: {
+                  "content-type": "application/json",
+                },
+                body: JSON.stringify({
+                  jsonrpc: "2.0",
+                  method: "eth_getTransactionReceipt",
+                  params: [txHash],
+                  id: 1,
+                }),
               });
+
+              if (txReceiptResponse.data.error) {
+                console.error(txReceiptResponse.data.error);
+                resolve();
+              }
+
+              const txReceipt = txReceiptResponse.data.result;
+              if (txReceipt) {
+                if (isPendingGotoHome.current) {
+                  return resolve();
+                }
+
+                if (txReceipt.status === EthTxStatus.Success) {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                } else {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                }
+                resolve();
+              }
+
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 4000,
+          }
+        );
+      } else {
+        const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+        txTracer
+          .traceTx(Buffer.from(txHash, "hex"))
+          .then((tx) => {
+            if (isPendingGotoHome.current) {
+              return;
+            }
+
+            if (tx.code == null || tx.code === 0) {
+              isPendingGoToResult.current = true;
+              navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+            } else {
+              isPendingGoToResult.current = true;
+              navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
             }
           })
-          .catch((err) => console.log(err, "err data"));
-      }
-    }
+          .catch((e) => {
+            console.log(`Failed to trace the tx (${txHash})`, e);
+          });
 
-    return () => {};
-  }, [chainId, chainStore, isFocused, route.params.txHash, retry]);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
-    );
-  };
-  const handleOnExplorer = async () => {
-    if (chainInfo?.raw?.txExplorer && txHash) {
-      const url = handleUrl(txHash);
-      await openLink(url);
-    }
-  };
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
-  const txs = txsStore(chainTxs);
-  const getDetailByHash = async (txHash) => {
-    try {
-      const tx = await txs.getTxsByHash(txHash, accountAddress);
-      setData(tx);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-  useEffect(() => {
-    if (txHash) {
-      InteractionManager.runAfterInteractions(() => {
-        if (chainInfo?.chainId === ChainIdEnum.Bitcoin) return;
-        const data = {
-          ...params?.data,
+        return () => {
+          txTracer.close();
         };
-        if (chainInfo?.chainId === "oraibtc-mainnet-1") {
-          setTimeout(() => {
-            if (params?.data?.type === "send") {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
-              }
-            } else {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
-              }
-              Promise.all([
-                queries.cosmos.queryValidators
-                  .getQueryStatus(BondStatus.Bonded)
-                  .fetch(),
-                queries.cosmos.queryDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryRewards
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryUnbondingDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-              ]);
-            }
-            navigate(SCREENS.TxSuccessResult, {
-              chainId,
-              txHash,
-              data,
-            });
-          }, 5000);
-          return;
-        }
-        OwalletEvent.txHashListener(txHash, (txInfo) => {
-          if (txInfo?.code === 0) {
-            navigate(SCREENS.TxSuccessResult, {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
-          } else {
-            navigate(SCREENS.TxFailedResult, {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
-          }
-        });
-        getDetailByHash(txHash);
-      });
-    }
-  }, [txHash, chainId]);
-  const fee = () => {
-    if (params?.data?.fee) {
-      return new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee.amount?.[0]?.amount)
-      );
-    } else {
-      if (data?.stdFee?.amount?.[0]?.amount) {
-        return new CoinPretty(
-          chainInfo.feeCurrencies?.[0],
-          new Dec(data?.stdFee?.amount?.[0]?.amount)
-        );
       }
-      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
     }
-  };
-  const dataItem =
-    params?.data &&
-    _.pickBy(params?.data, function (value, key) {
-      return (
-        key !== "memo" &&
-        key !== "fee" &&
-        key !== "amount" &&
-        key !== "currency" &&
-        key !== "type"
-      );
-    });
-  const styles = styling(colors);
-  return (
-    <PageWithBottom
-      bottomGroup={
-        <View style={styles.containerBottomButton}>
-          <Text style={styles.txtPending}>
-            The transaction is still pending. {"\n"}
-            You can check the status on {chainInfo?.raw?.txExplorer?.name}
-          </Text>
-          <OWButton
-            label="View on Explorer"
-            onPress={handleOnExplorer}
-            style={styles.btnExplorer}
-            textStyle={styles.txtViewOnExplorer}
-          />
-        </View>
-      }
-    >
-      <View style={styles.containerBox}>
-        {/*<PageHeader title={"Transaction details"} />*/}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <HeaderTx
-            type={capitalizedText(params?.data?.type) || "Send"}
-            imageType={
-              <Image
-                style={styles.imageType}
-                fadeDuration={0}
-                resizeMode="stretch"
-                source={require("../../assets/image/transactions/process_pedding.gif")}
-              />
-            }
-            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
-              ?.shrink(true)
-              ?.trim(true)
-              ?.toString()}`}
-            price={priceStore.calculatePrice(amount)?.toString()}
-          />
-          <View style={styles.cardBody}>
-            {dataItem &&
-              Object.keys(dataItem).map(function (key) {
-                return (
-                  <ItemReceivedToken
-                    label={capitalizedText(key)}
-                    valueDisplay={
-                      dataItem?.[key] &&
-                      formatContractAddress(dataItem?.[key], 20)
-                    }
-                    value={dataItem?.[key]}
-                  />
-                );
-              })}
+  }, [
+    chainId,
+    chainStore,
+    isFocused,
+    navigation,
+    route.params.txHash,
+    route.params.isEvmTx,
+  ]);
 
-            <ItemReceivedToken
-              label={"Fee"}
-              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
-                priceStore.calculatePrice(fee()) || "$0"
-              })`}
-              btnCopy={false}
-            />
-            <ItemReceivedToken
-              label={"Memo"}
-              valueDisplay={params?.data?.memo || "-"}
-              btnCopy={false}
-            />
-          </View>
-        </ScrollView>
+  return (
+    <Box style={style.flatten(["flex-grow-1", "items-center"])}>
+      <View style={style.flatten(["absolute-fill"])}>
+        {/*<SimpleGradient*/}
+        {/*  degree={*/}
+        {/*    style.get('tx-result-screen-pending-gradient-background').degree*/}
+        {/*  }*/}
+        {/*  stops={*/}
+        {/*    style.get('tx-result-screen-pending-gradient-background').stops*/}
+        {/*  }*/}
+        {/*  fallbackAndroidImage={*/}
+        {/*    style.get('tx-result-screen-pending-gradient-background')*/}
+        {/*      .fallbackAndroidImage*/}
+        {/*  }*/}
+        {/*/>*/}
       </View>
-    </PageWithBottom>
+      <View style={style.flatten(["flex-2"])} />
+      <View
+        style={style.flatten([
+          "width-122",
+          "height-122",
+          "border-width-8",
+          "border-color-blue-300",
+          "border-radius-64",
+        ])}
+      >
+        <Box
+          alignX="center"
+          alignY="center"
+          style={{
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 10,
+            ...style.flatten(["absolute"]),
+          }}
+        >
+          <LottieView
+            source={require("@assets/animations/loading_owallet.json")}
+            colorFilters={[
+              {
+                keypath: "#dot01",
+                color: style.flatten(["color-blue-300"]).color,
+              },
+              {
+                keypath: "#dot02",
+                color: style.flatten(["color-blue-300"]).color,
+              },
+              {
+                keypath: "#dot03",
+                color: style.flatten(["color-blue-300"]).color,
+              },
+            ]}
+            autoPlay
+            loop
+            style={{ width: 150, height: 150 }}
+          />
+        </Box>
+      </View>
+
+      <Text
+        style={style.flatten([
+          "mobile-h3",
+          "color-text-high",
+          "margin-top-82",
+          "margin-bottom-32",
+        ])}
+      >
+        <FormattedMessage id="page.tx-result-pending.title" />
+      </Text>
+
+      {/* To match the height of text with other tx result screens,
+         set the explicit height to upper view*/}
+      <View
+        style={StyleSheet.flatten([
+          style.flatten(["padding-x-66"]),
+          {
+            overflow: "visible",
+          },
+        ])}
+      >
+        <Text
+          style={style.flatten([
+            "subtitle2",
+            "text-center",
+            "color-text-middle",
+          ])}
+        >
+          <FormattedMessage id="page.tx-result-pending.paragraph" />
+        </Text>
+      </View>
+
+      <Box paddingX={48} height={116} marginTop={58} alignX="center">
+        <OWButton
+          type={"link"}
+          style={style.flatten(["flex-1"])}
+          size="large"
+          label={intl.formatMessage({
+            id: "page.tx-result-pending.go-to-home-button",
+          })}
+          iconRight={(color) => (
+            <View style={style.flatten(["margin-left-8"])}>
+              {/*<ArrowRightIcon color={color} size={18} />*/}
+              <OWIcon name={"tdesignarrow-right"} size={18} color={color} />
+            </View>
+          )}
+          onPress={() => {
+            isPendingGotoHome.current = true;
+            // navigate(SCREENS.Home);
+            resetTo(SCREENS.STACK.MainTab);
+          }}
+        />
+      </Box>
+
+      <View style={style.flatten(["flex-2"])} />
+    </Box>
   );
 });
-const styling = (colors) => {
-  return StyleSheet.create({
-    containerSuccess: {
-      backgroundColor: colors["highlight-surface-subtle"],
-      width: "100%",
-      paddingHorizontal: 12,
-      paddingVertical: 2,
-      borderRadius: 99,
-      alignSelf: "center",
-    },
-    containerBottomButton: {
-      width: "100%",
-      paddingHorizontal: 16,
-      paddingTop: 16,
-    },
-    btnApprove: {
-      borderRadius: 99,
-      backgroundColor: colors["primary-surface-default"],
-    },
-    cardBody: {
-      padding: 16,
-      borderRadius: 24,
-      marginHorizontal: 16,
-      backgroundColor: colors["neutral-surface-card"],
-    },
-    viewNetwork: {
-      flexDirection: "row",
-      paddingTop: 6,
-    },
-    imgNetwork: {
-      height: 20,
-      width: 20,
-      backgroundColor: colors["neutral-icon-on-dark"],
-    },
-    containerBox: {
-      flex: 1,
-    },
-    txtPending: {
-      textAlign: "center",
-      paddingVertical: 16,
-    },
-    txtViewOnExplorer: {
-      fontSize: 14,
-      fontWeight: "600",
-      color: colors["neutral-text-action-on-dark-bg"],
-    },
-    btnExplorer: {
-      borderRadius: 99,
-    },
-    imageType: {
-      width: metrics.screenWidth - 104,
-      height: 12,
-    },
-  });
-};
