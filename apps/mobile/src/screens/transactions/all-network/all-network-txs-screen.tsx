@@ -44,9 +44,7 @@ const AllNetworkTxsScreen = observer(() => {
   const { chainId } = chainStore.current;
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
+  const address = account.addressDisplay;
   const allArr = appInitStore.getInitApp.isAllNetworks
     ? hugeQueriesStore.getAllAddrByChain
     : {

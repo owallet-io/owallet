@@ -308,14 +308,14 @@ export const AppNavigation: FunctionComponent = observer(() => {
 
             {/*  <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.Transactions}*/}
-            {/*    component={TxTransactionsScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.HistoryDetail}*/}
-            {/*    component={HistoryDetail}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.Transactions}
+              component={TxTransactionsScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.HistoryDetail}
+              component={HistoryDetail}
+            />
             <Stack.Screen
               options={{
                 headerShown: false,
