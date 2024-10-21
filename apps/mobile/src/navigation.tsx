@@ -64,6 +64,7 @@ import { OWButton } from '@components/button';
 import OWButtonIcon from '@components/button/ow-button-icon';
 import OWIcon from '@components/ow-icon/ow-icon';
 import { AddChainScreen } from '@screens/setting/screens/manage-chains/add-network';
+import { SendEvmNewScreen } from './screens/send/send-evm-new';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
