@@ -5,7 +5,7 @@ export const PopupSize = {
   // If actual height excluded status bar is lesser than 600px,
   // it is hard to manage scroll bar of popup.
   // So, we need to add additional value to make sure that the actual height is greater than 600px.
-  height: 960,
+  height: 730,
 };
 
 const lastWindowIds: Record<string, number | undefined> = {};

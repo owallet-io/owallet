@@ -36,6 +36,7 @@ import { WalletStatus } from "@owallet/stores";
 import { Address } from "../../components/address";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 enum Tab {
   Details,
@@ -336,7 +337,7 @@ export const SignPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
         paddingBottom: 160,
       }}

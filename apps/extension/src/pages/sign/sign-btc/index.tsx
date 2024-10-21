@@ -35,6 +35,7 @@ import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 const cx = cn.bind(style);
 
@@ -218,7 +219,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
         paddingBottom: 160,
       }}

@@ -15,6 +15,7 @@ import ReactSwitch from "react-switch";
 import { FeeButtons, Input } from "../../../components/form";
 import { useStore } from "../../../stores";
 import { CoinPretty, Dec } from "@owallet/unit";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 export const FeeModal: FunctionComponent<{
   feeConfig: FeeConfig | FeeEvmConfig;
@@ -39,7 +40,10 @@ export const FeeModal: FunctionComponent<{
   const feePrice = priceStore.calculatePrice(fee);
 
   return (
-    <div className={style.feeModal} style={{ height: "100vh" }}>
+    <div
+      className={style.feeModal}
+      style={{ height: isRunningInSidePanel() ? "100vh" : 580 }}
+    >
       <div
         style={{
           display: "flex",

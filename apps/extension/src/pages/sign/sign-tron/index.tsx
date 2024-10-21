@@ -27,6 +27,7 @@ import useOnClickOutside from "../../../hooks/use-click-outside";
 import withErrorBoundary from "../hoc/withErrorBoundary";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 enum Tab {
   Details,
@@ -182,7 +183,7 @@ const SignTronContent: FunctionComponent = () => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
       }}
     >

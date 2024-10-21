@@ -11,6 +11,7 @@ import { Text } from "../../components/common/text";
 import colors from "../../theme/colors";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 export const AccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -80,7 +81,12 @@ export const AccessPage: FunctionComponent = observer(() => {
   });
 
   return (
-    <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
+    <EmptyLayout
+      style={{
+        height: isRunningInSidePanel() ? "100%" : 580,
+        paddingTop: "80px",
+      }}
+    >
       <div className={style.container}>
         <img
           src={require("assets/images/img_owallet.png")}
