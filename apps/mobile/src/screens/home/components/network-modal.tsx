@@ -154,6 +154,8 @@ export const NetworkModal: FC<{
         modalStore.close();
         if (!item.isAll) {
           tracking(`Select ${item?.chainName} Network`);
+          console.log("item?.chainId", item?.chainId);
+
           chainStore.selectChain(item?.chainId);
           await chainStore.saveLastViewChainId();
           appInitStore.selectAllNetworks(false);

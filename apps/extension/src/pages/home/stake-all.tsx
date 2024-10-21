@@ -858,19 +858,19 @@ const ClaimTokenItem: FunctionComponent<{
             display: "flex",
           }}
           onClick={() => {
-            _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
+            // _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
           }}
         >
           {state.failedReason ? (
             <img src={require("assets/svg/tdesign_error-triangle.svg")} />
           ) : undefined}
-          {isLoading ? (
+          {/* {isLoading ? (
             <span>
               <i className="fas fa-spinner fa-spin" />
             </span>
           ) : (
             "Claim"
-          )}
+          )} */}
         </div>
         <div
           onClick={() => {}}

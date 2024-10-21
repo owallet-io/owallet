@@ -1,4 +1,4 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -8,7 +8,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -39,6 +39,8 @@ input[type="number"] {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .token-selector {
@@ -60,7 +62,7 @@ input[type="number"] {
     color: $color-neutral-2;
     &::after {
       border-radius: 2px;
-      content: " ";
+      content: ' ';
       display: block;
       height: 0.625em;
       margin-top: -0.4375em;

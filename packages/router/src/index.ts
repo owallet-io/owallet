@@ -7,3 +7,4 @@ export * from "./error";
 export * from "./constants";
 export * from "./encoding";
 export * from "./json-uint8-array";
+export * from "./simple";

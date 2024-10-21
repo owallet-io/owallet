@@ -32,6 +32,7 @@ export const EditAccountPage = observer(() => {
   );
   const wallet = keyRingStore.multiKeyStoreInfo[Number(params.keystoreIndex)];
   const onAddAccount = () => {
+    window.close();
     browser.tabs.create({
       url: "/popup.html#/register",
     });

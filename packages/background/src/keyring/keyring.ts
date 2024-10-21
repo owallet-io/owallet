@@ -19,7 +19,6 @@ import {
   getNetworkTypeByChainId,
   KVStore,
   KVStoreType,
-  splitPath,
   LedgerAppType,
 } from "@owallet/common";
 import { ChainIdHelper } from "@owallet/cosmos";
@@ -1128,6 +1127,8 @@ export class KeyRing {
 
     const networkType = getNetworkTypeByChainId(chainId);
 
+    console.log("chainId", chainId);
+
     const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
 
     // using ledger app
@@ -1192,6 +1193,8 @@ export class KeyRing {
 
         return this.signEthereum(privKey, message);
       }
+      console.log("privKey", privKey);
+
       return privKey.sign(message);
     }
   }

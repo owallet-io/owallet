@@ -101,7 +101,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: "Oraichain",
     chainName: "Oraichain",
     chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+      "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
     networkType: "cosmos",
     stakeCurrency: {
       coinDenom: "ORAI",
@@ -109,7 +109,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: "oraichain-token",
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       gasPriceStep: {
         low: 0.003,
         average: 0.005,
@@ -206,6 +206,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
         },
         {
+          coinDenom: "BTC V2",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc",
+          coinDecimals: 14,
+          coinGeckoId: "bitcoin",
+          coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
+        },
+        {
           type: "cw20",
           coinDenom: "ORAIX",
           coinMinimalDenom:
@@ -213,7 +221,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
           contractAddress: "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
           coinDecimals: 6,
           coinGeckoId: "oraidex",
-          coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
+          // coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/oraix.png",
         },
         {
           type: "cw20",
@@ -389,7 +399,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: "oraichain-token",
           coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
         },
         {
           coinDenom: "BEP20 AIRI",
@@ -1063,7 +1073,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: "oraichain-token",
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
       {
         coinDenom: "ORAIX",
@@ -1072,7 +1082,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
         coinDecimals: 18,
         coinGeckoId: "oraidex",
-        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/oraix.png",
       },
     ],
     get feeCurrencies() {
@@ -1129,7 +1140,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: "oraichain-token",
           coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
         },
         {
           coinDenom: "AIRI",
@@ -1700,7 +1711,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: "oraichain-token",
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       gasPriceStep: {
         low: 0.003,
         average: 0.005,

@@ -34,6 +34,9 @@ import { Text } from "../../components/common/text";
 import { DataModal } from "./modals/data-modal";
 import { WalletStatus } from "@owallet/stores";
 import { Address } from "../../components/address";
+import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
+import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 enum Tab {
   Details,
@@ -265,6 +268,22 @@ export const SignPage: FunctionComponent = observer(() => {
     return undefined;
   })();
 
+  const [unmountPromise] = useState(() => {
+    let resolver: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolver = resolve;
+    });
+
+    return {
+      promise,
+      resolver: resolver!,
+    };
+  });
+
+  useUnmount(() => {
+    unmountPromise.resolver();
+  });
+
   useOnClickOutside(settingRef, () => {
     setOpenSetting(false);
   });
@@ -318,9 +337,9 @@ export const SignPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100%",
-        width: "100vw",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
       <div
@@ -351,7 +370,7 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         isLoaded ? (
           <div className={style.container}>
-            <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
+            <div style={{ overflow: "scroll", padding: 16 }}>
               <div
                 className={classnames(style.tabs)}
                 style={{ display: "flex", paddingBottom: 12 }}
@@ -397,7 +416,7 @@ export const SignPage: FunctionComponent = observer(() => {
                 position: "absolute",
                 bottom: 0,
                 width: "100%",
-                height: "25%",
+                height: 160,
                 backgroundColor: colors["neutral-surface-card"],
                 borderTop: "1px solid" + colors["neutral-border-default"],
               }}
@@ -454,7 +473,6 @@ export const SignPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>Demo text</Text> */}
                   </div>
                   <div
                     style={{
@@ -473,12 +491,31 @@ export const SignPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         if (needSetIsProcessing) {
                           setIsProcessing(true);
                         }
 
-                        await signInteractionStore.reject();
+                        await signInteractionStore.reject(
+                          signInteractionStore.waitingData.id,
+                          async (proceedNext) => {
+                            if (!proceedNext) {
+                              if (
+                                interactionInfo.interaction &&
+                                !interactionInfo.interactionInternal
+                              ) {
+                                handleExternalInteractionWithNoProceedNext();
+                              }
+                            }
+
+                            if (
+                              interactionInfo.interaction &&
+                              interactionInfo.interactionInternal
+                            ) {
+                              await unmountPromise.promise;
+                            }
+                          }
+                        );
 
                         if (
                           interactionInfo.interaction &&
@@ -496,7 +533,7 @@ export const SignPage: FunctionComponent = observer(() => {
                     </Button>
                     <Button
                       className={classnames(style.button, style.approveBtn)}
-                      // disabled={approveIsDisabled}
+                      disabled={approveIsDisabled}
                       data-loading={signInteractionStore.isLoading}
                       loading={signInteractionStore.isLoading}
                       onClick={async (e) => {
@@ -508,17 +545,34 @@ export const SignPage: FunctionComponent = observer(() => {
 
                         if (signDocHelper.signDocWrapper) {
                           await signInteractionStore.approveAndWaitEnd(
-                            signDocHelper.signDocWrapper
+                            signDocHelper.signDocWrapper,
+                            async (proceedNext) => {
+                              if (!proceedNext) {
+                                if (
+                                  interactionInfo.interaction &&
+                                  !interactionInfo.interactionInternal
+                                ) {
+                                  handleExternalInteractionWithNoProceedNext();
+                                }
+                              }
+
+                              if (
+                                interactionInfo.interaction &&
+                                interactionInfo.interactionInternal
+                              ) {
+                                await unmountPromise.promise;
+                              }
+                            }
                           );
                         }
-
-                        history.goBack();
 
                         if (
                           interactionInfo.interaction &&
                           !interactionInfo.interactionInternal
                         ) {
                           window.close();
+                        } else {
+                          history.goBack();
                         }
                       }}
                     >

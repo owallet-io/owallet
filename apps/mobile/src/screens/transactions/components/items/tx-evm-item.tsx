@@ -21,7 +21,8 @@ const getCurrency = (item, itemCoingecko) => {
   const currency = {
     coinDecimals: item.tokenInfo.attributes.decimals,
     coinImageUrl:
-      item.tokenInfo.attributes.image_url == "missing.png"
+      item.tokenInfo.attributes.image_url == "missing.png" ||
+      item.tokenInfo.attributes.image_url == "missing.svg"
         ? unknownToken.coinImageUrl
         : item.tokenInfo.attributes.image_url,
     coinGeckoId:

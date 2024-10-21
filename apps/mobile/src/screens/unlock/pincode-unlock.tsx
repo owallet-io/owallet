@@ -46,6 +46,7 @@ import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
+import { ChainIdEnum } from "@owallet/common";
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
   tryEnabled: boolean
@@ -283,7 +284,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
-    hugeQueriesStore,
   } = useStore();
   tracking(`Unlock Screen`);
   const navigation = useNavigation();
@@ -313,6 +313,22 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
+
+  const selectChain = async () => {
+    if (appInitStore.getInitApp.wallet === "osmosis") {
+      chainStore.selectChain(ChainIdEnum.Osmosis);
+      await chainStore.saveLastViewChainId();
+      appInitStore.selectAllNetworks(false);
+    } else if (appInitStore.getInitApp.wallet === "injective") {
+      chainStore.selectChain(ChainIdEnum.Injective);
+      await chainStore.saveLastViewChainId();
+      appInitStore.selectAllNetworks(false);
+    }
+  };
+
+  useEffect(() => {
+    selectChain();
+  }, [appInitStore.getInitApp.wallet]);
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,

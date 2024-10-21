@@ -49,6 +49,6 @@ export abstract class Message<R> {
     _env: Omit<Env, "requestInteraction">,
     _sender: MessageSender
   ): boolean {
-    return true;
+    return false;
   }
 }
