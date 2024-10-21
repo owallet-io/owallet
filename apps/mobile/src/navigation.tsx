@@ -324,18 +324,18 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={CameraScreen}
             />
 
-            {/*  <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />*/}
+            <Stack.Screen name={SCREENS.QRScreen} component={AddressQRScreen} />
 
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.NetworkSelect}*/}
             {/*    component={SelectNetworkScreen}*/}
             {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.NetworkToken}*/}
-            {/*    component={AddTokenScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.NetworkToken}
+              component={AddTokenScreen}
+            />
 
-            {/*  <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />*/}
+            <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
             {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />*/}
             <Stack.Screen

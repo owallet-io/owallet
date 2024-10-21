@@ -171,6 +171,58 @@ export const SwapFeeBps = {
 
 export const EmbedChainInfos: ChainInfo[] = [
   {
+    rpc: "https://sapphire.oasis.io",
+    rest: "https://sapphire.oasis.io",
+    grpc: "https://grpc.oasis.dev",
+    chainId: "oasis-1",
+    chainName: "Oasis Mainnet",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 9,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 9,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    bip44: {
+      coinType: 474,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("oasis"),
+    feeCurrencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 9,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+        gasPriceStep: {
+          high: 0,
+          low: 0,
+          average: 0,
+        },
+      },
+    ],
+    features: ["oasis"],
+    txExplorer: {
+      name: "Oasis scan",
+      txUrl: "https://www.oasisscan.com/transactions/{txHash}",
+      accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
+    },
+  },
+  {
     rpc: "https://evm-1.keplr.app",
     rest: "https://evm-1.keplr.app",
     evm: {

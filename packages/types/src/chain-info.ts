@@ -2,10 +2,11 @@ import { Currency, AppCurrency, FeeCurrency } from "./currency";
 import { BIP44 } from "./bip44";
 import { Bech32Config } from "./bech32";
 import { EVMInfo } from "./ethereum";
-export type NetworkType = "cosmos" | "evm" | "bitcoin";
+export type NetworkType = "cosmos" | "evm" | "bitcoin" | "oasis";
 export interface ChainInfo {
   readonly rpc: string;
   readonly rest: string;
+  readonly grpc?: string;
   readonly nodeProvider?: {
     readonly name: string;
     readonly email?: string;

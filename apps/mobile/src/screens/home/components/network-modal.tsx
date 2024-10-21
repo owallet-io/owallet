@@ -83,28 +83,29 @@ export const NetworkModal: FC<{
     return () => {};
   }, [accountOrai.bech32Address]);
   const onConfirm = async (item: any) => {
-    const { networkType } = chainStore.getChain(item?.chainId);
-    const keyDerivation = (() => {
-      const keyMain = getKeyDerivationFromAddressType(account.addressType);
-      if (networkType === "bitcoin") {
-        return keyMain;
-      }
-      return "44";
-    })();
+    // const { networkType } = chainStore.getChain(item?.chainId);
+    // const keyDerivation = (() => {
+    //   const keyMain = getKeyDerivationFromAddressType(account.addressType);
+    //   if (networkType === "bitcoin") {
+    //     return keyMain;
+    //   }
+    //   return "44";
+    // })();
+    // chainStore.selectChain(item?.chainId);
+    // await chainStore.saveLastViewChainId();
+    // appInitStore.selectAllNetworks(false);
+    // modalStore.close();
+    // Popup.hide();
+    //
+    // await keyRingStore.setKeyStoreLedgerAddress(
+    //   `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
+    //     bip44Option.bip44HDPath.account
+    //   }'/${bip44Option.bip44HDPath.change}/${
+    //     bip44Option.bip44HDPath.addressIndex
+    //   }`,
+    //   item?.chainId
+    // );
     chainStore.selectChain(item?.chainId);
-    await chainStore.saveLastViewChainId();
-    appInitStore.selectAllNetworks(false);
-    modalStore.close();
-    Popup.hide();
-
-    await keyRingStore.setKeyStoreLedgerAddress(
-      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
-        bip44Option.bip44HDPath.account
-      }'/${bip44Option.bip44HDPath.change}/${
-        bip44Option.bip44HDPath.addressIndex
-      }`,
-      item?.chainId
-    );
   };
 
   useEffect(() => {
@@ -121,48 +122,50 @@ export const NetworkModal: FC<{
 
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
-      if (account.isNanoLedger) {
-        modalStore.close();
-        if (!item.isAll) {
-          Popup.show({
-            type: "confirm",
-            title: "Switch network!",
-            textBody: `You are switching to ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } network. Please confirm that you have ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App opened before switch network`,
-            buttonText: `I have switched ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App`,
-            confirmText: "Cancel",
-            okButtonStyle: {
-              backgroundColor: colors["orange-800"],
-            },
-            callback: () => onConfirm(item),
-            cancelCallback: () => {
-              Popup.hide();
-            },
-            bounciness: 0,
-            duration: 10,
-          });
-          return;
-        } else {
-          appInitStore.selectAllNetworks(true);
-        }
-      } else {
-        modalStore.close();
-        if (!item.isAll) {
-          tracking(`Select ${item?.chainName} Network`);
-          chainStore.selectChain(item?.chainId);
-          await chainStore.saveLastViewChainId();
-          appInitStore.selectAllNetworks(false);
-          modalStore.close();
-        } else {
-          tracking("Select All Network");
-          appInitStore.selectAllNetworks(true);
-        }
-      }
+      // if (account.isNanoLedger) {
+      //   modalStore.close();
+      //   if (!item.isAll) {
+      //     Popup.show({
+      //       type: "confirm",
+      //       title: "Switch network!",
+      //       textBody: `You are switching to ${
+      //         COINTYPE_NETWORK[item.bip44.coinType]
+      //       } network. Please confirm that you have ${
+      //         COINTYPE_NETWORK[item.bip44.coinType]
+      //       } App opened before switch network`,
+      //       buttonText: `I have switched ${
+      //         COINTYPE_NETWORK[item.bip44.coinType]
+      //       } App`,
+      //       confirmText: "Cancel",
+      //       okButtonStyle: {
+      //         backgroundColor: colors["orange-800"],
+      //       },
+      //       callback: () => onConfirm(item),
+      //       cancelCallback: () => {
+      //         Popup.hide();
+      //       },
+      //       bounciness: 0,
+      //       duration: 10,
+      //     });
+      //     return;
+      //   } else {
+      //     appInitStore.selectAllNetworks(true);
+      //   }
+      // } else {
+      //   modalStore.close();
+      //   if (!item.isAll) {
+      //     tracking(`Select ${item?.chainName} Network`);
+      //     chainStore.selectChain(item?.chainId);
+      //     // await chainStore.saveLastViewChainId();
+      //     appInitStore.selectAllNetworks(false);
+      //     modalStore.close();
+      //   } else {
+      //     tracking("Select All Network");
+      //     appInitStore.selectAllNetworks(true);
+      //   }
+      // }
+      modalStore.close();
+      chainStore.selectChain(item?.chainId);
     } catch (error) {
       showToast({
         type: "danger",

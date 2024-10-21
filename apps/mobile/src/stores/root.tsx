@@ -78,6 +78,7 @@ import { ModalStore } from "@stores/modal";
 import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 import { UIConfigStore } from "@stores/ui-config";
 import { BrowserStore } from "@stores/browser";
+import { OasisQueries } from "@owallet/stores-oasis";
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -114,7 +115,8 @@ export class RootStore {
       AprQueries,
       // CosmosGovernanceQueries,
       // CosmosGovernanceQueriesV1,
-      EthereumQueries
+      EthereumQueries,
+      OasisQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -186,7 +188,6 @@ export class RootStore {
       CommunityChainInfoRepo
     );
 
-    //FIXME - @owallet/stores를 최신 버전으로 업데이트를 해야함
     this.queriesStore = new QueriesStore(
       new AsyncKVStore("store_queries"),
       this.chainStore,
@@ -215,7 +216,8 @@ export class RootStore {
       EthereumQueries.use({
         coingeckoAPIBaseURL: "",
         coingeckoAPIURI: "",
-      })
+      }),
+      OasisQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(

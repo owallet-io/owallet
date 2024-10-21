@@ -2,7 +2,7 @@ import { Bech32Address } from "@owallet/cosmos";
 import {
   IMemoConfig,
   IRecipientConfig,
-  useAddressBookConfig,
+  // useAddressBookConfig,
 } from "@owallet/hooks";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
@@ -30,77 +30,77 @@ const addressBookItemComponent = {
   inSetting: View,
 };
 
-const DeleteContactModal: FunctionComponent = ({
-  addressBookConfig,
-  i,
-  close,
-}) => {
-  const { colors } = useTheme();
-
-  return (
-    <View style={{ alignItems: "center" }}>
-      <Image
-        style={{
-          width: 114,
-          height: 126,
-        }}
-        fadeDuration={0}
-        resizeMode="contain"
-        source={require("../../../../assets/image/img_delete.png")}
-      />
-      <View style={{ padding: 16 }}>
-        <OWText weight="700" size={16}>
-          {"delete contact?".toUpperCase()}
-        </OWText>
-      </View>
-      <OWText color={colors["neutral-text-body"]} weight="500" size={14}>
-        {"Are you sure you want to delete this contact?"}
-      </OWText>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginTop: 48,
-        }}
-      >
-        <OWButton
-          onPress={close}
-          type="secondary"
-          label="Cancel"
-          style={[
-            {
-              borderRadius: 999,
-              width: metrics.screenWidth / 2.2,
-            },
-          ]}
-          textStyle={{
-            fontSize: 14,
-            fontWeight: "600",
-          }}
-        />
-        <OWButton
-          onPress={() => {
-            close();
-            addressBookConfig.removeAddressBook(i);
-          }}
-          type="danger"
-          label="Yes, delete it"
-          style={[
-            {
-              marginLeft: 8,
-              borderRadius: 999,
-              width: metrics.screenWidth / 2.2,
-            },
-          ]}
-          textStyle={{
-            fontSize: 14,
-            fontWeight: "600",
-          }}
-        />
-      </View>
-    </View>
-  );
-};
+// const DeleteContactModal: FunctionComponent = ({
+//   addressBookConfig,
+//   i,
+//   close,
+// }) => {
+//   const { colors } = useTheme();
+//
+//   return (
+//     <View style={{ alignItems: "center" }}>
+//       <Image
+//         style={{
+//           width: 114,
+//           height: 126,
+//         }}
+//         fadeDuration={0}
+//         resizeMode="contain"
+//         source={require("../../../../assets/image/img_delete.png")}
+//       />
+//       <View style={{ padding: 16 }}>
+//         <OWText weight="700" size={16}>
+//           {"delete contact?".toUpperCase()}
+//         </OWText>
+//       </View>
+//       <OWText color={colors["neutral-text-body"]} weight="500" size={14}>
+//         {"Are you sure you want to delete this contact?"}
+//       </OWText>
+//       <View
+//         style={{
+//           flexDirection: "row",
+//           justifyContent: "space-between",
+//           marginTop: 48,
+//         }}
+//       >
+//         <OWButton
+//           onPress={close}
+//           type="secondary"
+//           label="Cancel"
+//           style={[
+//             {
+//               borderRadius: 999,
+//               width: metrics.screenWidth / 2.2,
+//             },
+//           ]}
+//           textStyle={{
+//             fontSize: 14,
+//             fontWeight: "600",
+//           }}
+//         />
+//         <OWButton
+//           onPress={() => {
+//             close();
+//             addressBookConfig.removeAddressBook(i);
+//           }}
+//           type="danger"
+//           label="Yes, delete it"
+//           style={[
+//             {
+//               marginLeft: 8,
+//               borderRadius: 999,
+//               width: metrics.screenWidth / 2.2,
+//             },
+//           ]}
+//           textStyle={{
+//             fontSize: 14,
+//             fontWeight: "600",
+//           }}
+//         />
+//       </View>
+//     </View>
+//   );
+// };
 
 const styling = () => {
   return StyleSheet.create({
@@ -135,7 +135,7 @@ const debounce = (fn, delay) => {
 export const AddressBookScreen: FunctionComponent = observer(() => {
   const [nameSearch, setNameSearch] = useState<string>("");
   const [contractList, setContractList] = useState<any[]>([]);
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, uiConfigStore } = useStore();
   const { colors } = useTheme();
   const styles = styling();
 
@@ -160,68 +160,69 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const chainId = recipientConfig
     ? recipientConfig.chainId
     : chainStore.current.chainId;
+  //
+  // const addressBookConfig = useAddressBookConfig(
+  //   new AsyncKVStore("address_book"),
+  //   chainStore,
+  //   chainId,
+  //   {
+  //     setRecipient: (recipient: string) => {
+  //       if (recipientConfig) {
+  //         recipientConfig.setValue(recipient);
+  //       }
+  //     },
+  //     setMemo: (memo: string) => {
+  //       if (memoConfig) {
+  //         memoConfig.setValue(memo);
+  //       }
+  //     },
+  //   }
+  // );
 
-  const addressBookConfig = useAddressBookConfig(
-    new AsyncKVStore("address_book"),
-    chainStore,
-    chainId,
-    {
-      setRecipient: (recipient: string) => {
-        if (recipientConfig) {
-          recipientConfig.setValue(recipient);
-        }
-      },
-      setMemo: (memo: string) => {
-        if (memoConfig) {
-          memoConfig.setValue(memo);
-        }
-      },
-    }
-  );
-
-  const onPressDeletekModal = (i) => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-    // @ts-ignore
-    modalStore.setChildren(
-      <DeleteContactModal
-        addressBookConfig={addressBookConfig}
-        i={i}
-        close={() => modalStore.close()}
-      />
-    );
-  };
+  // const onPressDeletekModal = (i) => {
+  //   modalStore.setOptions({
+  //     bottomSheetModalConfig: {
+  //       enablePanDownToClose: false,
+  //       enableOverDrag: false,
+  //     },
+  //   });
+  //   // @ts-ignore
+  //   modalStore.setChildren(
+  //     <DeleteContactModal
+  //       // addressBookConfig={addressBookConfig}
+  //       i={i}
+  //       close={() => modalStore.close()}
+  //     />
+  //   );
+  // };
 
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? "inTransaction" : "inSetting"];
+  const items = chainStore.chainInfos.map((chainInfo) => {
+    return {
+      key: chainInfo.chainId,
+      label: chainInfo.chainName,
+      imageUrl: chainInfo.chainSymbolImageUrl,
+    };
+  });
 
-  const onNameSearch = (txt) => {
-    const searchWord = txt ?? nameSearch;
-    if (searchWord) {
-      const addressList = addressBookConfig.addressBookDatas;
-      if (addressList.length > 0) {
-        const newAdressList = addressList.filter((address) =>
-          address.name.toLowerCase().includes(searchWord.toLowerCase())
-        );
-        return setContractList(newAdressList);
-      }
-    }
-    return setContractList([]);
-  };
+  const addresses = uiConfigStore.addressBookConfig.getAddressBook(chainId);
+  // const onNameSearch = (txt) => {
+  //   const searchWord = txt ?? nameSearch;
+  //   if (searchWord) {
+  //     const addressList = addressBookConfig.addressBookDatas;
+  //     if (addressList.length > 0) {
+  //       const newAdressList = addressList.filter((address) =>
+  //         address.name.toLowerCase().includes(searchWord.toLowerCase())
+  //       );
+  //       return setContractList(newAdressList);
+  //     }
+  //   }
+  //   return setContractList([]);
+  // };
 
-  const debouncedHandler = useCallback(debounce(onNameSearch, 300), []);
-
-  const contractData =
-    contractList.length > 0
-      ? contractList
-      : nameSearch !== "" && contractList.length === 0
-      ? []
-      : addressBookConfig.addressBookDatas;
+  // const debouncedHandler = useCallback(debounce(onNameSearch, 300), []);
 
   return (
     <PageWithScrollView
@@ -256,7 +257,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           value={nameSearch}
           onChangeText={(text) => {
             setNameSearch(text);
-            debouncedHandler(text);
+            // debouncedHandler(text);
           }}
           placeholderTextColor={colors["neutral-text-body"]}
           placeholder="Search by address or contact name"
@@ -272,8 +273,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           onPress={() => {
             navigate(SCREENS.AddAddressBook, {
               chainId,
-              addressBookConfig,
-              recipient: "",
             });
           }}
           label="Add contact"
@@ -297,8 +296,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
         style={{ backgroundColor: colors["neutral-surface-card"] }}
         type="normal"
       >
-        {contractData?.length > 0 ? (
-          contractData.map((data, i) => {
+        {addresses?.length > 0 ? (
+          addresses.map((data, i) => {
             return (
               <React.Fragment key={i.toString()}>
                 <AddressBookItem
@@ -306,7 +305,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   enabled={isInTransaction}
                   onPress={() => {
                     if (isInTransaction) {
-                      addressBookConfig.selectAddressAt(i);
+                      // addressBookConfig.selectAddressAt(i);
                       goBack();
                     }
                   }}
@@ -340,35 +339,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                         alignItems: "flex-start",
                       }}
                       onPress={() => {
-                        //   if (
-                        //     await confirmModal.confirm({
-                        //       title: "Remove contact",
-                        //       paragraph: "Are you sure you want to remove this address?",
-                        //       yesButtonText: "Remove",
-                        //       noButtonText: "Cancel",
-                        //       titleStyleCustom: {
-                        //         color: colors["orange-800"]
-                        //       },
-                        //       modalRootCustom: {
-                        //         alignItems: "flex-start"
-                        //       },
-                        //       contentStyleCustom: {
-                        //         textAlign: "left"
-                        //       },
-                        //       noBtnStyleCustom: {
-                        //         backgroundColor: colors["gray-10"],
-                        //         color: colors["primary-surface-default"],
-                        //         borderColor: "transparent"
-                        //       },
-                        //       yesBtnStyleCustom: {
-                        //         backgroundColor: colors["orange-800"]
-                        //       }
-                        //     })
-                        //   ) {
-                        //     await addressBookConfig.removeAddressBook(i);
-                        //   }
-                        // }}
-                        onPressDeletekModal(i);
+                        // onPressDeletekModal(i);
                       }}
                     >
                       <OWIcon

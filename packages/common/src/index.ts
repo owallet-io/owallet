@@ -12,3 +12,4 @@ export * from "./coin";
 export * from "./service-worker";
 export * from "./config";
 export * from "./api";
+export * from "./oasis";

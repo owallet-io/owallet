@@ -1,6 +1,6 @@
 {
-  "name": "@owallet/hooks",
-  "version": "0.9.16",
+  "name": "@owallet/stores-oasis",
+  "version": "0.12.130",
   "main": "build/index.js",
   "author": "owallet-io",
   "license": "Apache-2.0",
@@ -16,27 +16,17 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@ethersproject/address": "^5.7.0",
-    "@ethersproject/providers": "^5.7.0",
-    "@owallet/background": "*",
+    "@oasisprotocol/client": "^1.1.0",
     "@owallet/common": "*",
-    "@owallet/cosmos": "*",
-    "@owallet/crypto": "*",
-    "@owallet/proto-types": "*",
     "@owallet/simple-fetch": "*",
     "@owallet/stores": "*",
-    "@owallet/stores-etc": "*",
-    "@owallet/stores-eth": "*",
-    "@owallet/stores-oasis": "*",
     "@owallet/types": "*",
     "@owallet/unit": "*",
-    "buffer": "^6.0.3",
-    "long": "^4.0.0",
+    "big-integer": "^1.6.48",
     "utility-types": "^3.10.0"
   },
   "peerDependencies": {
     "mobx": "^6",
-    "mobx-utils": "^6",
-    "react": "^16.8.0 || ^17 || ^18"
+    "mobx-utils": "^6"
   }
 }
