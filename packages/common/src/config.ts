@@ -206,6 +206,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
         },
         {
+          coinDenom: "BTC V2",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc",
+          coinDecimals: 14,
+          coinGeckoId: "bitcoin",
+          coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
+        },
+        {
           type: "cw20",
           coinDenom: "ORAIX",
           coinMinimalDenom:
