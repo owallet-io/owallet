@@ -43,12 +43,16 @@ export class PermissionService {
   }
 
   async init() {
+    if (!this.permissionMap) {
+      this.permissionMap = new Map();
+    }
     const migration = await migrate(this.kvStore);
+
     if (migration) {
       runInAction(() => {
         for (const key of Object.keys(migration)) {
           const granted = migration[key];
-          if (granted) {
+          if (granted && this.permissionMap) {
             this.permissionMap.set(key, true);
           }
         }
@@ -61,7 +65,7 @@ export class PermissionService {
         runInAction(() => {
           for (const key of Object.keys(savedPermissionMap)) {
             const granted = savedPermissionMap[key];
-            if (granted) {
+            if (granted && this.permissionMap) {
               this.permissionMap.set(key, true);
             }
           }
