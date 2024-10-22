@@ -75,7 +75,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
             ...prev,
             [item.chainId]: true,
           }));
-          await delay(500);
+          await delay(300);
           await chainStore.enableChainInfoInUIWithVaultId(
             vaultId,
             ...[chainIdentifier]
@@ -90,11 +90,12 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       } else {
         try {
           await chainStore.removeChainInfo(item.chainId);
+          await delay(100);
           setChainEnables((prev) => ({
             ...prev,
             [item.chainId]: false,
           }));
-          await delay(500);
+          await delay(200);
           await chainStore.disableChainInfoInUIWithVaultId(
             vaultId,
             ...[chainIdentifier]
