@@ -370,10 +370,10 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               History
             </OWText>
           </View>
-          {/*<HistoryByToken*/}
-          {/*  tokenAddr={denomHelper.contractAddress || denomHelper.denom}*/}
-          {/*  chainId={item.chainInfo.chainId}*/}
-          {/*/>*/}
+          <HistoryByToken
+            tokenAddr={denomHelper.contractAddress || denomHelper.denom}
+            chainId={item.chainInfo.chainId}
+          />
         </OWBox>
       </PageWithScrollView>
       <View
