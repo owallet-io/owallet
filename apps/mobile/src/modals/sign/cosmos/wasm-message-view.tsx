@@ -57,7 +57,7 @@ export const WasmMessageView: FunctionComponent<{
           setWarningMsg("");
         } catch {
           setWarningMsg(
-            "Failed to decrypt Secret message. This may be due to Keplr's encrypt/decrypt seed not matching the transaction seed."
+            "Failed to decrypt Secret message. This may be due to OWallet's encrypt/decrypt seed not matching the transaction seed."
           );
         }
       })();

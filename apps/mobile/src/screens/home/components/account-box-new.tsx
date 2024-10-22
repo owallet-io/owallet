@@ -82,7 +82,7 @@ export const AccountBoxAll: FunctionComponent<{
     availableTotalPrice,
     totalBalanceByChain,
     isLoading,
-    dataBalances,
+    // dataBalances,
   }) => {
     const {
       accountStore,
@@ -92,6 +92,7 @@ export const AccountBoxAll: FunctionComponent<{
       queriesStore,
       keyRingStore,
       priceStore,
+      hugeQueriesStore,
     } = useStore();
 
     const { colors } = useTheme();
@@ -99,10 +100,10 @@ export const AccountBoxAll: FunctionComponent<{
 
     const [isOpen, setModalOpen] = useState(false);
     // const [isMoreOpen, setMoreModalOpen] = useState(false);
-    // const [showChart, setShowChart] = useState(true);
-    // const [chainListWithBalance, setChainListWithBalance] = useState([]);
-    // const [series, setSeries] = useState([]);
-    // const [sliceColor, setSliceColor] = useState([]);
+    const [showChart, setShowChart] = useState(true);
+    const [chainListWithBalance, setChainListWithBalance] = useState([]);
+    const [series, setSeries] = useState([]);
+    const [sliceColor, setSliceColor] = useState([]);
     // const [isPending, startTransition] = useTransition();
 
     // const fiatCurrency = priceStore.getFiatCurrency(
@@ -157,72 +158,72 @@ export const AccountBoxAll: FunctionComponent<{
     // const delegated = queryDelegated.total;
     // const totalPrice = priceStore.calculatePrice(delegated);
 
-    // useEffect(() => {
-    //   const tmpChain = [];
-    //   const tmpSeries = [];
-    //   const tmpSliceColor = [];
-    //   let otherValue = 0;
-    //
-    //   const minimumPrice =
-    //     (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
-    //
-    //   const chainsInfoWithBalance = chainStore.chainInfos.map((item) => {
-    //     let balances = dataBalances.filter(
-    //       (token) => token.chainInfo.chainId === item.chainId
-    //     );
-    //     let result: PricePretty | undefined;
-    //     for (const bal of balances) {
-    //       if (bal.price) {
-    //         if (!result) {
-    //           result = bal.price;
-    //         } else {
-    //           result = result.add(bal.price);
-    //         }
-    //       }
-    //     }
-    //     //@ts-ignore
-    //     item.balance = result || initPrice;
-    //     return item;
-    //   });
-    //
-    //   const dataMainnet = sortChainsByPrice(chainsInfoWithBalance).filter(
-    //     (c) =>
-    //       !c.chainName.toLowerCase().includes("test") &&
-    //       c.chainName.toLowerCase()
-    //   );
-    //
-    //   dataMainnet.map((data) => {
-    //     const chainName = data._chainInfo.chainName;
-    //     const chainId = data._chainInfo.chainId;
-    //     const chainBalance = Number(data.balance?.toDec().toString());
-    //
-    //     if (chainBalance > minimumPrice) {
-    //       const colorKey = Object.values(ChainIdEnum).indexOf(
-    //         chainId as ChainIdEnum
-    //       );
-    //       const color = randomColors[colorKey];
-    //
-    //       tmpChain.push({
-    //         color,
-    //         totalBalance: chainBalance,
-    //         name: chainName,
-    //       });
-    //       tmpSeries.push(chainBalance);
-    //       tmpSliceColor.push(color);
-    //     } else {
-    //       otherValue += chainBalance;
-    //     }
-    //   });
-    //
-    //   tmpChain.push({
-    //     color: "#494949",
-    //     totalBalance: otherValue,
-    //     name: "Other",
-    //   });
-    //   setChainListWithBalance(tmpChain);
-    //   setSeries([...tmpSeries, otherValue]);
-    //   setSliceColor([...tmpSliceColor, "#494949"]);
-    // }, [dataBalances, accountOrai.bech32Address]);
+    useEffect(() => {
+      const tmpChain = [];
+      const tmpSeries = [];
+      const tmpSliceColor = [];
+      let otherValue = 0;
+
+      const minimumPrice =
+        (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
+
+      const chainsInfoWithBalance = chainStore.chainInfosInUI
+        .map((item) => {
+          let balances = hugeQueriesStore.getAllBalancesByChainId(item.chainId);
+          let result: PricePretty | undefined;
+          for (const bal of balances) {
+            if (bal.price) {
+              if (!result) {
+                result = bal.price;
+              } else {
+                result = result.add(bal.price);
+              }
+            }
+          }
+          //@ts-ignore
+          item.balance = result || initPrice;
+          return item;
+        })
+        .filter(
+          (c) =>
+            !c.chainName.toLowerCase().includes("test") &&
+            c.chainName.toLowerCase()
+        );
+
+      const dataMainnet = sortChainsByPrice(chainsInfoWithBalance);
+
+      dataMainnet.map((data) => {
+        const chainName = data.chainName;
+        const chainId = data.chainId;
+        const chainBalance = Number(data.balance?.toDec().toString());
+
+        if (chainBalance > minimumPrice) {
+          const colorKey = Object.values(ChainIdEnum).indexOf(
+            chainId as ChainIdEnum
+          );
+          const color = randomColors[colorKey];
+
+          tmpChain.push({
+            color,
+            totalBalance: chainBalance,
+            name: chainName,
+          });
+          tmpSeries.push(chainBalance);
+          tmpSliceColor.push(color);
+        } else {
+          otherValue += chainBalance;
+        }
+      });
+
+      tmpChain.push({
+        color: "#494949",
+        totalBalance: otherValue,
+        name: "Other",
+      });
+      setChainListWithBalance(tmpChain);
+      setSeries([...tmpSeries, otherValue]);
+      setSliceColor([...tmpSliceColor, "#494949"]);
+    }, [accountOrai.bech32Address]);
 
     const { isTimedOut, setTimer } = useSimpleTimer();
     // const chainAddress = account.getAddressDisplay(
@@ -259,79 +260,79 @@ export const AccountBoxAll: FunctionComponent<{
       );
     };
 
-    // const renderPieChartPortfolio = () => {
-    //   if (series.length > 0 && series[0] > 0) {
-    //     return (
-    //       <View style={{ flexDirection: "row", alignItems: "center" }}>
-    //         {series.length > 0 && series[0] > 0 ? (
-    //           <View
-    //             style={{
-    //               padding: 16,
-    //             }}
-    //           >
-    //             <PieChart
-    //               widthAndHeight={widthAndHeight}
-    //               series={series}
-    //               sliceColor={sliceColor}
-    //               coverRadius={0.75}
-    //               coverFill={colors["neutral-surface-card"]}
-    //             />
-    //           </View>
-    //         ) : null}
-    //         <View style={{ width: "60%" }}>
-    //           {chainListWithBalance
-    //             .sort((a, b) => {
-    //               return Number(b.totalBalance) - Number(a.totalBalance);
-    //             })
-    //             .map((chain) => {
-    //               return (
-    //                 <View
-    //                   style={{
-    //                     flexDirection: "row",
-    //                     justifyContent: "space-between",
-    //                     marginBottom: 8,
-    //                   }}
-    //                 >
-    //                   <View
-    //                     style={{ flexDirection: "row", alignItems: "center" }}
-    //                   >
-    //                     <View
-    //                       style={{
-    //                         width: 8,
-    //                         height: 8,
-    //                         borderRadius: 2,
-    //                         backgroundColor: chain.color,
-    //                         marginRight: 4,
-    //                       }}
-    //                     />
-    //                     <Text size={13} color={colors["neutral-text-body"]}>
-    //                       {chain.name}
-    //                     </Text>
-    //                   </View>
-    //                   <View
-    //                     style={{
-    //                       backgroundColor: colors["neutral-surface-bg2"],
-    //                       borderRadius: 999,
-    //                       paddingHorizontal: 4,
-    //                     }}
-    //                   >
-    //                     <Text>
-    //                       {(
-    //                         (Number(chain.totalBalance) /
-    //                           Number(totalPriceBalance.toDec().toString())) *
-    //                         100
-    //                       ).toFixed(2)}
-    //                       %
-    //                     </Text>
-    //                   </View>
-    //                 </View>
-    //               );
-    //             })}
-    //         </View>
-    //       </View>
-    //     );
-    //   }
-    // };
+    const renderPieChartPortfolio = () => {
+      if (series.length > 0 && series[0] > 0) {
+        return (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {series.length > 0 && series[0] > 0 ? (
+              <View
+                style={{
+                  padding: 16,
+                }}
+              >
+                <PieChart
+                  widthAndHeight={widthAndHeight}
+                  series={series}
+                  sliceColor={sliceColor}
+                  coverRadius={0.75}
+                  coverFill={colors["neutral-surface-card"]}
+                />
+              </View>
+            ) : null}
+            <View style={{ width: "60%" }}>
+              {chainListWithBalance
+                .sort((a, b) => {
+                  return Number(b.totalBalance) - Number(a.totalBalance);
+                })
+                .map((chain) => {
+                  return (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        marginBottom: 8,
+                      }}
+                    >
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <View
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 2,
+                            backgroundColor: chain.color,
+                            marginRight: 4,
+                          }}
+                        />
+                        <Text size={13} color={colors["neutral-text-body"]}>
+                          {chain.name}
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          backgroundColor: colors["neutral-surface-bg2"],
+                          borderRadius: 999,
+                          paddingHorizontal: 4,
+                        }}
+                      >
+                        <Text>
+                          {(
+                            (Number(chain.totalBalance) /
+                              Number(totalPriceBalance.toDec().toString())) *
+                            100
+                          ).toFixed(2)}
+                          %
+                        </Text>
+                      </View>
+                    </View>
+                  );
+                })}
+            </View>
+          </View>
+        );
+      }
+    };
 
     const renderAvailableperStaked = () => {
       if (!availableTotalPrice?.toDec() || !stakedTotalPrice?.toDec()) return;
@@ -593,6 +594,7 @@ export const AccountBoxAll: FunctionComponent<{
                     // startTransition(() => {
                     //   setShowChart(!showChart);
                     // });
+                    setShowChart(!showChart);
                   }}
                   style={styles.button}
                 >
@@ -658,10 +660,10 @@ export const AccountBoxAll: FunctionComponent<{
           {/*  ? renderAvailableperStaked()*/}
           {/*  : renderAssetsByChain()}*/}
 
-          {/*{appInitStore.getInitApp.isAllNetworks && showChart*/}
-          {/*  ? renderPieChartPortfolio()*/}
-          {/*  : null}*/}
           {renderAvailableperStaked()}
+          {appInitStore.getInitApp.isAllNetworks && showChart
+            ? renderPieChartPortfolio()
+            : null}
           {!appInitStore.getInitApp.isAllNetworks ? (
             <View style={styles.btnGroup}>
               <OWButton

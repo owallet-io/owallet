@@ -10,6 +10,7 @@ import { OWBox } from "@components/card";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
 import {
+  delay,
   EmbedChainInfos,
   fetchRetry,
   limitString,
@@ -22,13 +23,14 @@ import { Toggle } from "@components/toggle";
 import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
 import { _keyExtract, showToast } from "@utils/helper";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export const SelectChainsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const [chains, setChains] = useState([]);
 
   const [keyword, setKeyword] = useState("");
-  const { chainStore } = useStore();
+  const { chainStore, keyRingStore } = useStore();
   const [isLoading, setIsLoading] = useState(false);
   const [chainEnables, setChainEnables] = useState({});
   useEffect(() => {
@@ -62,13 +64,22 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
   }, []);
   const onEnableOrDisableChain = useCallback(
     async (item) => {
+      const vaultId = keyRingStore.selectedKeyInfo.id;
+      const chainIdentifier = ChainIdHelper.parse(item.chainId).identifier;
       if (!chainEnables?.[item.chainId]) {
         try {
-          await chainStore.addChain(item);
+          //@ts-ignore
+          await window.owallet.experimentalSuggestChain(item);
+
           setChainEnables((prev) => ({
             ...prev,
             [item.chainId]: true,
           }));
+          await delay(500);
+          await chainStore.enableChainInfoInUIWithVaultId(
+            vaultId,
+            ...[chainIdentifier]
+          );
         } catch (e) {
           showToast({
             type: "danger",
@@ -78,11 +89,16 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         }
       } else {
         try {
-          await chainStore.removeChainInfo(item.chainId);
+          // await chainStore.removeChainInfo(item.chainId);
           setChainEnables((prev) => ({
             ...prev,
             [item.chainId]: false,
           }));
+          await delay(500);
+          await chainStore.disableChainInfoInUIWithVaultId(
+            vaultId,
+            ...[chainIdentifier]
+          );
         } catch (e) {
           showToast({
             type: "danger",
