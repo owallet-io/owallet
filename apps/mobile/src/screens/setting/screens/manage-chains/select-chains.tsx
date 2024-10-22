@@ -89,7 +89,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         }
       } else {
         try {
-          // await chainStore.removeChainInfo(item.chainId);
+          await chainStore.removeChainInfo(item.chainId);
           setChainEnables((prev) => ({
             ...prev,
             [item.chainId]: false,
