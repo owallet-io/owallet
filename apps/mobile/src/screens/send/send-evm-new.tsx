@@ -26,6 +26,7 @@ import { BACKGROUND_PORT, Message } from '@owallet/router';
 import { LogAnalyticsEventMsg, SendTxAndRecordMsg } from '@owallet/background';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { amountToAmbiguousAverage } from '@src/utils/helper/amount-to-ambiguous-string';
+import { FeeControl } from '@src/components/input/fee-control';
 
 enum EthTxStatus {
   Success = '0x1',
@@ -59,6 +60,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);
   const isEvmChain = chainStore.isEvmChain(chainId);
+  const isEVMOnlyChain = chainStore.isEvmOnlyChain(chainId);
   const coinMinimalDenom = initialCoinMinimalDenom || chainInfo.currencies[0].coinMinimalDenom;
   const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
   const isErc20 = new DenomHelper(currency.coinMinimalDenom).type === 'erc20';
@@ -89,21 +91,17 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
     chainId,
     sender,
     // TODO: 이 값을 config 밑으로 빼자
-    300000,
+    isEvmTx ? 21000 : 300000,
     isIBCTransfer,
     {
-      allowHexAddressToBech32Address: !isEvmTx && !chainStore.getChain(chainId).chainId.startsWith('injective'),
+      allowHexAddressToBech32Address:
+        !isEvmChain && !isEvmTx && !chainStore.getChain(chainId).chainId.startsWith('injective'),
       allowHexAddressOnly: isEvmTx,
       icns: ICNSInfo,
       computeTerraClassicTax: true
     }
   );
-
   sendConfigs.amountConfig.setCurrency(currency);
-
-  useEffect(() => {
-    sendConfigs.recipientConfig.setValue(initialRecipientAddress || '');
-  }, [initialRecipientAddress, sendConfigs.recipientConfig]);
 
   const gasSimulatorKey = useMemo(() => {
     const txType: 'evm' | 'cosmos' = isEvmTx ? 'evm' : 'cosmos';
@@ -112,7 +110,13 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
       const denomHelper = new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom);
 
       if (denomHelper.type !== 'native') {
-        if (denomHelper.type === 'cw20' || denomHelper.type === 'erc20') {
+        if (denomHelper.type === 'erc20') {
+          // XXX: This logic causes gas simulation to run even if `gasSimulatorKey` is the same, it needs to be figured out why.
+          const amountHexDigits = BigInt(sendConfigs.amountConfig.amount[0].toCoin().amount).toString(16).length;
+          return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}/${amountHexDigits}`;
+        }
+
+        if (denomHelper.type === 'cw20') {
           // Probably, the gas can be different per cw20 according to how the contract implemented.
           return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}`;
         }
@@ -122,7 +126,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
     }
 
     return `${txType}/native`;
-  }, [isEvmTx, sendConfigs.amountConfig.currency]);
+  }, [isEvmTx, sendConfigs.amountConfig.amount, sendConfigs.amountConfig.currency]);
 
   const gasSimulator = useGasSimulator(
     new AsyncKVStore('gas-simulator.screen.send/send'),
@@ -133,25 +137,47 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
     isIBCTransfer ? `ibc/${gasSimulatorKey}` : gasSimulatorKey,
     () => {
       if (!sendConfigs.amountConfig.currency) {
-        throw new Error('error.send-currency-not-set');
+        throw new Error('Send currency not set');
       }
 
+      if (isIBCTransfer) {
+        if (
+          sendConfigs.channelConfig.uiProperties.loadingState === 'loading-block' ||
+          sendConfigs.channelConfig.uiProperties.error != null
+        ) {
+          throw new Error('Not ready to simulate tx');
+        }
+      }
+
+      // Prefer not to use the gas config or fee config,
+      // because gas simulator can change the gas config and fee config from the result of reaction,
+      // and it can make repeated reaction.
       if (
         sendConfigs.amountConfig.uiProperties.loadingState === 'loading-block' ||
         sendConfigs.amountConfig.uiProperties.error != null ||
         sendConfigs.recipientConfig.uiProperties.loadingState === 'loading-block' ||
         sendConfigs.recipientConfig.uiProperties.error != null
       ) {
-        throw new Error('error.not-read-simulate-tx');
+        throw new Error('Not ready to simulate tx');
       }
 
       const denomHelper = new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom);
       // I don't know why, but simulation does not work for secret20
       if (denomHelper.type === 'secret20') {
-        throw new Error('error.simulating-secret-wasm-not-supported');
+        throw new Error('Simulating secret wasm not supported');
       }
 
-      if (isEvmChain && sendConfigs.recipientConfig.isRecipientEthereumHexAddress) {
+      if (isIBCTransfer) {
+        return account.cosmos.makePacketForwardIBCTransferTx(
+          accountStore,
+          sendConfigs.channelConfig.channels,
+          sendConfigs.amountConfig.amount[0].toDec().toString(),
+          sendConfigs.amountConfig.amount[0].currency,
+          sendConfigs.recipientConfig.recipient
+        );
+      }
+
+      if (isEvmTx) {
         return {
           simulate: () =>
             ethereumAccount.simulateGasForSendTokenTx({
@@ -172,6 +198,13 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
+    if (chainStore.getChain(chainId).hasFeature('feemarket')) {
+      // feemarket 이상하게 만들어서 simulate하면 더 적은 gas가 나온다 귀찮아서 대충 처리.
+      gasSimulator.setGasAdjustmentValue('1.6');
+    }
+  }, [chainId, chainStore, gasSimulator]);
+
+  useEffect(() => {
     if (isEvmChain) {
       const sendingDenomHelper = new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom);
       const isERC20 = sendingDenomHelper.type === 'erc20';
@@ -179,7 +212,9 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
         sendingDenomHelper.type === 'native' &&
         (chainInfo.stakeCurrency?.coinMinimalDenom ?? chainInfo.currencies[0].coinMinimalDenom) ===
           sendingDenomHelper.denom;
-      const newIsEvmTx = sendConfigs.recipientConfig.isRecipientEthereumHexAddress && (isERC20 || isSendingNativeToken);
+      const newIsEvmTx =
+        isEVMOnlyChain ||
+        (sendConfigs.recipientConfig.isRecipientEthereumHexAddress && (isERC20 || isSendingNativeToken));
 
       const newSenderAddress = newIsEvmTx ? account.ethereumHexAddress : account.bech32Address;
 
@@ -191,6 +226,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
     account,
     ethereumAccount,
     isEvmChain,
+    isEVMOnlyChain,
     sendConfigs.amountConfig.currency.coinMinimalDenom,
     sendConfigs.recipientConfig.isRecipientEthereumHexAddress,
     sendConfigs.senderConfig,
@@ -263,32 +299,22 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
   const onSubmit = async () => {
     if (!txConfigsValidate.interactionBlocked) {
       try {
-        if (isEvmTx && sendConfigs.feeConfig.type !== 'manual') {
+        if (isEvmTx) {
           ethereumAccount.setIsSendingTx(true);
-          const { maxFeePerGas, maxPriorityFeePerGas } = sendConfigs.feeConfig.getEIP1559TxFees(
+          const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = sendConfigs.feeConfig.getEIP1559TxFees(
             sendConfigs.feeConfig.type
           );
 
-          const unsignedTx = await ethereumAccount.makeSendTokenTx({
+          const unsignedTx = ethereumAccount.makeSendTokenTx({
             currency: sendConfigs.amountConfig.amount[0].currency,
             amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-            //@ts-ignore
-            from: sender,
             to: sendConfigs.recipientConfig.recipient,
             gasLimit: sendConfigs.gasConfig.gas,
-            maxFeePerGas: maxFeePerGas.toString(),
-            maxPriorityFeePerGas: maxPriorityFeePerGas.toString()
+            maxFeePerGas: maxFeePerGas?.toString(),
+            maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
+            gasPrice: gasPrice?.toString()
           });
           await ethereumAccount.sendEthereumTx(sender, unsignedTx, {
-            onBroadcasted: txHash => {
-              ethereumAccount.setIsSendingTx(false);
-
-              navigate('TxPending', {
-                chainId,
-                txHash,
-                isEvmTx
-              });
-            },
             onFulfill: txReceipt => {
               queryBalances.getQueryEthereumHexAddress(sender).balances.forEach(balance => {
                 if (
@@ -310,14 +336,9 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                   balance.fetch();
                 }
               });
-
-              if (txReceipt.status === EthTxStatus.Success) {
-                console.log('success');
-              } else {
-                console.log('fail');
-              }
             }
           });
+          ethereumAccount.setIsSendingTx(false);
         } else {
           const tx = isIBCTransfer
             ? accountStore
@@ -336,6 +357,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                   sendConfigs.amountConfig.amount[0].currency,
                   sendConfigs.recipientConfig.recipient
                 );
+
           await tx.send(
             sendConfigs.feeConfig.toStdFee(),
             sendConfigs.memoConfig.memo,
@@ -373,7 +395,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
               }
             },
             {
-              onBroadcasted: async txHash => {
+              onBroadcasted: async () => {
                 chainStore.enableVaultsWithCosmosAddress(
                   sendConfigs.recipientConfig.chainId,
                   sendConfigs.recipientConfig.recipient
@@ -401,7 +423,6 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                   if (inCurrencyPrice) {
                     params['inFiatAvg'] = amountToAmbiguousAverage(inCurrencyPrice);
                   }
-
                   new RNMessageRequesterInternal().sendMessage(
                     BACKGROUND_PORT,
                     new LogAnalyticsEventMsg('send', params)
@@ -449,24 +470,13 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                   if (inCurrencyPrice) {
                     params['inFiatAvg'] = amountToAmbiguousAverage(inCurrencyPrice);
                   }
-
                   new RNMessageRequesterInternal().sendMessage(
                     BACKGROUND_PORT,
                     new LogAnalyticsEventMsg('ibc_send', params)
                   );
                 }
-
-                navigate('TxPending', {
-                  chainId,
-                  txHash: Buffer.from(txHash).toString('hex')
-                });
               },
-              onFulfill: (tx: any) => {
-                if (tx.code != null && tx.code !== 0) {
-                  console.log(tx);
-                  return;
-                }
-              }
+              onFulfill: (tx: any) => {}
             }
           );
         }
@@ -478,15 +488,19 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
         if (isEvmTx) {
           ethereumAccount.setIsSendingTx(false);
         }
+
+        console.log(e);
       }
     }
   };
+
+  console.log('balance 2', balance?.balance);
 
   return (
     <PageWithBottom
       bottomGroup={
         <OWButton
-          label="Send"
+          label="Send EVM"
           disabled={txConfigsValidate.interactionBlocked}
           loading={
             isEvmTx
@@ -554,7 +568,12 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
             >
               <View>
                 <OWText style={{ paddingTop: 8 }}>
-                  Balance : {balance?.trim(true)?.maxDecimals(6)?.hideDenom(true)?.toString() || '0'}
+                  Balance:{' '}
+                  {(balance?.balance ?? new CoinPretty(currency, '0'))
+                    ?.trim(true)
+                    ?.maxDecimals(6)
+                    ?.hideDenom(true)
+                    ?.toString() || '0'}
                 </OWText>
                 <CurrencySelector
                   chainId={chainStore.current.chainId}
@@ -592,10 +611,10 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                 alignItems: 'center'
               }}
             >
-              <OWIcon name="tdesign_swap" size={16} />
+              {/* <OWIcon name="tdesign_swap" size={16} />
               <OWText style={{ paddingLeft: 4 }} color={colors['neutral-text-body']}>
                 {priceStore.calculatePrice(amount).toString()}
-              </OWText>
+              </OWText> */}
             </View>
           </OWCard>
           <OWCard
@@ -614,16 +633,22 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
                 marginBottom: 8
               }}
             >
-              <OWText color={colors['neutral-text-title']} weight="600" size={16}>
+              {/* <OWText color={colors['neutral-text-title']} weight="600" size={16}>
                 Transaction fee
-              </OWText>
-              <TouchableOpacity style={{ flexDirection: 'row' }} onPress={_onPressFee}>
+              </OWText> */}
+              <FeeControl
+                senderConfig={sendConfigs.senderConfig}
+                feeConfig={sendConfigs.feeConfig}
+                gasConfig={sendConfigs.gasConfig}
+                gasSimulator={gasSimulator}
+              />
+              {/* <TouchableOpacity style={{ flexDirection: 'row' }} onPress={_onPressFee}>
                 <OWText color={colors['primary-text-action']} weight="600" size={16}>
                   {capitalizedText(sendConfigs.feeConfig.feeType)}:{' '}
                   {priceStore.calculatePrice(sendConfigs.feeConfig.fee)?.toString()}{' '}
                 </OWText>
                 <DownArrowIcon height={11} color={colors['primary-text-action']} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </OWCard>
         </View>

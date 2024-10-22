@@ -124,7 +124,7 @@ export class HugeQueriesStore {
             ? queries.queryBalances.getQueryEthereumHexAddress(account.ethereumHexAddress)
             : queries.queryBalances.getQueryBech32Address(account.bech32Address);
 
-        console.log('queryBalance', queryBalance);
+        // console.log('queryBalance', queryBalance);
 
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {

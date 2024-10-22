@@ -137,7 +137,9 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
 
     try {
       // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
-      if (chainStore.current.evm) {
+      const chainInfo = chainStore.getChain(item.chainInfo.chainId);
+
+      if (chainInfo.evm) {
         if (item.chainInfo.chainId === ChainIdEnum.TRON) {
           const itemTron = tronTokens?.find(t => {
             return t.coinGeckoId === item.token.currency.coinGeckoId;
@@ -158,9 +160,8 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
           return;
         }
         navigate(SCREENS.SendEvm, {
-          currency: item.token.currency.coinDenom,
-          contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom).contractAddress,
-          coinGeckoId: item.token.currency.coinGeckoId
+          coinMinimalDenom: item.token.currency.coinMinimalDenom,
+          chainId: item.chainInfo.chainId
         });
         return;
       }
@@ -173,7 +174,9 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
         // coinGeckoId: item.token.currency.coinGeckoId,
         // denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.log('err', err, item.chainInfo.chainId);
+    }
   };
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
