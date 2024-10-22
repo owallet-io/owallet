@@ -19,8 +19,6 @@ import { useStore } from "../../../stores";
 import { metrics, spacing } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { ChainIdEnum, formatAprString, zeroDec } from "@owallet/common";
-import { Popup } from "react-native-popup-confirm-toast";
-import { useBIP44Option } from "@src/screens/register/bip44";
 import { OWBox } from "@src/components/card";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { Dec, IntPretty } from "@owallet/unit";
@@ -47,53 +45,6 @@ const dataOWalletStake = [
     validator: "cosmosvaloper19qv67gvevp4xw64kmhd6ff6ta2l2ywgfm74xtz",
   },
 ];
-const valVotingPower = 1000;
-const daysInYears = 365.2425;
-
-async function getBlockTime(lcdEndpoint, blockHeightDiff = 100) {
-  try {
-    // Fetch the latest block
-    const latestBlockResponse = await fetch(
-      `${lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/latest`
-    );
-    const latestBlockData = await latestBlockResponse.json();
-
-    if (!latestBlockResponse.ok || !latestBlockData.block) {
-      throw new Error("Failed to fetch latest block.");
-    }
-
-    // Get latest block height and timestamp
-    const latestBlockHeight = parseInt(latestBlockData.block.header.height);
-    const latestBlockTime = new Date(
-      latestBlockData.block.header.time
-    ).getTime();
-
-    // Fetch a previous block
-    const previousBlockHeight = latestBlockHeight - blockHeightDiff;
-    const previousBlockResponse = await fetch(
-      `${lcdEndpoint}/cosmos/base/tendermint/v1beta1/blocks/${previousBlockHeight}`
-    );
-    const previousBlockData = await previousBlockResponse.json();
-
-    if (!previousBlockResponse.ok || !previousBlockData.block) {
-      throw new Error("Failed to fetch previous block.");
-    }
-
-    // Get previous block timestamp
-    const previousBlockTime = new Date(
-      previousBlockData.block.header.time
-    ).getTime();
-
-    // Calculate average block time
-    const timeDiff = (latestBlockTime - previousBlockTime) / blockHeightDiff; // Time difference divided by number of blocks
-    const averageBlockTimeInSeconds = timeDiff / 1000; // Convert milliseconds to seconds
-
-    return averageBlockTimeInSeconds;
-  } catch (error) {
-    console.error("Error fetching block time:", error);
-    return 0;
-  }
-}
 
 const fetchValidatorByApr = async () => {
   try {
@@ -107,47 +58,6 @@ const fetchValidatorByApr = async () => {
     console.log(e, "err for fetch Validator oraichain");
   }
 };
-
-// async function fetchChainData(chainInfo, validatorAddress) {
-//   try {
-//     const [
-//       totalSupplyResponse,
-//       paramsResponse,
-//       inflationResponse,
-//       validatorInfoResponse,
-//       blockTimeResponse,
-//     ] = await Promise.all([
-//       axios.get(
-//         `${chainInfo.rest}/cosmos/bank/v1beta1/supply${
-//           chainInfo.stakeCurrency.coinMinimalDenom === "orai"
-//             ? ""
-//             : `/by_denom?denom=${chainInfo.stakeCurrency.coinMinimalDenom}`
-//         }`
-//       ),
-//       axios.get(`${chainInfo.rest}/cosmos/distribution/v1beta1/params`),
-//       axios.get(`${chainInfo.rest}/cosmos/mint/v1beta1/inflation`),
-//       API.getValidatorInfo(chainInfo.rest, validatorAddress),
-//       getBlockTime(chainInfo.rest),
-//     ]);
-//
-//     const totalSupply =
-//       chainInfo.stakeCurrency.coinMinimalDenom === "orai"
-//         ? totalSupplyResponse.data.supply?.find((s) => s.denom === "orai")
-//             ?.amount
-//         : totalSupplyResponse.data?.amount?.amount;
-//
-//     return {
-//       totalSupply,
-//       params: paramsResponse.data?.params,
-//       inflationRate: inflationResponse.data?.inflation,
-//       validator: validatorInfoResponse.validator,
-//       blockTime: blockTimeResponse,
-//     };
-//   } catch (error) {
-//     console.error("Error fetching chain data:", error);
-//     throw error;
-//   }
-// }
 
 export interface AprItemInner {
   apr?: number;
@@ -338,92 +248,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
     );
   };
 
-  // const onConfirm = async (item: any) => {
-  //   const { networkType } = chainStore.getChain(item?.chainId);
-  //   const keyDerivation = (() => {
-  //     const keyMain = getKeyDerivationFromAddressType(account.addressType);
-  //     if (networkType === "bitcoin") {
-  //       return keyMain;
-  //     }
-  //     return "44";
-  //   })();
-  //   chainStore.selectChain(item?.chainId);
-  //   await chainStore.saveLastViewChainId();
-  //   appInitStore.selectAllNetworks(false);
-  //   modalStore.close();
-  //   Popup.hide();
-  //
-  //   await keyRingStore.setKeyStoreLedgerAddress(
-  //     `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
-  //       bip44Option.bip44HDPath.account
-  //     }'/${bip44Option.bip44HDPath.change}/${
-  //       bip44Option.bip44HDPath.addressIndex
-  //     }`,
-  //     item?.chainId
-  //   );
-  // };
-
-  // const handleSwitchNetwork = useCallback(async (item) => {
-  //   try {
-  //     if (account.isNanoLedger) {
-  //       if (!item.isAll) {
-  //         Popup.show({
-  //           type: "confirm",
-  //           title: "Switch network!",
-  //           textBody: `You are switching to ${
-  //             COINTYPE_NETWORK[item.bip44.coinType]
-  //           } network. Please confirm that you have ${
-  //             COINTYPE_NETWORK[item.bip44.coinType]
-  //           } App opened before switch network`,
-  //           buttonText: `I have switched ${
-  //             COINTYPE_NETWORK[item.bip44.coinType]
-  //           } App`,
-  //           confirmText: "Cancel",
-  //           okButtonStyle: {
-  //             backgroundColor: colors["orange-800"],
-  //           },
-  //           callback: () => onConfirm(item),
-  //           cancelCallback: () => {
-  //             Popup.hide();
-  //           },
-  //           bounciness: 0,
-  //           duration: 10,
-  //         });
-  //         return;
-  //       } else {
-  //         appInitStore.selectAllNetworks(true);
-  //       }
-  //     } else {
-  //       modalStore.close();
-  //       if (!item.isAll) {
-  //         tracking(`Select ${item?.chainName} Network`);
-  //         chainStore.selectChain(item?.chainId);
-  //         await chainStore.saveLastViewChainId();
-  //         appInitStore.selectAllNetworks(false);
-  //         modalStore.close();
-  //       } else {
-  //         tracking("Select All Network");
-  //         appInitStore.selectAllNetworks(true);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     showToast({
-  //       type: "danger",
-  //       message: JSON.stringify(error),
-  //     });
-  //   }
-  // }, []);
-
-  // const handlePressStake = useCallback(
-  //   (chain, validatorAddress) => {
-  //     handleSwitchNetwork(chain);
-  //     navigate(SCREENS.Delegate, {
-  //       validatorAddress,
-  //     });
-  //   },
-  //   [handleSwitchNetwork]
-  // );
-
   const renderNetworkItem = useCallback(
     (chain) => {
       if (chain) {
@@ -470,7 +294,7 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   );
 
   const renderNetworks = () => {
-    const stakeableChainsInfo = chainStore.chainInfos.filter((chain) => {
+    const stakeableChainsInfo = chainStore.chainInfosInUI.filter((chain) => {
       if (
         // chain.networkType === "cosmos" &&
         !chain.chainName.toLowerCase().includes("test") &&

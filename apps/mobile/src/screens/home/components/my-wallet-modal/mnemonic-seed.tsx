@@ -11,6 +11,7 @@ import { useStyleMyWallet } from "./styles";
 import OWFlatList from "@src/components/page/ow-flat-list";
 import { RightArrowIcon } from "@src/components/icon";
 import { KeyInfo } from "@owallet/background";
+import { delay } from "@owallet/common";
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -37,19 +38,16 @@ const MnemonicSeed = () => {
   }, [keyRingStore.keyInfos]);
 
   const selectKeyStore = async (keyStore: KeyInfo) => {
-    universalSwapStore.setLoaded(false);
-    await keyRingStore.selectKeyRing(keyStore.id);
+    keyRingStore.selectKeyRing(keyStore.id);
     await chainStore.waitSyncedEnabledChains();
   };
   const onSwitchWallet = useCallback(async (item) => {
     if (keyRingStore.selectedKeyInfo.id === item.id) {
       return;
     }
-    // setIsLoading(true);
+    modalStore.close();
+    await delay(10);
     await selectKeyStore(item);
-    await modalStore.close();
-    universalSwapStore.clearAmounts();
-    // setIsLoading(false);
   }, []);
   const renderItem = ({ item }) => {
     return (

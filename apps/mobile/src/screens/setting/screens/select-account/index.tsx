@@ -19,6 +19,7 @@ import { goBack, navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { KeyInfo } from "@owallet/background";
+import { delay } from "@owallet/common";
 
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const { keyRingStore, chainStore, universalSwapStore, accountStore } =
@@ -47,20 +48,24 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const loadingScreen = useLoadingScreen();
 
   const selectKeyStore = async (keyStore: KeyInfo) => {
-    await keyRingStore.selectKeyRing(keyStore.id);
+    await delay(10);
+    keyRingStore.selectKeyRing(keyStore.id);
     await chainStore.waitSyncedEnabledChains();
   };
   const handleOnKeyStore = async (keyStore: KeyInfo) => {
-    if (keyRingStore.selectedKeyInfo.id === keyStore.id) {
-      return;
+    try {
+      if (keyRingStore.selectedKeyInfo.id === keyStore.id) {
+        return;
+      }
+      loadingScreen.setIsLoading(true);
+      universalSwapStore.setLoaded(false);
+      universalSwapStore.clearAmounts();
+      await selectKeyStore(keyStore);
+    } finally {
+      loadingScreen.setIsLoading(false);
+      universalSwapStore.setLoaded(true);
+      goBack();
     }
-    // loadingScreen.setIsLoading(true);
-    universalSwapStore.setLoaded(false);
-    universalSwapStore.clearAmounts();
-    await selectKeyStore(keyStore);
-    // loadingScreen.setIsLoading(false);
-    universalSwapStore.setLoaded(true);
-    goBack();
   };
 
   const renderKeyStoreItem = (keyStore: KeyInfo, i) => {

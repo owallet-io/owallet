@@ -1,7 +1,13 @@
 import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FC,
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Platform,
   StyleSheet,
@@ -20,55 +26,83 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { unknownToken } from "@owallet/common";
+import { unknownToken, zeroDec } from "@owallet/common";
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
-// import { ViewToken } from "@src/stores/huge-queries";
+import { ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
 import { ChainInfo } from "@owallet/types";
 import { QueryError } from "@owallet/stores";
-export interface ViewToken {
-  token: CoinPretty;
-  chainInfo: ChainInfo;
-  isFetching: boolean;
-  error: QueryError<any> | undefined;
-}
+// export interface ViewToken {
+//   token: CoinPretty;
+//   chainInfo: ChainInfo;
+//   isFetching: boolean;
+//   error: QueryError<any> | undefined;
+// }
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  dataTokens: ViewToken[];
-}> = observer(({ containerStyle, dataTokens }) => {
-  const { priceStore, appInitStore } = useStore();
+  // dataTokens: ViewToken[];
+}> = observer(({ containerStyle }) => {
+  const { hugeQueriesStore, uiConfigStore } = useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
-    ? dataTokens.filter((item, index) => {
-        const balance = new CoinPretty(
-          item.token.currency,
-          item.token.toCoin().amount
-        );
-        const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
-      })
-    : dataTokens;
+  const allBalances = hugeQueriesStore.getAllBalances(true);
+  const allBalancesNonZero = useMemo(() => {
+    return allBalances.filter((token) => {
+      return token.token.toDec().gt(zeroDec);
+    });
+  }, [allBalances]);
+  const isFirstTime = allBalancesNonZero.length === 0;
+  const trimSearch = keyword.trim();
+  const _allBalancesSearchFiltered = useMemo(() => {
+    return allBalances.filter((token) => {
+      return (
+        token.chainInfo.chainName
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase()) ||
+        token.token.currency.coinDenom
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase())
+      );
+    });
+  }, [allBalances, trimSearch]);
+  const hasLowBalanceTokens =
+    hugeQueriesStore.filterLowBalanceTokens(allBalances).length > 0;
+  const lowBalanceFilteredAllBalancesSearchFiltered =
+    hugeQueriesStore.filterLowBalanceTokens(_allBalancesSearchFiltered);
 
-  const tokensAll =
-    tokens &&
-    tokens.filter((item, index) =>
-      item?.token?.currency?.coinDenom
-        ?.toLowerCase()
-        ?.includes(keyword.toLowerCase())
-    );
-
-  const [toggle, setToggle] = useState(
-    appInitStore.getInitApp.hideTokensWithoutBalance
-  );
-  const [openSide, setOpenSide] = useState(false);
+  const allBalancesSearchFiltered =
+    uiConfigStore.isHideLowBalance && hasLowBalanceTokens
+      ? lowBalanceFilteredAllBalancesSearchFiltered
+      : _allBalancesSearchFiltered;
+  // const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
+  //   ? dataTokens.filter((item, index) => {
+  //       const balance = new CoinPretty(
+  //         item.token.currency,
+  //         item.token.toCoin().amount
+  //       );
+  //       const price = priceStore.calculatePrice(balance, "usd");
+  //       return price?.toDec()?.gte(new Dec("0.1")) ?? false;
+  //     })
+  //   : dataTokens;
+  //
+  // const tokensAll =
+  //   tokens &&
+  //   tokens.filter((item, index) =>
+  //     item?.token?.currency?.coinDenom
+  //       ?.toLowerCase()
+  //       ?.includes(keyword.toLowerCase())
+  //   );
+  //
+  const [toggle, setToggle] = useState(uiConfigStore.isHideLowBalance);
+  // const [openSide, setOpenSide] = useState(false);
   useEffect(() => {
-    appInitStore.updateHideTokensWithoutBalance(toggle);
+    // appInitStore.updateHideTokensWithoutBalance(toggle);
+    uiConfigStore.setHideLowBalance(toggle);
   }, [toggle]);
   return (
     <>
@@ -117,8 +151,8 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
       </View>
-      {tokensAll?.length > 0 ? (
-        tokensAll.map((item, index) => (
+      {!isFirstTime ? (
+        allBalancesSearchFiltered.map((item, index) => (
           <TokenItem key={index.toString()} item={item} />
         ))
       ) : (
