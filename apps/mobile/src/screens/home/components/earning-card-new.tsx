@@ -44,7 +44,7 @@ export const EarningCardNew = observer(({}) => {
 
   const { colors } = useTheme();
   const route = useRoute();
-  const initialChainId = route.params["chainId"];
+  const initialChainId = route.params?.["chainId"];
   const chainId = initialChainId || chainStore.current.chainId;
   useEffect(() => {
     if (!initialChainId) goBack();
@@ -335,7 +335,7 @@ export const EarningCardNew = observer(({}) => {
               +
               {totalStakingReward
                 ? totalStakingReward.toString()
-                : stakingRewards.shrink(true).maxDecimals(6).toString()}
+                : stakingRewards?.shrink(true).maxDecimals(6).toString()}
             </Text>
             <View
               style={{
