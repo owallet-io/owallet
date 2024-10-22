@@ -171,6 +171,55 @@ export const SwapFeeBps = {
 
 export const EmbedChainInfos: ChainInfo[] = [
   {
+    rpc: "https://rpc.orai.io",
+    rest: "https://lcd.orai.io",
+    chainId: "Oraichain",
+    chainName: "Oraichain",
+    stakeCurrency: {
+      coinDenom: "ORAI",
+      coinMinimalDenom: "orai",
+      coinDecimals: 6,
+      coinGeckoId: "oraichain-token",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    },
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/cosmos-hub"
+        : "http://localhost:8080/chains/cosmos-hub",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/cosmos-hub"
+        : "http://localhost:8080/chains/cosmos-hub",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("orai"),
+    currencies: [
+      {
+        coinDenom: "ORAI",
+        coinMinimalDenom: "orai",
+        coinDecimals: 6,
+        coinGeckoId: "oraichain-token",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "ORAI",
+        coinMinimalDenom: "orai",
+        coinDecimals: 6,
+        coinGeckoId: "oraichain-token",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+  },
+  {
     rpc: "https://sapphire.oasis.io",
     rest: "https://sapphire.oasis.io",
     grpc: "https://grpc.oasis.dev",
@@ -337,55 +386,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
   },
-  {
-    rpc: "https://rpc.orai.io",
-    rest: "https://lcd.orai.io",
-    chainId: "Oraichain",
-    chainName: "Oraichain",
-    stakeCurrency: {
-      coinDenom: "ORAI",
-      coinMinimalDenom: "orai",
-      coinDecimals: 6,
-      coinGeckoId: "oraichain-token",
-      coinImageUrl:
-        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    },
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/cosmos-hub"
-        : "http://localhost:8080/chains/cosmos-hub",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/cosmos-hub"
-        : "http://localhost:8080/chains/cosmos-hub",
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("orai"),
-    currencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "orai",
-        coinDecimals: 6,
-        coinGeckoId: "oraichain-token",
-        coinImageUrl:
-          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "orai",
-        coinDecimals: 6,
-        coinGeckoId: "oraichain-token",
-        coinImageUrl:
-          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
-  },
+
   {
     rpc: "https://rpc-osmosis.keplr.app",
     rest: "https://lcd-osmosis.keplr.app",

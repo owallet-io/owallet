@@ -29,7 +29,8 @@ const OWHeaderTitle = observer(
   ({ title, subTitle, chainData, ...props }: IOWHeaderTitle) => {
     const { chainStore, modalStore, appInitStore } = useStore();
     const { colors } = useTheme();
-    const chainInfo = chainStore.getChain(chainStore.current.chainId);
+    const chainId = chainStore.current.chainId;
+    const chainInfo = chainStore.getChain(chainId);
 
     const navigation = useNavigation();
     const currentTab =

@@ -47,7 +47,13 @@ export const NetworkModal: FC<{
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
       modalStore.close();
-      chainStore.selectChain(item?.chainId);
+      console.log(item?.chainId, "item?.chainId");
+      if (!item?.chainId) {
+        appInitStore.selectAllNetworks(true);
+      } else {
+        chainStore.selectChain(item?.chainId);
+        appInitStore.selectAllNetworks(false);
+      }
     } catch (error) {
       showToast({
         type: "danger",

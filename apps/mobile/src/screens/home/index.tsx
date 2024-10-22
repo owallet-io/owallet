@@ -891,41 +891,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   }
   // };
 
-  const availableTotalPrice = useMemo(() => {
-    let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.allKnownBalances) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
-      }
-    }
-    return result;
-  }, [hugeQueriesStore.allKnownBalances]);
-  const stakedTotalPrice = useMemo(() => {
-    let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.delegations) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
-      }
-    }
-    for (const bal of hugeQueriesStore.unbondings) {
-      if (bal.viewToken.price) {
-        if (!result) {
-          result = bal.viewToken.price;
-        } else {
-          result = result.add(bal.viewToken.price);
-        }
-      }
-    }
-    return result;
-  }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -953,15 +918,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         }}
         colors={colors}
       />
-      <AccountBoxAll
-        isLoading={false}
-        totalBalanceByChain={initPrice}
-        stakedTotalPrice={stakedTotalPrice || initPrice}
-        availableTotalPrice={availableTotalPrice || initPrice}
-        totalPriceBalance={
-          availableTotalPrice?.add(stakedTotalPrice) || initPrice
-        }
-      />
+      <AccountBoxAll isLoading={false} />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>
