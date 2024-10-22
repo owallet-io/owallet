@@ -166,7 +166,7 @@ export const AccountBoxAll: FunctionComponent<{
 
       const minimumPrice =
         (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
-
+      console.log(minimumPrice, "minimumPrice");
       const chainsInfoWithBalance = chainStore.chainInfosInUI
         .map((item) => {
           let balances = hugeQueriesStore.getAllBalancesByChainId(item.chainId);
@@ -223,7 +223,7 @@ export const AccountBoxAll: FunctionComponent<{
       setChainListWithBalance(tmpChain);
       setSeries([...tmpSeries, otherValue]);
       setSliceColor([...tmpSliceColor, "#494949"]);
-    }, [accountOrai.bech32Address]);
+    }, [totalPriceBalance, accountOrai.bech32Address]);
 
     const { isTimedOut, setTimer } = useSimpleTimer();
     // const chainAddress = account.getAddressDisplay(
