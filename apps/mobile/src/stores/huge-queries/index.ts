@@ -21,13 +21,6 @@ export interface ViewToken {
   readonly error: QueryError<any> | undefined;
 }
 
-/**
- * 거대한 쿼리를 만든다.
- * 거대하기 때문에 로직을 분리하기 위해서 따로 만들었다.
- * 근데 이름그대로 거대한 쿼리를 만들기 때문에 꼭 필요할때만 써야한다.
- * 특정 밸런스가 필요하다고 여기서 balance를 다 가져와서 그 중에 한개만 찾아서 쓰고 그러면 안된다.
- * 꼭 필요할때만 쓰자
- */
 export class HugeQueriesStore {
   protected static zeroDec = new Dec(0);
 
@@ -115,9 +108,6 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-
-      console.log('chainInfo', chainInfo);
-
       if (account.bech32Address === '') {
         continue;
       }

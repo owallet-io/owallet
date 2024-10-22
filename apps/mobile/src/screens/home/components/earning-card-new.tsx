@@ -17,6 +17,7 @@ import { DenomDydx, removeDataInParentheses } from "@owallet/common";
 import { ChainInfo } from "@owallet/types";
 import { QueryError } from "@owallet/stores";
 import { useRoute } from "@react-navigation/native";
+import { useIntl } from "react-intl";
 const defaultGasPerDelegation = 140000;
 export interface ViewToken {
   token: CoinPretty;
@@ -81,83 +82,93 @@ export const EarningCardNew = observer(({}) => {
   const totalStakingReward = priceStore.calculatePrice(stakingRewards);
 
   const isDydx = chainId?.includes("dydx-mainnet");
+  const intl = useIntl();
   const _onPressCompound = async () => {
     try {
-      const validatorRewars = [];
+      const account = accountStore.getAccount(chainId);
 
-      const denom = DenomDydx;
-      queryRewards
-        .getDescendingPendingRewardValidatorAddresses(10)
-        .map((validatorAddress) => {
-          let rewards: CoinPretty | undefined;
-          if (isDydx) {
-            rewards = queryRewards
-              .getRewardsOf(validatorAddress)
-              .find((r) => r.currency.coinMinimalDenom === denom);
-          } else {
-            rewards = queryRewards.getStakableRewardOf(validatorAddress);
-          }
-          validatorRewars.push({ validatorAddress, rewards });
-        });
+      const queries = queriesStore.get(chainId);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
+      const validatorAddresses =
+        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
 
-      if (queryRewards) {
-        tracking(`${chainStore.current.chainName} Compound`);
-        await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-          queryRewards.getDescendingPendingRewardValidatorAddresses(10),
-          validatorRewars,
-          "",
-          {},
-          {},
-          {
-            onBroadcasted: (txHash) => {
-              // analyticsStore.logEvent("Compound reward tx broadcasted", {
-              //   chainId: chainId,
-              //   chainName: chainStore.current.chainName,
-              // });
-
-              const validatorObject = convertArrToObject(
-                queryRewards.pendingRewardValidatorAddresses
-              );
-              navigate(SCREENS.TxPendingResult, {
-                txHash: Buffer.from(txHash).toString("hex"),
-                title: "Compound",
-                data: {
-                  ...validatorObject,
-                  amount: stakingRewards?.toCoin(),
-                  currency: chainStore.current.stakeCurrency,
-                  type: "claim",
-                },
-              });
-            },
-          },
-          isDydx ? denom : queryRewards.stakableReward.currency.coinMinimalDenom
-        );
-      } else {
-        showToast({
-          message: "There is no reward!",
-          type: "danger",
-        });
-      }
-    } catch (e) {
-      console.error({ errorClaim: e });
-      if (chainId?.includes("dydx-mainnet")) {
-        showToast({
-          message: `Compound not supported for DYDX network`,
-          type: "danger",
-        });
+      if (validatorAddresses.length === 0) {
         return;
       }
+      const validatorRewards = validatorAddresses.map((validatorAddress) => {
+        const rewards = queryRewards.getStakableRewardOf(validatorAddress);
+        return { validatorAddress, rewards };
+      });
+      const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(
+        validatorAddresses,
+        validatorRewards
+      );
+
+      let gas = new Int(
+        validatorAddresses.length * 2 * defaultGasPerDelegation
+      );
+
+      try {
+        const simulated = await tx.simulate();
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gas = new Dec(simulated.gasUsed * 1.5).truncate();
+      } catch (e) {
+        console.log(e);
+      }
+      await tx.send(
+        {
+          gas: gas.toString(),
+          amount: [],
+        },
+        "",
+        {},
+        {
+          onBroadcasted: (txHash) => {
+            // analyticsStore.logEvent('complete_claim', {
+            //   chainId: viewToken.chainInfo.chainId,
+            //   chainName: viewToken.chainInfo.chainName,
+            // });
+            // navigation.navigate('TxPending', {
+            //   chainId,
+            //   txHash: Buffer.from(txHash).toString('hex'),
+            // });
+          },
+          onFulfill: (tx: any) => {
+            if (tx.code != null && tx.code !== 0) {
+              console.log(tx.log ?? tx.raw_log);
+
+              showToast({
+                type: "danger",
+                message: intl.formatMessage({ id: "error.transaction-failed" }),
+              });
+              return;
+            }
+            showToast({
+              type: "success",
+              message: intl.formatMessage({
+                id: "notification.transaction-success",
+              }),
+            });
+          },
+        }
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
-            e?.message ?? "Something went wrong! Please try again later.",
+            `Failed to Compound: ${e?.message}` ??
+            "Something went wrong! Please try again later.",
           type: "danger",
         });
         return;
       }
     }
   };
-
   const _onPressClaim = async () => {
     try {
       const validatorAddresses =

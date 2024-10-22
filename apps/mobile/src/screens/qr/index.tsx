@@ -17,8 +17,8 @@ import { CopyAddressModal } from "../home/components/copy-address/copy-address-m
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { tracking } from "@src/utils/tracking";
-import { ChainInfoInner } from "@owallet/stores";
-import { ChainInfoWithEmbed } from "@owallet/background";
+// import { ChainInfoInner } from "@owallet/stores";
+// import { ChainInfoWithEmbed } from "@owallet/background";
 import { unknownToken } from "@owallet/common";
 
 const styling = (colors) =>
@@ -70,9 +70,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
     network?.chainId || params?.chainId || chainStore.current.chainId
   );
   const [isBtcLegacy, setIsBtcLegacy] = useState<boolean>(false);
-  const addressToShow = isBtcLegacy
-    ? account.legacyAddress
-    : account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const addressToShow = account.addressDisplay;
   const [isOpen, setModalOpen] = useState(false);
 
   const { colors } = useTheme();

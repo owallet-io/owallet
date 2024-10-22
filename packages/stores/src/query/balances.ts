@@ -82,9 +82,6 @@ export class ObservableQueryBalancesImplMap {
     return this.getBalanceInner(chainInfo.stakeCurrency);
   }
 
-  /**
-   * 알려진 모든 Currency들의 balance를 반환환다.
-   */
   @computed
   get balances(): IObservableQueryBalanceImpl[] {
     const chainInfo = this.chainGetter.getChain(this.chainId);
@@ -102,9 +99,6 @@ export class ObservableQueryBalancesImplMap {
     return result;
   }
 
-  /**
-   * 알려진 모든 Currency들 중 0 이상의 잔고를 가진 balance를 반환환다.
-   */
   @computed
   get positiveBalances(): IObservableQueryBalanceImpl[] {
     const balances = this.balances;

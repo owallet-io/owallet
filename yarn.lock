@@ -6459,6 +6459,7 @@ __metadata:
     "@owallet/stores": "*"
     "@owallet/stores-etc": "*"
     "@owallet/stores-eth": "*"
+    "@owallet/stores-oasis": "*"
     "@owallet/types": "*"
     "@owallet/unit": "*"
     buffer: ^6.0.3
@@ -6639,6 +6640,24 @@ __metadata:
     "@owallet/stores": "*"
     "@owallet/stores-eth": "*"
     "@owallet/types": "*"
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
+"@owallet/stores-oasis@*, @owallet/stores-oasis@workspace:packages/stores-oasis":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-oasis@workspace:packages/stores-oasis"
+  dependencies:
+    "@oasisprotocol/client": ^1.1.0
+    "@owallet/common": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    big-integer: ^1.6.48
+    utility-types: ^3.10.0
   peerDependencies:
     mobx: ^6
     mobx-utils: ^6
@@ -24529,6 +24548,7 @@ __metadata:
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.11
+    "@owallet/stores-oasis": "*"
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-community/blur": 4.3.2
     "@react-native-community/netinfo": 9.4.1

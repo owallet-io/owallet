@@ -59,6 +59,7 @@ export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {
   readonly feeCurrencies: FeeCurrency[];
   readonly rest: string;
   readonly rpc: string;
+  readonly grpc: string | undefined;
   readonly walletUrl: string | undefined;
   readonly walletUrlForStaking: string | undefined;
   readonly chainSymbolImageUrl: string | undefined;

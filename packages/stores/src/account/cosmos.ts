@@ -12,7 +12,7 @@ import {
   StdSignDoc,
 } from "@owallet/types";
 import { DenomHelper, escapeHTML, sortObjectByKey } from "@owallet/common";
-import { Dec, DecUtils, Int } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Any } from "@owallet/proto-types/google/protobuf/any";
 import {
   AuthInfo,
@@ -1793,6 +1793,118 @@ export class CosmosAccountImpl {
             }).finish(),
           };
         }),
+        rlpTypes: {
+          MsgValue: [
+            { name: "delegator_address", type: "string" },
+            { name: "validator_address", type: "string" },
+          ],
+        },
+      },
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // After succeeding to withdraw rewards, refresh rewards.
+          this.queries.cosmos.queryRewards
+            .getQueryBech32Address(this.base.bech32Address)
+            .fetch();
+        }
+      }
+    );
+  }
+
+  makeWithdrawAndDelegationsRewardTx(
+    validatorAddresses: string[],
+    validatorRewars: Array<{ validatorAddress: string; rewards: CoinPretty }>
+  ) {
+    for (const validatorAddress of validatorAddresses) {
+      Bech32Address.validate(
+        validatorAddress,
+        this.chainGetter.getChain(this.chainId).bech32Config
+          ?.bech32PrefixValAddr
+      );
+    }
+    const msgs = validatorAddresses.map((validatorAddress) => {
+      return {
+        type: this.msgOpts.withdrawRewards.type,
+        value: {
+          delegator_address: this.base.bech32Address,
+          validator_address: validatorAddress,
+        },
+      };
+    });
+    let totalAmount = 0;
+    // Delegate msgs
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+    const delegateMsgs = validatorRewars.map((vr) => {
+      totalAmount += Number(
+        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
+      );
+      let dec = new Dec(
+        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
+      );
+      dec = dec.mulTruncate(
+        DecUtils.getTenExponentNInPrecisionRange(stakeCurrency.coinDecimals)
+      );
+      return {
+        type: this.msgOpts.delegate.type,
+        value: {
+          delegator_address: this.base.bech32Address,
+          validator_address: vr.validatorAddress,
+          amount: {
+            denom: stakeCurrency.coinMinimalDenom,
+            amount: Number(dec.truncate().toString()).toString(),
+          },
+        },
+      };
+    });
+
+    // const mergeMsgs = [
+    //   ...msgs.map((msg) => {
+    //     return {
+    //       typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+    //       value: MsgWithdrawDelegatorReward.encode({
+    //         delegatorAddress: msg.value.delegator_address,
+    //         validatorAddress: msg.value.validator_address,
+    //       }).finish(),
+    //     };
+    //   }),
+    //   ...delegateMsgs.map((delegateMsg) => {
+    //     return {
+    //       typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+    //       value: MsgDelegate.encode({
+    //         delegatorAddress: delegateMsg.value.delegator_address,
+    //         validatorAddress: delegateMsg.value.validator_address,
+    //         amount: delegateMsg.value.amount,
+    //       }).finish(),
+    //     };
+    //   }),
+    // ];
+
+    return this.makeTx(
+      "withdrawRewardsAndDelegation",
+      {
+        aminoMsgs: [...msgs, ...delegateMsgs],
+        protoMsgs: [
+          ...msgs.map((msg) => {
+            return {
+              typeUrl:
+                "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+              value: MsgWithdrawDelegatorReward.encode({
+                delegatorAddress: msg.value.delegator_address,
+                validatorAddress: msg.value.validator_address,
+              }).finish(),
+            };
+          }),
+          ...delegateMsgs.map((delegateMsg) => {
+            return {
+              typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+              value: MsgDelegate.encode({
+                delegatorAddress: delegateMsg.value.delegator_address,
+                validatorAddress: delegateMsg.value.validator_address,
+                amount: delegateMsg.value.amount,
+              }).finish(),
+            };
+          }),
+        ],
         rlpTypes: {
           MsgValue: [
             { name: "delegator_address", type: "string" },
