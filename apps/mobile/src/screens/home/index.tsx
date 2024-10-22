@@ -960,7 +960,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         }
         dataBalances={[]}
       />
-      {/*{appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}*/}
+      {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome
         dataTokens={
           appInitStore.getInitApp.isAllNetworks
