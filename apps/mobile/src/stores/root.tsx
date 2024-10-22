@@ -115,8 +115,8 @@ export class RootStore {
       AprQueries,
       // CosmosGovernanceQueries,
       // CosmosGovernanceQueriesV1,
-      EthereumQueries,
-      OasisQueries
+      EthereumQueries
+      // OasisQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -216,8 +216,8 @@ export class RootStore {
       EthereumQueries.use({
         coingeckoAPIBaseURL: "",
         coingeckoAPIURI: "",
-      }),
-      OasisQueries.use()
+      })
+      // OasisQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -230,12 +230,12 @@ export class RootStore {
     //     this.swapUsageQueries,
     //     SwapVenue,
     // );
-    this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
-      new AsyncKVStore("store_erc20_currency_registrar"),
-      24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
+    //   new AsyncKVStore("store_erc20_currency_registrar"),
+    //   24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     this.accountStore = new AccountStore(
       {
         addEventListener: (type: string, fn: () => void) => {

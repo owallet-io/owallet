@@ -84,7 +84,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const allBalances = hugeQueriesStore.getAllBalances(true);
+  const chainId = chainStore.current.chainId;
+  const allBalances = !chainId
+    ? hugeQueriesStore.getAllBalancesByChainId(chainId)
+    : hugeQueriesStore.getAllBalances(true);
   // const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   // const currentChain = chainStore.current;
@@ -96,25 +99,25 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   false
   // );
   // const previousChainId = usePrevious(currentChainId);
-  const chainStoreIsInitializing = chainStore.isInitializing;
-  const previousChainStoreIsInitializing = usePrevious(
-    chainStoreIsInitializing,
-    true
-  );
+  // const chainStoreIsInitializing = chainStore.isInitializing;
+  // const previousChainStoreIsInitializing = usePrevious(
+  //   chainStoreIsInitializing,
+  //   true
+  // );
 
-  useEffect(() => {
-    tracking("Home Screen");
-    InteractionManager.runAfterInteractions(() => {
-      fetch(InjectedProviderUrl)
-        .then((res) => {
-          return res.text();
-        })
-        .then((res) => {
-          browserStore.update_inject(res);
-        })
-        .catch((err) => console.log(err));
-    });
-  }, []);
+  // useEffect(() => {
+  //   tracking("Home Screen");
+  //   InteractionManager.runAfterInteractions(() => {
+  //     fetch(InjectedProviderUrl)
+  //       .then((res) => {
+  //         return res.text();
+  //       })
+  //       .then((res) => {
+  //         browserStore.update_inject(res);
+  //       })
+  //       .catch((err) => console.log(err));
+  //   });
+  // }, []);
 
   // const checkAndUpdateChainInfo = useCallback(() => {
   //   if (!chainStoreIsInitializing) {
@@ -958,19 +961,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         totalPriceBalance={
           availableTotalPrice?.add(stakedTotalPrice) || initPrice
         }
-        dataBalances={[]}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
-      <MainTabHome
-        dataTokens={
-          appInitStore.getInitApp.isAllNetworks
-            ? allBalances
-            : allBalances.filter(
-                (token) =>
-                  token.chainInfo.chainId === chainStore.current.chainId
-              )
-        }
-      />
+      <MainTabHome />
     </PageWithScrollViewInBottomTabView>
   );
 });

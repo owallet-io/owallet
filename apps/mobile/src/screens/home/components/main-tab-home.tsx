@@ -11,17 +11,15 @@ import { NftCard } from "./nft-card";
 import { useStore } from "@src/stores";
 import { ViewToken } from "@owallet/types";
 
-export const MainTabHome: FC<{
-  dataTokens: readonly ViewToken[];
-}> = observer(({ dataTokens }) => {
+export const MainTabHome: FC<{}> = observer(() => {
   const { colors } = useTheme();
-  const { chainStore, appInitStore } = useStore();
+
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
     switch (activeTab.id) {
       case TabEnum.TOKEN:
-        return <TokensCardAll dataTokens={dataTokens} />;
+        return <TokensCardAll />;
       case TabEnum.NFT:
         return <NftCard />;
       case TabEnum.History:
