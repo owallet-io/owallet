@@ -336,6 +336,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
             style={{
               borderRadius: 32,
             }}
+            textStyle={{ color: colors["neutral-text-action-on-dark-bg"] }}
             label={mode === "add" ? "Import" : " Next"}
             loading={isCreating}
             disabled={isCreating}

@@ -82,6 +82,10 @@ export class GetChainInfosWithoutEndpointsMsg extends Message<{
     return "get-chain-infos-without-endpoints";
   }
 
+  override approveExternal(): boolean {
+    return true;
+  }
+
   validateBasic(): void {
     // noop
   }

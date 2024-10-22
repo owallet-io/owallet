@@ -59,6 +59,7 @@ export const TokensCardAll: FunctionComponent<{
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.hideTokensWithoutBalance
   );
+  const [openSide, setOpenSide] = useState(false);
   useEffect(() => {
     appInitStore.updateHideTokensWithoutBalance(toggle);
   }, [toggle]);
@@ -214,7 +215,8 @@ const TokenItem: FC<{
               source={{
                 uri:
                   item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                  !item.token?.currency?.coinImageUrl
+                  !item.token?.currency?.coinImageUrl ||
+                  item.token?.currency?.coinImageUrl?.includes("missing.svg")
                     ? unknownToken.coinImageUrl
                     : item.token?.currency?.coinImageUrl,
               }}

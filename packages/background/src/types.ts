@@ -26,6 +26,8 @@ export const TYPES = {
   UpdaterStore: Symbol("UpdaterStore"),
 
   EventMsgRequester: Symbol("EventMsgRequester"),
+  SidePanelService: Symbol("SidePanelService"),
+  ExtensionMessageRequesterToUI: Symbol("ExtensionMessageRequesterToUI"),
 
   RNG: Symbol("RandomNumberGenerator"),
   CommonCrypto: Symbol("CommonCrypto"),

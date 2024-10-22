@@ -21,7 +21,7 @@ export const TokensCard: FC<{
   onSelectToken?: (token) => void;
 }> = observer(({ dataTokens, onSelectToken }) => {
   const [keyword, setKeyword] = useState("");
-  const { priceStore, chainStore, hugeQueriesStore } = useStore();
+  const { chainStore, hugeQueriesStore } = useStore();
   const onChangeKeyword = (e) => {
     setKeyword(e.target.value);
   };
@@ -205,7 +205,7 @@ const TokenItem: FC<{
       </div>
       <div className={styles.rightBlock}>
         <span className={styles.title}>
-          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(6)?.toString()}
+          {item.token?.trim(true)?.hideDenom(true)?.maxDecimals(4)?.toString()}
         </span>
         <span className={styles.subTitle}>
           {new PricePretty(fiatCurrency, item.price || "0").toString()}

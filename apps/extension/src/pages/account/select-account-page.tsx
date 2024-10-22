@@ -59,6 +59,7 @@ export const SelectAccountPage = observer(() => {
     }
   };
   const onAddAccount = () => {
+    window.close();
     browser.tabs.create({
       url: "/popup.html#/register",
     });

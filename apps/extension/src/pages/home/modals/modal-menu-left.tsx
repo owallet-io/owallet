@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import SlidingPane from "react-sliding-pane";
 import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
@@ -6,6 +6,15 @@ import { useStore } from "../../../stores";
 import { useHistory } from "react-router";
 import { ChainIdEnum } from "@owallet/common";
 import { toast } from "react-toastify";
+import Switch from "react-switch";
+import colors from "theme/colors";
+import {
+  GetSidePanelEnabledMsg,
+  GetSidePanelIsSupportedMsg,
+  SetSidePanelEnabledMsg,
+} from "@owallet/background";
+import { InExtensionMessageRequester } from "@owallet/router-extension";
+import { BACKGROUND_PORT } from "@owallet/router";
 
 export const ModalMenuLeft: FC<{
   isOpen: boolean;
@@ -13,6 +22,25 @@ export const ModalMenuLeft: FC<{
 }> = observer(({ isOpen, onRequestClose }) => {
   const { keyRingStore, chainStore } = useStore();
   const history = useHistory();
+
+  const [sidePanelSupported, setSidePanelSupported] = useState(false);
+  const [sidePanelEnabled, setSidePanelEnabled] = useState(false);
+
+  useEffect(() => {
+    const msg = new GetSidePanelIsSupportedMsg();
+    new InExtensionMessageRequester()
+      .sendMessage(BACKGROUND_PORT, msg)
+      .then((res) => {
+        setSidePanelSupported(res.supported);
+
+        const msg = new GetSidePanelEnabledMsg();
+        new InExtensionMessageRequester()
+          .sendMessage(BACKGROUND_PORT, msg)
+          .then((res) => {
+            setSidePanelEnabled(res.enabled);
+          });
+      });
+  }, []);
 
   const lock = async () => {
     await keyRingStore.lock();
@@ -101,6 +129,98 @@ export const ModalMenuLeft: FC<{
               <span className={styles.nameMenu}>{item.name}</span>
             </div>
             {item.value && <span className={styles.version}>{item.value}</span>}
+            {item.type === "switch" && (
+              <Switch
+                onColor={colors["highlight-surface-active"]}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                height={20}
+                width={35}
+                onChange={async (value) => {
+                  const msg = new SetSidePanelEnabledMsg(!sidePanelEnabled);
+                  new InExtensionMessageRequester()
+                    .sendMessage(BACKGROUND_PORT, msg)
+                    .then((res) => {
+                      setSidePanelEnabled(res.enabled);
+
+                      if (res.enabled) {
+                        if (
+                          typeof chrome !== "undefined" &&
+                          typeof chrome.sidePanel !== "undefined"
+                        ) {
+                          (async () => {
+                            const selfCloseId = Math.random() * 100000;
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            window.__self_id_for_closing_view_side_panel =
+                              selfCloseId;
+                            // side panel을 열고 나서 기존의 popup view를 모두 지워야한다
+                            const viewsBefore = browser.extension.getViews();
+
+                            try {
+                              const activeTabs = await browser.tabs.query({
+                                active: true,
+                                currentWindow: true,
+                              });
+                              if (activeTabs.length > 0) {
+                                const id = activeTabs[0].id;
+                                if (id != null) {
+                                  chrome.sidePanel.open({
+                                    tabId: id,
+                                  });
+                                }
+                              }
+                            } catch (e) {
+                              console.log(e);
+                            } finally {
+                              for (const view of viewsBefore) {
+                                if (
+                                  // 자기 자신은 제외해야한다.
+                                  // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                                  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                  // @ts-ignore
+                                  window.__self_id_for_closing_view_side_panel !==
+                                  selfCloseId
+                                ) {
+                                  view.window.close();
+                                }
+                              }
+
+                              window.close();
+                            }
+                          })();
+                        } else {
+                          window.close();
+                        }
+                      } else {
+                        const selfCloseId = Math.random() * 100000;
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        window.__self_id_for_closing_view_side_panel =
+                          selfCloseId;
+                        // side panel을 모두 닫아야한다.
+                        const views = browser.extension.getViews();
+
+                        for (const view of views) {
+                          if (
+                            // 자기 자신은 제외해야한다.
+                            // 다른거 끄기 전에 자기가 먼저 꺼지면 안되기 때문에...
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            window.__self_id_for_closing_view_side_panel !==
+                            selfCloseId
+                          ) {
+                            view.window.close();
+                          }
+                        }
+
+                        window.close();
+                      }
+                    });
+                }}
+                checked={sidePanelEnabled}
+              />
+            )}
           </div>
         ))}
       </div>
@@ -118,6 +238,7 @@ enum MenuEnum {
   LOCK = 6,
   ABOUT_USER = 7,
   FEEDBACK = 8,
+  SIDEPANEL = 9,
 }
 
 const dataItem = [
@@ -165,5 +286,12 @@ const dataItem = [
     icon: require("assets/svg/tdesign_info_circle.svg"),
     id: MenuEnum.FEEDBACK,
     link: `https://defi.featurebase.app/?b=66b096ba4e5763c7884f0f77`,
+    isBorderBottom: true,
+  },
+  {
+    name: "Side panel",
+    icon: require("assets/svg/tdesign_fullscreen.svg"),
+    id: MenuEnum.SIDEPANEL,
+    type: "switch",
   },
 ];

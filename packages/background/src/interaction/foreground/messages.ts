@@ -1,6 +1,31 @@
-import { Message, OWalletError } from "@owallet/router";
+import { OWalletError, Message } from "@owallet/router";
 import { ROUTE } from "./constants";
 import { InteractionWaitingData } from "../types";
+
+export class InteractionPingMsg extends Message<boolean> {
+  public static type() {
+    return "interaction-ping";
+  }
+
+  constructor(
+    public readonly windowId: number | undefined,
+    public readonly ignoreWindowIdAndForcePing: boolean
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return InteractionPingMsg.type();
+  }
+}
 
 export class PushInteractionDataMsg extends Message<void> {
   public static type() {
@@ -13,7 +38,7 @@ export class PushInteractionDataMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.data.type) {
-      throw new Error("Type should not be empty");
+      throw new OWalletError("interaction", 101, "Type should not be empty");
     }
   }
 
@@ -32,7 +57,10 @@ export class PushEventDataMsg extends Message<void> {
   }
 
   constructor(
-    public readonly data: Omit<InteractionWaitingData, "id" | "isInternal">
+    public readonly data: Omit<
+      InteractionWaitingData,
+      "id" | "uri" | "isInternal" | "tabId" | "windowId"
+    >
   ) {
     super();
   }

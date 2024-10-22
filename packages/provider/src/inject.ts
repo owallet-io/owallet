@@ -164,6 +164,8 @@ export class InjectedOWallet implements IOWallet {
                   message.args[3]
                 );
 
+                console.log("result signDirect", result);
+
                 return {
                   signed: {
                     bodyBytes: result.signed.bodyBytes,
@@ -232,6 +234,8 @@ export class InjectedOWallet implements IOWallet {
 
     return new Promise((resolve, reject) => {
       const receiveResponse = (e: MessageEvent) => {
+        console.log("e.data", e.data);
+
         const proxyResponse: ProxyRequestResponse = this.parseMessage
           ? this.parseMessage(e.data)
           : e.data;
@@ -337,6 +341,8 @@ export class InjectedOWallet implements IOWallet {
     },
     signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
+    console.log("signDoc signDirect", signDoc.bodyBytes);
+
     const result = await this.requestMethod("signDirect", [
       chainId,
       signer,
@@ -352,6 +358,8 @@ export class InjectedOWallet implements IOWallet {
       },
       deepmerge(this.defaultOptions.sign ?? {}, signOptions),
     ]);
+
+    console.log("signed result", result);
 
     const signed: {
       bodyBytes: Uint8Array;

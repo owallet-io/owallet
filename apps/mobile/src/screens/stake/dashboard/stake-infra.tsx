@@ -53,6 +53,11 @@ const dataOWalletStake = [
     isRecommended: false,
     validator: "cosmosvaloper19qv67gvevp4xw64kmhd6ff6ta2l2ywgfm74xtz",
   },
+  {
+    chainId: ChainIdEnum.DYDX,
+    isRecommended: false,
+    validator: "dydxvaloper1kuyezvy89hcr96q597ftuc4z03hrcftu5jy2pv",
+  },
 ];
 const valVotingPower = 1000;
 const daysInYears = 365.2425;
@@ -327,10 +332,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                       size={32}
                       style={{
                         borderRadius: 999,
-                        tintColor:
-                          item.chainId === ChainIdEnum.Oraichain
-                            ? colors["neutral-text-title"]
-                            : null,
+                        // tintColor:
+                        //   item.chainId === ChainIdEnum.Oraichain
+                        //     ? colors["neutral-text-title"]
+                        //     : null,
                       }}
                       source={{
                         uri: chainInfo.stakeCurrency.coinImageUrl,
