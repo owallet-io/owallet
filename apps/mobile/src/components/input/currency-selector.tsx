@@ -31,9 +31,11 @@ export const CurrencySelector: FunctionComponent<{
     setSelectedKey,
     selectedKey,
   }) => {
-    const { hugeQueriesStore } = useStore();
+    const { hugeQueriesStore, appInitStore } = useStore();
 
-    const tokens = hugeQueriesStore.getAllBalances(true);
+    const tokens = appInitStore.getInitApp.isAllNetworks
+      ? hugeQueriesStore.getAllBalances(true)
+      : hugeQueriesStore.getAllBalancesByChainId(chainId);
 
     const _filteredTokens = useMemo(() => {
       const zeroDec = new Dec(0);
@@ -41,17 +43,6 @@ export const CurrencySelector: FunctionComponent<{
         return token.token.toDec().gt(zeroDec);
       });
     }, [tokens]);
-
-    // const selectedKey = amountConfig.currency.coinMinimalDenom;
-    // console.log(selectedKey, "selectedKey");
-    // const setSelectedKey = (key: string | undefined) => {
-    //   // console.log(key,"key kaka");
-    //   const token = tokens.find(
-    //     (cur) => cur.token.currency.coinMinimalDenom === key
-    //   );
-    //   console.log(token.token.currency,"token kaka2")
-    //   amountConfig.setCurrency(token.token.currency);
-    // };
     return (
       <TokensSelector
         chainId={chainId}

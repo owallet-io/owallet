@@ -121,12 +121,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                         name: isParamAddressBook.params.name,
                       },
                     });
-                  } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.SendBtc, {
-                      chainId: chainInfo.chainId,
-                      recipient: data,
-                    });
-                  } else {
+                  }
+                  //     if (chainStore.current.networkType === "bitcoin") {
+                  //   navigate(SCREENS.SendBtc, {
+                  //     chainId: chainInfo.chainId,
+                  //     recipient: data,
+                  //   });
+                  // } else
+                  else {
                     navigate(SCREENS.NewSend, {
                       chainId: chainInfo.chainId,
                       recipient: data,

@@ -47,10 +47,14 @@ export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   // dataTokens: ViewToken[];
 }> = observer(({ containerStyle }) => {
-  const { hugeQueriesStore, uiConfigStore } = useStore();
+  const { hugeQueriesStore, uiConfigStore, appInitStore, chainStore } =
+    useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const allBalances = hugeQueriesStore.getAllBalances(true);
+  const { chainId } = chainStore.current;
+  const allBalances = appInitStore.getInitApp.isAllNetworks
+    ? hugeQueriesStore.getAllBalances(true)
+    : hugeQueriesStore.getAllBalancesByChainId(chainId);
   const allBalancesNonZero = useMemo(() => {
     return allBalances.filter((token) => {
       return token.token.toDec().gt(zeroDec);

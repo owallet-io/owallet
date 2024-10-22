@@ -509,7 +509,7 @@ export const AccountBoxAll: FunctionComponent<{
             {"  "}
             Staked:{" "}
             {delegated
-              .shrink(true)
+              ?.shrink(true)
               .maxDecimals(4)
               .trim(true)
               .upperCase(true)
@@ -518,7 +518,7 @@ export const AccountBoxAll: FunctionComponent<{
           <OWText size={14} weight="500">
             {stakedTotalPriceByChain
               ? stakedTotalPriceByChain.toString()
-              : delegated.shrink(true).maxDecimals(6).toString()}
+              : delegated?.shrink(true).maxDecimals(6).toString()}
           </OWText>
         </View>
         <View
@@ -766,6 +766,11 @@ export const AccountBoxAll: FunctionComponent<{
                 // } else {
                 //   navigate(SCREENS.NewSend);
                 // }
+                navigate(SCREENS.NewSend, {
+                  coinMinimalDenom:
+                    chainStore.current.feeCurrencies?.[0].coinMinimalDenom,
+                  chainId: chainId,
+                });
               }}
             />
             <View

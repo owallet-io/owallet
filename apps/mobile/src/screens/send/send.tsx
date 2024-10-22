@@ -33,6 +33,7 @@ import { BACKGROUND_PORT, Message } from "@owallet/router";
 import { SendTxAndRecordMsg } from "@owallet/background";
 import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
+import { showToast } from "@utils/helper";
 
 export const SendCosmosScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, appInitStore } = useStore();
@@ -56,10 +57,10 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const initialChainId = route.params["chainId"];
-  const initialCoinMinimalDenom = route.params["coinMinimalDenom"];
-  const initialRecipientAddress = route.params["recipientAddress"];
-  const chainIdInit = initialChainId || chainStore.chainInfosInUI[0].chainId;
+  const initialChainId = route.params?.["chainId"];
+  const initialCoinMinimalDenom = route.params?.["coinMinimalDenom"];
+  const initialRecipientAddress = route.params?.["recipientAddress"];
+  const chainIdInit = initialChainId || chainStore.current.chainId;
   const [chainId, setChainId] = useState(chainIdInit);
   console.log(chainId, "chainId");
   const chainInfo = chainStore.getChain(chainId);
@@ -279,19 +280,21 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
             onFulfill: (tx: any) => {
               if (tx.code != null && tx.code !== 0) {
                 console.log(tx);
-                // notification.show(
-                //     'failed',
-                //     intl.formatMessage({id: 'error.transaction-failed'}),
-                // );
+                showToast({
+                  type: "danger",
+                  message: intl.formatMessage({
+                    id: "error.transaction-failed",
+                  }),
+                });
                 return;
               }
 
-              // notification.show(
-              //     'success',
-              //     intl.formatMessage({
-              //       id: 'notification.transaction-success',
-              //     }),
-              // );
+              showToast({
+                type: "success",
+                message: intl.formatMessage({
+                  id: "notification.transaction-success",
+                }),
+              });
             },
           }
         );
@@ -382,15 +385,11 @@ export const SendCosmosScreen: FunctionComponent = observer(() => {
                 </OWText>
                 <CurrencySelector
                   chainId={chainId}
-                  // type="new"
                   selectedKey={coinMinimalDenom}
                   setSelectedKey={(key) => {
                     if (!key) return;
-
                     const [chainId, coinMinimalDenom] = key.split("|");
                     if (!chainId || !coinMinimalDenom) return;
-                    // sendConfigs.feeConfig.setChain(chainId);
-                    // sendConfigs.feeConfig.setFee(chainId);
                     setChainId(chainId);
                     setCoinMinimalDenom(coinMinimalDenom);
                   }}
