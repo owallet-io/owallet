@@ -23,22 +23,18 @@ import {
   IEthereumProvider,
   EIP6963EventNames,
   EIP6963ProviderInfo,
-  EIP6963ProviderDetail,
-} from "@owallet/types";
-import {
-  Result,
-  JSONUint8Array,
-  EthereumProviderRpcError,
-} from "@owallet/router";
-import { OWalletEnigmaUtils } from "./enigma";
-import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from "./cosmjs";
-import deepmerge from "deepmerge";
-import Long from "long";
-import { OWalletCoreTypes } from "./core-types";
-import EventEmitter from "events";
+  EIP6963ProviderDetail
+} from '@owallet/types';
+import { Result, JSONUint8Array, EthereumProviderRpcError } from '@owallet/router';
+import { OWalletEnigmaUtils } from './enigma';
+import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
+import deepmerge from 'deepmerge';
+import Long from 'long';
+import { OWalletCoreTypes } from './core-types';
+import EventEmitter from 'events';
 
 export interface ProxyRequest {
-  type: "proxy-request";
+  type: 'proxy-request';
   id: string;
   method: keyof (OWallet & OWalletCoreTypes);
   args: any[];
@@ -46,7 +42,7 @@ export interface ProxyRequest {
 }
 
 export interface ProxyRequestResponse {
-  type: "proxy-request-response";
+  type: 'proxy-request-response';
   id: string;
   result: Result | undefined;
 }
@@ -57,40 +53,24 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
     if (!descriptor || descriptor.configurable) {
       Object.defineProperty(o, p, {
         value,
-        writable: false,
+        writable: false
       });
     } else {
       o[p] = value;
     }
   } else {
-    console.warn(
-      `Failed to inject ${p} from owallet. Probably, other wallet is trying to intercept OWallet`
-    );
+    console.warn(`Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`);
   }
 }
 
 export function injectOWalletToWindow(owallet: IOWallet): void {
-  defineUnwritablePropertyIfPossible(window, "owallet", owallet);
-  defineUnwritablePropertyIfPossible(
-    window,
-    "getOfflineSigner",
-    owallet.getOfflineSigner
-  );
-  defineUnwritablePropertyIfPossible(
-    window,
-    "getOfflineSignerOnlyAmino",
-    owallet.getOfflineSignerOnlyAmino
-  );
-  defineUnwritablePropertyIfPossible(
-    window,
-    "getOfflineSignerAuto",
-    owallet.getOfflineSignerAuto
-  );
-  defineUnwritablePropertyIfPossible(
-    window,
-    "getEnigmaUtils",
-    owallet.getEnigmaUtils
-  );
+  defineUnwritablePropertyIfPossible(window, 'owallet', owallet);
+  defineUnwritablePropertyIfPossible(window, 'keplr', owallet);
+  defineUnwritablePropertyIfPossible(window, 'ethereum', owallet.ethereum);
+  defineUnwritablePropertyIfPossible(window, 'getOfflineSigner', owallet.getOfflineSigner);
+  defineUnwritablePropertyIfPossible(window, 'getOfflineSignerOnlyAmino', owallet.getOfflineSignerOnlyAmino);
+  defineUnwritablePropertyIfPossible(window, 'getOfflineSignerAuto', owallet.getOfflineSignerAuto);
+  defineUnwritablePropertyIfPossible(window, 'getEnigmaUtils', owallet.getEnigmaUtils);
 }
 
 /**
@@ -107,73 +87,65 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       removeMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
     } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      removeMessageListener: (fn: (e: any) => void) =>
-        window.removeEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ): () => void {
     const fn = async (e: any) => {
-      const message: ProxyRequest = parseMessage
-        ? parseMessage(e.data)
-        : e.data;
-      if (!message || message.type !== "proxy-request") {
+      const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
+      if (!message || message.type !== 'proxy-request') {
         return;
       }
 
       try {
         if (!message.id) {
-          throw new Error("Empty id");
+          throw new Error('Empty id');
         }
 
-        if (message.method.startsWith("protected")) {
-          throw new Error("Rejected");
+        if (message.method.startsWith('protected')) {
+          throw new Error('Rejected');
         }
 
-        if (message.method === "version") {
-          throw new Error("Version is not function");
+        if (message.method === 'version') {
+          throw new Error('Version is not function');
         }
 
-        if (message.method === "mode") {
-          throw new Error("Mode is not function");
+        if (message.method === 'mode') {
+          throw new Error('Mode is not function');
         }
 
-        if (message.method === "defaultOptions") {
-          throw new Error("DefaultOptions is not function");
+        if (message.method === 'defaultOptions') {
+          throw new Error('DefaultOptions is not function');
         }
 
         if (
           !owallet[message.method] ||
-          (message.method !== "ethereum" &&
-            typeof owallet[message.method] !== "function")
+          (message.method !== 'ethereum' && typeof owallet[message.method] !== 'function')
         ) {
           throw new Error(`Invalid method: ${message.method}`);
         }
 
-        if (message.method === "getOfflineSigner") {
+        if (message.method === 'getOfflineSigner') {
           throw new Error("GetOfflineSigner method can't be proxy request");
         }
 
-        if (message.method === "getOfflineSignerOnlyAmino") {
-          throw new Error(
-            "GetOfflineSignerOnlyAmino method can't be proxy request"
-          );
+        if (message.method === 'getOfflineSignerOnlyAmino') {
+          throw new Error("GetOfflineSignerOnlyAmino method can't be proxy request");
         }
 
-        if (message.method === "getOfflineSignerAuto") {
+        if (message.method === 'getOfflineSignerAuto') {
           throw new Error("GetOfflineSignerAuto method can't be proxy request");
         }
 
-        if (message.method === "getEnigmaUtils") {
+        if (message.method === 'getEnigmaUtils') {
           throw new Error("GetEnigmaUtils method can't be proxy request");
         }
 
         const method = message.method;
         const result = await (async () => {
-          if (method === "signDirect") {
+          if (method === 'signDirect') {
             return await (async () => {
               const receivedSignDoc: {
                 bodyBytes?: Uint8Array | null;
@@ -189,9 +161,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                   bodyBytes: receivedSignDoc.bodyBytes,
                   authInfoBytes: receivedSignDoc.authInfoBytes,
                   chainId: receivedSignDoc.chainId,
-                  accountNumber: receivedSignDoc.accountNumber
-                    ? Long.fromString(receivedSignDoc.accountNumber)
-                    : null,
+                  accountNumber: receivedSignDoc.accountNumber ? Long.fromString(receivedSignDoc.accountNumber) : null
                 },
                 message.args[3]
               );
@@ -201,14 +171,14 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                   bodyBytes: result.signed.bodyBytes,
                   authInfoBytes: result.signed.authInfoBytes,
                   chainId: result.signed.chainId,
-                  accountNumber: result.signed.accountNumber.toString(),
+                  accountNumber: result.signed.accountNumber.toString()
                 },
-                signature: result.signature,
+                signature: result.signature
               };
             })();
           }
 
-          if (method === "signDirectAux") {
+          if (method === 'signDirectAux') {
             return await (async () => {
               const receivedSignDoc: {
                 bodyBytes?: Uint8Array | null;
@@ -228,12 +198,8 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                   bodyBytes: receivedSignDoc.bodyBytes,
                   publicKey: receivedSignDoc.publicKey,
                   chainId: receivedSignDoc.chainId,
-                  accountNumber: receivedSignDoc.accountNumber
-                    ? Long.fromString(receivedSignDoc.accountNumber)
-                    : null,
-                  sequence: receivedSignDoc.sequence
-                    ? Long.fromString(receivedSignDoc.sequence)
-                    : null,
+                  accountNumber: receivedSignDoc.accountNumber ? Long.fromString(receivedSignDoc.accountNumber) : null,
+                  sequence: receivedSignDoc.sequence ? Long.fromString(receivedSignDoc.sequence) : null
                 },
                 message.args[3]
               );
@@ -244,44 +210,44 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                   publicKey: result.signed.publicKey,
                   chainId: result.signed.chainId,
                   accountNumber: result.signed.accountNumber.toString(),
-                  sequence: result.signed.sequence.toString(),
+                  sequence: result.signed.sequence.toString()
                 },
-                signature: result.signature,
+                signature: result.signature
               };
             })();
           }
 
-          if (method === "ethereum") {
+          if (method === 'ethereum') {
             const ethereumProviderMethod = message.ethereumProviderMethod;
 
             //@ts-ignore
-            if (ethereumProviderMethod?.startsWith("protected")) {
-              throw new Error("Rejected");
+            if (ethereumProviderMethod?.startsWith('protected')) {
+              throw new Error('Rejected');
             }
 
-            if (ethereumProviderMethod === "chainId") {
-              throw new Error("chainId is not function");
+            if (ethereumProviderMethod === 'chainId') {
+              throw new Error('chainId is not function');
             }
 
-            if (ethereumProviderMethod === "selectedAddress") {
-              throw new Error("selectedAddress is not function");
+            if (ethereumProviderMethod === 'selectedAddress') {
+              throw new Error('selectedAddress is not function');
             }
 
-            if (ethereumProviderMethod === "networkVersion") {
-              throw new Error("networkVersion is not function");
+            if (ethereumProviderMethod === 'networkVersion') {
+              throw new Error('networkVersion is not function');
             }
 
-            if (ethereumProviderMethod === "isOWallet") {
-              throw new Error("isOWallet is not function");
+            if (ethereumProviderMethod === 'isOWallet') {
+              throw new Error('isOWallet is not function');
             }
 
-            if (ethereumProviderMethod === "isMetaMask") {
-              throw new Error("isMetaMask is not function");
+            if (ethereumProviderMethod === 'isMetaMask') {
+              throw new Error('isMetaMask is not function');
             }
 
             if (
               ethereumProviderMethod === undefined ||
-              typeof owallet.ethereum[ethereumProviderMethod] !== "function"
+              typeof owallet.ethereum[ethereumProviderMethod] !== 'function'
             ) {
               throw new Error(
                 //@ts-ignore
@@ -290,20 +256,16 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             }
 
             const messageArgs = JSONUint8Array.unwrap(message.args);
-            if (ethereumProviderMethod === "request") {
+            if (ethereumProviderMethod === 'request') {
               return await owallet.ethereum.request(
-                typeof messageArgs === "string"
-                  ? JSON.parse(messageArgs)
-                  : messageArgs
+                typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs
               );
             }
 
             return await owallet.ethereum[ethereumProviderMethod](
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
-              ...(typeof messageArgs === "string"
-                ? JSON.parse(messageArgs)
-                : messageArgs)
+              ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
             );
           }
 
@@ -315,17 +277,17 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         })();
 
         const proxyResponse: ProxyRequestResponse = {
-          type: "proxy-request-response",
+          type: 'proxy-request-response',
           id: message.id,
           result: {
-            return: JSONUint8Array.wrap(result),
-          },
+            return: JSONUint8Array.wrap(result)
+          }
         };
 
         eventListener.postMessage(proxyResponse);
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
-          type: "proxy-request-response",
+          type: 'proxy-request-response',
           id: message.id,
           result: {
             error:
@@ -333,10 +295,10 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                 ? {
                     code: e.code,
                     message: e.message,
-                    data: e.data,
+                    data: e.data
                   }
-                : e.message || e.toString(),
-          },
+                : e.message || e.toString()
+          }
         };
 
         eventListener.postMessage(proxyResponse);
@@ -350,31 +312,26 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     };
   }
 
-  protected requestMethod(
-    method: keyof (IOWallet & OWalletCoreTypes),
-    args: any[]
-  ): Promise<any> {
+  protected requestMethod(method: keyof (IOWallet & OWalletCoreTypes), args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
-      .join("");
+      .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      type: 'proxy-request',
       id,
       method,
-      args: JSONUint8Array.wrap(args),
+      args: JSONUint8Array.wrap(args)
     };
 
     return new Promise((resolve, reject) => {
       const receiveResponse = (e: any) => {
-        const proxyResponse: ProxyRequestResponse = this.parseMessage
-          ? this.parseMessage(e.data)
-          : e.data;
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
 
-        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
           return;
         }
 
@@ -387,7 +344,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         const result = JSONUint8Array.unwrap(proxyResponse.result);
 
         if (!result) {
-          reject(new Error("Result is null"));
+          reject(new Error('Result is null'));
           return;
         }
 
@@ -417,12 +374,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       removeMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
     } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      removeMessageListener: (fn: (e: any) => void) =>
-        window.removeEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any,
     protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo
@@ -432,20 +386,20 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     // Freeze fields
     const fieldNames = Object.keys(this);
     for (const fieldName of fieldNames) {
-      if (fieldName !== "defaultOptions") {
+      if (fieldName !== 'defaultOptions') {
         Object.defineProperty(this, fieldName, {
           value: (this as any)[fieldName],
-          writable: false,
+          writable: false
         });
       }
 
       // If field is "eventListener", try to iterate one-level deep.
-      if (fieldName === "eventListener") {
+      if (fieldName === 'eventListener') {
         const fieldNames = Object.keys(this.eventListener);
         for (const fieldName of fieldNames) {
           Object.defineProperty(this.eventListener, fieldName, {
             value: (this.eventListener as any)[fieldName],
-            writable: false,
+            writable: false
           });
         }
       }
@@ -453,67 +407,57 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     // Freeze methods
     const methodNames = Object.getOwnPropertyNames(InjectedOWallet.prototype);
     for (const methodName of methodNames) {
-      if (
-        methodName !== "constructor" &&
-        typeof (this as any)[methodName] === "function"
-      ) {
+      if (methodName !== 'constructor' && typeof (this as any)[methodName] === 'function') {
         Object.defineProperty(this, methodName, {
           value: (this as any)[methodName].bind(this),
-          writable: false,
+          writable: false
         });
       }
     }
   }
 
   async ping(): Promise<void> {
-    await this.requestMethod("ping", []);
+    await this.requestMethod('ping', []);
   }
 
   async enable(chainIds: string | string[]): Promise<void> {
-    await this.requestMethod("enable", [chainIds]);
+    await this.requestMethod('enable', [chainIds]);
   }
 
   async disable(chainIds?: string | string[]): Promise<void> {
-    await this.requestMethod("disable", [chainIds]);
+    await this.requestMethod('disable', [chainIds]);
   }
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     if (chainInfo.hideInUI) {
-      throw new Error("hideInUI is not allowed");
+      throw new Error('hideInUI is not allowed');
     }
 
-    if (
-      chainInfo.features?.includes("stargate") ||
-      chainInfo.features?.includes("no-legacy-stdTx")
-    ) {
+    if (chainInfo.features?.includes('stargate') || chainInfo.features?.includes('no-legacy-stdTx')) {
       console.warn(
-        "“stargate”, “no-legacy-stdTx” feature has been deprecated. The launchpad is no longer supported, thus works without the two features. We would keep the aforementioned two feature for a while, but the upcoming update would potentially cause errors. Remove the two feature."
+        '“stargate”, “no-legacy-stdTx” feature has been deprecated. The launchpad is no longer supported, thus works without the two features. We would keep the aforementioned two feature for a while, but the upcoming update would potentially cause errors. Remove the two feature.'
       );
     }
 
-    await this.requestMethod("experimentalSuggestChain", [chainInfo]);
+    await this.requestMethod('experimentalSuggestChain', [chainInfo]);
   }
 
   async getKey(chainId: string): Promise<Key> {
-    return await this.requestMethod("getKey", [chainId]);
+    return await this.requestMethod('getKey', [chainId]);
   }
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
-    return await this.requestMethod("getKeysSettled", [chainIds]);
+    return await this.requestMethod('getKeysSettled', [chainIds]);
   }
 
-  async sendTx(
-    chainId: string,
-    tx: StdTx | Uint8Array,
-    mode: BroadcastMode
-  ): Promise<Uint8Array> {
-    if (!("length" in tx)) {
+  async sendTx(chainId: string, tx: StdTx | Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
+    if (!('length' in tx)) {
       console.warn(
-        "Do not send legacy std tx via `sendTx` API. We now only support protobuf tx. The usage of legeacy std tx would throw an error in the near future."
+        'Do not send legacy std tx via `sendTx` API. We now only support protobuf tx. The usage of legeacy std tx would throw an error in the near future.'
       );
     }
 
-    return await this.requestMethod("sendTx", [chainId, tx, mode]);
+    return await this.requestMethod('sendTx', [chainId, tx, mode]);
   }
 
   async signAmino(
@@ -522,11 +466,11 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     signDoc: StdSignDoc,
     signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
-    return await this.requestMethod("signAmino", [
+    return await this.requestMethod('signAmino', [
       chainId,
       signer,
       signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     ]);
   }
 
@@ -541,7 +485,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     },
     signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
-    const result = await this.requestMethod("signDirect", [
+    const result = await this.requestMethod('signDirect', [
       chainId,
       signer,
       // We can't send the `Long` with remaing the type.
@@ -550,11 +494,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         bodyBytes: signDoc.bodyBytes,
         authInfoBytes: signDoc.authInfoBytes,
         chainId: signDoc.chainId,
-        accountNumber: signDoc.accountNumber
-          ? signDoc.accountNumber.toString()
-          : null,
+        accountNumber: signDoc.accountNumber ? signDoc.accountNumber.toString() : null
       },
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     ]);
 
     const signed: {
@@ -571,9 +513,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         chainId: signed.chainId,
         // We can't send the `Long` with remaing the type.
         // Sender should change the `Long` to `string`.
-        accountNumber: Long.fromString(signed.accountNumber),
+        accountNumber: Long.fromString(signed.accountNumber)
       },
-      signature: result.signature,
+      signature: result.signature
     };
   }
 
@@ -590,12 +532,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       accountNumber?: Long | null;
       sequence?: Long | null;
     },
-    signOptions: Exclude<
-      OWalletSignOptions,
-      "preferNoSetFee" | "disableBalanceCheck"
-    > = {}
+    signOptions: Exclude<OWalletSignOptions, 'preferNoSetFee' | 'disableBalanceCheck'> = {}
   ): Promise<DirectAuxSignResponse> {
-    const result = await this.requestMethod("signDirectAux", [
+    const result = await this.requestMethod('signDirectAux', [
       chainId,
       signer,
       // We can't send the `Long` with remaing the type.
@@ -604,17 +543,15 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         bodyBytes: signDoc.bodyBytes,
         publicKey: signDoc.publicKey,
         chainId: signDoc.chainId,
-        accountNumber: signDoc.accountNumber
-          ? signDoc.accountNumber.toString()
-          : null,
-        sequence: signDoc.sequence ? signDoc.sequence.toString() : null,
+        accountNumber: signDoc.accountNumber ? signDoc.accountNumber.toString() : null,
+        sequence: signDoc.sequence ? signDoc.sequence.toString() : null
       },
       deepmerge(
         {
-          preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo,
+          preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo
         },
         signOptions
-      ),
+      )
     ]);
 
     const signed: {
@@ -636,18 +573,14 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         // We can't send the `Long` with remaing the type.
         // Sender should change the `Long` to `string`.
         accountNumber: Long.fromString(signed.accountNumber),
-        sequence: Long.fromString(signed.sequence),
+        sequence: Long.fromString(signed.sequence)
       },
-      signature: result.signature,
+      signature: result.signature
     };
   }
 
-  async signArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature> {
-    return await this.requestMethod("signArbitrary", [chainId, signer, data]);
+  async signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature> {
+    return await this.requestMethod('signArbitrary', [chainId, signer, data]);
   }
 
   signICNSAdr36(
@@ -657,13 +590,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     username: string,
     addressChainIds: string[]
   ): Promise<ICNSAdr36Signatures> {
-    return this.requestMethod("signICNSAdr36", [
-      chainId,
-      contractAddress,
-      owner,
-      username,
-      addressChainIds,
-    ]);
+    return this.requestMethod('signICNSAdr36', [chainId, contractAddress, owner, username, addressChainIds]);
   }
 
   async verifyArbitrary(
@@ -672,12 +599,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     data: string | Uint8Array,
     signature: StdSignature
   ): Promise<boolean> {
-    return await this.requestMethod("verifyArbitrary", [
-      chainId,
-      signer,
-      data,
-      signature,
-    ]);
+    return await this.requestMethod('verifyArbitrary', [chainId, signer, data, signature]);
   }
 
   async signEthereum(
@@ -686,25 +608,14 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     data: string | Uint8Array,
     type: EthSignType
   ): Promise<Uint8Array> {
-    return await this.requestMethod("signEthereum", [
-      chainId,
-      signer,
-      data,
-      type,
-    ]);
+    return await this.requestMethod('signEthereum', [chainId, signer, data, type]);
   }
 
-  getOfflineSigner(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner & OfflineDirectSigner {
+  getOfflineSigner(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner & OfflineDirectSigner {
     return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
-  getOfflineSignerOnlyAmino(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner {
+  getOfflineSignerOnlyAmino(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner {
     return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
   }
 
@@ -719,40 +630,20 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
-  async suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void> {
-    return await this.requestMethod("suggestToken", [
-      chainId,
-      contractAddress,
-      viewingKey,
-    ]);
+  async suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void> {
+    return await this.requestMethod('suggestToken', [chainId, contractAddress, viewingKey]);
   }
 
-  async getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string> {
-    return await this.requestMethod("getSecret20ViewingKey", [
-      chainId,
-      contractAddress,
-    ]);
+  async getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string> {
+    return await this.requestMethod('getSecret20ViewingKey', [chainId, contractAddress]);
   }
 
   async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
-    return await this.requestMethod("getEnigmaPubKey", [chainId]);
+    return await this.requestMethod('getEnigmaPubKey', [chainId]);
   }
 
-  async getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
-    return await this.requestMethod("getEnigmaTxEncryptionKey", [
-      chainId,
-      nonce,
-    ]);
+  async getEnigmaTxEncryptionKey(chainId: string, nonce: Uint8Array): Promise<Uint8Array> {
+    return await this.requestMethod('getEnigmaTxEncryptionKey', [chainId, nonce]);
   }
 
   async enigmaEncrypt(
@@ -761,23 +652,11 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     // eslint-disable-next-line @typescript-eslint/ban-types
     msg: object
   ): Promise<Uint8Array> {
-    return await this.requestMethod("enigmaEncrypt", [
-      chainId,
-      contractCodeHash,
-      msg,
-    ]);
+    return await this.requestMethod('enigmaEncrypt', [chainId, contractCodeHash, msg]);
   }
 
-  async enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
-    return await this.requestMethod("enigmaDecrypt", [
-      chainId,
-      ciphertext,
-      nonce,
-    ]);
+  async enigmaDecrypt(chainId: string, ciphertext: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
+    return await this.requestMethod('enigmaDecrypt', [chainId, ciphertext, nonce]);
   }
 
   getEnigmaUtils(chainId: string): SecretUtils {
@@ -802,39 +681,35 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     signDoc: StdSignDoc,
     signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
-    return await this.requestMethod("experimentalSignEIP712CosmosTx_v0", [
+    return await this.requestMethod('experimentalSignEIP712CosmosTx_v0', [
       chainId,
       signer,
       eip712,
       signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     ]);
   }
 
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
-    return await this.requestMethod("getChainInfosWithoutEndpoints", []);
+    return await this.requestMethod('getChainInfosWithoutEndpoints', []);
   }
 
-  async getChainInfoWithoutEndpoints(
-    chainId: string
-  ): Promise<ChainInfoWithoutEndpoints> {
-    return await this.requestMethod("getChainInfoWithoutEndpoints", [chainId]);
+  async getChainInfoWithoutEndpoints(chainId: string): Promise<ChainInfoWithoutEndpoints> {
+    return await this.requestMethod('getChainInfoWithoutEndpoints', [chainId]);
   }
 
   __core__getAnalyticsId(): Promise<string> {
-    return this.requestMethod("__core__getAnalyticsId", []);
+    return this.requestMethod('__core__getAnalyticsId', []);
   }
 
   async changeKeyRingName({
     defaultName,
-    editable = true,
+    editable = true
   }: {
     defaultName: string;
     editable?: boolean;
   }): Promise<string> {
-    return await this.requestMethod("changeKeyRingName", [
-      { defaultName, editable },
-    ]);
+    return await this.requestMethod('changeKeyRingName', [{ defaultName, editable }]);
   }
 
   async __core__privilageSignAminoWithdrawRewards(
@@ -842,10 +717,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     signer: string,
     signDoc: StdSignDoc
   ): Promise<AminoSignResponse> {
-    return await this.requestMethod(
-      "__core__privilageSignAminoWithdrawRewards",
-      [chainId, signer, signDoc]
-    );
+    return await this.requestMethod('__core__privilageSignAminoWithdrawRewards', [chainId, signer, signDoc]);
   }
 
   async __core__privilageSignAminoDelegate(
@@ -853,23 +725,19 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     signer: string,
     signDoc: StdSignDoc
   ): Promise<AminoSignResponse> {
-    return await this.requestMethod("__core__privilageSignAminoDelegate", [
-      chainId,
-      signer,
-      signDoc,
-    ]);
+    return await this.requestMethod('__core__privilageSignAminoDelegate', [chainId, signer, signDoc]);
   }
 
   async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
-    return await this.requestMethod("sendEthereumTx", [chainId, tx]);
+    return await this.requestMethod('sendEthereumTx', [chainId, tx]);
   }
 
   async suggestERC20(chainId: string, contractAddress: string): Promise<void> {
-    return await this.requestMethod("suggestERC20", [chainId, contractAddress]);
+    return await this.requestMethod('suggestERC20', [chainId, contractAddress]);
   }
 
   async __core__webpageClosed(): Promise<void> {
-    return await this.requestMethod("__core__webpageClosed", []);
+    return await this.requestMethod('__core__webpageClosed', []);
   }
 
   public readonly ethereum = new EthereumProvider(
@@ -901,12 +769,9 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       removeMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
     } = {
-      addMessageListener: (fn: (e: any) => void) =>
-        window.addEventListener("message", fn),
-      removeMessageListener: (fn: (e: any) => void) =>
-        window.removeEventListener("message", fn),
-      postMessage: (message) =>
-        window.postMessage(message, window.location.origin),
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any,
     protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo
@@ -915,22 +780,18 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     this._initProviderState();
 
-    window.addEventListener("owallet_keystorechange", async () => {
+    window.addEventListener('owallet_keystorechange', async () => {
       if (this._currentChainId) {
-        const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(
-          this._currentChainId
-        );
+        const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(this._currentChainId);
 
         if (chainInfo) {
-          const selectedAddress = (
-            await injectedOWallet.getKey(this._currentChainId)
-          ).ethereumHexAddress;
+          const selectedAddress = (await injectedOWallet.getKey(this._currentChainId)).ethereumHexAddress;
           this._handleAccountsChanged(selectedAddress);
         }
       }
     });
 
-    window.addEventListener("owallet_chainChanged", (event) => {
+    window.addEventListener('owallet_chainChanged', event => {
       const origin = (event as CustomEvent).detail.origin;
 
       if (origin === window.location.origin) {
@@ -939,65 +800,52 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       }
     });
 
-    window.addEventListener("owallet_ethSubscription", (event: Event) => {
+    window.addEventListener('owallet_ethSubscription', (event: Event) => {
       const origin = (event as CustomEvent).detail.origin;
       const providerId = (event as CustomEvent).detail.providerId;
 
-      if (
-        origin === window.location.origin &&
-        providerId === this.eip6963ProviderInfo?.uuid
-      ) {
+      if (origin === window.location.origin && providerId === this.eip6963ProviderInfo?.uuid) {
         const data = (event as CustomEvent).detail.data;
-        this.emit("message", {
-          type: "eth_subscription",
-          data,
+        this.emit('message', {
+          type: 'eth_subscription',
+          data
         });
       }
     });
 
     if (this.eip6963ProviderInfo) {
-      const announceEvent = new CustomEvent<EIP6963ProviderDetail>(
-        EIP6963EventNames.Announce,
-        {
-          detail: Object.freeze({
-            info: this.eip6963ProviderInfo,
-            provider: this,
-          }),
-        }
-      );
-      window.addEventListener(EIP6963EventNames.Request, () =>
-        window.dispatchEvent(announceEvent)
-      );
+      const announceEvent = new CustomEvent<EIP6963ProviderDetail>(EIP6963EventNames.Announce, {
+        detail: Object.freeze({
+          info: this.eip6963ProviderInfo,
+          provider: this
+        })
+      });
+      window.addEventListener(EIP6963EventNames.Request, () => window.dispatchEvent(announceEvent));
       window.dispatchEvent(announceEvent);
     }
   }
 
-  protected _requestMethod = async (
-    method: keyof IEthereumProvider,
-    args: Record<string, any>
-  ): Promise<any> => {
+  protected _requestMethod = async (method: keyof IEthereumProvider, args: Record<string, any>): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
-      .join("");
+      .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      type: 'proxy-request',
       id,
-      method: "ethereum",
+      method: 'ethereum',
       args: JSONUint8Array.wrap(args),
-      ethereumProviderMethod: method,
+      ethereumProviderMethod: method
     };
 
     return new Promise((resolve, reject) => {
       const receiveResponse = (e: any) => {
-        const proxyResponse: ProxyRequestResponse = this.parseMessage
-          ? this.parseMessage(e.data)
-          : e.data;
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
 
-        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
           return;
         }
 
@@ -1010,7 +858,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
         const result = JSONUint8Array.unwrap(proxyResponse.result);
 
         if (!result) {
-          reject(new Error("Result is null"));
+          reject(new Error('Result is null'));
           return;
         }
 
@@ -1018,11 +866,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
           const error = result.error;
           reject(
             error.code && !error.module
-              ? new EthereumProviderRpcError(
-                  error.code,
-                  error.message,
-                  error.data
-                )
+              ? new EthereumProviderRpcError(error.code, error.message, error.data)
               : new Error(error)
           );
           return;
@@ -1038,19 +882,14 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   };
 
   protected _initProviderState = async () => {
-    const initialProviderState = await this._requestMethod("request", {
-      method: "owallet_initProviderState",
+    const initialProviderState = await this._requestMethod('request', {
+      method: 'owallet_initProviderState'
     });
 
     if (initialProviderState) {
-      const { currentEvmChainId, currentChainId, selectedAddress } =
-        initialProviderState;
+      const { currentEvmChainId, currentChainId, selectedAddress } = initialProviderState;
 
-      if (
-        currentChainId != null &&
-        currentEvmChainId != null &&
-        selectedAddress != null
-      ) {
+      if (currentChainId != null && currentEvmChainId != null && selectedAddress != null) {
         this._handleConnect(currentEvmChainId);
         this._handleChainChanged(currentEvmChainId);
         this._currentChainId = currentChainId;
@@ -1065,14 +904,14 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
       const evmChainIdHexString = `0x${evmChainId.toString(16)}`;
 
-      this.emit("connect", { chainId: evmChainIdHexString });
+      this.emit('connect', { chainId: evmChainIdHexString });
     }
   };
 
   protected _handleDisconnect = async () => {
     if (this._isConnected) {
-      await this._requestMethod("request", {
-        method: "owallet_disconnect",
+      await this._requestMethod('request', {
+        method: 'owallet_disconnect'
       });
 
       this._isConnected = false;
@@ -1080,7 +919,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       this.selectedAddress = null;
       this.networkVersion = null;
 
-      this.emit("disconnect");
+      this.emit('disconnect');
     }
   };
 
@@ -1090,7 +929,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       this.chainId = evmChainIdHexString;
       this.networkVersion = evmChainId.toString(10);
 
-      this.emit("chainChanged", evmChainIdHexString);
+      this.emit('chainChanged', evmChainIdHexString);
     }
   };
 
@@ -1098,7 +937,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     if (this.selectedAddress !== selectedAddress) {
       this.selectedAddress = selectedAddress;
 
-      this.emit("accountsChanged", [selectedAddress]);
+      this.emit('accountsChanged', [selectedAddress]);
     }
   };
 
@@ -1109,41 +948,41 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   request = async <T = unknown>({
     method,
     params,
-    chainId,
+    chainId
   }: {
     method: string;
     params?: readonly unknown[] | Record<string, unknown>;
     chainId?: string;
   }): Promise<T> => {
-    if (typeof method !== "string") {
-      throw new Error("Invalid paramater: `method` must be a string");
+    if (typeof method !== 'string') {
+      throw new Error('Invalid paramater: `method` must be a string');
     }
 
     if (!this._isConnected) {
       await this._initProviderState();
     }
 
-    if (method === "eth_accounts") {
+    if (method === 'eth_accounts') {
       return (this.selectedAddress ? [this.selectedAddress] : []) as T;
     }
 
-    return await this._requestMethod("request", {
+    return await this._requestMethod('request', {
       method,
       params,
       providerId: this.eip6963ProviderInfo?.uuid,
-      chainId,
+      chainId
     });
   };
 
   enable = async (): Promise<string[]> => {
     return (await this.request({
-      method: "eth_requestAccounts",
+      method: 'eth_requestAccounts'
     })) as string[];
   };
 
   net_version = async (): Promise<string> => {
     return (await this.request({
-      method: "net_version",
+      method: 'net_version'
     })) as string;
   };
 }

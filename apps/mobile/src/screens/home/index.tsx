@@ -1,25 +1,11 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import {
-  AppState,
-  AppStateStatus,
-  InteractionManager,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
-import { useStore } from "../../stores";
-import { observer } from "mobx-react-lite";
-import { usePrevious } from "../../hooks";
-import { useTheme } from "@src/themes/theme-provider";
-import { useFocusEffect } from "@react-navigation/native";
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { AppState, AppStateStatus, InteractionManager, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { useStore } from '../../stores';
+import { observer } from 'mobx-react-lite';
+import { usePrevious } from '../../hooks';
+import { useTheme } from '@src/themes/theme-provider';
+import { useFocusEffect } from '@react-navigation/native';
 // import { ChainInfoWithEmbed, ChainUpdaterService } from "@owallet/background";
 import {
   addressToPublicKey,
@@ -32,38 +18,32 @@ import {
   getOasisNic,
   getRpcByChainId,
   MapChainIdToNetwork,
-  parseRpcBalance,
-} from "@owallet/common";
-import { AccountBoxAll } from "./components/account-box-new";
-import { InjectedProviderUrl } from "../web/config";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-} from "@owallet/unit";
-import { chainInfos, network } from "@oraichain/oraidex-common";
+  parseRpcBalance
+} from '@owallet/common';
+import { AccountBoxAll } from './components/account-box-new';
+import { InjectedProviderUrl } from '../web/config';
+import { initPrice } from '@src/screens/home/hooks/use-multiple-assets';
+import { CoinPretty, Dec, DecUtils, IntPretty, PricePretty } from '@owallet/unit';
+import { chainInfos, network } from '@oraichain/oraidex-common';
 // import { useCoinGeckoPrices } from "@owallet/hooks";
 // import { debounce } from "lodash";
-import { MainTabHome } from "./components";
-import { sha256 } from "sha.js";
-import { Mixpanel } from "mixpanel-react-native";
-import { tracking } from "@src/utils/tracking";
-import { StakeCardAll } from "./components/stake-card-all";
+import { MainTabHome } from './components';
+import { sha256 } from 'sha.js';
+import { Mixpanel } from 'mixpanel-react-native';
+import { tracking } from '@src/utils/tracking';
+import { StakeCardAll } from './components/stake-card-all';
 // import { ChainInfoInner } from "@owallet/stores";
-import Web3 from "web3";
-import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
-import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
-import { ViewToken } from "@src/stores/huge-queries";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AddressBtcType } from "@owallet/types";
-import { NewThemeModal } from "@src/modals/theme/new-theme";
-import { CONTRACT_WETH } from "@src/common/constants";
+import Web3 from 'web3';
+import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
+import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { ViewToken } from '@src/stores/huge-queries';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AddressBtcType } from '@owallet/types';
+import { NewThemeModal } from '@src/modals/theme/new-theme';
+import { CONTRACT_WETH } from '@src/common/constants';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const [isLoading, setIsLoading] = React.useState(false);
@@ -80,7 +60,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     keyRingStore,
     // modalStore,
     browserStore,
-    hugeQueriesStore,
+    hugeQueriesStore
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -105,19 +85,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   true
   // );
 
-  // useEffect(() => {
-  //   tracking("Home Screen");
-  //   InteractionManager.runAfterInteractions(() => {
-  //     fetch(InjectedProviderUrl)
-  //       .then((res) => {
-  //         return res.text();
-  //       })
-  //       .then((res) => {
-  //         browserStore.update_inject(res);
-  //       })
-  //       .catch((err) => console.log(err));
-  //   });
-  // }, []);
+  useEffect(() => {
+    tracking('Home Screen');
+    InteractionManager.runAfterInteractions(() => {
+      fetch(InjectedProviderUrl)
+        .then(res => {
+          return res.text();
+        })
+        .then(res => {
+          browserStore.update_inject(res);
+        })
+        .catch(err => console.log(err));
+    });
+  }, []);
 
   // const checkAndUpdateChainInfo = useCallback(() => {
   //   if (!chainStoreIsInitializing) {
@@ -958,9 +938,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         totalBalanceByChain={initPrice}
         stakedTotalPrice={stakedTotalPrice || initPrice}
         availableTotalPrice={availableTotalPrice || initPrice}
-        totalPriceBalance={
-          availableTotalPrice?.add(stakedTotalPrice) || initPrice
-        }
+        totalPriceBalance={availableTotalPrice?.add(stakedTotalPrice) || initPrice}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome />
@@ -968,13 +946,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
-      backgroundColor: colors["neutral-surface-bg"],
+      backgroundColor: colors['neutral-surface-bg']
     },
     containerEarnStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-    },
+      backgroundColor: colors['neutral-surface-bg2']
+    }
   });
