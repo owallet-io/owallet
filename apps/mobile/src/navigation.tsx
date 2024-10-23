@@ -67,6 +67,7 @@ import { ConnectHardwareWalletScreen } from '@screens/register/connect-hardware'
 import { FinalizeKeyScreen } from '@screens/register/finalize-key';
 import { EnableChainsScreen } from '@screens/register/enable-chains';
 import { WelcomeScreen } from '@screens/register/welcome';
+import { SendEvmNewScreen } from './screens/send/send-evm-new';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
