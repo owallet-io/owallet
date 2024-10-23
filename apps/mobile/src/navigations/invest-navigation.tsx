@@ -16,6 +16,7 @@ export const InvestNavigation: FC = observer(() => {
     );
     return headerOptions;
   };
+  const { appInitStore } = useStore();
   return (
     <Stack.Navigator
       screenOptions={handleScreenOptions}
@@ -26,7 +27,11 @@ export const InvestNavigation: FC = observer(() => {
         //   headerLeft: null,
         // }}
         name={SCREENS.Invest}
-        component={StakingInfraScreen}
+        component={
+          appInitStore.getInitApp.isAllNetworks
+            ? StakingInfraScreen
+            : StakingDashboardScreen
+        }
       />
       <Stack.Screen
         name={SCREENS.StakeDashboard}

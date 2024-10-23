@@ -32,9 +32,7 @@ export const HistoryByToken: FunctionComponent<{
   };
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
+  const address = account.addressDisplay;
   const allArr =
     chainId === ChainIdEnum.OasisSapphire ||
     chainId === ChainIdEnum.OasisEmerald

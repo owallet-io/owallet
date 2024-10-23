@@ -186,10 +186,6 @@ export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
                       styles.imgNetwork,
                       {
                         borderRadius: 999,
-                        tintColor:
-                          chainInfo.feeCurrencies?.[0].coinDenom === "ORAI"
-                            ? colors["neutral-text-title"]
-                            : null,
                       },
                     ]}
                     source={{

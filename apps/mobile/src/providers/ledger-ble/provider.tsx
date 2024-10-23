@@ -114,6 +114,10 @@ export const LedgerBLEProvider: FunctionComponent<PropsWithChildren> = ({
             setTransportRequest(null);
           }
         }}
+        close={() => {
+          transportRequest?.reject(new Error("User canceled"));
+          setTransportRequest(null);
+        }}
       />
     </LedgerBLEContext.Provider>
   );

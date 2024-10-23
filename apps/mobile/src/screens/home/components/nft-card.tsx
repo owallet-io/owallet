@@ -55,7 +55,7 @@ export const NftCard = observer(() => {
                       style={{
                         borderRadius: 999,
                         tintColor:
-                          coinDenom === "ORAI" || coinDenom === "AIRI"
+                          coinDenom === "AIRI"
                             ? colors["neutral-text-title"]
                             : null,
                       }}

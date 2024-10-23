@@ -288,7 +288,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     if (this.hasChain(this.selectedChainId)) {
       return this.getChain(this.selectedChainId);
     }
-
     return this.chainInfos[0];
   }
   @flow

@@ -1,10 +1,6 @@
 import { Bech32Address } from "@owallet/cosmos";
-import {
-  IMemoConfig,
-  IRecipientConfig,
-  // useAddressBookConfig,
-} from "@owallet/hooks";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { IMemoConfig, IRecipientConfig } from "@owallet/hooks";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
 import OWCard from "@src/components/card/ow-card";
 import { OWEmpty } from "@src/components/empty";
@@ -12,10 +8,9 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useCallback, useState } from "react";
-import { Image, Platform, StyleSheet, TextInput, View } from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { Image, StyleSheet, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { AsyncKVStore } from "../../../../common";
 import { PageWithScrollView } from "../../../../components/page";
 import { RectButton } from "../../../../components/rect-button";
 
@@ -24,83 +19,87 @@ import { useStyle } from "../../../../styles";
 import { metrics, spacing } from "../../../../themes";
 import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { UIConfigStore } from "@stores/ui-config";
+import { OWHeaderTitle } from "@components/header";
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
   inSetting: View,
 };
 
-// const DeleteContactModal: FunctionComponent = ({
-//   addressBookConfig,
-//   i,
-//   close,
-// }) => {
-//   const { colors } = useTheme();
-//
-//   return (
-//     <View style={{ alignItems: "center" }}>
-//       <Image
-//         style={{
-//           width: 114,
-//           height: 126,
-//         }}
-//         fadeDuration={0}
-//         resizeMode="contain"
-//         source={require("../../../../assets/image/img_delete.png")}
-//       />
-//       <View style={{ padding: 16 }}>
-//         <OWText weight="700" size={16}>
-//           {"delete contact?".toUpperCase()}
-//         </OWText>
-//       </View>
-//       <OWText color={colors["neutral-text-body"]} weight="500" size={14}>
-//         {"Are you sure you want to delete this contact?"}
-//       </OWText>
-//       <View
-//         style={{
-//           flexDirection: "row",
-//           justifyContent: "space-between",
-//           marginTop: 48,
-//         }}
-//       >
-//         <OWButton
-//           onPress={close}
-//           type="secondary"
-//           label="Cancel"
-//           style={[
-//             {
-//               borderRadius: 999,
-//               width: metrics.screenWidth / 2.2,
-//             },
-//           ]}
-//           textStyle={{
-//             fontSize: 14,
-//             fontWeight: "600",
-//           }}
-//         />
-//         <OWButton
-//           onPress={() => {
-//             close();
-//             addressBookConfig.removeAddressBook(i);
-//           }}
-//           type="danger"
-//           label="Yes, delete it"
-//           style={[
-//             {
-//               marginLeft: 8,
-//               borderRadius: 999,
-//               width: metrics.screenWidth / 2.2,
-//             },
-//           ]}
-//           textStyle={{
-//             fontSize: 14,
-//             fontWeight: "600",
-//           }}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
+const DeleteContactModal: FunctionComponent<{
+  uiConfigStore: UIConfigStore;
+  i: number;
+  close: () => void;
+  chainId: string;
+}> = ({ uiConfigStore, i, close, chainId }) => {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ alignItems: "center" }}>
+      <Image
+        style={{
+          width: 114,
+          height: 126,
+        }}
+        fadeDuration={0}
+        resizeMode="contain"
+        source={require("../../../../assets/image/img_delete.png")}
+      />
+      <View style={{ padding: 16 }}>
+        <OWText weight="700" size={16}>
+          {"delete contact?".toUpperCase()}
+        </OWText>
+      </View>
+      <OWText color={colors["neutral-text-body"]} weight="500" size={14}>
+        {"Are you sure you want to delete this contact?"}
+      </OWText>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: 48,
+        }}
+      >
+        <OWButton
+          onPress={close}
+          type="secondary"
+          label="Cancel"
+          style={[
+            {
+              borderRadius: 999,
+              width: metrics.screenWidth / 2.2,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+        />
+        <OWButton
+          onPress={() => {
+            close();
+
+            uiConfigStore.addressBookConfig.removeAddressBookAt(chainId, i);
+          }}
+          type="danger"
+          label="Yes, delete it"
+          style={[
+            {
+              marginLeft: 8,
+              borderRadius: 999,
+              width: metrics.screenWidth / 2.2,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
+        />
+      </View>
+    </View>
+  );
+};
 
 const styling = () => {
   return StyleSheet.create({
@@ -124,17 +123,8 @@ const styling = () => {
   });
 };
 
-const debounce = (fn, delay) => {
-  let timerId;
-  return (...args) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(() => fn(...args), delay);
-  };
-};
-
 export const AddressBookScreen: FunctionComponent = observer(() => {
   const [nameSearch, setNameSearch] = useState<string>("");
-  const [contractList, setContractList] = useState<any[]>([]);
   const { chainStore, modalStore, uiConfigStore } = useStore();
   const { colors } = useTheme();
   const styles = styling();
@@ -160,70 +150,53 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const chainId = recipientConfig
     ? recipientConfig.chainId
     : chainStore.current.chainId;
-  //
-  // const addressBookConfig = useAddressBookConfig(
-  //   new AsyncKVStore("address_book"),
-  //   chainStore,
-  //   chainId,
-  //   {
-  //     setRecipient: (recipient: string) => {
-  //       if (recipientConfig) {
-  //         recipientConfig.setValue(recipient);
-  //       }
-  //     },
-  //     setMemo: (memo: string) => {
-  //       if (memoConfig) {
-  //         memoConfig.setValue(memo);
-  //       }
-  //     },
-  //   }
-  // );
 
-  // const onPressDeletekModal = (i) => {
-  //   modalStore.setOptions({
-  //     bottomSheetModalConfig: {
-  //       enablePanDownToClose: false,
-  //       enableOverDrag: false,
-  //     },
-  //   });
-  //   // @ts-ignore
-  //   modalStore.setChildren(
-  //     <DeleteContactModal
-  //       // addressBookConfig={addressBookConfig}
-  //       i={i}
-  //       close={() => modalStore.close()}
-  //     />
-  //   );
-  // };
+  const onPressDeletekModal = (i) => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    // @ts-ignore
+    modalStore.setChildren(
+      <DeleteContactModal
+        uiConfigStore={uiConfigStore}
+        i={i}
+        chainId={chainId}
+        close={() => modalStore.close()}
+      />
+    );
+  };
 
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? "inTransaction" : "inSetting"];
-  const items = chainStore.chainInfos.map((chainInfo) => {
-    return {
-      key: chainInfo.chainId,
-      label: chainInfo.chainName,
-      imageUrl: chainInfo.chainSymbolImageUrl,
-    };
-  });
+  // const items = chainStore.chainInfos.map((chainInfo) => {
+  //     return {
+  //         key: chainInfo.chainId,
+  //         label: chainInfo.chainName,
+  //         imageUrl: chainInfo.chainSymbolImageUrl,
+  //     };
+  // });
 
   const addresses = uiConfigStore.addressBookConfig.getAddressBook(chainId);
-  // const onNameSearch = (txt) => {
-  //   const searchWord = txt ?? nameSearch;
-  //   if (searchWord) {
-  //     const addressList = addressBookConfig.addressBookDatas;
-  //     if (addressList.length > 0) {
-  //       const newAdressList = addressList.filter((address) =>
-  //         address.name.toLowerCase().includes(searchWord.toLowerCase())
-  //       );
-  //       return setContractList(newAdressList);
-  //     }
-  //   }
-  //   return setContractList([]);
-  // };
-
-  // const debouncedHandler = useCallback(debounce(onNameSearch, 300), []);
-
+  const addressesFilter =
+    addresses &&
+    addresses.filter(
+      (address) =>
+        address.name?.toLowerCase().includes(nameSearch?.toLowerCase()) ||
+        address.address?.toLowerCase().includes(nameSearch?.toLowerCase())
+    );
+  const navigation = useNavigation();
+  const chainInfo = chainStore.getChain(chainId);
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle title={"Address Book"} subTitle={chainInfo?.chainName} />
+      ),
+    });
+  }, [chainId]);
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
@@ -257,7 +230,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           value={nameSearch}
           onChangeText={(text) => {
             setNameSearch(text);
-            // debouncedHandler(text);
           }}
           placeholderTextColor={colors["neutral-text-body"]}
           placeholder="Search by address or contact name"
@@ -296,8 +268,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
         style={{ backgroundColor: colors["neutral-surface-card"] }}
         type="normal"
       >
-        {addresses?.length > 0 ? (
-          addresses.map((data, i) => {
+        {addressesFilter?.length > 0 ? (
+          addressesFilter.map((data, i) => {
             return (
               <React.Fragment key={i.toString()}>
                 <AddressBookItem
@@ -305,7 +277,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   enabled={isInTransaction}
                   onPress={() => {
                     if (isInTransaction) {
-                      // addressBookConfig.selectAddressAt(i);
+                      // uiConfigStore.addressBookConfig.setAddressBookAt(chainId,i,data);
                       goBack();
                     }
                   }}
@@ -339,7 +311,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                         alignItems: "flex-start",
                       }}
                       onPress={() => {
-                        // onPressDeletekModal(i);
+                        onPressDeletekModal(i);
                       }}
                     >
                       <OWIcon

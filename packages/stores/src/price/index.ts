@@ -354,7 +354,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     coin: CoinPretty,
     vsCurrrency?: string
   ): PricePretty | undefined {
-    if (!coin.currency.coinGeckoId) {
+    if (!coin?.currency.coinGeckoId) {
       return undefined;
     }
 

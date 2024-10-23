@@ -42,6 +42,11 @@ import { AddressBtcType } from '@owallet/types';
 import { NewThemeModal } from '@src/modals/theme/new-theme';
 import { CONTRACT_WETH } from '@src/common/constants';
 
+export const useIsNotReady = () => {
+  const { chainStore, queriesStore } = useStore();
+  const query = queriesStore.get(chainStore.chainInfos[0].chainId).cosmos.queryRPCStatus;
+  return query.response == null && query.error == null;
+};
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -65,9 +70,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const chainId = chainStore.current.chainId;
-  const allBalances = !chainId
-    ? hugeQueriesStore.getAllBalancesByChainId(chainId)
-    : hugeQueriesStore.getAllBalances(true);
+
   // const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   // const currentChain = chainStore.current;
@@ -130,7 +133,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       setThemeOpen(true);
     }
   }, [appInitStore.getInitApp.isSelectTheme]);
-
+  const isNotReady = useIsNotReady();
   // useFocusEffect(
   //   useCallback(() => {
   //     if (
@@ -870,57 +873,32 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //     ]);
   //   }
   // };
+  const onRefresh = async () => {
+    if (isNotReady) {
+      return;
+    }
+    priceStore.fetch();
 
-  const availableTotalPrice = useMemo(() => {
-    let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.allKnownBalances) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
+    for (const chainInfo of chainStore.chainInfosInUI) {
+      const account = accountStore.getAccount(chainInfo.chainId);
+
+      if (account.bech32Address === '') {
+        continue;
       }
+      const queries = queriesStore.get(chainInfo.chainId);
+      const queryBalance = queries.queryBalances.getQueryBech32Address(account.bech32Address);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
+      queryBalance.fetch();
+      queryRewards.fetch();
+      const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address);
+      const queryDelegation = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+      queryUnbonding.fetch();
+      queryDelegation.fetch();
     }
-    return result;
-  }, [hugeQueriesStore.allKnownBalances]);
-  const stakedTotalPrice = useMemo(() => {
-    let result: PricePretty | undefined;
-    for (const bal of hugeQueriesStore.delegations) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
-        }
-      }
-    }
-    for (const bal of hugeQueriesStore.unbondings) {
-      if (bal.viewToken.price) {
-        if (!result) {
-          result = bal.viewToken.price;
-        } else {
-          result = result.add(bal.viewToken.price);
-        }
-      }
-    }
-    return result;
-  }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]);
+  };
   return (
     <PageWithScrollViewInBottomTabView
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            // setRefreshing(true);
-            // setDataBalances([]); // Clear existing balances
-            // processedItemsTotalPrice.clear();
-            // processedItemsTotalPriceByChain.clear();
-            // onRefresh();
-            // fetchAllBalances();
-          }}
-        />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
@@ -933,13 +911,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         }}
         colors={colors}
       />
-      <AccountBoxAll
-        isLoading={false}
-        totalBalanceByChain={initPrice}
-        stakedTotalPrice={stakedTotalPrice || initPrice}
-        availableTotalPrice={availableTotalPrice || initPrice}
-        totalPriceBalance={availableTotalPrice?.add(stakedTotalPrice) || initPrice}
-      />
+      <AccountBoxAll isLoading={false} />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>

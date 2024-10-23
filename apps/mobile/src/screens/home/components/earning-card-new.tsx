@@ -44,7 +44,7 @@ export const EarningCardNew = observer(({}) => {
 
   const { colors } = useTheme();
   const route = useRoute();
-  const initialChainId = route.params["chainId"];
+  const initialChainId = route.params?.["chainId"];
   const chainId = initialChainId || chainStore.current.chainId;
   useEffect(() => {
     if (!initialChainId) goBack();
@@ -246,50 +246,6 @@ export const EarningCardNew = observer(({}) => {
     }
   };
 
-  // const _onPressClaim = async () => {
-  //   try {
-  //     tracking(`${chainStore.current.chainName} Claim`);
-  //     await account.cosmos.sendWithdrawDelegationRewardMsgs(
-  //       queryRewards.getDescendingPendingRewardValidatorAddresses(10),
-  //       "",
-  //       {},
-  //       {},
-  //       {
-  //         onBroadcasted: (txHash) => {
-  //           // analyticsStore.logEvent("Claim reward tx broadcasted", {
-  //           //   chainId: chainId,
-  //           //   chainName: chainStore.current.chainName,
-  //           // });
-  //
-  //           const validatorObject = convertArrToObject(
-  //             queryRewards.pendingRewardValidatorAddresses
-  //           );
-  //           navigate(SCREENS.TxPendingResult, {
-  //             txHash: Buffer.from(txHash).toString("hex"),
-  //             title: "Withdraw rewards",
-  //             data: {
-  //               ...validatorObject,
-  //               amount: stakingRewards?.toCoin(),
-  //               currency: chainStore.current.stakeCurrency,
-  //               type: "claim",
-  //             },
-  //           });
-  //         },
-  //       },
-  //       stakingRewards.currency.coinMinimalDenom
-  //     );
-  //   } catch (e) {
-  //     console.error({ errorClaim: e });
-  //     if (!e?.message?.startsWith("Transaction Rejected")) {
-  //       showToast({
-  //         message:
-  //           e?.message ?? "Something went wrong! Please try again later.",
-  //         type: "danger",
-  //       });
-  //       return;
-  //     }
-  //   }
-  // };
   const isDisableClaim =
     !account.isReadyToSendMsgs ||
     stakingRewards?.toDec().equals(new Dec(0)) ||
@@ -379,7 +335,7 @@ export const EarningCardNew = observer(({}) => {
               +
               {totalStakingReward
                 ? totalStakingReward.toString()
-                : stakingRewards.shrink(true).maxDecimals(6).toString()}
+                : stakingRewards?.shrink(true).maxDecimals(6).toString()}
             </Text>
             <View
               style={{

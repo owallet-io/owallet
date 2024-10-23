@@ -62,7 +62,11 @@ import { OWButton } from '@components/button';
 import OWButtonIcon from '@components/button/ow-button-icon';
 import OWIcon from '@components/ow-icon/ow-icon';
 import { AddChainScreen } from '@screens/setting/screens/manage-chains/add-network';
-import { SendEvmNewScreen } from './screens/send/send-evm-new';
+import { ConnectLedgerScreen } from '@screens/register/connect-ledger';
+import { ConnectHardwareWalletScreen } from '@screens/register/connect-hardware';
+import { FinalizeKeyScreen } from '@screens/register/finalize-key';
+import { EnableChainsScreen } from '@screens/register/enable-chains';
+import { WelcomeScreen } from '@screens/register/welcome';
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -156,7 +160,16 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.ManageChain}
               component={SelectChainsScreen}
             />
-
+            <Stack.Screen
+              name="Register.EnableChain"
+              options={{
+                title: 'Enable Chain'
+                // ...registerHeaderOptions,
+              }}
+              component={EnableChainsScreen}
+            />
+            <Stack.Screen name="Register.Welcome" options={{ headerShown: false }} component={WelcomeScreen} />
+            <Stack.Screen name="Register.FinalizeKey" options={{ headerShown: false }} component={FinalizeKeyScreen} />
             <Stack.Screen name={SCREENS.AddAddressBook} component={AddAddressBookScreen} />
             <Stack.Screen name={SCREENS.STACK.MainTab} component={MainTabNavigation} />
             <Stack.Screen name={SCREENS.TokenDetails} component={TokenDetailsScreen} />
@@ -190,14 +203,12 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={RecoverMnemonicScreen}*/}
             {/*  />*/}
             <Stack.Screen name={SCREENS.RegisterNewMnemonic} component={NewMnemonicScreen} />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterRecoverPhraseMain}*/}
-            {/*    component={RecoverPhraseScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterNewLedger}*/}
-            {/*    component={NewLedgerScreen}*/}
-            {/*  />*/}
+            {/*<Stack.Screen*/}
+            {/*  name={SCREENS.RegisterRecoverPhraseMain}*/}
+            {/*  component={RecoverPhraseScreen}*/}
+            {/*/>*/}
+            <Stack.Screen name={SCREENS.RegisterNewLedger} component={ConnectHardwareWalletScreen} />
+            <Stack.Screen name={SCREENS.ConnectNewLedger} component={ConnectLedgerScreen} />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.RegisterNewLedgerMain}*/}
             {/*    component={NewLedgerScreen}*/}
@@ -243,10 +254,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    name={SCREENS.NetworkSelect}*/}
             {/*    component={SelectNetworkScreen}*/}
             {/*  />*/}
-            <Stack.Screen
-              name={SCREENS.NetworkToken}
-              component={AddTokenScreen}
-            />
+            <Stack.Screen name={SCREENS.NetworkToken} component={AddTokenScreen} />
 
             <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
             {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
