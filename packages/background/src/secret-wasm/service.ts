@@ -161,7 +161,7 @@ export class SecretWasmService {
       return Hash.sha256(
         await this.keyRingCosmosService.legacySignArbitraryInternal(
           chainInfo.chainId,
-          "Create Keplr Secret encryption key. Only approve requests by Keplr."
+          "Create OWallet Secret encryption key. Only approve requests by OWallet."
         )
       );
     })();

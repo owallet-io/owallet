@@ -53,6 +53,7 @@ export const SCREENS = {
   RegisterRecoverMnemonic: "Register.RecoverMnemonic",
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
+  ConnectNewLedger: "Connect.NewLedger",
   PincodeScreen: "PincodeScreen",
   Send: "Send",
   SendEvm: "SendEvm",

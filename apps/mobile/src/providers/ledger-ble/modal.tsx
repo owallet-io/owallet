@@ -13,6 +13,7 @@ import {
   Text,
 } from "react-native";
 import DeviceInfo from "react-native-device-info";
+
 // import {registerCardModal} from '../../components/modal/card';
 import Transport from "@ledgerhq/hw-transport";
 import { Box } from "../../components/box";
