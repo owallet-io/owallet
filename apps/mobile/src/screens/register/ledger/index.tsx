@@ -47,7 +47,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
   const styles = useStyles();
 
-  const { analyticsStore, chainStore, keyRingStore } = useStore();
+  const { chainStore, keyRingStore } = useStore();
 
   // const registerConfig: RegisterConfig = route.params.registerConfig;
   const registerConfig = useRegisterConfig(keyRingStore, []);

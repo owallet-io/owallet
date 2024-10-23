@@ -253,14 +253,14 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterNewMnemonic}
               component={NewMnemonicScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterRecoverPhraseMain}*/}
-            {/*    component={RecoverPhraseScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterNewLedger}*/}
-            {/*    component={NewLedgerScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.RegisterRecoverPhraseMain}
+              component={RecoverPhraseScreen}
+            />
+            <Stack.Screen
+              name={SCREENS.RegisterNewLedger}
+              component={NewLedgerScreen}
+            />
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.RegisterNewLedgerMain}*/}
             {/*    component={NewLedgerScreen}*/}
