@@ -33,6 +33,7 @@ import {
 import { useFocusAfterRouting } from "@hooks/use-focus";
 import { useIntl } from "react-intl";
 import { useStyle } from "@src/styles";
+import { OWHeaderTitle } from "@components/header";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -139,7 +140,18 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     recipientConfig,
     memoConfig,
   });
-
+  const navigation = useNavigation();
+  const chainInfo = chainStore.getChain(chainId);
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Add new contact"}
+          subTitle={chainInfo?.chainName}
+        />
+      ),
+    });
+  }, [chainId]);
   const handleSubmit = () => {
     if (txConfigsValidate.interactionBlocked || name === "") {
       return;
