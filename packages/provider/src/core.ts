@@ -20,6 +20,7 @@ import {
   SettledResponses,
   DirectAuxSignResponse,
   IEthereumProvider,
+  IOasisProvider,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -1233,30 +1234,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                 ? "Unlock OWallet to proceed"
                 : "Open OWallet to approve request(s)";
 
-              // const arrowLeftOpenWrapper = document.createElement("div");
-              // arrowLeftOpenWrapper.style.boxSizing = "border-box";
-              // arrowLeftOpenWrapper.style.display = "flex";
-              // arrowLeftOpenWrapper.style.alignItems = "center";
-              // arrowLeftOpenWrapper.style.padding = "0.5rem 0.75rem";
-              //
-              // arrowLeftOpenWrapper.innerHTML = `
-              // <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              //   <path d="M13 5L6.25 11.75L13 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   } stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              //   <path d="M19.3333 5L12.5833 11.75L19.3333 18.5" stroke=${
-              //     isLightMode ? "#1633C0" : "#566FEC"
-              //   }  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              // </svg>`;
-              //
-              // const openText = document.createElement("span");
-              // openText.style.boxSizing = "border-box";
-              // openText.style.fontSize = "1rem";
-              // openText.style.color = isLightMode ? "#1633C0" : "#566FEC";
-              // openText.textContent = "OPEN";
-              //
-              // arrowLeftOpenWrapper.appendChild(openText);
-
               // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
               button.appendChild(owalletLogoWrap);
@@ -1313,6 +1290,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   }
 
   public readonly ethereum = new EthereumProvider(this, this.requester);
+  public readonly oasis = new OasisProvider(this, this.requester);
 }
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
   chainId: string | null = null;
@@ -1410,6 +1388,86 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
   async net_version(): Promise<string> {
     return await this.request({ method: "net_version" });
+  }
+}
+
+class OasisProvider extends EventEmitter implements IOasisProvider {
+  constructor(
+    protected readonly owallet: OWallet,
+    protected readonly requester: MessageRequester
+  ) {
+    super();
+  }
+
+  protected async protectedEnableAccess(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "permission-interactive",
+        "enable-access-for-evm",
+        {}
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+  async getKey(chainId: string): Promise<Key> {
+    console.log(chainId, "chainId keyring-oasis");
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-oasis",
+        "get-oasis-key",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-oasis",
+        "get-oasis-keys-settled",
+        {
+          chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
   }
 }
 

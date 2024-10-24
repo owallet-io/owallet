@@ -264,7 +264,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         },
       },
     ],
-    features: ["oasis"],
+    features: ["oasis", "gen-address"],
     txExplorer: {
       name: "Oasis scan",
       txUrl: "https://www.oasisscan.com/transactions/{txHash}",

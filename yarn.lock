@@ -4287,6 +4287,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@improbable-eng/grpc-web@npm:^0.15.0":
+  version: 0.15.0
+  resolution: "@improbable-eng/grpc-web@npm:0.15.0"
+  dependencies:
+    browser-headers: ^0.4.1
+  peerDependencies:
+    google-protobuf: ^3.14.0
+  checksum: 8c6322e681965be4fcadf58fde0571f7972c36b48290474e87c7d12bed09b27163fd6ed73c6c36e896885da782abf1835bbeaf65b35bcdb65d9114ea8a0e6ba5
+  languageName: node
+  linkType: hard
+
 "@injectivelabs/core-proto-ts@npm:^0.0.18":
   version: 0.0.18
   resolution: "@injectivelabs/core-proto-ts@npm:0.0.18"
@@ -25925,6 +25936,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "owallet@workspace:."
   dependencies:
+    "@improbable-eng/grpc-web": ^0.15.0
     "@oasisprotocol/client": ^1.0.0
     "@oasisprotocol/client-rt": ^1.0.0
     "@octokit/core": ^3.5.1

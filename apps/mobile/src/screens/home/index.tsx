@@ -81,6 +81,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountStore,
     queriesStore,
     priceStore,
+    oasisAccountStore,
     // browserStore,
     appInitStore,
     keyRingStore,
@@ -88,7 +89,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     hugeQueriesStore,
   } = useStore();
-
+  const oasisAccount = oasisAccountStore.getAccount("oasis-1");
+  console.log(oasisAccount.bech32Address, "oasisAccount.bech32Address");
   const scrollViewRef = useRef<ScrollView | null>(null);
   const chainId = chainStore.current.chainId;
 

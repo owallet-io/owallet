@@ -65,20 +65,6 @@ export const uint2bigintString = (uint: Uint8Array): StringifiedBigInt =>
 export const stringBigint2uint = (number: StringifiedBigInt) =>
   quantity.fromBigInt(BigInt(number));
 
-export function concat(...parts: Uint8Array[]) {
-  let length = 0;
-  for (const part of parts) {
-    length += part.length;
-  }
-  const result = new Uint8Array(length);
-  let pos = 0;
-  for (const part of parts) {
-    result.set(part, pos);
-    pos += part.length;
-  }
-  return result;
-}
-
 export function parseRoseStringToBigNumber(
   value: string,
   decimals = 9

@@ -33,9 +33,9 @@ export class AccountSharedContext {
     [chainId: string],
     void
   >(0, async (requests) => {
-    const keplr = await this.getOWallet();
+    const owallet = await this.getOWallet();
 
-    if (!keplr) {
+    if (!owallet) {
       return requests.map(() => {
         return {
           status: "rejected",
@@ -47,7 +47,7 @@ export class AccountSharedContext {
     const chainIdSet = new Set<string>(requests.map((req) => req.args[0]));
     const chainIds = Array.from(chainIdSet);
     try {
-      await keplr.enable(chainIds);
+      await owallet.enable(chainIds);
 
       return requests.map(() => {
         return {
@@ -68,9 +68,9 @@ export class AccountSharedContext {
     [chainId: string],
     Key
   >(0, async (requests) => {
-    const keplr = await this.getOWallet();
+    const owallet = await this.getOWallet();
 
-    if (!keplr) {
+    if (!owallet) {
       return requests.map(() => {
         return {
           status: "rejected",
@@ -82,7 +82,7 @@ export class AccountSharedContext {
     const chainIdSet = new Set<string>(requests.map((req) => req.args[0]));
     const chainIds = Array.from(chainIdSet);
 
-    const settled = await keplr.getKeysSettled(chainIds);
+    const settled = await owallet.getKeysSettled(chainIds);
 
     const settledMap = new Map<string, SettledResponse<Key>>();
     for (let i = 0; i < chainIds.length; i++) {
@@ -107,9 +107,9 @@ export class AccountSharedContext {
 
     const promise = new Promise<OWallet | undefined>((resolve, reject) => {
       this._getOWallet()
-        .then((keplr) => {
+        .then((owallet) => {
           this.promiseGetOWallet = undefined;
-          resolve(keplr);
+          resolve(owallet);
         })
         .catch((e) => {
           this.promiseGetOWallet = undefined;

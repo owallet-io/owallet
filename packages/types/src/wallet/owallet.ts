@@ -244,6 +244,11 @@ export interface OWallet {
   suggestERC20(chainId: string, contractAddress: string): Promise<void>;
 
   readonly ethereum: IEthereumProvider;
+  readonly oasis?: IOasisProvider;
+}
+export interface IOasisProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
 }
 
 export interface IEthereumProvider extends EventEmitter {

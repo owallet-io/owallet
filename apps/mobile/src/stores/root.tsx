@@ -78,7 +78,7 @@ import { ModalStore } from "@stores/modal";
 import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 import { UIConfigStore } from "@stores/ui-config";
 import { BrowserStore } from "@stores/browser";
-import { OasisQueries } from "@owallet/stores-oasis";
+import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -125,6 +125,7 @@ export class RootStore {
     [CosmosAccount, CosmwasmAccount, SecretAccount]
   >;
   public readonly ethereumAccountStore: EthereumAccountStore;
+  public readonly oasisAccountStore: OasisAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
 
   public readonly tokenFactoryRegistrar: TokenFactoryCurrencyRegistrar;
@@ -383,6 +384,10 @@ export class RootStore {
     );
 
     this.ethereumAccountStore = new EthereumAccountStore(
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.oasisAccountStore = new OasisAccountStore(
       this.chainStore,
       getOWalletFromWindow
     );

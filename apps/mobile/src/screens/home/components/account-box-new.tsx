@@ -80,6 +80,7 @@ export const AccountBoxAll: FunctionComponent<{
     hugeQueriesStore,
     queriesStore,
     priceStore,
+    oasisAccountStore,
   } = useStore();
 
   const { colors } = useTheme();
@@ -93,7 +94,10 @@ export const AccountBoxAll: FunctionComponent<{
   const [sliceColor, setSliceColor] = useState([]);
 
   const chainId = chainStore.current.chainId;
+  console.log(chainId, "chainId ka");
   const account = accountStore.getAccount(chainId);
+  const oasisAccount = oasisAccountStore.getAccount(chainId);
+
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const availableTotalPrice =
     useMemo(() => {
@@ -255,7 +259,8 @@ export const AccountBoxAll: FunctionComponent<{
   // const chainAddress = account.getAddressDisplay(
   //   keyRingStore.keyRingLedgerAddresses
   // );
-  const chainAddress = account.addressDisplay;
+  const chainAddress = account.addressDisplay || oasisAccount.bech32Address;
+  console.log(oasisAccount.bech32Address, "oasisAccount.bech32Address");
   const _onPressMyWallet = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {

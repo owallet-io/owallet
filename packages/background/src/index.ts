@@ -22,6 +22,7 @@ import * as KeyRingLedger from "./keyring-ledger/internal";
 import * as KeyRingKeystone from "./keyring-keystone/internal";
 import * as KeyRingPrivateKey from "./keyring-private-key/internal";
 import * as KeyRingCosmos from "./keyring-cosmos/internal";
+import * as KeyRingOasis from "./keyring-oasis/internal";
 import * as KeyRingEthereum from "./keyring-ethereum/internal";
 import * as PermissionInteractive from "./permission-interactive/internal";
 import * as TokenScan from "./token-scan/internal";
@@ -45,6 +46,7 @@ export * from "./permission-interactive";
 export * from "./keyring";
 export * from "./vault";
 export * from "./keyring-cosmos";
+export * from "./keyring-oasis";
 export * from "./keyring-ethereum";
 export * from "./keyring-keystone";
 export * from "./token-scan";
@@ -56,6 +58,11 @@ import { KVStore } from "@owallet/common";
 import { ChainInfo } from "@owallet/types";
 import { Notification } from "./tx";
 import { ChainInfoWithCoreTypes } from "./chains";
+import {
+  KeyRingOasisBaseService,
+  KeyRingOasisPrivateKeyService,
+} from "./keyring-oasis";
+import { KeyRingOasisMnemonicService } from "./keyring-oasis/keyring-base/mnemonic-service";
 
 export function init(
   router: Router,
@@ -178,7 +185,14 @@ export function init(
     chainsService,
     vaultService
   );
-
+  const keyringBaseMnemonic = new KeyRingMnemonic.KeyRingMnemonicService(
+    vaultService
+  );
+  const keyringBasePrivateKey = new KeyRingPrivateKey.KeyRingPrivateKeyService(
+    vaultService
+  );
+  const keyringBaseLedger = new KeyRingLedger.KeyRingLedgerService();
+  const keyringBaseKeystone = new KeyRingKeystone.KeyRingKeystoneService();
   const keyRingV2Service = new KeyRingV2.KeyRingService(
     storeCreator("keyring-v2"),
     {
@@ -194,10 +208,10 @@ export function init(
     vaultService,
     analyticsService,
     [
-      new KeyRingMnemonic.KeyRingMnemonicService(vaultService),
-      new KeyRingLedger.KeyRingLedgerService(),
-      new KeyRingPrivateKey.KeyRingPrivateKeyService(vaultService),
-      new KeyRingKeystone.KeyRingKeystoneService(),
+      keyringBaseMnemonic,
+      keyringBasePrivateKey,
+      keyringBaseLedger,
+      keyringBaseKeystone,
     ]
   );
   const keyRingCosmosService = new KeyRingCosmos.KeyRingCosmosService(
@@ -207,6 +221,18 @@ export function init(
     chainsUIService,
     analyticsService,
     msgPrivilegedOrigins
+  );
+
+  const keyRingOasisService = new KeyRingOasis.KeyRingOasisService(
+    chainsService,
+    keyRingV2Service,
+    interactionService,
+    chainsUIService,
+    msgPrivilegedOrigins,
+    new KeyRingOasisBaseService(chainsService, vaultService, [
+      new KeyRingOasisMnemonicService(vaultService, keyringBaseMnemonic),
+      new KeyRingOasisPrivateKeyService(vaultService, keyringBasePrivateKey),
+    ])
   );
   const autoLockAccountService = new AutoLocker.AutoLockAccountService(
     storeCreator("auto-lock-account"),
@@ -289,6 +315,7 @@ export function init(
     keyRingCosmosService,
     permissionInteractiveService
   );
+  KeyRingOasis.init(router, keyRingOasisService, permissionInteractiveService);
   KeyRingEthereum.init(
     router,
     keyRingEthereumService,
@@ -322,6 +349,7 @@ export function init(
       await chainsUpdateService.init();
       await keyRingV2Service.init();
       await keyRingCosmosService.init();
+      await keyRingOasisService.init();
       await keyRingEthereumService.init();
       await permissionService.init();
       await tokenCW20Service.init();

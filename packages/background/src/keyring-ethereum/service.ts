@@ -31,8 +31,6 @@ export class KeyRingEthereumService {
   constructor(
     protected readonly chainsService: ChainsService,
     protected readonly keyRingService: KeyRingService,
-    // XXX: 미래에는 cosmos와 분리되어서 ethereum을 다뤄야하는데 현재는 그냥 ethermint 계열에서만 작동하기 때문에
-    //      keyring-cosmos의 기능들도 사용한다.
     protected readonly keyRingCosmosService: KeyRingCosmosService,
     protected readonly interactionService: InteractionService,
     protected readonly analyticsService: AnalyticsService,

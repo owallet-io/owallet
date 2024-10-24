@@ -28,7 +28,11 @@ export interface KeyRing {
     vault: Vault,
     coinType: number,
     chainInfo: ChainInfo
-  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+  ):
+    | PubKeySecp256k1
+    | Promise<PubKeySecp256k1>
+    | Uint8Array
+    | Promise<Uint8Array>;
   sign(
     vault: Vault,
     coinType: number,
