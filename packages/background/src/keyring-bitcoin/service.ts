@@ -10,7 +10,9 @@ import { PubKeySecp256k1 } from "@owallet/crypto";
 import { Vault, VaultService } from "../vault";
 import * as oasis from "@oasisprotocol/client";
 import { KeyRingBtcBaseService } from "./keyring-base";
-import { getKeyPairByMnemonic } from "@owallet/bitcoin/build/helpers";
+import { getAddress } from "@owallet/bitcoin";
+import * as bitcoin from "bitcoinjs-lib";
+import { Buffer } from "buffer";
 
 export class KeyRingBtcService {
   constructor(
@@ -40,25 +42,31 @@ export class KeyRingBtcService {
         chainId,
         vaultId
       );
-      const address = pubKey.getCosmosAddress();
+
+      // const publicKey = pubKey.toBytes();
+      //@ts-ignore
+      const legacyAddress = bitcoin.payments.p2pkh({
+        pubkey: pubKey.toBytes(),
+      }).address;
+      console.log(legacyAddress, "legacyAddress2");
+      const pubKeyBip84 = await this.keyRingBtcBaseService.getPubKeyBip84(
+        chainId,
+        vaultId
+      );
+      const address = pubKeyBip84.getCosmosAddress();
       const bech32Address = new Bech32Address(address);
       const keyInfo = this.keyRingService.getKeyInfo(vaultId);
-      // const masterSeed = Buffer.from(masterSeedText, "hex");
-      // const keyPair = getKeyPairByMnemonic({
-      //   seed: masterSeed,
-      //   selectedCrypto: chainId as string,
-      //   keyDerivationPath: keyDerivation,
-      // });
 
       return {
         name: this.keyRingService.getKeyRingName(vaultId),
         algo: "secp256k1",
-        pubKey: pubKey.toBytes(),
+        pubKey: pubKeyBip84.toBytes(),
         address,
         bech32Address: bech32Address.toBech32Btc(
           chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
         ),
         ethereumHexAddress: "",
+        btcLegacyAddress: legacyAddress,
         isNanoLedger: keyInfo.type === "ledger",
         isKeystone: keyInfo.type === "keystone",
       };

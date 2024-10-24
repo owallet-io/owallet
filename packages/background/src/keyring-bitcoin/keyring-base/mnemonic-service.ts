@@ -5,6 +5,7 @@ import { HDKey, uint2hex } from "@owallet/common";
 import { KeyRing } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
+import { getKeyPairByMnemonic } from "@owallet/bitcoin/build/helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -38,14 +39,14 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     }
     const bip44Path = this.getBIP44PathFromVault(vault);
 
-    const tag = `pubKey-m/84'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
+    const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
 
     if (vault.insensitive[tag]) {
       const pubKey = Buffer.from(vault.insensitive[tag] as string, "hex");
       return new PubKeySecp256k1(pubKey);
     }
 
-    const privKey = this.getPrivKey(vault, coinType);
+    const privKey = this.getPrivKey(vault, coinType, 44);
 
     const pubKey = privKey.getPubKey();
 
@@ -56,6 +57,35 @@ export class KeyRingBtcMnemonicService implements KeyRing {
 
     return pubKey;
   }
+  getPubKeyBip84(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
+    if (!chainInfo?.features.includes("gen-address")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
+    const bip44Path = this.getBIP44PathFromVault(vault);
+
+    const tag = `pubKey-m/84'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
+
+    if (vault.insensitive[tag]) {
+      const pubKey = Buffer.from(vault.insensitive[tag] as string, "hex");
+      return new PubKeySecp256k1(pubKey);
+    }
+
+    const privKey = this.getPrivKey(vault, coinType, 84);
+
+    const pubKey = privKey.getPubKey();
+
+    const pubKeyText = Buffer.from(pubKey.toBytes()).toString("hex");
+    this.vaultService.setAndMergeInsensitiveToVault("keyRing", vault.id, {
+      [tag]: pubKeyText,
+    });
+
+    return pubKey;
+  }
+
   sign(
     vault: Vault,
     coinType: number,
@@ -84,8 +114,12 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     return;
   }
 
-  protected getPrivKey(vault: Vault, coinType: number): PrivKeySecp256k1 {
-    const bip84Path = this.getBIP44PathFromVault(vault);
+  protected getPrivKey(
+    vault: Vault,
+    coinType: number,
+    keyDerivation: number = 84
+  ): PrivKeySecp256k1 {
+    const bip44Path = this.getBIP44PathFromVault(vault);
 
     const decrypted = this.vaultService.decrypt(vault.sensitive);
     const masterSeedText = decrypted["masterSeedText"] as string | undefined;
@@ -97,7 +131,7 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     return new PrivKeySecp256k1(
       Mnemonic.generatePrivateKeyFromMasterSeed(
         masterSeed,
-        `m/84'/${coinType}'/${bip84Path.account}'/${bip84Path.change}/${bip84Path.addressIndex}`
+        `m/${keyDerivation}'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
       )
     );
   }

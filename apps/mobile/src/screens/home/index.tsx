@@ -94,6 +94,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   console.log(oasisAccount.bech32Address, "oasisAccount.bech32Address");
   const btcAccount = bitcoinAccountStore.getAccount("bitcoin");
   console.log(btcAccount.bech32Address, "btcAccount.bech32Address");
+  console.log(btcAccount.btcLegacyAddress, "btcAccount.btcLegacyAddress");
   const scrollViewRef = useRef<ScrollView | null>(null);
   const chainId = chainStore.current.chainId;
 

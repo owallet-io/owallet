@@ -14,6 +14,8 @@ export class BtcAccountBase {
   @observable
   protected _ethereumHexAddress: string = "";
   @observable
+  protected _btcLegacyAddress: string = "";
+  @observable
   protected _isNanoLedger: boolean = false;
   @observable
   protected _isKeystone: boolean = false;
@@ -46,6 +48,9 @@ export class BtcAccountBase {
   get bech32Address(): string {
     return this._bech32Address;
   }
+  get btcLegacyAddress(): string {
+    return this._btcLegacyAddress;
+  }
 
   get pubKey(): Uint8Array {
     return this._pubKey.slice();
@@ -68,12 +73,14 @@ export class BtcAccountBase {
     yield this.sharedContext.getKey(this.chainId, (res) => {
       if (res.status === "fulfilled") {
         const key = res.value;
+        console.log(key, "key btc");
         this._bech32Address = key.bech32Address;
         this._ethereumHexAddress = key.ethereumHexAddress;
         this._isNanoLedger = key.isNanoLedger;
         this._isKeystone = key.isKeystone;
         this._name = key.name;
         this._pubKey = key.pubKey;
+        this._btcLegacyAddress = key.btcLegacyAddress;
       } else {
         // Caught error loading key
         // Reset properties, and set status to Rejected
@@ -83,6 +90,7 @@ export class BtcAccountBase {
         this._isKeystone = false;
         this._name = "";
         this._pubKey = new Uint8Array(0);
+        this._btcLegacyAddress = "";
       }
     });
   }
