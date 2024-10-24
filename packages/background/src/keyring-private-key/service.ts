@@ -1,6 +1,7 @@
 import { VaultService, PlainObject, Vault } from "../vault";
 import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
+import { ChainInfo } from "@owallet/types";
 
 export class KeyRingPrivateKeyService {
   constructor(protected readonly vaultService: VaultService) {}
@@ -35,7 +36,14 @@ export class KeyRingPrivateKeyService {
     });
   }
 
-  getPubKey(vault: Vault): PubKeySecp256k1 {
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
+    if (chainInfo?.features.includes("gen-address")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
     const publicKeyBytes = Buffer.from(
       vault.insensitive["publicKey"] as string,
       "hex"
