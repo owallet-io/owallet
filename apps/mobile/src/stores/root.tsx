@@ -418,7 +418,8 @@ export class RootStore {
       this.chainStore,
       this.queriesStore,
       this.accountStore,
-      this.priceStore
+      this.priceStore,
+      this.oasisAccountStore
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(

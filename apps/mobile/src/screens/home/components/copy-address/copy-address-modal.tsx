@@ -40,7 +40,8 @@ export const CopyAddressModal: FunctionComponent<{
 
   const styles = styling(colors);
 
-  const { accountStore, keyRingStore, chainStore } = useStore();
+  const { accountStore, keyRingStore, chainStore, oasisAccountStore } =
+    useStore();
   // const btcLegacyChain = chainStore.chainInfos.find(
   //   (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
   // );
@@ -87,7 +88,9 @@ export const CopyAddressModal: FunctionComponent<{
       >
         {chainsData?.length > 0 &&
           chainsData.map((item, index) => {
-            let address = accountStore.getAccount(item.chainId).addressDisplay;
+            let address = item.features.includes("oasis")
+              ? oasisAccountStore.getAccount(item.chainId).bech32Address
+              : accountStore.getAccount(item.chainId).addressDisplay;
             // if (index === chainsData.length - 1) {
             //   address = accountStore.getAccount(item.chainId).legacyAddress;
             // } else {

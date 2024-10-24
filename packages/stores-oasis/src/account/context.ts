@@ -16,10 +16,9 @@ export class AccountOasisSharedContext {
         };
       });
     }
-    console.log(requests, "requests ka");
     const chainIdSet = new Set<string>(requests.map((req) => req.args[0]));
     const chainIds = Array.from(chainIdSet);
-    console.log(chainIds, "chainIds");
+
     const settled = await owallet.oasis.getKeysSettled(chainIds);
 
     const settledMap = new Map<string, SettledResponse<Key>>();

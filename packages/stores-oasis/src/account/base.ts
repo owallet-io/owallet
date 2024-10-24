@@ -74,7 +74,9 @@ export class OasisAccountBase {
       }
     });
   }
-
+  get addressDisplay(): string {
+    return this._bech32Address;
+  }
   get isSendingTx(): boolean {
     return this._isSendingTx;
   }

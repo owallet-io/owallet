@@ -256,11 +256,9 @@ export const AccountBoxAll: FunctionComponent<{
   }, [totalPriceBalance, accountOrai.bech32Address]);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
-  // const chainAddress = account.getAddressDisplay(
-  //   keyRingStore.keyRingLedgerAddresses
-  // );
-  const chainAddress = account.addressDisplay || oasisAccount.bech32Address;
-  console.log(oasisAccount.bech32Address, "oasisAccount.bech32Address");
+  const chainAddress = chainStore.current.features.includes("oasis")
+    ? oasisAccount.bech32Address
+    : account.addressDisplay;
   const _onPressMyWallet = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {

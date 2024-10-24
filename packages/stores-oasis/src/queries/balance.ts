@@ -55,6 +55,7 @@ export class ObservableQueryOasisAccountBalanceImpl
     const currency = chainInfo.currencies.find(
       (cur) => cur.coinMinimalDenom === denom
     );
+    console.log(this.response.data, "this.response.data");
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -108,18 +109,16 @@ export class ObservableQueryOasisAccountBalanceImpl
     // }
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const nic = new oasis.client.NodeInternal(chainInfo.grpc);
-    const publicKey = await staking.addressFromBech32(
-      "oasis1qp60c29kd0r8mx6hhs96a8sp0fsmftxqkcnt7vyk"
-    );
+    const publicKey = await staking.addressFromBech32(this.bech32Address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
     console.log(grpcBalance, "grpcBalance");
-    const result = "";
-    // return {
-    //   headers: result.headers,
-    //   data: result.data.result,
-    // };
-    return;
+    // const result = "";
+    return {
+      headers: {},
+      data: grpcBalance.available,
+    };
+    // return;
   }
 
   protected override getCacheKey(): string {
@@ -145,18 +144,8 @@ export class ObservableQueryOasisAccountBalanceRegistry
   ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
-    console.log(chainId, "chainId oasis");
-    if (!chainInfo.features.includes("oasis")) return;
-    // const isHexAddress =
-    //   OasisAccountBase.isOasisHexAddressWithChecksum(address);
-    // if (
-    //   denomHelper.type !== "native" ||
-    //   !isHexAddress ||
-    //   chainInfo.evm == null
-    // ) {
-    //   return;
-    // }
-
+    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
+      return;
     return new ObservableQueryOasisAccountBalanceImpl(
       this.sharedContext,
       chainId,

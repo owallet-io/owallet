@@ -17,6 +17,7 @@ import {
 } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
+import { OasisAccountStore } from "@owallet/stores-oasis";
 
 interface ViewToken {
   chainInfo: IChainInfoImpl;
@@ -41,7 +42,8 @@ export class HugeQueriesStore {
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
     protected readonly accountStore: IAccountStore,
-    protected readonly priceStore: CoinGeckoPriceStore
+    protected readonly priceStore: CoinGeckoPriceStore,
+    protected readonly oasisAccountStore: OasisAccountStore
   ) {
     let balanceDisposal: (() => void) | undefined;
     this.balanceBinarySort = new BinarySortArray<ViewToken>(
@@ -112,7 +114,11 @@ export class HugeQueriesStore {
     const prevKeyMap = new Map(this.balanceBinarySort.indexForKeyMap());
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
-      const account = this.accountStore.getAccount(chainInfo.chainId);
+      let account = this.accountStore.getAccount(chainInfo.chainId);
+      if (chainInfo.features.includes("oasis")) {
+        // @ts-ignore
+        account = this.oasisAccountStore.getAccount(chainInfo.chainId);
+      }
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
       if (account.bech32Address === "") {
@@ -149,11 +155,6 @@ export class HugeQueriesStore {
             if (!balance) {
               continue;
             }
-            // If the balance is zero, don't show it.
-            // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-            // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-            //   continue;
-            // }
 
             keysUsed.set(key, true);
             prevKeyMap.delete(key);
@@ -513,6 +514,7 @@ export class HugeQueriesStore {
       return 1;
     }
   }
+
   @computed
   get getAllAddrByChain(): Record<string, string> {
     const data: Record<string, string> = {};
