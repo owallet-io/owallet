@@ -79,6 +79,7 @@ import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 import { UIConfigStore } from "@stores/ui-config";
 import { BrowserStore } from "@stores/browser";
 import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
+
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -140,6 +141,7 @@ export class RootStore {
   public readonly deepLinkStore: DeepLinkStore;
   public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
   public readonly browserStore: BrowserStore;
+
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -388,6 +390,14 @@ export class RootStore {
       getOWalletFromWindow
     );
     this.oasisAccountStore = new OasisAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
       this.chainStore,
       getOWalletFromWindow
     );

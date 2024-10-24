@@ -903,7 +903,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     priceStore.fetch();
 
     for (const chainInfo of chainStore.chainInfosInUI) {
-      const account = accountStore.getAccount(chainInfo.chainId);
+      let account = accountStore.getAccount(chainInfo.chainId);
+      if (chainInfo.features.includes("oasis")) {
+        // @ts-ignore
+        account = oasisAccountStore.getAccount(chainInfo.chainId);
+      }
 
       if (account.bech32Address === "") {
         continue;

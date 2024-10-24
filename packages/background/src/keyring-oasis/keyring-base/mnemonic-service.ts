@@ -3,6 +3,7 @@ import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
 import { HDKey, uint2hex } from "@owallet/common";
 import { KeyRing } from "../../keyring";
+import { ChainInfo } from "@owallet/types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -26,7 +27,14 @@ export class KeyRingOasisMnemonicService implements KeyRing {
     return this.baseKeyringService.createKeyRingVault(mnemonic, bip44Path);
   }
 
-  async getPubKey(vault: Vault, coinType: number): Promise<Uint8Array> {
+  async getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): Promise<Uint8Array> {
+    if (!chainInfo?.features.includes("gen-address")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
     const bip44Path = this.getBIP44PathFromVault(vault);
 
     const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;

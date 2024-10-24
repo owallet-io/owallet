@@ -5,12 +5,17 @@ import { AccountOasisSharedContext } from "./context";
 
 export class OasisAccountStore extends HasMapStore<OasisAccountBase> {
   constructor(
+    protected readonly eventListener: {
+      addEventListener: (type: string, fn: () => unknown) => void;
+      removeEventListener: (type: string, fn: () => unknown) => void;
+    },
     protected readonly chainGetter: ChainGetter,
     protected readonly getOWallet: () => Promise<OWallet | undefined>
   ) {
     const sharedContext = new AccountOasisSharedContext(getOWallet);
     super((chainId: string) => {
       return new OasisAccountBase(
+        eventListener,
         chainGetter,
         chainId,
         sharedContext,

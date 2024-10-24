@@ -4,6 +4,7 @@ import { KeyRingPrivateKeyService } from "../../keyring-private-key";
 import { Vault, VaultService } from "../../vault";
 import { HDKey } from "@owallet/common";
 import { KeyRing } from "../../keyring";
+import { ChainInfo } from "@owallet/types";
 
 export class KeyRingOasisPrivateKeyService implements KeyRing {
   constructor(
@@ -30,7 +31,10 @@ export class KeyRingOasisPrivateKeyService implements KeyRing {
     });
   }
 
-  getPubKey(vault: Vault): Uint8Array {
+  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array {
+    if (!chainInfo?.features.includes("gen-address")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
     const publicKeyBytes = Buffer.from(
       vault.insensitive["publicKey"] as string,
       "hex"

@@ -37,17 +37,17 @@ const MnemonicSeed = () => {
     );
   }, [keyRingStore.keyInfos]);
 
-  const selectKeyStore = async (keyStore: KeyInfo) => {
-    keyRingStore.selectKeyRing(keyStore.id);
-    await chainStore.waitSyncedEnabledChains();
-  };
   const onSwitchWallet = useCallback(async (item) => {
     if (keyRingStore.selectedKeyInfo.id === item.id) {
       return;
     }
-    modalStore.close();
+    setIsLoading(true);
     await delay(10);
-    await selectKeyStore(item);
+    keyRingStore.selectKeyRing(item.id);
+    await chainStore.waitSyncedEnabledChains();
+    await delay(10);
+    setIsLoading(false);
+    modalStore.close();
   }, []);
   const renderItem = ({ item }) => {
     return (
