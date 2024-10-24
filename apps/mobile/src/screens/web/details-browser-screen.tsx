@@ -58,6 +58,9 @@ export const DetailsBrowserScreen = observer(props => {
   });
   const { inject } = browserStore;
   const sourceCode = inject;
+
+  console.log('sourceCode', sourceCode.length);
+
   // const [owallet] = useState(
   //   () =>
   //     new OWallet(
@@ -81,7 +84,8 @@ export const DetailsBrowserScreen = observer(props => {
   // );
   // const [eventEmitter] = useState(() => new EventEmitter());
 
-  // console.log('window.owallet', window.owallet);
+  //@ts-ignore
+  console.log('window.owallet', window.owallet);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {

@@ -1,212 +1,212 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { SignModal } from "../../modals/sign";
-import { LedgerGranterModal } from "../../modals/ledger";
-import { navigationRef } from "../../router/root";
-import { HomeBaseModal } from "../../modals/home-base";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { SignModal } from '../../modals/sign';
+import { LedgerGranterModal } from '../../modals/ledger';
+import { navigationRef } from '../../router/root';
+import { HomeBaseModal } from '../../modals/home-base';
 
-import { SignTronModal } from "../../modals/sign/sign-tron";
-import { AccessModal } from "@src/modals/permission";
-import { SignBitcoinModal } from "@src/modals/sign/sign-bitcoin";
-import { AppState, BackHandler, Platform } from "react-native";
-import { WCMessageRequester } from "@stores/wallet-connect/msg-requester";
-import { ADR36SignModal } from "@src/modals/sign/sign-adr36-modal";
-import { SignEthereumModal } from "@src/modals/sign/sign-ethereum-modal";
-import { LoadingModal } from "@src/modals/loading";
-import { WalletConnectAccessModal } from "@src/modals/permission/wallet-connect-access";
-import { GlobalPermissionModal } from "@src/modals/permission/global-permission";
-import { SuggestChainModal } from "@src/modals/permission/suggest-chain";
-import { BasicAccessModal } from "@src/modals/permission/basic-access";
+import { SignTronModal } from '../../modals/sign/sign-tron';
+import { AccessModal } from '@src/modals/permission';
+import { SignBitcoinModal } from '@src/modals/sign/sign-bitcoin';
+import { AppState, BackHandler, Platform } from 'react-native';
+import { WCMessageRequester } from '@stores/wallet-connect/msg-requester';
+import { ADR36SignModal } from '@src/modals/sign/sign-adr36-modal';
+import { SignEthereumModal } from '@src/modals/sign/sign-ethereum-modal';
+import { LoadingModal } from '@src/modals/loading';
+import { WalletConnectAccessModal } from '@src/modals/permission/wallet-connect-access';
+import { GlobalPermissionModal } from '@src/modals/permission/global-permission';
+import { SuggestChainModal } from '@src/modals/permission/suggest-chain';
+import { BasicAccessModal } from '@src/modals/permission/basic-access';
+import { BasicAccessEVMModal } from '@src/modals/permission/basic-access-evm';
 
-export const InteractionModalsProivder: FunctionComponent = observer(
-  ({ children }) => {
-    const {
-      signInteractionStore,
-      signEthereumInteractionStore,
-      permissionStore,
-      chainSuggestStore,
-      walletConnectStore,
-      keyRingStore,
-      tokensStore,
-      modalStore,
-    } = useStore();
+export const InteractionModalsProivder: FunctionComponent = observer(({ children }) => {
+  const {
+    signInteractionStore,
+    signEthereumInteractionStore,
+    permissionStore,
+    chainSuggestStore,
+    walletConnectStore,
+    keyRingStore,
+    tokensStore,
+    modalStore
+  } = useStore();
 
-    const [showGoBackToBrowserIOS, setShowGoBackToBrowserIOS] = useState(false);
+  const [showGoBackToBrowserIOS, setShowGoBackToBrowserIOS] = useState(false);
 
-    useEffect(() => {
-      if (walletConnectStore.needGoBackToBrowser) {
-        if (Platform.OS === "android") {
-          BackHandler.exitApp();
-        } else {
-          setShowGoBackToBrowserIOS(true);
-        }
+  useEffect(() => {
+    if (walletConnectStore.needGoBackToBrowser) {
+      if (Platform.OS === 'android') {
+        BackHandler.exitApp();
+      } else {
+        setShowGoBackToBrowserIOS(true);
       }
-    }, [walletConnectStore.needGoBackToBrowser]);
+    }
+  }, [walletConnectStore.needGoBackToBrowser]);
 
-    useEffect(() => {
-      const listener = AppState.addEventListener("change", (e) => {
-        if (e === "background" || e === "inactive") {
-          setShowGoBackToBrowserIOS(false);
-          walletConnectStore.clearNeedGoBackToBrowser();
-        }
-      });
+  useEffect(() => {
+    const listener = AppState.addEventListener('change', e => {
+      if (e === 'background' || e === 'inactive') {
+        setShowGoBackToBrowserIOS(false);
+        walletConnectStore.clearNeedGoBackToBrowser();
+      }
+    });
 
-      return () => {
-        listener.remove();
-      };
-    }, [walletConnectStore]);
+    return () => {
+      listener.remove();
+    };
+  }, [walletConnectStore]);
 
-    const mergedPermissionData = permissionStore.waitingPermissionMergedData;
-    // useEffect(() => {
-    //   for (const data of permissionStore.waitingDatas) {
-    //     // Currently, there is no modal to permit the permission of external apps.
-    //     // All apps should be embeded explicitly.
-    //     // If such apps needs the permissions, add these origins to the privileged origins.
-    //     // if (data.data.origins.length !== 1) {
-    //     //   // permissionStore.rejectAll();
-    //     // }
-    //   }
-    // }, [permissionStore, permissionStore.waitingDatas]);
-    //
-    // const renderAccessModal = () => {
-    //   if (permissionStore.waitingDatas) {
-    //     return permissionStore.waitingDatas.map((wd) => {
-    //       return (
-    //         <AccessModal
-    //           waitingData={wd}
-    //           isOpen={true}
-    //           close={() => permissionStore.rejectAll()}
-    //         />
-    //       );
-    //     });
-    //   }
-    // };
+  const mergedPermissionData = permissionStore.waitingPermissionMergedData;
+  const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
 
-    return (
-      <React.Fragment>
-        {signInteractionStore.waitingData &&
-        !signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
-          <SignModal
-            isOpen={true}
-            close={() => {
-              signInteractionStore.rejectWithProceedNext(
-                signInteractionStore.waitingData?.id!,
-                () => {}
-              );
-            }}
-            interactionData={signInteractionStore.waitingData}
-          />
-        ) : null}
+  console.log('mergedDataForEVM', mergedDataForEVM);
+  console.log('mergedPermissionData', mergedPermissionData);
 
-        {signInteractionStore.waitingData &&
-        signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
-          <ADR36SignModal
-            isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
-          />
-        ) : null}
+  // useEffect(() => {
+  //   for (const data of permissionStore.waitingDatas) {
+  //     // Currently, there is no modal to permit the permission of external apps.
+  //     // All apps should be embeded explicitly.
+  //     // If such apps needs the permissions, add these origins to the privileged origins.
+  //     // if (data.data.origins.length !== 1) {
+  //     //   // permissionStore.rejectAll();
+  //     // }
+  //   }
+  // }, [permissionStore, permissionStore.waitingDatas]);
+  //
+  // const renderAccessModal = () => {
+  //   if (permissionStore.waitingDatas) {
+  //     return permissionStore.waitingDatas.map((wd) => {
+  //       return (
+  //         <AccessModal
+  //           waitingData={wd}
+  //           isOpen={true}
+  //           close={() => permissionStore.rejectAll()}
+  //         />
+  //       );
+  //     });
+  //   }
+  // };
 
-        {signEthereumInteractionStore.waitingData ? (
-          <SignEthereumModal
-            isOpen={true}
-            close={() => {
-              signEthereumInteractionStore.rejectWithProceedNext(
-                signEthereumInteractionStore.waitingData?.id!,
-                () => {}
-              );
-            }}
-            interactionData={signEthereumInteractionStore.waitingData}
-          />
-        ) : null}
+  return (
+    <React.Fragment>
+      {signInteractionStore.waitingData && !signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
+        <SignModal
+          isOpen={true}
+          close={() => {
+            signInteractionStore.rejectWithProceedNext(signInteractionStore.waitingData?.id!, () => {});
+          }}
+          interactionData={signInteractionStore.waitingData}
+        />
+      ) : null}
 
-        {keyRingStore.status === "unlocked" &&
-        (walletConnectStore.isPendingClientFromDeepLink ||
-          walletConnectStore.isPendingWcCallFromDeepLinkClient) ? (
-          <LoadingModal isOpen={true} close={() => {}} />
-        ) : null}
+      {signInteractionStore.waitingData && signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
+        <ADR36SignModal isOpen={true} close={() => signInteractionStore.rejectAll()} />
+      ) : null}
 
-        {/*{showGoBackToBrowserIOS ? (*/}
-        {/*    <GoBackToBrowserModal*/}
-        {/*        isOpen={showGoBackToBrowserIOS}*/}
-        {/*        setIsOpen={v => {*/}
-        {/*            if (!v) {*/}
-        {/*                setShowGoBackToBrowserIOS(false);*/}
-        {/*                walletConnectStore.clearNeedGoBackToBrowser();*/}
-        {/*            }*/}
-        {/*        }}*/}
-        {/*    />*/}
-        {/*) : null}*/}
+      {signEthereumInteractionStore.waitingData ? (
+        <SignEthereumModal
+          isOpen={true}
+          close={() => {
+            signEthereumInteractionStore.rejectWithProceedNext(signEthereumInteractionStore.waitingData?.id!, () => {});
+          }}
+          interactionData={signEthereumInteractionStore.waitingData}
+        />
+      ) : null}
 
-        {permissionStore.waitingGlobalPermissionData ? (
-          <GlobalPermissionModal
-            isOpen={true}
-            close={async () => {
-              await permissionStore.rejectGlobalPermissionAll();
-            }}
-          />
-        ) : null}
+      {keyRingStore.status === 'unlocked' &&
+      (walletConnectStore.isPendingClientFromDeepLink || walletConnectStore.isPendingWcCallFromDeepLinkClient) ? (
+        <LoadingModal isOpen={true} close={() => {}} />
+      ) : null}
 
-        {mergedPermissionData
-          ? (() => {
-              const data = mergedPermissionData;
-              if (data.origins.length === 1) {
-                if (WCMessageRequester.isVirtualURL(data.origins[0])) {
-                  return (
-                    <WalletConnectAccessModal
-                      isOpen={true}
-                      close={async () =>
-                        await permissionStore.rejectPermissionWithProceedNext(
-                          data.ids,
-                          () => {}
-                        )
-                      }
-                      key={data.ids.join(",")}
-                      data={data}
-                    />
-                  );
-                }
+      {/*{showGoBackToBrowserIOS ? (*/}
+      {/*    <GoBackToBrowserModal*/}
+      {/*        isOpen={showGoBackToBrowserIOS}*/}
+      {/*        setIsOpen={v => {*/}
+      {/*            if (!v) {*/}
+      {/*                setShowGoBackToBrowserIOS(false);*/}
+      {/*                walletConnectStore.clearNeedGoBackToBrowser();*/}
+      {/*            }*/}
+      {/*        }}*/}
+      {/*    />*/}
+      {/*) : null}*/}
+
+      {permissionStore.waitingGlobalPermissionData ? (
+        <GlobalPermissionModal
+          isOpen={true}
+          close={async () => {
+            await permissionStore.rejectGlobalPermissionAll();
+          }}
+        />
+      ) : null}
+
+      {mergedPermissionData
+        ? (() => {
+            const data = mergedPermissionData;
+            if (data.origins.length === 1) {
+              if (WCMessageRequester.isVirtualURL(data.origins[0])) {
+                return (
+                  <WalletConnectAccessModal
+                    isOpen={true}
+                    // close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                    close={() => {}}
+                    key={data.ids.join(',')}
+                    data={data}
+                  />
+                );
               }
+            }
 
-              return (
-                <BasicAccessModal
-                  isOpen={true}
-                  close={async () =>
-                    await permissionStore.rejectPermissionWithProceedNext(
-                      data.ids,
-                      () => {}
-                    )
-                  }
-                  key={data.ids.join(",")}
-                  data={data}
-                />
-              );
-            })()
-          : null}
+            return (
+              <BasicAccessModal
+                isOpen={true}
+                close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                // close={() => {}}
+                key={data.ids.join(',')}
+                data={data}
+              />
+            );
+          })()
+        : null}
 
-        {chainSuggestStore.waitingSuggestedChainInfo ? (
-          <SuggestChainModal
-            isOpen={true}
-            close={async () => {
-              await chainSuggestStore.rejectAll();
-            }}
-          />
-        ) : null}
+      {mergedDataForEVM && !mergedPermissionData
+        ? (() => {
+            const data = mergedDataForEVM;
 
-        {modalStore.getOptions?.isOpen ? (
-          <HomeBaseModal
-            bottomSheetModalConfig={{
-              snapPoints: ["40%", "70%"],
-              index: 1,
-            }}
-            {...modalStore.getOptions}
-            isOpen={true}
-            close={() => modalStore.close()}
-          />
-        ) : null}
+            return (
+              <BasicAccessEVMModal
+                isOpen={true}
+                close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                // close={() => {}}
+                key={data.ids.join(',')}
+                data={data}
+              />
+            );
+          })()
+        : null}
 
-        {children}
-      </React.Fragment>
-    );
-  }
-);
+      {chainSuggestStore.waitingSuggestedChainInfo ? (
+        <SuggestChainModal
+          isOpen={true}
+          close={async () => {
+            await chainSuggestStore.rejectAll();
+          }}
+        />
+      ) : null}
+
+      {modalStore.getOptions?.isOpen ? (
+        <HomeBaseModal
+          bottomSheetModalConfig={{
+            snapPoints: ['40%', '70%'],
+            index: 1
+          }}
+          {...modalStore.getOptions}
+          isOpen={true}
+          close={() => modalStore.close()}
+        />
+      ) : null}
+
+      {children}
+    </React.Fragment>
+  );
+});

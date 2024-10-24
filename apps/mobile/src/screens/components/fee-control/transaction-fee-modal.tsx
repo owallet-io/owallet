@@ -23,7 +23,8 @@ export const TransactionFeeModal = registerModal(
     gasConfig: IGasConfig;
     gasSimulator?: IGasSimulator;
     disableAutomaticFeeSet?: boolean;
-  }>(({ senderConfig, feeConfig, gasConfig, gasSimulator, setIsOpen, disableAutomaticFeeSet }) => {
+    isForEVMTx?: boolean;
+  }>(({ senderConfig, feeConfig, gasConfig, gasSimulator, setIsOpen, disableAutomaticFeeSet, isForEVMTx }) => {
     const { queriesStore, uiConfigStore } = useStore();
     const intl = useIntl();
 
@@ -89,6 +90,7 @@ export const TransactionFeeModal = registerModal(
       prevGasConfigGas.current = gasConfig.gas;
       prevGasSimulatorEnabled.current = isGasSimulatorEnabled;
     }, [feeConfig.type, feeConfigCurrencyString, gasConfig.gas, isGasSimulatorEnabled]);
+    const isShowingMaxFee = isForEVMTx && !!gasSimulator?.gasEstimated;
 
     return (
       <View>

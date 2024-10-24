@@ -128,9 +128,9 @@ export const FeeControl: FunctionComponent<{
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
-
   disableAutomaticFeeSet?: boolean;
-}> = observer(({ senderConfig, feeConfig, gasConfig, gasSimulator, disableAutomaticFeeSet }) => {
+  isForEVMTx?: boolean;
+}> = observer(({ senderConfig, feeConfig, gasConfig, gasSimulator, disableAutomaticFeeSet, isForEVMTx }) => {
   const { queriesStore, priceStore, chainStore, uiConfigStore } = useStore();
   const intl = useIntl();
   const { colors } = useTheme();
@@ -138,6 +138,7 @@ export const FeeControl: FunctionComponent<{
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const hasError = feeConfig.uiProperties.error || feeConfig.uiProperties.warning;
+  const isShowingEstimatedFee = isForEVMTx && !!gasSimulator?.gasEstimated;
 
   useFeeOptionSelectionOnInit(uiConfigStore, feeConfig, disableAutomaticFeeSet);
 
@@ -248,12 +249,16 @@ export const FeeControl: FunctionComponent<{
 
       <TransactionFeeModal
         isOpen={isModalOpen}
+        close={() => {
+          setIsModalOpen(false);
+        }}
         setIsOpen={setIsModalOpen}
         senderConfig={senderConfig}
         feeConfig={feeConfig}
         gasConfig={gasConfig}
         gasSimulator={gasSimulator}
         disableAutomaticFeeSet={disableAutomaticFeeSet}
+        isForEVMTx={isForEVMTx}
       />
     </View>
   );

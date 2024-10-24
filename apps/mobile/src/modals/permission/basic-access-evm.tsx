@@ -20,7 +20,7 @@ import { OWButton } from '@components/button';
 import images from '@assets/images';
 import OWText from '@components/text/ow-text';
 
-export const BasicAccessModal = registerModal(
+export const BasicAccessEVMModal = registerModal(
   observer<{
     isOpen: boolean;
     // close: (isOpen: boolean) => void;

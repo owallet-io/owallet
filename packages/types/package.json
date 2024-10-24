@@ -1,6 +1,6 @@
 {
   "name": "@owallet/types",
-  "version": "0.9.12",
+  "version": "0.9.16",
   "main": "build/index.js",
   "author": "owallet-io",
   "license": "Apache-2.0",

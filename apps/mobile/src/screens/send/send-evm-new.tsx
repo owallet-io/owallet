@@ -199,7 +199,6 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (chainStore.getChain(chainId).hasFeature('feemarket')) {
-      // feemarket 이상하게 만들어서 simulate하면 더 적은 gas가 나온다 귀찮아서 대충 처리.
       gasSimulator.setGasAdjustmentValue('1.6');
     }
   }, [chainId, chainStore, gasSimulator]);

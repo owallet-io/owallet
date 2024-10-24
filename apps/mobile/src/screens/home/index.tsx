@@ -36,7 +36,7 @@ import { StakeCardAll } from './components/stake-card-all';
 import Web3 from 'web3';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { ViewToken } from '@src/stores/huge-queries';
+// import { ViewToken } from '@src/stores/huge-queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressBtcType } from '@owallet/types';
 import { NewThemeModal } from '@src/modals/theme/new-theme';
@@ -64,6 +64,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
     appInitStore,
     keyRingStore,
     // modalStore,
+    permissionStore,
     browserStore,
     hugeQueriesStore
   } = useStore();
@@ -88,6 +89,12 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //   true
   // );
 
+  const mergedPermissionData = permissionStore.waitingPermissionMergedData;
+  const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
+
+  console.log('mergedDataForEVM', mergedDataForEVM);
+  console.log('mergedPermissionData', mergedPermissionData);
+
   useEffect(() => {
     tracking('Home Screen');
     InteractionManager.runAfterInteractions(() => {
@@ -96,6 +103,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
           return res.text();
         })
         .then(res => {
+          console.log('res', res.length);
+
           browserStore.update_inject(res);
         })
         .catch(err => console.log(err));
@@ -873,6 +882,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //     ]);
   //   }
   // };
+
   const onRefresh = async () => {
     if (isNotReady) {
       return;
