@@ -1,5 +1,5 @@
 import { Currency, AppCurrency, FeeCurrency } from "./currency";
-import { BIP44 } from "./bip44";
+import { BIP44, BIP84 } from "./bip44";
 import { Bech32Config } from "./bech32";
 import { EVMInfo } from "./ethereum";
 export type NetworkType = "cosmos" | "evm" | "bitcoin" | "oasis";
@@ -24,6 +24,7 @@ export interface ChainInfo {
   readonly walletUrl?: string;
   readonly walletUrlForStaking?: string;
   readonly bip44: BIP44;
+  readonly bip84?: BIP84;
   readonly alternativeBIP44s?: BIP44[];
   readonly bech32Config?: Bech32Config;
 

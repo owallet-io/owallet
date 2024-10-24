@@ -21,6 +21,8 @@ import {
   DirectAuxSignResponse,
   IEthereumProvider,
   IOasisProvider,
+  IBitcoinProvider,
+  ITronProvider,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -1291,6 +1293,8 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
 
   public readonly ethereum = new EthereumProvider(this, this.requester);
   public readonly oasis = new OasisProvider(this, this.requester);
+  public readonly tron = new TronProvider(this, this.requester);
+  public readonly bitcoin = new BitcoinProvider(this, this.requester);
 }
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
   chainId: string | null = null;
@@ -1422,7 +1426,6 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
   async getKey(chainId: string): Promise<Key> {
-    console.log(chainId, "chainId keyring-oasis");
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
@@ -1470,7 +1473,118 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
 }
+class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
+  constructor(
+    protected readonly owallet: OWallet,
+    protected readonly requester: MessageRequester
+  ) {
+    super();
+  }
 
+  async getKey(chainId: string): Promise<Key> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-bitcoin",
+        "get-btc-key",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-bitcoin",
+        "get-btc-keys-settled",
+        {
+          chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
+  }
+}
+class TronProvider extends EventEmitter implements ITronProvider {
+  constructor(
+    protected readonly owallet: OWallet,
+    protected readonly requester: MessageRequester
+  ) {
+    super();
+  }
+
+  async getKey(chainId: string): Promise<Key> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-tron",
+        "get-trx-key",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-tron",
+        "get-trx-keys-settled",
+        {
+          chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      // setTimeout(() => {
+      //   if (!f) {
+      //     this.protectedTryOpenSidePanelIfEnabled();
+      //   }
+      // }, 100);
+    });
+  }
+}
 // IMPORTANT: 사이드 패널을 열어야하는 JSON-RPC 메소드들이 생길 때마다 여기에 추가해야한다.
 const sidePanelOpenNeededJSONRPCMethods = [
   "eth_sendTransaction",

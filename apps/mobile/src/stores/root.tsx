@@ -79,6 +79,8 @@ import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
 import { UIConfigStore } from "@stores/ui-config";
 import { BrowserStore } from "@stores/browser";
 import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
+import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
+import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 
 // import {WebpageStore} from './webpage';
 
@@ -117,7 +119,9 @@ export class RootStore {
       // CosmosGovernanceQueries,
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
-      OasisQueries
+      OasisQueries,
+      TrxQueries,
+      BtcQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -127,6 +131,8 @@ export class RootStore {
   >;
   public readonly ethereumAccountStore: EthereumAccountStore;
   public readonly oasisAccountStore: OasisAccountStore;
+  public readonly tronAccountStore: TrxAccountStore;
+  public readonly bitcoinAccountStore: BtcAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
 
   public readonly tokenFactoryRegistrar: TokenFactoryCurrencyRegistrar;
@@ -220,7 +226,9 @@ export class RootStore {
         coingeckoAPIBaseURL: "",
         coingeckoAPIURI: "",
       }),
-      OasisQueries.use()
+      OasisQueries.use(),
+      TrxQueries.use(),
+      BtcQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -401,7 +409,30 @@ export class RootStore {
       this.chainStore,
       getOWalletFromWindow
     );
-
+    this.tronAccountStore = new TrxAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.bitcoinAccountStore = new BtcAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),
       FiatCurrencies.reduce<{

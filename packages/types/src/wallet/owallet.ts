@@ -245,8 +245,18 @@ export interface OWallet {
 
   readonly ethereum: IEthereumProvider;
   readonly oasis?: IOasisProvider;
+  readonly bitcoin?: IBitcoinProvider;
+  readonly tron?: ITronProvider;
 }
 export interface IOasisProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+}
+export interface IBitcoinProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+}
+export interface ITronProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
 }

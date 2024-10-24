@@ -40,6 +40,7 @@ export const COINTYPE_NETWORK = {
   0: "Bitcoin",
   1: "Bitcoin Testnet",
 };
+
 export const checkValidDomain = (url: string) => {
   if (isValidDomain(url)) {
     return true;
@@ -201,7 +202,7 @@ function isBase58Address(address) {
 }
 
 export const getBase58Address = (address) => {
-  if (!address) return null;
+  if (!address) return "";
   const evmAddress = Buffer.from("41" + address.slice(2), "hex");
   const hash = Hash.sha256(Hash.sha256(evmAddress));
   const checkSum = Buffer.from(hash.slice(0, 4));

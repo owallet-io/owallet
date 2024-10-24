@@ -111,19 +111,18 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   true
   // );
 
-  // useEffect(() => {
-  //   tracking("Home Screen");
-  //   InteractionManager.runAfterInteractions(() => {
-  //     fetch(InjectedProviderUrl)
-  //       .then((res) => {
-  //         return res.text();
-  //       })
-  //       .then((res) => {
-  //         browserStore.update_inject(res);
-  //       })
-  //       .catch((err) => console.log(err));
-  //   });
-  // }, []);
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      fetch(InjectedProviderUrl)
+        .then((res) => {
+          return res.text();
+        })
+        .then((res) => {
+          browserStore.update_inject(res);
+        })
+        .catch((err) => console.log(err));
+    });
+  }, []);
 
   // const checkAndUpdateChainInfo = useCallback(() => {
   //   if (!chainStoreIsInitializing) {
@@ -896,6 +895,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //     ]);
   //   }
   // };
+  // let account = accountStore.getAccount("eip155:728126428");
+  // console.log(account.addressDisplay,"account.base58Address")
   const onRefresh = async () => {
     if (isNotReady) {
       return;

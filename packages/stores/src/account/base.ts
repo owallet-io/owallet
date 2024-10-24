@@ -1,7 +1,7 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import { AppCurrency, OWallet } from "@owallet/types";
 import { ChainGetter } from "../chain";
-import { DenomHelper, toGenerator } from "@owallet/common";
+import { DenomHelper, getBase58Address, toGenerator } from "@owallet/common";
 import { MakeTxResponse } from "./types";
 import { AccountSharedContext } from "./context";
 
@@ -262,7 +262,15 @@ export class AccountSetBase {
     return this._bech32Address;
   }
   get addressDisplay(): string {
-    if (this.chainId?.includes("eip155")) return this._ethereumHexAddress;
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    if (
+      this.chainId?.includes("eip155") &&
+      !chainInfo.features?.includes("base58-address")
+    ) {
+      return this._ethereumHexAddress;
+    } else if (chainInfo.features?.includes("base58-address")) {
+      return this.base58Address;
+    }
     return this._bech32Address;
   }
 
@@ -305,6 +313,9 @@ export class AccountSetBase {
 
   get ethereumHexAddress(): string {
     return this._ethereumHexAddress;
+  }
+  get base58Address(): string {
+    return getBase58Address(this._ethereumHexAddress);
   }
 }
 

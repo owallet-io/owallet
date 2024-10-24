@@ -444,6 +444,142 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
   },
   {
+    rpc: "https://blockstream.info/api",
+    rest: "https://blockstream.info/api",
+    chainId: "bitcoin",
+    chainName: "Bitcoin",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    bip44: {
+      coinType: 0,
+    },
+    bip84: {
+      coinType: 0,
+    },
+    stakeCurrency: {
+      coinDenom: "BTC",
+      coinMinimalDenom: "btc",
+      coinDecimals: 8,
+      coinGeckoId: "bitcoin",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    },
+    bech32Config: Bech32Address.defaultBech32Config("bc"),
+    currencies: [
+      {
+        type: "btc-legacy",
+        coinDenom: "BTC",
+        coinMinimalDenom: "btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+      {
+        type: "btc-segwit",
+        coinDenom: "BTC",
+        coinMinimalDenom: "btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+      ];
+    },
+
+    features: ["gen-address"],
+    txExplorer: {
+      name: "BlockStream",
+      txUrl: "https://blockstream.info/tx/{txHash}",
+      accountUrl: "https://blockstream.info/address/{address}",
+    },
+  },
+  {
+    rpc: "https://api.trongrid.io",
+    rest: "https://apilist.tronscanapi.com",
+    chainId: "eip155:728126428",
+    chainName: "Tron",
+    evm: {
+      rpc: "https://api.trongrid.io/jsonrpc",
+      chainId: 728126428,
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+    stakeCurrency: {
+      coinDenom: "TRX",
+      coinMinimalDenom: "trx",
+      coinDecimals: 6,
+      coinGeckoId: "tron",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+    },
+    currencies: [
+      {
+        coinDenom: "TRX",
+        coinMinimalDenom: "trx",
+        coinDecimals: 6,
+        coinGeckoId: "tron",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+      },
+      {
+        contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
+        coinDenom: "USDC",
+        coinMinimalDenom: "erc20:0x3487b63D30B5B2C87fb7fFa8bcfADE38EAaC1abe",
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        coinDecimals: 6,
+      },
+      {
+        contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        coinMinimalDenom: "erc20:0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C",
+        coinDenom: "USDT",
+        coinDecimals: 6,
+        coinGeckoId: "tether",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      },
+      {
+        contractAddress: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+        coinMinimalDenom: "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18",
+        coinDenom: "WTRX",
+        coinDecimals: 6,
+        coinGeckoId: "wrapped-tron",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+      },
+    ],
+    bip44: {
+      coinType: 195,
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    features: ["base58-address"],
+    txExplorer: {
+      name: "Tronscan",
+      txUrl: "https://tronscan.org/#/transaction/{txHash}",
+      accountUrl: "https://tronscan.org/#/address/{address}",
+    },
+  },
+  {
     rpc: "https://sapphire.oasis.io",
     rest: "https://sapphire.oasis.io",
     chainId: "eip155:23294",

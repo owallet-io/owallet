@@ -23,6 +23,8 @@ import * as KeyRingKeystone from "./keyring-keystone/internal";
 import * as KeyRingPrivateKey from "./keyring-private-key/internal";
 import * as KeyRingCosmos from "./keyring-cosmos/internal";
 import * as KeyRingOasis from "./keyring-oasis/internal";
+import * as KeyRingTron from "./keyring-tron/internal";
+import * as KeyRingBitcoin from "./keyring-bitcoin/internal";
 import * as KeyRingEthereum from "./keyring-ethereum/internal";
 import * as PermissionInteractive from "./permission-interactive/internal";
 import * as TokenScan from "./token-scan/internal";
@@ -47,6 +49,8 @@ export * from "./keyring";
 export * from "./vault";
 export * from "./keyring-cosmos";
 export * from "./keyring-oasis";
+export * from "./keyring-bitcoin";
+export * from "./keyring-tron";
 export * from "./keyring-ethereum";
 export * from "./keyring-keystone";
 export * from "./token-scan";
@@ -61,8 +65,18 @@ import { ChainInfoWithCoreTypes } from "./chains";
 import {
   KeyRingOasisBaseService,
   KeyRingOasisPrivateKeyService,
+  KeyRingOasisMnemonicService,
 } from "./keyring-oasis";
-import { KeyRingOasisMnemonicService } from "./keyring-oasis/keyring-base/mnemonic-service";
+import {
+  KeyRingTronBaseService,
+  KeyRingTronPrivateKeyService,
+  KeyRingTronMnemonicService,
+} from "./keyring-tron";
+import {
+  KeyRingBtcBaseService,
+  KeyRingBtcPrivateKeyService,
+  KeyRingBtcMnemonicService,
+} from "./keyring-bitcoin";
 
 export function init(
   router: Router,
@@ -234,6 +248,28 @@ export function init(
       new KeyRingOasisPrivateKeyService(vaultService, keyringBasePrivateKey),
     ])
   );
+  const keyRingTronService = new KeyRingTron.KeyRingTronService(
+    chainsService,
+    keyRingV2Service,
+    interactionService,
+    chainsUIService,
+    msgPrivilegedOrigins,
+    new KeyRingTronBaseService(chainsService, vaultService, [
+      new KeyRingTronMnemonicService(vaultService, keyringBaseMnemonic),
+      new KeyRingTronPrivateKeyService(vaultService, keyringBasePrivateKey),
+    ])
+  );
+  const keyRingBitcoinService = new KeyRingBitcoin.KeyRingBtcService(
+    chainsService,
+    keyRingV2Service,
+    interactionService,
+    chainsUIService,
+    msgPrivilegedOrigins,
+    new KeyRingBtcBaseService(chainsService, vaultService, [
+      new KeyRingBtcMnemonicService(vaultService, keyringBaseMnemonic),
+      new KeyRingBtcPrivateKeyService(vaultService, keyringBasePrivateKey),
+    ])
+  );
   const autoLockAccountService = new AutoLocker.AutoLockAccountService(
     storeCreator("auto-lock-account"),
     keyRingV2Service,
@@ -316,6 +352,12 @@ export function init(
     permissionInteractiveService
   );
   KeyRingOasis.init(router, keyRingOasisService, permissionInteractiveService);
+  KeyRingTron.init(router, keyRingTronService, permissionInteractiveService);
+  KeyRingBitcoin.init(
+    router,
+    keyRingBitcoinService,
+    permissionInteractiveService
+  );
   KeyRingEthereum.init(
     router,
     keyRingEthereumService,
