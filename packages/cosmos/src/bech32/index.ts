@@ -83,6 +83,11 @@ export class Bech32Address {
     const words = bech32.toWords(this.address);
     return bech32.encode(prefix, words, limit);
   }
+  toBech32Btc(prefix: string, limit?: number): string {
+    const words = bech32.toWords(this.address);
+    words.unshift(0);
+    return bech32.encode(prefix, words, limit);
+  }
 
   toHex(mixedCaseChecksum: boolean = true): string {
     const hex = Buffer.from(this.address).toString("hex");

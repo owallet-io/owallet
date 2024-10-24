@@ -15,23 +15,14 @@ export class KeyRingBtcPrivateKeyService implements KeyRing {
     return this.baseKeyringService.supportedKeyRingType();
   }
   createKeyRingVault(privateKey: Uint8Array) {
-    if (!privateKey || privateKey.length === 0) {
-      throw new Error("Invalid arguments");
-    }
-    const keyPair = HDKey.getAccountSignerFromPrivateKey(privateKey);
-    if (!keyPair) throw new Error("KeyPair from Private Key Invalid");
-    const publicKey = Buffer.from(keyPair.publicKey).toString("hex");
-    return Promise.resolve({
-      insensitive: {
-        publicKey,
-      },
-      sensitive: {
-        privateKey: Buffer.from(privateKey).toString("hex"),
-      },
-    });
+    return this.baseKeyringService.createKeyRingVault(privateKey);
   }
 
-  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array {
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
     if (!chainInfo?.features.includes("gen-address")) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
@@ -40,9 +31,8 @@ export class KeyRingBtcPrivateKeyService implements KeyRing {
       "hex"
     );
 
-    return publicKeyBytes;
+    return new PubKeySecp256k1(publicKeyBytes);
   }
-
   sign(
     vault: Vault,
     _coinType: number,

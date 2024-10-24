@@ -33,29 +33,25 @@ export class KeyRingOasisService {
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    try {
-      const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-      const pubKey = await this.keyRingOasisBaseService.getPubKey(
-        chainId,
-        vaultId
-      );
-      const address = await oasis.staking.addressFromPublicKey(pubKey);
-      const bech32Address = new Bech32Address(address);
-      const keyInfo = this.keyRingService.getKeyInfo(vaultId);
-      return {
-        name: this.keyRingService.getKeyRingName(vaultId),
-        algo: "secp256k1",
-        pubKey: pubKey,
-        address,
-        bech32Address: bech32Address.toBech32(
-          chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
-        ),
-        ethereumHexAddress: "",
-        isNanoLedger: keyInfo.type === "ledger",
-        isKeystone: keyInfo.type === "keystone",
-      };
-    } catch (e) {
-      console.error(e, "err get key oasis");
-    }
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    const pubKey = await this.keyRingOasisBaseService.getPubKey(
+      chainId,
+      vaultId
+    );
+    const address = await oasis.staking.addressFromPublicKey(pubKey);
+    const bech32Address = new Bech32Address(address);
+    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+    return {
+      name: this.keyRingService.getKeyRingName(vaultId),
+      algo: "secp256k1",
+      pubKey: pubKey,
+      address,
+      bech32Address: bech32Address.toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      ),
+      ethereumHexAddress: "",
+      isNanoLedger: keyInfo.type === "ledger",
+      isKeystone: keyInfo.type === "keystone",
+    };
   }
 }

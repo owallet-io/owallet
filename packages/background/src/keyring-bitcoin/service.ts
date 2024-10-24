@@ -10,6 +10,7 @@ import { PubKeySecp256k1 } from "@owallet/crypto";
 import { Vault, VaultService } from "../vault";
 import * as oasis from "@oasisprotocol/client";
 import { KeyRingBtcBaseService } from "./keyring-base";
+import { getKeyPairByMnemonic } from "@owallet/bitcoin/build/helpers";
 
 export class KeyRingBtcService {
   constructor(
@@ -39,15 +40,22 @@ export class KeyRingBtcService {
         chainId,
         vaultId
       );
-      const address = await oasis.staking.addressFromPublicKey(pubKey);
+      const address = pubKey.getCosmosAddress();
       const bech32Address = new Bech32Address(address);
       const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+      // const masterSeed = Buffer.from(masterSeedText, "hex");
+      // const keyPair = getKeyPairByMnemonic({
+      //   seed: masterSeed,
+      //   selectedCrypto: chainId as string,
+      //   keyDerivationPath: keyDerivation,
+      // });
+
       return {
         name: this.keyRingService.getKeyRingName(vaultId),
         algo: "secp256k1",
-        pubKey: pubKey,
+        pubKey: pubKey.toBytes(),
         address,
-        bech32Address: bech32Address.toBech32(
+        bech32Address: bech32Address.toBech32Btc(
           chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
         ),
         ethereumHexAddress: "",
@@ -55,7 +63,7 @@ export class KeyRingBtcService {
         isKeystone: keyInfo.type === "keystone",
       };
     } catch (e) {
-      console.error(e, "err get key oasis");
+      console.error(e, "err get key btc");
     }
   }
 }
