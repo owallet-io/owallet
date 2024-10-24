@@ -444,6 +444,95 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
   },
   {
+    rpc: "https://sapphire.oasis.io",
+    rest: "https://sapphire.oasis.io",
+    chainId: "eip155:23294",
+    evm: {
+      websocket: "wss://sapphire.oasis.io/ws",
+      rpc: "https://sapphire.oasis.io",
+      chainId: 23294,
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Sapphire",
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: [],
+    txExplorer: {
+      name: "Oasis Saphire Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+      accountUrl:
+        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+    },
+  },
+  {
+    rpc: "https://emerald.oasis.dev",
+    rest: "https://emerald.oasis.dev",
+    chainId: "eip155:42262",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Emerald",
+    evm: {
+      websocket: "wss://emerald.oasis.io/ws",
+      rpc: "https://emerald.oasis.dev",
+      chainId: 42262,
+    },
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: [],
+    txExplorer: {
+      name: "Oasis Emerald Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
+      accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
+    },
+  },
+  {
     rpc: "https://evm-1.keplr.app",
     rest: "https://evm-1.keplr.app",
     evm: {
