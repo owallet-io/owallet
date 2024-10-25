@@ -273,6 +273,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               onPress={() => {
                 navigate(SCREENS.QRScreen, {
                   chainId: item.chainInfo.chainId,
+                  isBtcLegacy: item.token.currency.type === "legacy",
                 });
                 return;
               }}

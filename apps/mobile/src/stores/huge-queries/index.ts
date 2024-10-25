@@ -20,7 +20,7 @@ import { BinarySortArray } from "./sort";
 import { OasisAccountStore } from "@owallet/stores-oasis";
 import { AllAccountStore } from "@stores/all-account-store";
 
-interface ViewToken {
+export interface ViewToken {
   chainInfo: IChainInfoImpl;
   token: CoinPretty;
   price: PricePretty | undefined;
@@ -365,7 +365,10 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -404,7 +407,10 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -462,7 +468,10 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === "") {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -529,11 +538,7 @@ export class HugeQueriesStore {
       const address = account.addressDisplay;
       const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
       if (!mapChainNetwork) continue;
-      data[mapChainNetwork] =
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald
-          ? getOasisAddress(address)
-          : address;
+      data[mapChainNetwork] = address;
     }
     return data;
   }

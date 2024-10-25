@@ -11,15 +11,14 @@ import { OWButton } from "@src/components/button";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
-import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { tracking } from "@src/utils/tracking";
-// import { ChainInfoInner } from "@owallet/stores";
-// import { ChainInfoWithEmbed } from "@owallet/background";
+
 import { unknownToken } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -46,7 +45,7 @@ const styling = (colors) =>
   });
 
 export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
-  const { chainStore, keyRingStore, accountStore, modalStore } = useStore();
+  const { chainStore, allAccountStore, modalStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -64,13 +63,14 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
     params?.chainId ? params?.chainId : chainStore.current.chainId
   );
 
-  const [network, setNetwork] =
-    useState<ChainInfoInner<ChainInfoWithEmbed>>(chainInfo);
-  const account = accountStore.getAccount(
+  const [network, setNetwork] = useState<ChainInfo>(chainInfo);
+  const account = allAccountStore.getAccount(
     network?.chainId || params?.chainId || chainStore.current.chainId
   );
-  const [isBtcLegacy, setIsBtcLegacy] = useState<boolean>(false);
-  const addressToShow = account.addressDisplay;
+  const [isBtcLegacy, setIsBtcLegacy] = useState(params?.isBtcLegacy || false);
+  const addressToShow = isBtcLegacy
+    ? account.btcLegacyAddress
+    : account.addressDisplay;
   const [isOpen, setModalOpen] = useState(false);
 
   const { colors } = useTheme();
@@ -81,8 +81,9 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
     return () => {};
   }, []);
 
-  const onPressAddress = (item) => {
+  const onPressAddress = (item, isBtcLegacy) => {
     setNetwork(item);
+    setIsBtcLegacy(isBtcLegacy);
     setModalOpen(false);
   };
 
@@ -118,8 +119,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
         close={() => setModalOpen(false)}
         isOpen={isOpen}
         onPress={(item, isBtcLegacy) => {
-          onPressAddress(item);
-          setIsBtcLegacy(isBtcLegacy);
+          onPressAddress(item, isBtcLegacy);
         }}
         bottomSheetModalConfig={{
           enablePanDownToClose: false,
