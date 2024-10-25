@@ -1,14 +1,11 @@
-import { ChainsService } from "../chains";
-import { simpleFetch } from "@owallet/simple-fetch";
-import { Notification } from "../tx/types";
-import { EthTxReceipt } from "@owallet/types";
-import { retry } from "@owallet/common";
+import { ChainsService } from '../chains';
+import { simpleFetch } from '@owallet/simple-fetch';
+import { Notification } from '../tx/types';
+import { EthTxReceipt } from '@owallet/types';
+import { retry } from '@owallet/common';
 
 export class BackgroundTxEthereumService {
-  constructor(
-    protected readonly chainsService: ChainsService,
-    protected readonly notification: Notification
-  ) {}
+  constructor(protected readonly chainsService: ChainsService, protected readonly notification: Notification) {}
 
   async init(): Promise<void> {
     // noop
@@ -25,9 +22,9 @@ export class BackgroundTxEthereumService {
   ): Promise<string> {
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
-        title: "Tx is pending...",
-        message: "Wait a second",
+        iconRelativeUrl: 'assets/logo-256.png',
+        title: 'Tx is pending...',
+        message: 'Wait a second'
       });
     }
 
@@ -35,33 +32,32 @@ export class BackgroundTxEthereumService {
       const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
       const evmInfo = ChainsService.getEVMInfo(chainInfo);
       if (!evmInfo) {
-        throw new Error("No EVM info provided");
+        throw new Error('No EVM info provided');
       }
+
+      console.log('tx', chainId, [`0x${Buffer.from(tx).toString('hex')}`]);
 
       const sendRawTransactionResponse = await simpleFetch<{
         result?: string;
         error?: Error;
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      }>(evmInfo.rpc, "", {
-        method: "POST",
+      }>(evmInfo.rpc, '', {
+        method: 'POST',
         headers: {
-          "content-type": "application/json",
-          "request-source": origin,
+          'content-type': 'application/json',
+          'request-source': origin
         },
         body: JSON.stringify({
-          jsonrpc: "2.0",
-          method: "eth_sendRawTransaction",
-          params: [`0x${Buffer.from(tx).toString("hex")}`],
-          id: 1,
-        }),
+          jsonrpc: '2.0',
+          method: 'eth_sendRawTransaction',
+          params: [`0x${Buffer.from(tx).toString('hex')}`],
+          id: 1
+        })
       });
 
       const txHash = sendRawTransactionResponse.data.result;
       if (sendRawTransactionResponse.data.error || !txHash) {
-        throw (
-          sendRawTransactionResponse.data.error ??
-          new Error("No tx hash responded")
-        );
+        throw sendRawTransactionResponse.data.error ?? new Error('No tx hash responded');
       }
 
       retry(
@@ -71,17 +67,17 @@ export class BackgroundTxEthereumService {
               result: EthTxReceipt | null;
               error?: Error;
             }>(evmInfo.rpc, {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "content-type": "application/json",
-                "request-source": origin,
+                'content-type': 'application/json',
+                'request-source': origin
               },
               body: JSON.stringify({
-                jsonrpc: "2.0",
-                method: "eth_getTransactionReceipt",
+                jsonrpc: '2.0',
+                method: 'eth_getTransactionReceipt',
                 params: [txHash],
-                id: 1,
-              }),
+                id: 1
+              })
             });
 
             if (txReceiptResponse.data.error) {
@@ -92,9 +88,7 @@ export class BackgroundTxEthereumService {
             const txReceipt = txReceiptResponse.data.result;
             if (txReceipt) {
               options?.onFulfill?.(txReceipt);
-              BackgroundTxEthereumService.processTxResultNotification(
-                this.notification
-              );
+              BackgroundTxEthereumService.processTxResultNotification(this.notification);
               resolve();
             }
 
@@ -104,7 +98,7 @@ export class BackgroundTxEthereumService {
         {
           maxRetries: 10,
           waitMsAfterError: 500,
-          maxWaitMsAfterError: 4000,
+          maxWaitMsAfterError: 4000
         }
       );
 
@@ -112,10 +106,7 @@ export class BackgroundTxEthereumService {
     } catch (e) {
       console.error(e);
       if (!options.silent) {
-        BackgroundTxEthereumService.processTxErrorNotification(
-          this.notification,
-          e
-        );
+        BackgroundTxEthereumService.processTxErrorNotification(this.notification, e);
       }
       throw e;
     }
@@ -124,26 +115,23 @@ export class BackgroundTxEthereumService {
   private static processTxResultNotification(notification: Notification): void {
     try {
       notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
-        title: "Tx succeeds",
+        iconRelativeUrl: 'assets/logo-256.png',
+        title: 'Tx succeeds',
         // TODO: Let users know the tx id?
-        message: "Congratulations!",
+        message: 'Congratulations!'
       });
     } catch (e) {
       BackgroundTxEthereumService.processTxErrorNotification(notification, e);
     }
   }
 
-  private static processTxErrorNotification(
-    notification: Notification,
-    e: Error
-  ): void {
+  private static processTxErrorNotification(notification: Notification, e: Error): void {
     const message = e.message;
 
     notification.create({
-      iconRelativeUrl: "assets/logo-256.png",
-      title: "Tx failed",
-      message,
+      iconRelativeUrl: 'assets/logo-256.png',
+      title: 'Tx failed',
+      message
     });
   }
 }

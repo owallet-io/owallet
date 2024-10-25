@@ -36,12 +36,14 @@ import OWText from '@components/text/ow-text';
 import OWIcon from '@components/ow-icon/ow-icon';
 import { AsyncKVStore } from '@src/common';
 import { FeeControl } from '@src/screens/components/fee-control';
+// import { EthSignType } from '@owallet/types';
+import Web3 from 'web3';
 
-declare enum EthSignType {
-  MESSAGE = 'message',
-  TRANSACTION = 'transaction',
-  EIP712 = 'eip-712'
-}
+const EthSignType = {
+  MESSAGE: 'message',
+  TRANSACTION: 'transaction',
+  EIP712: 'eip-712'
+};
 
 export const SignEthereumModal = registerModal(
   observer<{
@@ -108,6 +110,10 @@ export const SignEthereumModal = registerModal(
           feeConfig.type === 'manual' ? uiConfigStore.lastFeeOption || 'average' : feeConfig.type
         );
 
+        console.log('maxFeePerGas', maxFeePerGas);
+        console.log('maxPriorityFeePerGas', maxPriorityFeePerGas);
+        console.log('gasPrice', gasPrice);
+
         return maxFeePerGas && maxPriorityFeePerGas
           ? {
               maxFeePerGas: `0x${BigInt(maxFeePerGas.truncate().toString()).toString(16)}`,
@@ -137,6 +143,7 @@ export const SignEthereumModal = registerModal(
           gasConfig.setValue(gasLimitFromTx.toString());
 
           const gasPriceFromTx = BigInt(unsignedTx.maxFeePerGas ?? unsignedTx.gasPrice ?? 0);
+
           if (gasPriceFromTx > 0) {
             feeConfig.setFee(
               new CoinPretty(chainInfo.currencies[0], new Dec(gasConfig.gas).mul(new Dec(gasPriceFromTx)))
@@ -150,6 +157,8 @@ export const SignEthereumModal = registerModal(
     useEffect(() => {
       if (isTxSigning && !interactionData.isInternal) {
         const unsignedTx = JSON.parse(Buffer.from(message).toString('utf8'));
+
+        console.log('unsignedTx.message', message);
 
         if (gasConfig.gas > 0) {
           unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
@@ -168,6 +177,11 @@ export const SignEthereumModal = registerModal(
 
         if (!unsignedTx.gasPrice && !unsignedTx.maxFeePerGas && !unsignedTx.maxPriorityFeePerGas && gasPrice) {
           unsignedTx.gasPrice = gasPrice;
+        }
+
+        if (!unsignedTx.maxPriorityFeePerGas) {
+          // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
+          unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei('1', 'gwei');
         }
 
         setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), 'utf8'));

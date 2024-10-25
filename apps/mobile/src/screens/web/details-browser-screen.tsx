@@ -30,6 +30,21 @@ import { tracking } from '@src/utils/tracking';
 import { navigate, popTo, popToTop } from '@src/router/root';
 import { BACKGROUND_PORT } from '@owallet/router';
 import { URLTempAllowOnMobileMsg } from '@owallet/background';
+import RNFS from 'react-native-fs';
+
+export const useInjectedSourceCode = () => {
+  const [code, setCode] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(r => setCode(r));
+    } else {
+      RNFS.readFileAssets('injected-provider.bundle.js').then(r => setCode(r));
+    }
+  }, []);
+
+  return code;
+};
 
 export const DetailsBrowserScreen = observer(props => {
   const { top } = useSafeAreaInsets();
@@ -58,8 +73,9 @@ export const DetailsBrowserScreen = observer(props => {
   });
   const { inject } = browserStore;
   const sourceCode = inject;
+  // const sourceCode = useInjectedSourceCode();
 
-  console.log('sourceCode', sourceCode.length);
+  console.log('sourceCode', sourceCode?.length);
 
   // const [owallet] = useState(
   //   () =>
@@ -85,7 +101,7 @@ export const DetailsBrowserScreen = observer(props => {
   // const [eventEmitter] = useState(() => new EventEmitter());
 
   //@ts-ignore
-  console.log('window.owallet', window.owallet);
+  // console.log('window.owallet', window.owallet);
 
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {

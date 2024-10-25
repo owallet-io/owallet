@@ -125,6 +125,7 @@
     "react-native-fast-image": "8.6.3",
     "react-native-flash-message": "0.4.2",
     "react-native-fresh-refresh": "^2.1.1",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.17.1",
     "react-native-get-random-values": "1.11.0",
     "react-native-graph": "^1.1.0",

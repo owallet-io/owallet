@@ -1,29 +1,26 @@
-import { ChainsService } from "../chains";
-import { KeyRingService } from "../keyring";
-import { InteractionService } from "../interaction";
-import { AnalyticsService } from "../analytics";
-import { Env, EthereumProviderRpcError, WEBPAGE_PORT } from "@owallet/router";
-import { ChainInfo, EthereumSignResponse, EthSignType } from "@owallet/types";
-import { Bech32Address } from "@owallet/cosmos";
-import { Buffer } from "buffer/";
-import {
-  domainHash,
-  EIP712MessageValidator,
-  KeyRingCosmosService,
-  messageHash,
-} from "../keyring-cosmos";
-import {
-  serialize,
-  TransactionTypes,
-  UnsignedTransaction,
-} from "@ethersproject/transactions";
-import { simpleFetch } from "@owallet/simple-fetch";
-import { getBasicAccessPermissionType, PermissionService } from "../permission";
-import { BackgroundTxEthereumService } from "../tx-ethereum";
-import { TokenERC20Service } from "../token-erc20";
-import { validateEVMChainId } from "./helper";
-import { runInAction } from "mobx";
-import { PermissionInteractiveService } from "../permission-interactive";
+import { ChainsService } from '../chains';
+import { KeyRingService } from '../keyring';
+import { InteractionService } from '../interaction';
+import { AnalyticsService } from '../analytics';
+import { Env, EthereumProviderRpcError, WEBPAGE_PORT } from '@owallet/router';
+import { ChainInfo, EthereumSignResponse } from '@owallet/types';
+import { Bech32Address } from '@owallet/cosmos';
+import { Buffer } from 'buffer/';
+import { domainHash, EIP712MessageValidator, KeyRingCosmosService, messageHash } from '../keyring-cosmos';
+import { serialize, TransactionTypes, UnsignedTransaction } from '@ethersproject/transactions';
+import { simpleFetch } from '@owallet/simple-fetch';
+import { getBasicAccessPermissionType, PermissionService } from '../permission';
+import { BackgroundTxEthereumService } from '../tx-ethereum';
+import { TokenERC20Service } from '../token-erc20';
+import { validateEVMChainId } from './helper';
+import { runInAction } from 'mobx';
+import { PermissionInteractiveService } from '../permission-interactive';
+
+const EthSignType = {
+  MESSAGE: 'message',
+  TRANSACTION: 'transaction',
+  EIP712: 'eip-712'
+};
 
 export class KeyRingEthereumService {
   protected websocketSubscriptionMap = new Map<string, WebSocket>();
@@ -52,7 +49,7 @@ export class KeyRingEthereumService {
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: EthSignType
+    signType: any
   ): Promise<EthereumSignResponse> {
     return await this.signEthereum(
       env,
@@ -72,7 +69,7 @@ export class KeyRingEthereumService {
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: EthSignType
+    signType: any
   ): Promise<EthereumSignResponse> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
@@ -82,41 +79,34 @@ export class KeyRingEthereumService {
     const evmInfo = ChainsService.getEVMInfo(chainInfo);
 
     if (!isEthermintLike && !evmInfo) {
-      throw new Error("Not ethermint like and EVM chain");
+      throw new Error('Not ethermint like and EVM chain');
     }
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error("Null key info");
+      throw new Error('Null key info');
     }
 
-    if (keyInfo.type === "ledger") {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
-        chainId
-      );
+    if (keyInfo.type === 'ledger') {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
     }
 
     try {
       Bech32Address.validate(signer);
     } catch {
       // Ignore mixed-case checksum
-      signer = (
-        signer.substring(0, 2) === "0x" ? signer : "0x" + signer
-      ).toLowerCase();
+      signer = (signer.substring(0, 2) === '0x' ? signer : '0x' + signer).toLowerCase();
     }
 
     const key = await this.keyRingCosmosService.getKey(vaultId, chainId);
-    if (
-      signer !== key.bech32Address &&
-      signer !== key.ethereumHexAddress.toLowerCase()
-    ) {
-      throw new Error("Signer mismatched");
+    if (signer !== key.bech32Address && signer !== key.ethereumHexAddress.toLowerCase()) {
+      throw new Error('Signer mismatched');
     }
 
     return await this.interactionService.waitApproveV2(
       env,
-      "/sign-ethereum",
-      "request-sign-ethereum",
+      '/sign-ethereum',
+      'request-sign-ethereum',
       {
         origin,
         chainId,
@@ -125,18 +115,21 @@ export class KeyRingEthereumService {
         message,
         signType,
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive,
+        keyInsensitive: keyInfo.insensitive
       },
+
       async (res: { signingData: Uint8Array; signature?: Uint8Array }) => {
+        console.log('signType', signType);
+
         const { signature, signingData } = await (async () => {
-          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+          if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
             if (!res.signature || res.signature.length === 0) {
-              throw new Error("Frontend should provide signature");
+              throw new Error('Frontend should provide signature');
             }
 
             return {
               signingData: res.signingData,
-              signature: res.signature,
+              signature: res.signature
             };
           } else {
             switch (signType) {
@@ -145,11 +138,11 @@ export class KeyRingEthereumService {
                   chainId,
                   vaultId,
                   Buffer.concat([
-                    Buffer.from("\x19Ethereum Signed Message:\n"),
+                    Buffer.from('\x19Ethereum Signed Message:\n'),
                     Buffer.from(res.signingData.length.toString()),
-                    res.signingData,
+                    res.signingData
                   ]),
-                  "keccak256"
+                  'keccak256'
                 );
 
                 return {
@@ -158,20 +151,14 @@ export class KeyRingEthereumService {
                     signature.r,
                     signature.s,
                     // The metamask doesn't seem to consider the chain id in this case... (maybe bug on metamask?)
-                    signature.v
-                      ? Buffer.from("1c", "hex")
-                      : Buffer.from("1b", "hex"),
-                  ]),
+                    signature.v ? Buffer.from('1c', 'hex') : Buffer.from('1b', 'hex')
+                  ])
                 };
               }
               case EthSignType.TRANSACTION: {
-                const unsignedTx = JSON.parse(
-                  Buffer.from(res.signingData).toString()
-                );
+                const unsignedTx = JSON.parse(Buffer.from(res.signingData).toString());
 
-                const isEIP1559 =
-                  !!unsignedTx.maxFeePerGas ||
-                  !!unsignedTx.maxPriorityFeePerGas;
+                const isEIP1559 = !!unsignedTx.maxFeePerGas || !!unsignedTx.maxPriorityFeePerGas;
                 if (isEIP1559) {
                   unsignedTx.type = TransactionTypes.eip1559;
                 }
@@ -181,9 +168,11 @@ export class KeyRingEthereumService {
                 const signature = await this.keyRingService.sign(
                   chainId,
                   vaultId,
-                  Buffer.from(serialize(unsignedTx).replace("0x", ""), "hex"),
-                  "keccak256"
+                  Buffer.from(serialize(unsignedTx).replace('0x', ''), 'hex'),
+                  'keccak256'
                 );
+
+                console.log('signature', signature);
 
                 return {
                   signingData: res.signingData,
@@ -191,10 +180,8 @@ export class KeyRingEthereumService {
                     signature.r,
                     signature.s,
                     // The metamask doesn't seem to consider the chain id in this case... (maybe bug on metamask?)
-                    signature.v
-                      ? Buffer.from("1c", "hex")
-                      : Buffer.from("1b", "hex"),
-                  ]),
+                    signature.v ? Buffer.from('1c', 'hex') : Buffer.from('1b', 'hex')
+                  ])
                 };
               }
               case EthSignType.EIP712: {
@@ -208,15 +195,15 @@ export class KeyRingEthereumService {
                   vaultId,
                   Buffer.concat([
                     // eth separator
-                    Buffer.from("19", "hex"),
+                    Buffer.from('19', 'hex'),
                     // Version: 1
-                    Buffer.from("01", "hex"),
+                    Buffer.from('01', 'hex'),
                     //@ts-ignore
-                    Buffer.from(domainHash(data).replace("0x", ""), "hex"),
+                    Buffer.from(domainHash(data).replace('0x', ''), 'hex'),
                     //@ts-ignore
-                    Buffer.from(messageHash(data).replace("0x", ""), "hex"),
+                    Buffer.from(messageHash(data).replace('0x', ''), 'hex')
                   ]),
-                  "keccak256"
+                  'keccak256'
                 );
 
                 return {
@@ -225,10 +212,8 @@ export class KeyRingEthereumService {
                     signature.r,
                     signature.s,
                     // The metamask doesn't seem to consider the chain id in this case... (maybe bug on metamask?)
-                    signature.v
-                      ? Buffer.from("1c", "hex")
-                      : Buffer.from("1b", "hex"),
-                  ]),
+                    signature.v ? Buffer.from('1c', 'hex') : Buffer.from('1b', 'hex')
+                  ])
                 };
               }
               default:
@@ -238,56 +223,55 @@ export class KeyRingEthereumService {
         })();
 
         try {
-          const tx =
-            signType === EthSignType.TRANSACTION
-              ? JSON.parse(Buffer.from(signingData).toString())
-              : undefined;
+          const tx = signType === EthSignType.TRANSACTION ? JSON.parse(Buffer.from(signingData).toString()) : undefined;
           const ethTxType = await (async () => {
             if (signType !== EthSignType.TRANSACTION) {
               return;
             }
 
-            if (tx.to == null || tx.to === "0x") {
-              return "deploy-contract";
+            if (tx.to == null || tx.to === '0x') {
+              return 'deploy-contract';
             }
 
             const contractBytecode = await this.request<string>(
               env,
               origin,
-              "eth_getCode",
-              [tx.to, "latest"],
+              'eth_getCode',
+              [tx.to, 'latest'],
               undefined,
               chainId
             );
-            if (
-              (tx.data == null || tx.data === "0x") &&
-              BigInt(tx.value) > 0 &&
-              contractBytecode === "0x"
-            ) {
-              return "send-native";
+
+            console.log('tx.data', tx.data);
+            console.log('tx.signingData', signingData);
+
+            if ((tx.data == null || tx.data === '0x') && BigInt(tx.value) > 0 && contractBytecode === '0x') {
+              return 'send-native';
             }
 
-            if (tx.data?.startsWith("0xa9059cbb")) {
-              return "execute-contract/send-erc20";
+            if (tx.data?.startsWith('0xa9059cbb')) {
+              return 'execute-contract/send-erc20';
             }
 
-            return "execute-contract";
+            return 'execute-contract';
           })();
 
-          this.analyticsService.logEventIgnoreError("evm_tx_signed", {
+          console.log('ethTxType', ethTxType);
+
+          this.analyticsService.logEventIgnoreError('evm_tx_signed', {
             chainId,
             isInternal: env.isInternalMsg,
             origin,
             keyType: keyInfo.type,
             ethSignType: signType,
             ...(signType === EthSignType.TRANSACTION && {
-              ethTxType,
+              ethTxType
             }),
             ...(ethTxType &&
-              ethTxType.startsWith("execute-contract") &&
+              ethTxType.startsWith('execute-contract') &&
               tx && {
-                contractAddress: tx.to,
-              }),
+                contractAddress: tx.to
+              })
           });
         } catch (e) {
           console.log(e);
@@ -295,7 +279,7 @@ export class KeyRingEthereumService {
 
         return {
           signingData,
-          signature,
+          signature
         };
       }
     );
@@ -310,78 +294,58 @@ export class KeyRingEthereumService {
     chainId?: string
   ): Promise<T> {
     if (env.isInternalMsg && chainId == null) {
-      throw new Error(
-        "The chain id must be provided for the internal message."
-      );
+      throw new Error('The chain id must be provided for the internal message.');
     }
 
-    const currentChainId =
-      this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
+    const currentChainId = this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
     if (currentChainId == null) {
-      if (method === "owallet_initProviderState") {
+      if (method === 'owallet_initProviderState') {
         return {
           currentEvmChainId: null,
           currentChainId: null,
-          selectedAddress: null,
+          selectedAddress: null
         } as T;
       } else {
-        await this.permissionService.removeAllSpecificTypePermission(
-          [origin],
-          getBasicAccessPermissionType()
-        );
+        await this.permissionService.removeAllSpecificTypePermission([origin], getBasicAccessPermissionType());
 
-        await this.permissionInteractiveService.ensureEnabledForEVM(
-          env,
-          origin
-        );
+        await this.permissionInteractiveService.ensureEnabledForEVM(env, origin);
 
-        return this.request<T>(
-          env,
-          origin,
-          method,
-          params,
-          providerId,
-          chainId
-        );
+        return this.request<T>(env, origin, method, params, providerId, chainId);
       }
     }
 
-    const currentChainInfo =
-      this.chainsService.getChainInfoOrThrow(currentChainId);
-    const currentChainEVMInfo =
-      this.chainsService.getEVMInfoOrThrow(currentChainId);
+    console.log('method', method);
 
-    const pubkey = await this.keyRingService.getPubKeySelected(
-      currentChainInfo.chainId
-    );
-    const selectedAddress = `0x${Buffer.from(pubkey.getEthAddress()).toString(
-      "hex"
-    )}`;
+    const currentChainInfo = this.chainsService.getChainInfoOrThrow(currentChainId);
+    const currentChainEVMInfo = this.chainsService.getEVMInfoOrThrow(currentChainId);
+
+    const pubkey = await this.keyRingService.getPubKeySelected(currentChainInfo.chainId);
+    const selectedAddress = `0x${Buffer.from(pubkey.getEthAddress()).toString('hex')}`;
 
     const result = (await (async () => {
       switch (method) {
-        case "owallet_initProviderState":
-        case "owallet_connect": {
+        case 'owallet_initProviderState':
+        case 'owallet_connect': {
           return {
             currentEvmChainId: currentChainEVMInfo.chainId,
             currentChainId: currentChainInfo.chainId,
-            selectedAddress,
+            selectedAddress
           };
         }
-        case "owallet_disconnect": {
+        case 'owallet_disconnect': {
           return this.permissionService.removeAllTypePermission([origin]);
         }
-        case "eth_chainId": {
+        case 'eth_chainId': {
           return `0x${currentChainEVMInfo.chainId.toString(16)}`;
         }
-        case "net_version": {
+        case 'net_version': {
           return currentChainEVMInfo.chainId.toString();
         }
-        case "eth_accounts":
-        case "eth_requestAccounts": {
+        case 'eth_accounts':
+        case 'eth_requestAccounts': {
           return [selectedAddress];
         }
-        case "eth_sendTransaction": {
+        case 'eth_sendTransaction': {
           const tx =
             (Array.isArray(params) &&
               (params?.[0] as {
@@ -392,14 +356,14 @@ export class KeyRingEthereumService {
               })) ||
             null;
           if (!tx) {
-            throw new Error("Invalid parameters: must provide a transaction.");
+            throw new Error('Invalid parameters: must provide a transaction.');
           }
 
           if (tx.chainId) {
             const evmChainIdFromTx: number = validateEVMChainId(
               (() => {
-                if (typeof tx.chainId === "string") {
-                  if (tx.chainId.startsWith("0x")) {
+                if (typeof tx.chainId === 'string') {
+                  if (tx.chainId.startsWith('0x')) {
                     return parseInt(tx.chainId, 16);
                   } else {
                     return parseInt(tx.chainId, 10);
@@ -410,29 +374,28 @@ export class KeyRingEthereumService {
               })()
             );
             if (evmChainIdFromTx !== currentChainEVMInfo.chainId) {
-              throw new Error(
-                "The current active chain id does not match the one in the transaction."
-              );
+              throw new Error('The current active chain id does not match the one in the transaction.');
             }
           }
 
           const transactionCount = await this.request(
             env,
             origin,
-            "eth_getTransactionCount",
-            [selectedAddress, "pending"],
+            'eth_getTransactionCount',
+            [selectedAddress, 'pending'],
             providerId,
             chainId
           );
-          const nonce = parseInt(transactionCount, 16);
 
           const { from: sender, gas, ...restTx } = tx;
           const unsignedTx: UnsignedTransaction = {
             ...restTx,
             gasLimit: restTx?.gasLimit ?? gas,
             chainId: currentChainEVMInfo.chainId,
-            nonce,
+            nonce: transactionCount
           };
+
+          console.log('unsignedTx', unsignedTx);
 
           const { signingData, signature } = await this.signEthereumSelected(
             env,
@@ -443,29 +406,24 @@ export class KeyRingEthereumService {
             EthSignType.TRANSACTION
           );
 
+          console.log('signingData', signingData);
+
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
 
-          const isEIP1559 =
-            !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
+          const isEIP1559 = !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
           if (isEIP1559) {
             signingTx.type = TransactionTypes.eip1559;
           }
+          console.log(';signature', signature);
+          const signedTx = Buffer.from(serialize(signingTx, signature).replace('0x', ''), 'hex');
 
-          const signedTx = Buffer.from(
-            serialize(signingTx, signature).replace("0x", ""),
-            "hex"
-          );
+          const txHash = await this.backgroundTxEthereumService.sendEthereumTx(origin, currentChainId, signedTx, {});
 
-          const txHash = await this.backgroundTxEthereumService.sendEthereumTx(
-            origin,
-            currentChainId,
-            signedTx,
-            {}
-          );
+          console.log('txHash', txHash);
 
           return txHash;
         }
-        case "eth_signTransaction": {
+        case 'eth_signTransaction': {
           const tx =
             (Array.isArray(params) &&
               (params?.[0] as {
@@ -476,14 +434,14 @@ export class KeyRingEthereumService {
               })) ||
             null;
           if (!tx) {
-            throw new Error("Invalid parameters: must provide a transaction.");
+            throw new Error('Invalid parameters: must provide a transaction.');
           }
 
           if (tx.chainId) {
             const evmChainIdFromTx: number = validateEVMChainId(
               (() => {
-                if (typeof tx.chainId === "string") {
-                  if (tx.chainId.startsWith("0x")) {
+                if (typeof tx.chainId === 'string') {
+                  if (tx.chainId.startsWith('0x')) {
                     return parseInt(tx.chainId, 16);
                   } else {
                     return parseInt(tx.chainId, 10);
@@ -494,17 +452,15 @@ export class KeyRingEthereumService {
               })()
             );
             if (evmChainIdFromTx !== currentChainEVMInfo.chainId) {
-              throw new Error(
-                "The current active chain id does not match the one in the transaction."
-              );
+              throw new Error('The current active chain id does not match the one in the transaction.');
             }
           }
 
           const transactionCount = await this.request(
             env,
             origin,
-            "eth_getTransactionCount",
-            [selectedAddress, "pending"],
+            'eth_getTransactionCount',
+            [selectedAddress, 'pending'],
             providerId,
             chainId
           );
@@ -515,7 +471,7 @@ export class KeyRingEthereumService {
             ...restTx,
             gasLimit: restTx?.gasLimit ?? gas,
             chainId: currentChainEVMInfo.chainId,
-            nonce,
+            nonce
           };
 
           const { signingData, signature } = await this.signEthereumSelected(
@@ -529,8 +485,7 @@ export class KeyRingEthereumService {
 
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
 
-          const isEIP1559 =
-            !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
+          const isEIP1559 = !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
           if (isEIP1559) {
             signingTx.type = TransactionTypes.eip1559;
           }
@@ -539,21 +494,15 @@ export class KeyRingEthereumService {
 
           return signedTx;
         }
-        case "personal_sign": {
-          const message =
-            (Array.isArray(params) && (params?.[0] as string)) || undefined;
+        case 'personal_sign': {
+          const message = (Array.isArray(params) && (params?.[0] as string)) || undefined;
           if (!message) {
-            throw new Error(
-              "Invalid parameters: must provide a stringified message."
-            );
+            throw new Error('Invalid parameters: must provide a stringified message.');
           }
 
-          const signer =
-            (Array.isArray(params) && (params?.[1] as string)) || undefined;
+          const signer = (Array.isArray(params) && (params?.[1] as string)) || undefined;
           if (!signer || (signer && !signer.match(/^0x[0-9A-Fa-f]*$/))) {
-            throw new Error(
-              "Invalid parameters: must provide an Ethereum address."
-            );
+            throw new Error('Invalid parameters: must provide an Ethereum address.');
           }
 
           const { signature } = await this.signEthereumSelected(
@@ -565,105 +514,85 @@ export class KeyRingEthereumService {
             EthSignType.MESSAGE
           );
 
-          return `0x${Buffer.from(signature).toString("hex")}`;
+          return `0x${Buffer.from(signature).toString('hex')}`;
         }
-        case "eth_signTypedData_v3":
-        case "eth_signTypedData_v4": {
-          const signer =
-            (Array.isArray(params) && (params?.[0] as string)) || undefined;
+        case 'eth_signTypedData_v3':
+        case 'eth_signTypedData_v4': {
+          const signer = (Array.isArray(params) && (params?.[0] as string)) || undefined;
           if (!signer || (signer && !signer.match(/^0x[0-9A-Fa-f]*$/))) {
-            throw new Error(
-              "Invalid parameters: must provide an Ethereum address."
-            );
+            throw new Error('Invalid parameters: must provide an Ethereum address.');
           }
 
-          const typedData =
-            (Array.isArray(params) && (params?.[1] as any)) || undefined;
+          const typedData = (Array.isArray(params) && (params?.[1] as any)) || undefined;
 
           const { signature } = await this.signEthereumSelected(
             env,
             origin,
             currentChainId,
             signer,
-            Buffer.from(
-              typeof typedData === "string"
-                ? typedData
-                : JSON.stringify(typedData)
-            ),
+            Buffer.from(typeof typedData === 'string' ? typedData : JSON.stringify(typedData)),
             EthSignType.EIP712
           );
 
-          return `0x${Buffer.from(signature).toString("hex")}`;
+          return `0x${Buffer.from(signature).toString('hex')}`;
         }
-        case "eth_subscribe": {
+        case 'eth_subscribe': {
           if (!currentChainEVMInfo.websocket) {
-            throw new Error(
-              `WebSocket endpoint for current chain has not been provided to OWallet.`
-            );
+            throw new Error(`WebSocket endpoint for current chain has not been provided to OWallet.`);
           }
 
           const ws = new WebSocket(currentChainEVMInfo.websocket);
-          const subscriptionId: string = await new Promise(
-            (resolve, reject) => {
-              const handleOpen = () => {
-                ws.send(
-                  JSON.stringify({
-                    jsonrpc: "2.0",
-                    id: 1,
-                    method,
-                    params,
-                  })
-                );
-              };
-              const handleMessage = (event: MessageEvent) => {
-                const eventData = JSON.parse(event.data);
-                if (eventData.error) {
-                  ws.close();
-
-                  reject(eventData.error);
-                } else {
-                  if (eventData.method === "eth_subscription") {
-                    this.interactionService.dispatchEvent(
-                      WEBPAGE_PORT,
-                      "owallet_ethSubscription",
-                      {
-                        origin,
-                        providerId,
-                        data: {
-                          subscription: eventData.params.subscription,
-                          result: eventData.params.result,
-                        },
-                      }
-                    );
-                  } else {
-                    resolve(eventData.result);
-                  }
-                }
-              };
-              const handleError = () => {
+          const subscriptionId: string = await new Promise((resolve, reject) => {
+            const handleOpen = () => {
+              ws.send(
+                JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method,
+                  params
+                })
+              );
+            };
+            const handleMessage = (event: MessageEvent) => {
+              const eventData = JSON.parse(event.data);
+              if (eventData.error) {
                 ws.close();
 
-                reject(
-                  new Error(
-                    "Something went wrong with the WebSocket connection"
-                  )
-                );
-              };
+                reject(eventData.error);
+              } else {
+                if (eventData.method === 'eth_subscription') {
+                  this.interactionService.dispatchEvent(WEBPAGE_PORT, 'owallet_ethSubscription', {
+                    origin,
+                    providerId,
+                    data: {
+                      subscription: eventData.params.subscription,
+                      result: eventData.params.result
+                    }
+                  });
+                } else {
+                  resolve(eventData.result);
+                }
+              }
+            };
+            const handleError = () => {
+              ws.close();
 
-              ws.addEventListener("open", handleOpen);
-              ws.addEventListener("message", handleMessage);
-              ws.addEventListener("error", handleError);
-              ws.addEventListener(
-                "close",
-                () => {
-                  ws.removeEventListener("open", handleOpen);
-                  ws.removeEventListener("message", handleMessage);
-                  ws.removeEventListener("error", handleError);
-                },
-                { once: true }
-              );
-            }
-          );
+              reject(new Error('Something went wrong with the WebSocket connection'));
+            };
+
+            ws.addEventListener('open', handleOpen);
+            ws.addEventListener('message', handleMessage);
+            ws.addEventListener('error', handleError);
+            ws.addEventListener(
+              'close',
+              () => {
+                ws.removeEventListener('open', handleOpen);
+                ws.removeEventListener('message', handleMessage);
+                ws.removeEventListener('error', handleError);
+              },
+              { once: true }
+            );
+          });
           runInAction(() => {
             const key = `${subscriptionId}/${providerId}`;
             this.websocketSubscriptionMap.set(key, ws);
@@ -671,23 +600,17 @@ export class KeyRingEthereumService {
 
           return subscriptionId;
         }
-        case "eth_unsubscribe": {
-          const subscriptionId =
-            (Array.isArray(params) && (params?.[0] as string)) || undefined;
+        case 'eth_unsubscribe': {
+          const subscriptionId = (Array.isArray(params) && (params?.[0] as string)) || undefined;
           if (!subscriptionId) {
-            throw new Error(
-              "Invalid parameters: must provide a subscription id."
-            );
+            throw new Error('Invalid parameters: must provide a subscription id.');
           }
 
           if (!currentChainEVMInfo.websocket) {
-            throw new Error(
-              `WebSocket endpoint for current chain has not been provided to OWallet.`
-            );
+            throw new Error(`WebSocket endpoint for current chain has not been provided to OWallet.`);
           }
 
-          const subscribedWs =
-            this.websocketSubscriptionMap.get(subscriptionId);
+          const subscribedWs = this.websocketSubscriptionMap.get(subscriptionId);
           if (!subscribedWs) {
             return false;
           }
@@ -697,10 +620,10 @@ export class KeyRingEthereumService {
             const handleOpen = () => {
               ws.send(
                 JSON.stringify({
-                  jsonrpc: "2.0",
+                  jsonrpc: '2.0',
                   id: 1,
                   method,
-                  params,
+                  params
                 })
               );
             };
@@ -722,20 +645,18 @@ export class KeyRingEthereumService {
             const handleError = () => {
               ws.close();
 
-              reject(
-                new Error("Something went wrong with the WebSocket connection")
-              );
+              reject(new Error('Something went wrong with the WebSocket connection'));
             };
 
-            ws.addEventListener("open", handleOpen);
-            ws.addEventListener("message", handleMessage);
-            ws.addEventListener("error", handleError);
+            ws.addEventListener('open', handleOpen);
+            ws.addEventListener('message', handleMessage);
+            ws.addEventListener('error', handleError);
             ws.addEventListener(
-              "close",
+              'close',
               () => {
-                ws.removeEventListener("open", handleOpen);
-                ws.removeEventListener("message", handleMessage);
-                ws.removeEventListener("error", handleError);
+                ws.removeEventListener('open', handleOpen);
+                ws.removeEventListener('message', handleMessage);
+                ws.removeEventListener('error', handleError);
               },
               { once: true }
             );
@@ -743,12 +664,10 @@ export class KeyRingEthereumService {
 
           return result;
         }
-        case "wallet_switchEthereumChain": {
-          const param =
-            (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
-            undefined;
+        case 'wallet_switchEthereumChain': {
+          const param = (Array.isArray(params) && (params?.[0] as { chainId: string })) || undefined;
           if (!param?.chainId) {
-            throw new Error("Invalid parameters: must provide a chain id.");
+            throw new Error('Invalid parameters: must provide a chain id.');
           }
 
           const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
@@ -756,8 +675,7 @@ export class KeyRingEthereumService {
             return null;
           }
 
-          const newCurrentChainInfo =
-            this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
+          const newCurrentChainInfo = this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
           if (!newCurrentChainInfo) {
             throw new EthereumProviderRpcError(
               4902,
@@ -765,15 +683,11 @@ export class KeyRingEthereumService {
             );
           }
 
-          await this.permissionService.updateCurrentChainIdForEVM(
-            env,
-            origin,
-            newCurrentChainInfo.chainId
-          );
+          await this.permissionService.updateCurrentChainIdForEVM(env, origin, newCurrentChainInfo.chainId);
 
           return null;
         }
-        case "wallet_addEthereumChain": {
+        case 'wallet_addEthereumChain': {
           const param =
             Array.isArray(params) &&
             (params?.[0] as {
@@ -787,10 +701,8 @@ export class KeyRingEthereumService {
               rpcUrls: string[];
               iconUrls?: string[];
             });
-          if (!param || typeof param !== "object") {
-            throw new Error(
-              "Invalid parameters: must provide a single object parameter."
-            );
+          if (!param || typeof param !== 'object') {
+            throw new Error('Invalid parameters: must provide a single object parameter.');
           }
 
           const evmChainId = validateEVMChainId(parseInt(param.chainId, 16));
@@ -798,24 +710,18 @@ export class KeyRingEthereumService {
           const chainInfo =
             this.chainsService.getChainInfoByEVMChainId(evmChainId) ??
             (await (async () => {
-              const rpc = param.rpcUrls.find((url) => {
+              const rpc = param.rpcUrls.find(url => {
                 try {
                   const urlObject = new URL(url);
-                  return (
-                    urlObject.protocol === "http:" ||
-                    urlObject.protocol === "https:"
-                  );
+                  return urlObject.protocol === 'http:' || urlObject.protocol === 'https:';
                 } catch {
                   return false;
                 }
               });
-              const websocket = param.rpcUrls.find((url) => {
+              const websocket = param.rpcUrls.find(url => {
                 try {
                   const urlObject = new URL(url);
-                  return (
-                    urlObject.protocol === "ws:" ||
-                    urlObject.protocol === "wss:"
-                  );
+                  return urlObject.protocol === 'ws:' || urlObject.protocol === 'wss:';
                 } catch {
                   return false;
                 }
@@ -828,87 +734,70 @@ export class KeyRingEthereumService {
                 rest: rpc,
                 chainId: `eip155:${evmChainId}`,
                 bip44: {
-                  coinType: 60,
+                  coinType: 60
                 },
                 chainName,
                 stakeCurrency: {
                   coinDenom: nativeCurrency.symbol,
                   coinMinimalDenom: nativeCurrency.symbol,
-                  coinDecimals: nativeCurrency.decimals,
+                  coinDecimals: nativeCurrency.decimals
                 },
                 currencies: [
                   {
                     coinDenom: nativeCurrency.symbol,
                     coinMinimalDenom: nativeCurrency.symbol,
-                    coinDecimals: nativeCurrency.decimals,
-                  },
+                    coinDecimals: nativeCurrency.decimals
+                  }
                 ],
                 feeCurrencies: [
                   {
                     coinDenom: nativeCurrency.symbol,
                     coinMinimalDenom: nativeCurrency.symbol,
-                    coinDecimals: nativeCurrency.decimals,
-                  },
+                    coinDecimals: nativeCurrency.decimals
+                  }
                 ],
                 evm: {
                   chainId: evmChainId,
                   rpc,
-                  websocket,
+                  websocket
                 },
-                features: ["eth-address-gen", "eth-key-sign"],
+                features: ['eth-address-gen', 'eth-key-sign'],
                 chainSymbolImageUrl: iconUrls?.[0],
-                beta: true,
+                beta: true
               } as ChainInfo;
 
-              await this.chainsService.suggestChainInfo(
-                env,
-                addingChainInfo,
-                origin
-              );
+              await this.chainsService.suggestChainInfo(env, addingChainInfo, origin);
 
               return addingChainInfo;
             })());
 
-          this.permissionService.addPermission(
-            [chainInfo.chainId],
-            getBasicAccessPermissionType(),
-            [origin]
-          );
+          this.permissionService.addPermission([chainInfo.chainId], getBasicAccessPermissionType(), [origin]);
 
-          await this.permissionService.updateCurrentChainIdForEVM(
-            env,
-            origin,
-            chainInfo.chainId
-          );
+          await this.permissionService.updateCurrentChainIdForEVM(env, origin, chainInfo.chainId);
 
           return null;
         }
-        case "wallet_getPermissions":
+        case 'wallet_getPermissions':
         // This `request` method can be executed if the basic access permission is granted.
         // So, it's not necessary to check or grant the permission here.
-        case "wallet_requestPermissions": {
-          return [{ parentCapability: "eth_accounts" }];
+        case 'wallet_requestPermissions': {
+          return [{ parentCapability: 'eth_accounts' }];
         }
-        case "wallet_revokePermissions": {
-          const param =
-            Array.isArray(params) && (params?.[0] as Record<string, object>);
-          if (!param || typeof param !== "object") {
-            throw new Error(
-              "Invalid parameters: must provide a single object parameter."
-            );
+        case 'wallet_revokePermissions': {
+          const param = Array.isArray(params) && (params?.[0] as Record<string, object>);
+          if (!param || typeof param !== 'object') {
+            throw new Error('Invalid parameters: must provide a single object parameter.');
           }
 
-          if (param["eth_accounts"] == null) {
-            throw new Error(
-              "Invalid parameters: must provide a single object parameter with the key 'eth_accounts'."
-            );
+          if (param['eth_accounts'] == null) {
+            throw new Error("Invalid parameters: must provide a single object parameter with the key 'eth_accounts'.");
           }
 
           await this.permissionService.removeAllTypePermission([origin]);
 
           return null;
         }
-        case "wallet_watchAsset": {
+        case 'wallet_watchAsset': {
           const param = params as
             | {
                 type: string;
@@ -921,42 +810,38 @@ export class KeyRingEthereumService {
                 };
               }
             | undefined;
-          if (param?.type !== "ERC20") {
-            throw new Error("Not a supported asset type.");
+          if (param?.type !== 'ERC20') {
+            throw new Error('Not a supported asset type.');
           }
 
           const contractAddress = param?.options.address;
 
-          await this.tokenERC20Service.suggestERC20Token(
-            env,
-            currentChainId,
-            contractAddress
-          );
+          await this.tokenERC20Service.suggestERC20Token(env, currentChainId, contractAddress);
 
           return true;
         }
-        case "eth_call":
-        case "eth_estimateGas":
-        case "eth_getTransactionCount":
-        case "eth_getTransactionByHash":
-        case "eth_getTransactionByBlockHashAndIndex":
-        case "eth_getTransactionByBlockNumberAndIndex":
-        case "eth_getTransactionByHash":
-        case "eth_getTransactionReceipt":
-        case "eth_sendRawTransaction":
-        case "eth_protocolVersion":
-        case "eth_syncing":
-        case "eth_getCode":
-        case "eth_getLogs":
-        case "eth_getProof":
-        case "eth_getStorageAt":
-        case "eth_getBalance":
-        case "eth_blockNumber":
-        case "eth_getBlockByHash":
-        case "eth_getBlockByNumber":
-        case "eth_gasPrice":
-        case "eth_feeHistory":
-        case "eth_maxPriorityFeePerGas": {
+        case 'eth_call':
+        case 'eth_estimateGas':
+        case 'eth_getTransactionCount':
+        case 'eth_getTransactionByHash':
+        case 'eth_getTransactionByBlockHashAndIndex':
+        case 'eth_getTransactionByBlockNumberAndIndex':
+        case 'eth_getTransactionByHash':
+        case 'eth_getTransactionReceipt':
+        case 'eth_sendRawTransaction':
+        case 'eth_protocolVersion':
+        case 'eth_syncing':
+        case 'eth_getCode':
+        case 'eth_getLogs':
+        case 'eth_getProof':
+        case 'eth_getStorageAt':
+        case 'eth_getBalance':
+        case 'eth_blockNumber':
+        case 'eth_getBlockByHash':
+        case 'eth_getBlockByNumber':
+        case 'eth_gasPrice':
+        case 'eth_feeHistory':
+        case 'eth_maxPriorityFeePerGas': {
           return (
             await simpleFetch<{
               jsonrpc: string;
@@ -964,17 +849,17 @@ export class KeyRingEthereumService {
               result: any;
               error?: Error;
             }>(currentChainEVMInfo.rpc, {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "content-type": "application/json",
-                "request-source": origin,
+                'content-type': 'application/json',
+                'request-source': origin
               },
               body: JSON.stringify({
-                jsonrpc: "2.0",
+                jsonrpc: '2.0',
                 method,
                 params,
-                id: 1,
-              }),
+                id: 1
+              })
             })
           ).data.result;
         }
