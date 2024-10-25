@@ -51,7 +51,9 @@ export class BtcAccountBase {
   get btcLegacyAddress(): string {
     return this._btcLegacyAddress;
   }
-
+  get addressDisplay(): string {
+    return this._bech32Address;
+  }
   get pubKey(): Uint8Array {
     return this._pubKey.slice();
   }
@@ -94,9 +96,7 @@ export class BtcAccountBase {
       }
     });
   }
-  get addressDisplay(): string {
-    return this._bech32Address;
-  }
+
   @action
   public disconnect(): void {
     this.hasInited = false;

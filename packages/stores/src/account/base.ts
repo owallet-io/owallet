@@ -39,7 +39,8 @@ export class AccountSetBase {
 
   @observable
   protected _name: string = "";
-
+  @observable
+  protected _btcLegacyAddress: string = "";
   @observable
   protected _bech32Address: string = "";
   @observable
@@ -165,7 +166,7 @@ export class AccountSetBase {
         this._isKeystone = key.isKeystone;
         this._name = key.name;
         this._pubKey = key.pubKey;
-
+        this._btcLegacyAddress = "";
         // Set the wallet status as loaded after getting all necessary infos.
         this._walletStatus = WalletStatus.Loaded;
       } else {
@@ -177,6 +178,7 @@ export class AccountSetBase {
         this._isKeystone = false;
         this._name = "";
         this._pubKey = new Uint8Array(0);
+        this._btcLegacyAddress = "";
 
         this._walletStatus = WalletStatus.Rejected;
         this._rejectionReason = res.reason;
@@ -216,7 +218,9 @@ export class AccountSetBase {
       this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ""
     );
   }
-
+  get btcLegacyAddress(): string {
+    return this._btcLegacyAddress;
+  }
   /**
    * @deprecated Use `isReadyToSendTx`
    */

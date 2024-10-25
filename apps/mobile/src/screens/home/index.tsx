@@ -89,12 +89,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     // modalStore,
     browserStore,
     hugeQueriesStore,
+    allAccountStore,
   } = useStore();
   const oasisAccount = oasisAccountStore.getAccount("oasis-1");
   console.log(oasisAccount.bech32Address, "oasisAccount.bech32Address");
-  const btcAccount = bitcoinAccountStore.getAccount("bitcoin");
+  const btcAccount = allAccountStore.getAccount("bitcoin");
   console.log(btcAccount.bech32Address, "btcAccount.bech32Address");
-  console.log(btcAccount.btcLegacyAddress, "btcAccount.btcLegacyAddress");
+  console.log(btcAccount.addressDisplay, "btcAccount.btcLegacyAddress");
   const scrollViewRef = useRef<ScrollView | null>(null);
   const chainId = chainStore.current.chainId;
 

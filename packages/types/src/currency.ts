@@ -24,11 +24,11 @@ export interface CW20Currency extends Currency {
 }
 
 export interface BTCSegwitCurrency extends Currency {
-  readonly type: "btc-segwit";
+  readonly type: "segwit";
 }
 
 export interface BTCLegacyCurrency extends Currency {
-  readonly type: "btc-legacy";
+  readonly type: "legacy";
 }
 
 export interface Secret20Currency extends Currency {

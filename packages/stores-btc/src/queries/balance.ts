@@ -11,6 +11,8 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
 import * as oasis from "@oasisprotocol/client";
 import { staking } from "@oasisprotocol/client";
+import { CoinGeckoSimplePrice } from "@owallet/stores/build/price/types";
+import deepmerge from "deepmerge";
 
 export class ObservableQueryBtcAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -21,35 +23,30 @@ export class ObservableQueryBtcAccountBalanceImpl
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly denomHelper: DenomHelper,
-    protected readonly bech32Address: string
+    protected readonly btcAddress: string
   ) {
+    // const chainInfo =this.chainGetter.getChain(chainId);
     super(
       sharedContext,
-      null,
-      null,
-      null
-      //     [
-      //   ethereumHexAddress,
-      //   "latest",
-      // ]
+      chainGetter.getChain(chainId).rest,
+      `/address/${btcAddress}/utxo`
     );
-
     makeObservable(this);
   }
 
   protected override canFetch(): boolean {
     // If ethereum hex address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address.length > 0;
+    return this.btcAddress.length > 0;
   }
 
   @computed
   get balance(): CoinPretty {
     const denom = this.denomHelper.denom;
+    console.log(denom, "denom btc");
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const currency = chainInfo.currencies.find(
       (cur) => cur.coinMinimalDenom === denom
     );
-    console.log(this.response.data, "this.response.data");
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -72,21 +69,12 @@ export class ObservableQueryBtcAccountBalanceImpl
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const nic = new oasis.client.NodeInternal(chainInfo.grpc);
-    const publicKey = await staking.addressFromBech32(this.bech32Address);
-    const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
-    const grpcBalance = parseRpcBalance(account);
+    const { data, headers } = await super.fetchResponse(abortController);
+    console.log(data, "data");
     return {
-      headers: {},
-      data: grpcBalance.available,
+      headers,
+      data: data,
     };
-  }
-
-  protected override getCacheKey(): string {
-    return `${super.getCacheKey()}-${this.bech32Address}-${
-      this.denomHelper.denom
-    }`;
   }
 }
 
@@ -103,7 +91,10 @@ export class ObservableQueryBtcAccountBalanceRegistry
   ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
-    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
+    if (
+      !chainInfo.features.includes("btc") ||
+      (denomHelper.type !== "legacy" && denomHelper.type !== "segwit")
+    )
       return;
     return new ObservableQueryBtcAccountBalanceImpl(
       this.sharedContext,

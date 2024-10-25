@@ -42,11 +42,11 @@ export class KeyRingBtcService {
         chainId,
         vaultId
       );
-
-      // const publicKey = pubKey.toBytes();
-      //@ts-ignore
       const legacyAddress = bitcoin.payments.p2pkh({
-        pubkey: pubKey.toBytes(),
+        pubkey: Buffer.from(
+          pubKey.toKeyPair().getPublic().encodeCompressed("hex"),
+          "hex"
+        ),
       }).address;
       console.log(legacyAddress, "legacyAddress2");
       const pubKeyBip84 = await this.keyRingBtcBaseService.getPubKeyBip84(

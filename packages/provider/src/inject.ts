@@ -77,6 +77,7 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
 
 export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
+  defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
   defineUnwritablePropertyIfPossible(
     window,
     "getOfflineSigner",
@@ -963,6 +964,16 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     this.eip6963ProviderInfo
   );
   public readonly oasis = new OasisProvider(
+    this,
+    this.eventListener,
+    this.parseMessage
+  );
+  public readonly bitcoin = new BitcoinProvider(
+    this,
+    this.eventListener,
+    this.parseMessage
+  );
+  public readonly tron = new TronProvider(
     this,
     this.eventListener,
     this.parseMessage

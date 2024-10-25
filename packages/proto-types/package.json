@@ -7,7 +7,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "zx ./proto-types-gen/scripts/clean.mjs; rm -rf node_modules; rm -rf proto-types-gen/build; rm -rf proto-types-gen/src",
+    "clean:dev": "zx ./proto-types-gen/scripts/clean.mjs; rm -rf node_modules; rm -rf proto-types-gen/build; rm -rf proto-types-gen/src",
     "build:dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
     "start:dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
     "lint-test": "eslint \"proto-types-gen/scripts/**/*\" && prettier --check \"proto-types-gen/scripts/**/*\"",

@@ -34,7 +34,10 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
-    if (!chainInfo?.features.includes("gen-address")) {
+    if (
+      !chainInfo?.features.includes("gen-address") ||
+      !chainInfo?.features.includes("btc")
+    ) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
     const bip44Path = this.getBIP44PathFromVault(vault);
@@ -62,7 +65,10 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
-    if (!chainInfo?.features.includes("gen-address")) {
+    if (
+      !chainInfo?.features.includes("gen-address") ||
+      !chainInfo?.features.includes("btc")
+    ) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
     const bip44Path = this.getBIP44PathFromVault(vault);

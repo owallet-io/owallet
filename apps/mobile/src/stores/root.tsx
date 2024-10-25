@@ -81,6 +81,7 @@ import { BrowserStore } from "@stores/browser";
 import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
 import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
+import { AllAccountStore } from "@stores/all-account-store";
 
 // import {WebpageStore} from './webpage';
 
@@ -132,7 +133,10 @@ export class RootStore {
   public readonly ethereumAccountStore: EthereumAccountStore;
   public readonly oasisAccountStore: OasisAccountStore;
   public readonly tronAccountStore: TrxAccountStore;
+
   public readonly bitcoinAccountStore: BtcAccountStore;
+
+  public readonly allAccountStore: AllAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
 
   public readonly tokenFactoryRegistrar: TokenFactoryCurrencyRegistrar;
@@ -432,6 +436,14 @@ export class RootStore {
       },
       this.chainStore,
       getOWalletFromWindow
+    );
+    this.allAccountStore = new AllAccountStore(
+      this.chainStore,
+      this.oasisAccountStore,
+      this.accountStore,
+      this.tronAccountStore,
+      this.ethereumAccountStore,
+      this.bitcoinAccountStore
     );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),

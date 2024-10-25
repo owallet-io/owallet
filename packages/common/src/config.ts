@@ -467,18 +467,18 @@ export const EmbedChainInfos: ChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("bc"),
     currencies: [
       {
-        type: "btc-legacy",
+        type: "legacy",
         coinDenom: "BTC",
-        coinMinimalDenom: "btc",
+        coinMinimalDenom: "legacy:btc",
         coinDecimals: 8,
         coinGeckoId: "bitcoin",
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
       },
       {
-        type: "btc-segwit",
+        type: "segwit",
         coinDenom: "BTC",
-        coinMinimalDenom: "btc",
+        coinMinimalDenom: "segwit:btc",
         coinDecimals: 8,
         coinGeckoId: "bitcoin",
         coinImageUrl:
@@ -503,7 +503,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       ];
     },
 
-    features: ["gen-address"],
+    features: ["gen-address", "btc"],
     txExplorer: {
       name: "BlockStream",
       txUrl: "https://blockstream.info/tx/{txHash}",

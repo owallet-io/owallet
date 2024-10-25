@@ -80,7 +80,7 @@ export const AccountBoxAll: FunctionComponent<{
     hugeQueriesStore,
     queriesStore,
     priceStore,
-    oasisAccountStore,
+    allAccountStore,
   } = useStore();
 
   const { colors } = useTheme();
@@ -94,10 +94,7 @@ export const AccountBoxAll: FunctionComponent<{
   const [sliceColor, setSliceColor] = useState([]);
 
   const chainId = chainStore.current.chainId;
-  console.log(chainId, "chainId ka");
-  const account = accountStore.getAccount(chainId);
-  const oasisAccount = oasisAccountStore.getAccount(chainId);
-
+  const account = allAccountStore.getAccount(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const availableTotalPrice =
     useMemo(() => {
@@ -181,7 +178,7 @@ export const AccountBoxAll: FunctionComponent<{
         }
       }
       return result;
-    }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]) ||
+    }, [hugeQueriesStore.delegations, chainId, hugeQueriesStore.unbondings]) ||
     initPrice;
   const totalPriceByChain =
     useMemo(() => {
@@ -256,9 +253,7 @@ export const AccountBoxAll: FunctionComponent<{
   }, [totalPriceBalance, accountOrai.bech32Address]);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
-  const chainAddress = chainStore.current.features.includes("oasis")
-    ? oasisAccount.bech32Address
-    : account.addressDisplay;
+  const chainAddress = account.addressDisplay;
   const _onPressMyWallet = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
