@@ -110,10 +110,6 @@ export const SignEthereumModal = registerModal(
           feeConfig.type === 'manual' ? uiConfigStore.lastFeeOption || 'average' : feeConfig.type
         );
 
-        console.log('maxFeePerGas', maxFeePerGas);
-        console.log('maxPriorityFeePerGas', maxPriorityFeePerGas);
-        console.log('gasPrice', gasPrice);
-
         return maxFeePerGas && maxPriorityFeePerGas
           ? {
               maxFeePerGas: `0x${BigInt(maxFeePerGas.truncate().toString()).toString(16)}`,
@@ -158,8 +154,6 @@ export const SignEthereumModal = registerModal(
       if (isTxSigning && !interactionData.isInternal) {
         const unsignedTx = JSON.parse(Buffer.from(message).toString('utf8'));
 
-        console.log('unsignedTx.message', message);
-
         if (gasConfig.gas > 0) {
           unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
 
@@ -183,6 +177,8 @@ export const SignEthereumModal = registerModal(
           // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
           unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei('1', 'gwei');
         }
+
+        console.log('unsignedTx', unsignedTx);
 
         setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), 'utf8'));
       }

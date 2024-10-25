@@ -537,7 +537,7 @@ export const DetailsBrowserScreen = observer(props => {
             </>
           )}
 
-          {sourceCode && route?.params?.url && (
+          {/* {sourceCode && route?.params?.url && (
             <>
               <WebView
                 originWhitelist={['*']} // to allowing WebView to load blob
@@ -563,7 +563,39 @@ export const DetailsBrowserScreen = observer(props => {
                 source={{ uri: route?.params?.url }}
               />
             </>
-          )}
+          )} */}
+
+          {sourceCode && route?.params?.url ? (
+            <WebView
+              source={{ uri: route?.params?.url }}
+              ref={webviewRef}
+              applicationNameForUserAgent={`OWalletMobile/${DeviceInfo.getVersion()}`}
+              injectedJavaScriptBeforeContentLoaded={sourceCode}
+              onMessage={onMessage}
+              onNavigationStateChange={(e: any) => {
+                // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+                // Use two handlers to measure simultaneously in ios and android.
+                setCanGoBack(e.canGoBack);
+                setCanGoForward(e.canGoForward);
+
+                setCurrentURL(e.url);
+              }}
+              onLoadProgress={(e: any) => {
+                // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+                // Use two handlers to measure simultaneously in ios and android.
+                setCanGoBack(e.nativeEvent.canGoBack);
+                setCanGoForward(e.nativeEvent.canGoForward);
+
+                setCurrentURL(e.nativeEvent.url);
+              }}
+              contentInsetAdjustmentBehavior="never"
+              automaticallyAdjustContentInsets={false}
+              decelerationRate="normal"
+              allowsBackForwardNavigationGestures={true}
+              originWhitelist={['*']}
+              allowsInlineMediaPlayback={true}
+            />
+          ) : null}
         </View>
       </View>
     </PageWithViewInBottomTabView>

@@ -406,15 +406,12 @@ export class KeyRingEthereumService {
             EthSignType.TRANSACTION
           );
 
-          console.log('signingData', signingData);
-
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
 
           const isEIP1559 = !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
           if (isEIP1559) {
             signingTx.type = TransactionTypes.eip1559;
           }
-          console.log(';signature', signature);
           const signedTx = Buffer.from(serialize(signingTx, signature).replace('0x', ''), 'hex');
 
           const txHash = await this.backgroundTxEthereumService.sendEthereumTx(origin, currentChainId, signedTx, {});
