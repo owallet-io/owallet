@@ -42,7 +42,7 @@ import { StackNavigationOptions } from "@react-navigation/stack";
 import { OWHeaderTitle } from "@components/header";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
-  const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
+  const { chainStore, priceStore, allAccountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
@@ -66,11 +66,12 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
 
   const { item } = route.params;
 
-  const account = accountStore.getAccount(item.chainInfo.chainId);
+  const account = allAccountStore.getAccount(item.chainInfo.chainId);
 
-  const [tronTokens, setTronTokens] = useState([]);
-
-  const address = account.addressDisplay;
+  const address =
+    item.token.currency.type === "legacy"
+      ? account.btcLegacyAddress
+      : account.addressDisplay;
   const onPressToken = async () => {
     // chainStore.selectChain(item.chainInfo.chainId);
     // await chainStore.saveLastViewChainId();
