@@ -130,6 +130,7 @@ export class RootStore {
   public readonly accountStore: AccountStore<
     [CosmosAccount, CosmwasmAccount, SecretAccount]
   >;
+
   public readonly ethereumAccountStore: EthereumAccountStore;
   public readonly oasisAccountStore: OasisAccountStore;
   public readonly tronAccountStore: TrxAccountStore;
@@ -470,9 +471,8 @@ export class RootStore {
     this.hugeQueriesStore = new HugeQueriesStore(
       this.chainStore,
       this.queriesStore,
-      this.accountStore,
-      this.priceStore,
-      this.oasisAccountStore
+      this.allAccountStore,
+      this.priceStore
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(

@@ -70,42 +70,6 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
 
   const [tronTokens, setTronTokens] = useState([]);
 
-  // useEffect(() => {
-  //   tracking("Token Detail Screen");
-  //   InteractionManager.runAfterInteractions(() => {
-  //     (async function get() {
-  //       try {
-  //         if (accountTron.evmosHexAddress) {
-  //           const res = await API.getTronAccountInfo(
-  //             {
-  //               address: getBase58Address(accountTron.evmosHexAddress),
-  //             },
-  //             {
-  //               baseURL: chainStore.current.rpc,
-  //             }
-  //           );
-  //
-  //           if (res.data?.data?.length > 0) {
-  //             if (res.data?.data[0].trc20) {
-  //               const tokenArr = [];
-  //               TRC20_LIST.map((tk) => {
-  //                 let token = res.data?.data[0].trc20.find(
-  //                   (t) => tk.contractAddress in t
-  //                 );
-  //                 if (token) {
-  //                   tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-  //                 }
-  //               });
-  //
-  //               setTronTokens(tokenArr);
-  //             }
-  //           }
-  //         }
-  //       } catch (error) {}
-  //     })();
-  //   });
-  // }, [accountTron.evmosHexAddress]);
-
   const address = account.addressDisplay;
   const onPressToken = async () => {
     // chainStore.selectChain(item.chainInfo.chainId);

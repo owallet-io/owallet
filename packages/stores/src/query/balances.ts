@@ -219,4 +219,9 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   ): ObservableQueryBalancesImplMap {
     return this.get(ethereumHexAddress) as ObservableQueryBalancesImplMap;
   }
+  getQueryBtcLegacyAddress(
+    btcLegacyAddress: string
+  ): ObservableQueryBalancesImplMap {
+    return this.get(btcLegacyAddress) as ObservableQueryBalancesImplMap;
+  }
 }

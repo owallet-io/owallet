@@ -285,7 +285,7 @@ const TokenItem: FC<{
 
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
+              {removeDataInParentheses(item.token?.currency?.coinDenom)}
               {/*<Text*/}
               {/*  size={12}*/}
               {/*  color={*/}
@@ -301,17 +301,21 @@ const TokenItem: FC<{
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
+              {item.token?.currency?.type &&
+              item.token?.currency?.coinDenom === "BTC"
+                ? ` ${capitalizedText(item.token?.currency?.type)}`
+                : ""}
             </Text>
-            {/*{item.typeAddress && (*/}
-            {/*  <View style={styles.type}>*/}
-            {/*    <Text*/}
-            {/*      weight="400"*/}
-            {/*      size={12}*/}
-            {/*      color={colors["neutral-text-body-2"]}*/}
-            {/*    >*/}
-            {/*      {capitalizedText(item.typeAddress)}*/}
-            {/*    </Text>*/}
-            {/*  </View>*/}
+            {/*{item.token?.currency?.type && item.token?.currency?.coinDenom === "BTC" && (*/}
+            {/*    <View style={styles.type}>*/}
+            {/*        <Text*/}
+            {/*            weight="400"*/}
+            {/*            size={12}*/}
+            {/*            color={colors["neutral-text-body-2"]}*/}
+            {/*        >*/}
+            {/*            {capitalizedText(item.token?.currency?.type)}*/}
+            {/*        </Text>*/}
+            {/*    </View>*/}
             {/*)}*/}
           </View>
         </View>

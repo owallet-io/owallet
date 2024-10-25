@@ -18,6 +18,7 @@ import {
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
 import { OasisAccountStore } from "@owallet/stores-oasis";
+import { AllAccountStore } from "@stores/all-account-store";
 
 interface ViewToken {
   chainInfo: IChainInfoImpl;
@@ -41,9 +42,8 @@ export class HugeQueriesStore {
   constructor(
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
-    protected readonly accountStore: IAccountStore,
-    protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly oasisAccountStore: OasisAccountStore
+    protected readonly accountStore: AllAccountStore,
+    protected readonly priceStore: CoinGeckoPriceStore
   ) {
     let balanceDisposal: (() => void) | undefined;
     this.balanceBinarySort = new BinarySortArray<ViewToken>(
@@ -115,13 +115,9 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       let account = this.accountStore.getAccount(chainInfo.chainId);
-      if (chainInfo.features.includes("oasis")) {
-        // @ts-ignore
-        account = this.oasisAccountStore.getAccount(chainInfo.chainId);
-      }
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
-      if (account.bech32Address === "") {
+      if (account.addressDisplay === "") {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -135,7 +131,7 @@ export class HugeQueriesStore {
         const isERC20 = denomHelper.type === "erc20";
         const isMainCurrency =
           mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
-        const queryBalance =
+        let queryBalance =
           this.chainStore.isEvmChain(chainInfo.chainId) &&
           (isMainCurrency || isERC20)
             ? queries.queryBalances.getQueryEthereumHexAddress(
@@ -144,7 +140,17 @@ export class HugeQueriesStore {
             : queries.queryBalances.getQueryBech32Address(
                 account.bech32Address
               );
-
+        const isBtcLegacy = denomHelper.type === "legacy";
+        console.log(
+          denomHelper.type,
+          account.btcLegacyAddress,
+          "denomHelper.type"
+        );
+        if (isBtcLegacy) {
+          queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
+            account.btcLegacyAddress
+          );
+        }
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {
           if (
