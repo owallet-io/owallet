@@ -60,15 +60,22 @@ export const HomeScreen: FunctionComponent = observer(props => {
     accountStore,
     queriesStore,
     priceStore,
+    oasisAccountStore,
+    bitcoinAccountStore,
     // browserStore,
     appInitStore,
     keyRingStore,
     // modalStore,
     permissionStore,
     browserStore,
-    hugeQueriesStore
+    hugeQueriesStore,
+    allAccountStore
   } = useStore();
-
+  const oasisAccount = oasisAccountStore.getAccount('oasis-1');
+  console.log(oasisAccount.bech32Address, 'oasisAccount.bech32Address');
+  const btcAccount = allAccountStore.getAccount('bitcoin');
+  console.log(btcAccount.bech32Address, 'btcAccount.bech32Address');
+  console.log(btcAccount.addressDisplay, 'btcAccount.btcLegacyAddress');
   const scrollViewRef = useRef<ScrollView | null>(null);
   const chainId = chainStore.current.chainId;
 
@@ -89,22 +96,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //   true
   // );
 
-  const mergedPermissionData = permissionStore.waitingPermissionMergedData;
-  const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
-
-  console.log('mergedDataForEVM', mergedDataForEVM);
-  console.log('mergedPermissionData', mergedPermissionData);
-
   useEffect(() => {
-    tracking('Home Screen');
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
         .then(res => {
           return res.text();
         })
         .then(res => {
-          console.log('res', res.length);
-
           browserStore.update_inject(res);
         })
         .catch(err => console.log(err));
@@ -882,7 +880,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //     ]);
   //   }
   // };
-
+  // let account = accountStore.getAccount("eip155:728126428");
+  // console.log(account.addressDisplay,"account.base58Address")
   const onRefresh = async () => {
     if (isNotReady) {
       return;
@@ -890,7 +889,11 @@ export const HomeScreen: FunctionComponent = observer(props => {
     priceStore.fetch();
 
     for (const chainInfo of chainStore.chainInfosInUI) {
-      const account = accountStore.getAccount(chainInfo.chainId);
+      let account = accountStore.getAccount(chainInfo.chainId);
+      if (chainInfo.features.includes('oasis')) {
+        // @ts-ignore
+        account = oasisAccountStore.getAccount(chainInfo.chainId);
+      }
 
       if (account.bech32Address === '') {
         continue;

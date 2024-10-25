@@ -23,6 +23,14 @@ export interface CW20Currency extends Currency {
   readonly contractAddress: string;
 }
 
+export interface BTCSegwitCurrency extends Currency {
+  readonly type: "segwit";
+}
+
+export interface BTCLegacyCurrency extends Currency {
+  readonly type: "legacy";
+}
+
 export interface Secret20Currency extends Currency {
   readonly type: "secret20";
   readonly contractAddress: string;
@@ -71,7 +79,9 @@ export type AppCurrency =
   | CW20Currency
   | Secret20Currency
   | IBCCurrency
-  | ERC20Currency;
+  | ERC20Currency
+  | BTCSegwitCurrency
+  | BTCLegacyCurrency;
 
 export interface FiatCurrency {
   readonly currency: string;

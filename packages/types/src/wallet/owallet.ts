@@ -23,6 +23,7 @@ export interface Key {
   readonly address: Uint8Array;
   readonly bech32Address: string;
   readonly ethereumHexAddress: string;
+  readonly btcLegacyAddress?: string;
   // Indicate whether the selected account is from the nano ledger.
   // Because current cosmos app in the nano ledger doesn't support the direct (proto) format msgs,
   // this can be used to select the amino or direct signer.
@@ -244,6 +245,21 @@ export interface OWallet {
   suggestERC20(chainId: string, contractAddress: string): Promise<void>;
 
   readonly ethereum: IEthereumProvider;
+  readonly oasis?: IOasisProvider;
+  readonly bitcoin?: IBitcoinProvider;
+  readonly tron?: ITronProvider;
+}
+export interface IOasisProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+}
+export interface IBitcoinProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+}
+export interface ITronProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
 }
 
 export interface IEthereumProvider extends EventEmitter {

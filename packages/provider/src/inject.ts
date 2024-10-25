@@ -23,7 +23,10 @@ import {
   IEthereumProvider,
   EIP6963EventNames,
   EIP6963ProviderInfo,
-  EIP6963ProviderDetail
+  EIP6963ProviderDetail,
+  IOasisProvider,
+  IBitcoinProvider,
+  ITronProvider
 } from '@owallet/types';
 import { Result, JSONUint8Array, EthereumProviderRpcError } from '@owallet/router';
 import { OWalletEnigmaUtils } from './enigma';
@@ -39,6 +42,9 @@ export interface ProxyRequest {
   method: keyof (OWallet & OWalletCoreTypes);
   args: any[];
   ethereumProviderMethod?: keyof IEthereumProvider;
+  oasisProviderMethod?: keyof IOasisProvider;
+  tronProviderMethod?: keyof ITronProvider;
+  bitcoinProviderMethod?: keyof IBitcoinProvider;
 }
 
 export interface ProxyRequestResponse {
@@ -263,6 +269,69 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             }
 
             return await owallet.ethereum[ethereumProviderMethod](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
+            );
+          } else if (method === 'oasis') {
+            const oasisProviderMethod = message.oasisProviderMethod;
+
+            //@ts-ignore
+            if (oasisProviderMethod?.startsWith('protected')) {
+              throw new Error('Rejected');
+            }
+            if (oasisProviderMethod === undefined || typeof owallet.oasis[oasisProviderMethod] !== 'function') {
+              throw new Error(
+                //@ts-ignore
+                `${message?.oasisProviderMethod} is not function or invalid Oasis provider method`
+              );
+            }
+
+            const messageArgs = JSONUint8Array.unwrap(message.args);
+
+            return await owallet.oasis[oasisProviderMethod](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
+            );
+          } else if (method === 'bitcoin') {
+            const bitcoinProviderMethod = message.bitcoinProviderMethod;
+
+            //@ts-ignore
+            if (bitcoinProviderMethod?.startsWith('protected')) {
+              throw new Error('Rejected');
+            }
+            if (bitcoinProviderMethod === undefined || typeof owallet.bitcoin[bitcoinProviderMethod] !== 'function') {
+              throw new Error(
+                //@ts-ignore
+                `${message?.bitcoinProviderMethod} is not function or invalid Oasis provider method`
+              );
+            }
+
+            const messageArgs = JSONUint8Array.unwrap(message.args);
+
+            return await owallet.bitcoin[bitcoinProviderMethod](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
+            );
+          } else if (method === 'tron') {
+            const tronProviderMethod = message.tronProviderMethod;
+
+            //@ts-ignore
+            if (tronProviderMethod?.startsWith('protected')) {
+              throw new Error('Rejected');
+            }
+            if (tronProviderMethod === undefined || typeof owallet.tron[tronProviderMethod] !== 'function') {
+              throw new Error(
+                //@ts-ignore
+                `${message?.tronProviderMethod} is not function or invalid Oasis provider method`
+              );
+            }
+
+            const messageArgs = JSONUint8Array.unwrap(message.args);
+
+            return await owallet.tron[tronProviderMethod](
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
@@ -746,6 +815,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     this.parseMessage,
     this.eip6963ProviderInfo
   );
+  public readonly oasis = new OasisProvider(this, this.eventListener, this.parseMessage);
+  public readonly bitcoin = new BitcoinProvider(this, this.eventListener, this.parseMessage);
+  public readonly tron = new TronProvider(this, this.eventListener, this.parseMessage);
 }
 
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
@@ -985,4 +1057,235 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       method: 'net_version'
     })) as string;
   };
+}
+class OasisProvider extends EventEmitter implements IOasisProvider {
+  constructor(
+    protected readonly injectedOWallet: InjectedOWallet,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {
+    super();
+  }
+
+  protected _requestMethod = async (method: keyof IOasisProvider, args: Record<string, any>): Promise<any> => {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map(value => {
+        return value.toString(16);
+      })
+      .join('');
+
+    const proxyMessage: ProxyRequest = {
+      type: 'proxy-request',
+      id,
+      method: 'oasis',
+      args: JSONUint8Array.wrap(args),
+      oasisProviderMethod: method
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: any) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error('Result is null'));
+          return;
+        }
+
+        if (result.error) {
+          const error = result.error;
+          reject(new Error(error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+
+      this.eventListener.postMessage(proxyMessage);
+    });
+  };
+
+  async getKey(chainId: string): Promise<Key> {
+    return await this._requestMethod('getKey', [chainId]);
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this._requestMethod('getKeysSettled', [chainIds]);
+  }
+}
+class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
+  constructor(
+    protected readonly injectedOWallet: InjectedOWallet,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {
+    super();
+  }
+
+  protected _requestMethod = async (method: keyof IBitcoinProvider, args: Record<string, any>): Promise<any> => {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map(value => {
+        return value.toString(16);
+      })
+      .join('');
+
+    const proxyMessage: ProxyRequest = {
+      type: 'proxy-request',
+      id,
+      method: 'bitcoin',
+      args: JSONUint8Array.wrap(args),
+      bitcoinProviderMethod: method
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: any) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error('Result is null'));
+          return;
+        }
+
+        if (result.error) {
+          const error = result.error;
+          reject(new Error(error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+
+      this.eventListener.postMessage(proxyMessage);
+    });
+  };
+
+  async getKey(chainId: string): Promise<Key> {
+    return await this._requestMethod('getKey', [chainId]);
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this._requestMethod('getKeysSettled', [chainIds]);
+  }
+}
+class TronProvider extends EventEmitter implements ITronProvider {
+  constructor(
+    protected readonly injectedOWallet: InjectedOWallet,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+      postMessage: message => window.postMessage(message, window.location.origin)
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {
+    super();
+  }
+
+  protected _requestMethod = async (method: keyof ITronProvider, args: Record<string, any>): Promise<any> => {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map(value => {
+        return value.toString(16);
+      })
+      .join('');
+
+    const proxyMessage: ProxyRequest = {
+      type: 'proxy-request',
+      id,
+      method: 'tron',
+      args: JSONUint8Array.wrap(args),
+      tronProviderMethod: method
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: any) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error('Result is null'));
+          return;
+        }
+
+        if (result.error) {
+          const error = result.error;
+          reject(new Error(error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+
+      this.eventListener.postMessage(proxyMessage);
+    });
+  };
+
+  async getKey(chainId: string): Promise<Key> {
+    return await this._requestMethod('getKey', [chainId]);
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this._requestMethod('getKeysSettled', [chainIds]);
+  }
 }

@@ -70,7 +70,11 @@ import { ModalStore } from '@stores/modal';
 import { UniversalSwapStore, universalSwapStore } from '@stores/universal_swap';
 import { UIConfigStore } from '@stores/ui-config';
 import { BrowserStore } from '@stores/browser';
-import { OasisQueries } from '@owallet/stores-oasis';
+import { OasisAccountStore, OasisQueries } from '@owallet/stores-oasis';
+import { TrxAccountStore, TrxQueries } from '@owallet/stores-trx';
+import { BtcAccountStore, BtcQueries } from '@owallet/stores-btc';
+import { AllAccountStore } from '@stores/all-account-store';
+
 // import {WebpageStore} from './webpage';
 
 export class RootStore {
@@ -109,13 +113,21 @@ export class RootStore {
       // CosmosGovernanceQueries,
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
-      OasisQueries
+      OasisQueries,
+      TrxQueries,
+      BtcQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
   // public readonly skipQueriesStore: SkipQueries;
   public readonly accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
   public readonly ethereumAccountStore: EthereumAccountStore;
+  public readonly oasisAccountStore: OasisAccountStore;
+  public readonly tronAccountStore: TrxAccountStore;
+
+  public readonly bitcoinAccountStore: BtcAccountStore;
+
+  public readonly allAccountStore: AllAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
 
   public readonly tokenFactoryRegistrar: TokenFactoryCurrencyRegistrar;
@@ -130,6 +142,7 @@ export class RootStore {
   public readonly deepLinkStore: DeepLinkStore;
   public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
   public readonly browserStore: BrowserStore;
+
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
@@ -191,7 +204,9 @@ export class RootStore {
         coingeckoAPIBaseURL: '',
         coingeckoAPIURI: ''
       }),
-      OasisQueries.use()
+      OasisQueries.use(),
+      TrxQueries.use(),
+      BtcQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -351,7 +366,50 @@ export class RootStore {
     );
 
     this.ethereumAccountStore = new EthereumAccountStore(this.chainStore, getOWalletFromWindow);
-
+    this.oasisAccountStore = new OasisAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        }
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.tronAccountStore = new TrxAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        }
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.bitcoinAccountStore = new BtcAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        }
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.allAccountStore = new AllAccountStore(
+      this.chainStore,
+      this.oasisAccountStore,
+      this.accountStore,
+      this.tronAccountStore,
+      this.ethereumAccountStore,
+      this.bitcoinAccountStore
+    );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore('store_prices'),
       FiatCurrencies.reduce<{
@@ -378,7 +436,8 @@ export class RootStore {
       this.chainStore,
       this.queriesStore,
       this.accountStore,
-      this.priceStore
+      this.priceStore,
+      this.oasisAccountStore
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(

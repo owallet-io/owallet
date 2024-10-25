@@ -95,7 +95,11 @@ export class KeyRingCosmosService {
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-
+    if (chainInfo.features.includes("gen-address")) {
+      throw new Error(
+        `${chainInfo.chainId} not support getKey from keyring cosmos base`
+      );
+    }
     const pubKey = await this.keyRingService.getPubKey(chainId, vaultId);
 
     const isEthermintLike = KeyRingService.isEthermintLike(chainInfo);

@@ -9,14 +9,8 @@ import {
 import { AppCurrency, ChainInfo } from "@owallet/types";
 import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-// import { OasisAccountBase } from "../account";
-// import {simpleFetch} from "@owallet/simple-fetch";
-import { Buffer } from "buffer";
-import { Hash } from "@owallet/crypto";
 import * as oasis from "@oasisprotocol/client";
 import { staking } from "@oasisprotocol/client";
-
-// import { ObservableEvmChainJsonRpcQuery } from "./evm-chain-json-rpc";
 
 export class ObservableQueryOasisAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -55,6 +49,7 @@ export class ObservableQueryOasisAccountBalanceImpl
     const currency = chainInfo.currencies.find(
       (cur) => cur.coinMinimalDenom === denom
     );
+    console.log(this.response.data, "this.response.data");
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -77,58 +72,21 @@ export class ObservableQueryOasisAccountBalanceImpl
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
-    // const result = await simpleFetch<{
-    //   jsonrpc: "2.0";
-    //   result?: T;
-    //   id: string;
-    //   error?: {
-    //     code?: number;
-    //     message?: string;
-    //   };
-    // }>(this.baseURL, this.url, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     jsonrpc: "2.0",
-    //     id: "1",
-    //     method: this.method,
-    //     params: this.params,
-    //   }),
-    //   signal: abortController.signal,
-    // });
-    //
-    // if (result.data.error && result.data.error.message) {
-    //   throw new Error(result.data.error.message);
-    // }
-    //
-    // if (!result.data.result) {
-    //   throw new Error("Unknown error");
-    // }
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const nic = new oasis.client.NodeInternal(chainInfo.grpc);
-    const publicKey = await staking.addressFromBech32(
-      "oasis1qp60c29kd0r8mx6hhs96a8sp0fsmftxqkcnt7vyk"
-    );
+    const publicKey = await staking.addressFromBech32(this.bech32Address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
-    console.log(grpcBalance, "grpcBalance");
-    const result = "";
-    // return {
-    //   headers: result.headers,
-    //   data: result.data.result,
-    // };
-    return;
+    return {
+      headers: {},
+      data: grpcBalance.available,
+    };
   }
 
   protected override getCacheKey(): string {
-    // const paramsHash = Buffer.from(
-    //     Hash.sha256(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
-    // ).toString("hex");
-    //
-    // return `${super.getCacheKey()}-${this.method}-${paramsHash}`;
-    return "";
+    return `${super.getCacheKey()}-${this.bech32Address}-${
+      this.denomHelper.denom
+    }`;
   }
 }
 
@@ -145,18 +103,8 @@ export class ObservableQueryOasisAccountBalanceRegistry
   ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
-    console.log(chainId, "chainId oasis");
-    if (!chainInfo.features.includes("oasis")) return;
-    // const isHexAddress =
-    //   OasisAccountBase.isOasisHexAddressWithChecksum(address);
-    // if (
-    //   denomHelper.type !== "native" ||
-    //   !isHexAddress ||
-    //   chainInfo.evm == null
-    // ) {
-    //   return;
-    // }
-
+    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
+      return;
     return new ObservableQueryOasisAccountBalanceImpl(
       this.sharedContext,
       chainId,

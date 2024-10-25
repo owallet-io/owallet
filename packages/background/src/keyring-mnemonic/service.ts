@@ -6,6 +6,7 @@ import {
   PrivKeySecp256k1,
   PubKeySecp256k1,
 } from "@owallet/crypto";
+import { ChainInfo } from "@owallet/types";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
@@ -59,7 +60,14 @@ export class KeyRingMnemonicService {
     });
   }
 
-  getPubKey(vault: Vault, coinType: number): PubKeySecp256k1 {
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
+    if (chainInfo?.features.includes("gen-address")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
     const bip44Path = this.getBIP44PathFromVault(vault);
 
     const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
