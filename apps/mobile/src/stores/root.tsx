@@ -31,6 +31,7 @@ import {
   PermissionStore,
   SignEthereumInteractionStore,
   SignInteractionStore,
+  SignOasisInteractionStore,
   TokensStore,
 } from "@owallet/stores-core";
 import { AsyncKVStore } from "../common";
@@ -102,6 +103,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly universalSwapStore: UniversalSwapStore;
   // public readonly webpageStore: WebpageStore;
@@ -121,7 +123,7 @@ export class RootStore {
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
       OasisQueries,
-      TrxQueries,
+      // TrxQueries,
       BtcQueries
     ]
   >;
@@ -197,6 +199,10 @@ export class RootStore {
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(
       this.interactionStore
     );
+    this.signOasisInteractionStore = new SignOasisInteractionStore(
+      this.interactionStore
+    );
+
     this.chainSuggestStore = new ChainSuggestStore(
       this.interactionStore,
       CommunityChainInfoRepo
@@ -232,7 +238,7 @@ export class RootStore {
         coingeckoAPIURI: "",
       }),
       OasisQueries.use(),
-      TrxQueries.use(),
+      // TrxQueries.use(),
       BtcQueries.use()
     );
     this.browserStore = new BrowserStore();

@@ -2,11 +2,12 @@ import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { KeyRingPrivateKeyService } from "../../keyring-private-key";
 import { Vault, VaultService } from "../../vault";
-import { HDKey } from "@owallet/common";
-import { KeyRing } from "../../keyring";
-import { ChainInfo } from "@owallet/types";
+import { HDKey, TW } from "@owallet/common";
+import { KeyRingOasis } from "../../keyring";
+import { ChainInfo, TransactionType } from "@owallet/types";
+import { types } from "@oasisprotocol/client";
 
-export class KeyRingOasisPrivateKeyService implements KeyRing {
+export class KeyRingOasisPrivateKeyService implements KeyRingOasis {
   constructor(
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingPrivateKeyService
@@ -46,13 +47,8 @@ export class KeyRingOasisPrivateKeyService implements KeyRing {
   sign(
     vault: Vault,
     _coinType: number,
-    data: Uint8Array,
-    digestMethod: "sha256" | "keccak256"
-  ): {
-    readonly r: Uint8Array;
-    readonly s: Uint8Array;
-    readonly v: number | null;
-  } {
+    data: Uint8Array
+  ): types.SignatureSigned {
     // const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
     //     "privateKey"
     //     ] as string;

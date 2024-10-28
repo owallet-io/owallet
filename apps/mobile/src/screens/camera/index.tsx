@@ -129,7 +129,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                   //   });
                   // } else
                   else {
-                    navigate(SCREENS.NewSend, {
+                    navigate(SCREENS.Send, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });

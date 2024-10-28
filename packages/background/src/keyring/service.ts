@@ -1130,22 +1130,6 @@ export class KeyRingService {
     return signature;
   }
 
-  getPubKeyWithVault(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): Promise<PubKeySecp256k1> {
-    if (this.vaultService.isLocked) {
-      throw new Error("KeyRing is locked");
-    }
-
-    const keyRing = this.getVaultKeyRing(vault);
-
-    return Promise.resolve(
-      keyRing.getPubKey(vault, coinType, chainInfo) as PubKeySecp256k1
-    );
-  }
-
   signWithVault(
     vault: Vault,
     coinType: number,
@@ -1165,6 +1149,21 @@ export class KeyRingService {
 
     return Promise.resolve(
       keyRing.sign(vault, coinType, data, digestMethod, chainInfo)
+    );
+  }
+  getPubKeyWithVault(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): Promise<PubKeySecp256k1> {
+    if (this.vaultService.isLocked) {
+      throw new Error("KeyRing is locked");
+    }
+
+    const keyRing = this.getVaultKeyRing(vault);
+
+    return Promise.resolve(
+      keyRing.getPubKey(vault, coinType, chainInfo) as PubKeySecp256k1
     );
   }
 

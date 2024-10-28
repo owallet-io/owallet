@@ -111,15 +111,9 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
     // }
 
     try {
-      // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
-      navigate(SCREENS.NewSend, {
+      navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
         chainId: item.chainInfo.chainId,
-        // currency: item.token.currency.coinDenom,
-        // contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-        //   .contractAddress,
-        // coinGeckoId: item.token.currency.coinGeckoId,
-        // denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
       });
     } catch (err) {}
   };

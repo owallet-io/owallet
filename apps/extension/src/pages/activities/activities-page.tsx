@@ -33,6 +33,7 @@ export const ActivitiesPage = observer(() => {
   const { chainId } = chainStore.current;
   const mapChainNetwork = MapChainIdToNetwork[chainId];
   const account = accountStore.getAccount(chainId);
+  const chainInfo = chainStore.getChain(chainId);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const address = account.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses
@@ -40,11 +41,9 @@ export const ActivitiesPage = observer(() => {
   const allArr = chainStore.isAllNetwork
     ? hugeQueriesStore.getAllAddrByChain
     : {
-        [mapChainNetwork]:
-          chainId === ChainIdEnum.OasisSapphire ||
-          chainId === ChainIdEnum.OasisEmerald
-            ? getOasisAddress(address)
-            : address,
+        [mapChainNetwork]: chainInfo.features.includes("oasis-address")
+          ? getOasisAddress(address)
+          : address,
       };
 
   const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);

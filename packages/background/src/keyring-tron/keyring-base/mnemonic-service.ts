@@ -4,6 +4,7 @@ import { Vault, VaultService } from "../../vault";
 import { HDKey, uint2hex } from "@owallet/common";
 import { KeyRing } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
+import { PubKeySecp256k1 } from "@owallet/crypto";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -31,28 +32,8 @@ export class KeyRingTronMnemonicService implements KeyRing {
     vault: Vault,
     coinType: number,
     chainInfo: ChainInfo
-  ): Promise<Uint8Array> {
-    if (!chainInfo?.features.includes("gen-address")) {
-      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
-    }
-    const bip44Path = this.getBIP44PathFromVault(vault);
-
-    const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
-
-    if (vault.insensitive[tag]) {
-      return Buffer.from(vault.insensitive[tag] as string, "hex");
-    }
-    const decrypted = this.vaultService.decrypt(vault.sensitive);
-    const mnemonicText = decrypted["mnemonic"] as string | undefined;
-    if (!mnemonicText) {
-      throw new Error("mnemonicText is null");
-    }
-    const keyPair = await HDKey.getAccountSigner(mnemonicText as string);
-    const pubKeyText = Buffer.from(keyPair.publicKey).toString("hex");
-    this.vaultService.setAndMergeInsensitiveToVault("keyRing", vault.id, {
-      [tag]: pubKeyText,
-    });
-    return keyPair.publicKey;
+  ): Promise<PubKeySecp256k1> {
+    return this.baseKeyringService.getPubKey(vault, coinType, chainInfo);
   }
   sign(
     vault: Vault,
@@ -81,19 +62,19 @@ export class KeyRingTronMnemonicService implements KeyRing {
     // return privKey.signDigest32(digest);
     return;
   }
-
-  protected async getPrivKey(
-    vault: Vault,
-    coinType: number
-  ): Promise<Uint8Array> {
-    const decrypted = this.vaultService.decrypt(vault.sensitive);
-    const mnemonicText = decrypted["mnemonic"] as string | undefined;
-    if (!mnemonicText) {
-      throw new Error("mnemonicText is null");
-    }
-    const keyPair = await HDKey.getAccountSigner(mnemonicText as string);
-    return keyPair.secretKey;
-  }
+  //
+  // protected async getPrivKey(
+  //   vault: Vault,
+  //   coinType: number
+  // ): Promise<Uint8Array> {
+  //   const decrypted = this.vaultService.decrypt(vault.sensitive);
+  //   const mnemonicText = decrypted["mnemonic"] as string | undefined;
+  //   if (!mnemonicText) {
+  //     throw new Error("mnemonicText is null");
+  //   }
+  //   const keyPair = await HDKey.getAccountSigner(mnemonicText as string);
+  //   return keyPair.secretKey;
+  // }
 
   protected getBIP44PathFromVault(vault: Vault): {
     account: number;

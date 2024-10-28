@@ -18,12 +18,14 @@ import { WalletConnectAccessModal } from "@src/modals/permission/wallet-connect-
 import { GlobalPermissionModal } from "@src/modals/permission/global-permission";
 import { SuggestChainModal } from "@src/modals/permission/suggest-chain";
 import { BasicAccessModal } from "@src/modals/permission/basic-access";
+import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
       signInteractionStore,
       signEthereumInteractionStore,
+      signOasisInteractionStore,
       permissionStore,
       chainSuggestStore,
       walletConnectStore,
@@ -82,7 +84,10 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     //     });
     //   }
     // };
-
+    console.log(
+      signOasisInteractionStore.waitingData,
+      "signOasisInteractionStore.waitingData"
+    );
     return (
       <React.Fragment>
         {signInteractionStore.waitingData &&
@@ -117,6 +122,18 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               );
             }}
             interactionData={signEthereumInteractionStore.waitingData}
+          />
+        ) : null}
+        {signOasisInteractionStore.waitingData ? (
+          <SignOasisModal
+            isOpen={true}
+            close={() => {
+              signOasisInteractionStore.rejectWithProceedNext(
+                signOasisInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signOasisInteractionStore.waitingData}
           />
         ) : null}
 

@@ -33,7 +33,6 @@ import { OwLoading } from "@src/components/owallet-loading/ow-loading";
 import { Currency, AllNetworkItemTx, ResDetailAllTx } from "@owallet/types";
 
 import { OWEmpty } from "@src/components/empty";
-import { CosmosItem } from "@src/screens/transactions/cosmos/types";
 
 export const AllNetworkDetailTxScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore } = useStore();

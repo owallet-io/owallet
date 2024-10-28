@@ -1,7 +1,7 @@
 import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { KeyRingPrivateKeyService } from "../../keyring-private-key";
-import { Vault, VaultService } from "../../vault";
+import { PlainObject, Vault, VaultService } from "../../vault";
 import { HDKey } from "@owallet/common";
 import { KeyRing } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
@@ -11,36 +11,24 @@ export class KeyRingTronPrivateKeyService implements KeyRing {
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingPrivateKeyService
   ) {}
+
   supportedKeyRingType(): string {
     return this.baseKeyringService.supportedKeyRingType();
   }
-  createKeyRingVault(privateKey: Uint8Array) {
-    if (!privateKey || privateKey.length === 0) {
-      throw new Error("Invalid arguments");
-    }
-    const keyPair = HDKey.getAccountSignerFromPrivateKey(privateKey);
-    if (!keyPair) throw new Error("KeyPair from Private Key Invalid");
-    const publicKey = Buffer.from(keyPair.publicKey).toString("hex");
-    return Promise.resolve({
-      insensitive: {
-        publicKey,
-      },
-      sensitive: {
-        privateKey: Buffer.from(privateKey).toString("hex"),
-      },
-    });
+
+  createKeyRingVault(privateKey: Uint8Array): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }> {
+    return this.baseKeyringService.createKeyRingVault(privateKey);
   }
 
-  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array {
-    if (!chainInfo?.features.includes("gen-address")) {
-      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
-    }
-    const publicKeyBytes = Buffer.from(
-      vault.insensitive["publicKey"] as string,
-      "hex"
-    );
-
-    return publicKeyBytes;
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
+    return this.baseKeyringService.getPubKey(vault, coinType, chainInfo);
   }
 
   sign(

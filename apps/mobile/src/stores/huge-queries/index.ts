@@ -132,7 +132,7 @@ export class HugeQueriesStore {
         const isMainCurrency =
           mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
         let queryBalance =
-          this.chainStore.isEvmChain(chainInfo.chainId) &&
+          this.chainStore.isEvmOnlyChain(chainInfo.chainId) &&
           (isMainCurrency || isERC20)
             ? queries.queryBalances.getQueryEthereumHexAddress(
                 account.ethereumHexAddress
@@ -141,11 +141,6 @@ export class HugeQueriesStore {
                 account.bech32Address
               );
         const isBtcLegacy = denomHelper.type === "legacy";
-        console.log(
-          denomHelper.type,
-          account.btcLegacyAddress,
-          "denomHelper.type"
-        );
         if (isBtcLegacy) {
           queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
             account.btcLegacyAddress
@@ -538,7 +533,9 @@ export class HugeQueriesStore {
       const address = account.addressDisplay;
       const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
       if (!mapChainNetwork) continue;
-      data[mapChainNetwork] = address;
+      data[mapChainNetwork] = chainInfo.features.includes("oasis-address")
+        ? getOasisAddress(address)
+        : address;
     }
     return data;
   }

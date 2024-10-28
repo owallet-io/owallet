@@ -29,7 +29,7 @@ const AllNetworkTxsScreen = observer(() => {
   const {
     hugeQueriesStore,
     chainStore,
-    accountStore,
+    allAccountStore,
     keyRingStore,
     appInitStore,
   } = useStore();
@@ -43,16 +43,15 @@ const AllNetworkTxsScreen = observer(() => {
   const perPage = 10;
   const { chainId } = chainStore.current;
   const mapChainNetwork = MapChainIdToNetwork[chainId];
-  const account = accountStore.getAccount(chainId);
+  const account = allAccountStore.getAccount(chainId);
+  const chainInfo = chainStore.getChain(chainId);
   const address = account.addressDisplay;
   const allArr = appInitStore.getInitApp.isAllNetworks
     ? hugeQueriesStore.getAllAddrByChain
     : {
-        [mapChainNetwork]:
-          chainId === ChainIdEnum.OasisSapphire ||
-          chainId === ChainIdEnum.OasisEmerald
-            ? getOasisAddress(address)
-            : address,
+        [mapChainNetwork]: chainInfo.features.includes("oasis-address")
+          ? getOasisAddress(address)
+          : address,
       };
   const fetchData = async (addrByNetworks, isLoadMore = false) => {
     try {

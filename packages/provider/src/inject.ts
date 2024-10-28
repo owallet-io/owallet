@@ -27,6 +27,7 @@ import {
   IOasisProvider,
   IBitcoinProvider,
   ITronProvider,
+  TransactionType,
 } from "@owallet/types";
 import {
   Result,
@@ -39,6 +40,8 @@ import deepmerge from "deepmerge";
 import Long from "long";
 import { OWalletCoreTypes } from "./core-types";
 import EventEmitter from "events";
+import { TW } from "@owallet/common";
+import { types } from "@oasisprotocol/client";
 
 export interface ProxyRequest {
   type: "proxy-request";
@@ -765,20 +768,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     ]);
   }
 
-  async signEthereum(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    type: EthSignType
-  ): Promise<Uint8Array> {
-    return await this.requestMethod("signEthereum", [
-      chainId,
-      signer,
-      data,
-      type,
-    ]);
-  }
-
   getOfflineSigner(
     chainId: string,
     signOptions?: OWalletSignOptions
@@ -944,7 +933,19 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       signDoc,
     ]);
   }
-
+  async signEthereum(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: EthSignType
+  ): Promise<Uint8Array> {
+    return await this.requestMethod("signEthereum", [
+      chainId,
+      signer,
+      data,
+      type,
+    ]);
+  }
   async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
     return await this.requestMethod("sendEthereumTx", [chainId, tx]);
   }
@@ -1330,6 +1331,20 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod("getKeysSettled", [chainIds]);
+  }
+  async sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionType
+  ): Promise<types.SignatureSigned> {
+    return await this._requestMethod("sign", [chainId, signer, data, type]);
+  }
+  async sendTx(
+    chainId: string,
+    signedTx: types.SignatureSigned
+  ): Promise<string> {
+    return await this._requestMethod("sendTx", [chainId, signedTx]);
   }
 }
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {

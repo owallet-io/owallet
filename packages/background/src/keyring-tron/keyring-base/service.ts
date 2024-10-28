@@ -4,6 +4,7 @@ import { makeObservable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainInfo } from "@owallet/types";
 import { ChainsService } from "../../chains";
+import { PubKeySecp256k1 } from "@owallet/crypto";
 
 export class KeyRingTronBaseService {
   constructor(
@@ -18,7 +19,7 @@ export class KeyRingTronBaseService {
   //   return this.getPubKey(chainId, this.selectedVaultId);
   // }
 
-  getPubKey(chainId: string, vaultId: string): Promise<Uint8Array> {
+  getPubKey(chainId: string, vaultId: string): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
     }
@@ -48,7 +49,7 @@ export class KeyRingTronBaseService {
     vault: Vault,
     coinType: number,
     chainInfo: ChainInfo
-  ): Promise<Uint8Array> {
+  ): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
     }
@@ -56,7 +57,7 @@ export class KeyRingTronBaseService {
     const keyRing = this.getVaultKeyRing(vault);
 
     return Promise.resolve(
-      keyRing.getPubKey(vault, coinType, chainInfo) as Uint8Array
+      keyRing.getPubKey(vault, coinType, chainInfo) as PubKeySecp256k1
     );
   }
   protected getVaultKeyRing(vault: Vault): KeyRing {

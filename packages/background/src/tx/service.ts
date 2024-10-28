@@ -91,8 +91,6 @@ export class BackgroundTxService {
 
       const txHash = Buffer.from(txResponse.txhash, "hex");
 
-      // 이 기능은 tx commit일때 notification을 띄울 뿐이다.
-      // 실제 로직 처리와는 관계가 없어야하기 때문에 여기서 await을 하면 안된다!!
       retry(
         () => {
           return new Promise<void>((resolve, reject) => {
@@ -101,11 +99,6 @@ export class BackgroundTxService {
               "/websocket"
             );
             txTracer.addEventListener("close", () => {
-              // reject if ws closed before fulfilled
-              // 하지만 로직상 fulfill 되기 전에 ws가 닫히는게 되기 때문에
-              // delay를 좀 준다.
-              // trace 이후 로직은 동기적인 로직밖에 없기 때문에 문제될 게 없다.
-              // 문제될게 없다.
               setTimeout(() => {
                 reject();
               }, 500);

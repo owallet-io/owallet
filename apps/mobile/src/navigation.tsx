@@ -45,7 +45,7 @@ import { RedelegateScreen } from "./screens/stake/redelegate";
 import { UndelegateScreen } from "./screens/stake/undelegate";
 import { SendScreen } from "./screens/send";
 import { PincodeScreen } from "./screens/pincode/pincode";
-import { SendCosmosScreen } from "./screens/send/send";
+import { SendCosmosScreen } from "./screens/send/send-cosmos";
 import { SendEvmScreen } from "./screens/send/send-evm";
 import TxTransactionsScreen from "./screens/transactions/tx-transaction-screen";
 import { HistoryDetail } from "./screens/transactions/history-detail";
@@ -330,7 +330,8 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*    component={BackupMnemonicScreen}*/}
             {/*  />*/}
             {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*!/*/}
-            <Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />
+            {/*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*/}
+            <Stack.Screen name={SCREENS.Send} component={SendScreen} />
 
             {/*  <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />*/}
             {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}

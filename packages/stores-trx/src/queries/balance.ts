@@ -49,7 +49,6 @@ export class ObservableQueryTrxAccountBalanceImpl
     const currency = chainInfo.currencies.find(
       (cur) => cur.coinMinimalDenom === denom
     );
-    console.log(this.response.data, "this.response.data");
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }

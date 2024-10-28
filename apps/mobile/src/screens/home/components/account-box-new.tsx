@@ -764,7 +764,7 @@ export const AccountBoxAll: FunctionComponent<{
                 // } else {
                 //   navigate(SCREENS.NewSend);
                 // }
-                navigate(SCREENS.NewSend, {
+                navigate(SCREENS.Send, {
                   coinMinimalDenom:
                     chainStore.current.feeCurrencies?.[0].coinMinimalDenom,
                   chainId: chainId,

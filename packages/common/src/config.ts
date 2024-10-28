@@ -572,7 +572,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ["base58-address", "not-support-staking"],
+    features: ["base58-address", "not-support-staking", "tron"],
     txExplorer: {
       name: "Tronscan",
       txUrl: "https://tronscan.org/#/transaction/{txHash}",
@@ -616,7 +616,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       return [this.stakeCurrency];
     },
 
-    features: [],
+    features: ["not-support-staking", "oasis-address"],
     txExplorer: {
       name: "Oasis Saphire Scan",
       txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
@@ -661,7 +661,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       return [this.stakeCurrency];
     },
 
-    features: [],
+    features: ["not-support-staking", "oasis-address"],
     txExplorer: {
       name: "Oasis Emerald Scan",
       txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
@@ -703,7 +703,7 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
       },
     ],
-    features: [],
+    features: ["not-support-staking"],
   },
   {
     rpc: "https://evm-56.keplr.app",
@@ -740,7 +740,7 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
       },
     ],
-    features: [],
+    features: ["not-support-staking"],
   },
   {
     rpc: "https://rpc-cosmoshub.keplr.app",

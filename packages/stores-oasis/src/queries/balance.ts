@@ -23,16 +23,7 @@ export class ObservableQueryOasisAccountBalanceImpl
     protected readonly denomHelper: DenomHelper,
     protected readonly bech32Address: string
   ) {
-    super(
-      sharedContext,
-      null,
-      null,
-      null
-      //     [
-      //   ethereumHexAddress,
-      //   "latest",
-      // ]
-    );
+    super(sharedContext, "", "");
 
     makeObservable(this);
   }
@@ -49,7 +40,6 @@ export class ObservableQueryOasisAccountBalanceImpl
     const currency = chainInfo.currencies.find(
       (cur) => cur.coinMinimalDenom === denom
     );
-    console.log(this.response.data, "this.response.data");
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }

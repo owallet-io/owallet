@@ -8,6 +8,7 @@ import * as ChainsUpdate from "./chains-update/internal";
 import * as SecretWasm from "./secret-wasm/internal";
 import * as BackgroundTx from "./tx/internal";
 import * as BackgroundTxEthereum from "./tx-ethereum/internal";
+import * as BackgroundTxOasis from "./tx-oasis/internal";
 import * as TokenCW20 from "./token-cw20/internal";
 import * as TokenERC20 from "./token-erc20/internal";
 import * as Interaction from "./interaction/internal";
@@ -178,6 +179,8 @@ export function init(
       chainsService,
       notification
     );
+  const backgroundTxOasisService =
+    new BackgroundTxOasis.BackgroundTxOasisService(chainsService, notification);
 
   const phishingListService = new PhishingList.PhishingListService(
     {
@@ -257,7 +260,8 @@ export function init(
     new KeyRingTronBaseService(chainsService, vaultService, [
       new KeyRingTronMnemonicService(vaultService, keyringBaseMnemonic),
       new KeyRingTronPrivateKeyService(vaultService, keyringBasePrivateKey),
-    ])
+    ]),
+    keyRingCosmosService
   );
   const keyRingBitcoinService = new KeyRingBitcoin.KeyRingBtcService(
     chainsService,
@@ -342,6 +346,11 @@ export function init(
     backgroundTxEthereumService,
     permissionInteractiveService
   );
+  BackgroundTxOasis.init(
+    router,
+    backgroundTxOasisService,
+    permissionInteractiveService
+  );
   PhishingList.init(router, phishingListService);
   AutoLocker.init(router, autoLockAccountService);
   Analytics.init(router, analyticsService);
@@ -399,6 +408,7 @@ export function init(
 
       await backgroundTxService.init();
       await backgroundTxEthereumService.init();
+      await backgroundTxOasisService.init();
       await phishingListService.init();
       await autoLockAccountService.init();
       await permissionInteractiveService.init();
