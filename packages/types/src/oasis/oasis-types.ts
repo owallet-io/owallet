@@ -42,3 +42,32 @@ export type TW<T> = oasis.consensus.TransactionWrapper<T>;
 
 /** Runtime Transaction Wrapper */
 type RTW<T> = oasisRT.wrapper.TransactionWrapper<T, void>;
+
+export interface ListOasisScan {
+  code: number;
+  message: string;
+  data: DataOasisScan;
+}
+
+export interface DataOasisScan {
+  list: ItemOasisScan[];
+  page: number;
+  size: number;
+  maxPage: number;
+  totalSize: number;
+}
+
+export interface ItemOasisScan {
+  txHash: string;
+  height: number;
+  method: string;
+  fee: string;
+  amount: string;
+  shares: string;
+  add: boolean;
+  timestamp: number;
+  time: number;
+  status: boolean;
+  from: string;
+  to: string;
+}

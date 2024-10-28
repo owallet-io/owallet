@@ -2,6 +2,7 @@ import { ChainGetter } from "@owallet/stores";
 import {
   AppCurrency,
   EthTxReceipt,
+  ItemOasisScan,
   OWallet,
   TransactionType,
 } from "@owallet/types";
@@ -15,7 +16,7 @@ import {
   urlTxHistory,
 } from "@owallet/common";
 import { simpleFetch } from "@owallet/simple-fetch";
-import { ResDetailAllTx } from "@owallet/types-legacy";
+import { ListOasisScan } from "@owallet/types";
 
 export interface UnsignedOasisTransaction {
   amount: string;
@@ -134,6 +135,7 @@ export class OasisAccountBase {
   get isSendingTx(): boolean {
     return this._isSendingTx;
   }
+
   makeSendTokenTx({
     currency,
     amount,
@@ -164,13 +166,14 @@ export class OasisAccountBase {
 
     return unsignedTx;
   }
+
   async sendTx(
     sender: string,
     unsignedTx: UnsignedOasisTransaction,
     onTxEvents?: {
       onBroadcastFailed?: (e?: Error) => void;
       onBroadcasted?: (txHash: string) => void;
-      onFulfill?: (txReceipt: EthTxReceipt) => void;
+      onFulfill?: (txReceipt: ItemOasisScan) => void;
     }
   ) {
     try {
@@ -200,13 +203,19 @@ export class OasisAccountBase {
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {
-            // const { status, data } = await simpleFetch(`https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${this.bech32Address}`)
-            // console.log(data,"data oasis");
-            // if (data && status === 200) {
-            //     onTxEvents?.onFulfill?.(data);
-            //     resolve();
-            // }
-
+            const { status, data } = await simpleFetch<ListOasisScan>(
+              `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${this.addressDisplay}`
+            );
+            if (data && status === 200) {
+              if (!data.data?.list) return;
+              for (const itemList of data.data?.list) {
+                if (!itemList?.txHash) return;
+                if (itemList?.txHash === txHash && itemList.status) {
+                  onTxEvents?.onFulfill?.(itemList);
+                  resolve();
+                }
+              }
+            }
             reject();
           });
         },
