@@ -5,7 +5,7 @@ import { ChainInfoWithCoreTypes } from "./types";
 
 export class PingMsg extends Message<void> {
   public static type() {
-    return "keplr-ping";
+    return "owallet-ping";
   }
 
   validateBasic(): void {

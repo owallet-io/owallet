@@ -46,6 +46,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const chainId = route.params?.chainId || chainStore.current.chainId;
+  const chainInfo = chainStore.getChain(chainId);
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
@@ -66,6 +67,12 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    if (appInitStore.getInitApp.isAllNetworks) {
+      navigation.setOptions({
+        headerLeft: null,
+      });
+      return;
+    }
     navigation.setOptions({
       headerLeft: () => {
         if (navigation.canGoBack()) {
@@ -92,13 +99,13 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
         }
       },
     });
-  }, [chainId]);
+  }, [chainId, appInitStore.getInitApp.isAllNetworks]);
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      {chainId.includes("eip155") ? (
+      {chainInfo.features.includes("not-support-staking") ? (
         <View
           style={{
             position: "relative",

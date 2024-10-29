@@ -20,13 +20,13 @@ export class AllAccountStore {
 
   constructor(
     protected readonly chainGetter: ChainGetter,
-    protected readonly oasisAccountStore: OasisAccountStore,
-    protected readonly baseAccountStore: AccountStore<
+    public readonly oasisAccountStore: OasisAccountStore,
+    public readonly baseAccountStore: AccountStore<
       [CosmosAccount, CosmwasmAccount, SecretAccount]
     >,
-    protected readonly tronAccountStore: TrxAccountStore,
-    protected readonly ethereumAccountStore: EthereumAccountStore,
-    protected readonly btcAccountStore: BtcAccountStore
+    public readonly tronAccountStore: TrxAccountStore,
+    public readonly ethereumAccountStore: EthereumAccountStore,
+    public readonly btcAccountStore: BtcAccountStore
   ) {
     this.accountGetters = {
       oasis: (chainId) =>

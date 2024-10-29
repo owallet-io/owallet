@@ -18,12 +18,14 @@ import { WalletConnectAccessModal } from '@src/modals/permission/wallet-connect-
 import { GlobalPermissionModal } from '@src/modals/permission/global-permission';
 import { SuggestChainModal } from '@src/modals/permission/suggest-chain';
 import { BasicAccessModal } from '@src/modals/permission/basic-access';
+import { SignOasisModal } from '@src/modals/sign/sign-oasis';
 import { BasicAccessEVMModal } from '@src/modals/permission/basic-access-evm';
 
 export const InteractionModalsProivder: FunctionComponent = observer(({ children }) => {
   const {
     signInteractionStore,
     signEthereumInteractionStore,
+    signOasisInteractionStore,
     permissionStore,
     chainSuggestStore,
     walletConnectStore,
@@ -102,6 +104,16 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
 
       {signInteractionStore.waitingData && signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
         <ADR36SignModal isOpen={true} close={() => signInteractionStore.rejectAll()} />
+      ) : null}
+
+      {signOasisInteractionStore.waitingData ? (
+        <SignOasisModal
+          isOpen={true}
+          close={() => {
+            signOasisInteractionStore.rejectWithProceedNext(signOasisInteractionStore.waitingData?.id!, () => {});
+          }}
+          interactionData={signOasisInteractionStore.waitingData}
+        />
       ) : null}
 
       {signEthereumInteractionStore.waitingData ? (

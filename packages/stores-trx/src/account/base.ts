@@ -2,6 +2,7 @@ import { ChainGetter, WalletStatus } from "@owallet/stores";
 import { OWallet } from "@owallet/types";
 import { action, flow, makeObservable, observable } from "mobx";
 import { AccountTrxSharedContext } from "./context";
+import { getBase58Address } from "@owallet/common";
 
 export class TrxAccountBase {
   @observable
@@ -68,6 +69,7 @@ export class TrxAccountBase {
     yield this.sharedContext.getKey(this.chainId, (res) => {
       if (res.status === "fulfilled") {
         const key = res.value;
+        console.log(key, "key tron");
         this._bech32Address = key.bech32Address;
         this._ethereumHexAddress = key.ethereumHexAddress;
         this._isNanoLedger = key.isNanoLedger;
@@ -87,7 +89,7 @@ export class TrxAccountBase {
     });
   }
   get addressDisplay(): string {
-    return this._bech32Address;
+    return this.base58Address;
   }
   @action
   public disconnect(): void {
@@ -102,6 +104,12 @@ export class TrxAccountBase {
     this._isKeystone = false;
     this._name = "";
     this._pubKey = new Uint8Array(0);
+  }
+  get ethereumHexAddress(): string {
+    return this._ethereumHexAddress;
+  }
+  get base58Address(): string {
+    return getBase58Address(this._ethereumHexAddress);
   }
   get isSendingTx(): boolean {
     return this._isSendingTx;

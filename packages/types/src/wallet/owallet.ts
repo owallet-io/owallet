@@ -14,7 +14,10 @@ import Long from "long";
 import { SettledResponses } from "../settled";
 import { DirectAuxSignResponse } from "../cosmjs-alt";
 import EventEmitter from "events";
-
+import { TransactionType } from "../oasis";
+import { TW } from "../oasis/oasis-types";
+import * as oasis from "@oasisprotocol/client";
+import { types } from "@oasisprotocol/client";
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -252,6 +255,13 @@ export interface OWallet {
 export interface IOasisProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string>;
+  sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionType
+  ): Promise<types.SignatureSigned>;
 }
 export interface IBitcoinProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;

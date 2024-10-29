@@ -5,12 +5,16 @@ import {
   Key,
   SettledResponses,
   StdSignDoc,
+  EthSignType,
+  TransactionType,
 } from "@owallet/types";
 import { ROUTE } from "./constants";
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
 } from "@owallet/cosmos";
+import { TW } from "@owallet/common";
+import { types } from "@oasisprotocol/client";
 
 export class GetOasisKeyMsg extends Message<Key> {
   public static type() {
@@ -78,50 +82,40 @@ export class GetOasisKeysSettledMsg extends Message<SettledResponses<Key>> {
   }
 }
 
-export class RequestOasisSignMsg extends Message<AminoSignResponse> {
+export class RequestSignOasisMsg extends Message<types.SignatureSigned> {
   public static type() {
-    return "request-oasis-sign";
+    return "request-sign-oasis";
   }
 
   constructor(
     public readonly chainId: string,
     public readonly signer: string,
-    public readonly signDoc: StdSignDoc,
-    public readonly signOptions: OWalletSignOptions
+    public readonly message: Uint8Array,
+    public readonly signType: TransactionType
   ) {
     super();
   }
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError("keyring", 270, "chain id not set");
+      throw new Error("chain id not set");
     }
 
     if (!this.signer) {
-      throw new OWalletError("keyring", 230, "signer not set");
+      throw new Error("signer not set");
     }
 
-    // Validate bech32 address.
-    Bech32Address.validate(this.signer);
-
-    // Check and validate the ADR-36 sign doc.
-    // ADR-36 sign doc doesn't have the chain id
-    if (!checkAndValidateADR36AminoSignDoc(this.signDoc)) {
-      if (this.signDoc.chain_id !== this.chainId) {
-        throw new OWalletError(
-          "keyring",
-          234,
-          "Chain id in the message is not matched with the requested chain id"
-        );
-      }
-    } else {
-      if (this.signDoc.msgs[0].value.signer !== this.signer) {
-        throw new OWalletError("keyring", 233, "Unmatched signer in sign doc");
-      }
+    if (!this.signType) {
+      throw new Error("sign type not set");
     }
 
-    if (!this.signOptions) {
-      throw new OWalletError("keyring", 235, "Sign options are null");
+    // Validate signer address.
+    try {
+      Bech32Address.validate(this.signer);
+    } catch {
+      console.error(
+        `Invalidate Bech32 address from ${RequestSignOasisMsg.type()}`
+      );
     }
   }
 
@@ -134,6 +128,6 @@ export class RequestOasisSignMsg extends Message<AminoSignResponse> {
   }
 
   type(): string {
-    return RequestOasisSignMsg.type();
+    return RequestSignOasisMsg.type();
   }
 }

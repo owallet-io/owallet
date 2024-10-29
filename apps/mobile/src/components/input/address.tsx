@@ -127,7 +127,7 @@ export const AddressInput: FunctionComponent<{
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
-        paragraph={recipientConfig.value}
+        // paragraph={recipientConfig.value}
         inputLeft={inputLeft}
         inputRight={
           disableAddressBook ? null : (

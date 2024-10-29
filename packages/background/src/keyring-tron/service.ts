@@ -18,7 +18,8 @@ export class KeyRingTronService {
     protected readonly interactionService: InteractionService,
     protected readonly chainsUIService: ChainsUIService,
     protected readonly msgPrivilegedOrigins: string[],
-    protected readonly keyRingTronBaseService: KeyRingTronBaseService
+    protected readonly keyRingTronBaseService: KeyRingTronBaseService,
+    protected readonly keyRingCosmosService: KeyRingCosmosService
   ) {}
 
   async init() {
@@ -29,33 +30,10 @@ export class KeyRingTronService {
   }
 
   async getKeySelected(chainId: string): Promise<Key> {
-    return await this.getKey(this.keyRingService.selectedVaultId, chainId);
+    return this.keyRingCosmosService.getKeySelected(chainId);
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    try {
-      const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-      const pubKey = await this.keyRingTronBaseService.getPubKey(
-        chainId,
-        vaultId
-      );
-      const address = await oasis.staking.addressFromPublicKey(pubKey);
-      const bech32Address = new Bech32Address(address);
-      const keyInfo = this.keyRingService.getKeyInfo(vaultId);
-      return {
-        name: this.keyRingService.getKeyRingName(vaultId),
-        algo: "secp256k1",
-        pubKey: pubKey,
-        address,
-        bech32Address: bech32Address.toBech32(
-          chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
-        ),
-        ethereumHexAddress: "",
-        isNanoLedger: keyInfo.type === "ledger",
-        isKeystone: keyInfo.type === "keystone",
-      };
-    } catch (e) {
-      console.error(e, "err get key oasis");
-    }
+    return this.keyRingCosmosService.getKey(vaultId, chainId);
   }
 }

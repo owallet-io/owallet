@@ -1081,6 +1081,18 @@ export class ChainsService {
     const chainInfo = this.getChainInfoOrThrow(chainId);
     return chainInfo.evm !== undefined;
   }
+  isOasisChain(chainId: string): boolean {
+    const chainInfo = this.getChainInfoOrThrow(chainId);
+    return chainInfo.features.includes("oasis");
+  }
+  isTronChain(chainId: string): boolean {
+    const chainInfo = this.getChainInfoOrThrow(chainId);
+    return chainInfo.features.includes("tron");
+  }
+  isBtcChain(chainId: string): boolean {
+    const chainInfo = this.getChainInfoOrThrow(chainId);
+    return chainInfo.features.includes("btc");
+  }
 
   isEvmOnlyChain(chainId: string): boolean {
     return this.isEvmChain(chainId) && chainId.split(":")[0] === "eip155";

@@ -32,7 +32,7 @@ import { StackNavigationOptions } from '@react-navigation/stack';
 import { OWHeaderTitle } from '@components/header';
 
 export const TokenDetailsScreen: FunctionComponent = observer(props => {
-  const { chainStore, priceStore, accountStore, keyRingStore } = useStore();
+  const { chainStore, priceStore, allAccountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
   const styles = useStyles(colors);
@@ -56,47 +56,9 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
 
   const { item } = route.params;
 
-  const account = accountStore.getAccount(item.chainInfo.chainId);
+  const account = allAccountStore.getAccount(item.chainInfo.chainId);
 
-  const [tronTokens, setTronTokens] = useState([]);
-
-  // useEffect(() => {
-  //   tracking("Token Detail Screen");
-  //   InteractionManager.runAfterInteractions(() => {
-  //     (async function get() {
-  //       try {
-  //         if (accountTron.evmosHexAddress) {
-  //           const res = await API.getTronAccountInfo(
-  //             {
-  //               address: getBase58Address(accountTron.evmosHexAddress),
-  //             },
-  //             {
-  //               baseURL: chainStore.current.rpc,
-  //             }
-  //           );
-  //
-  //           if (res.data?.data?.length > 0) {
-  //             if (res.data?.data[0].trc20) {
-  //               const tokenArr = [];
-  //               TRC20_LIST.map((tk) => {
-  //                 let token = res.data?.data[0].trc20.find(
-  //                   (t) => tk.contractAddress in t
-  //                 );
-  //                 if (token) {
-  //                   tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
-  //                 }
-  //               });
-  //
-  //               setTronTokens(tokenArr);
-  //             }
-  //           }
-  //         }
-  //       } catch (error) {}
-  //     })();
-  //   });
-  // }, [accountTron.evmosHexAddress]);
-
-  const address = account.addressDisplay;
+  const address = item.token.currency.type === 'legacy' ? account.btcLegacyAddress : account.addressDisplay;
   const onPressToken = async () => {
     // chainStore.selectChain(item.chainInfo.chainId);
     // await chainStore.saveLastViewChainId();
@@ -136,43 +98,9 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
     // }
 
     try {
-      // console.log(new DenomHelper(item.token.currency.coinMinimalDenom).denom, "denom helper");
-      const chainInfo = chainStore.getChain(item.chainInfo.chainId);
-
-      if (chainInfo.evm) {
-        if (item.chainInfo.chainId === ChainIdEnum.TRON) {
-          const itemTron = tronTokens?.find(t => {
-            return t.coinGeckoId === item.token.currency.coinGeckoId;
-          });
-
-          navigate(SCREENS.SendTron, {
-            item: itemTron,
-            currency: item.token.currency.coinDenom,
-            contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom).contractAddress
-          });
-
-          return;
-        }
-        if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
-          navigate(SCREENS.SendOasis, {
-            currency: chainStore.current.stakeCurrency.coinMinimalDenom
-          });
-          return;
-        }
-        navigate(SCREENS.SendEvm, {
-          coinMinimalDenom: item.token.currency.coinMinimalDenom,
-          chainId: item.chainInfo.chainId
-        });
-        return;
-      }
-      navigate(SCREENS.NewSend, {
+      navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
         chainId: item.chainInfo.chainId
-        // currency: item.token.currency.coinDenom,
-        // contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-        //   .contractAddress,
-        // coinGeckoId: item.token.currency.coinGeckoId,
-        // denom: new DenomHelper(item.token.currency.coinMinimalDenom).denom,
       });
     } catch (err) {
       console.log('err', err, item.chainInfo.chainId);
@@ -303,7 +231,8 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
               label="Receive"
               onPress={() => {
                 navigate(SCREENS.QRScreen, {
-                  chainId: item.chainInfo.chainId
+                  chainId: item.chainInfo.chainId,
+                  isBtcLegacy: item.token.currency.type === 'legacy'
                 });
                 return;
               }}

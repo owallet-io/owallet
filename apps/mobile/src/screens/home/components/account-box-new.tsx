@@ -95,7 +95,7 @@ export const AccountBoxAll: FunctionComponent<{
 
   const chainId = chainStore.current.chainId;
   const account = allAccountStore.getAccount(chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
   const availableTotalPrice =
     useMemo(() => {
       let result: PricePretty | undefined;
@@ -193,7 +193,6 @@ export const AccountBoxAll: FunctionComponent<{
 
     const minimumPrice =
       (Number(totalPriceBalance.toDec().toString()) * 3) / 100;
-    console.log(minimumPrice, "minimumPrice");
     const chainsInfoWithBalance = chainStore.chainInfosInUI
       .map((item) => {
         let balances = hugeQueriesStore.getAllBalancesByChainId(item.chainId);
@@ -250,7 +249,7 @@ export const AccountBoxAll: FunctionComponent<{
     setChainListWithBalance(tmpChain);
     setSeries([...tmpSeries, otherValue]);
     setSliceColor([...tmpSliceColor, "#494949"]);
-  }, [totalPriceBalance, accountOrai.bech32Address]);
+  }, [totalPriceBalance, account.addressDisplay]);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
   const chainAddress = account.addressDisplay;
@@ -264,6 +263,7 @@ export const AccountBoxAll: FunctionComponent<{
     modalStore.setChildren(<MyWalletModal />);
   };
   const queries = queriesStore.get(chainId);
+
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
@@ -637,7 +637,7 @@ export const AccountBoxAll: FunctionComponent<{
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text style={styles.labelName}>{accountOrai?.name || "..."}</Text>
+            <Text style={styles.labelName}>{account?.name || "..."}</Text>
             <DownArrowIcon
               height={15}
               color={colors["neutral-icon-on-light"]}
@@ -764,7 +764,7 @@ export const AccountBoxAll: FunctionComponent<{
                 // } else {
                 //   navigate(SCREENS.NewSend);
                 // }
-                navigate(SCREENS.NewSend, {
+                navigate(SCREENS.Send, {
                   coinMinimalDenom:
                     chainStore.current.feeCurrencies?.[0].coinMinimalDenom,
                   chainId: chainId,

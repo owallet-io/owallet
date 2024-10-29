@@ -217,6 +217,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       ),
     });
   }, [chainStore.current?.chainName]);
+  console.log("zo tron");
   return (
     <PageWithBottom
       bottomGroup={

@@ -27,6 +27,7 @@ import {
   PermissionStore,
   SignEthereumInteractionStore,
   SignInteractionStore,
+  SignOasisInteractionStore,
   TokensStore
 } from '@owallet/stores-core';
 import { AsyncKVStore } from '../common';
@@ -95,6 +96,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly universalSwapStore: UniversalSwapStore;
   // public readonly webpageStore: WebpageStore;
@@ -114,13 +116,14 @@ export class RootStore {
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
       OasisQueries,
-      TrxQueries,
+      // TrxQueries,
       BtcQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
   // public readonly skipQueriesStore: SkipQueries;
   public readonly accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
+
   public readonly ethereumAccountStore: EthereumAccountStore;
   public readonly oasisAccountStore: OasisAccountStore;
   public readonly tronAccountStore: TrxAccountStore;
@@ -173,6 +176,8 @@ export class RootStore {
     );
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(this.interactionStore);
+    this.signOasisInteractionStore = new SignOasisInteractionStore(this.interactionStore);
+
     this.chainSuggestStore = new ChainSuggestStore(this.interactionStore, CommunityChainInfoRepo);
 
     this.queriesStore = new QueriesStore(
@@ -205,7 +210,7 @@ export class RootStore {
         coingeckoAPIURI: ''
       }),
       OasisQueries.use(),
-      TrxQueries.use(),
+      // TrxQueries.use(),
       BtcQueries.use()
     );
     this.browserStore = new BrowserStore();
@@ -435,9 +440,8 @@ export class RootStore {
     this.hugeQueriesStore = new HugeQueriesStore(
       this.chainStore,
       this.queriesStore,
-      this.accountStore,
-      this.priceStore,
-      this.oasisAccountStore
+      this.allAccountStore,
+      this.priceStore
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(

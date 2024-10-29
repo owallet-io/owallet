@@ -21,22 +21,20 @@ import { Box } from "../../components/box";
 import { FormattedMessage, useIntl } from "react-intl";
 // import {EthTxReceipt, EthTxStatus} from '@owallet/types';
 import { simpleFetch } from "@owallet/simple-fetch";
-import { retry } from "@owallet/common";
+import { Network, retry, urlTxHistory } from "@owallet/common";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { OWButton } from "@components/button";
 import OWIcon from "@components/ow-icon/ow-icon";
-import { EthTxReceipt, EthTxStatus } from "@owallet/types";
+import { EthTxReceipt, EthTxStatus, ResDetailAllTx } from "@owallet/types";
 import { notification } from "@stores/notification";
+import { API } from "@common/api";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
-  // const notification = useNotification();
+  const { chainStore, allAccountStore } = useStore();
   const intl = useIntl();
 
   const isPendingGoToResult = useRef(false);
-  //NOTE home으로 갈 때 home이 다 렌더링이 안될 때 tx에 성공되면 tx tracer에 의해서 success로 이동됨
-  //해서 해당 값을 통해서 home으로 갈 경우 success로 이동 안될 수 있게 함
   const isPendingGotoHome = useRef(false);
 
   const route = useRoute<
@@ -54,29 +52,39 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   >();
 
   const chainId = route.params.chainId;
-
+  const account = allAccountStore.getAccount(chainId);
   const style = useStyle();
   const navigation = useNavigation();
 
   const isFocused = useIsFocused();
-
-  // useEffect(() => {
-  //   notification.disable(true);
-  //   return () => {
-  //     //NOTE 성공 또는 실패로 라우팅될때 해당 페이지가 렌더링된후 현재 pending페이지의 useEffect return 이 실행됨
-  //     //그래서 성공페이지에서 disable(true)로 설정된후 이후 여기의 disable(false)가 실행됨
-  //     //해서 홈으로 만 갈때만 disable을 false로 설정함
-  //     if (!isPendingGoToResult.current) {
-  //       notification.disable(false);
-  //     }
-  //   };
-  // }, [notification]);
 
   useEffect(() => {
     if (isFocused) {
       const txHash = route.params.txHash;
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
+      if (chainInfo.features.includes("oasis") && txHash) {
+        simpleFetch(
+          `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${account.addressDisplay}`
+        )
+          .then(({ data }) => {
+            if (!data.data?.list) return;
+            for (const itemList of data.data?.list) {
+              if (!itemList?.txHash) return;
+              if (itemList?.txHash === txHash && itemList.status) {
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+                return;
+              } else {
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+                return;
+              }
+            }
+          })
+          .catch((err) => console.error(err, "Err oasis"));
+        return;
+      }
 
       if (isEvmTx) {
         retry(

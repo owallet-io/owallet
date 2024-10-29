@@ -138,9 +138,9 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               label={label ?? ""}
               className={styleAddressInput.input}
               innerRef={inputRef}
-              value={recipientConfig.rawRecipient}
+              value={recipientConfig.recipient}
               onChange={(e) => {
-                recipientConfig.setRawRecipient(e.target.value);
+                recipientConfig.setValue(e.target.value);
                 e.preventDefault();
               }}
               autoComplete="off"

@@ -113,42 +113,4 @@ export class KeyRingBtcBaseService {
 
     throw new Error("Unsupported keyRing vault");
   }
-  // getPubKey(vault: Vault): Uint8Array {
-  //   const publicKeyBytes = Buffer.from(
-  //     vault.insensitive["publicKey"] as string,
-  //     "hex"
-  //   );
-  //
-  //   return new Uint8Array(publicKeyBytes);
-  // }
-
-  // sign(
-  //   vault: Vault,
-  //   _coinType: number,
-  //   data: Uint8Array,
-  //   digestMethod: "sha256" | "keccak256"
-  // ): {
-  //   readonly r: Uint8Array;
-  //   readonly s: Uint8Array;
-  //   readonly v: number | null;
-  // } {
-  //   const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
-  //     "privateKey"
-  //   ] as string;
-  //   const privateKey = new PrivKeySecp256k1(Buffer.from(privateKeyText, "hex"));
-  //
-  //   let digest = new Uint8Array();
-  //   switch (digestMethod) {
-  //     case "sha256":
-  //       digest = Hash.sha256(data);
-  //       break;
-  //     case "keccak256":
-  //       digest = Hash.keccak256(data);
-  //       break;
-  //     default:
-  //       throw new Error(`Unknown digest method: ${digestMethod}`);
-  //   }
-  //
-  //   return privateKey.signDigest32(digest);
-  // }
 }

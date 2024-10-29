@@ -13,8 +13,9 @@ import { ChainIdEnum, DenomHelper, getOasisAddress, MapChainIdToNetwork } from '
 import { computedFn } from 'mobx-utils';
 import { BinarySortArray } from './sort';
 import { OasisAccountStore } from '@owallet/stores-oasis';
+import { AllAccountStore } from '@stores/all-account-store';
 
-interface ViewToken {
+export interface ViewToken {
   chainInfo: IChainInfoImpl;
   token: CoinPretty;
   price: PricePretty | undefined;
@@ -36,9 +37,8 @@ export class HugeQueriesStore {
   constructor(
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
-    protected readonly accountStore: IAccountStore,
-    protected readonly priceStore: CoinGeckoPriceStore,
-    protected readonly oasisAccountStore: OasisAccountStore
+    protected readonly accountStore: AllAccountStore,
+    protected readonly priceStore: CoinGeckoPriceStore
   ) {
     let balanceDisposal: (() => void) | undefined;
     this.balanceBinarySort = new BinarySortArray<ViewToken>(
@@ -110,13 +110,9 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       let account = this.accountStore.getAccount(chainInfo.chainId);
-      if (chainInfo.features.includes('oasis')) {
-        // @ts-ignore
-        account = this.oasisAccountStore.getAccount(chainInfo.chainId);
-      }
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
-      if (account.bech32Address === '') {
+      if (account.addressDisplay === '') {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -129,11 +125,14 @@ export class HugeQueriesStore {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
         const isERC20 = denomHelper.type === 'erc20';
         const isMainCurrency = mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
-        const queryBalance =
-          this.chainStore.isEvmChain(chainInfo.chainId) && (isMainCurrency || isERC20)
+        let queryBalance =
+          this.chainStore.isEvmOnlyChain(chainInfo.chainId) && (isMainCurrency || isERC20)
             ? queries.queryBalances.getQueryEthereumHexAddress(account.ethereumHexAddress)
             : queries.queryBalances.getQueryBech32Address(account.bech32Address);
-
+        const isBtcLegacy = denomHelper.type === 'legacy';
+        if (isBtcLegacy) {
+          queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(account.btcLegacyAddress);
+        }
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {
           if (chainInfo.stakeCurrency?.coinMinimalDenom === currency.coinMinimalDenom) {
@@ -310,7 +309,7 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '') {
+      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -346,7 +345,7 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '') {
+      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -396,7 +395,7 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '') {
+      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -458,10 +457,7 @@ export class HugeQueriesStore {
       const address = account.addressDisplay;
       const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
       if (!mapChainNetwork) continue;
-      data[mapChainNetwork] =
-        chainInfo.chainId === ChainIdEnum.OasisSapphire || chainInfo.chainId === ChainIdEnum.OasisEmerald
-          ? getOasisAddress(address)
-          : address;
+      data[mapChainNetwork] = chainInfo.features.includes('oasis-address') ? getOasisAddress(address) : address;
     }
     return data;
   }

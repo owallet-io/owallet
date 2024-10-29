@@ -3,13 +3,27 @@ import { KeyRing, KeyRingService } from "../keyring";
 
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import { ChainInfo, Key } from "@owallet/types";
-import { KeyRingCosmosService } from "../keyring-cosmos";
+import {
+  ChainInfo,
+  EthereumSignResponse,
+  EthSignType,
+  Key,
+  TransactionType,
+} from "@owallet/types";
+import {
+  domainHash,
+  EIP712MessageValidator,
+  KeyRingCosmosService,
+  messageHash,
+} from "../keyring-cosmos";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { Vault, VaultService } from "../vault";
 import * as oasis from "@oasisprotocol/client";
 import { KeyRingOasisBaseService } from "./keyring-base";
+import { Env } from "@owallet/router";
+import { Buffer } from "buffer";
+import { TW } from "@owallet/common";
 
 export class KeyRingOasisService {
   constructor(
@@ -23,9 +37,6 @@ export class KeyRingOasisService {
 
   async init() {
     // TODO: ?
-    // this.chainsService.addChainSuggestedHandler(
-    //   this.onChainSuggested.bind(this)
-    // );
   }
 
   async getKeySelected(chainId: string): Promise<Key> {
@@ -53,5 +64,121 @@ export class KeyRingOasisService {
       isNanoLedger: keyInfo.type === "ledger",
       isKeystone: keyInfo.type === "keystone",
     };
+  }
+  async signOasisSelected(
+    env: Env,
+    origin: string,
+    chainId: string,
+    signer: string,
+    message: Uint8Array,
+    signType: TransactionType
+  ): Promise<{
+    signingData: Uint8Array;
+    signature?: oasis.types.SignatureSigned;
+  }> {
+    return await this.signOasis(
+      env,
+      origin,
+      this.keyRingService.selectedVaultId,
+      chainId,
+      signer,
+      message,
+      signType
+    );
+  }
+
+  async signOasis(
+    env: Env,
+    origin: string,
+    vaultId: string,
+    chainId: string,
+    signer: string,
+    message: Uint8Array,
+    signType: TransactionType
+  ): Promise<{
+    signingData: Uint8Array;
+    signature?: oasis.types.SignatureSigned;
+  }> {
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    if (chainInfo.hideInUI) {
+      throw new Error("Can't sign for hidden chain");
+    }
+    const isOasisChain = this.chainsService.isOasisChain(chainId);
+
+    if (!isOasisChain) {
+      throw new Error("Invalid Oasis chain");
+    }
+
+    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+    if (!keyInfo) {
+      throw new Error("Null key info");
+    }
+
+    if (keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
+    }
+
+    try {
+      Bech32Address.validate(signer);
+    } catch {
+      console.error("Fail validate Bech32Address");
+    }
+
+    const key = await this.getKey(vaultId, chainId);
+    if (signer !== key.bech32Address) {
+      throw new Error("Signer mismatched");
+    }
+
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-oasis",
+      "request-sign-oasis",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: key.pubKey,
+        message,
+        signType,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: {
+        signingData: Uint8Array;
+        signature?: oasis.types.SignatureSigned;
+      }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            return {
+              signingData: res.signingData,
+              signature: res.signature,
+            };
+          } else {
+            switch (signType) {
+              case TransactionType.StakingTransfer: {
+                const signature = await this.keyRingOasisBaseService.sign(
+                  chainId,
+                  vaultId,
+                  res.signingData
+                );
+                return {
+                  signingData: res.signingData,
+                  signature: signature,
+                };
+              }
+
+              default:
+                throw new Error(`Unknown sign type: ${signType}`);
+            }
+          }
+        })();
+      }
+    );
   }
 }

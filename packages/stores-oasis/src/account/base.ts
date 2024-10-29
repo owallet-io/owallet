@@ -1,7 +1,29 @@
-import { ChainGetter, WalletStatus } from "@owallet/stores";
-import { OWallet } from "@owallet/types";
+import { ChainGetter } from "@owallet/stores";
+import {
+  AppCurrency,
+  EthTxReceipt,
+  ItemOasisScan,
+  OWallet,
+  TransactionType,
+} from "@owallet/types";
 import { action, flow, makeObservable, observable } from "mobx";
 import { AccountOasisSharedContext } from "./context";
+import {
+  API,
+  DenomHelper,
+  Network,
+  retry,
+  urlTxHistory,
+} from "@owallet/common";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { ListOasisScan } from "@owallet/types";
+
+export interface UnsignedOasisTransaction {
+  amount: string;
+  to: string;
+  coinMinimalDenom: string;
+  chainId: string;
+}
 
 export class OasisAccountBase {
   @observable
@@ -50,11 +72,15 @@ export class OasisAccountBase {
   get pubKey(): Uint8Array {
     return this._pubKey.slice();
   }
+
   protected hasInited = false;
+
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
   }
+
   private readonly handleInit = () => this.init();
+
   @flow
   public *init() {
     if (!this.hasInited) {
@@ -86,9 +112,11 @@ export class OasisAccountBase {
       }
     });
   }
+
   get addressDisplay(): string {
     return this._bech32Address;
   }
+
   @action
   public disconnect(): void {
     this.hasInited = false;
@@ -103,7 +131,108 @@ export class OasisAccountBase {
     this._name = "";
     this._pubKey = new Uint8Array(0);
   }
+
   get isSendingTx(): boolean {
     return this._isSendingTx;
+  }
+
+  makeSendTokenTx({
+    currency,
+    amount,
+    to,
+  }: {
+    currency: AppCurrency;
+    amount: string;
+    to: string;
+  }): UnsignedOasisTransaction {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const isOasis = chainInfo.features.includes("oasis");
+    if (!isOasis) {
+      throw new Error("No Oasis chain info provided");
+    }
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+
+    const unsignedTx: UnsignedOasisTransaction = (() => {
+      switch (denomHelper.type) {
+        default:
+          return {
+            chainId: chainInfo.chainId,
+            to,
+            amount,
+            coinMinimalDenom: currency.coinMinimalDenom,
+          };
+      }
+    })();
+
+    return unsignedTx;
+  }
+
+  async sendTx(
+    sender: string,
+    unsignedTx: UnsignedOasisTransaction,
+    onTxEvents?: {
+      onBroadcastFailed?: (e?: Error) => void;
+      onBroadcasted?: (txHash: string) => void;
+      onFulfill?: (txReceipt: ItemOasisScan) => void;
+    }
+  ) {
+    try {
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      const oasisInfo = chainInfo.grpc;
+      if (!oasisInfo || !chainInfo.features.includes("oasis")) {
+        throw new Error("No Oasis info provided");
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const owallet = (await this.getOWallet())!;
+      const signedTx = await owallet.oasis.sign(
+        this.chainId,
+        sender,
+        JSON.stringify(unsignedTx),
+        TransactionType.StakingTransfer
+      );
+      const txHash = await owallet.oasis.sendTx(this.chainId, signedTx);
+      if (!txHash) {
+        throw new Error("No tx hash responded");
+      }
+
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents.onBroadcasted(txHash);
+      }
+
+      retry(
+        () => {
+          return new Promise<void>(async (resolve, reject) => {
+            const { status, data } = await simpleFetch<ListOasisScan>(
+              `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${this.addressDisplay}`
+            );
+            if (data && status === 200) {
+              if (!data.data?.list) return;
+              for (const itemList of data.data?.list) {
+                if (!itemList?.txHash) return;
+                if (itemList?.txHash === txHash && itemList.status) {
+                  onTxEvents?.onFulfill?.(itemList);
+                  resolve();
+                }
+              }
+            }
+            reject();
+          });
+        },
+        {
+          maxRetries: 10,
+          waitMsAfterError: 500,
+          maxWaitMsAfterError: 4000,
+        }
+      );
+
+      return txHash;
+    } catch (e) {
+      if (onTxEvents?.onBroadcastFailed) {
+        onTxEvents.onBroadcastFailed(e);
+      }
+
+      throw e;
+    }
   }
 }

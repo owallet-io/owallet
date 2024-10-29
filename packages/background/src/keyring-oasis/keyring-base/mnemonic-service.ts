@@ -1,14 +1,23 @@
 import { Buffer } from "buffer/";
 import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
-import { HDKey, uint2hex } from "@owallet/common";
-import { KeyRing } from "../../keyring";
-import { ChainInfo } from "@owallet/types";
+import {
+  getOasisNic,
+  HDKey,
+  OasisTransaction,
+  parseRoseStringToBigNumber,
+  signerFromPrivateKey,
+  TW,
+  uint2hex,
+} from "@owallet/common";
+import { KeyRingOasis } from "../../keyring";
+import { ChainInfo, TransactionType } from "@owallet/types";
+import * as oasis from "@oasisprotocol/client";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
-export class KeyRingOasisMnemonicService implements KeyRing {
+export class KeyRingOasisMnemonicService implements KeyRingOasis {
   constructor(
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingMnemonicService
@@ -54,37 +63,45 @@ export class KeyRingOasisMnemonicService implements KeyRing {
     });
     return keyPair.publicKey;
   }
-  sign(
+  async sign(
     vault: Vault,
     coinType: number,
     data: Uint8Array,
-    digestMethod: "sha256" | "keccak256"
-  ): {
-    readonly r: Uint8Array;
-    readonly s: Uint8Array;
-    readonly v: number | null;
-  } {
-    // const privKey = this.getPrivKey(vault, coinType);
+    chainInfo: ChainInfo
+  ): Promise<oasis.types.SignatureSigned> {
+    const parsedData = JSON.parse(Buffer.from(data).toString());
+    console.log(parsedData, "parsedData");
+    const { amount, to } = parsedData;
+    const privKey = await this.getPrivKey(vault);
+    const signer = signerFromPrivateKey(privKey);
+    console.log(amount, "amount");
+    console.log(
+      parseRoseStringToBigNumber(amount).toString(),
+      "parseRoseStringToBigNumber(amount).toString()"
+    );
+    const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
+    console.log(bigIntAmount, to, "bigIntAmount");
+    if (!chainInfo.grpc || !chainInfo.features.includes("oasis"))
+      throw Error("Not found Oasis chain");
+    const nic = getOasisNic(chainInfo.grpc);
+    const chainContext = await nic.consensusGetChainContext();
+
+    const tw = await OasisTransaction.buildTransfer(
+      nic,
+      signer,
+      to,
+      bigIntAmount
+    );
+
+    await OasisTransaction.sign(chainContext, signer, tw);
+    console.log(tw, "tw");
     //
-    // let digest = new Uint8Array();
-    // switch (digestMethod) {
-    //     case "sha256":
-    //         digest = Hash.sha256(data);
-    //         break;
-    //     case "keccak256":
-    //         digest = Hash.keccak256(data);
-    //         break;
-    //     default:
-    //         throw new Error(`Unknown digest method: ${digestMethod}`);
-    // }
-    //
-    // return privKey.signDigest32(digest);
-    return;
+    return tw.signedTransaction;
   }
 
   protected async getPrivKey(
-    vault: Vault,
-    coinType: number
+    vault: Vault
+    // coinType: number
   ): Promise<Uint8Array> {
     const decrypted = this.vaultService.decrypt(vault.sensitive);
     const mnemonicText = decrypted["mnemonic"] as string | undefined;

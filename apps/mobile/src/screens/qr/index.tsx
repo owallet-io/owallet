@@ -11,15 +11,14 @@ import { OWButton } from "@src/components/button";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
 import { CheckIcon, DownArrowIcon } from "@src/components/icon";
-import { chainIcons } from "@oraichain/oraidex-common";
 import { useSimpleTimer } from "@src/hooks";
 import { CopyAddressModal } from "../home/components/copy-address/copy-address-modal";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { tracking } from "@src/utils/tracking";
-// import { ChainInfoInner } from "@owallet/stores";
-// import { ChainInfoWithEmbed } from "@owallet/background";
+
 import { unknownToken } from "@owallet/common";
+import { ChainInfo } from "@owallet/types";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -43,10 +42,62 @@ const styling = (colors) =>
       width: metrics.screenWidth / 2.3,
       borderRadius: 999,
     },
+    viewCenter: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    touchableStyle: {
+      flexDirection: "row",
+      backgroundColor: colors["neutral-surface-action3"],
+      borderRadius: 999,
+      paddingHorizontal: 14,
+      paddingVertical: 12,
+      maxWidth: metrics.screenWidth / 2,
+      marginTop: 12,
+      alignItems: "center",
+    },
+    iconWrapper: {
+      width: 22,
+      height: 22,
+      borderRadius: 999,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      backgroundColor: colors["neutral-surface-action"],
+    },
+    qrImageWrapper: {
+      position: "absolute",
+      alignSelf: "center",
+    },
+    qrImage: {
+      width: metrics.screenHeight / 3.2,
+      height: metrics.screenHeight / 3.2,
+    },
+    qrCodeWrapper: {
+      marginTop: 24,
+      alignSelf: "center",
+    },
+    addressWrapper: {
+      marginTop: metrics.screenHeight / 10,
+      alignItems: "center",
+    },
+    addressContainer: {
+      backgroundColor: colors["neutral-surface-bg"],
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      marginBottom: 16,
+    },
+    copyButton: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    copyIcon: {
+      paddingHorizontal: 4,
+    },
   });
 
 export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
-  const { chainStore, keyRingStore, accountStore, modalStore } = useStore();
+  const { chainStore, allAccountStore, modalStore } = useStore();
 
   const route = useRoute<
     RouteProp<
@@ -64,13 +115,14 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
     params?.chainId ? params?.chainId : chainStore.current.chainId
   );
 
-  const [network, setNetwork] =
-    useState<ChainInfoInner<ChainInfoWithEmbed>>(chainInfo);
-  const account = accountStore.getAccount(
+  const [network, setNetwork] = useState<ChainInfo>(chainInfo);
+  const account = allAccountStore.getAccount(
     network?.chainId || params?.chainId || chainStore.current.chainId
   );
-  const [isBtcLegacy, setIsBtcLegacy] = useState<boolean>(false);
-  const addressToShow = account.addressDisplay;
+  const [isBtcLegacy, setIsBtcLegacy] = useState(params?.isBtcLegacy || false);
+  const addressToShow = isBtcLegacy
+    ? account.btcLegacyAddress
+    : account.addressDisplay;
   const [isOpen, setModalOpen] = useState(false);
 
   const { colors } = useTheme();
@@ -81,8 +133,9 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
     return () => {};
   }, []);
 
-  const onPressAddress = (item) => {
+  const onPressAddress = (item, isBtcLegacy) => {
     setNetwork(item);
+    setIsBtcLegacy(isBtcLegacy);
     setModalOpen(false);
   };
 
@@ -118,8 +171,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
         close={() => setModalOpen(false)}
         isOpen={isOpen}
         onPress={(item, isBtcLegacy) => {
-          onPressAddress(item);
-          setIsBtcLegacy(isBtcLegacy);
+          onPressAddress(item, isBtcLegacy);
         }}
         bottomSheetModalConfig={{
           enablePanDownToClose: false,
@@ -127,42 +179,18 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
         }}
       />
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <View style={styles.viewCenter}>
           <OWText color={colors["neutral-text-title"]} size={14}>
             Scan QR code or share address to sender
           </OWText>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <View style={styles.viewCenter}>
             <TouchableOpacity
               onPress={() => {
                 setModalOpen(true);
               }}
-              style={{
-                flexDirection: "row",
-                backgroundColor: colors["neutral-surface-action3"],
-                borderRadius: 999,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                maxWidth: metrics.screenWidth / 2,
-                marginTop: 12,
-                alignItems: "center",
-              }}
+              style={styles.touchableStyle}
             >
-              <View
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 999,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                  backgroundColor: colors["neutral-surface-action"],
-                }}
-              >
+              <View style={styles.iconWrapper}>
                 <OWIcon
                   type="images"
                   source={{
@@ -170,35 +198,25 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
                       network?.chainSymbolImageUrl || unknownToken.coinImageUrl,
                   }}
                   size={16}
-                  style={{
-                    borderRadius: 999,
-                  }}
+                  style={{ borderRadius: 999 }}
                 />
               </View>
 
-              <OWText style={{ paddingHorizontal: 4 }} weight="600" size={14}>
+              <OWText style={styles.copyIcon} weight="600" size={14}>
                 {network?.chainName}
               </OWText>
               <DownArrowIcon height={11} color={colors["primary-text"]} />
             </TouchableOpacity>
             <View style={{ marginTop: 24 }}>
-              <View
-                style={{
-                  position: "absolute",
-                  alignSelf: "center",
-                }}
-              >
+              <View style={styles.qrImageWrapper}>
                 <Image
-                  style={{
-                    width: metrics.screenHeight / 3.2,
-                    height: metrics.screenHeight / 3.2,
-                  }}
+                  style={styles.qrImage}
                   source={require("../../assets/image/img_qr.png")}
                   resizeMode="contain"
                   fadeDuration={0}
                 />
               </View>
-              <View style={{ marginTop: 24, alignSelf: "center" }}>
+              <View style={styles.qrCodeWrapper}>
                 {addressToShow ? (
                   <QRCode
                     size={metrics.screenHeight / 4.2}
@@ -209,30 +227,15 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
             </View>
           </View>
 
-          <View
-            style={{
-              marginTop: metrics.screenHeight / 10,
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: colors["neutral-surface-bg"],
-                borderRadius: 8,
-                paddingHorizontal: 16,
-                marginBottom: 16,
-              }}
-            >
+          <View style={styles.addressWrapper}>
+            <View style={styles.addressContainer}>
               <OWText color={colors["neutral-text-body"]} size={13}>
                 {addressToShow}
               </OWText>
             </View>
 
             <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-              }}
+              style={styles.copyButton}
               onPress={() => {
                 Clipboard.setString(addressToShow);
                 setTimer(2000);
@@ -249,7 +252,7 @@ export const AddressQRScreen: FunctionComponent<{}> = observer(({}) => {
               )}
 
               <OWText
-                style={{ paddingHorizontal: 4 }}
+                style={styles.copyIcon}
                 color={colors["primary-text-action"]}
                 weight="600"
                 size={14}

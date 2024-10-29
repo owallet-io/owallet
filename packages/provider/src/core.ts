@@ -23,6 +23,7 @@ import {
   IOasisProvider,
   IBitcoinProvider,
   ITronProvider,
+  TransactionType,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -38,6 +39,8 @@ import Long from "long";
 import { Buffer } from "buffer/";
 import { OWalletCoreTypes } from "./core-types";
 import EventEmitter from "events";
+import { TW } from "@owallet/common";
+import { types } from "@oasisprotocol/client";
 
 export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -557,7 +560,20 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       }, 100);
     });
   }
+  async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
+    await this.enable(chainId);
 
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "background-tx-ethereum",
+      "send-ethereum-tx-to-background",
+      {
+        chainId,
+        tx,
+      }
+    );
+  }
   async signEthereum(
     chainId: string,
     signer: string,
@@ -950,24 +966,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     );
   }
 
-  async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
-    // XXX: 원래 enable을 미리하지 않아도 백그라운드에서 알아서 처리해주는 시스템이였는데...
-    //      side panel에서는 불가능하기 때문에 이젠 provider에서 permission도 관리해줘야한다...
-    //      sendTx의 경우는 일종의 쿼리이기 때문에 언제 결과가 올지 알 수 없다. 그러므로 미리 권한 처리를 해야한다.
-    await this.enable(chainId);
-
-    return await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "background-tx-ethereum",
-      "send-ethereum-tx-to-background",
-      {
-        chainId,
-        tx,
-      }
-    );
-  }
-
   async suggestERC20(chainId: string, contractAddress: string): Promise<void> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1002,18 +1000,10 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       {}
     );
   }
-
-  // IMPORTANT: protected로 시작하는 method는 InjectedOWallet.startProxy()에서 injected 쪽에서 event system으로도 호출할 수 없도록 막혀있다.
-  //            protected로 시작하지 않는 method는 injected owallet에 없어도 event system을 통하면 호출 할 수 있다.
-  //            이를 막기 위해서 method 이름을 protected로 시작하게 한다.
   async protectedTryOpenSidePanelIfEnabled(
     ignoreGestureFailure: boolean = false
   ): Promise<void> {
     let isInContentScript = false;
-    // 이 provider가 content script 위에서 동작하고 있는지 아닌지 구분해야한다.
-    // content script일때만 side panel을 열도록 시도해볼 가치가 있다.
-    // 근데 js 자체적으로 api등을 통해서는 이를 알아낼 방법이 없다.
-    // extension 상에서 content script에서 owallet provider proxy를 시작하기 전에 window에 밑의 field를 알아서 주입하는 방식으로 처리한다.
     if (
       typeof window !== "undefined" &&
       (window as any).__owallet_content_script === true
@@ -1449,6 +1439,54 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
 
+  async sendTx(
+    chainId: string,
+    signedTx: types.SignatureSigned
+  ): Promise<string> {
+    await this.owallet.enable(chainId);
+
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "background-tx-oasis",
+      "send-oasis-tx-to-background",
+      {
+        chainId,
+        signedTx,
+      }
+    );
+  }
+  async sign(
+    chainId: string,
+    signer: string,
+    message: string | Uint8Array,
+    signType: TransactionType
+  ): Promise<types.SignatureSigned> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-oasis",
+        "request-sign-oasis",
+        {
+          chainId,
+          signer,
+          message: typeof message === "string" ? Buffer.from(message) : message,
+          signType,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1465,11 +1503,11 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
         .catch(reject)
         .finally(() => (f = true));
 
-      // setTimeout(() => {
-      //   if (!f) {
-      //     this.protectedTryOpenSidePanelIfEnabled();
-      //   }
-      // }, 100);
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
     });
   }
 }
@@ -1497,11 +1535,11 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
         .catch(reject)
         .finally(() => (f = true));
 
-      // setTimeout(() => {
-      //   if (!f) {
-      //     this.protectedTryOpenSidePanelIfEnabled();
-      //   }
-      // }, 100);
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
     });
   }
 
@@ -1521,11 +1559,11 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
         .catch(reject)
         .finally(() => (f = true));
 
-      // setTimeout(() => {
-      //   if (!f) {
-      //     this.protectedTryOpenSidePanelIfEnabled();
-      //   }
-      // }, 100);
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
     });
   }
 }
@@ -1553,11 +1591,11 @@ class TronProvider extends EventEmitter implements ITronProvider {
         .catch(reject)
         .finally(() => (f = true));
 
-      // setTimeout(() => {
-      //   if (!f) {
-      //     this.protectedTryOpenSidePanelIfEnabled();
-      //   }
-      // }, 100);
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
     });
   }
 
@@ -1577,11 +1615,11 @@ class TronProvider extends EventEmitter implements ITronProvider {
         .catch(reject)
         .finally(() => (f = true));
 
-      // setTimeout(() => {
-      //   if (!f) {
-      //     this.protectedTryOpenSidePanelIfEnabled();
-      //   }
-      // }, 100);
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
     });
   }
 }
