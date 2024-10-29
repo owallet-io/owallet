@@ -98,6 +98,14 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
     // }
 
     try {
+      const chainInfo = chainStore.getChain(item.chainInfo.chainId);
+
+      if (chainInfo.evm) {
+        navigate(SCREENS.SendEvm, {
+          coinMinimalDenom: item.token.currency.coinMinimalDenom,
+          chainId: item.chainInfo.chainId
+        });
+      }
       navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
         chainId: item.chainInfo.chainId
