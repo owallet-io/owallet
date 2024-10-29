@@ -1323,8 +1323,17 @@ class TronProvider extends EventEmitter implements ITronProvider {
     throw new Error('Method not implemented.');
   }
 
-  async sign(transaction: object): Promise<object> {
-    throw new Error('Method not implemented.');
+  async sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionType
+  ): Promise<types.SignatureSigned> {
+    return await this._requestMethod('sign', [chainId, signer, data, type]);
+  }
+
+  async sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string> {
+    return await this._requestMethod('sendTx', [chainId, signedTx]);
   }
 
   async getDefaultAddress(): Promise<SettledResponses<Key>> {

@@ -6,6 +6,14 @@ export class EmptyAddressError extends Error {
   }
 }
 
+export class InvalidTronAddressError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, InvalidTronAddressError.prototype);
+  }
+}
+
 export class InvalidBech32Error extends Error {
   constructor(m: string) {
     super(m);

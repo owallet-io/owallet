@@ -100,7 +100,14 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
     try {
       const chainInfo = chainStore.getChain(item.chainInfo.chainId);
 
-      if (chainInfo.evm) {
+      if (chainInfo.evm && !chainInfo.features.includes('tron')) {
+        // if (chainInfo.features.includes('tron')) {
+        //   navigate(SCREENS.SendTron, {
+        //     coinMinimalDenom: item.token.currency.coinMinimalDenom,
+        //     chainId: item.chainInfo.chainId
+        //   });
+        //   return;
+        // }
         navigate(SCREENS.SendEvm, {
           coinMinimalDenom: item.token.currency.coinMinimalDenom,
           chainId: item.chainInfo.chainId
