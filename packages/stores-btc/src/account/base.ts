@@ -2,7 +2,8 @@ import { ChainGetter, WalletStatus } from "@owallet/stores";
 import { OWallet } from "@owallet/types";
 import { action, flow, makeObservable, observable } from "mobx";
 import { AccountBtcSharedContext } from "./context";
-
+import { validate } from "bitcoin-address-validation";
+import { getAddress as getEthAddress } from "@ethersproject/address";
 export class BtcAccountBase {
   @observable
   protected _isSendingTx: boolean = false;
@@ -40,7 +41,10 @@ export class BtcAccountBase {
   setIsSendingTx(value: boolean) {
     this._isSendingTx = value;
   }
-
+  static isBtcAddress(address: string): boolean {
+    if (!address) return false;
+    return validate(address);
+  }
   get name(): string {
     return this._name;
   }
@@ -111,6 +115,7 @@ export class BtcAccountBase {
     this._name = "";
     this._pubKey = new Uint8Array(0);
   }
+
   get isSendingTx(): boolean {
     return this._isSendingTx;
   }

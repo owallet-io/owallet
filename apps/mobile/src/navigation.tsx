@@ -25,11 +25,6 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Text } from "./components/text";
 import { TokenDetailsScreen, TokensScreen } from "./screens/tokens";
 import { BackupMnemonicScreen } from "./screens/register/mnemonic/backup-mnemonic";
-import {
-  NewMnemonicScreen,
-  RecoverMnemonicScreen,
-  VerifyMnemonicScreen,
-} from "./screens/register/mnemonic";
 import { RegisterEndScreen } from "./screens/register/end";
 import { RegisterDoneScreen } from "./screens/register/done";
 import { NewLedgerScreen } from "./screens/register/ledger";
@@ -86,6 +81,9 @@ import { ConnectHardwareWalletScreen } from "@screens/register/connect-hardware"
 import { FinalizeKeyScreen } from "@screens/register/finalize-key";
 import { EnableChainsScreen } from "@screens/register/enable-chains";
 import { WelcomeScreen } from "@screens/register/welcome";
+import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
+import { RecoverMnemonicScreen } from "@screens/register/recover-mnemonic";
+import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -237,7 +235,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
             <Stack.Screen
               name={SCREENS.RegisterRecoverPhrase}
-              component={RecoverPhraseScreen}
+              component={RecoverMnemonicScreen}
             />
             <Stack.Screen
               name={SCREENS.RegisterNewPincode}

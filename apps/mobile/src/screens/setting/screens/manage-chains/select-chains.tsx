@@ -45,9 +45,8 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
           (chain) =>
             !EmbedChainInfos.some(
               (embedChain) => embedChain.chainId === chain.chainId
-            ) &&
-            !/test|dev/i.test(chain?.chainName) &&
-            !chain?.chainId.includes("eip155")
+            ) && !/test|dev/i.test(chain?.chainName)
+          // && !chain?.chainId.includes("eip155")
         );
         const sortedChains = chainsFilter.sort((a, b) => {
           const aHasChainInfo = chainInfoExists(a.chainId);
@@ -191,8 +190,10 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         <OWFlatList
           loading={isLoading}
           style={styles.flatList}
-          data={chains.filter((chain, index) =>
-            chain.chainName?.toLowerCase().includes(keyword?.toLowerCase())
+          data={chains.filter(
+            (chain, index) =>
+              chain.chainName?.toLowerCase().includes(keyword?.toLowerCase()) ||
+              chain.chainId?.toLowerCase().includes(keyword?.toLowerCase())
           )}
           renderItem={renderChain}
           keyExtractor={_keyExtract}

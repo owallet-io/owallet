@@ -13,3 +13,4 @@ export * from "./service-worker";
 export * from "./config";
 export * from "./api";
 export * from "./oasis";
+export * from "./bitcoin";

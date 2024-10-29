@@ -24,6 +24,7 @@ import { useState } from "react";
 import { Buffer } from "buffer/";
 import { validateICNSName } from "@owallet/common";
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { BtcAccountBase } from "@owallet/stores-btc";
 
 interface ICNSFetchData {
   isFetching: boolean;
@@ -412,6 +413,17 @@ export class RecipientConfig
     }
 
     const chainInfo = this.chainInfo;
+    const isBtcChain = chainInfo.features.includes("btc");
+    if (isBtcChain) {
+      if (BtcAccountBase.isBtcAddress(rawRecipient)) {
+        return {};
+      } else {
+        return {
+          error: new InvalidBech32Error(`Invalid bech32}`),
+        };
+      }
+    }
+
     const isEvmChain = !!this.chainInfo.evm;
     const hasEthereumAddress =
       chainInfo.bip44.coinType === 60 ||

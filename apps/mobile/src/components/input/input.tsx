@@ -59,7 +59,7 @@ export const TextInput = React.forwardRef<
             <Text
               style={{
                 ...typography.h7,
-                color: colors["primary-text"],
+                color: colors["neutral-text-title"],
                 marginBottom: spacing["3"],
                 ...props.labelStyle,
               }}

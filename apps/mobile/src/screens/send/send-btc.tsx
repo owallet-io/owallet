@@ -2,6 +2,7 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
   useGasSimulator,
+  useSendBtcTxConfig,
   useSendMixedIBCTransferConfig,
   useSendOasisTxConfig,
   useTxConfigsValidate,
@@ -42,7 +43,7 @@ export const SendBtcScreen: FunctionComponent<{
   setSelectedKey: (key) => void;
 }> = observer(
   ({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-    const { chainStore, oasisAccountStore, queriesStore, appInitStore } =
+    const { chainStore, bitcoinAccountStore, queriesStore, appInitStore } =
       useStore();
     const { colors } = useTheme();
     const styles = styling(colors);
@@ -61,14 +62,13 @@ export const SendBtcScreen: FunctionComponent<{
 
     const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
 
-    const account = oasisAccountStore.getAccount(chainId);
+    const account = bitcoinAccountStore.getAccount(chainId);
     const queryBalances = queriesStore.get(chainId).queryBalances;
     const sender = account.bech32Address;
     const balance = queryBalances
       .getQueryBech32Address(sender)
       .getBalance(currency);
-    const intl = useIntl();
-    const sendConfigs = useSendOasisTxConfig(
+    const sendConfigs = useSendBtcTxConfig(
       chainStore,
       queriesStore,
       chainId,
@@ -186,7 +186,6 @@ export const SendBtcScreen: FunctionComponent<{
             },
           });
         } catch (e) {
-          console.log(e, "eee oasis");
           if (e?.message === "Request rejected") {
             return;
           }
@@ -226,12 +225,10 @@ export const SendBtcScreen: FunctionComponent<{
                 },
               ]}
             >
-              <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
-
               <AddressInput
                 colors={colors}
                 placeholder="Enter address"
-                label=""
+                label="Recipient"
                 recipientConfig={sendConfigs.recipientConfig}
                 memoConfig={null}
                 labelStyle={styles.sendlabelInput}
@@ -319,16 +316,13 @@ export const SendBtcScreen: FunctionComponent<{
                 gasConfig={sendConfigs.gasConfig}
                 gasSimulator={null}
               />
-
-              {/*<OWText color={colors["neutral-text-title"]}>Memo</OWText>*/}
-
-              {/*<MemoInput*/}
-              {/*    label=""*/}
-              {/*    placeholder="Required if send to CEX"*/}
-              {/*    inputContainerStyle={styles.inputContainerMemo}*/}
-              {/*    memoConfig={sendConfigs.memoConfig}*/}
-              {/*    labelStyle={styles.sendlabelInput}*/}
-              {/*/>*/}
+              <MemoInput
+                label="Message"
+                placeholder="Required if send to CEX"
+                inputContainerStyle={styles.inputContainerMemo}
+                memoConfig={sendConfigs.memoConfig}
+                labelStyle={styles.sendlabelInput}
+              />
             </OWCard>
           </View>
         </ScrollView>
@@ -371,7 +365,6 @@ const styling = (colors) =>
       fontSize: 14,
       fontWeight: "500",
       lineHeight: 20,
-      color: colors["neutral-text-body"],
     },
     inputContainerMemo: {
       backgroundColor: colors["neutral-surface-card"],

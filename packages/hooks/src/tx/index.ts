@@ -8,6 +8,7 @@ export * from "./amount";
 export * from "./sender";
 export * from "./send-tx";
 export * from "./oasis";
+export * from "./btc";
 export * from "./chain";
 export * from "./gas-simulator";
 export * from "./validate";

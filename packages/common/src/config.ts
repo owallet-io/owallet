@@ -3,8 +3,6 @@ import { ChainInfo, Currency } from "@owallet/types";
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
 
-export const HelpDeskUrl = "https://help.keplr.app";
-export const TermsOfUseUrl = "https://terms-of-use.keplr.app";
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
   process.env["KEPLR_EXT_COINGECKO_ENDPOINT"] ||
@@ -489,7 +487,20 @@ export const EmbedChainInfos: ChainInfo[] = [
       return [
         {
           coinDenom: "BTC",
-          coinMinimalDenom: "btc",
+          coinMinimalDenom: "segwit:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "legacy:btc",
           coinDecimals: 8,
           coinGeckoId: "bitcoin",
           coinImageUrl:
