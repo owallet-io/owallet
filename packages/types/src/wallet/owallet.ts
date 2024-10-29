@@ -1,5 +1,5 @@
-import { ChainInfo, ChainInfoWithoutEndpoints } from "../chain-info";
-import { EthSignType } from "../ethereum";
+import { ChainInfo, ChainInfoWithoutEndpoints } from '../chain-info';
+import { EthSignType } from '../ethereum';
 import {
   BroadcastMode,
   AminoSignResponse,
@@ -7,17 +7,17 @@ import {
   OfflineAminoSigner,
   StdSignature,
   DirectSignResponse,
-  OfflineDirectSigner,
-} from "../cosmjs";
-import { SecretUtils } from "../secretjs";
-import Long from "long";
-import { SettledResponses } from "../settled";
-import { DirectAuxSignResponse } from "../cosmjs-alt";
-import EventEmitter from "events";
-import { TransactionType } from "../oasis";
-import { TW } from "../oasis/oasis-types";
-import * as oasis from "@oasisprotocol/client";
-import { types } from "@oasisprotocol/client";
+  OfflineDirectSigner
+} from '../cosmjs';
+import { SecretUtils } from '../secretjs';
+import Long from 'long';
+import { SettledResponses } from '../settled';
+import { DirectAuxSignResponse } from '../cosmjs-alt';
+import EventEmitter from 'events';
+import { TransactionType } from '../oasis';
+import { TW } from '../oasis/oasis-types';
+import * as oasis from '@oasisprotocol/client';
+import { types } from '@oasisprotocol/client';
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -38,13 +38,13 @@ export type ICNSAdr36Signatures = {
   chainId: string;
   bech32Prefix: string;
   bech32Address: string;
-  addressHash: "cosmos" | "ethereum";
+  addressHash: 'cosmos' | 'ethereum';
   pubKey: Uint8Array;
   signatureSalt: number;
   signature: Uint8Array;
 }[];
 
-export type OWalletMode = "core" | "extension" | "mobile-web" | "walletconnect";
+export type OWalletMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
 export interface OWalletIntereactionOptions {
   readonly sign?: OWalletSignOptions;
@@ -126,16 +126,9 @@ export interface OWallet {
         tipper: string;
       } | null;
     },
-    signOptions?: Exclude<
-      OWalletSignOptions,
-      "preferNoSetFee" | "disableBalanceCheck"
-    >
+    signOptions?: Exclude<OWalletSignOptions, 'preferNoSetFee' | 'disableBalanceCheck'>
   ): Promise<DirectAuxSignResponse>;
-  sendTx(
-    chainId: string,
-    tx: Uint8Array,
-    mode: BroadcastMode
-  ): Promise<Uint8Array>;
+  sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode): Promise<Uint8Array>;
 
   signICNSAdr36(
     chainId: string,
@@ -145,11 +138,7 @@ export interface OWallet {
     addressChainIds: string[]
   ): Promise<ICNSAdr36Signatures>;
 
-  signArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature>;
+  signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature>;
   verifyArbitrary(
     chainId: string,
     signer: string,
@@ -157,55 +146,30 @@ export interface OWallet {
     signature: StdSignature
   ): Promise<boolean>;
 
-  signEthereum(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    type: EthSignType
-  ): Promise<Uint8Array>;
+  signEthereum(chainId: string, signer: string, data: string | Uint8Array, type: EthSignType): Promise<Uint8Array>;
 
-  getOfflineSigner(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner & OfflineDirectSigner;
-  getOfflineSignerOnlyAmino(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner;
+  getOfflineSigner(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner & OfflineDirectSigner;
+  getOfflineSignerOnlyAmino(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner;
   getOfflineSignerAuto(
     chainId: string,
     signOptions?: OWalletSignOptions
   ): Promise<OfflineAminoSigner | OfflineDirectSigner>;
 
-  suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void>;
-  getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string>;
+  suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void>;
+  getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
 
   // Related to Enigma.
   // But, recommended to use `getEnigmaUtils` rather than using below.
   getEnigmaPubKey(chainId: string): Promise<Uint8Array>;
-  getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
+  getEnigmaTxEncryptionKey(chainId: string, nonce: Uint8Array): Promise<Uint8Array>;
   enigmaEncrypt(
     chainId: string,
     contractCodeHash: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     msg: object
   ): Promise<Uint8Array>;
-  enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
+  enigmaDecrypt(chainId: string, ciphertext: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
 
   /**
    * Sign the sign doc with ethermint's EIP-712 format.
@@ -233,15 +197,10 @@ export interface OWallet {
   ): Promise<AminoSignResponse>;
 
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
-  getChainInfoWithoutEndpoints(
-    chainId: string
-  ): Promise<ChainInfoWithoutEndpoints>;
+  getChainInfoWithoutEndpoints(chainId: string): Promise<ChainInfoWithoutEndpoints>;
 
   /** Change wallet extension user name **/
-  changeKeyRingName(opts: {
-    defaultName: string;
-    editable?: boolean;
-  }): Promise<string>;
+  changeKeyRingName(opts: { defaultName: string; editable?: boolean }): Promise<string>;
 
   sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string>;
 
@@ -270,6 +229,13 @@ export interface IBitcoinProvider extends EventEmitter {
 export interface ITronProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  getDefaultAddress(): Promise<SettledResponses<Key>>;
+}
+
+export interface RequestArguments {
+  method: string;
+  params?: any;
+  [key: string]: any;
 }
 
 export interface IEthereumProvider extends EventEmitter {
@@ -288,7 +254,7 @@ export interface IEthereumProvider extends EventEmitter {
   request<T = unknown>({
     method,
     params,
-    chainId,
+    chainId
   }: {
     method: string;
     params?: readonly unknown[] | Record<string, unknown>;

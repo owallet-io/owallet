@@ -27,7 +27,8 @@ import {
   IOasisProvider,
   IBitcoinProvider,
   ITronProvider,
-  TransactionType
+  TransactionType,
+  RequestArguments
 } from '@owallet/types';
 import { Result, JSONUint8Array, EthereumProviderRpcError } from '@owallet/router';
 import { OWalletEnigmaUtils } from './enigma';
@@ -76,6 +77,8 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, 'owallet', owallet);
   defineUnwritablePropertyIfPossible(window, 'keplr', owallet);
   defineUnwritablePropertyIfPossible(window, 'ethereum', owallet.ethereum);
+  defineUnwritablePropertyIfPossible(window, 'tronWeb', owallet.tron);
+  defineUnwritablePropertyIfPossible(window, 'tronLink', owallet.tron);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSigner', owallet.getOfflineSigner);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSignerOnlyAmino', owallet.getOfflineSignerOnlyAmino);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSignerAuto', owallet.getOfflineSignerAuto);
@@ -1299,5 +1302,39 @@ class TronProvider extends EventEmitter implements ITronProvider {
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod('getKeysSettled', [chainIds]);
+  }
+
+  sendRawTransaction(transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  }): Promise<object> {
+    throw new Error('Method not implemented.');
+  }
+
+  triggerSmartContract(
+    address: string,
+    functionSelector: string,
+    options: object,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
+  async sign(transaction: object): Promise<object> {
+    throw new Error('Method not implemented.');
+  }
+
+  async getDefaultAddress(): Promise<SettledResponses<Key>> {
+    return this._requestMethod('getDefaultAddress', []);
+  }
+
+  async request(args: RequestArguments): Promise<any> {
+    return await this._requestMethod(
+      args.method as keyof ITronProvider,
+      args.params ? [args.params, args.chainId] : [[]]
+    );
   }
 }
