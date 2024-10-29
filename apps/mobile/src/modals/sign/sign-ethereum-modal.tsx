@@ -14,7 +14,6 @@ import {
 } from '@owallet/hooks';
 // import {BaseModalHeader} from '../../components/modal';
 import { Column, Columns } from '../../components/column';
-import { Text } from 'react-native';
 import { Gutter } from '../../components/gutter';
 import { Box } from '../../components/box';
 import { XAxis } from '../../components/axis';
@@ -38,6 +37,7 @@ import { AsyncKVStore } from '@src/common';
 import { FeeControl } from '@src/screens/components/fee-control';
 // import { EthSignType } from '@owallet/types';
 import Web3 from 'web3';
+import { useTheme } from '@src/themes/theme-provider';
 
 const EthSignType = {
   MESSAGE: 'message',
@@ -57,6 +57,8 @@ export const SignEthereumModal = registerModal(
       accountStore,
       ethereumAccountStore
     } = useStore();
+
+    const colors = useTheme();
 
     const intl = useIntl();
     const style = useStyle();
@@ -178,8 +180,6 @@ export const SignEthereumModal = registerModal(
           unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei('1', 'gwei');
         }
 
-        console.log('unsignedTx', unsignedTx);
-
         setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), 'utf8'));
       }
     }, [
@@ -274,7 +274,7 @@ export const SignEthereumModal = registerModal(
     };
 
     return (
-      <Box style={style.flatten(['padding-12', 'padding-top-0'])}>
+      <Box backgroundColor={colors['neutral-surface-card']} style={style.flatten(['padding-12', 'padding-top-0'])}>
         <OWText size={16} weight={'700'}>
           {intl.formatMessage({
             id: isTxSigning ? 'page.sign.ethereum.tx.title' : 'page.sign.ethereum.title'
@@ -283,9 +283,9 @@ export const SignEthereumModal = registerModal(
         <Gutter size={24} />
 
         <Columns sum={1} alignY="center">
-          <Text style={style.flatten(['h5', 'color-label-default'])}>
+          <OWText color={colors['neutral-text-body']} style={style.flatten(['h5'])}>
             <FormattedMessage id="page.sign.ethereum.tx.summary" />
-          </Text>
+          </OWText>
 
           <Column weight={1} />
 
@@ -297,7 +297,7 @@ export const SignEthereumModal = registerModal(
         {isViewData ? (
           <Box maxHeight={128} backgroundColor={style.get('color-gray-500').color} padding={12} borderRadius={6}>
             <ScrollView persistentScrollbar={true}>
-              <Text style={style.flatten(['body3', 'color-text-middle'])}>{signingDataText}</Text>
+              <OWText style={style.flatten(['body3', 'color-text-middle'])}>{signingDataText}</OWText>
             </ScrollView>
           </Box>
         ) : (
@@ -317,9 +317,6 @@ export const SignEthereumModal = registerModal(
             }
           </Box>
         )}
-
-        <Gutter size={60} />
-        {interactionData.isInternal && <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />}
 
         <Gutter size={12} />
 
@@ -353,6 +350,7 @@ export const ViewDataButton: FunctionComponent<{
   setIsViewData: (value: boolean) => void;
 }> = ({ isViewData, setIsViewData }) => {
   const style = useStyle();
+  const colors = useTheme();
 
   return (
     <TouchableWithoutFeedback
@@ -361,20 +359,14 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(['text-button2', 'color-label-default'])}>
+        <OWText color={colors['neutral-text-body']} style={style.flatten(['text-button2'])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
-        </Text>
-
-        <Gutter size={4} />
+        </OWText>
 
         {isViewData ? (
-          <CloseIcon size={12} color={style.get('color-gray-100').color} />
+          <CloseIcon size={12} color={colors['neutral-text-body']} />
         ) : (
-          // <CodeBracketIcon
-          //   size={12}
-          //   color={style.get('color-gray-100').color}
-          // />
-          <OWIcon size={12} name={'tdesignbrackets'} color={style.get('color-gray-100').color} />
+          <OWIcon size={12} name={'tdesignbrackets'} color={colors['neutral-text-body']} />
         )}
       </XAxis>
     </TouchableWithoutFeedback>

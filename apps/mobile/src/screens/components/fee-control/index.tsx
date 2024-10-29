@@ -5,7 +5,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useStore } from '../../../stores';
 import { autorun } from 'mobx';
 import { CoinPretty, Dec, PricePretty } from '@owallet/unit';
-import { ActivityIndicator, Text, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { TransactionFeeModal } from './transaction-fee-modal';
 import { UIConfigStore } from '../../../stores/ui-config';
 import { IChainStore, IQueriesStore } from '@owallet/stores';
@@ -153,7 +153,7 @@ export const FeeControl: FunctionComponent<{
           </React.Fragment>
         ) : null}
 
-        <Text>
+        <OWText>
           <FormattedMessage
             id="components.input.fee-control.fee"
             values={{
@@ -171,9 +171,9 @@ export const FeeControl: FunctionComponent<{
                 .join('+')
             }}
           />
-        </Text>
+        </OWText>
 
-        <Text>
+        <OWText>
           {(() => {
             let total: PricePretty | undefined;
             let hasUnknown = false;
@@ -198,7 +198,7 @@ export const FeeControl: FunctionComponent<{
             }
             return `(${total.toString()})`;
           })()}
-        </Text>
+        </OWText>
 
         {!disableAutomaticFeeSet && uiConfigStore.rememberLastFeeOption ? (
           <React.Fragment>
