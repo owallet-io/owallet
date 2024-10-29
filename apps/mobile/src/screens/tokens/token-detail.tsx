@@ -105,6 +105,7 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
           coinMinimalDenom: item.token.currency.coinMinimalDenom,
           chainId: item.chainInfo.chainId
         });
+        return;
       }
       navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,

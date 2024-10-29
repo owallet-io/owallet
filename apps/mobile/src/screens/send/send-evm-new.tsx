@@ -493,7 +493,7 @@ export const SendEvmNewScreen: FunctionComponent = observer(() => {
     }
   };
 
-  console.log('balance 2', balance?.balance);
+  console.log('balance evm', balance?.balance);
 
   return (
     <PageWithBottom
