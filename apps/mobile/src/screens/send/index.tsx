@@ -56,7 +56,14 @@ export const SendScreen: FunctionComponent = observer(() => {
       />
     ),
     tron: <SendTronScreen />,
-    btc: <SendBtcScreen />,
+    btc: (
+      <SendBtcScreen
+        setSelectedKey={setSelectedKey}
+        chainId={chainId}
+        coinMinimalDenom={coinMinimalDenom}
+        recipientAddress={initialRecipientAddress}
+      />
+    ),
   };
   for (const feature of chainInfo.features) {
     if (sendGetters[feature]) {

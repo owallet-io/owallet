@@ -23,15 +23,8 @@ import { computedFn } from "mobx-utils";
 export class InteractionStore implements InteractionForegroundHandler {
   @observable
   protected _isInitialized: boolean = false;
-
-  // TODO: 일단 빠르게 개발해보려고 얘를 public으로 바꿨지만 적절한 방식이 아니다. 좀 더 고민해본다...
   @observable.shallow
   public data: InteractionWaitingData[] = [];
-  // 원래 obsolete에 대한 정보를 data 밑의 field에 포함시켰는데
-  // obsolete 처리가 추가되기 전에는 data는 한번 받으면 그 이후에 변화되지 않는다는 가정으로 다른 로직이 짜여졌었다.
-  // ref도 변하면 안됐기 때문에 obsolete가 data 밑에 있으면 이러한 요구사항을 이루면서 처리할 수가 없다.
-  // (특히 서명 페이지에서 문제가 될 수 있음)
-  // 기존의 로직과의 호환성을 위해서 아예 분리되었음.
   @observable.shallow
   protected obsoleteData = new Map<string, boolean>();
 
@@ -74,9 +67,6 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   protected async refreshData(): Promise<void> {
-    // 어차피 interaction data는 한번 생성되면 값이 바뀌지 않도록 만들어져있고
-    // id는 겹칠 수 없기 때문에 이걸 key로 사용한다.
-    // refresh한 이후에 값이 바뀐게 아니라면 ref도 바꾸지 않기 위해서 값 자체를 바꾸지 않는다.
     const prevKey = this.data.map((d) => d.id).join("/");
     let data = await this.msgRequester.sendMessage(
       BACKGROUND_PORT,

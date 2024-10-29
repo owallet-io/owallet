@@ -7,7 +7,6 @@ import {
   useTxConfigsValidate,
 } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { DenomHelper, ICNSInfo } from "@owallet/common";
 import { StyleSheet, View, ScrollView } from "react-native";
 import {
   AddressInput,
@@ -151,8 +150,6 @@ export const SendOasisScreen: FunctionComponent<{
     const txConfigsValidate = useTxConfigsValidate({
       ...sendConfigs,
     });
-    console.log(txConfigsValidate, "blocked");
-    const historyType = "basic-send";
 
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
@@ -186,7 +183,6 @@ export const SendOasisScreen: FunctionComponent<{
                     balance.fetch();
                   }
                 });
-              console.log(txReceipt, "txReceipt");
             },
           });
         } catch (e) {
