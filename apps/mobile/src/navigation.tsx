@@ -83,7 +83,6 @@ import { EnableChainsScreen } from "@screens/register/enable-chains";
 import { WelcomeScreen } from "@screens/register/welcome";
 import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
 import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
-import { RecoverMnemonicScreen } from "@screens/register/mnemonic";
 
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
@@ -235,7 +234,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
             <Stack.Screen
               name={SCREENS.RegisterRecoverPhrase}
-              component={RecoverMnemonicScreen}
+              component={RecoverPhraseScreen}
             />
             <Stack.Screen
               name={SCREENS.RegisterNewPincode}
