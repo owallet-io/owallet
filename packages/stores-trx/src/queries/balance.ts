@@ -1,16 +1,14 @@
-import { DenomHelper, parseRpcBalance } from "@owallet/common";
+import { DenomHelper } from '@owallet/common';
 import {
-  BalanceRegistry,
   ChainGetter,
   IObservableQueryBalanceImpl,
+  ObservableEvmChainJsonRpcQuery,
   ObservableQuery,
-  QuerySharedContext,
-} from "@owallet/stores";
-import { AppCurrency, ChainInfo } from "@owallet/types";
-import { CoinPretty, Int } from "@owallet/unit";
-import { computed, makeObservable } from "mobx";
-import * as oasis from "@oasisprotocol/client";
-import { staking } from "@oasisprotocol/client";
+  QuerySharedContext
+} from '@owallet/stores';
+import { AppCurrency } from '@owallet/types';
+import { CoinPretty, Int } from '@owallet/unit';
+import { computed, makeObservable, override } from 'mobx';
 
 export class ObservableQueryTrxAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -21,18 +19,10 @@ export class ObservableQueryTrxAccountBalanceImpl
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly denomHelper: DenomHelper,
-    protected readonly bech32Address: string
+    protected readonly bech32Address: string,
+    protected readonly nativeBalances: ObservableQueryTronBalances
   ) {
-    super(
-      sharedContext,
-      null,
-      null,
-      null
-      //     [
-      //   ethereumHexAddress,
-      //   "latest",
-      // ]
-    );
+    super(sharedContext, null, null, null);
 
     makeObservable(this);
   }
@@ -46,9 +36,7 @@ export class ObservableQueryTrxAccountBalanceImpl
   get balance(): CoinPretty {
     const denom = this.denomHelper.denom;
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const currency = chainInfo.currencies.find(
-      (cur) => cur.coinMinimalDenom === denom
-    );
+    const currency = chainInfo.currencies.find(cur => cur.coinMinimalDenom === denom);
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -63,53 +51,50 @@ export class ObservableQueryTrxAccountBalanceImpl
   @computed
   get currency(): AppCurrency {
     const denom = this.denomHelper.denom;
-
     const chainInfo = this.chainGetter.getChain(this.chainId);
     return chainInfo.forceFindCurrency(denom);
   }
 
-  protected override async fetchResponse(
-    abortController: AbortController
-  ): Promise<{ headers: any; data: any }> {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const nic = new oasis.client.NodeInternal(chainInfo.grpc);
-    const publicKey = await staking.addressFromBech32(this.bech32Address);
-    const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
-    const grpcBalance = parseRpcBalance(account);
+  protected override async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: any }> {
     return {
       headers: {},
-      data: grpcBalance.available,
+      data: {}
     };
   }
 
   protected override getCacheKey(): string {
-    return `${super.getCacheKey()}-${this.bech32Address}-${
-      this.denomHelper.denom
-    }`;
+    return `${super.getCacheKey()}-${this.bech32Address}-${this.denomHelper.denom}`;
   }
 }
 
-export class ObservableQueryTrxAccountBalanceRegistry
-  implements BalanceRegistry
-{
-  constructor(protected readonly sharedContext: QuerySharedContext) {}
+export class ObservableQueryTronBalances extends ObservableEvmChainJsonRpcQuery<string> {
+  protected walletAddress: string;
 
-  getBalanceImpl(
-    chainId: string,
-    chainGetter: ChainGetter<ChainInfo>,
-    address: string,
-    minimalDenom: string
-  ): IObservableQueryBalanceImpl | undefined {
-    const denomHelper = new DenomHelper(minimalDenom);
-    const chainInfo = chainGetter.getChain(chainId);
-    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
-      return;
-    return new ObservableQueryTrxAccountBalanceImpl(
-      this.sharedContext,
-      chainId,
-      chainGetter,
-      denomHelper,
-      address
-    );
+  protected duplicatedFetchCheck: boolean = false;
+
+  constructor(sharedContext: QuerySharedContext, chainId: string, chainGetter: ChainGetter, walletAddress: string) {
+    super(sharedContext, chainId, chainGetter, 'eth_getBalance', [walletAddress, 'latest']);
+
+    this.walletAddress = walletAddress;
+
+    makeObservable(this);
+  }
+
+  protected canFetch(): boolean {
+    return this.walletAddress?.length > 0;
+  }
+
+  @override
+  *fetch() {
+    if (!this.duplicatedFetchCheck) {
+      // it is inefficient to fetching duplicately in the same loop.
+      // So, if the fetching requests are in the same tick, this prevent to refetch the result and use the prior fetching.
+      this.duplicatedFetchCheck = true;
+      setTimeout(() => {
+        this.duplicatedFetchCheck = false;
+      }, 1);
+
+      yield super.fetch();
+    }
   }
 }

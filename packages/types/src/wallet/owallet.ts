@@ -230,6 +230,8 @@ export interface ITronProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
   getDefaultAddress(): Promise<SettledResponses<Key>>;
+  sendTx(chainId: string, signedTx: unknown): Promise<string>;
+  sign(chainId: string, signer: string, data: string | Uint8Array, type: TransactionType): Promise<unknown>;
 }
 
 export interface RequestArguments {

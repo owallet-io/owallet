@@ -23,24 +23,20 @@ import {
   IOasisProvider,
   IBitcoinProvider,
   ITronProvider,
-  TransactionType,
-} from "@owallet/types";
-import {
-  BACKGROUND_PORT,
-  MessageRequester,
-  sendSimpleMessage,
-} from "@owallet/router";
+  TransactionType
+} from '@owallet/types';
+import { BACKGROUND_PORT, MessageRequester, sendSimpleMessage } from '@owallet/router';
 
-import { OWalletEnigmaUtils } from "./enigma";
+import { OWalletEnigmaUtils } from './enigma';
 
-import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from "./cosmjs";
-import deepmerge from "deepmerge";
-import Long from "long";
-import { Buffer } from "buffer/";
-import { OWalletCoreTypes } from "./core-types";
-import EventEmitter from "events";
-import { TW } from "@owallet/common";
-import { types } from "@oasisprotocol/client";
+import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
+import deepmerge from 'deepmerge';
+import Long from 'long';
+import { Buffer } from 'buffer/';
+import { OWalletCoreTypes } from './core-types';
+import EventEmitter from 'events';
+import { TW } from '@owallet/common';
+import { types } from '@oasisprotocol/client';
 
 export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -54,31 +50,19 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ) {}
 
   async ping(): Promise<void> {
-    await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "chains",
-      "owallet-ping",
-      {}
-    );
+    await sendSimpleMessage(this.requester, BACKGROUND_PORT, 'chains', 'owallet-ping', {});
   }
 
   enable(chainIds: string | string[]): Promise<void> {
-    if (typeof chainIds === "string") {
+    if (typeof chainIds === 'string') {
       chainIds = [chainIds];
     }
 
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "permission-interactive",
-        "enable-access",
-        {
-          chainIds,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'enable-access', {
+        chainIds
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -93,37 +77,25 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
 
   // TODO: 웹페이지에서도 필요할수도 있을 것 같으니 나중에 owallet의 API로 추가해준다.
   async isEnabled(chainIds: string | string[]): Promise<boolean> {
-    if (typeof chainIds === "string") {
+    if (typeof chainIds === 'string') {
       chainIds = [chainIds];
     }
 
-    return await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "permission-interactive",
-      "is-enabled-access",
-      {
-        chainIds,
-      }
-    );
+    return await sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'is-enabled-access', {
+      chainIds
+    });
   }
 
   async disable(chainIds?: string | string[]): Promise<void> {
-    if (typeof chainIds === "string") {
+    if (typeof chainIds === 'string') {
       chainIds = [chainIds];
     }
 
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "permission-interactive",
-        "disable-access",
-        {
-          chainIds: chainIds ?? [],
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'disable-access', {
+        chainIds: chainIds ?? []
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -147,7 +119,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     }
   ): Promise<void> {
     if (chainInfo.hideInUI) {
-      throw new Error("hideInUI is not allowed");
+      throw new Error('hideInUI is not allowed');
     }
 
     if (chainInfo.gasPriceStep) {
@@ -170,13 +142,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       delete chainInfo.gasPriceStep;
 
       console.warn(
-        "The `gasPriceStep` field of the `ChainInfo` has been moved under `feeCurrencies`. This is automatically handled as of right now, but the upcoming update would potentially cause errors."
+        'The `gasPriceStep` field of the `ChainInfo` has been moved under `feeCurrencies`. This is automatically handled as of right now, but the upcoming update would potentially cause errors.'
       );
     }
 
     if ((chainInfo as any).coinType) {
       console.warn(
-        "The `coinType` field of the `ChainInfo` is removed. This is automatically handled as of right now, but the upcoming update would potentially cause errors."
+        'The `coinType` field of the `ChainInfo` is removed. This is automatically handled as of right now, but the upcoming update would potentially cause errors.'
       );
       delete (chainInfo as any).coinType;
     }
@@ -184,28 +156,16 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     return new Promise((resolve, reject) => {
       let f = false;
 
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "chains",
-        "need-suggest-chain-info-interaction",
-        {
-          chainInfo,
-        }
-      ).then((needInteraction) => {
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'chains', 'need-suggest-chain-info-interaction', {
+        chainInfo
+      }).then(needInteraction => {
         if (!needInteraction) {
           f = true;
         }
 
-        sendSimpleMessage(
-          this.requester,
-          BACKGROUND_PORT,
-          "chains",
-          "suggest-chain-info",
-          {
-            chainInfo,
-          }
-        )
+        sendSimpleMessage(this.requester, BACKGROUND_PORT, 'chains', 'suggest-chain-info', {
+          chainInfo
+        })
           .then(resolve)
           .catch(reject)
           .finally(() => (f = true));
@@ -222,15 +182,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "get-cosmos-key",
-        {
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'get-cosmos-key', {
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -246,15 +200,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "get-cosmos-keys-settled",
-        {
-          chainIds,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'get-cosmos-keys-settled', {
+        chainIds
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -270,14 +218,8 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "chains",
-        "get-chain-infos-without-endpoints",
-        {}
-      )
-        .then((r) => resolve(r.chainInfos))
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'chains', 'get-chain-infos-without-endpoints', {})
+        .then(r => resolve(r.chainInfos))
         .catch(reject)
         .finally(() => (f = true));
 
@@ -289,21 +231,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async getChainInfoWithoutEndpoints(
-    chainId: string
-  ): Promise<ChainInfoWithoutEndpoints> {
+  async getChainInfoWithoutEndpoints(chainId: string): Promise<ChainInfoWithoutEndpoints> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "chains",
-        "get-chain-info-without-endpoints",
-        {
-          chainId,
-        }
-      )
-        .then((r) => resolve(r.chainInfo))
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'chains', 'get-chain-info-without-endpoints', {
+        chainId
+      })
+        .then(r => resolve(r.chainInfo))
         .catch(reject)
         .finally(() => (f = true));
 
@@ -315,27 +249,17 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async sendTx(
-    chainId: string,
-    tx: StdTx | Uint8Array,
-    mode: BroadcastMode
-  ): Promise<Uint8Array> {
+  async sendTx(chainId: string, tx: StdTx | Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
     // XXX: 원래 enable을 미리하지 않아도 백그라운드에서 알아서 처리해주는 시스템이였는데...
     //      side panel에서는 불가능하기 때문에 이젠 provider에서 permission도 관리해줘야한다...
     //      sendTx의 경우는 일종의 쿼리이기 때문에 언제 결과가 올지 알 수 없다. 그러므로 미리 권한 처리를 해야한다.
     await this.enable(chainId);
 
-    return await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "background-tx",
-      "send-tx-to-background",
-      {
-        chainId,
-        tx,
-        mode,
-      }
-    );
+    return await sendSimpleMessage(this.requester, BACKGROUND_PORT, 'background-tx', 'send-tx-to-background', {
+      chainId,
+      tx,
+      mode
+    });
   }
 
   async signAmino(
@@ -346,18 +270,12 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<AminoSignResponse> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-cosmos-sign-amino",
-        {
-          chainId,
-          signer,
-          signDoc,
-          signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions),
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-cosmos-sign-amino', {
+        chainId,
+        signer,
+        signDoc,
+        signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions)
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -383,34 +301,26 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<DirectSignResponse> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-cosmos-sign-direct",
-        {
-          chainId,
-          signer,
-          signDoc: {
-            bodyBytes: signDoc.bodyBytes,
-            authInfoBytes: signDoc.authInfoBytes,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber
-              ? signDoc.accountNumber.toString()
-              : null,
-          },
-          signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions),
-        }
-      )
-        .then((r) =>
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-cosmos-sign-direct', {
+        chainId,
+        signer,
+        signDoc: {
+          bodyBytes: signDoc.bodyBytes,
+          authInfoBytes: signDoc.authInfoBytes,
+          chainId: signDoc.chainId,
+          accountNumber: signDoc.accountNumber ? signDoc.accountNumber.toString() : null
+        },
+        signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions)
+      })
+        .then(r =>
           resolve({
             signed: {
               bodyBytes: r.signed.bodyBytes,
               authInfoBytes: r.signed.authInfoBytes,
               chainId: r.signed.chainId,
-              accountNumber: Long.fromString(r.signed.accountNumber),
+              accountNumber: Long.fromString(r.signed.accountNumber)
             },
-            signature: r.signature,
+            signature: r.signature
           })
         )
         .catch(reject)
@@ -437,48 +347,37 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       accountNumber?: Long | null;
       sequence?: Long | null;
     },
-    signOptions: Exclude<
-      OWalletSignOptions,
-      "preferNoSetFee" | "disableBalanceCheck"
-    > = {}
+    signOptions: Exclude<OWalletSignOptions, 'preferNoSetFee' | 'disableBalanceCheck'> = {}
   ): Promise<DirectAuxSignResponse> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-cosmos-sign-direct-aux",
-        {
-          chainId,
-          signer,
-          signDoc: {
-            bodyBytes: signDoc.bodyBytes,
-            publicKey: signDoc.publicKey,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber
-              ? signDoc.accountNumber.toString()
-              : null,
-            sequence: signDoc.sequence ? signDoc.sequence.toString() : null,
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-cosmos-sign-direct-aux', {
+        chainId,
+        signer,
+        signDoc: {
+          bodyBytes: signDoc.bodyBytes,
+          publicKey: signDoc.publicKey,
+          chainId: signDoc.chainId,
+          accountNumber: signDoc.accountNumber ? signDoc.accountNumber.toString() : null,
+          sequence: signDoc.sequence ? signDoc.sequence.toString() : null
+        },
+        signOptions: deepmerge(
+          {
+            preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo
           },
-          signOptions: deepmerge(
-            {
-              preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo,
-            },
-            signOptions
-          ),
-        }
-      )
-        .then((r) =>
+          signOptions
+        )
+      })
+        .then(r =>
           resolve({
             signed: {
               bodyBytes: r.signed.bodyBytes,
               publicKey: r.signed.publicKey,
               chainId: r.signed.chainId,
               accountNumber: Long.fromString(r.signed.accountNumber),
-              sequence: Long.fromString(r.signed.sequence),
+              sequence: Long.fromString(r.signed.sequence)
             },
-            signature: r.signature,
+            signature: r.signature
           })
         )
         .catch(reject)
@@ -492,27 +391,17 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async signArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature> {
+  async signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-cosmos-sign-amino-adr-36",
-        {
-          chainId,
-          signer,
-          data: typeof data === "string" ? Buffer.from(data) : data,
-          signOptions: {
-            isADR36WithString: typeof data === "string",
-          },
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-cosmos-sign-amino-adr-36', {
+        chainId,
+        signer,
+        data: typeof data === 'string' ? Buffer.from(data) : data,
+        signOptions: {
+          isADR36WithString: typeof data === 'string'
         }
-      )
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -531,24 +420,18 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     data: string | Uint8Array,
     signature: StdSignature
   ): Promise<boolean> {
-    if (typeof data === "string") {
+    if (typeof data === 'string') {
       data = Buffer.from(data);
     }
 
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "verify-cosmos-sign-amino-adr-36",
-        {
-          chainId,
-          signer,
-          data,
-          signature,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'verify-cosmos-sign-amino-adr-36', {
+        chainId,
+        signer,
+        data,
+        signature
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -566,11 +449,11 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     return await sendSimpleMessage(
       this.requester,
       BACKGROUND_PORT,
-      "background-tx-ethereum",
-      "send-ethereum-tx-to-background",
+      'background-tx-ethereum',
+      'send-ethereum-tx-to-background',
       {
         chainId,
-        tx,
+        tx
       }
     );
   }
@@ -582,18 +465,12 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-ethereum",
-        "request-sign-ethereum",
-        {
-          chainId,
-          signer,
-          message: typeof message === "string" ? Buffer.from(message) : message,
-          signType,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-ethereum', 'request-sign-ethereum', {
+        chainId,
+        signer,
+        message: typeof message === 'string' ? Buffer.from(message) : message,
+        signType
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -615,19 +492,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<ICNSAdr36Signatures> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-icns-adr-36-signatures-v2",
-        {
-          chainId,
-          contractAddress,
-          owner,
-          username,
-          addressChainIds,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-icns-adr-36-signatures-v2', {
+        chainId,
+        contractAddress,
+        owner,
+        username,
+        addressChainIds
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -640,17 +511,11 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  getOfflineSigner(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner & OfflineDirectSigner {
+  getOfflineSigner(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner & OfflineDirectSigner {
     return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
-  getOfflineSignerOnlyAmino(
-    chainId: string,
-    signOptions?: OWalletSignOptions
-  ): OfflineAminoSigner {
+  getOfflineSignerOnlyAmino(chainId: string, signOptions?: OWalletSignOptions): OfflineAminoSigner {
     return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
   }
 
@@ -665,24 +530,14 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
-  async suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void> {
+  async suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "token-cw20",
-        "SuggestTokenMsg",
-        {
-          chainId,
-          contractAddress,
-          viewingKey,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'token-cw20', 'SuggestTokenMsg', {
+        chainId,
+        contractAddress,
+        viewingKey
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -695,22 +550,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string> {
+  async getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "token-cw20",
-        "get-secret20-viewing-key",
-        {
-          chainId,
-          contractAddress,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'token-cw20', 'get-secret20-viewing-key', {
+        chainId,
+        contractAddress
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -726,15 +572,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "secret-wasm",
-        "get-pubkey-msg",
-        {
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'secret-wasm', 'get-pubkey-msg', {
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -747,22 +587,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
+  async getEnigmaTxEncryptionKey(chainId: string, nonce: Uint8Array): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "secret-wasm",
-        "get-tx-encryption-key-msg",
-        {
-          chainId,
-          nonce,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'secret-wasm', 'get-tx-encryption-key-msg', {
+        chainId,
+        nonce
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -783,17 +614,11 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "secret-wasm",
-        "request-encrypt-msg",
-        {
-          chainId,
-          contractCodeHash,
-          msg,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'secret-wasm', 'request-encrypt-msg', {
+        chainId,
+        contractCodeHash,
+        msg
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -806,28 +631,18 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  async enigmaDecrypt(
-    chainId: string,
-    cipherText: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
+  async enigmaDecrypt(chainId: string, cipherText: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
     if (!cipherText || cipherText.length === 0) {
       return new Uint8Array();
     }
 
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "secret-wasm",
-        "request-decrypt-msg",
-        {
-          chainId,
-          cipherText,
-          nonce,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'secret-wasm', 'request-decrypt-msg', {
+        chainId,
+        cipherText,
+        nonce
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -864,19 +679,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   ): Promise<AminoSignResponse> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-cosmos",
-        "request-sign-eip-712-cosmos-tx-v0",
-        {
-          chainId,
-          signer,
-          eip712,
-          signDoc,
-          signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions),
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-cosmos', 'request-sign-eip-712-cosmos-tx-v0', {
+        chainId,
+        signer,
+        eip712,
+        signDoc,
+        signOptions: deepmerge(this.defaultOptions.sign ?? {}, signOptions)
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -890,34 +699,22 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   }
 
   async __core__getAnalyticsId(): Promise<string> {
-    return await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "analytics",
-      "get-analytics-id",
-      {}
-    );
+    return await sendSimpleMessage(this.requester, BACKGROUND_PORT, 'analytics', 'get-analytics-id', {});
   }
 
   async changeKeyRingName({
     defaultName,
-    editable = true,
+    editable = true
   }: {
     defaultName: string;
     editable?: boolean;
   }): Promise<string> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-v2",
-        "change-keyring-name-interactive",
-        {
-          defaultName,
-          editable,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-v2', 'change-keyring-name-interactive', {
+        defaultName,
+        editable
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -938,12 +735,12 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     return await sendSimpleMessage(
       this.requester,
       BACKGROUND_PORT,
-      "keyring-cosmos",
-      "PrivilegeCosmosSignAminoWithdrawRewards",
+      'keyring-cosmos',
+      'PrivilegeCosmosSignAminoWithdrawRewards',
       {
         chainId,
         signer,
-        signDoc,
+        signDoc
       }
     );
   }
@@ -956,12 +753,12 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     return await sendSimpleMessage(
       this.requester,
       BACKGROUND_PORT,
-      "keyring-cosmos",
-      "PrivilegeCosmosSignAminoDelegate",
+      'keyring-cosmos',
+      'PrivilegeCosmosSignAminoDelegate',
       {
         chainId,
         signer,
-        signDoc,
+        signDoc
       }
     );
   }
@@ -969,16 +766,10 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   async suggestERC20(chainId: string, contractAddress: string): Promise<void> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "token-erc20",
-        "SuggestERC20TokenMsg",
-        {
-          chainId,
-          contractAddress,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'token-erc20', 'SuggestERC20TokenMsg', {
+        chainId,
+        contractAddress
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -992,35 +783,18 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   }
 
   async __core__webpageClosed(): Promise<void> {
-    await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "interaction",
-      "injected-webpage-closed",
-      {}
-    );
+    await sendSimpleMessage(this.requester, BACKGROUND_PORT, 'interaction', 'injected-webpage-closed', {});
   }
-  async protectedTryOpenSidePanelIfEnabled(
-    ignoreGestureFailure: boolean = false
-  ): Promise<void> {
+  async protectedTryOpenSidePanelIfEnabled(ignoreGestureFailure: boolean = false): Promise<void> {
     let isInContentScript = false;
-    if (
-      typeof window !== "undefined" &&
-      (window as any).__owallet_content_script === true
-    ) {
+    if (typeof window !== 'undefined' && (window as any).__owallet_content_script === true) {
       isInContentScript = true;
     }
 
     if (isInContentScript) {
       const isEnabled = await sendSimpleMessage<{
         enabled: boolean;
-      }>(
-        this.requester,
-        BACKGROUND_PORT,
-        "side-panel",
-        "GetSidePanelEnabledMsg",
-        {}
-      );
+      }>(this.requester, BACKGROUND_PORT, 'side-panel', 'GetSidePanelEnabledMsg', {});
 
       if (isEnabled.enabled) {
         try {
@@ -1029,29 +803,23 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
           return await sendSimpleMessage(
             this.requester,
             BACKGROUND_PORT,
-            "router-extension/src/router/extension.ts",
-            "tryOpenSidePanelIfEnabled",
+            'router-extension/src/router/extension.ts',
+            'tryOpenSidePanelIfEnabled',
             {}
           );
         } catch (e) {
           console.log(e);
 
-          if (
-            !ignoreGestureFailure &&
-            e.message &&
-            e.message.includes("in response to a user gesture")
-          ) {
-            if (!document.getElementById("__open_owallet_side_panel__")) {
+          if (!ignoreGestureFailure && e.message && e.message.includes('in response to a user gesture')) {
+            if (!document.getElementById('__open_owallet_side_panel__')) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
-                "interaction",
-                "ping-content-script-tab-has-opened-side-panel",
+                'interaction',
+                'ping-content-script-tab-has-opened-side-panel',
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
@@ -1059,25 +827,20 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
-                "keyring",
-                "GetIsLockedMsg",
+                'keyring',
+                'GetIsLockedMsg',
                 {}
               );
 
-              const owalletThemeOption = await sendSimpleMessage<
-                "light" | "dark" | "auto"
-              >(
+              const owalletThemeOption = await sendSimpleMessage<'light' | 'dark' | 'auto'>(
                 this.requester,
                 BACKGROUND_PORT,
-                "settings",
-                "GetThemeOptionMsg",
+                'settings',
+                'GetThemeOptionMsg',
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
-              const fontUrl = chrome.runtime.getURL(
-                "/assets/Inter-SemiBold.ttf"
-              );
+              const fontUrl = chrome.runtime.getURL('/assets/Inter-SemiBold.ttf');
               const fontFaceAndKeyFrames = `
                 @font-face {
                   font-family: 'Inter-SemiBold-OWallet';
@@ -1116,35 +879,32 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
             `;
 
               const isLightMode =
-                owalletThemeOption === "auto"
-                  ? !window.matchMedia("(prefers-color-scheme: dark)").matches
-                  : owalletThemeOption === "light";
+                owalletThemeOption === 'auto'
+                  ? !window.matchMedia('(prefers-color-scheme: dark)').matches
+                  : owalletThemeOption === 'light';
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
-              const styleElement = document.createElement("style");
-              styleElement.appendChild(
-                document.createTextNode(fontFaceAndKeyFrames)
-              );
+              const styleElement = document.createElement('style');
+              styleElement.appendChild(document.createTextNode(fontFaceAndKeyFrames));
               document.head.appendChild(styleElement);
 
-              const button = document.createElement("div");
-              button.id = "__open_owallet_side_panel__";
-              button.style.boxSizing = "border-box";
-              button.style.animation = "slide-left 0.5s forwards";
-              button.style.position = "fixed";
-              button.style.right = "1.5rem";
-              button.style.top = "1.5rem";
-              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
-              button.style.borderRadius = "1rem";
-              button.style.display = "flex";
-              button.style.alignItems = "center";
+              const button = document.createElement('div');
+              button.id = '__open_owallet_side_panel__';
+              button.style.boxSizing = 'border-box';
+              button.style.animation = 'slide-left 0.5s forwards';
+              button.style.position = 'fixed';
+              button.style.right = '1.5rem';
+              button.style.top = '1.5rem';
+              button.style.padding = '1rem 1.75rem 1rem 0.75rem';
+              button.style.zIndex = '2147483647';
+              button.style.borderRadius = '1rem';
+              button.style.display = 'flex';
+              button.style.alignItems = 'center';
 
-              button.style.fontFamily = "Inter-SemiBold-OWallet";
-              button.style.fontWeight = "600";
+              button.style.fontFamily = 'Inter-SemiBold-OWallet';
+              button.style.fontWeight = '600';
 
               // button.style.cursor = "pointer";
-              button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
+              button.style.background = isLightMode ? '#FEFEFE' : '#1D1D1F';
               // if (isLightMode) {
               //   button.style.boxShadow =
               //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
@@ -1176,55 +936,51 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               // megaphone.style.animation = "tada 1s infinite";
               // megaphoneWrapper.appendChild(megaphone);
 
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
+              const arrowTop = document.createElement('div');
+              arrowTop.style.boxSizing = 'border-box';
+              arrowTop.style.transform = 'translateY(-0.65rem)';
+              arrowTop.style.marginRight = '0.35rem';
               arrowTop.innerHTML = `
                 <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
+                      isLightMode ? '#2C4BE2' : '#72747B'
                     }"/>
                 </svg>
               `;
 
-              const owalletLogoWrap = document.createElement("div");
-              owalletLogoWrap.style.boxSizing = "border-box";
-              owalletLogoWrap.style.position = "relative";
-              owalletLogoWrap.style.marginRight = "1rem";
-              const owalletLogo = document.createElement("img");
+              const owalletLogoWrap = document.createElement('div');
+              owalletLogoWrap.style.boxSizing = 'border-box';
+              owalletLogoWrap.style.position = 'relative';
+              owalletLogoWrap.style.marginRight = '1rem';
+              const owalletLogo = document.createElement('img');
               const owalletLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isOWalletLocked ? "locked-owallet-logo" : "icon"
-                }-128.png`
+                `/assets/${isOWalletLocked ? 'locked-owallet-logo' : 'icon'}-128.png`
               );
               owalletLogo.src = owalletLogoUrl;
-              owalletLogo.style.boxSizing = "border-box";
-              owalletLogo.style.width = "3rem";
-              owalletLogo.style.height = "3rem";
+              owalletLogo.style.boxSizing = 'border-box';
+              owalletLogo.style.width = '3rem';
+              owalletLogo.style.height = '3rem';
               owalletLogoWrap.appendChild(owalletLogo);
 
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
+              const logoClickCursor = document.createElement('img');
+              const logoClickCursorUrl = chrome.runtime.getURL('assets/icon-click-cursor.png');
               logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
+              logoClickCursor.style.boxSizing = 'border-box';
+              logoClickCursor.style.position = 'absolute';
+              logoClickCursor.style.right = '-0.2rem';
+              logoClickCursor.style.bottom = '-0.2rem';
+              logoClickCursor.style.aspectRatio = '78/98';
+              logoClickCursor.style.height = '1.375rem';
               owalletLogoWrap.appendChild(logoClickCursor);
 
-              const mainText = document.createElement("span");
-              mainText.style.boxSizing = "border-box";
+              const mainText = document.createElement('span');
+              mainText.style.boxSizing = 'border-box';
               // mainText.style.maxWidth = "9.125rem";
-              mainText.style.fontSize = "1rem";
-              mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
+              mainText.style.fontSize = '1rem';
+              mainText.style.color = isLightMode ? '#020202' : '#FEFEFE';
               mainText.textContent = isOWalletLocked
-                ? "Unlock OWallet to proceed"
-                : "Open OWallet to approve request(s)";
+                ? 'Unlock OWallet to proceed'
+                : 'Open OWallet to approve request(s)';
 
               // button.appendChild(megaphoneWrapper);
               button.appendChild(arrowTop);
@@ -1232,23 +988,19 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
-              const hasAlready = document.getElementById(
-                "__open_owallet_side_panel__"
-              );
+              const hasAlready = document.getElementById('__open_owallet_side_panel__');
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
                     BACKGROUND_PORT,
-                    "interaction",
-                    "ping-content-script-tab-has-opened-side-panel",
+                    'interaction',
+                    'ping-content-script-tab-has-opened-side-panel',
                     {}
-                  ).then((sidePanelPing) => {
+                  ).then(sidePanelPing => {
                     if (sidePanelPing) {
                       clearInterval(intervalId);
                       if (!removed) {
@@ -1259,11 +1011,8 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                   });
                 }, 300);
 
-                // 버튼을 body에 추가
                 document.body.appendChild(button);
 
-                // XXX: 현재 크롬의 버그로 인해서 밑의 코드가 동작할 수 없기 때문에 일단 주석처리한다.
-                // 버튼 클릭 이벤트 추가 (필요한 동작을 정의)
                 // button.addEventListener("click", () => {
                 //   this.protectedTryOpenSidePanelIfEnabled(true);
                 //
@@ -1294,10 +1043,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   isOWallet: boolean = true;
   isMetaMask: boolean = true;
 
-  constructor(
-    protected readonly owallet: OWallet,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(protected readonly owallet: OWallet, protected readonly requester: MessageRequester) {
     super();
   }
 
@@ -1305,13 +1051,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     return new Promise((resolve, reject) => {
       let f = false;
 
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "permission-interactive",
-        "enable-access-for-evm",
-        {}
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'enable-access-for-evm', {})
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1332,34 +1072,28 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     method,
     params,
     providerId,
-    chainId,
+    chainId
   }: {
     method: string;
     params?: readonly unknown[] | Record<string, unknown>;
     providerId?: string;
     chainId?: string;
   }): Promise<T> {
-    if (typeof method !== "string") {
-      throw new Error("Invalid paramater: `method` must be a string");
+    if (typeof method !== 'string') {
+      throw new Error('Invalid paramater: `method` must be a string');
     }
-    if (method !== "owallet_initProviderState") {
+    if (method !== 'owallet_initProviderState') {
       await this.protectedEnableAccess();
     }
 
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-ethereum",
-        "request-json-rpc-to-evm",
-        {
-          method,
-          params,
-          providerId,
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-ethereum', 'request-json-rpc-to-evm', {
+        method,
+        params,
+        providerId,
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1377,19 +1111,16 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
    */
 
   async enable(): Promise<string[]> {
-    return await this.request({ method: "eth_requestAccounts" });
+    return await this.request({ method: 'eth_requestAccounts' });
   }
 
   async net_version(): Promise<string> {
-    return await this.request({ method: "net_version" });
+    return await this.request({ method: 'net_version' });
   }
 }
 
 class OasisProvider extends EventEmitter implements IOasisProvider {
-  constructor(
-    protected readonly owallet: OWallet,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(protected readonly owallet: OWallet, protected readonly requester: MessageRequester) {
     super();
   }
 
@@ -1397,13 +1128,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     return new Promise((resolve, reject) => {
       let f = false;
 
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "permission-interactive",
-        "enable-access-for-evm",
-        {}
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'enable-access-for-evm', {})
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1418,15 +1143,9 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-oasis",
-        "get-oasis-key",
-        {
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-oasis', 'get-oasis-key', {
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1439,20 +1158,17 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
 
-  async sendTx(
-    chainId: string,
-    signedTx: types.SignatureSigned
-  ): Promise<string> {
+  async sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string> {
     await this.owallet.enable(chainId);
 
     return await sendSimpleMessage(
       this.requester,
       BACKGROUND_PORT,
-      "background-tx-oasis",
-      "send-oasis-tx-to-background",
+      'background-tx-oasis',
+      'send-oasis-tx-to-background',
       {
         chainId,
-        signedTx,
+        signedTx
       }
     );
   }
@@ -1464,18 +1180,12 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   ): Promise<types.SignatureSigned> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-oasis",
-        "request-sign-oasis",
-        {
-          chainId,
-          signer,
-          message: typeof message === "string" ? Buffer.from(message) : message,
-          signType,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-oasis', 'request-sign-oasis', {
+        chainId,
+        signer,
+        message: typeof message === 'string' ? Buffer.from(message) : message,
+        signType
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1490,15 +1200,9 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-oasis",
-        "get-oasis-keys-settled",
-        {
-          chainIds,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-oasis', 'get-oasis-keys-settled', {
+        chainIds
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1512,25 +1216,16 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   }
 }
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
-  constructor(
-    protected readonly owallet: OWallet,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(protected readonly owallet: OWallet, protected readonly requester: MessageRequester) {
     super();
   }
 
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-bitcoin",
-        "get-btc-key",
-        {
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-bitcoin', 'get-btc-key', {
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1546,15 +1241,9 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-bitcoin",
-        "get-btc-keys-settled",
-        {
-          chainIds,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-bitcoin', 'get-btc-keys-settled', {
+        chainIds
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1568,25 +1257,16 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   }
 }
 class TronProvider extends EventEmitter implements ITronProvider {
-  constructor(
-    protected readonly owallet: OWallet,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(protected readonly owallet: OWallet, protected readonly requester: MessageRequester) {
     super();
   }
 
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-tron",
-        "get-trx-key",
-        {
-          chainId,
-        }
-      )
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-key', {
+        chainId
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1602,15 +1282,56 @@ class TronProvider extends EventEmitter implements ITronProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(
-        this.requester,
-        BACKGROUND_PORT,
-        "keyring-tron",
-        "get-trx-keys-settled",
-        {
-          chainIds,
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {
+        chainIds
+      })
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
         }
-      )
+      }, 100);
+    });
+  }
+
+  async getDefaultAddress(): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async sendTx(chainId: string, signedTx: unknown): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+  async sign(chainId: string, signer: string, data: string | Uint8Array, type: TransactionType): Promise<unknown> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1623,13 +1344,12 @@ class TronProvider extends EventEmitter implements ITronProvider {
     });
   }
 }
-// IMPORTANT: 사이드 패널을 열어야하는 JSON-RPC 메소드들이 생길 때마다 여기에 추가해야한다.
 const sidePanelOpenNeededJSONRPCMethods = [
-  "eth_sendTransaction",
-  "personal_sign",
-  "eth_signTypedData_v3",
-  "eth_signTypedData_v4",
-  "wallet_addEthereumChain",
-  "wallet_switchEthereumChain",
-  "wallet_watchAsset",
+  'eth_sendTransaction',
+  'personal_sign',
+  'eth_signTypedData_v3',
+  'eth_signTypedData_v4',
+  'wallet_addEthereumChain',
+  'wallet_switchEthereumChain',
+  'wallet_watchAsset'
 ];

@@ -80,6 +80,17 @@ export const SendTronScreen: FunctionComponent<{
   //   }
   //   return;
   // }, [sendConfigs.feeConfig]);
+
+  const { feeTrx } = useGetFeeTron(
+    addressToFetch,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainStore.current,
+    keyRingStore,
+    null
+  );
+
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === sender
       ? new InvalidTronAddressError('Cannot transfer TRX to the same account')

@@ -116,7 +116,7 @@ export class RootStore {
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
       OasisQueries,
-      // TrxQueries,
+      TrxQueries,
       BtcQueries
     ]
   >;
