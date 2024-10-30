@@ -1,7 +1,6 @@
 import { Int } from '@owallet/unit';
 import {
   DEFAULT_FEE_LIMIT_TRON,
-  encodeParams,
   estimateBandwidthTron,
   EXTRA_FEE_LIMIT_TRON,
   getEvmAddress,
@@ -9,11 +8,12 @@ import {
   TronWebProvider
 } from '@owallet/common';
 import { CoinPrimitive, IChainInfoImpl } from '@owallet/stores';
-import { TrxQueries, TrxQueriesImpl } from '@owallet/stores-trx';
+import { KeyRingStore } from '@owallet/stores-core';
+import { TrxQueriesImpl } from '@owallet/stores-trx';
 import { useEffect, useState } from 'react';
 import { AmountConfig } from '../amount';
 import { RecipientConfig } from '../recipient';
-import { ChainInfoWithCoreTypes, KeyRingTronBaseService } from '@owallet/background';
+import { ChainInfoWithCoreTypes } from '@owallet/background';
 
 interface IGetFeeTron {
   feeLimit: Int;
@@ -28,7 +28,8 @@ export const useGetFeeTron = (
   recipientConfig: RecipientConfig,
   queriesTron: TrxQueriesImpl,
   chainInfo: IChainInfoImpl<ChainInfoWithCoreTypes>,
-  keyRingTronStore: KeyRingTronBaseService,
+  vaultId: string,
+  keyringStore: KeyRingStore,
   dataSign: any
 ): IGetFeeTron => {
   const initData = {
@@ -43,6 +44,8 @@ export const useGetFeeTron = (
   const chainParameter = queriesTron.queryChainParameter.getQueryChainParameters();
   const feeCurrency = chainInfo.feeCurrencies[0];
   const { bandwidthRemaining, energyRemaining } = accountTronInfo;
+  console.log(' bandwidthRemaining, energyRemaining ', bandwidthRemaining, energyRemaining);
+
   const caculatorAmountBandwidthFee = (signedTx, bandwidthRemaining): Int => {
     if (!signedTx || !bandwidthRemaining) return;
     const bandwidthUsed = estimateBandwidthTron(signedTx);
@@ -92,7 +95,11 @@ export const useGetFeeTron = (
     console.log('B4: simulate sign trigger data request Trigger: ', dataReq);
     console.log('B4: simulate sign trigger data after Trigger: ', triggerContract);
     if (!triggerContract?.energy_used) return;
-    const signedTx = await keyRingTronStore.simulateSignTron(triggerContract.transaction);
+    const signedTx = await keyringStore.simulateSignTron(
+      triggerContract.transaction,
+      vaultId,
+      chainInfo.bip44.coinType
+    );
     const amountBandwidthFee = caculatorAmountBandwidthFee(signedTx, bandwidthRemaining);
     const amountEnergyFee = caculatorAmountEnergyFee(signedTx, energyRemaining, triggerContract.energy_used);
     const trc20Fee = amountBandwidthFee.add(amountEnergyFee);
@@ -112,7 +119,7 @@ export const useGetFeeTron = (
       feeLimit
     }));
   };
-  const simulateSignTron = async () => {
+  const simulateSignTron = async (vaultId, coinType) => {
     if (dataSign?.functionSelector) {
       try {
         if (addressTronBase58?.length <= 0 || !addressTronBase58?.length) return;
@@ -152,7 +159,9 @@ export const useGetFeeTron = (
           addressTronBase58,
           1
         );
-        const signedTx = await keyRingStore.simulateSignTron(transaction);
+        const signedTx = await keyringStore.simulateSignTron(transaction, vaultId, coinType);
+        console.log('signedTx', signedTx);
+
         const amountBandwidthFee = caculatorAmountBandwidthFee(signedTx, bandwidthRemaining);
         setData(prevState => ({
           ...prevState,
@@ -189,7 +198,17 @@ export const useGetFeeTron = (
     }
   };
   useEffect(() => {
-    simulateSignTron();
-  }, [amountConfig.amount, recipientConfig.recipient, addressTronBase58, amountConfig.currency, dataSign]);
+    console.log('get here simulateSignTron', simulateSignTron, vaultId, chainInfo.bip44.coinType);
+
+    simulateSignTron(vaultId, chainInfo.bip44.coinType);
+  }, [
+    amountConfig.amount,
+    recipientConfig.recipient,
+    addressTronBase58,
+    amountConfig.currency,
+    dataSign,
+    vaultId,
+    chainInfo
+  ]);
   return data;
 };

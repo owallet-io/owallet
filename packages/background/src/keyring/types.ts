@@ -1,9 +1,9 @@
-import { PlainObject, Vault } from "../vault";
-import { PubKeySecp256k1 } from "@owallet/crypto";
-import { ChainInfo, TransactionType } from "@owallet/types";
-import { types } from "@oasisprotocol/client";
+import { PlainObject, Vault } from '../vault';
+import { PrivKeySecp256k1, PubKeySecp256k1 } from '@owallet/crypto';
+import { ChainInfo, TransactionType } from '@owallet/types';
+import { types } from '@oasisprotocol/client';
 
-export type KeyRingStatus = "empty" | "locked" | "unlocked";
+export type KeyRingStatus = 'empty' | 'locked' | 'unlocked';
 
 export type BIP44HDPath = {
   account: number;
@@ -27,23 +27,17 @@ export interface KeyRing {
     sensitive: PlainObject;
   }>;
 
-  getPubKey(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
 
-  getPubKeyBip84?(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+  getPubKeyBip84?(vault: Vault, coinType: number, chainInfo: ChainInfo): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  simulateSignTron?(transaction: any, vault: Vault, coinType: number): string | Promise<string>;
 
   sign(
     vault: Vault,
     coinType: number,
     data: Uint8Array,
-    digestMethod: "sha256" | "keccak256",
+    digestMethod: 'sha256' | 'keccak256',
     chainInfo: ChainInfo
   ):
     | {
@@ -66,11 +60,7 @@ export interface KeyRingOasis {
     sensitive: PlainObject;
   }>;
 
-  getPubKey(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): Uint8Array | Promise<Uint8Array>;
+  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array | Promise<Uint8Array>;
 
   sign(
     vault: Vault,
@@ -81,7 +71,7 @@ export interface KeyRingOasis {
 }
 
 export interface ExportedKeyRingVault {
-  type: "mnemonic" | "private-key";
+  type: 'mnemonic' | 'private-key';
   id: string;
   insensitive: PlainObject;
   sensitive: string;

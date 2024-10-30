@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { InvalidTronAddressError, NotLoadedFeeError, useSendTronTxConfig } from '@owallet/hooks';
+import { InvalidTronAddressError, NotLoadedFeeError, useSendTronTxConfig, useGetFeeTron } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { EthereumEndpoint, toAmount } from '@owallet/common';
 import { InteractionManager, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -30,7 +30,7 @@ export const SendTronScreen: FunctionComponent<{
   recipientAddress: string;
   setSelectedKey: (key) => void;
 }> = observer(({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-  const { chainStore, tronAccountStore, queriesStore, priceStore, keyRingStore, universalSwapStore } = useStore();
+  const { chainStore, tronAccountStore, queriesStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const route = useRoute<
@@ -87,9 +87,12 @@ export const SendTronScreen: FunctionComponent<{
     sendConfigs.recipientConfig,
     queries.tron,
     chainStore.current,
+    keyRingStore.selectedKeyInfo.id,
     keyRingStore,
     null
   );
+
+  console.log('feeTrx', feeTrx);
 
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === sender

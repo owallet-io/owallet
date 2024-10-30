@@ -210,7 +210,7 @@ export class RootStore {
         coingeckoAPIURI: ''
       }),
       OasisQueries.use(),
-      // TrxQueries.use(),
+      TrxQueries.use(),
       BtcQueries.use()
     );
     this.browserStore = new BrowserStore();

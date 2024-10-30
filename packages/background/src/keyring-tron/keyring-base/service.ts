@@ -1,10 +1,10 @@
-import { Vault, VaultService } from "../../vault";
-import { KeyRing } from "../../keyring";
-import { makeObservable } from "mobx";
-import { ChainIdHelper } from "@owallet/cosmos";
-import { ChainInfo } from "@owallet/types";
-import { ChainsService } from "../../chains";
-import { PubKeySecp256k1 } from "@owallet/crypto";
+import { Vault, VaultService } from '../../vault';
+import { KeyRing } from '../../keyring';
+import { makeObservable } from 'mobx';
+import { ChainIdHelper } from '@owallet/cosmos';
+import { ChainInfo } from '@owallet/types';
+import { ChainsService } from '../../chains';
+import { PubKeySecp256k1 } from '@owallet/crypto';
 
 export class KeyRingTronBaseService {
   constructor(
@@ -21,19 +21,17 @@ export class KeyRingTronBaseService {
 
   getPubKey(chainId: string, vaultId: string): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
-      throw new Error("KeyRing is locked");
+      throw new Error('KeyRing is locked');
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
 
-    const vault = this.vaultService.getVault("keyRing", vaultId);
+    const vault = this.vaultService.getVault('keyRing', vaultId);
     if (!vault) {
-      throw new Error("Vault is null");
+      throw new Error('Vault is null');
     }
 
-    const coinTypeTag = `keyRing-${
-      ChainIdHelper.parse(chainId).identifier
-    }-coinType`;
+    const coinTypeTag = `keyRing-${ChainIdHelper.parse(chainId).identifier}-coinType`;
 
     const coinType = (() => {
       if (vault.insensitive[coinTypeTag]) {
@@ -45,29 +43,27 @@ export class KeyRingTronBaseService {
 
     return this.getPubKeyWithVault(vault, coinType, chainInfo);
   }
-  getPubKeyWithVault(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): Promise<PubKeySecp256k1> {
+  getPubKeyWithVault(vault: Vault, coinType: number, chainInfo: ChainInfo): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
-      throw new Error("KeyRing is locked");
+      throw new Error('KeyRing is locked');
     }
 
     const keyRing = this.getVaultKeyRing(vault);
 
-    return Promise.resolve(
-      keyRing.getPubKey(vault, coinType, chainInfo) as PubKeySecp256k1
-    );
+    return Promise.resolve(keyRing.getPubKey(vault, coinType, chainInfo) as PubKeySecp256k1);
   }
   protected getVaultKeyRing(vault: Vault): KeyRing {
     for (const keyRing of this.keyRings) {
-      if (vault.insensitive["keyRingType"] === keyRing.supportedKeyRingType()) {
+      if (vault.insensitive['keyRingType'] === keyRing.supportedKeyRingType()) {
         return keyRing;
       }
     }
 
-    throw new Error("Unsupported keyRing vault");
+    throw new Error('Unsupported keyRing vault');
+  }
+
+  simulateSignTron(transaction) {
+    return 'txHash';
   }
   // getPubKey(vault: Vault): Uint8Array {
   //   const publicKeyBytes = Buffer.from(

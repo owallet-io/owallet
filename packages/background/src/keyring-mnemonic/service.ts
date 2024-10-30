@@ -1,14 +1,11 @@
-import { VaultService, PlainObject, Vault } from "../vault";
-import { Buffer } from "buffer/";
-import {
-  Hash,
-  Mnemonic,
-  PrivKeySecp256k1,
-  PubKeySecp256k1,
-} from "@owallet/crypto";
-import { ChainInfo } from "@owallet/types";
+import { VaultService, PlainObject, Vault } from '../vault';
+import { Buffer } from 'buffer/';
+import { Hash, Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from '@owallet/crypto';
+import { ChainInfo } from '@owallet/types';
+import TronWeb from 'tronweb';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const bip39 = require("bip39");
+const bip39 = require('bip39');
 
 export class KeyRingMnemonicService {
   constructor(protected readonly vaultService: VaultService) {}
@@ -18,7 +15,7 @@ export class KeyRingMnemonicService {
   }
 
   supportedKeyRingType(): string {
-    return "mnemonic";
+    return 'mnemonic';
   }
 
   createKeyRingVault(
@@ -32,8 +29,8 @@ export class KeyRingMnemonicService {
     insensitive: PlainObject;
     sensitive: PlainObject;
   }> {
-    if (!mnemonic || typeof mnemonic !== "string") {
-      throw new Error("Invalid arguments");
+    if (!mnemonic || typeof mnemonic !== 'string') {
+      throw new Error('Invalid arguments');
     }
 
     // Validate mnemonic.
@@ -41,31 +38,27 @@ export class KeyRingMnemonicService {
     try {
       bip39.mnemonicToEntropy(mnemonic);
     } catch (e) {
-      if (e.message !== "Invalid mnemonic checksum") {
+      if (e.message !== 'Invalid mnemonic checksum') {
         throw e;
       }
     }
 
     const masterSeed = Mnemonic.generateMasterSeedFromMnemonic(mnemonic);
-    const masterSeedText = Buffer.from(masterSeed).toString("hex");
+    const masterSeedText = Buffer.from(masterSeed).toString('hex');
 
     return Promise.resolve({
       insensitive: {
-        bip44Path,
+        bip44Path
       },
       sensitive: {
         masterSeedText,
-        mnemonic,
-      },
+        mnemonic
+      }
     });
   }
 
-  getPubKey(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): PubKeySecp256k1 {
-    if (chainInfo?.features.includes("gen-address")) {
+  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): PubKeySecp256k1 {
+    if (chainInfo?.features.includes('gen-address')) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
     const bip44Path = this.getBIP44PathFromVault(vault);
@@ -73,7 +66,7 @@ export class KeyRingMnemonicService {
     const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
 
     if (vault.insensitive[tag]) {
-      const pubKey = Buffer.from(vault.insensitive[tag] as string, "hex");
+      const pubKey = Buffer.from(vault.insensitive[tag] as string, 'hex');
       return new PubKeySecp256k1(pubKey);
     }
 
@@ -81,9 +74,9 @@ export class KeyRingMnemonicService {
 
     const pubKey = privKey.getPubKey();
 
-    const pubKeyText = Buffer.from(pubKey.toBytes()).toString("hex");
-    this.vaultService.setAndMergeInsensitiveToVault("keyRing", vault.id, {
-      [tag]: pubKeyText,
+    const pubKeyText = Buffer.from(pubKey.toBytes()).toString('hex');
+    this.vaultService.setAndMergeInsensitiveToVault('keyRing', vault.id, {
+      [tag]: pubKeyText
     });
 
     return pubKey;
@@ -93,7 +86,7 @@ export class KeyRingMnemonicService {
     vault: Vault,
     coinType: number,
     data: Uint8Array,
-    digestMethod: "sha256" | "keccak256"
+    digestMethod: 'sha256' | 'keccak256'
   ): {
     readonly r: Uint8Array;
     readonly s: Uint8Array;
@@ -103,10 +96,10 @@ export class KeyRingMnemonicService {
 
     let digest = new Uint8Array();
     switch (digestMethod) {
-      case "sha256":
+      case 'sha256':
         digest = Hash.sha256(data);
         break;
-      case "keccak256":
+      case 'keccak256':
         digest = Hash.keccak256(data);
         break;
       default:
@@ -116,16 +109,22 @@ export class KeyRingMnemonicService {
     return privKey.signDigest32(digest);
   }
 
+  simulateSignTron(transaction: any, vault: Vault, coinType: number) {
+    const privKey = this.getPrivKey(vault, coinType);
+    const signedTxn = TronWeb.utils.crypto.signTransaction(privKey.toBytes(), transaction);
+    return signedTxn;
+  }
+
   protected getPrivKey(vault: Vault, coinType: number): PrivKeySecp256k1 {
     const bip44Path = this.getBIP44PathFromVault(vault);
 
     const decrypted = this.vaultService.decrypt(vault.sensitive);
-    const masterSeedText = decrypted["masterSeedText"] as string | undefined;
+    const masterSeedText = decrypted['masterSeedText'] as string | undefined;
     if (!masterSeedText) {
-      throw new Error("masterSeedText is null");
+      throw new Error('masterSeedText is null');
     }
 
-    const masterSeed = Buffer.from(masterSeedText, "hex");
+    const masterSeed = Buffer.from(masterSeedText, 'hex');
     return new PrivKeySecp256k1(
       Mnemonic.generatePrivateKeyFromMasterSeed(
         masterSeed,
@@ -139,7 +138,7 @@ export class KeyRingMnemonicService {
     change: number;
     addressIndex: number;
   } {
-    return vault.insensitive["bip44Path"] as {
+    return vault.insensitive['bip44Path'] as {
       account: number;
       change: number;
       addressIndex: number;
