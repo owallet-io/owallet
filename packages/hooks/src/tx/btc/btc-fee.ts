@@ -1,8 +1,11 @@
 import {
   DefaultGasPriceStep,
   FeeType,
+  IAmountConfig,
   IBaseAmountConfig,
   IBtcFeeConfig,
+  IMemoConfig,
+  IRecipientConfig,
   ISenderConfig,
   UIProperties,
 } from "../types";
@@ -15,6 +18,7 @@ import { computedFn } from "mobx-utils";
 import { useState } from "react";
 import { InsufficientFeeError } from "../errors";
 import { QueriesStore } from "../internal";
+import { estimateFeeByFeeRate } from "@owallet/common";
 
 export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
   @observable.ref
@@ -34,10 +38,11 @@ export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
     protected readonly queriesStore: QueriesStore,
     initialChainId: string,
     protected readonly senderConfig: ISenderConfig,
-    protected readonly amountConfig: IBaseAmountConfig
+    protected readonly amountConfig: IAmountConfig,
+    protected readonly recipientConfig: IRecipientConfig,
+    protected readonly memoConfig: IMemoConfig
   ) {
     super(chainGetter, initialChainId);
-
     makeObservable(this);
   }
 
@@ -207,11 +212,45 @@ export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
 
   readonly getFeeTypePrettyForFeeCurrency = computedFn(
     (feeCurrency: FeeCurrency, feeType: FeeType) => {
-      //TODO: need update gas
-      const gas = 0;
+      // //TODO: need update gas
+      // const gas = 1;
       const gasPrice = this.getGasPriceForFeeCurrency(feeCurrency, feeType);
-      const feeAmount = gasPrice.mul(new Dec(gas));
-
+      // console.log(gasPrice,"gasPrice");
+      // const feeAmount = gasPrice.mul(new Dec(gas));
+      // console.log(feeAmount?.toString())
+      // console.log(this?.amountConfig?.amount?.[0]?.toCoin()?.amount,"this.amountConfig.amount[0].toCoin().amount")
+      const utxos = [
+        {
+          txid: "9ede3b7747a705aa9fe723c5d6da7ea639b2e3ae072f828d2e72ca7bbc8c68bc",
+          vout: 1,
+          status: {
+            confirmed: true,
+            block_height: 824380,
+            block_hash:
+              "000000000000000000022d1e6fc0b8efd24dd48bc87a1c35150d3ff95bbd180e",
+            block_time: 1704400656,
+          },
+          value: 7032,
+        },
+      ];
+      // console.log(this.amount[0]
+      //     .toDec()
+      //     .mul(DecUtils.getTenExponentN(this.amount[0].currency.coinDecimals)),"amount")
+      // const queryOsmosis = this.queriesStore.get(this.chainId);
+      const amountData = new Dec(this.amountConfig.amountNotSubFee || 0).mul(
+        DecUtils.getTenExponentN(feeCurrency.coinDecimals)
+      );
+      const fee = estimateFeeByFeeRate(
+        utxos,
+        Number(gasPrice.roundUp().toString()),
+        {
+          message: this.memoConfig.memo,
+          recipient: this.recipientConfig.recipient,
+          amount: Number(amountData.roundUp().toString()),
+        }
+      );
+      // console.log(fee,"fee btc");
+      const feeAmount = new Dec(fee);
       return new CoinPretty(feeCurrency, feeAmount.roundUp()).maxDecimals(
         feeCurrency.coinDecimals
       );
@@ -314,7 +353,9 @@ export const useBtcFeeConfig = (
   queriesStore: QueriesStore,
   chainId: string,
   senderConfig: ISenderConfig,
-  amountConfig: IBaseAmountConfig
+  amountConfig: IAmountConfig,
+  recipientConfig: IRecipientConfig,
+  memoConfig: IMemoConfig
 ) => {
   const [config] = useState(
     () =>
@@ -323,7 +364,9 @@ export const useBtcFeeConfig = (
         queriesStore,
         chainId,
         senderConfig,
-        amountConfig
+        amountConfig,
+        recipientConfig,
+        memoConfig
       )
   );
   config.setChain(chainId);

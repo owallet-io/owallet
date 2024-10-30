@@ -136,7 +136,7 @@ export interface IAmountConfig extends IBaseAmountConfig {
   currency: AppCurrency;
   setCurrency(currency: AppCurrency | undefined): void;
   canUseCurrency(currency: AppCurrency): boolean;
-
+  amountNotSubFee?: string;
   // Zero means unset.
   fraction: number;
   setFraction(fraction: number): void;

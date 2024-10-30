@@ -4,6 +4,9 @@ import {
   QuerySharedContext,
 } from "@owallet/stores";
 import { ObservableQueryBtcAccountBalanceRegistry } from "./balance";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryBtcFeeHistory } from "./fee-history";
+import { ObservableQueryBtcUtxos } from "./utxos";
 export interface BtcQueries {
   bitcoin: BtcQueriesImpl;
 }
@@ -34,6 +37,8 @@ export const BtcQueries = {
 };
 
 export class BtcQueriesImpl {
+  public readonly queryBtcUtxos: DeepReadonly<ObservableQueryBtcUtxos>;
+  public readonly queryBtcFeeHistory: DeepReadonly<ObservableQueryBtcFeeHistory>;
   constructor(
     base: QueriesSetBase,
     sharedContext: QuerySharedContext,
@@ -42,6 +47,17 @@ export class BtcQueriesImpl {
   ) {
     base.queryBalances.addBalanceRegistry(
       new ObservableQueryBtcAccountBalanceRegistry(sharedContext)
+    );
+    this.queryBtcUtxos = new ObservableQueryBtcUtxos(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
+
+    this.queryBtcFeeHistory = new ObservableQueryBtcFeeHistory(
+      sharedContext,
+      chainId,
+      chainGetter
     );
   }
 }

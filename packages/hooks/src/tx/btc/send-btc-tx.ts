@@ -32,18 +32,20 @@ export const useSendBtcTxConfig = (
     senderConfig
   );
 
+  const recipientConfig = useRecipientConfig(chainGetter, chainId, options);
+  const memoConfig = useMemoConfig(chainGetter, chainId);
   const feeConfig = useBtcFeeConfig(
     chainGetter,
     queriesStore,
     chainId,
     senderConfig,
-    amountConfig
+    amountConfig,
+    recipientConfig,
+    memoConfig
   );
 
   amountConfig.setFeeConfig(feeConfig);
 
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, options);
-  const memoConfig = useMemoConfig(chainGetter, chainId);
   return {
     senderConfig,
     amountConfig,

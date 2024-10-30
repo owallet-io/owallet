@@ -53,7 +53,24 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   setFeeConfig(feeConfig: IFeeConfig | IBtcFeeConfig | undefined) {
     this._feeConfig = feeConfig;
   }
+  @computed
+  get amountNotSubFee(): string {
+    if (this.fraction > 0) {
+      let result = this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.senderConfig.sender)
+        .getBalanceFromCurrency(this.currency);
 
+      return result
+        .mul(new Dec(this.fraction))
+        .trim(true)
+        .locale(false)
+        .hideDenom(true)
+        .toString();
+    }
+
+    return this._value;
+  }
   @computed
   get value(): string {
     if (this.fraction > 0) {
@@ -101,10 +118,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       } else {
         amount = new Dec(this.value);
       }
-    } catch {
+    } catch (e) {
+      console.log(e, "err");
       amount = new Dec(0);
     }
-
     return [
       new CoinPretty(
         this.currency,
