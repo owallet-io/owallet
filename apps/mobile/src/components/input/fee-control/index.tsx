@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useLayoutEffect, useState } from "react";
 import {
+  IBtcFeeConfig,
   IFeeConfig,
   IGasConfig,
   IGasSimulator,
@@ -16,24 +17,19 @@ import { Box } from "../../box";
 import { Text } from "react-native";
 import { useStyle } from "../../../styles";
 import { Gutter } from "../../gutter";
-// import {IconButton} from '../../icon-button';
-// import {AdjustmentsHorizontalIcon} from '../../icon/adjustments-horizontal';
 import { TransactionFeeModal } from "./transaction-fee-modal";
 import { GuideBox } from "../../guide-box";
 import { UIConfigStore } from "../../../stores/ui-config";
 import { IChainStore, IQueriesStore } from "@owallet/stores";
 import { SVGLoadingIcon } from "../../spinner";
-// import {InformationModal} from '../../modal/infoModal';
-// import {InformationOutlinedIcon} from '../../icon/information-outlined';
 import OwButtonIcon from "@components/button/ow-button-icon";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { InformationModal } from "@src/modals/fee/infoModal";
+import { TransactionBtcFeeModal } from "@components/input/fee-control/transaction-btc-fee-modal";
 
-// 기본적으로 `FeeControl` 안에 있는 로직이였지만 `FeeControl` 말고도 다른 UI를 가진 똑같은 기능의 component가
-// 여러개 생기게 되면서 공통적으로 사용하기 위해서 custom hook으로 분리함
 export const useFeeOptionSelectionOnInit = (
   uiConfigStore: UIConfigStore,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -71,7 +67,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
   chainStore: IChainStore,
   queriesStore: IQueriesStore,
   senderConfig: ISenderConfig,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -169,7 +165,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
 
 export const FeeControl: FunctionComponent<{
   senderConfig: ISenderConfig;
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
 
@@ -190,10 +186,6 @@ export const FeeControl: FunctionComponent<{
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
     const hasError =
       feeConfig.uiProperties.error || feeConfig.uiProperties.warning;
-    console.log(
-      feeConfig.selectableFeeCurrencies,
-      "feeConfig.selectableFeeCurrencies"
-    );
     useFeeOptionSelectionOnInit(
       uiConfigStore,
       feeConfig,
@@ -207,7 +199,8 @@ export const FeeControl: FunctionComponent<{
       feeConfig,
       disableAutomaticFeeSet
     );
-
+    const chainInfo = chainStore.getChain(feeConfig.chainId);
+    const isBtc = chainInfo.features.includes("btc");
     return (
       <Box
         style={style.flatten(["width-full"])}
@@ -425,16 +418,27 @@ export const FeeControl: FunctionComponent<{
           </Box>
         ) : null}
 
-        <TransactionFeeModal
-          isOpen={isModalOpen}
-          close={() => setIsModalOpen(false)}
-          setIsOpen={() => setIsModalOpen(false)}
-          senderConfig={senderConfig}
-          feeConfig={feeConfig}
-          gasConfig={gasConfig}
-          gasSimulator={gasSimulator}
-          disableAutomaticFeeSet={disableAutomaticFeeSet}
-        />
+        {isBtc ? (
+          <TransactionBtcFeeModal
+            isOpen={isModalOpen}
+            close={() => setIsModalOpen(false)}
+            setIsOpen={() => setIsModalOpen(false)}
+            senderConfig={senderConfig}
+            feeConfig={feeConfig}
+            disableAutomaticFeeSet={disableAutomaticFeeSet}
+          />
+        ) : (
+          <TransactionFeeModal
+            isOpen={isModalOpen}
+            close={() => setIsModalOpen(false)}
+            setIsOpen={() => setIsModalOpen(false)}
+            senderConfig={senderConfig}
+            feeConfig={feeConfig as IFeeConfig}
+            gasConfig={gasConfig}
+            gasSimulator={gasSimulator}
+            disableAutomaticFeeSet={disableAutomaticFeeSet}
+          />
+        )}
 
         <InformationModal
           isOpen={isInfoModalOpen}

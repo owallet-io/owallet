@@ -1,5 +1,6 @@
 import {
   IAmountConfig,
+  IBtcFeeConfig,
   IFeeConfig,
   ISenderConfig,
   UIProperties,
@@ -31,7 +32,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   protected _fraction: number = 0;
 
   @observable.ref
-  protected _feeConfig: IFeeConfig | undefined = undefined;
+  protected _feeConfig: IFeeConfig | IBtcFeeConfig | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -44,12 +45,12 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     makeObservable(this);
   }
 
-  get feeConfig(): IFeeConfig | undefined {
+  get feeConfig(): IFeeConfig | IBtcFeeConfig | undefined {
     return this._feeConfig;
   }
 
   @action
-  setFeeConfig(feeConfig: IFeeConfig | undefined) {
+  setFeeConfig(feeConfig: IFeeConfig | IBtcFeeConfig | undefined) {
     this._feeConfig = feeConfig;
   }
 

@@ -35,6 +35,7 @@ import { SendTxAndRecordMsg } from "@owallet/background";
 import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
 import { showToast } from "@utils/helper";
+import { DenomHelper } from "@owallet/common";
 
 export const SendBtcScreen: FunctionComponent<{
   chainId: string;
@@ -64,132 +65,70 @@ export const SendBtcScreen: FunctionComponent<{
 
     const account = bitcoinAccountStore.getAccount(chainId);
     const queryBalances = queriesStore.get(chainId).queryBalances;
-    const sender = account.bech32Address;
+    console.log(coinMinimalDenom, "coinMinimalDenom btc");
+    const denomHelper = new DenomHelper(coinMinimalDenom);
+    const sender =
+      denomHelper.type === "legacy"
+        ? account.btcLegacyAddress
+        : account.bech32Address;
     const balance = queryBalances
       .getQueryBech32Address(sender)
       .getBalance(currency);
+
     const sendConfigs = useSendBtcTxConfig(
       chainStore,
       queriesStore,
       chainId,
-      sender,
-      1
+      sender
     );
 
     sendConfigs.amountConfig.setCurrency(currency);
     useEffect(() => {
       sendConfigs.recipientConfig.setValue(recipientAddress || "");
     }, [recipientAddress, sendConfigs.recipientConfig]);
-
-    // const gasSimulatorKey = useMemo(() => {
-    //     const txType: "evm" | "cosmos" = "cosmos";
-    //
-    //     if (sendConfigs.amountConfig.currency) {
-    //         const denomHelper = new DenomHelper(
-    //             sendConfigs.amountConfig.currency.coinMinimalDenom
-    //         );
-    //
-    //         if (denomHelper.type !== "native") {
-    //             if (denomHelper.type === "cw20") {
-    //                 // Probably, the gas can be different per cw20 according to how the contract implemented.
-    //                 return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}`;
-    //             }
-    //
-    //             return `${txType}/${denomHelper.type}`;
-    //         }
-    //     }
-    //
-    //     return `${txType}/native`;
-    // }, [sendConfigs.amountConfig.currency]);
-
-    // const gasSimulator = useGasSimulator(
-    //     new AsyncKVStore("gas-simulator.screen.send/send"),
-    //     chainStore,
-    //     chainId,
-    //     sendConfigs.gasConfig,
-    //     sendConfigs.feeConfig,
-    //     gasSimulatorKey,
-    //     () => {
-    //         if (!sendConfigs.amountConfig.currency) {
-    //             throw new Error(
-    //                 intl.formatMessage({id: "error.send-currency-not-set"})
-    //             );
-    //         }
-    //         if (
-    //             sendConfigs.amountConfig.uiProperties.loadingState ===
-    //             "loading-block" ||
-    //             sendConfigs.amountConfig.uiProperties.error != null ||
-    //             sendConfigs.recipientConfig.uiProperties.loadingState ===
-    //             "loading-block" ||
-    //             sendConfigs.recipientConfig.uiProperties.error != null
-    //         ) {
-    //             throw new Error(
-    //                 intl.formatMessage({id: "error.not-read-simulate-tx"})
-    //             );
-    //         }
-    //
-    //         const denomHelper = new DenomHelper(
-    //             sendConfigs.amountConfig.currency.coinMinimalDenom
-    //         );
-    //         // I don't know why, but simulation does not work for secret20
-    //         if (denomHelper.type === "secret20") {
-    //             throw new Error(
-    //                 intl.formatMessage({
-    //                     id: "error.simulating-secret-wasm-not-supported",
-    //                 })
-    //             );
-    //         }
-    //         return account.makeSendTokenTx(
-    //             sendConfigs.amountConfig.amount[0].toDec().toString(),
-    //             sendConfigs.amountConfig.amount[0].currency,
-    //             sendConfigs.recipientConfig.recipient
-    //         );
-    //     }
-    // );
-
     const txConfigsValidate = useTxConfigsValidate({
       ...sendConfigs,
     });
 
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
-        try {
-          account.setIsSendingTx(true);
-          const unsignedTx = account.makeSendTokenTx({
-            currency: sendConfigs.amountConfig.amount[0].currency,
-            amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-            to: sendConfigs.recipientConfig.recipient,
-          });
-          await account.sendTx(sender, unsignedTx, {
-            onBroadcasted: (txHash) => {
-              account.setIsSendingTx(false);
-              navigate(SCREENS.TxPendingResult, {
-                chainId,
-                txHash,
-              });
-            },
-            onFulfill: (txReceipt) => {
-              queryBalances
-                .getQueryBech32Address(account.bech32Address)
-                .balances.forEach((balance) => {
-                  if (
-                    balance.currency.coinMinimalDenom === coinMinimalDenom ||
-                    sendConfigs.feeConfig.fees.some(
-                      (fee) =>
-                        fee.currency.coinMinimalDenom ===
-                        balance.currency.coinMinimalDenom
-                    )
-                  ) {
-                    balance.fetch();
-                  }
-                });
-            },
-          });
-        } catch (e) {
-          if (e?.message === "Request rejected") {
-            return;
-          }
-        }
+        // try {
+        //   account.setIsSendingTx(true);
+        //   const unsignedTx = account.makeSendTokenTx({
+        //     currency: sendConfigs.amountConfig.amount[0].currency,
+        //     amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
+        //     to: sendConfigs.recipientConfig.recipient,
+        //   });
+        //   await account.sendTx(sender, unsignedTx, {
+        //     onBroadcasted: (txHash) => {
+        //       account.setIsSendingTx(false);
+        //       navigate(SCREENS.TxPendingResult, {
+        //         chainId,
+        //         txHash,
+        //       });
+        //     },
+        //     onFulfill: (txReceipt) => {
+        //       queryBalances
+        //         .getQueryBech32Address(account.bech32Address)
+        //         .balances.forEach((balance) => {
+        //           if (
+        //             balance.currency.coinMinimalDenom === coinMinimalDenom ||
+        //             sendConfigs.feeConfig.fees.some(
+        //               (fee) =>
+        //                 fee.currency.coinMinimalDenom ===
+        //                 balance.currency.coinMinimalDenom
+        //             )
+        //           ) {
+        //             balance.fetch();
+        //           }
+        //         });
+        //     },
+        //   });
+        // } catch (e) {
+        //   if (e?.message === "Request rejected") {
+        //     return;
+        //   }
+        // }
       }
     };
     const loadingSend = account.isSendingTx;
@@ -313,7 +252,7 @@ export const SendBtcScreen: FunctionComponent<{
               <FeeControl
                 senderConfig={sendConfigs.senderConfig}
                 feeConfig={sendConfigs.feeConfig}
-                gasConfig={sendConfigs.gasConfig}
+                gasConfig={null}
                 gasSimulator={null}
               />
               <MemoInput

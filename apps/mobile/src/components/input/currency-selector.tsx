@@ -5,8 +5,6 @@ import { TextStyle, ViewStyle } from "react-native";
 import { TokensSelector } from "./tokens-selector";
 import { useStore } from "@src/stores";
 import { Dec } from "@owallet/unit";
-// import { ObservableQueryBalanceInner } from "@owallet/stores";
-
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;

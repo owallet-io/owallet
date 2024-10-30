@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from "react";
-import { IFeeConfig } from "@owallet/hooks";
+import { IBtcFeeConfig, IFeeConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { Column, Columns } from "../../column";
@@ -10,7 +10,7 @@ import { FormattedMessage } from "react-intl";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 export const FeeSelector: FunctionComponent<{
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
 }> = observer(({ feeConfig }) => {
   const { priceStore } = useStore();
   const style = useStyle();

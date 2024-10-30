@@ -3,16 +3,14 @@ import { useSenderConfig } from "../sender";
 import { useAmountConfig } from "../amount";
 import { useRecipientConfig } from "../recipient";
 import { QueriesStore } from "../internal";
-import { useFeeConfig } from "../fee";
-import { useGasConfig } from "../gas";
 import { useMemoConfig } from "../memo";
+import { useBtcFeeConfig } from "./btc-fee";
 
 export const useSendBtcTxConfig = (
   chainGetter: ChainGetter,
   queriesStore: QueriesStore,
   chainId: string,
   sender: string,
-  initialGas: number,
   options: {
     allowHexAddressToBech32Address?: boolean;
     icns?: {
@@ -34,15 +32,12 @@ export const useSendBtcTxConfig = (
     senderConfig
   );
 
-  const gasConfig = useGasConfig(chainGetter, chainId, initialGas);
-  const feeConfig = useFeeConfig(
+  const feeConfig = useBtcFeeConfig(
     chainGetter,
     queriesStore,
     chainId,
     senderConfig,
-    amountConfig,
-    gasConfig,
-    options
+    amountConfig
   );
 
   amountConfig.setFeeConfig(feeConfig);
@@ -52,7 +47,6 @@ export const useSendBtcTxConfig = (
   return {
     senderConfig,
     amountConfig,
-    gasConfig,
     feeConfig,
     memoConfig,
     recipientConfig,

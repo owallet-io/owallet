@@ -498,19 +498,6 @@ export const EmbedChainInfos: ChainInfo[] = [
             high: 1,
           },
         },
-        {
-          coinDenom: "BTC",
-          coinMinimalDenom: "legacy:btc",
-          coinDecimals: 8,
-          coinGeckoId: "bitcoin",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-          gasPriceStep: {
-            low: 144,
-            average: 18,
-            high: 1,
-          },
-        },
       ];
     },
 

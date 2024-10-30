@@ -34,6 +34,9 @@ export const TokenView: FunctionComponent<{
   const { colors } = useTheme();
 
   const name = balance.token?.currency?.coinDenom;
+  const denomHelper = new DenomHelper(
+    balance.token?.currency?.coinMinimalDenom
+  );
   const getName = () => {
     return removeDataInParentheses(name);
   };
@@ -47,10 +50,14 @@ export const TokenView: FunctionComponent<{
   if (name.includes("factory")) {
     contractAddress = "Factory";
   }
+  const isBtc = balance?.chainInfo.features?.includes("btc");
+  if (denomHelper.type && isBtc) {
+    contractAddress = denomHelper.type;
+  }
+
   if (extractDataInParentheses(name)) {
     contractAddress = extractDataInParentheses(name);
   }
-  // const tokenPrice = priceStore.calculatePrice(amount);
   return (
     <View
       style={{

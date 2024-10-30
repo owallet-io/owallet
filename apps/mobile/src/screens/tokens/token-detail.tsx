@@ -202,7 +202,8 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
                   )
                     .hideDenom(true)
                     .trim(true)
-                    .toString()
+                    .toString(),
+                  6
                 )}{" "}
                 {removeDataInParentheses(item.token.currency.coinDenom)}
               </OWText>
