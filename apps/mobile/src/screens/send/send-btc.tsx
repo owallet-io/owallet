@@ -45,8 +45,13 @@ export const SendBtcScreen: FunctionComponent<{
   setSelectedKey: (key) => void;
 }> = observer(
   ({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-    const { chainStore, bitcoinAccountStore, queriesStore, appInitStore } =
-      useStore();
+    const {
+      chainStore,
+      bitcoinAccountStore,
+      priceStore,
+      queriesStore,
+      appInitStore,
+    } = useStore();
     const { colors } = useTheme();
     const styles = styling(colors);
 
@@ -227,8 +232,8 @@ export const SendBtcScreen: FunctionComponent<{
                     Balance:{" "}
                     {(balance?.balance ?? new CoinPretty(currency, "0"))
                       ?.trim(true)
-                      ?.maxDecimals(6)
-                      ?.hideDenom(true)
+                      .maxDecimals(6)
+                      .hideDenom(true)
                       ?.toString() || "0"}
                   </OWText>
                   <CurrencySelector
@@ -268,7 +273,9 @@ export const SendBtcScreen: FunctionComponent<{
                   style={{ paddingLeft: 4 }}
                   color={colors["neutral-text-body"]}
                 >
-                  {/*{estimatePrice}*/}
+                  {priceStore
+                    .calculatePrice(sendConfigs.amountConfig.amount[0])
+                    ?.toString()}
                 </OWText>
               </View>
             </OWCard>

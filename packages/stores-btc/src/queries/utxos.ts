@@ -16,7 +16,7 @@ export class ObservableQueryBtcUtxosInner extends ObservableChainQuery<
     chainGetter: ChainGetter,
     protected readonly btcAddress: string
   ) {
-    super(sharedContext, chainId, chainGetter, `/address/${btcAddress}/utxos`);
+    super(sharedContext, chainId, chainGetter, `/address/${btcAddress}/utxo`);
 
     makeObservable(this);
   }
@@ -28,7 +28,7 @@ export class ObservableQueryBtcUtxosInner extends ObservableChainQuery<
 
   @computed
   get utxos(): BtcBalances[] {
-    return this.response.data || [];
+    return this.response?.data || [];
   }
 }
 
