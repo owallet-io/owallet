@@ -4,9 +4,12 @@ import { useStore } from "../../stores";
 import { SendOasisScreen } from "@screens/send/send-oasis";
 import { SendTronScreen } from "@screens/send/send-tron";
 import { SendBtcScreen } from "@screens/send/send-btc";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { SendCosmosScreen } from "@screens/send/send-cosmos";
 import { goBack } from "@src/router/root";
+import { OWHeaderTitle } from "@components/header";
+import { DenomHelper } from "@owallet/common";
+import { capitalizedText } from "@utils/helper";
 
 export const SendScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -36,6 +39,7 @@ export const SendScreen: FunctionComponent = observer(() => {
       goBack();
     }
   }, [initialChainId, initialCoinMinimalDenom]);
+  const navigation = useNavigation();
 
   const [coinMinimalDenom, setCoinMinimalDenom] =
     useState(coinMinimalDenomInit);
@@ -46,6 +50,20 @@ export const SendScreen: FunctionComponent = observer(() => {
     setChainId(chainId);
     setCoinMinimalDenom(coinMinimalDenom);
   };
+  useEffect(() => {
+    const denomHelper = new DenomHelper(coinMinimalDenom);
+    const isBtc = chainInfo.features.includes("btc");
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Send"}
+          subTitle={`${chainInfo.chainName}${
+            isBtc ? ` ${capitalizedText(denomHelper.type)}` : ""
+          }`}
+        />
+      ),
+    });
+  }, [coinMinimalDenom, chainId]);
   const sendGetters = {
     oasis: (
       <SendOasisScreen

@@ -42,21 +42,12 @@ export const SendCosmosScreen: FunctionComponent<{
   setSelectedKey: (key) => void;
 }> = observer(
   ({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-    const { chainStore, accountStore, queriesStore, appInitStore } = useStore();
+    const { chainStore, accountStore, priceStore, queriesStore, appInitStore } =
+      useStore();
     const { colors } = useTheme();
     const styles = styling(colors);
 
     const chainInfo = chainStore.getChain(chainId);
-
-    const navigation = useNavigation();
-    useEffect(() => {
-      if (appInitStore.getInitApp.isAllNetworks) return;
-      navigation.setOptions({
-        headerTitle: () => (
-          <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName} />
-        ),
-      });
-    }, [chainId]);
 
     const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
 
@@ -390,7 +381,9 @@ export const SendCosmosScreen: FunctionComponent<{
                   style={{ paddingLeft: 4 }}
                   color={colors["neutral-text-body"]}
                 >
-                  {/*{estimatePrice}*/}
+                  {priceStore
+                    .calculatePrice(sendConfigs.amountConfig.amount[0])
+                    ?.toString()}
                 </OWText>
               </View>
             </OWCard>
