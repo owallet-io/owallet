@@ -1,5 +1,5 @@
 import { computed, makeObservable } from "mobx";
-import { BtcBalances } from "./types";
+import { BtcBalances, Utxos, UtxosWithNonWitness } from "./types";
 import {
   ChainGetter,
   ObservableChainQuery,
@@ -8,7 +8,7 @@ import {
 } from "@owallet/stores";
 
 export class ObservableQueryBtcUtxosInner extends ObservableChainQuery<
-  BtcBalances[]
+  Utxos[]
 > {
   constructor(
     sharedContext: QuerySharedContext,
@@ -27,14 +27,12 @@ export class ObservableQueryBtcUtxosInner extends ObservableChainQuery<
   }
 
   @computed
-  get utxos(): BtcBalances[] {
+  get utxos(): Utxos[] {
     return this.response?.data || [];
   }
 }
 
-export class ObservableQueryBtcUtxos extends ObservableChainQueryMap<
-  BtcBalances[]
-> {
+export class ObservableQueryBtcUtxos extends ObservableChainQueryMap<Utxos[]> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,

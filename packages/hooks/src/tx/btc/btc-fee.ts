@@ -183,7 +183,6 @@ export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
       amount: string;
       currency: FeeCurrency;
     }[] = [];
-
     // If there is no fee currency, just return with empty fee amount.
     if (!this.fee) {
       res = [];

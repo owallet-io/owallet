@@ -5,3 +5,4 @@ export * from "./chain-suggest";
 export * from "./icns";
 export * from "./eth-sign";
 export * from "./oasis-sign";
+export * from "./btc-sign";

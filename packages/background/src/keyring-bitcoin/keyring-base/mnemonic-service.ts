@@ -1,16 +1,25 @@
 import { Buffer } from "buffer/";
 import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
-import { HDKey, uint2hex } from "@owallet/common";
-import { KeyRing } from "../../keyring";
+import {
+  compileMemo,
+  HDKey,
+  signSignatureBtc,
+  uint2hex,
+} from "@owallet/common";
+import { KeyRing, KeyRingBtc } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { getKeyPairByMnemonic } from "@owallet/bitcoin/build/helpers";
+import * as bitcoin from "bitcoinjs-lib";
+import { networks } from "@owallet/bitcoin/build/networks";
+import bip32 = networks.bitcoin.bip32;
+import { Utxos } from "@owallet/stores-btc/build/queries/types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
 
-export class KeyRingBtcMnemonicService implements KeyRing {
+export class KeyRingBtcMnemonicService implements KeyRingBtc {
   constructor(
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingMnemonicService
@@ -96,30 +105,13 @@ export class KeyRingBtcMnemonicService implements KeyRing {
     vault: Vault,
     coinType: number,
     data: Uint8Array,
-    digestMethod: "sha256" | "keccak256"
-  ): {
-    readonly r: Uint8Array;
-    readonly s: Uint8Array;
-    readonly v: number | null;
-  } {
-    // const privKey = this.getPrivKey(vault, coinType);
-    //
-    // let digest = new Uint8Array();
-    // switch (digestMethod) {
-    //     case "sha256":
-    //         digest = Hash.sha256(data);
-    //         break;
-    //     case "keccak256":
-    //         digest = Hash.keccak256(data);
-    //         break;
-    //     default:
-    //         throw new Error(`Unknown digest method: ${digestMethod}`);
-    // }
-    //
-    // return privKey.signDigest32(digest);
-    return;
+    inputs: any,
+    outputs: any,
+    signType: "legacy" | "bech32"
+  ): string {
+    const keyPair = this.getKeyPair(vault, coinType, signType);
+    return signSignatureBtc(keyPair, data, inputs, outputs);
   }
-
   protected getPrivKey(
     vault: Vault,
     coinType: number,
@@ -152,5 +144,23 @@ export class KeyRingBtcMnemonicService implements KeyRing {
       change: number;
       addressIndex: number;
     };
+  }
+  protected getKeyPair(
+    vault: Vault,
+    coinType: number,
+    signType: "legacy" | "bech32"
+  ) {
+    const keyDerivation = signType === "legacy" ? 44 : 84;
+    const bip44Path = this.getBIP44PathFromVault(vault);
+    const decrypted = this.vaultService.decrypt(vault.sensitive);
+    const masterSeedText = decrypted["masterSeedText"] as string | undefined;
+    if (!masterSeedText) {
+      throw new Error("masterSeedText is null");
+    }
+    const masterSeed = Buffer.from(masterSeedText, "hex");
+    return Mnemonic.generateKeyPairFromMasterSeed(
+      masterSeed,
+      `m/${keyDerivation}'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
+    );
   }
 }

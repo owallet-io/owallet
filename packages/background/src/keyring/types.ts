@@ -32,13 +32,6 @@ export interface KeyRing {
     coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
-
-  getPubKeyBip84?(
-    vault: Vault,
-    coinType: number,
-    chainInfo: ChainInfo
-  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
-
   sign(
     vault: Vault,
     coinType: number,
@@ -56,6 +49,37 @@ export interface KeyRing {
         readonly s: Uint8Array;
         readonly v: number | null;
       }>;
+}
+export interface KeyRingBtc {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  getPubKeyBip84?(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: Uint8Array,
+    //TODO: need check type inputs/outputs
+    inputs: any,
+    outputs: any,
+    signType: "legacy" | "bech32",
+    chainInfo: ChainInfo
+  ): string | Promise<string>;
 }
 
 export interface KeyRingOasis {

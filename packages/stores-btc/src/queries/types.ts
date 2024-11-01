@@ -6,6 +6,15 @@ export interface Utxos {
   status: Status;
   value: number;
 }
+export interface UtxosWithNonWitness extends Utxos {
+  nonWitnessUtxo?: any; // For non-SegWit UTXOs (Legacy addresses)
+}
+export interface UtxosWithWitness extends Utxos {
+  witnessUtxo?: {
+    script: any;
+    value: number;
+  };
+}
 
 export interface Status {
   confirmed: boolean;

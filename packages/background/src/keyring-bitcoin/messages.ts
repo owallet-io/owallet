@@ -1,6 +1,9 @@
 import { Message } from "@owallet/router";
-import { Key, SettledResponses } from "@owallet/types";
+import { Key, SettledResponses, TransactionType } from "@owallet/types";
 import { ROUTE } from "./constants";
+import { types } from "@oasisprotocol/client";
+import { Bech32Address } from "@owallet/cosmos";
+import { BtcAccountBase } from "@owallet/stores-btc";
 
 export class GetBtcKeyMsg extends Message<Key> {
   public static type() {
@@ -65,5 +68,55 @@ export class GetBtcKeysSettledMsg extends Message<SettledResponses<Key>> {
 
   type(): string {
     return GetBtcKeysSettledMsg.type();
+  }
+}
+export class RequestSignBtcMsg extends Message<string> {
+  public static type() {
+    return "request-sign-btc";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly message: Uint8Array,
+    public readonly signType: "legacy" | "bech32"
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error("chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new Error("signer not set");
+    }
+
+    if (!this.signType) {
+      throw new Error("sign type not set");
+    }
+
+    // Validate signer address.
+    try {
+      const isValid = BtcAccountBase.isBtcAddress(this.signer);
+      if (!isValid) {
+        throw new Error("Invalid BTC Address");
+      }
+    } catch {
+      console.error(`Invalidate BTC address from ${RequestSignBtcMsg.type()}`);
+    }
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignBtcMsg.type();
   }
 }

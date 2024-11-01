@@ -1,6 +1,11 @@
 import React, { FunctionComponent } from "react";
 import { useStore } from "../../../../stores";
-import { IFeeConfig, IGasConfig, InsufficientFeeError } from "@owallet/hooks";
+import {
+  IBtcFeeConfig,
+  IFeeConfig,
+  IGasConfig,
+  InsufficientFeeError,
+} from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useStyle } from "../../../../styles";
@@ -12,7 +17,7 @@ import { Gutter } from "../../../../components/gutter";
 import { GuideBox } from "../../../../components/guide-box";
 
 export const FeeSummary: FunctionComponent<{
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
 }> = observer(({ feeConfig, gasConfig }) => {
   const { priceStore, chainStore } = useStore();
@@ -35,6 +40,7 @@ export const FeeSummary: FunctionComponent<{
           <View style={{ flex: 1 }} />
 
           {(() => {
+            console.log(feeConfig.fees, "feeConfig.fees");
             if (feeConfig.fees.length > 0) {
               return feeConfig.fees;
             }

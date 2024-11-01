@@ -24,6 +24,7 @@ import {
   IBitcoinProvider,
   ITronProvider,
   TransactionType,
+  TransactionBtcType,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -1553,6 +1554,51 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
         "get-btc-keys-settled",
         {
           chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+  async sendTx(chainId: string, signedTx: string): Promise<string> {
+    await this.owallet.enable(chainId);
+
+    return await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "background-tx-btc",
+      "send-btc-tx-to-background",
+      {
+        chainId,
+        signedTx,
+      }
+    );
+  }
+  async sign(
+    chainId: string,
+    signer: string,
+    message: string | Uint8Array,
+    signType: TransactionBtcType
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-btc",
+        "request-sign-btc",
+        {
+          chainId,
+          signer,
+          message: typeof message === "string" ? Buffer.from(message) : message,
+          signType,
         }
       )
         .then(resolve)

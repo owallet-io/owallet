@@ -1,21 +1,15 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  useGasSimulator,
-  useSendBtcTxConfig,
-  useSendMixedIBCTransferConfig,
-  useSendOasisTxConfig,
-  useTxConfigsValidate,
-} from "@owallet/hooks";
+import { useSendBtcTxConfig, useTxConfigsValidate } from "@owallet/hooks";
 import { useStore } from "../../stores";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   AddressInput,
   CurrencySelector,
   MemoInput,
 } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
@@ -23,20 +17,13 @@ import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { Buffer } from "buffer";
+import { CoinPretty } from "@owallet/unit";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
-import { AsyncKVStore } from "@src/common";
-import { useIntl } from "react-intl";
-import { BACKGROUND_PORT, Message } from "@owallet/router";
-import { SendTxAndRecordMsg } from "@owallet/background";
-import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
-import { showToast } from "@utils/helper";
-import { DenomHelper, estimateFeeByFeeRate } from "@owallet/common";
-import { simpleFetch } from "@owallet/simple-fetch";
+import { DenomHelper } from "@owallet/common";
+import { TransactionBtcType } from "@owallet/types";
 
 export const SendBtcScreen: FunctionComponent<{
   chainId: string;
@@ -71,7 +58,6 @@ export const SendBtcScreen: FunctionComponent<{
 
     const account = bitcoinAccountStore.getAccount(chainId);
     const queryBalances = queriesStore.get(chainId).queryBalances;
-    console.log(coinMinimalDenom, "coinMinimalDenom btc");
     const denomHelper = new DenomHelper(coinMinimalDenom);
     const sender =
       denomHelper.type === "legacy"
@@ -80,31 +66,7 @@ export const SendBtcScreen: FunctionComponent<{
     const balance = queryBalances
       .getQueryBech32Address(sender)
       .getBalance(currency);
-    const utxos = [
-      {
-        txid: "9ede3b7747a705aa9fe723c5d6da7ea639b2e3ae072f828d2e72ca7bbc8c68bc",
-        vout: 1,
-        status: {
-          confirmed: true,
-          block_height: 824380,
-          block_hash:
-            "000000000000000000022d1e6fc0b8efd24dd48bc87a1c35150d3ff95bbd180e",
-          block_time: 1704400656,
-        },
-        value: 7032,
-      },
-    ];
 
-    // const test = estimateFeeByFeeRate(
-    //     utxos,
-    //     1,
-    //     {
-    //         message:null,
-    //         amount:1000,
-    //         recipient:"16JeWmHHsP1DjyJdcJLXkz5JHwjUKdkdC1"
-    //     }
-    // )
-    //   console.log(test,"estimateFeeByFeeRate");
     const sendConfigs = useSendBtcTxConfig(
       chainStore,
       queriesStore,
@@ -122,47 +84,53 @@ export const SendBtcScreen: FunctionComponent<{
 
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
-        console.log(
-          sendConfigs.amountConfig.amount[0].toDec().toString(),
-          "sendConfigs.amountConfig.amount[0].toDec().toString()"
-        );
-        // try {
-        //   account.setIsSendingTx(true);
-        //   const unsignedTx = account.makeSendTokenTx({
-        //     currency: sendConfigs.amountConfig.amount[0].currency,
-        //     amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-        //     to: sendConfigs.recipientConfig.recipient,
-        //   });
-        //   await account.sendTx(sender, unsignedTx, {
-        //     onBroadcasted: (txHash) => {
-        //       account.setIsSendingTx(false);
-        //       navigate(SCREENS.TxPendingResult, {
-        //         chainId,
-        //         txHash,
-        //       });
-        //     },
-        //     onFulfill: (txReceipt) => {
-        //       queryBalances
-        //         .getQueryBech32Address(account.bech32Address)
-        //         .balances.forEach((balance) => {
-        //           if (
-        //             balance.currency.coinMinimalDenom === coinMinimalDenom ||
-        //             sendConfigs.feeConfig.fees.some(
-        //               (fee) =>
-        //                 fee.currency.coinMinimalDenom ===
-        //                 balance.currency.coinMinimalDenom
-        //             )
-        //           ) {
-        //             balance.fetch();
-        //           }
-        //         });
-        //     },
-        //   });
-        // } catch (e) {
-        //   if (e?.message === "Request rejected") {
-        //     return;
-        //   }
-        // }
+        try {
+          account.setIsSendingTx(true);
+          const unsignedTx = account.makeSendTokenTx({
+            currency: sendConfigs.amountConfig.amount[0].currency,
+            amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
+            to: sendConfigs.recipientConfig.recipient,
+            memo: sendConfigs.memoConfig.memo,
+            sender,
+          });
+          await account.sendTx(
+            sender,
+            unsignedTx,
+            denomHelper.type === "legacy"
+              ? TransactionBtcType.Legacy
+              : TransactionBtcType.Bech32,
+            {
+              onBroadcasted: (txHash) => {
+                account.setIsSendingTx(false);
+                navigate(SCREENS.TxPendingResult, {
+                  chainId,
+                  txHash,
+                });
+              },
+              onFulfill: (txReceipt) => {
+                queryBalances
+                  .getQueryBech32Address(account.bech32Address)
+                  .balances.forEach((balance) => {
+                    if (
+                      balance.currency.coinMinimalDenom === coinMinimalDenom ||
+                      sendConfigs.feeConfig.fees.some(
+                        (fee) =>
+                          fee.currency.coinMinimalDenom ===
+                          balance.currency.coinMinimalDenom
+                      )
+                    ) {
+                      balance.fetch();
+                    }
+                  });
+              },
+            }
+          );
+        } catch (e) {
+          account.setIsSendingTx(false);
+          if (e?.message === "Request rejected") {
+            return;
+          }
+        }
       }
     };
     const loadingSend = account.isSendingTx;

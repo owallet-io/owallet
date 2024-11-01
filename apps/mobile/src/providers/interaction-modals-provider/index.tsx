@@ -2,13 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { SignModal } from "../../modals/sign";
-import { LedgerGranterModal } from "../../modals/ledger";
-import { navigationRef } from "../../router/root";
 import { HomeBaseModal } from "../../modals/home-base";
-
-import { SignTronModal } from "../../modals/sign/sign-tron";
-import { AccessModal } from "@src/modals/permission";
-import { SignBitcoinModal } from "@src/modals/sign/sign-bitcoin";
 import { AppState, BackHandler, Platform } from "react-native";
 import { WCMessageRequester } from "@stores/wallet-connect/msg-requester";
 import { ADR36SignModal } from "@src/modals/sign/sign-adr36-modal";
@@ -19,6 +13,7 @@ import { GlobalPermissionModal } from "@src/modals/permission/global-permission"
 import { SuggestChainModal } from "@src/modals/permission/suggest-chain";
 import { BasicAccessModal } from "@src/modals/permission/basic-access";
 import { SignOasisModal } from "@src/modals/sign/sign-oasis";
+import { SignBtcModal } from "@src/modals/sign/sign-btc";
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -26,6 +21,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       signInteractionStore,
       signEthereumInteractionStore,
       signOasisInteractionStore,
+      signBtcInteractionStore,
       permissionStore,
       chainSuggestStore,
       walletConnectStore,
@@ -84,10 +80,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     //     });
     //   }
     // };
-    console.log(
-      signOasisInteractionStore.waitingData,
-      "signOasisInteractionStore.waitingData"
-    );
+
     return (
       <React.Fragment>
         {signInteractionStore.waitingData &&
@@ -122,6 +115,18 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               );
             }}
             interactionData={signEthereumInteractionStore.waitingData}
+          />
+        ) : null}
+        {signBtcInteractionStore.waitingData ? (
+          <SignBtcModal
+            isOpen={true}
+            close={() => {
+              signBtcInteractionStore.rejectWithProceedNext(
+                signBtcInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signBtcInteractionStore.waitingData}
           />
         ) : null}
         {signOasisInteractionStore.waitingData ? (

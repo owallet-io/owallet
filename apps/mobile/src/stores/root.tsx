@@ -83,6 +83,7 @@ import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
 import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
+import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
 
 // import {WebpageStore} from './webpage';
 
@@ -104,6 +105,7 @@ export class RootStore {
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
+  public readonly signBtcInteractionStore: SignBtcInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly universalSwapStore: UniversalSwapStore;
   // public readonly webpageStore: WebpageStore;
@@ -202,7 +204,9 @@ export class RootStore {
     this.signOasisInteractionStore = new SignOasisInteractionStore(
       this.interactionStore
     );
-
+    this.signBtcInteractionStore = new SignBtcInteractionStore(
+      this.interactionStore
+    );
     this.chainSuggestStore = new ChainSuggestStore(
       this.interactionStore,
       CommunityChainInfoRepo

@@ -18,6 +18,7 @@ import { TransactionType } from "../oasis";
 import { TW } from "../oasis/oasis-types";
 import * as oasis from "@oasisprotocol/client";
 import { types } from "@oasisprotocol/client";
+import { TransactionBtcType } from "../btc";
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -266,6 +267,13 @@ export interface IOasisProvider extends EventEmitter {
 export interface IBitcoinProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  sendTx(chainId: string, signedTx: string): Promise<string>;
+  sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionBtcType
+  ): Promise<string>;
 }
 export interface ITronProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
