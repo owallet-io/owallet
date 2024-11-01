@@ -26,7 +26,12 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { OWButton } from "@components/button";
 import OWIcon from "@components/ow-icon/ow-icon";
-import { EthTxReceipt, EthTxStatus, ResDetailAllTx } from "@owallet/types";
+import {
+  EthTxReceipt,
+  EthTxStatus,
+  ResDetailAllTx,
+  TxBtcInfo,
+} from "@owallet/types";
 import { notification } from "@stores/notification";
 import { API } from "@common/api";
 
@@ -61,8 +66,39 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (isFocused) {
       const txHash = route.params.txHash;
+      console.log(txHash, "txHash pending");
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
+      console.log(
+        chainInfo.features.includes("btc"),
+        'chainInfo.features.includes("btc")'
+      );
+      if (chainInfo.features.includes("btc") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              const txReceiptResponse = await simpleFetch<TxBtcInfo>(
+                `${chainInfo.rest}/tx/${txHash}`
+              );
+              const txReceipt = txReceiptResponse.data;
+              if (txReceipt) {
+                if (isPendingGotoHome.current) {
+                  return resolve();
+                }
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+                resolve();
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 20,
+            waitMsAfterError: 2000,
+            maxWaitMsAfterError: 4000,
+          }
+        );
+      }
       if (chainInfo.features.includes("oasis") && txHash) {
         simpleFetch(
           `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${account.addressDisplay}`

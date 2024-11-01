@@ -57,12 +57,8 @@ export class BackgroundTxBtcService {
             const txReceiptResponse = await simpleFetch<TxBtcInfo>(
               `${chainInfo.rest}/tx/${txHash}`
             );
-
-            if (
-              !txReceiptResponse.data ||
-              txReceiptResponse.status !== 200 ||
-              !txReceiptResponse.data?.status.confirmed
-            ) {
+            console.log(txReceiptResponse, "txReceiptResponse btc base");
+            if (!txReceiptResponse.data || txReceiptResponse.status !== 200) {
               console.error(txReceiptResponse.data);
               resolve();
             }

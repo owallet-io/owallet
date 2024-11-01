@@ -184,8 +184,9 @@ export class BtcAccountBase {
         signType
       );
       console.log(signedTx, "signedTx");
-      // const txHash = await owallet.bitcoin.sendTx(this.chainId, signedTx);
-      const txHash = "";
+      const txHash = await owallet.bitcoin.sendTx(this.chainId, signedTx);
+      console.log(txHash, "txHash");
+      // const txHash = "";
       if (!txHash) {
         throw new Error("No tx hash responded");
       }
