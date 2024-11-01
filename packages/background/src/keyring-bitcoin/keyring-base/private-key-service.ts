@@ -20,7 +20,7 @@ export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
 
   getPubKey(
     vault: Vault,
-    coinType: number,
+    _coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
     if (!chainInfo?.features.includes("gen-address")) {

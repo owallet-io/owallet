@@ -523,6 +523,87 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
   },
   {
+    rpc: "https://blockstream.info/testnet/api",
+    rest: "https://blockstream.info/testnet/api",
+    chainId: "bitcoinTestnet",
+    chainName: "Bitcoin Testnet",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    bip44: {
+      coinType: 1,
+    },
+    bip84: {
+      coinType: 1,
+    },
+    stakeCurrency: {
+      coinDenom: "BTC",
+      coinMinimalDenom: "btc",
+      coinDecimals: 8,
+      coinGeckoId: "bitcoin",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    },
+    bech32Config: Bech32Address.defaultBech32Config("tb"),
+    currencies: [
+      {
+        type: "legacy",
+        coinDenom: "BTC",
+        coinMinimalDenom: "legacy:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+      {
+        type: "segwit",
+        coinDenom: "BTC",
+        coinMinimalDenom: "segwit:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "segwit:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+        {
+          type: "legacy",
+          coinDenom: "BTC",
+          coinMinimalDenom: "legacy:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+      ];
+    },
+
+    features: ["gen-address", "btc", "not-support-staking"],
+    txExplorer: {
+      name: "BlockStream",
+      txUrl: "https://blockstream.info/testnet/tx/{txHash}",
+      accountUrl: "https://blockstream.info/testnet/address/{address}",
+    },
+  },
+  {
     rpc: "https://api.trongrid.io",
     rest: "https://apilist.tronscanapi.com",
     chainId: "eip155:728126428",
