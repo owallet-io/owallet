@@ -10,6 +10,7 @@ import OWFlatList from "@src/components/page/ow-flat-list";
 import { ChainStore } from "@owallet/stores";
 import { ChainIdEnum } from "@owallet/common";
 import OWText from "@src/components/text/ow-text";
+import { navigate } from "@src/router/root";
 
 interface ThemeModalProps {
   modalStore: ModalStore;
@@ -30,6 +31,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
   colors,
 }) => {
   const onChooseTheme = async (item) => {
+    console.log(item.label, "item.label");
     if (item.label !== "light" && item.label !== "dark") {
       appInitStore.updateTheme("dark");
       appInitStore.updateWalletTheme(item.label);
@@ -38,6 +40,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
       appInitStore.updateWalletTheme("owallet");
     }
     modalStore.close();
+    navigate("FullScreenModal");
   };
 
   const renderTheme = ({ item }) => {

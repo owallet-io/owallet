@@ -349,6 +349,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
             borderTopLeftRadius: 24,
             marginTop: 16,
             paddingBottom: 32,
+            backgroundColor: colors["neutral-surface-card"],
           }}
         >
           <View
@@ -418,6 +419,7 @@ const useStyles = (colors) => {
       width: metrics.screenWidth - 32,
       padding: spacing["16"],
       borderRadius: 24,
+      backgroundColor: colors["neutral-surface-card"],
     },
     overview: {
       marginTop: 12,

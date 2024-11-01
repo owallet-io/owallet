@@ -8,7 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import { FocusedScreenProvider } from "./providers/focused-screen";
 import analytics from "@react-native-firebase/analytics";
-import { navigate, navigationRef } from "./router/root";
+import { navigate, navigationRef, resetTo } from "./router/root";
 import { SCREENS, SCREENS_OPTIONS } from "./common/constants";
 import { MainTabNavigation } from "./navigations";
 import { useTheme } from "./themes/theme-provider";
@@ -73,10 +73,58 @@ import OWButtonIcon from "@components/button/ow-button-icon";
 import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
 import LottieView from "lottie-react-native";
 import { metrics } from "./themes";
+import { Text, View } from "react-native";
+import { ChainIdEnum } from "@owallet/common";
 
 const Stack = createStackNavigator();
+const FullScreenModal = observer(() => {
+  const { appInitStore, chainStore } = useStore();
+  if (appInitStore.getInitApp.wallet === "osmosis") {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/osmo-animate.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Osmosis);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  } else if (appInitStore.getInitApp.wallet === "injective") {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/inj-animate.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Injective);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  } else {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/splashscreen.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Oraichain);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  }
+});
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, appInitStore } = useStore();
+  const { keyRingStore, appInitStore, chainStore } = useStore();
 
   const [isInit, setIsInit] = useState(true);
   if (isInit) {
@@ -89,6 +137,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           autoPlay
           loop={false}
           onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Osmosis);
             setIsInit(false);
           }}
         />
@@ -102,6 +151,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           autoPlay
           loop={false}
           onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Injective);
             setIsInit(false);
           }}
         />
@@ -115,6 +165,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           autoPlay
           loop={false}
           onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Oraichain);
             setIsInit(false);
           }}
         />
@@ -158,6 +209,19 @@ export const AppNavigation: FunctionComponent = observer(() => {
             }
             screenOptions={handleScreenOptions}
           >
+            <Stack.Screen
+              name="FullScreenModal"
+              component={FullScreenModal}
+              options={{
+                presentation: "modal", // Set to 'transparentModal' for translucent background
+                headerShown: false, // Hide header for full screen effect
+                cardStyleInterpolator: ({ current, next }) => ({
+                  cardStyle: {
+                    opacity: next ? next.progress : current.progress, // Fade-in and fade-out effect
+                  },
+                }),
+              }}
+            />
             <Stack.Screen
               name={SCREENS.STACK.PincodeUnlock}
               component={PincodeUnlockScreen}
