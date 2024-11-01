@@ -69,10 +69,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       console.log(txHash, "txHash pending");
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
-      console.log(
-        chainInfo.features.includes("btc"),
-        'chainInfo.features.includes("btc")'
-      );
       if (chainInfo.features.includes("btc") && txHash) {
         retry(
           () => {
