@@ -15,9 +15,8 @@ import { TextInput } from "../../../components/input";
 import { SearchIcon } from "../../../components/icon";
 import { Gutter } from "../../../components/gutter";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-// import {RootStackParamList, StackNavProp} from '../../../navigation';
+import { RootStackParamList, StackNavProp } from "../../../navigation";
 import { useStore } from "../../../stores";
-// import {useEffectOnce} from '../../../hooks';
 import {
   CoinGeckoPriceStore,
   IChainInfoImpl,
@@ -32,27 +31,20 @@ import {
 import { CoinPretty, Dec } from "@owallet/unit";
 import { ChainInfo } from "@owallet/types";
 import { XAxis, YAxis } from "../../../components/axis";
-// import * as ExpoImage from 'expo-image';
-// import {Checkbox} from '../../../components/checkbox';
 import { RectButton } from "../../../components/rect-button";
-// import {Tag} from '../../../components/tag';
 import { ViewRegisterContainer } from "../components/view-register-container";
 import { VerticalCollapseTransition } from "../../../components/transition";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-// import {BinarySortArray} from '../../../common';
 import { ChainStore } from "../../../stores/chain";
 import { ScrollView } from "../../../components/scroll-view/common-scroll-view";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { BinarySortArray } from "@stores/huge-queries/sort";
-import { resetTo, RootStackParamList } from "@src/router/root";
-import { SCREENS } from "@common/constants";
+import { useEffectOnce } from "@hooks/use-effect-once";
 import CheckBox from "react-native-check-box";
 import OWText from "@components/text/ow-text";
-import images from "@assets/images";
 import { unknownToken } from "@owallet/common";
-import { useEffectOnce } from "@hooks/use-effect-once";
+import { SCREENS } from "@common/constants";
 
-// 안드로이드의 성능 문제로 어느정도 최적화가 들어가야되서 좀 복잡해짐...
 class QueryCandidateAddressesSortBalanceChainInfos {
   @observable.ref
   protected candidateAddresses: {
@@ -87,9 +79,6 @@ class QueryCandidateAddressesSortBalanceChainInfos {
     makeObservable(this);
 
     let disposal: (() => void) | undefined;
-    // BinarySortArray는 push할때 값을 destrucutring하고 필요한 symbol을 집어넣기 때문에,
-    // object여야하고 instance면 안되는 제약이 있기 땜시...
-    // 일단 대충 object에 chainId만 넣어서 사용함.
     this.balanceBinarySort = new BinarySortArray<{
       chainId: string;
     }>(
@@ -243,7 +232,7 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
   const route =
     useRoute<RouteProp<RootStackParamList, "Register.EnableChain">>();
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavProp>();
 
   const { accountStore, chainStore, keyRingStore, priceStore, queriesStore } =
     useStore();
@@ -254,7 +243,8 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
     isFresh,
     skipWelcome,
     initialSearchValue,
-    fallbackEthereumLedgerApp,
+    // fallbackEthereumLedgerApp,
+    fallbackBtcLedgerApp,
     stepPrevious,
     stepTotal,
     password,
@@ -297,7 +287,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
     return keyInfo.type;
   }, [keyRingStore.keyInfos, vaultId]);
 
-  // QUESTION: 왜 isFresh일때만 보여줌?
   const paragraph = isFresh
     ? `${intl.formatMessage({
         id: "pages.register.components.header.header-step.title",
@@ -424,10 +413,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
                     queries.cosmos.queryAccount.getQueryBech32Address(
                       bech32Address
                     );
-
-                  // Check that the account exist on chain.
-                  // With stargate implementation, querying account fails with 404 status if account not exists.
-                  // But, if account receives some native tokens, the account would be created and it may deserve to be chosen.
                   if (
                     queryAccount.response?.data &&
                     queryAccount.error == null
@@ -555,40 +540,47 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
     return map;
   }, [enabledChainIdentifiers]);
 
-  // 기본적으로 최초로 활성화되어있던 체인의 경우 sort에서 우선권을 가진다.
   const [sortPriorityChainIdentifierMap] = useState(enabledChainIdentifierMap);
 
   const [search, setSearch] = useState<string>(initialSearchValue ?? "");
-
-  // 검색 뿐만 아니라 로직에 따른 선택할 수 있는 체인 목록을 가지고 있다.
-  // 그러니까 로직을 파악해서 주의해서 사용해야함.
-  // 그리고 이를 토대로 balance에 따른 sort를 진행한다.
   useLayoutEffect(() => {
     const value = (() => {
       let chainInfos = chainStore.chainInfos.slice();
 
       if (keyType === "ledger") {
         chainInfos = chainInfos.filter((chainInfo) => {
-          const isEthermintLike =
-            chainInfo.bip44.coinType === 60 ||
-            !!chainInfo.features?.includes("eth-address-gen") ||
-            !!chainInfo.features?.includes("eth-key-sign");
+          const isBtc = chainInfo.features.includes("btc");
+          // const isEthermintLike =
+          //     chainInfo.bip44.coinType === 60 ||
+          //     !!chainInfo.features?.includes('eth-address-gen') ||
+          //     !!chainInfo.features?.includes('eth-key-sign');
 
-          // Ledger일 경우 ethereum app을 바로 처리할 수 없다.
-          // 이 경우 빼줘야한다.
-          if (isEthermintLike && !fallbackEthereumLedgerApp) {
+          // if (isEthermintLike && !fallbackEthereumLedgerApp) {
+          //     return false;
+          // }
+          if (isBtc && !fallbackBtcLedgerApp) {
             return false;
           }
-
-          // fallbackEthereumLedgerApp가 true이면 ethereum app이 필요없는 체인은 이전에 다 처리된 것이다.
-          // 이게 true이면 ethereum app이 필요하고 가능한 체인만 남기면 된다.
-          if (fallbackEthereumLedgerApp) {
-            if (!isEthermintLike) {
+          // if (fallbackEthereumLedgerApp) {
+          //     if (!isEthermintLike) {
+          //         return false;
+          //     }
+          //
+          //     try {
+          //         KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+          //             chainInfo.chainId,
+          //         );
+          //         return true;
+          //     } catch {
+          //         return false;
+          //     }
+          // }
+          if (fallbackBtcLedgerApp) {
+            if (!isBtc) {
               return false;
             }
 
             try {
-              // 처리가능한 체인만 true를 반환한다.
               KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
                 chainInfo.chainId
               );
@@ -597,7 +589,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
               return false;
             }
           }
-
           return true;
         });
       }
@@ -623,7 +614,8 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
     queryCandidateAddressesSortBalanceChainInfos.setPreSortChainInfos(value);
   }, [
     chainStore.chainInfos,
-    fallbackEthereumLedgerApp,
+    // fallbackEthereumLedgerApp,
+    fallbackBtcLedgerApp,
     keyType,
     queryCandidateAddressesSortBalanceChainInfos,
     search,
@@ -669,7 +661,7 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
 
   const replaceToWelcomePage = () => {
     if (skipWelcome) {
-      resetTo(SCREENS.STACK.MainTab);
+      navigation.reset({ routes: [{ name: "Home" }] });
     } else {
       navigation.reset({
         routes: [{ name: "Register.Welcome", params: { password } }],
@@ -688,7 +680,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
   const [preSelectedChainIdentifiers, setPreSelectedChainIdentifiers] =
     useState<string[]>([]);
 
-  // 키보드가 올라가면 View가 너무 줄어들기 때문에 대충 먼가 처리를 해준다.
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(() =>
     Keyboard.isVisible()
   );
@@ -790,31 +781,40 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
             }
           }
 
-          const ledgerEthereumAppNeeds: string[] = [];
+          // const ledgerEthereumAppNeeds: string[] = [];
+          const ledgerBtcAppNeeds: string[] = [];
           for (let i = 0; i < enables.length; i++) {
-            if (!fallbackEthereumLedgerApp) {
+            if (!fallbackBtcLedgerApp) {
               break;
             }
 
             const enable = enables[i];
 
             const chainInfo = chainStore.getChain(enable);
-            const isEthermintLike =
-              chainInfo.bip44.coinType === 60 ||
-              !!chainInfo.features?.includes("eth-address-gen") ||
-              !!chainInfo.features?.includes("eth-key-sign");
-
-            if (isEthermintLike) {
-              // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
-              // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
-              // Remove enable from enables
+            const isBtc = chainInfo.features?.includes("btc");
+            // const isEthermintLike =
+            //     chainInfo.bip44.coinType === 60 ||
+            //     !!chainInfo.features?.includes('eth-address-gen') ||
+            //     !!chainInfo.features?.includes('eth-key-sign');
+            if (isBtc) {
               enables.splice(i, 1);
               i--;
               // And push it disables
               disables.push(enable);
 
-              ledgerEthereumAppNeeds.push(enable);
+              ledgerBtcAppNeeds.push(enable);
             }
+            // if (isEthermintLike) {
+            //     // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
+            //     // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
+            //     // Remove enable from enables
+            //     enables.splice(i, 1);
+            //     i--;
+            //     // And push it disables
+            //     disables.push(enable);
+            //
+            //     ledgerEthereumAppNeeds.push(enable);
+            // }
           }
 
           await Promise.all([
@@ -853,30 +853,26 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
               ],
             });
           } else {
-            // 어차피 bip44 coin type selection과 ethereum ledger app이 동시에 필요한 경우는 없다.
-            // (ledger에서는 coin type이 app당 할당되기 때문에...)
             if (keyType === "ledger") {
-              if (!fallbackEthereumLedgerApp) {
+              if (!fallbackBtcLedgerApp) {
                 navigation.navigate("Register.EnableChain", {
                   vaultId,
                   candidateAddresses: [],
                   isFresh: false,
                   skipWelcome,
-                  fallbackEthereumLedgerApp: true,
+                  fallbackBtcLedgerApp: true,
                   stepPrevious: stepPrevious,
                   stepTotal: stepTotal,
                 });
-              } else if (ledgerEthereumAppNeeds.length > 0) {
+              } else if (ledgerBtcAppNeeds.length > 0) {
                 const keyInfo = keyRingStore.keyInfos.find(
                   (keyInfo) => keyInfo.id === vaultId
                 );
                 if (!keyInfo) {
                   throw new Error("KeyInfo not found");
                 }
-                if (keyInfo.insensitive["Ethereum"]) {
-                  await chainStore.enableChainInfoInUI(
-                    ...ledgerEthereumAppNeeds
-                  );
+                if (keyInfo.insensitive["Bitcoin"]) {
+                  await chainStore.enableChainInfoInUI(...ledgerBtcAppNeeds);
                   replaceToWelcomePage();
                 } else {
                   const bip44Path = keyInfo.insensitive["bip44Path"];
@@ -884,10 +880,10 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
                     throw new Error("bip44Path not found");
                   }
 
-                  navigation.navigate(SCREENS.ConnectNewLedger, {
+                  navigation.push(SCREENS.ConnectNewLedger, {
                     name: "",
                     password: password || "",
-                    app: "Ethereum",
+                    app: "Bitcoin",
                     bip44Path: bip44Path as {
                       account: number;
                       change: number;
@@ -896,7 +892,7 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
 
                     appendModeInfo: {
                       vaultId,
-                      afterEnableChains: ledgerEthereumAppNeeds,
+                      afterEnableChains: ledgerBtcAppNeeds,
                     },
                     stepPrevious: stepPrevious || 0,
                     stepTotal: stepTotal || 0,
@@ -968,12 +964,12 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
             <Gutter size={4} />
 
             <CheckBox
-              onClick={() => {
-                onClickSelectAll();
-              }}
               isChecked={
                 chainInfos.length === enabledChainIdentifiersInPage.length
               }
+              onClick={() => {
+                onClickSelectAll();
+              }}
             />
           </XAxis>
         </RectButton>
@@ -1044,49 +1040,48 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
             );
           })}
 
-          {!fallbackEthereumLedgerApp &&
-            keyType === "ledger" &&
-            chainStore.chainInfos
-              .filter((chainInfo) => {
-                const trimSearch = search.trim();
-                return (
-                  chainInfo.chainName
-                    .toLowerCase()
-                    .includes(trimSearch.toLowerCase()) ||
-                  (chainInfo.stakeCurrency || chainInfo.currencies[0]).coinDenom
-                    .toLowerCase()
-                    .includes(trimSearch.toLowerCase())
-                );
-              })
-              .map((chainInfo) => {
-                const isEthermintLike =
-                  chainInfo.bip44.coinType === 60 ||
-                  !!chainInfo.features?.includes("eth-address-gen") ||
-                  !!chainInfo.features?.includes("eth-key-sign");
+          {/*{!fallbackEthereumLedgerApp &&*/}
+          {/*    keyType === 'ledger' &&*/}
+          {/*    chainStore.chainInfos*/}
+          {/*        .filter(chainInfo => {*/}
+          {/*            const trimSearch = search.trim();*/}
+          {/*            return (*/}
+          {/*                chainInfo.chainName*/}
+          {/*                    .toLowerCase()*/}
+          {/*                    .includes(trimSearch.toLowerCase()) ||*/}
+          {/*                (chainInfo.stakeCurrency || chainInfo.currencies[0]).coinDenom*/}
+          {/*                    .toLowerCase()*/}
+          {/*                    .includes(trimSearch.toLowerCase())*/}
+          {/*            );*/}
+          {/*        })*/}
+          {/*        .map(chainInfo => {*/}
+          {/*            const isEthermintLike =*/}
+          {/*                chainInfo.bip44.coinType === 60 ||*/}
+          {/*                !!chainInfo.features?.includes('eth-address-gen') ||*/}
+          {/*                !!chainInfo.features?.includes('eth-key-sign');*/}
 
-                const supported = (() => {
-                  try {
-                    // 처리가능한 체인만 true를 반환한다.
-                    KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
-                      chainInfo.chainId
-                    );
-                    return true;
-                  } catch {
-                    return false;
-                  }
-                })();
+          {/*            const supported = (() => {*/}
+          {/*                try {*/}
+          {/*                    KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(*/}
+          {/*                        chainInfo.chainId,*/}
+          {/*                    );*/}
+          {/*                    return true;*/}
+          {/*                } catch {*/}
+          {/*                    return false;*/}
+          {/*                }*/}
+          {/*            })();*/}
 
-                if (isEthermintLike && supported) {
-                  return (
-                    <NextStepEvmChainItem
-                      key={chainInfo.chainId}
-                      chainInfo={chainInfo}
-                    />
-                  );
-                }
+          {/*            if (isEthermintLike && supported) {*/}
+          {/*                return (*/}
+          {/*                    <NextStepEvmChainItem*/}
+          {/*                        key={chainInfo.chainId}*/}
+          {/*                        chainInfo={chainInfo}*/}
+          {/*                    />*/}
+          {/*                );*/}
+          {/*            }*/}
 
-                return null;
-              })}
+          {/*            return null;*/}
+          {/*        })}*/}
         </ScrollView>
       </View>
       <VerticalCollapseTransition collapsed={isKeyboardOpen}>
@@ -1141,7 +1136,7 @@ const ChainItem: FunctionComponent<{
                   ? chainInfo.chainSymbolImageUrl
                   : unknownToken.coinImageUrl
               }
-              contentFit="contain"
+              // contentFit="contain"
             />
 
             <Gutter size={8} />
@@ -1176,13 +1171,7 @@ const ChainItem: FunctionComponent<{
 
             <Gutter size={16} />
 
-            <CheckBox
-              onClick={() => {
-                toggle;
-              }}
-              isChecked={enabled}
-              size="large"
-            />
+            <CheckBox isChecked={enabled} onClick={toggle} size="large" />
           </XAxis>
         </Box>
       </TouchableWithoutFeedback>
@@ -1212,7 +1201,7 @@ const NextStepEvmChainItem: FunctionComponent<{
         <Image
           style={style.flatten(["width-40", "height-40", "border-radius-40"])}
           source={
-            chainInfo.chainSymbolImageUrl
+            chainInfo?.chainSymbolImageUrl
               ? chainInfo.chainSymbolImageUrl
               : unknownToken.coinImageUrl
           }

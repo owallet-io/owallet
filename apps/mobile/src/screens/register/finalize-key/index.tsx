@@ -116,14 +116,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     (async () => {
       // Chain store should be initialized before creating the key.
       await chainStore.waitUntilInitialized();
-
-      // background에서의 체인 정보의 변경사항 (ochain-registry로부터의) 등을 sync 해야한다.
-      // 사실 문제가 되는 부분은 유저가 install한 직후이다.
-      // 유저가 install한 직후에 바로 register page를 열도록 background가 짜여져있기 때문에
-      // 이 경우 background에서 chains service가 체인 정보를 업데이트하기 전에 register page가 열린다.
-      // 그 결과 chain image가 제대로 표시되지 않는다.
-      // 또한 background와 체인 정보가 맞지 않을 확률이 높기 때문에 잠재적으로도 문제가 될 수 있다.
-      // 이 문제를 해결하기 위해서 밑의 한줄이 존재한다.
       await chainStore.updateChainInfosFromBackground();
 
       let vaultId: unknown;
@@ -143,6 +135,15 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           password
         );
       } else if (ledger) {
+        if (ledger?.app44 && ledger?.pubKey44) {
+          vaultId = await keyRingStore.newLedgerKey(
+            ledger.pubKey44,
+            ledger.app44,
+            ledger.bip44Path,
+            name,
+            password
+          );
+        }
         vaultId = await keyRingStore.newLedgerKey(
           ledger.pubKey,
           ledger.app,
@@ -285,7 +286,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           const targetCurrency =
             chainInfo.stakeCurrency || chainInfo.currencies[0];
           if (targetCurrency.coinGeckoId) {
-            // Push coingecko id to priceStore.
             priceStore.getPrice(targetCurrency.coinGeckoId);
           }
         }
@@ -294,10 +294,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
         promises.push(priceStore.waitFreshResponse());
 
         if (promises.length >= 10) {
-          // RN에서 한번에 많은 쿼리를 처리하면 느리진다...
-          // 이 문제를 해결할수가 없기 때문에 query가 처리된 비율에 따라 progress를 계산하고 0.8(80%) 이상의 쿼리가 처리되고
-          // 그 후 3초를 더 기다리고 넘긴다...
-          // (최대 기다리는 시간은 15초)
           let once = false;
           setTimeout(() => {
             if (!once) {
@@ -338,20 +334,12 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidateAddresses]);
 
-  // XXX: sceneTransition은 method마다 ref이 변한다.
-  //      onceRef이 없으면 무한루프에 빠진다.
-  //      처음에 이걸 고려 안해서 이런 문제가 생겨버렸는데
-  //      수정할 시간이 없으니 일단 대충 처리한다.
   const onceRef = useRef<boolean>(false);
   useEffect(() => {
     if (
       !onceRef.current &&
       candidateAddresses.length > 0 &&
       vaultId &&
-      // RN에서 한번에 많은 쿼리를 처리하면 느리진다...
-      // 이 문제를 해결할수가 없기 때문에 query가 처리된 비율에 따라 progress를 계산하고 0.8(80%) 이상의 쿼리가 처리되고
-      // 그 후 3초를 더 기다리고 넘긴다...
-      // (최대 기다리는 시간은 15초)
       queryRoughlyDone
     ) {
       onceRef.current = true;

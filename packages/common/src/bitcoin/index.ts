@@ -37,6 +37,14 @@ export const signSignatureBtc = (
   inputs,
   outputs
 ) => {
+  const { psbt } = buidTx(keyPair, data, inputs, outputs);
+  psbt.signAllInputs(keyPair); // Sign all inputs
+  psbt.finalizeAllInputs(); // Finalise inputs
+
+  return psbt.extractTransaction(true).toHex();
+};
+
+export const buidTx = (keyPair, data: Uint8Array, inputs, outputs) => {
   const unsignedTx: UnsignedBtcTransaction = JSON.parse(
     Buffer.from(data).toString()
   );
@@ -83,8 +91,5 @@ export const signSignatureBtc = (
       }
     }
   });
-  psbt.signAllInputs(keyPair); // Sign all inputs
-  psbt.finalizeAllInputs(); // Finalise inputs
-
-  return psbt.extractTransaction(true).toHex();
+  return { psbt };
 };

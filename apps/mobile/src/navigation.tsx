@@ -195,10 +195,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
             <Stack.Screen
               name="Register.EnableChain"
-              options={{
-                title: "Enable Chain",
-                // ...registerHeaderOptions,
-              }}
               component={EnableChainsScreen}
             />
             <Stack.Screen

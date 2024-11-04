@@ -34,7 +34,6 @@ import { OWButton } from "@components/button";
 import OWText from "@components/text/ow-text";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { SignBtcInteractionStore } from "@owallet/stores-core";
-import { EthSignType } from "@owallet/types";
 import { UnsignedBtcTransaction } from "@owallet/stores-btc";
 import {
   Utxos,
@@ -45,6 +44,9 @@ import { simpleFetch } from "@owallet/simple-fetch";
 import { compileMemo } from "@owallet/common";
 import * as bitcoin from "bitcoinjs-lib";
 import { PubKeySecp256k1 } from "@owallet/crypto";
+import { LedgerGuideBox } from "@components/guide-box/ledger-guide-box";
+import { handleBtcPreSignByLedger } from "@src/modals/sign/util/handle-btc-sign";
+import { useLedgerBLE } from "@src/providers/ledger-ble";
 export const SignBtcModal = registerModal(
   observer<{
     interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
@@ -72,12 +74,16 @@ export const SignBtcModal = registerModal(
     const [inputs, setInputs] = useState([]);
     const [outputs, setOutputs] = useState([]);
     const accountBtc = bitcoinAccountStore.getAccount(chainId);
+    const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
+    const [ledgerInteractingError, setLedgerInteractingError] = useState<
+      Error | undefined
+    >(undefined);
+
     useEffect(() => {
       if (!utxos || !signer) return;
       (async () => {
         const info = getAddressInfo(signer);
-        console.log(info.bech32, "info.bech32");
-        if (!info.bech32) {
+        if (!info.bech32 || interactionData.data.keyType === "ledger") {
           const utxosNonWitness = await fetchUxtosNonWitness(utxos);
           setUtxosData(utxosNonWitness);
         } else {
@@ -211,9 +217,27 @@ export const SignBtcModal = registerModal(
         2
       );
     }, [interactionData.data]);
+    const ledgerBLE = useLedgerBLE();
     const approve = async () => {
       try {
-        if (!inputs?.length || !outputs?.length) return;
+        if (!inputs?.length || !outputs?.length || !utxosData?.length) return;
+        let signature;
+        if (interactionData.data.keyType === "ledger") {
+          setIsLedgerInteracting(true);
+          setLedgerInteractingError(undefined);
+          const info = getAddressInfo(signer);
+          signature = await handleBtcPreSignByLedger(
+            interactionData,
+            Buffer.from(signingDataText),
+            ledgerBLE.getTransport,
+            info.bech32 ? "84" : "44",
+            utxosData,
+            inputs,
+            outputs
+          );
+          console.log(signature, "signature");
+        }
+
         await signBtcInteractionStore.approveWithProceedNext(
           interactionData.id,
           Buffer.from(signingDataText),
@@ -294,15 +318,29 @@ export const SignBtcModal = registerModal(
         )}
 
         <Gutter size={12} />
+        {ledgerInteractingError ? (
+          <React.Fragment>
+            <LedgerGuideBox
+              data={{
+                keyInsensitive: interactionData.data.keyInsensitive,
+                isBtc: !!chainInfo.features?.includes("btc"),
+              }}
+              isLedgerInteracting={isLedgerInteracting}
+              ledgerInteractingError={ledgerInteractingError}
+            />
 
+            <Gutter size={12} />
+          </React.Fragment>
+        ) : null}
         <OWButton
           // size="large"
           label={intl.formatMessage({
             id: "button.approve",
           })}
-          loading={signBtcInteractionStore.isObsoleteInteraction(
-            interactionData.id
-          )}
+          loading={
+            signBtcInteractionStore.isObsoleteInteraction(interactionData.id) ||
+            isLedgerInteracting
+          }
           onPress={approve}
 
           // innerButtonStyle={style.flatten(['width-full'])}

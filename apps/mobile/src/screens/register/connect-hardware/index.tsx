@@ -78,8 +78,6 @@ export const ConnectHardwareWalletScreen: FunctionComponent = observer(() => {
   });
 
   useEffectOnce(() => {
-    // XXX: 병맛이지만 RN에서 스크린이 변할때 바로 mount에서 focus를 주면 안드로이드에서 키보드가 안뜬다.
-    //      이 경우 settimeout을 쓰라지만... 그냥 스크린이 다 뜨면 포커스를 주는 것으로 한다.
     InteractionManager.runAfterInteractions(() => {
       setFocus("name");
     });

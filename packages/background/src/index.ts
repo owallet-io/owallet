@@ -78,6 +78,7 @@ import {
   KeyRingBtcBaseService,
   KeyRingBtcPrivateKeyService,
   KeyRingBtcMnemonicService,
+  KeyRingBtcLedgerService,
 } from "./keyring-bitcoin";
 
 export function init(
@@ -277,6 +278,7 @@ export function init(
     new KeyRingBtcBaseService(chainsService, vaultService, [
       new KeyRingBtcMnemonicService(vaultService, keyringBaseMnemonic),
       new KeyRingBtcPrivateKeyService(vaultService, keyringBasePrivateKey),
+      new KeyRingBtcLedgerService(),
     ])
   );
   const autoLockAccountService = new AutoLocker.AutoLockAccountService(

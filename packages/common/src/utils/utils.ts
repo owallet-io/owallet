@@ -14,7 +14,7 @@ import { IntPretty } from "@owallet/unit";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
 import { ethers } from "ethers";
-import Web3 from "web3";
+// import Web3 from "web3";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
 import "dotenv/config";
@@ -243,32 +243,32 @@ export const decodeParams = async (types, output, ignoreMethodHash) => {
   }, []);
 };
 
-export const encodeParams = async (inputs) => {
-  const typesValues = inputs;
-  let parameters = "";
-
-  if (typesValues.length == 0) return parameters;
-  const abiCoder = new AbiCoder();
-  const types = [];
-  const values = [];
-
-  for (let i = 0; i < typesValues.length; i++) {
-    let { type, value } = typesValues[i];
-    if (type == "address") value = value.replace(ADDRESS_PREFIX_REGEX, "0x");
-    else if (type == "address[]")
-      value = value.map((v) =>
-        Web3.utils.toHex(v).replace(ADDRESS_PREFIX_REGEX, "0x")
-      );
-    types.push(type);
-    values.push(value);
-  }
-  try {
-    parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
-  } catch (ex) {
-    console.log(ex);
-  }
-  return parameters;
-};
+// export const encodeParams = async (inputs) => {
+//   const typesValues = inputs;
+//   let parameters = "";
+//
+//   if (typesValues.length == 0) return parameters;
+//   const abiCoder = new AbiCoder();
+//   const types = [];
+//   const values = [];
+//
+//   for (let i = 0; i < typesValues.length; i++) {
+//     let { type, value } = typesValues[i];
+//     if (type == "address") value = value.replace(ADDRESS_PREFIX_REGEX, "0x");
+//     else if (type == "address[]")
+//       value = value.map((v) =>
+//         Web3.utils.toHex(v).replace(ADDRESS_PREFIX_REGEX, "0x")
+//       );
+//     types.push(type);
+//     values.push(value);
+//   }
+//   try {
+//     parameters = abiCoder.encode(types, values).replace(/^(0x)/, "");
+//   } catch (ex) {
+//     console.log(ex);
+//   }
+//   return parameters;
+// };
 export const estimateBandwidthTron = (signedTxn) => {
   const DATA_HEX_PROTOBUF_EXTRA = 3;
   const MAX_RESULT_SIZE_IN_TX = 64;

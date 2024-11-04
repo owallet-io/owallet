@@ -18,7 +18,8 @@ import {
 export const LedgerGuideBox: FunctionComponent<{
   data: {
     keyInsensitive: PlainObject;
-    isEthereum: boolean;
+    isEthereum?: boolean;
+    isBtc?: boolean;
   };
   isLedgerInteracting: boolean;
   ledgerInteractingError: Error | undefined;
@@ -122,6 +123,23 @@ export const LedgerGuideBox: FunctionComponent<{
                         })}
                         paragraph={intl.formatMessage({
                           id: "page.sign.components.ledger-guide.box.initialize-ethereum-app-first-paragraph",
+                        })}
+                      />
+                    );
+                  }
+                }
+                if (data.isBtc) {
+                  if (appData["Bitcoin84"]) {
+                    app = "Bitcoin";
+                  } else {
+                    return (
+                      <GuideBox
+                        color="warning"
+                        title={intl.formatMessage({
+                          id: "page.sign.components.ledger-guide.box.error-title",
+                        })}
+                        paragraph={intl.formatMessage({
+                          id: "page.sign.components.ledger-guide.box.initialize-btc-app-first-paragraph",
                         })}
                       />
                     );

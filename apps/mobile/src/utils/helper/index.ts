@@ -811,6 +811,7 @@ export function numberWithCommas(number) {
 }
 
 export const sortChainsByPrice = (chains) => {
+  if (!chains?.length) return [];
   return chains.sort(
     (a, b) =>
       Number(b.balance.toDec().toString()) -

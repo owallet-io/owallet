@@ -2,7 +2,7 @@ import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CoinGeckoPrices } from "@oraichain/oraidex-common";
-import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
+// import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
 
 export class AppInit {
   @persist("object")
@@ -24,9 +24,9 @@ export class AppInit {
     balances: object;
     chainInfos: Array<any>;
   };
-  @persist("object")
-  @observable
-  protected multipleAssets: IMultipleAsset;
+  // @persist("object")
+  // @observable
+  // protected multipleAssets: IMultipleAsset;
 
   @observable
   protected notiData: {};
@@ -75,14 +75,14 @@ export class AppInit {
   updateSelectTheme() {
     this.initApp = { ...this.initApp, isSelectTheme: true };
   }
-  @action
-  updateMultipleAssets(data: IMultipleAsset) {
-    this.multipleAssets = { ...data };
-  }
-  @computed
-  get getMultipleAssets(): IMultipleAsset {
-    return this.multipleAssets;
-  }
+  // @action
+  // updateMultipleAssets(data: IMultipleAsset) {
+  //   this.multipleAssets = { ...data };
+  // }
+  // @computed
+  // get getMultipleAssets(): IMultipleAsset {
+  //   return this.multipleAssets;
+  // }
 
   @action
   updateFeeOption(fee) {

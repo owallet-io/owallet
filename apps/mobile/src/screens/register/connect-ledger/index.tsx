@@ -27,6 +27,7 @@ import { ScrollViewRegisterContainer } from "../components/scroll-view-register-
 import { AppHRP, CosmosApp } from "@owallet/ledger-cosmos";
 import Transport from "@ledgerhq/hw-transport";
 import Eth from "@ledgerhq/hw-app-eth";
+import Btc from "@ledgerhq/hw-app-btc";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
@@ -52,7 +53,11 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
     password,
   } = route.params;
 
-  if (!Object.keys(AppHRP).includes(propApp) && propApp !== "Ethereum") {
+  if (
+    !Object.keys(AppHRP).includes(propApp) &&
+    propApp !== "Ethereum" &&
+    propApp !== "Bitcoin"
+  ) {
     throw new Error(`Unsupported app: ${propApp}`);
   }
 
@@ -146,6 +151,106 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
         }
       } catch (e) {
         console.log(e);
+        setStep("connected");
+      }
+
+      await transport.close();
+
+      setIsLoading(false);
+
+      return;
+    } else if (propApp === "Bitcoin") {
+      let btcApp = new Btc(transport);
+      try {
+        await btcApp.getWalletPublicKey("84'/0'/'0/0/0");
+        await btcApp.getWalletPublicKey("44'/0'/'0/0/0");
+      } catch (e) {
+        console.log(e, "err2");
+        // Device is locked or user is in home sceen or other app.
+        if (
+          e?.message.includes("(0x6b0c)") ||
+          e?.message.includes("(0x6511)") ||
+          e?.message.includes("(0x6e00)")
+        ) {
+          setStep("connected");
+        } else {
+          console.log(e);
+          setStep("unknown");
+          await transport.close();
+
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      transport = await LedgerUtils.tryAppOpen(transport, propApp);
+      btcApp = new Btc(transport);
+
+      try {
+        const res = await btcApp.getWalletPublicKey(
+          `84'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+          {
+            format: "bech32",
+            verify: false,
+          }
+        );
+        const res44 = await btcApp.getWalletPublicKey(
+          `44'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+          {
+            format: "legacy",
+            verify: false,
+          }
+        );
+        console.log(res, "res");
+        console.log(res44, "res44");
+        const pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, "hex"));
+        const pubKey44 = new PubKeySecp256k1(
+          Buffer.from(res44.publicKey, "hex")
+        );
+
+        setStep("app");
+
+        if (appendModeInfo) {
+          await keyRingStore.appendLedgerKeyApp(
+            appendModeInfo.vaultId,
+            pubKey.toBytes(true),
+            `${propApp}84`
+          );
+          await keyRingStore.appendLedgerKeyApp(
+            appendModeInfo.vaultId,
+            pubKey44.toBytes(true),
+            `${propApp}44`
+          );
+          await chainStore.enableChainInfoInUI(
+            ...appendModeInfo.afterEnableChains
+          );
+          navigation.reset({
+            routes: [{ name: "Register.Welcome", params: { password } }],
+          });
+        } else {
+          navigation.reset({
+            routes: [
+              {
+                name: "Register.FinalizeKey",
+                params: {
+                  name,
+                  password,
+                  stepPrevious: stepPrevious + 1,
+                  stepTotal,
+                  ledger: {
+                    pubKey: pubKey.toBytes(),
+                    pubKey44: pubKey44.toBytes(),
+                    bip44Path,
+                    app: `${propApp}84`,
+                    app44: `${propApp}44`,
+                  },
+                },
+              },
+            ],
+          });
+        }
+      } catch (e) {
+        console.log(e, "err btc");
         setStep("connected");
       }
 

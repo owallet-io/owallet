@@ -136,6 +136,11 @@ export const AccountBoxAll: FunctionComponent<{
     initPrice;
   const totalPriceBalance =
     useMemo(() => {
+      if (!availableTotalPrice)
+        return new PricePretty(
+          priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
+          new Dec(0)
+        );
       return availableTotalPrice.add(stakedTotalPrice);
     }, [availableTotalPrice, stakedTotalPrice]) || initPrice;
   const availableTotalPriceByChain =
@@ -182,6 +187,11 @@ export const AccountBoxAll: FunctionComponent<{
     initPrice;
   const totalPriceByChain =
     useMemo(() => {
+      if (!availableTotalPriceByChain)
+        return new PricePretty(
+          priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
+          new Dec(0)
+        );
       return availableTotalPriceByChain.add(stakedTotalPriceByChain);
     }, [availableTotalPriceByChain, stakedTotalPriceByChain]) || initPrice;
 
@@ -216,7 +226,8 @@ export const AccountBoxAll: FunctionComponent<{
           c.chainName.toLowerCase()
       );
 
-    const dataMainnet = sortChainsByPrice(chainsInfoWithBalance);
+    // const dataMainnet = sortChainsByPrice(chainsInfoWithBalance);
+    const dataMainnet = [];
 
     dataMainnet.map((data) => {
       const chainName = data.chainName;
