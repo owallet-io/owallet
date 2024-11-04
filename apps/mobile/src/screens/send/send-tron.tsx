@@ -37,7 +37,7 @@ export const SendTronScreen: FunctionComponent<{
   recipientAddress: string;
   setSelectedKey: (key) => void;
 }> = observer(({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-  const { chainStore, tronAccountStore, queriesStore, keyRingStore, priceStore } = useStore();
+  const { chainStore, tronAccountStore, queriesStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const route = useRoute<
@@ -86,8 +86,10 @@ export const SendTronScreen: FunctionComponent<{
     sendConfigs.recipientConfig.setValue(recipientAddress || '');
   }, [recipientAddress, sendConfigs.recipientConfig]);
 
+  console.log('amountConfig 1123', sendConfigs.amountConfig, sendConfigs.recipientConfig);
+
   const feeTrx = useGetFeeTron(
-    addressToFetch,
+    sender,
     sendConfigs.amountConfig,
     sendConfigs.recipientConfig,
     queries.tron,

@@ -126,7 +126,6 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
     protected readonly walletAddress: string
   ) {
     super(sharedContext, chainId, chainGetter, `/api/accountv2?address=${walletAddress}`);
-
     makeObservable(this);
   }
 
@@ -156,6 +155,8 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
 
   @computed
   get bandwidthRemaining(): Int {
+    console.log('this.response?.data', this.response?.data);
+
     if (!this.response?.data?.bandwidth) {
       return new Int(0);
     }
@@ -193,6 +194,9 @@ export class ObservableQueryAccountTron extends ObservableChainQueryMap<AuthAcco
   }
 
   getQueryWalletAddress(walletAddress: string): ObservableQueryAccountTronInner {
+    console.log('walletAddress', walletAddress);
+    console.log('walletAddress getttt', this.get(walletAddress));
+
     return this.get(walletAddress) as ObservableQueryAccountTronInner;
   }
 }
