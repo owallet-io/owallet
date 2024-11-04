@@ -12,3 +12,4 @@ export * from './settled';
 export * from './chain';
 export * from './address';
 export * from './oasis';
+export * from './tron';

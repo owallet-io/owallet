@@ -70,6 +70,19 @@ export interface KeyRingOasis {
   ): types.SignatureSigned | Promise<types.SignatureSigned>;
 }
 
+export interface KeyRingTron {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array | Promise<Uint8Array>;
+
+  sign(vault: Vault, coinType: number, data: string, chainInfo: ChainInfo): unknown | Promise<unknown>;
+}
+
 export interface ExportedKeyRingVault {
   type: 'mnemonic' | 'private-key';
   id: string;

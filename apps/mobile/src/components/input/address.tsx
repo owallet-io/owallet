@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
 import {
   EmptyAddressError,
   // ENSFailedToFetchError,
@@ -7,36 +7,30 @@ import {
   // ENSNotSupportedError,
   IMemoConfig,
   InvalidBech32Error,
-  IRecipientConfig,
-} from "@owallet/hooks";
-import {
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-  TouchableOpacity,
-} from "react-native";
-import { TextInput } from "./input";
-import { ObservableEnsFetcher } from "@owallet/ens";
-import { LoadingSpinner } from "../spinner";
-import { useStyle } from "../../styles";
-import { NoteIcon } from "../icon";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
+  IRecipientConfig
+} from '@owallet/hooks';
+import { StyleSheet, TextStyle, View, ViewStyle, TouchableOpacity } from 'react-native';
+import { TextInput } from './input';
+import { ObservableEnsFetcher } from '@owallet/ens';
+import { LoadingSpinner } from '../spinner';
+import { useStyle } from '../../styles';
+import { NoteIcon } from '../icon';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 
 const styles = StyleSheet.create({
   absolute: {
-    position: "absolute",
+    position: 'absolute'
   },
-  "height-16": {
-    height: 16,
+  'height-16': {
+    height: 16
   },
-  "justify-center": {
-    justifyContent: "center",
+  'justify-center': {
+    justifyContent: 'center'
   },
-  "margin-top-2": {
-    marginTop: 2,
-  },
+  'margin-top-2': {
+    marginTop: 2
+  }
 });
 
 export const AddressInput: FunctionComponent<{
@@ -49,14 +43,12 @@ export const AddressInput: FunctionComponent<{
   colors?: any;
   inputRight?: React.ReactNode;
   inputLeft?: React.ReactNode;
-
   recipientConfig: IRecipientConfig;
   memoConfig: IMemoConfig;
-
   disableAddressBook?: boolean;
-
   placeholder?: string;
   placeholderTextColor?: string;
+  disableAddressError?: boolean;
 }> = observer(
   ({
     labelStyle,
@@ -73,6 +65,7 @@ export const AddressInput: FunctionComponent<{
     inputRight,
     colors,
     topInInputContainer,
+    disableAddressError
   }) => {
     const style = useStyle();
 
@@ -80,7 +73,7 @@ export const AddressInput: FunctionComponent<{
     //   recipientConfig.rawRecipient
     // );
 
-    const error = recipientConfig.uiProperties.error;
+    const error = disableAddressError ? null : recipientConfig.uiProperties.error;
 
     const errorText: string | undefined = useMemo(() => {
       if (error) {
@@ -89,7 +82,7 @@ export const AddressInput: FunctionComponent<{
             // No need to show the error to user.
             return;
           case InvalidBech32Error:
-            return "Invalid address";
+            return 'Invalid address';
           // case ENSNotSupportedError:
           //     return "ENS not supported";
           // case ENSFailedToFetchError:
@@ -97,7 +90,7 @@ export const AddressInput: FunctionComponent<{
           // case ENSIsFetchingError:
           //     return;
           default:
-            return "Unknown error";
+            return 'Unknown error';
         }
       }
     }, [error]);
@@ -112,18 +105,17 @@ export const AddressInput: FunctionComponent<{
         labelStyle={labelStyle}
         containerStyle={{
           ...containerStyle,
-          marginBottom:
-            error && error.constructor !== EmptyAddressError ? 24 : 0,
+          marginBottom: error && error.constructor !== EmptyAddressError ? 24 : 0
         }}
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.value}
-        onChangeText={(text) => {
-          recipientConfig.setValue(text.replace(/\s/g, ""));
+        onChangeText={text => {
+          recipientConfig.setValue(text.replace(/\s/g, ''));
         }}
         style={{
-          fontSize: 16,
+          fontSize: 16
         }}
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
@@ -131,29 +123,20 @@ export const AddressInput: FunctionComponent<{
         inputLeft={inputLeft}
         inputRight={
           disableAddressBook ? null : (
-            <View
-              style={style.flatten([
-                "height-1",
-                "overflow-visible",
-                "justify-center",
-              ])}
-            >
+            <View style={style.flatten(['height-1', 'overflow-visible', 'justify-center'])}>
               {inputRight ? (
                 inputRight
               ) : (
                 <TouchableOpacity
-                  style={style.flatten(["padding-4"])}
+                  style={style.flatten(['padding-4'])}
                   onPress={() => {
                     navigate(SCREENS.AddressBook, {
                       recipientConfig,
-                      memoConfig,
+                      memoConfig
                     });
                   }}
                 >
-                  <NoteIcon
-                    color={colors ? colors["neutral-icon-on-light"] : "#7C00DB"}
-                    height={18}
-                  />
+                  <NoteIcon color={colors ? colors['neutral-icon-on-light'] : '#7C00DB'} height={18} />
                 </TouchableOpacity>
               )}
             </View>

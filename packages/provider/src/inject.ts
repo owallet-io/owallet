@@ -37,7 +37,6 @@ import deepmerge from 'deepmerge';
 import Long from 'long';
 import { OWalletCoreTypes } from './core-types';
 import EventEmitter from 'events';
-import { TW } from '@owallet/common';
 import { types } from '@oasisprotocol/client';
 
 export interface ProxyRequest {
@@ -1323,13 +1322,8 @@ class TronProvider extends EventEmitter implements ITronProvider {
     throw new Error('Method not implemented.');
   }
 
-  async sign(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    type: TransactionType
-  ): Promise<types.SignatureSigned> {
-    return await this._requestMethod('sign', [chainId, signer, data, type]);
+  async sign(chainId: string, data: object): Promise<any> {
+    return await this._requestMethod('sign', [chainId, data]);
   }
 
   async sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string> {

@@ -26,6 +26,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
     signInteractionStore,
     signEthereumInteractionStore,
     signOasisInteractionStore,
+    signTronInteractionStore,
     permissionStore,
     chainSuggestStore,
     walletConnectStore,
@@ -61,9 +62,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
 
   const mergedPermissionData = permissionStore.waitingPermissionMergedData;
   const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
-
-  console.log('mergedDataForEVM', mergedDataForEVM);
-  console.log('mergedPermissionData', mergedPermissionData);
 
   // useEffect(() => {
   //   for (const data of permissionStore.waitingDatas) {
@@ -113,6 +111,16 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
             signOasisInteractionStore.rejectWithProceedNext(signOasisInteractionStore.waitingData?.id!, () => {});
           }}
           interactionData={signOasisInteractionStore.waitingData}
+        />
+      ) : null}
+
+      {signTronInteractionStore.waitingData ? (
+        <SignTronModal
+          isOpen={true}
+          close={() => {
+            signTronInteractionStore.rejectWithProceedNext(signTronInteractionStore.waitingData?.id!, () => {});
+          }}
+          interactionData={signTronInteractionStore.waitingData}
         />
       ) : null}
 

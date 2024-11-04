@@ -28,6 +28,7 @@ import {
   SignEthereumInteractionStore,
   SignInteractionStore,
   SignOasisInteractionStore,
+  SignTronInteractionStore,
   TokensStore
 } from '@owallet/stores-core';
 import { AsyncKVStore } from '../common';
@@ -97,6 +98,7 @@ export class RootStore {
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
+  public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly universalSwapStore: UniversalSwapStore;
   // public readonly webpageStore: WebpageStore;
@@ -177,6 +179,7 @@ export class RootStore {
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(this.interactionStore);
     this.signOasisInteractionStore = new SignOasisInteractionStore(this.interactionStore);
+    this.signTronInteractionStore = new SignTronInteractionStore(this.interactionStore);
 
     this.chainSuggestStore = new ChainSuggestStore(this.interactionStore, CommunityChainInfoRepo);
 

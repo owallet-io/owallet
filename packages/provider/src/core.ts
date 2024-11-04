@@ -1316,7 +1316,10 @@ class TronProvider extends EventEmitter implements ITronProvider {
   async sendTx(chainId: string, signedTx: unknown): Promise<string> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'background-tx-tron', 'send-tron-tx-to-background', {
+        chainId,
+        signedTx
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1328,10 +1331,14 @@ class TronProvider extends EventEmitter implements ITronProvider {
       }, 100);
     });
   }
-  async sign(chainId: string, signer: string, data: string | Uint8Array, type: TransactionType): Promise<unknown> {
+
+  async sign(chainId: string, data: object | string): Promise<any> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'request-sign-tron', {
+        chainId,
+        data: JSON.stringify(data)
+      })
         .then(resolve)
         .catch(reject)
         .finally(() => (f = true));
@@ -1344,6 +1351,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
     });
   }
 }
+
 const sidePanelOpenNeededJSONRPCMethods = [
   'eth_sendTransaction',
   'personal_sign',

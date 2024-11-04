@@ -1,34 +1,29 @@
-import React, { FunctionComponent, useEffect, useRef } from "react";
-import {
-  RouteProp,
-  useIsFocused,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { Text, View, StyleSheet } from "react-native";
-import { useStyle } from "../../styles";
-import { TendermintTxTracer } from "@owallet/cosmos";
-import { Buffer } from "buffer/";
-import LottieView from "lottie-react-native";
+import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { RouteProp, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { Text, View, StyleSheet } from 'react-native';
+import { useStyle } from '../../styles';
+import { TendermintTxTracer } from '@owallet/cosmos';
+import { Buffer } from 'buffer/';
+import LottieView from 'lottie-react-native';
 // import {SimpleGradient} from '../../components/svg';
 // import {ArrowRightIcon} from '../../components/icon/arrow-right';
 // import {StackNavProp} from '../../navigation';
-import { Box } from "../../components/box";
+import { Box } from '../../components/box';
 // import {TextButton} from '../../components/text-button';
 // import {useNotification} from '../../hooks/notification';
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from 'react-intl';
 // import {EthTxReceipt, EthTxStatus} from '@owallet/types';
-import { simpleFetch } from "@owallet/simple-fetch";
-import { Network, retry, urlTxHistory } from "@owallet/common";
-import { navigate, resetTo } from "@src/router/root";
-import { SCREENS } from "@common/constants";
-import { OWButton } from "@components/button";
-import OWIcon from "@components/ow-icon/ow-icon";
-import { EthTxReceipt, EthTxStatus, ResDetailAllTx } from "@owallet/types";
-import { notification } from "@stores/notification";
-import { API } from "@common/api";
+import { simpleFetch } from '@owallet/simple-fetch';
+import { Network, retry, urlTxHistory } from '@owallet/common';
+import { navigate, resetTo } from '@src/router/root';
+import { SCREENS } from '@common/constants';
+import { OWButton } from '@components/button';
+import OWIcon from '@components/ow-icon/ow-icon';
+import { EthTxReceipt, EthTxStatus, ResDetailAllTx } from '@owallet/types';
+import { notification } from '@stores/notification';
+import { API } from '@common/api';
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, allAccountStore } = useStore();
@@ -63,7 +58,34 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       const txHash = route.params.txHash;
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
-      if (chainInfo.features.includes("oasis") && txHash) {
+      if (chainInfo.features.includes('tron') && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch(`https://tronscan.org/#/transaction/${txHash}`);
+                if (data && status === 200) {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+                  resolve();
+                }
+              } catch (error) {
+                reject();
+                console.log('error', error);
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 4000
+          }
+        );
+      }
+      if (chainInfo.features.includes('oasis') && txHash) {
         simpleFetch(
           `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${account.addressDisplay}`
         )
@@ -82,7 +104,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               }
             }
           })
-          .catch((err) => console.error(err, "Err oasis"));
+          .catch(err => console.error(err, 'Err oasis'));
         return;
       }
 
@@ -98,16 +120,16 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 result: EthTxReceipt | null;
                 error?: Error;
               }>(chainInfo.evm.rpc, {
-                method: "POST",
+                method: 'POST',
                 headers: {
-                  "content-type": "application/json",
+                  'content-type': 'application/json'
                 },
                 body: JSON.stringify({
-                  jsonrpc: "2.0",
-                  method: "eth_getTransactionReceipt",
+                  jsonrpc: '2.0',
+                  method: 'eth_getTransactionReceipt',
                   params: [txHash],
-                  id: 1,
-                }),
+                  id: 1
+                })
               });
 
               if (txReceiptResponse.data.error) {
@@ -126,14 +148,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxSuccessResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    isEvmTx
                   });
                 } else {
                   isPendingGoToResult.current = true;
                   navigate(SCREENS.TxFailedResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    isEvmTx
                   });
                 }
                 resolve();
@@ -145,14 +167,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           {
             maxRetries: 10,
             waitMsAfterError: 500,
-            maxWaitMsAfterError: 4000,
+            maxWaitMsAfterError: 4000
           }
         );
       } else {
-        const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+        const txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
         txTracer
-          .traceTx(Buffer.from(txHash, "hex"))
-          .then((tx) => {
+          .traceTx(Buffer.from(txHash, 'hex'))
+          .then(tx => {
             if (isPendingGotoHome.current) {
               return;
             }
@@ -165,7 +187,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
             }
           })
-          .catch((e) => {
+          .catch(e => {
             console.log(`Failed to trace the tx (${txHash})`, e);
           });
 
@@ -174,18 +196,11 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         };
       }
     }
-  }, [
-    chainId,
-    chainStore,
-    isFocused,
-    navigation,
-    route.params.txHash,
-    route.params.isEvmTx,
-  ]);
+  }, [chainId, chainStore, isFocused, navigation, route.params.txHash, route.params.isEvmTx]);
 
   return (
-    <Box style={style.flatten(["flex-grow-1", "items-center"])}>
-      <View style={style.flatten(["absolute-fill"])}>
+    <Box style={style.flatten(['flex-grow-1', 'items-center'])}>
+      <View style={style.flatten(['absolute-fill'])}>
         {/*<SimpleGradient*/}
         {/*  degree={*/}
         {/*    style.get('tx-result-screen-pending-gradient-background').degree*/}
@@ -199,14 +214,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         {/*  }*/}
         {/*/>*/}
       </View>
-      <View style={style.flatten(["flex-2"])} />
+      <View style={style.flatten(['flex-2'])} />
       <View
         style={style.flatten([
-          "width-122",
-          "height-122",
-          "border-width-8",
-          "border-color-blue-300",
-          "border-radius-64",
+          'width-122',
+          'height-122',
+          'border-width-8',
+          'border-color-blue-300',
+          'border-radius-64'
         ])}
       >
         <Box
@@ -217,24 +232,24 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             right: 0,
             top: 0,
             bottom: 10,
-            ...style.flatten(["absolute"]),
+            ...style.flatten(['absolute'])
           }}
         >
           <LottieView
-            source={require("@assets/animations/loading_owallet.json")}
+            source={require('@assets/animations/loading_owallet.json')}
             colorFilters={[
               {
-                keypath: "#dot01",
-                color: style.flatten(["color-blue-300"]).color,
+                keypath: '#dot01',
+                color: style.flatten(['color-blue-300']).color
               },
               {
-                keypath: "#dot02",
-                color: style.flatten(["color-blue-300"]).color,
+                keypath: '#dot02',
+                color: style.flatten(['color-blue-300']).color
               },
               {
-                keypath: "#dot03",
-                color: style.flatten(["color-blue-300"]).color,
-              },
+                keypath: '#dot03',
+                color: style.flatten(['color-blue-300']).color
+              }
             ]}
             autoPlay
             loop
@@ -243,14 +258,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         </Box>
       </View>
 
-      <Text
-        style={style.flatten([
-          "mobile-h3",
-          "color-text-high",
-          "margin-top-82",
-          "margin-bottom-32",
-        ])}
-      >
+      <Text style={style.flatten(['mobile-h3', 'color-text-high', 'margin-top-82', 'margin-bottom-32'])}>
         <FormattedMessage id="page.tx-result-pending.title" />
       </Text>
 
@@ -258,35 +266,29 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
          set the explicit height to upper view*/}
       <View
         style={StyleSheet.flatten([
-          style.flatten(["padding-x-66"]),
+          style.flatten(['padding-x-66']),
           {
-            overflow: "visible",
-          },
+            overflow: 'visible'
+          }
         ])}
       >
-        <Text
-          style={style.flatten([
-            "subtitle2",
-            "text-center",
-            "color-text-middle",
-          ])}
-        >
+        <Text style={style.flatten(['subtitle2', 'text-center', 'color-text-middle'])}>
           <FormattedMessage id="page.tx-result-pending.paragraph" />
         </Text>
       </View>
 
       <Box paddingX={48} height={116} marginTop={58} alignX="center">
         <OWButton
-          type={"link"}
-          style={style.flatten(["flex-1"])}
+          type={'link'}
+          style={style.flatten(['flex-1'])}
           size="large"
           label={intl.formatMessage({
-            id: "page.tx-result-pending.go-to-home-button",
+            id: 'page.tx-result-pending.go-to-home-button'
           })}
-          iconRight={(color) => (
-            <View style={style.flatten(["margin-left-8"])}>
+          iconRight={color => (
+            <View style={style.flatten(['margin-left-8'])}>
               {/*<ArrowRightIcon color={color} size={18} />*/}
-              <OWIcon name={"tdesignarrow-right"} size={18} color={color} />
+              <OWIcon name={'tdesignarrow-right'} size={18} color={color} />
             </View>
           )}
           onPress={() => {
@@ -297,7 +299,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         />
       </Box>
 
-      <View style={style.flatten(["flex-2"])} />
+      <View style={style.flatten(['flex-2'])} />
     </Box>
   );
 });

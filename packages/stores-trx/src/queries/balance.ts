@@ -1,14 +1,16 @@
 import { DenomHelper } from '@owallet/common';
 import {
+  BalanceRegistry,
   ChainGetter,
   IObservableQueryBalanceImpl,
   ObservableEvmChainJsonRpcQuery,
   ObservableQuery,
   QuerySharedContext
 } from '@owallet/stores';
-import { AppCurrency } from '@owallet/types';
+import { AppCurrency, ChainInfo } from '@owallet/types';
 import { CoinPretty, Int } from '@owallet/unit';
 import { computed, makeObservable, override } from 'mobx';
+import Web3 from 'web3';
 
 export class ObservableQueryTrxAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -19,10 +21,9 @@ export class ObservableQueryTrxAccountBalanceImpl
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly denomHelper: DenomHelper,
-    protected readonly bech32Address: string,
-    protected readonly nativeBalances: ObservableQueryTronBalances
+    protected readonly bech32Address: string
   ) {
-    super(sharedContext, null, null, null);
+    super(sharedContext, '', '');
 
     makeObservable(this);
   }
@@ -36,7 +37,9 @@ export class ObservableQueryTrxAccountBalanceImpl
   get balance(): CoinPretty {
     const denom = this.denomHelper.denom;
     const chainInfo = this.chainGetter.getChain(this.chainId);
+
     const currency = chainInfo.currencies.find(cur => cur.coinMinimalDenom === denom);
+
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -53,13 +56,6 @@ export class ObservableQueryTrxAccountBalanceImpl
     const denom = this.denomHelper.denom;
     const chainInfo = this.chainGetter.getChain(this.chainId);
     return chainInfo.forceFindCurrency(denom);
-  }
-
-  protected override async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: any }> {
-    return {
-      headers: {},
-      data: {}
-    };
   }
 
   protected override getCacheKey(): string {
@@ -96,5 +92,31 @@ export class ObservableQueryTronBalances extends ObservableEvmChainJsonRpcQuery<
 
       yield super.fetch();
     }
+  }
+}
+
+export class ObservableQueryTrxAccountBalanceRegistry implements BalanceRegistry {
+  protected nativeBalances: Map<string, ObservableQueryTronBalances> = new Map();
+
+  constructor(protected readonly sharedContext: QuerySharedContext) {}
+
+  getBalanceImpl(
+    chainId: string,
+    chainGetter: ChainGetter<ChainInfo>,
+    address: string,
+    minimalDenom: string
+  ): IObservableQueryBalanceImpl | undefined {
+    const denomHelper = new DenomHelper(minimalDenom);
+    const chainInfo = chainGetter.getChain(chainId);
+
+    if (denomHelper.type !== 'native' || !Web3.utils.isAddress(address)) return;
+    if (!chainInfo.evm) return;
+    const key = `tron-${chainId}/${address}`;
+
+    if (!this.nativeBalances.has(key)) {
+      this.nativeBalances.set(key, new ObservableQueryTronBalances(this.sharedContext, chainId, chainGetter, address));
+    }
+
+    return new ObservableQueryTrxAccountBalanceImpl(this.sharedContext, chainId, chainGetter, denomHelper, address);
   }
 }

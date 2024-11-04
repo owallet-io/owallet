@@ -160,7 +160,6 @@ export const useGetFeeTron = (
           1
         );
         const signedTx = await keyringStore.simulateSignTron(transaction, vaultId, coinType);
-        console.log('signedTx', signedTx);
 
         const amountBandwidthFee = caculatorAmountBandwidthFee(signedTx, bandwidthRemaining);
         setData(prevState => ({

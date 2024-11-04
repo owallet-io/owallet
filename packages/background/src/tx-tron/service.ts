@@ -1,8 +1,7 @@
 import { ChainsService } from '../chains';
-import { simpleFetch } from '@owallet/simple-fetch';
 import { Notification } from '../tx/types';
-import { Transaction, TransactionStatus, TransactionType } from '@owallet/types';
-import { retry } from '@owallet/common';
+import { Transaction } from '@owallet/types';
+import { retry, TronWebProvider } from '@owallet/common';
 
 export class BackgroundTxTronService {
   constructor(protected readonly chainsService: ChainsService, protected readonly notification: Notification) {}
@@ -29,12 +28,16 @@ export class BackgroundTxTronService {
 
     try {
       const isTronChain = this.chainsService.isTronChain(chainId);
-      const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-      if (!chainInfo.grpc || !isTronChain) {
+      if (!isTronChain) {
         throw new Error('No Tron info chain');
       }
 
-      const txHash = '';
+      console.log('signedTx', signedTx);
+
+      let txHash = signedTx.transaction.txID;
+
+      console.log('txHash', txHash);
+
       if (!txHash) {
         throw new Error('No tx hash responded');
       }
@@ -42,7 +45,16 @@ export class BackgroundTxTronService {
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {
-            resolve();
+            if (!txHash) {
+              console.error('No tx hash responded');
+              resolve();
+            }
+
+            if (txHash) {
+              options?.onFulfill?.(signedTx);
+              BackgroundTxTronService.processTxResultNotification(this.notification);
+              resolve();
+            }
 
             reject();
           });
@@ -54,7 +66,7 @@ export class BackgroundTxTronService {
         }
       );
 
-      return 'txHash';
+      return txHash;
     } catch (e) {
       console.error(e);
       if (!options.silent) {

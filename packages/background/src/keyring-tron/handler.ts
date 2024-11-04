@@ -1,13 +1,7 @@
-import {
-  Env,
-  Handler,
-  InternalHandler,
-  OWalletError,
-  Message,
-} from "@owallet/router";
-import { GetTronKeyMsg, GetTronKeysSettledMsg } from "./messages";
-import { KeyRingTronService } from "./service";
-import { PermissionInteractiveService } from "../permission-interactive";
+import { Env, Handler, InternalHandler, OWalletError, Message } from '@owallet/router';
+import { GetTronKeyMsg, GetTronKeysSettledMsg, RequestSignTronMsg } from './messages';
+import { KeyRingTronService } from './service';
+import { PermissionInteractiveService } from '../permission-interactive';
 
 export const getHandler: (
   service: KeyRingTronService,
@@ -16,18 +10,13 @@ export const getHandler: (
   return (env: Env, msg: Message<unknown>) => {
     switch (msg.constructor) {
       case GetTronKeyMsg:
-        return handleGetTronKeyMsg(service, permissionInteractionService)(
-          env,
-          msg as GetTronKeyMsg
-        );
+        return handleGetTronKeyMsg(service, permissionInteractionService)(env, msg as GetTronKeyMsg);
       case GetTronKeysSettledMsg:
-        return handleGetTronKeysSettledMsg(
-          service,
-          permissionInteractionService
-        )(env, msg as GetTronKeysSettledMsg);
-
+        return handleGetTronKeysSettledMsg(service, permissionInteractionService)(env, msg as GetTronKeysSettledMsg);
+      case RequestSignTronMsg:
+        return handleRequestSignTronMsg(service, permissionInteractionService)(env, msg as RequestSignTronMsg);
       default:
-        throw new OWalletError("keyring", 221, "Unknown msg type");
+        throw new OWalletError('keyring', 221, 'Unknown msg type');
     }
   };
 };
@@ -35,16 +24,9 @@ export const getHandler: (
 const handleGetTronKeyMsg: (
   service: KeyRingTronService,
   permissionInteractionService: PermissionInteractiveService
-) => InternalHandler<GetTronKeyMsg> = (
-  service,
-  permissionInteractionService
-) => {
+) => InternalHandler<GetTronKeyMsg> = (service, permissionInteractionService) => {
   return async (env, msg) => {
-    await permissionInteractionService.ensureEnabled(
-      env,
-      [msg.chainId],
-      msg.origin
-    );
+    await permissionInteractionService.ensureEnabled(env, [msg.chainId], msg.origin);
 
     return await service.getKeySelected(msg.chainId);
   };
@@ -53,19 +35,20 @@ const handleGetTronKeyMsg: (
 const handleGetTronKeysSettledMsg: (
   service: KeyRingTronService,
   permissionInteractionService: PermissionInteractiveService
-) => InternalHandler<GetTronKeysSettledMsg> = (
-  service,
-  permissionInteractionService
-) => {
+) => InternalHandler<GetTronKeysSettledMsg> = (service, permissionInteractionService) => {
   return async (env, msg) => {
-    await permissionInteractionService.ensureEnabled(
-      env,
-      msg.chainIds,
-      msg.origin
-    );
+    await permissionInteractionService.ensureEnabled(env, msg.chainIds, msg.origin);
 
-    return await Promise.allSettled(
-      msg.chainIds.map((chainId) => service.getKeySelected(chainId))
-    );
+    return await Promise.allSettled(msg.chainIds.map(chainId => service.getKeySelected(chainId)));
+  };
+};
+const handleRequestSignTronMsg: (
+  service: KeyRingTronService,
+  permissionInteractionService: PermissionInteractiveService
+) => InternalHandler<RequestSignTronMsg> = (service, permissionInteractionService) => {
+  return async (env, msg) => {
+    await permissionInteractionService.ensureEnabled(env, [msg.chainId], msg.origin);
+
+    return (await service.signTronSelected(env, msg.origin, msg.chainId, msg.data)).signature;
   };
 };

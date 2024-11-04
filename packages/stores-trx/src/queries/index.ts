@@ -1,6 +1,7 @@
 import { QueriesSetBase, ChainGetter, QuerySharedContext } from '@owallet/stores';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQueryAccountTron } from './account';
+import { ObservableQueryTrxAccountBalanceRegistry } from './balance';
 import { ObservableQueryChainParameterTron } from './chain-parameters';
 export interface TrxQueries {
   tron: TrxQueriesImpl;
@@ -35,6 +36,7 @@ export class TrxQueriesImpl {
     protected chainId: string,
     protected chainGetter: ChainGetter
   ) {
+    // base.queryBalances.addBalanceRegistry(new ObservableQueryTrxAccountBalanceRegistry(sharedContext));
     this.queryAccount = new ObservableQueryAccountTron(sharedContext, chainId, chainGetter);
     this.queryChainParameter = new ObservableQueryChainParameterTron(sharedContext, chainId, chainGetter);
   }

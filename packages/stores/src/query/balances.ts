@@ -1,10 +1,10 @@
-import { DenomHelper } from "@owallet/common";
-import { ChainGetter } from "../chain";
-import { computed, makeObservable, observable, runInAction } from "mobx";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
-import { AppCurrency } from "@owallet/types";
-import { HasMapStore, IObservableQuery, QuerySharedContext } from "../common";
-import { computedFn } from "mobx-utils";
+import { DenomHelper } from '@owallet/common';
+import { ChainGetter } from '../chain';
+import { computed, makeObservable, observable, runInAction } from 'mobx';
+import { CoinPretty, Dec, Int } from '@owallet/unit';
+import { AppCurrency } from '@owallet/types';
+import { HasMapStore, IObservableQuery, QuerySharedContext } from '../common';
+import { computedFn } from 'mobx-utils';
 
 export interface IObservableQueryBalanceImpl extends IObservableQuery {
   balance: CoinPretty;
@@ -24,8 +24,7 @@ export class ObservableQueryBalancesImplMap {
   protected address: string;
 
   @observable.shallow
-  protected balanceImplMap: Map<string, IObservableQueryBalanceImpl> =
-    new Map();
+  protected balanceImplMap: Map<string, IObservableQueryBalanceImpl> = new Map();
 
   constructor(
     protected readonly sharedContext: QuerySharedContext,
@@ -40,21 +39,19 @@ export class ObservableQueryBalancesImplMap {
   }
 
   fetch() {
-    this.balanceImplMap.forEach((bal) => bal.fetch());
+    this.balanceImplMap.forEach(bal => bal.fetch());
   }
 
-  protected getBalanceInner(
-    currency: AppCurrency
-  ): IObservableQueryBalanceImpl | undefined {
+  protected getBalanceInner(currency: AppCurrency): IObservableQueryBalanceImpl | undefined {
     let key = currency.coinMinimalDenom;
     // If the currency is secret20, it will be different according to not only the minimal denom but also the viewing key of the currency.
-    if ("type" in currency && currency.type === "secret20") {
-      key = currency.coinMinimalDenom + "/" + currency.viewingKey;
+    if ('type' in currency && currency.type === 'secret20') {
+      key = currency.coinMinimalDenom + '/' + currency.viewingKey;
     }
 
     if (!this.balanceImplMap.has(key)) {
       runInAction(() => {
-        this.balanceRegistries.forEach((registry) => {
+        this.balanceRegistries.forEach(registry => {
           const balanceImpl = registry.getBalanceImpl(
             this.chainId,
             this.chainGetter,
@@ -90,6 +87,7 @@ export class ObservableQueryBalancesImplMap {
 
     for (let i = 0; i < chainInfo.currencies.length; i++) {
       const currency = chainInfo.currencies[i];
+
       const balanceInner = this.getBalanceInner(currency);
       if (balanceInner) {
         result.push(balanceInner);
@@ -102,7 +100,7 @@ export class ObservableQueryBalancesImplMap {
   @computed
   get positiveBalances(): IObservableQueryBalanceImpl[] {
     const balances = this.balances;
-    return balances.filter((bal) => bal.balance.toDec().gt(new Dec(0)));
+    return balances.filter(bal => bal.balance.toDec().gt(new Dec(0)));
   }
 
   /**
@@ -112,9 +110,7 @@ export class ObservableQueryBalancesImplMap {
   @computed
   get nonNativeBalances(): IObservableQueryBalanceImpl[] {
     const balances = this.balances;
-    return balances.filter(
-      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== "native"
-    );
+    return balances.filter(bal => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native');
   }
 
   /**
@@ -127,11 +123,10 @@ export class ObservableQueryBalancesImplMap {
 
     const balances = this.balances;
     return balances.filter(
-      (bal) =>
-        new DenomHelper(bal.currency.coinMinimalDenom).type === "native" &&
+      bal =>
+        new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
         bal.balance.toDec().gt(new Dec(0)) &&
-        bal.currency.coinMinimalDenom !==
-          chainInfo.stakeCurrency?.coinMinimalDenom
+        bal.currency.coinMinimalDenom !== chainInfo.stakeCurrency?.coinMinimalDenom
     );
   }
 
@@ -140,8 +135,7 @@ export class ObservableQueryBalancesImplMap {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
     const currencies = chainInfo.currencies.filter(
-      (cur) =>
-        cur.coinMinimalDenom !== chainInfo.stakeCurrency?.coinMinimalDenom
+      cur => cur.coinMinimalDenom !== chainInfo.stakeCurrency?.coinMinimalDenom
     );
 
     const result = [];
@@ -160,31 +154,23 @@ export class ObservableQueryBalancesImplMap {
   /**
    * @deprecated
    */
-  readonly getBalanceFromCurrency = computedFn(
-    (currency: AppCurrency): CoinPretty => {
-      const bal = this.balances.find(
-        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-      );
-      if (bal) {
-        return bal.balance;
-      }
-
-      return new CoinPretty(currency, new Int(0));
+  readonly getBalanceFromCurrency = computedFn((currency: AppCurrency): CoinPretty => {
+    const bal = this.balances.find(bal => bal.currency.coinMinimalDenom === currency.coinMinimalDenom);
+    if (bal) {
+      return bal.balance;
     }
-  );
 
-  readonly getBalance = computedFn(
-    (currency: AppCurrency): IObservableQueryBalanceImpl | undefined => {
-      const bal = this.balances.find(
-        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-      );
-      if (bal) {
-        return bal;
-      }
+    return new CoinPretty(currency, new Int(0));
+  });
 
-      return;
+  readonly getBalance = computedFn((currency: AppCurrency): IObservableQueryBalanceImpl | undefined => {
+    const bal = this.balances.find(bal => bal.currency.coinMinimalDenom === currency.coinMinimalDenom);
+    if (bal) {
+      return bal;
     }
-  );
+
+    return;
+  });
 }
 
 export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalancesImplMap> {
@@ -214,14 +200,10 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
     return this.get(bech32Address) as ObservableQueryBalancesImplMap;
   }
 
-  getQueryEthereumHexAddress(
-    ethereumHexAddress: string
-  ): ObservableQueryBalancesImplMap {
+  getQueryEthereumHexAddress(ethereumHexAddress: string): ObservableQueryBalancesImplMap {
     return this.get(ethereumHexAddress) as ObservableQueryBalancesImplMap;
   }
-  getQueryBtcLegacyAddress(
-    btcLegacyAddress: string
-  ): ObservableQueryBalancesImplMap {
+  getQueryBtcLegacyAddress(btcLegacyAddress: string): ObservableQueryBalancesImplMap {
     return this.get(btcLegacyAddress) as ObservableQueryBalancesImplMap;
   }
 }
