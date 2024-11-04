@@ -8,7 +8,7 @@ import {
   UIProperties
 } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter } from '@owallet/stores';
+import { ChainGetter, CoinPrimitive } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { Currency, FeeCurrency, StdFee } from '@owallet/types';
@@ -46,6 +46,14 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
   @observable
   protected _l1DataFee: Dec | undefined = undefined;
+
+  @observable
+  protected _manualFee:
+    | {
+        amount: string;
+        currency: FeeCurrency;
+      }[]
+    | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -167,6 +175,13 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     } else {
       this._fee = undefined;
     }
+    this._manualFee = undefined;
+  }
+
+  @action
+  setManualFee(fee: { amount: string; currency: FeeCurrency }[]) {
+    this._manualFee = fee;
+    this._fee = undefined;
   }
 
   @computed
@@ -298,6 +313,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     }[] = [];
 
     // If there is no fee currency, just return with empty fee amount.
+    if (this._manualFee) {
+      return this._manualFee;
+    }
     if (!this.fee) {
       res = [];
     } else if ('type' in this.fee) {

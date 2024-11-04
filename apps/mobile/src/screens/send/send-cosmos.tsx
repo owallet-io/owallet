@@ -165,6 +165,8 @@ export const SendCosmosScreen: FunctionComponent<{
 
   const historyType = 'basic-send';
 
+  console.log('   sendConfigs.feeConfig.toStdFee()', sendConfigs.feeConfig.toStdFee());
+
   const submitSend = async () => {
     if (!txConfigsValidate.interactionBlocked) {
       try {

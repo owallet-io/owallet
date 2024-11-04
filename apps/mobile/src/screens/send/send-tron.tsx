@@ -88,7 +88,7 @@ export const SendTronScreen: FunctionComponent<{
 
   console.log('amountConfig 1123', sendConfigs.amountConfig, sendConfigs.recipientConfig);
 
-  const feeTrx = useGetFeeTron(
+  const { feeTrx } = useGetFeeTron(
     sender,
     sendConfigs.amountConfig,
     sendConfigs.recipientConfig,
@@ -100,6 +100,18 @@ export const SendTronScreen: FunctionComponent<{
   );
 
   console.log('feeTrx', feeTrx);
+
+  useEffect(() => {
+    if (feeTrx) {
+      sendConfigs.feeConfig.setManualFee([
+        { amount: feeTrx.amount, currency: chainInfo.forceFindCurrency(feeTrx.denom) }
+      ]);
+    }
+
+    return () => {
+      sendConfigs.feeConfig.setManualFee(null);
+    };
+  }, [feeTrx]);
 
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === sender
@@ -129,9 +141,8 @@ export const SendTronScreen: FunctionComponent<{
     // if (!txConfigsValidate.interactionBlocked) {
     try {
       account.setIsSendingTx(true);
-      const contractAddress = sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom.startsWith('erc20')
-        ? sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom.split(':')[1]
-        : null;
+      //@ts-ignore
+      const contractAddress = sendConfigs.amountConfig.currency?.contractAddress;
 
       const unsignedTx = account.makeSendTokenTx({
         address: sender,
@@ -156,7 +167,7 @@ export const SendTronScreen: FunctionComponent<{
         onFulfill: txReceipt => {
           console.log('txReceipt', txReceipt);
 
-          queryBalances.getQueryBech32Address(account.bech32Address).balances.forEach(balance => {
+          queryBalances.getQueryEthereumHexAddress(sender).balances.forEach(balance => {
             if (
               balance.currency.coinMinimalDenom === coinMinimalDenom ||
               sendConfigs.feeConfig.fees.some(
