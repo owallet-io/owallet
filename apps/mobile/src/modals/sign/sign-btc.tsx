@@ -47,6 +47,8 @@ import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerGuideBox } from "@components/guide-box/ledger-guide-box";
 import { handleBtcPreSignByLedger } from "@src/modals/sign/util/handle-btc-sign";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
+import { OWalletError } from "@owallet/router";
+import { ErrModuleLedgerSign } from "@src/modals/sign/util/ledger-types";
 export const SignBtcModal = registerModal(
   observer<{
     interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
@@ -71,6 +73,7 @@ export const SignBtcModal = registerModal(
       .get(chainId)
       .bitcoin.queryBtcUtxos.getQueryBtcAddress(signer).utxos;
     const [utxosData, setUtxosData] = useState([]);
+    const [utxosWithHex, setUtxosWithHex] = useState([]);
     const [inputs, setInputs] = useState([]);
     const [outputs, setOutputs] = useState([]);
     const accountBtc = bitcoinAccountStore.getAccount(chainId);
@@ -83,12 +86,16 @@ export const SignBtcModal = registerModal(
       if (!utxos || !signer) return;
       (async () => {
         const info = getAddressInfo(signer);
-        if (!info.bech32 || interactionData.data.keyType === "ledger") {
+        if (!info.bech32) {
           const utxosNonWitness = await fetchUxtosNonWitness(utxos);
           setUtxosData(utxosNonWitness);
         } else {
           const utxosWitness = getUxtosWitness(utxos);
           setUtxosData(utxosWitness);
+        }
+        if (interactionData.data.keyType === "ledger") {
+          const utxosNonWitness = await fetchUxtosWithHex(utxos);
+          setUtxosWithHex(utxosNonWitness);
         }
       })();
     }, [utxos, signer]);
@@ -145,6 +152,31 @@ export const SignBtcModal = registerModal(
             return {
               ...item,
               nonWitnessUtxo: null,
+            };
+          }
+        })
+      );
+    };
+    const fetchUxtosWithHex = async (
+      utxos: Utxos[]
+    ): Promise<UtxosWithNonWitness[]> => {
+      return Promise.all(
+        utxos.map(async (item) => {
+          try {
+            // Fetch the nonWitnessUtxo data (assuming the response contains the raw transaction hex as a string)
+            const res = await simpleFetch<string>(
+              chainInfo.rest,
+              `/tx/${item.txid}/hex`
+            );
+            return {
+              ...item,
+              hex: res.data, // Convert the raw hex to Buffer
+            };
+          } catch (error) {
+            console.error(`Error fetching UTXO for txId: ${item.txid}`, error);
+            return {
+              ...item,
+              hex: null,
             };
           }
         })
@@ -220,9 +252,10 @@ export const SignBtcModal = registerModal(
     const ledgerBLE = useLedgerBLE();
     const approve = async () => {
       try {
-        if (!inputs?.length || !outputs?.length || !utxosData?.length) return;
+        if (!inputs?.length || !outputs?.length) return;
         let signature;
         if (interactionData.data.keyType === "ledger") {
+          if (!utxosWithHex?.length) return;
           setIsLedgerInteracting(true);
           setLedgerInteractingError(undefined);
           const info = getAddressInfo(signer);
@@ -231,7 +264,7 @@ export const SignBtcModal = registerModal(
             Buffer.from(signingDataText),
             ledgerBLE.getTransport,
             info.bech32 ? "84" : "44",
-            utxosData,
+            utxosWithHex,
             inputs,
             outputs
           );
@@ -244,7 +277,7 @@ export const SignBtcModal = registerModal(
           inputs,
           outputs,
           // TODO: Ledger support
-          undefined,
+          signature,
           async () => {
             // noop
           },
@@ -254,6 +287,17 @@ export const SignBtcModal = registerModal(
         );
       } catch (e) {
         console.log(e);
+        if (e instanceof OWalletError) {
+          if (e.module === ErrModuleLedgerSign) {
+            setLedgerInteractingError(e);
+          } else {
+            setLedgerInteractingError(undefined);
+          }
+        } else {
+          setLedgerInteractingError(undefined);
+        }
+      } finally {
+        setIsLedgerInteracting(false);
       }
     };
 

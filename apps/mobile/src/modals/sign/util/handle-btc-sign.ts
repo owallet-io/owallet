@@ -159,25 +159,35 @@ export const connectAndSignBtcWithLedger = async (
       const { psbt } = buidTx(keyPair, message, inputs, outputs);
       const inputsData: Array<
         [Transaction, number, string | null, number | null]
-      > = utxos.map(({ nonWitnessUtxo, txid, vout }) => {
-        if (!nonWitnessUtxo) {
+      > = utxos.map(({ hex, txid, vout }) => {
+        if (!hex) {
           throw Error(`Missing 'txHex' for UTXO (txHash ${txid})`);
         }
         // const utxoTx = Bitcoin.Transaction.fromHex(txid);
-
-        const splittedTx = btcApp.splitTransaction(
-          nonWitnessUtxo,
-          keyDerivation === "84" /* no segwit support */
-        );
-        return [splittedTx, vout];
+        console.log(hex, "hex");
+        const utxoTx = bitcoin.Transaction.fromHex(hex);
+        const splittedTx = btcApp.splitTransaction(hex, utxoTx.hasWitnesses());
+        // const splittedTx = btcApp.splitTransaction(
+        //   hex,
+        //   keyDerivation === "84" /* no segwit support */
+        // );
+        console.log(splittedTx, "splittedTx");
+        return [splittedTx, vout, null, null];
       });
+      console.log(inputsData, "inputsData");
       const associatedKeysets = utxos.map(
         (tx) => `${keyDerivation}'/0'/0'/0/0`
       );
+      console.log(associatedKeysets, "associatedKeysets");
       const newTxHex = psbt.data.globalMap.unsignedTx
         .toBuffer()
         .toString("hex");
-      const newTx: Transaction = btcApp.splitTransaction(newTxHex, true);
+      console.log(newTxHex, "newTxHex");
+      const newTx: Transaction = btcApp.splitTransaction(
+        newTxHex,
+        keyDerivation === "84"
+      );
+      console.log(newTx, "newTx");
       const outputScriptHex = btcApp
         .serializeTransactionOutputs(newTx)
         .toString("hex");
@@ -186,6 +196,8 @@ export const connectAndSignBtcWithLedger = async (
           ? {
               // no additionals - similar to https://github.com/shapeshift/hdwallet/blob/a61234eb83081a4de54750b8965b873b15803a03/packages/hdwallet-ledger/src/bitcoin.ts#L222
               additionals: [],
+              segwit: false,
+              useTrustedInputForSegwit: false,
             }
           : {
               segwit: true,

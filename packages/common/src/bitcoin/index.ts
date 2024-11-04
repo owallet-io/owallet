@@ -48,7 +48,7 @@ export const buidTx = (keyPair, data: Uint8Array, inputs, outputs) => {
   const unsignedTx: UnsignedBtcTransaction = JSON.parse(
     Buffer.from(data).toString()
   );
-  const { sender, memo } = unsignedTx;
+  const { sender, memo, chainId } = unsignedTx;
   const psbt = new bitcoin.Psbt(); // Network-specific
   inputs.forEach((utxo) => {
     if (utxo.witnessUtxo) {

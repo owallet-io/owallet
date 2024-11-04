@@ -69,7 +69,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
         .toString();
     }
 
-    return this._value;
+    return this._value?.replace(",", ".");
   }
   @computed
   get value(): string {
