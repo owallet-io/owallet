@@ -50,34 +50,30 @@ export class BackgroundTxBtcService {
       if (!txHash) {
         throw new Error("No tx hash responded");
       }
-
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {
-            const txReceiptResponse = await simpleFetch<TxBtcInfo>(
-              `${chainInfo.rest}/tx/${txHash}`
-            );
-            console.log(txReceiptResponse, "txReceiptResponse btc base");
-            if (!txReceiptResponse.data || txReceiptResponse.status !== 200) {
-              console.error(txReceiptResponse.data);
-              resolve();
-            }
-
-            const txReceipt = txReceiptResponse.data;
-            if (txReceipt) {
-              options?.onFulfill?.(txReceipt);
-              BackgroundTxBtcService.processTxResultNotification(
-                this.notification
+            try {
+              const txReceiptResponse = await simpleFetch<TxBtcInfo>(
+                `${chainInfo.rest}/tx/${txHash}`
               );
-              resolve();
+              if (txReceiptResponse?.data) {
+                options?.onFulfill?.(txReceiptResponse?.data);
+                BackgroundTxBtcService.processTxResultNotification(
+                  this.notification
+                );
+                resolve();
+              }
+              reject();
+            } catch (e) {
+              reject();
+              throw Error(e);
             }
-
-            reject();
           });
         },
         {
-          maxRetries: 10,
-          waitMsAfterError: 500,
+          maxRetries: 20,
+          waitMsAfterError: 1000,
           maxWaitMsAfterError: 4000,
         }
       );

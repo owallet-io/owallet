@@ -209,6 +209,7 @@ export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
           this.senderConfig.sender
         ).utxos;
       const gasPrice = this.getGasPriceForFeeCurrency(feeCurrency, feeType);
+      console.log(Number(gasPrice.toString()), "gasPrice.roundUp().toString()");
       const amountData = new Dec(this.amountConfig.amountNotSubFee || 0).mul(
         DecUtils.getTenExponentN(feeCurrency.coinDecimals)
       );
@@ -239,30 +240,32 @@ export class BtcFeeConfig extends TxChainSetter implements IBtcFeeConfig {
     feeType: FeeType
   ): Dec {
     const gasPriceStep = feeCurrency.gasPriceStep ?? DefaultGasPriceStep;
+    console.log(gasPriceStep, "gasPriceStep");
     let gasPrice = new Dec(0);
     const feeHistory = this.queriesStore.get(this.chainId).bitcoin
       .queryBtcFeeHistory.feeHistory;
     if (!feeHistory) {
       return new Dec(0);
     }
+    console.log(feeHistory, "feeHistory");
     switch (feeType) {
       case "low": {
-        gasPrice = new Dec(Math.ceil(feeHistory[gasPriceStep.low]));
+        gasPrice = new Dec(feeHistory[gasPriceStep.low]);
         break;
       }
       case "average": {
-        gasPrice = new Dec(Math.ceil(feeHistory[gasPriceStep.average]));
+        gasPrice = new Dec(feeHistory[gasPriceStep.average]);
         break;
       }
       case "high": {
-        gasPrice = new Dec(Math.ceil(feeHistory[gasPriceStep.high]));
+        gasPrice = new Dec(feeHistory[gasPriceStep.high]);
         break;
       }
       default: {
         throw new Error(`Unknown fee type: ${feeType}`);
       }
     }
-
+    console.log(gasPrice, "gasPrice after");
     return gasPrice;
   }
 

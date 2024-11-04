@@ -73,19 +73,27 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         retry(
           () => {
             return new Promise<void>(async (resolve, reject) => {
-              const txReceiptResponse = await simpleFetch<TxBtcInfo>(
-                `${chainInfo.rest}/tx/${txHash}`
-              );
-              const txReceipt = txReceiptResponse.data;
-              if (txReceipt) {
-                if (isPendingGotoHome.current) {
-                  return resolve();
+              try {
+                const txReceiptResponse = await simpleFetch<TxBtcInfo>(
+                  `${chainInfo.rest}/tx/${txHash}`
+                );
+                if (txReceiptResponse?.data) {
+                  if (isPendingGotoHome.current) {
+                    return resolve();
+                  }
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                  resolve();
                 }
-                isPendingGoToResult.current = true;
-                navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
-                resolve();
+                reject();
+              } catch (e) {
+                reject();
+                throw Error(e);
               }
-              reject();
             });
           },
           {
