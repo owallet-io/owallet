@@ -779,6 +779,33 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     currencies: [
       {
+        coinDenom: "OCH",
+        coinMinimalDenom: "erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
+        contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
+        coinDecimals: 18,
+        coinGeckoId: "och",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
+      },
+      {
+        coinDenom: "ORAI",
+        coinMinimalDenom: "erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5",
+        contractAddress: "0x4c11249814f11b9346808179cf06e71ac328c1b5",
+        coinDecimals: 18,
+        coinGeckoId: "oraichain-token",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
+      },
+      {
+        coinDenom: "ORAIX",
+        coinMinimalDenom: "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
+        contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
+        coinDecimals: 18,
+        coinGeckoId: "oraidex",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/oraix.png",
+      },
+      {
         coinDenom: "ETH",
         coinMinimalDenom: "ethereum-native",
         coinDecimals: 18,
@@ -822,6 +849,22 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinGeckoId: "binancecoin",
         coinImageUrl:
           "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
+      },
+      {
+        coinDenom: "ORAI",
+        coinMinimalDenom: "erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
+        coinDecimals: 18,
+        coinGeckoId: "oraichain-token",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
+      },
+      {
+        coinDenom: "AIRI",
+        coinMinimalDenom: "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f",
+        coinDecimals: 18,
+        coinGeckoId: "airight",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
       },
     ],
     feeCurrencies: [
@@ -985,47 +1028,47 @@ export const EmbedChainInfos: ChainInfo[] = [
     ],
     features: ["secretwasm", "ibc-go", "ibc-transfer"],
   },
-  // {
-  //   rpc: "https://rpc-akash.keplr.app",
-  //   rest: "https://lcd-akash.keplr.app",
-  //   chainId: "akashnet-2",
-  //   chainName: "Akash",
-  //   stakeCurrency: {
-  //     coinDenom: "AKT",
-  //     coinMinimalDenom: "uakt",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "akash-network",
-  //   },
-  //   walletUrl:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/akash"
-  //       : "http://localhost:8080/chains/akash",
-  //   walletUrlForStaking:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/akash"
-  //       : "http://localhost:8080/chains/akash",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("akash"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "AKT",
-  //       coinMinimalDenom: "uakt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "akash-network",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "AKT",
-  //       coinMinimalDenom: "uakt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "akash-network",
-  //     },
-  //   ],
-  //   features: ["ibc-transfer"],
-  // },
+  {
+    rpc: "https://rpc-akash.keplr.app",
+    rest: "https://lcd-akash.keplr.app",
+    chainId: "akashnet-2",
+    chainName: "Akash",
+    stakeCurrency: {
+      coinDenom: "AKT",
+      coinMinimalDenom: "uakt",
+      coinDecimals: 6,
+      coinGeckoId: "akash-network",
+    },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/akash"
+        : "http://localhost:8080/chains/akash",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/akash"
+        : "http://localhost:8080/chains/akash",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("akash"),
+    currencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "AKT",
+        coinMinimalDenom: "uakt",
+        coinDecimals: 6,
+        coinGeckoId: "akash-network",
+      },
+    ],
+    features: ["ibc-transfer"],
+  },
   // {
   //   rpc: "https://rpc-mars.keplr.app",
   //   rest: "https://lcd-mars.keplr.app",
@@ -1231,62 +1274,62 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: ["ibc-go", "ibc-transfer"],
   // },
-  // {
-  //   rpc: "https://rpc-persistence.keplr.app",
-  //   rest: "https://lcd-persistence.keplr.app",
-  //   chainId: "core-1",
-  //   chainName: "Persistence",
-  //   stakeCurrency: {
-  //     coinDenom: "XPRT",
-  //     coinMinimalDenom: "uxprt",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "persistence",
-  //   },
-  //   walletUrl:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/persistence"
-  //       : "http://localhost:8080/chains/persistence",
-  //   walletUrlForStaking:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/persistence"
-  //       : "http://localhost:8080/chains/persistence",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   alternativeBIP44s: [
-  //     {
-  //       coinType: 750,
-  //     },
-  //   ],
-  //   bech32Config: Bech32Address.defaultBech32Config("persistence"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "XPRT",
-  //       coinMinimalDenom: "uxprt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "persistence",
-  //     },
-  //     {
-  //       coinDenom: "STKATOM",
-  //       coinMinimalDenom: "stk/uatom",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "XPRT",
-  //       coinMinimalDenom: "uxprt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "persistence",
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0.025,
-  //         high: 0.04,
-  //       },
-  //     },
-  //   ],
-  //   features: ["ibc-transfer", "ibc-go"],
-  // },
+  {
+    rpc: "https://rpc-persistence.keplr.app",
+    rest: "https://lcd-persistence.keplr.app",
+    chainId: "core-1",
+    chainName: "Persistence",
+    stakeCurrency: {
+      coinDenom: "XPRT",
+      coinMinimalDenom: "uxprt",
+      coinDecimals: 6,
+      coinGeckoId: "persistence",
+    },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/persistence"
+        : "http://localhost:8080/chains/persistence",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/persistence"
+        : "http://localhost:8080/chains/persistence",
+    bip44: {
+      coinType: 118,
+    },
+    alternativeBIP44s: [
+      {
+        coinType: 750,
+      },
+    ],
+    bech32Config: Bech32Address.defaultBech32Config("persistence"),
+    currencies: [
+      {
+        coinDenom: "XPRT",
+        coinMinimalDenom: "uxprt",
+        coinDecimals: 6,
+        coinGeckoId: "persistence",
+      },
+      {
+        coinDenom: "STKATOM",
+        coinMinimalDenom: "stk/uatom",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "XPRT",
+        coinMinimalDenom: "uxprt",
+        coinDecimals: 6,
+        coinGeckoId: "persistence",
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+  },
   // {
   //   rpc: "https://rpc-sentinel.keplr.app",
   //   rest: "https://lcd-sentinel.keplr.app",
@@ -1333,67 +1376,67 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: ["ibc-transfer"],
   // },
-  // {
-  //   rpc: "https://rpc-agoric.keplr.app",
-  //   rest: "https://lcd-agoric.keplr.app",
-  //   chainId: "agoric-3",
-  //   chainName: "Agoric",
-  //   stakeCurrency: {
-  //     coinDenom: "BLD",
-  //     coinMinimalDenom: "ubld",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "agoric",
-  //   },
-  //   walletUrl:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/agoric"
-  //       : "http://localhost:8080/chains/agoric",
-  //   walletUrlForStaking:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/agoric"
-  //       : "http://localhost:8080/chains/agoric",
-  //   bip44: {
-  //     coinType: 564,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("agoric"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "BLD",
-  //       coinMinimalDenom: "ubld",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "agoric",
-  //     },
-  //     {
-  //       coinDenom: "IST",
-  //       coinMinimalDenom: "uist",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "BLD",
-  //       coinMinimalDenom: "ubld",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "agoric",
-  //       gasPriceStep: {
-  //         low: 0.012,
-  //         average: 0.024,
-  //         high: 0.071,
-  //       },
-  //     },
-  //     {
-  //       coinDenom: "IST",
-  //       coinMinimalDenom: "uist",
-  //       coinDecimals: 6,
-  //       gasPriceStep: {
-  //         low: 0.0034,
-  //         average: 0.007,
-  //         high: 0.02,
-  //       },
-  //     },
-  //   ],
-  //   features: ["ibc-go"],
-  // },
+  {
+    rpc: "https://rpc-agoric.keplr.app",
+    rest: "https://lcd-agoric.keplr.app",
+    chainId: "agoric-3",
+    chainName: "Agoric",
+    stakeCurrency: {
+      coinDenom: "BLD",
+      coinMinimalDenom: "ubld",
+      coinDecimals: 6,
+      coinGeckoId: "agoric",
+    },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/agoric"
+        : "http://localhost:8080/chains/agoric",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/agoric"
+        : "http://localhost:8080/chains/agoric",
+    bip44: {
+      coinType: 564,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("agoric"),
+    currencies: [
+      {
+        coinDenom: "BLD",
+        coinMinimalDenom: "ubld",
+        coinDecimals: 6,
+        coinGeckoId: "agoric",
+      },
+      {
+        coinDenom: "IST",
+        coinMinimalDenom: "uist",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "BLD",
+        coinMinimalDenom: "ubld",
+        coinDecimals: 6,
+        coinGeckoId: "agoric",
+        gasPriceStep: {
+          low: 0.012,
+          average: 0.024,
+          high: 0.071,
+        },
+      },
+      {
+        coinDenom: "IST",
+        coinMinimalDenom: "uist",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.0034,
+          average: 0.007,
+          high: 0.02,
+        },
+      },
+    ],
+    features: ["ibc-go"],
+  },
   // {
   //   rpc: "https://rpc-cyber.keplr.app",
   //   rest: "https://lcd-cyber.keplr.app",
@@ -1457,63 +1500,63 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: ["ibc-transfer", "cosmwasm", "ibc-go"],
   // },
-  // {
-  //   rpc: "https://rpc-juno.keplr.app",
-  //   rest: "https://lcd-juno.keplr.app",
-  //   chainId: "juno-1",
-  //   chainName: "Juno",
-  //   stakeCurrency: {
-  //     coinDenom: "JUNO",
-  //     coinMinimalDenom: "ujuno",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "juno-network",
-  //   },
-  //   walletUrl:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/juno"
-  //       : "http://localhost:8080/chains/juno",
-  //   walletUrlForStaking:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/juno"
-  //       : "http://localhost:8080/chains/juno",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("juno"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "JUNO",
-  //       coinMinimalDenom: "ujuno",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "juno-network",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "JUNO",
-  //       coinMinimalDenom: "ujuno",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "juno-network",
-  //       gasPriceStep: {
-  //         low: 0.001,
-  //         average: 0.0025,
-  //         high: 0.004,
-  //       },
-  //     },
-  //     {
-  //       coinDenom: "ATOM",
-  //       coinMinimalDenom:
-  //         "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
-  //       coinDecimals: 6,
-  //       gasPriceStep: {
-  //         low: 0.001 * 0.33,
-  //         average: 0.0025 * 0.33,
-  //         high: 0.004 * 0.33,
-  //       },
-  //     },
-  //   ],
-  //   features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
-  // },
+  {
+    rpc: "https://rpc-juno.keplr.app",
+    rest: "https://lcd-juno.keplr.app",
+    chainId: "juno-1",
+    chainName: "Juno",
+    stakeCurrency: {
+      coinDenom: "JUNO",
+      coinMinimalDenom: "ujuno",
+      coinDecimals: 6,
+      coinGeckoId: "juno-network",
+    },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/juno"
+        : "http://localhost:8080/chains/juno",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/juno"
+        : "http://localhost:8080/chains/juno",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("juno"),
+    currencies: [
+      {
+        coinDenom: "JUNO",
+        coinMinimalDenom: "ujuno",
+        coinDecimals: 6,
+        coinGeckoId: "juno-network",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "JUNO",
+        coinMinimalDenom: "ujuno",
+        coinDecimals: 6,
+        coinGeckoId: "juno-network",
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.0025,
+          high: 0.004,
+        },
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom:
+          "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.001 * 0.33,
+          average: 0.0025 * 0.33,
+          high: 0.004 * 0.33,
+        },
+      },
+    ],
+    features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
+  },
   {
     rpc: "https://rpc-stargaze.keplr.app",
     rest: "https://lcd-stargaze.keplr.app",
@@ -1905,52 +1948,52 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
   // },
-  // {
-  //   rpc: "https://rpc-injective.keplr.app",
-  //   rest: "https://lcd-injective.keplr.app",
-  //   chainId: "injective-1",
-  //   chainName: "Injective",
-  //   stakeCurrency: {
-  //     coinDenom: "INJ",
-  //     coinMinimalDenom: "inj",
-  //     coinDecimals: 18,
-  //     coinGeckoId: "injective-protocol",
-  //   },
-  //   walletUrl:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/injective"
-  //       : "http://localhost:8080/chains/injective",
-  //   walletUrlForStaking:
-  //     process.env.NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/injective"
-  //       : "http://localhost:8080/chains/injective",
-  //   bip44: {
-  //     coinType: 60,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("inj"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "INJ",
-  //       coinMinimalDenom: "inj",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "injective-protocol",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "INJ",
-  //       coinMinimalDenom: "inj",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "injective-protocol",
-  //       gasPriceStep: {
-  //         low: 5000000000,
-  //         average: 25000000000,
-  //         high: 50000000000,
-  //       },
-  //     },
-  //   ],
-  //   features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-  // },
+  {
+    rpc: "https://rpc-injective.keplr.app",
+    rest: "https://lcd-injective.keplr.app",
+    chainId: "injective-1",
+    chainName: "Injective",
+    stakeCurrency: {
+      coinDenom: "INJ",
+      coinMinimalDenom: "inj",
+      coinDecimals: 18,
+      coinGeckoId: "injective-protocol",
+    },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/injective"
+        : "http://localhost:8080/chains/injective",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/injective"
+        : "http://localhost:8080/chains/injective",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("inj"),
+    currencies: [
+      {
+        coinDenom: "INJ",
+        coinMinimalDenom: "inj",
+        coinDecimals: 18,
+        coinGeckoId: "injective-protocol",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "INJ",
+        coinMinimalDenom: "inj",
+        coinDecimals: 18,
+        coinGeckoId: "injective-protocol",
+        gasPriceStep: {
+          low: 5000000000,
+          average: 25000000000,
+          high: 50000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+  },
   // {
   //   rpc: "https://rpc-kava.keplr.app",
   //   rest: "https://lcd-kava.keplr.app",
@@ -2254,59 +2297,59 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: [],
   // },
-  // {
-  //   rpc: "https://rpc-noble.keplr.app",
-  //   rest: "https://lcd-noble.keplr.app",
-  //   chainId: "noble-1",
-  //   chainName: "Noble",
-  //   stakeCurrency: {
-  //     coinDenom: "STAKE",
-  //     coinMinimalDenom: "ustake",
-  //     coinDecimals: 6,
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "noble",
-  //     bech32PrefixAccPub: "noblepub",
-  //     bech32PrefixValAddr: "noblevaloper",
-  //     bech32PrefixValPub: "noblevaloperpub",
-  //     bech32PrefixConsAddr: "noblevalcons",
-  //     bech32PrefixConsPub: "noblevalconspub",
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: "STAKE",
-  //       coinMinimalDenom: "ustake",
-  //       coinDecimals: 6,
-  //     },
-  //     {
-  //       coinDenom: "USDC",
-  //       coinMinimalDenom: "uusdc",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "USDC",
-  //       coinMinimalDenom: "uusdc",
-  //       coinDecimals: 6,
-  //     },
-  //     {
-  //       coinDenom: "ATOM",
-  //       coinMinimalDenom:
-  //         "ibc/EF48E6B1A1A19F47ECAEA62F5670C37C0580E86A9E88498B7E393EB6F49F33C0",
-  //       coinDecimals: 6,
-  //       gasPriceStep: {
-  //         low: 0.001,
-  //         average: 0.001,
-  //         high: 0.001,
-  //       },
-  //     },
-  //   ],
-  //   features: [],
-  // },
+  {
+    rpc: "https://rpc-noble.keplr.app",
+    rest: "https://lcd-noble.keplr.app",
+    chainId: "noble-1",
+    chainName: "Noble",
+    stakeCurrency: {
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
+      coinDecimals: 6,
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "noble",
+      bech32PrefixAccPub: "noblepub",
+      bech32PrefixValAddr: "noblevaloper",
+      bech32PrefixValPub: "noblevaloperpub",
+      bech32PrefixConsAddr: "noblevalcons",
+      bech32PrefixConsPub: "noblevalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "uusdc",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "uusdc",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom:
+          "ibc/EF48E6B1A1A19F47ECAEA62F5670C37C0580E86A9E88498B7E393EB6F49F33C0",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.001,
+          high: 0.001,
+        },
+      },
+    ],
+    features: [],
+  },
   // {
   //   rpc: "https://rpc-omniflixhub.keplr.app",
   //   rest: "https://lcd-omniflixhub.keplr.app",
@@ -2391,48 +2434,48 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: [],
   // },
-  // {
-  //   rpc: "https://rpc-neutron.keplr.app",
-  //   rest: "https://lcd-neutron.keplr.app",
-  //   chainId: "neutron-1",
-  //   chainName: "Neutron",
-  //   stakeCurrency: {
-  //     coinDenom: "STAKE",
-  //     coinMinimalDenom: "ustake",
-  //     coinDecimals: 6,
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "neutron",
-  //     bech32PrefixAccPub: "neutronpub",
-  //     bech32PrefixValAddr: "neutronvaloper",
-  //     bech32PrefixValPub: "neutronvaloperpub",
-  //     bech32PrefixConsAddr: "neutronvalcons",
-  //     bech32PrefixConsPub: "neutronvalconspub",
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: "NTRN",
-  //       coinMinimalDenom: "untrn",
-  //       coinDecimals: 6,
-  //     },
-  //     {
-  //       coinDenom: "STAKE",
-  //       coinMinimalDenom: "ustake",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "NTRN",
-  //       coinMinimalDenom: "untrn",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   features: [],
-  // },
+  {
+    rpc: "https://rpc-neutron.keplr.app",
+    rest: "https://lcd-neutron.keplr.app",
+    chainId: "neutron-1",
+    chainName: "Neutron",
+    stakeCurrency: {
+      coinDenom: "STAKE",
+      coinMinimalDenom: "ustake",
+      coinDecimals: 6,
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "neutron",
+      bech32PrefixAccPub: "neutronpub",
+      bech32PrefixValAddr: "neutronvaloper",
+      bech32PrefixValPub: "neutronvaloperpub",
+      bech32PrefixConsAddr: "neutronvalcons",
+      bech32PrefixConsPub: "neutronvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+      },
+      {
+        coinDenom: "STAKE",
+        coinMinimalDenom: "ustake",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "NTRN",
+        coinMinimalDenom: "untrn",
+        coinDecimals: 6,
+      },
+    ],
+    features: [],
+  },
   // {
   //   rpc: "https://rpc-likecoin.keplr.app",
   //   rest: "https://lcd-likecoin.keplr.app",
@@ -2478,73 +2521,73 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: [],
   // },
-  // {
-  //   rpc: "https://rpc-dydx.keplr.app",
-  //   rest: "https://lcd-dydx.keplr.app",
-  //   chainId: "dydx-mainnet-1",
-  //   chainName: "dYdX",
-  //   stakeCurrency: {
-  //     coinDenom: "DYDX",
-  //     coinDecimals: 18,
-  //     coinMinimalDenom: "adydx",
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "dydx",
-  //     bech32PrefixAccPub: "dydxpub",
-  //     bech32PrefixValAddr: "dydxvaloper",
-  //     bech32PrefixValPub: "dydxvaloperpub",
-  //     bech32PrefixConsAddr: "dydxvalcons",
-  //     bech32PrefixConsPub: "dydxvalconspub",
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: "DYDX",
-  //       coinDecimals: 18,
-  //       coinMinimalDenom: "adydx",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "DYDX",
-  //       coinDecimals: 18,
-  //       coinMinimalDenom: "adydx",
-  //     },
-  //   ],
-  //   features: [],
-  // },
-  // {
-  //   rpc: "https://rpc-celestia.keplr.app",
-  //   rest: "https://lcd-celestia.keplr.app",
-  //   chainId: "celestia",
-  //   chainName: "Celestia",
-  //   stakeCurrency: {
-  //     coinDenom: "TIA",
-  //     coinDecimals: 6,
-  //     coinMinimalDenom: "utia",
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("celestia"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //     },
-  //   ],
-  //   features: [],
-  // },
+  {
+    rpc: "https://rpc-dydx.keplr.app",
+    rest: "https://lcd-dydx.keplr.app",
+    chainId: "dydx-mainnet-1",
+    chainName: "dYdX",
+    stakeCurrency: {
+      coinDenom: "DYDX",
+      coinDecimals: 18,
+      coinMinimalDenom: "adydx",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dydx",
+      bech32PrefixAccPub: "dydxpub",
+      bech32PrefixValAddr: "dydxvaloper",
+      bech32PrefixValPub: "dydxvaloperpub",
+      bech32PrefixConsAddr: "dydxvalcons",
+      bech32PrefixConsPub: "dydxvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "DYDX",
+        coinDecimals: 18,
+        coinMinimalDenom: "adydx",
+      },
+    ],
+    features: [],
+  },
+  {
+    rpc: "https://rpc-celestia.keplr.app",
+    rest: "https://lcd-celestia.keplr.app",
+    chainId: "celestia",
+    chainName: "Celestia",
+    stakeCurrency: {
+      coinDenom: "TIA",
+      coinDecimals: 6,
+      coinMinimalDenom: "utia",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("celestia"),
+    currencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "TIA",
+        coinDecimals: 6,
+        coinMinimalDenom: "utia",
+      },
+    ],
+    features: [],
+  },
   // {
   //   rpc: "https://rpc-passage.keplr.app",
   //   rest: "https://lcd-passage.keplr.app",
@@ -2578,50 +2621,50 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: ["cosmwasm"],
   // },
-  // {
-  //   chainId: "dymension_1100-1",
-  //   chainName: "Dymension",
-  //   rpc: "https://rpc-dymension.keplr.app",
-  //   rest: "https://lcd-dymension.keplr.app",
-  //   currencies: [
-  //     {
-  //       coinMinimalDenom: "adym",
-  //       coinDenom: "DYM",
-  //       coinDecimals: 18,
-  //       coinImageUrl:
-  //         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
-  //     },
-  //   ],
-  //   bip44: {
-  //     coinType: 60,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "dym",
-  //     bech32PrefixAccPub: "dympub",
-  //     bech32PrefixValAddr: "dymvaloper",
-  //     bech32PrefixValPub: "dymvaloperpub",
-  //     bech32PrefixConsAddr: "dymvalcons",
-  //     bech32PrefixConsPub: "dymvalconspub",
-  //   },
-  //   stakeCurrency: {
-  //     coinMinimalDenom: "adym",
-  //     coinDenom: "DYM",
-  //     coinDecimals: 18,
-  //   },
-  //   feeCurrencies: [
-  //     {
-  //       coinMinimalDenom: "adym",
-  //       coinDenom: "DYM",
-  //       coinDecimals: 18,
-  //       gasPriceStep: {
-  //         average: 20000000000,
-  //         high: 20000000000,
-  //         low: 20000000000,
-  //       },
-  //     },
-  //   ],
-  //   features: ["eth-address-gen", "eth-key-sign"],
-  // },
+  {
+    chainId: "dymension_1100-1",
+    chainName: "Dymension",
+    rpc: "https://rpc-dymension.keplr.app",
+    rest: "https://lcd-dymension.keplr.app",
+    currencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
+      },
+    ],
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "dym",
+      bech32PrefixAccPub: "dympub",
+      bech32PrefixValAddr: "dymvaloper",
+      bech32PrefixValPub: "dymvaloperpub",
+      bech32PrefixConsAddr: "dymvalcons",
+      bech32PrefixConsPub: "dymvalconspub",
+    },
+    stakeCurrency: {
+      coinMinimalDenom: "adym",
+      coinDenom: "DYM",
+      coinDecimals: 18,
+    },
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "adym",
+        coinDenom: "DYM",
+        coinDecimals: 18,
+        gasPriceStep: {
+          average: 20000000000,
+          high: 20000000000,
+          low: 20000000000,
+        },
+      },
+    ],
+    features: ["eth-address-gen", "eth-key-sign"],
+  },
   // {
   //   chainId: "chihuahua-1",
   //   chainName: "Chihuahua",

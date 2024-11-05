@@ -230,14 +230,11 @@ export const AccountBoxAll: FunctionComponent<{
 
     dataMainnet.map((data) => {
       const chainName = data.chainName;
-      const chainId = data.chainId;
       const chainBalance = Number(data.balance?.toDec().toString());
 
       if (chainBalance > minimumPrice) {
-        const colorKey = chainStore.chainInfosInUI.findIndex(
-          (chain) => chain.chainId === chainId
-        );
-        const color = randomColors[colorKey] || colors["primary"];
+        const color =
+          randomColors[Math.floor(Math.random() * colorList.length)];
 
         tmpChain.push({
           color,

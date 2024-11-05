@@ -27,7 +27,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
 
   const route = useRoute();
 
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
     navigate(SCREENS.RegisterRecoverPhrase);
   };
