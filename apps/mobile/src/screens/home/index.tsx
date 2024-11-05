@@ -15,7 +15,8 @@ import { MainTabHome } from "./components";
 import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
 import { StakeCardAll } from "./components/stake-card-all";
-import { NewThemeModal } from "@src/modals/theme/new-theme";
+import { NewThemeModal } from "@src/modals/theme-modal/theme";
+// import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
