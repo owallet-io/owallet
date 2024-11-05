@@ -1,28 +1,19 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect } from "react";
-import { Linking, View } from "react-native";
+import React, { FunctionComponent, useState } from "react";
 import { KeyRingStatus } from "@owallet/background";
-import { NavigationContainer, DarkTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { useStore } from "./stores";
 import { observer } from "mobx-react-lite";
-import {
-  createStackNavigator,
-  TransitionPresets,
-} from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { PageScrollPositionProvider } from "./providers/page-scroll-position";
 import { FocusedScreenProvider } from "./providers/focused-screen";
-
 import analytics from "@react-native-firebase/analytics";
-import { navigate, navigationRef } from "./router/root";
-import { handleDeepLink } from "./utils/helper";
-
+import { navigate, navigationRef, resetTo } from "./router/root";
 import { SCREENS, SCREENS_OPTIONS } from "./common/constants";
 import { MainTabNavigation } from "./navigations";
 import { useTheme } from "./themes/theme-provider";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
 import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";
-import { ErrorBoundary } from "react-error-boundary";
-import { Text } from "./components/text";
 import { TokenDetailsScreen, TokensScreen } from "./screens/tokens";
 import { BackupMnemonicScreen } from "./screens/register/mnemonic/backup-mnemonic";
 import { RegisterEndScreen } from "./screens/register/end";
@@ -72,10 +63,12 @@ import {
 import useHeaderOptions from "./hooks/use-header";
 import { ManageWalletConnectScreen } from "@screens/setting/screens/manage-walletconnect/ManageWalletConnectScreen";
 import { SelectChainsScreen } from "@screens/setting/screens/manage-chains/select-chains";
-import { OWButton } from "@components/button";
 import OWButtonIcon from "@components/button/ow-button-icon";
-import OWIcon from "@components/ow-icon/ow-icon";
 import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
+import LottieView from "lottie-react-native";
+import { metrics } from "./themes";
+import { Text, View } from "react-native";
+import { ChainIdEnum } from "@owallet/common";
 import { ConnectLedgerScreen } from "@screens/register/connect-ledger";
 import { ConnectHardwareWalletScreen } from "@screens/register/connect-hardware";
 import { FinalizeKeyScreen } from "@screens/register/finalize-key";
@@ -85,8 +78,102 @@ import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
 import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
 
 const Stack = createStackNavigator();
+const FullScreenModal = observer(() => {
+  const { appInitStore, chainStore } = useStore();
+  if (appInitStore.getInitApp.wallet === "osmosis") {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/osmo-animate.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Osmosis);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  } else if (appInitStore.getInitApp.wallet === "injective") {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/inj-animate.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Injective);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  } else {
+    return (
+      <LottieView
+        source={require("@src/assets/animations/splashscreen.json")}
+        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+        resizeMode={"cover"}
+        autoPlay
+        loop={false}
+        onAnimationFinish={() => {
+          chainStore.selectChain(ChainIdEnum.Oraichain);
+          resetTo(SCREENS.STACK.MainTab);
+        }}
+      />
+    );
+  }
+});
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, appInitStore } = useStore();
+  const { keyRingStore, appInitStore, chainStore } = useStore();
+
+  const [isInit, setIsInit] = useState(true);
+  if (isInit) {
+    if (appInitStore.getInitApp.wallet === "osmosis") {
+      return (
+        <LottieView
+          source={require("@src/assets/animations/osmo-animate.json")}
+          style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+          resizeMode={"cover"}
+          autoPlay
+          loop={false}
+          onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Osmosis);
+            setIsInit(false);
+          }}
+        />
+      );
+    } else if (appInitStore.getInitApp.wallet === "injective") {
+      return (
+        <LottieView
+          source={require("@src/assets/animations/inj-animate.json")}
+          style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+          resizeMode={"cover"}
+          autoPlay
+          loop={false}
+          onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Injective);
+            setIsInit(false);
+          }}
+        />
+      );
+    } else {
+      return (
+        <LottieView
+          source={require("@src/assets/animations/splashscreen.json")}
+          style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+          resizeMode={"cover"}
+          autoPlay
+          loop={false}
+          onAnimationFinish={() => {
+            chainStore.selectChain(ChainIdEnum.Oraichain);
+            setIsInit(false);
+          }}
+        />
+      );
+    }
+  }
+
   const { colors } = useTheme();
   const handleScreenOptions = ({ route, navigation }) => {
     const headerOptions = useHeaderOptions(
@@ -120,10 +207,22 @@ export const AppNavigation: FunctionComponent = observer(() => {
               keyRingStore.status !== "unlocked"
                 ? SCREENS.STACK.PincodeUnlock
                 : SCREENS.STACK.MainTab
-              // SCREENS.STACK.PincodeUnlock
             }
             screenOptions={handleScreenOptions}
           >
+            <Stack.Screen
+              name="FullScreenModal"
+              component={FullScreenModal}
+              options={{
+                presentation: "modal", // Set to 'transparentModal' for translucent background
+                headerShown: false, // Hide header for full screen effect
+                cardStyleInterpolator: ({ current, next }) => ({
+                  cardStyle: {
+                    opacity: next ? next.progress : current.progress, // Fade-in and fade-out effect
+                  },
+                }),
+              }}
+            />
             <Stack.Screen
               name={SCREENS.STACK.PincodeUnlock}
               component={PincodeUnlockScreen}

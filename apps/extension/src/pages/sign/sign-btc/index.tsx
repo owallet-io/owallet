@@ -35,6 +35,7 @@ import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 const cx = cn.bind(style);
 
@@ -218,13 +219,11 @@ export const SignBtcPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
-      {/* <div className={cx("setting", openSetting ? "activeSetting" : "", "modal")} ref={settingRef}>
-        <FeeModal onClose={() => setOpenSetting(false)} feeConfig={feeConfig} gasConfig={gasConfig} />
-      </div> */}
       <div
         className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
         ref={dataRef}
@@ -359,7 +358,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                         </Text>
                       </div>
                     </div>
-                    {/* <Text color={colors["neutral-text-body"]}>123</Text> */}
                   </div>
                   <div
                     style={{
@@ -377,7 +375,7 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         await signInteractionStore.reject(
                           signInteractionStore.waitingBitcoinData.id,
                           async (proceedNext) => {
@@ -419,7 +417,6 @@ export const SignBtcPage: FunctionComponent = observer(() => {
                       onClick={async (e) => {
                         e.preventDefault();
 
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         //@ts-ignore
                         await signInteractionStore.approveBitcoinAndWaitEnd(
                           {

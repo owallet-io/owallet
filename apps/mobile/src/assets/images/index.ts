@@ -61,6 +61,8 @@ const images = {
   success: require("./success.png"),
   success_dark: require("./success_dark.png"),
   swap: require("./swap.png"),
+  osmo_swap: require("./osmo-swap.png"),
+  inj_swap: require("./inj-swap.png"),
   thumnail_nft: require("./thumnail_nft.jpg"),
 };
 export default images;

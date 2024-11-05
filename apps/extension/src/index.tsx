@@ -62,7 +62,7 @@ const App: FunctionComponent = () => {
           <LoadingIndicatorProvider>
             <ConfirmProvider>
               {/* <GlobalStyle /> */}
-              {/* {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : <GlobalPopupStyle />} */}
+              {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : null}
               <HashRouter>
                 <LogPageViewWrapper>
                   <Routes />

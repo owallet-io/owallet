@@ -36,6 +36,7 @@ import { ModalFee } from "pages/modals/modal-fee";
 import { DataTab } from "./data-tab";
 import { handleExternalInteractionWithNoProceedNext } from "helpers/side-panel";
 import { useUnmount } from "hooks/use-unmount";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 enum Tab {
   Details,
@@ -221,8 +222,9 @@ export const SignEvmPage: FunctionComponent = observer(() => {
   return (
     <div
       style={{
-        height: "100vh",
+        height: isRunningInSidePanel() ? "100vh" : 580,
         overflowX: "auto",
+        paddingBottom: 160,
       }}
     >
       <ModalFee
@@ -391,7 +393,7 @@ export const SignEvmPage: FunctionComponent = observer(() => {
                       disabled={signInteractionStore.isLoading}
                       onClick={async (e) => {
                         e.preventDefault();
-
+                        history.goBack();
                         if (needSetIsProcessing) {
                           setIsProcessing(true);
                         }

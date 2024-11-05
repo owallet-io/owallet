@@ -385,6 +385,9 @@ export const SignTronModal: FunctionComponent<{
               ? colors["primary-surface-disable"]
               : colors["primary-surface-default"],
           }}
+          textStyleApprove={{
+            color: colors["neutral-text-action-on-dark-bg"],
+          }}
           onPressClose={_onPressReject}
           onPressApprove={_onPressApprove}
           styleClose={{

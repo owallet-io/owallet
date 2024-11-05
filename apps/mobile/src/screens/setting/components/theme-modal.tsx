@@ -7,6 +7,10 @@ import { AppInit } from "@src/stores/app_init";
 import { ModalStore } from "../../../stores/modal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWFlatList from "@src/components/page/ow-flat-list";
+import { ChainStore } from "@owallet/stores";
+import { ChainIdEnum } from "@owallet/common";
+import OWText from "@src/components/text/ow-text";
+import { navigate } from "@src/router/root";
 
 interface ThemeModalProps {
   modalStore: ModalStore;
@@ -26,7 +30,8 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
   modalStore,
   colors,
 }) => {
-  const onChooseTheme = (item) => {
+  const onChooseTheme = async (item) => {
+    console.log(item.label, "item.label");
     if (item.label !== "light" && item.label !== "dark") {
       appInitStore.updateTheme("dark");
       appInitStore.updateWalletTheme(item.label);
@@ -35,6 +40,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
       appInitStore.updateWalletTheme("owallet");
     }
     modalStore.close();
+    navigate("FullScreenModal");
   };
 
   const renderTheme = ({ item }) => {
@@ -56,18 +62,18 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
       case "light":
         icon = (
           <OWIcon
-            name="tdesignsunny"
-            color={colors["neutral-text-title"]}
-            size={18}
+            type={"images"}
+            style={styles.img}
+            source={require("@src/assets/images/theme-light.png")}
           />
         );
         break;
       case "dark":
         icon = (
           <OWIcon
-            name="tdesign_moon"
-            color={colors["neutral-text-title"]}
-            size={18}
+            type={"images"}
+            style={styles.img}
+            source={require("@src/assets/images/theme-dark.png")}
           />
         );
         break;
@@ -75,14 +81,8 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            size={18}
-            style={{
-              borderRadius: 999,
-              tintColor: colors["neutral-text-title"],
-            }}
-            source={{
-              uri: "https://assets.coingecko.com/coins/images/16724/standard/osmo.png",
-            }}
+            style={styles.img}
+            source={require("@src/assets/images/theme-osmo.png")}
           />
         );
         break;
@@ -90,14 +90,8 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         icon = (
           <OWIcon
             type={"images"}
-            size={18}
-            style={{
-              borderRadius: 999,
-              tintColor: colors["neutral-text-title"],
-            }}
-            source={{
-              uri: "https://assets.coingecko.com/coins/images/12882/standard/Secondary_Symbol.png?1696512670",
-            }}
+            style={styles.img}
+            source={require("@src/assets/images/theme-inj.png")}
           />
         );
         break;
@@ -114,56 +108,28 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         }}
         style={{
           width: metrics.screenWidth / 2.3,
-          padding: 16,
-          borderRadius: 16,
-          borderWidth: 3,
-          marginBottom: 12,
-          borderColor: !selected
-            ? colors["neutral-border-default"]
-            : colors["neutral-surface-pressed"],
-          flexDirection: "row",
-          justifyContent: "space-between",
+          height: metrics.screenWidth / 2,
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <View>
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-action3"],
-              borderRadius: 999,
-              padding: 7,
-              width: 32,
-              height: 32,
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 6,
-            }}
-          >
-            {icon}
-          </View>
-          <View>
-            <Text weight="600" size={16} color={colors["neutral-text-title"]}>
-              {capitalizeFirstLetter(item.label)}
-            </Text>
-          </View>
-        </View>
-        <View>
-          {item.isNew ? (
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: colors["highlight-surface-subtle"],
-                padding: 4,
-              }}
-            >
-              <Text
-                weight="600"
-                size={12}
-                color={colors["highlight-text-title"]}
-              >
-                NEW
-              </Text>
-            </View>
+        {icon}
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          {selected ? (
+            <OWIcon
+              name={"tdesigncheck-circle-filled"}
+              color={colors["primary-surface-default"]}
+              size={14}
+            />
           ) : null}
+          <OWText
+            style={{ marginLeft: 4 }}
+            size={16}
+            weight="600"
+            color={colors["neutral-text-title"]}
+          >
+            {capitalizeFirstLetter(item.label)}
+          </OWText>
         </View>
       </TouchableOpacity>
     );
@@ -222,5 +188,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     padding: 24,
     alignItems: "center",
+  },
+  img: {
+    width: metrics.screenWidth / 2.4,
+    height: metrics.screenWidth / 2.3,
   },
 });

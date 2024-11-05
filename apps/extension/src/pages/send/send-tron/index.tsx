@@ -154,8 +154,9 @@ export const SendTronEvmPage: FunctionComponent<{
   };
 
   useEffect(() => {
-    // @ts-ignore
+    //@ts-ignore
     const token = history.location.state?.token;
+
     if (token) {
       const selectedKey = token.token?.currency?.coinMinimalDenom;
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
@@ -163,7 +164,7 @@ export const SendTronEvmPage: FunctionComponent<{
       );
       sendConfigs.amountConfig.setSendCurrency(currency);
     }
-    // @ts-ignore
+    //@ts-ignore
   }, [history.location.state?.token]);
 
   const queries = queriesStore.get(current.chainId);

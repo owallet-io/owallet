@@ -175,6 +175,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             onPress={() => {
               resetTo(SCREENS.STACK.MainTab);
             }}
+            textStyleApprove={{
+              color: colors["neutral-text-action-on-dark-bg"],
+            }}
           />
         </View>
         {/*{!!txExplorer && !isEvmTx ? (*/}

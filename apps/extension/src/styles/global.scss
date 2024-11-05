@@ -60,8 +60,9 @@ hr {
 }
 
 #app {
-  // min-width: $popup-size-width;
-  max-height: 100vh;
+  min-width: $popup-size-width;
+  min-height: $popup-size-height;
+  // min-height: 100vh;
 }
 
 @keyframes spinAround {

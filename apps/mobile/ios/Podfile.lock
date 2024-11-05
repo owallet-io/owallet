@@ -593,9 +593,6 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
-  - react-native-compat (2.15.1):
-    - RCT-Folly (= 2021.07.22.00)
-    - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
   - react-native-netinfo (9.4.1):
@@ -864,7 +861,6 @@ DEPENDENCIES:
   - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-bytebrew-sdk (from `../node_modules/react-native-bytebrew-sdk`)
   - react-native-camera (from `../node_modules/react-native-camera`)
-  - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -1025,8 +1021,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-bytebrew-sdk"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
-  react-native-compat:
-    :path: "../node_modules/@walletconnect/react-native-compat"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
@@ -1191,7 +1185,6 @@ SPEC CHECKSUMS:
   react-native-branch: 2d064d63b23ea395bc3ee187faadfc8937d791fd
   react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
-  react-native-compat: 1990fd875b148f268cf762ce6edf96cb273036bb
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-pager-view: 4be639d9742fb683ea538b69a8855f9239ea72c6

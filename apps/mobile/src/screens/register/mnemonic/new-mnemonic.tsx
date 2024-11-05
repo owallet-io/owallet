@@ -191,6 +191,8 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
             style={{
               borderRadius: 32,
             }}
+            textStyle={{ color: colors["neutral-text-action-on-dark-bg"] }}
+            // label={mode === "add" ? "Import" : " Next"}
             label={"Next"}
             onPress={submit}
           />

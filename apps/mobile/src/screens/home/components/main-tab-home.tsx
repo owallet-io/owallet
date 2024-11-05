@@ -13,7 +13,6 @@ import { ViewToken } from "@owallet/types";
 
 export const MainTabHome: FC<{}> = observer(() => {
   const { colors } = useTheme();
-
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
@@ -39,7 +38,7 @@ export const MainTabHome: FC<{}> = observer(() => {
                 ...styles.titleTab,
                 color:
                   activeTab.id === item.id
-                    ? colors["neutral-border-bold"]
+                    ? colors["neutral-text-title"]
                     : colors["neutral-text-body"],
               }}
               onPress={() => {
