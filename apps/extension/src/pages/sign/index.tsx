@@ -112,7 +112,6 @@ export const SignPage: FunctionComponent = observer(() => {
     signInteractionStore,
     accountStore,
     queriesStore,
-    priceStore,
   } = useStore();
 
   const [signer, setSigner] = useState("");
@@ -335,18 +334,6 @@ export const SignPage: FunctionComponent = observer(() => {
     : signDocJson;
 
   return (
-    // <HeaderLayout
-    //   showChainName={alternativeTitle == null}
-    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
-    //   canChangeChainInfo={false}
-    //   onBackButton={
-    //     interactionInfo.interactionInternal
-    //       ? () => {
-    //           history.goBack();
-    //         }
-    //       : undefined
-    //   }
-    // >
     <div
       style={{
         height: "100vh",
@@ -613,7 +600,6 @@ export const SignPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-      {/* </HeaderLayout> */}
     </div>
   );
 });

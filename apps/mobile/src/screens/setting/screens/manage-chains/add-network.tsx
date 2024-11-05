@@ -113,6 +113,10 @@ export const AddChainScreen: FunctionComponent = observer(() => {
       return;
     } catch (e) {
       console.log(e, "errr");
+      showToast({
+        type: "danger",
+        message: e?.message || JSON.stringify(e),
+      });
     } finally {
       setIsLoading(false);
     }

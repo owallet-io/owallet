@@ -270,9 +270,7 @@ export const Pincode: FunctionComponent<{
           )}
           <View
             style={{
-              paddingLeft: 20,
-              paddingRight: 20,
-              paddingTop: 32,
+              paddingTop: 12,
             }}
           >
             {isNumericPad ? (
@@ -477,7 +475,7 @@ const useStyles = () => {
     },
     buttonItemStyle: {
       backgroundColor: colors["neutral-surface-action3"],
-      width: 110,
+      width: metrics.screenWidth / 3.65,
       height: 80,
       borderRadius: 8,
     },
@@ -485,7 +483,7 @@ const useStyles = () => {
       backgroundColor: colors["neutral-surface-action3"],
       padding: 4,
       borderRadius: 999,
-      marginTop: 32,
+      marginTop: 12,
     },
     switchText: {
       paddingHorizontal: 24,

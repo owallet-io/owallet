@@ -40,6 +40,7 @@ import { isPrivateKey, showToast, trimWordsStr } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface FormData {
   name: string;
@@ -333,184 +334,190 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   // ) :
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
-      {isCreating ? (
-        <View
-          style={{
-            backgroundColor: colors["neutral-surface-bg"],
-            width: metrics.screenWidth,
-            height: metrics.screenHeight,
-            opacity: 0.8,
-            position: "absolute",
-            zIndex: 999,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator size={"large"} />
-        </View>
-      ) : null}
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
-          <OWIcon
-            size={16}
-            color={colors["neutral-icon-on-light"]}
-            name="arrow-left"
-          />
-        </TouchableOpacity>
-        <View style={styles.aic}>
-          <OWText color={colors["neutral-text-title"]} variant="h2" typo="bold">
-            {confirmCode ? "Confirm your" : "Set"} passcode
-          </OWText>
-          <OWText color={colors["neutral-text-body"]} weight={"500"}>
-            Secure your wallet by setting a passcode
-          </OWText>
+      <SafeAreaView>
+        {isCreating ? (
           <View
             style={{
-              paddingLeft: 20,
-              paddingRight: 20,
-              paddingTop: 32,
+              backgroundColor: colors["neutral-surface-bg"],
+              width: metrics.screenWidth,
+              height: metrics.screenHeight,
+              opacity: 0.8,
+              position: "absolute",
+              zIndex: 999,
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
+            <ActivityIndicator size={"large"} />
+          </View>
+        ) : null}
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.goBack} onPress={onGoBack}>
+            <OWIcon
+              size={16}
+              color={colors["neutral-icon-on-light"]}
+              name="arrow-left"
+            />
+          </TouchableOpacity>
+          <View style={styles.aic}>
+            <OWText
+              color={colors["neutral-text-title"]}
+              variant="h2"
+              typo="bold"
+            >
+              {confirmCode ? "Confirm your" : "Set"} passcode
+            </OWText>
+            <OWText color={colors["neutral-text-body"]} weight={"500"}>
+              Secure your wallet by setting a passcode
+            </OWText>
+            <View
+              style={{
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingTop: 12,
+              }}
+            >
+              {isNumericPad ? (
+                <SmoothPinCodeInput
+                  ref={pinRef}
+                  keyboardType={"email-address"}
+                  value={code}
+                  codeLength={6}
+                  cellStyle={{
+                    borderWidth: 0,
+                  }}
+                  cellStyleFocused={{
+                    borderColor: colors["neutral-surface-action"],
+                  }}
+                  placeholder={
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 48,
+                        backgroundColor: colors["neutral-surface-action"],
+                      }}
+                    />
+                  }
+                  mask={
+                    <View
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 48,
+                        opacity: 0.7,
+                        backgroundColor: colors["highlight-surface-active"],
+                      }}
+                    />
+                  }
+                  maskDelay={1000}
+                  password={true}
+                  //   onFulfill={}
+                  onBackspace={(code) => console.log(code)}
+                />
+              ) : (
+                <View
+                  style={{
+                    width: metrics.screenWidth,
+                    paddingHorizontal: 20,
+                  }}
+                >
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: "Password is required",
+                      validate: validatePassword,
+                    }}
+                    render={renderPassword}
+                    name="password"
+                    defaultValue=""
+                  />
+                  <OWText
+                    size={13}
+                    color={colors["neutral-text-body"]}
+                    weight={"400"}
+                  >
+                    *The password must be at least 6 characters
+                  </OWText>
+                </View>
+              )}
+            </View>
+
+            <View style={[styles.rc, styles.switch]}>
+              <TouchableOpacity
+                style={[
+                  styles.switchText,
+                  isNumericPad ? styles.switchTextActive : { marginRight: 9 },
+                ]}
+                onPress={() => onSwitchPad("numeric")}
+              >
+                <OWText
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  weight="500"
+                  size={16}
+                >
+                  123
+                </OWText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.switchText,
+                  !isNumericPad ? styles.switchTextActive : { marginLeft: 9 },
+                ]}
+                onPress={() => onSwitchPad("alphabet")}
+              >
+                <OWText weight="500" size={16}>
+                  Aa
+                </OWText>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.aic}>
             {isNumericPad ? (
-              <SmoothPinCodeInput
-                ref={pinRef}
-                keyboardType={"email-address"}
-                value={code}
-                codeLength={6}
-                cellStyle={{
-                  borderWidth: 0,
+              <NumericPad
+                ref={numpadRef}
+                numLength={6}
+                buttonSize={60}
+                activeOpacity={0.1}
+                onValueChange={(value) => {
+                  setCode(value);
                 }}
-                cellStyleFocused={{
-                  borderColor: colors["neutral-surface-action"],
-                }}
-                placeholder={
-                  <View
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 48,
-                      backgroundColor: colors["neutral-surface-action"],
-                    }}
+                allowDecimal={false}
+                // style={{ backgroundColor: 'black', paddingVertical: 12 }}
+                // buttonAreaStyle={{ backgroundColor: 'gray' }}
+                buttonItemStyle={styles.buttonItemStyle}
+                buttonTextStyle={styles.buttonTextStyle}
+                //@ts-ignore
+                rightBottomButton={
+                  <OWIcon
+                    size={30}
+                    color={colors["neutral-text-title"]}
+                    name="backspace-outline"
                   />
                 }
-                mask={
-                  <View
-                    style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 48,
-                      opacity: 0.7,
-                      backgroundColor: colors["highlight-surface-active"],
-                    }}
-                  />
-                }
-                maskDelay={1000}
-                password={true}
-                //   onFulfill={}
-                onBackspace={(code) => console.log(code)}
+                onRightBottomButtonPress={() => {
+                  numpadRef.current.clear();
+                }}
               />
             ) : (
-              <View
-                style={{
-                  width: metrics.screenWidth,
-                  paddingHorizontal: 20,
-                }}
-              >
-                <Controller
-                  control={control}
-                  rules={{
-                    required: "Password is required",
-                    validate: validatePassword,
+              <View style={styles.signIn}>
+                <OWButton
+                  style={{
+                    borderRadius: 32,
                   }}
-                  render={renderPassword}
-                  name="password"
-                  defaultValue=""
+                  label="Continue"
+                  disabled={isLoading || !password}
+                  onPress={() => {
+                    handleContinue();
+                  }}
+                  loading={isLoading || isBiometricLoading}
                 />
-                <OWText
-                  size={13}
-                  color={colors["neutral-text-body"]}
-                  weight={"400"}
-                >
-                  *The password must be at least 6 characters
-                </OWText>
               </View>
             )}
           </View>
-
-          <View style={[styles.rc, styles.switch]}>
-            <TouchableOpacity
-              style={[
-                styles.switchText,
-                isNumericPad ? styles.switchTextActive : { marginRight: 9 },
-              ]}
-              onPress={() => onSwitchPad("numeric")}
-            >
-              <OWText
-                color={colors["neutral-text-action-on-light-bg"]}
-                weight="500"
-                size={16}
-              >
-                123
-              </OWText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.switchText,
-                !isNumericPad ? styles.switchTextActive : { marginLeft: 9 },
-              ]}
-              onPress={() => onSwitchPad("alphabet")}
-            >
-              <OWText weight="500" size={16}>
-                Aa
-              </OWText>
-            </TouchableOpacity>
-          </View>
         </View>
-
-        <View style={styles.aic}>
-          {isNumericPad ? (
-            <NumericPad
-              ref={numpadRef}
-              numLength={6}
-              buttonSize={60}
-              activeOpacity={0.1}
-              onValueChange={(value) => {
-                setCode(value);
-              }}
-              allowDecimal={false}
-              // style={{ backgroundColor: 'black', paddingVertical: 12 }}
-              // buttonAreaStyle={{ backgroundColor: 'gray' }}
-              buttonItemStyle={styles.buttonItemStyle}
-              buttonTextStyle={styles.buttonTextStyle}
-              //@ts-ignore
-              rightBottomButton={
-                <OWIcon
-                  size={30}
-                  color={colors["neutral-text-title"]}
-                  name="backspace-outline"
-                />
-              }
-              onRightBottomButtonPress={() => {
-                numpadRef.current.clear();
-              }}
-            />
-          ) : (
-            <View style={styles.signIn}>
-              <OWButton
-                style={{
-                  borderRadius: 32,
-                }}
-                label="Continue"
-                disabled={isLoading || !password}
-                onPress={() => {
-                  handleContinue();
-                }}
-                loading={isLoading || isBiometricLoading}
-              />
-            </View>
-          )}
-        </View>
-      </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 });
@@ -542,7 +549,6 @@ const useStyles = () => {
     },
 
     container: {
-      paddingTop: metrics.screenHeight / 19,
       justifyContent: "space-between",
       height: "100%",
       backgroundColor: colors["neutral-surface-card"],
@@ -569,7 +575,7 @@ const useStyles = () => {
     },
     buttonItemStyle: {
       backgroundColor: colors["neutral-surface-action3"],
-      width: 110,
+      width: metrics.screenWidth / 3.65,
       height: 80,
       borderRadius: 8,
     },

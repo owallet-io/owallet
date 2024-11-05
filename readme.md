@@ -75,18 +75,18 @@ yarn build:libs
 4. Build provider
 
 ```shell
-cd packages/mobile && yarn build:provider
+cd apps/mobile && yarn build:provider
 ```
 
 5. Install Pod for iOS
 
 ```shell
-cd packages/mobile/ios && pod install
+cd apps/mobile/ios && pod install
 ```
 
 6. Run it
 
-Get into packages/mobile and run
+Get into apps/mobile and run
 - iOS
 ```shell
 yarn ios

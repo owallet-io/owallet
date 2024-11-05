@@ -193,19 +193,23 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   }
 
   @flow
-  *addChain(chainInfo) {
+  *addChain(chainInfo: ChainInfo) {
+    if (!chainInfo) throw Error("Chain Info must not be empty.");
     const msg = new GetChainInfosMsg();
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
-    const chainInfos = yield this.requester.sendMessage(
-      BACKGROUND_PORT,
-      msgAddchain
+    const chainExisted = result.chainInfos.find(
+      (item) => item.chainId === chainInfo.chainId
     );
-    console.log(chainInfos, "chainInfos");
+    if (chainExisted)
+      throw Error("The chain already exists and cannot be added.");
+    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
+    yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
+
     yield this.setChainInfos([...result.chainInfos, chainInfo]);
   }
+
   @flow
   *tryUpdateChain(chainId: string) {
     const msg = new TryUpdateChainMsg(chainId);

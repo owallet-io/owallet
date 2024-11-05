@@ -82,14 +82,14 @@ end
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :release do 
-    create_keychain(
-      name: ENV["KEYCHAIN_NAME"],
-      password: ENV["KEYCHAIN_PASSWORD"],
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600,
-      lock_when_sleeps: false
-    )
+    # create_keychain(
+    #   name: ENV["KEYCHAIN_NAME"],
+    #   password: ENV["KEYCHAIN_PASSWORD"],
+    #   default_keychain: true,
+    #   unlock: true,
+    #   timeout: 3600,
+    #   lock_when_sleeps: false
+    # )
     if ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
       match(
         storage_mode:'git',
