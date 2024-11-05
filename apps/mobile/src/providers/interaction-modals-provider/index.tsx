@@ -63,6 +63,9 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
   const mergedPermissionData = permissionStore.waitingPermissionMergedData;
   const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
 
+  console.log('mergedPermissionData', mergedPermissionData);
+  console.log('mergedDataForEVM', mergedDataForEVM);
+
   // useEffect(() => {
   //   for (const data of permissionStore.waitingDatas) {
   //     // Currently, there is no modal to permit the permission of external apps.

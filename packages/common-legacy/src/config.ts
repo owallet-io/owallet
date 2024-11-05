@@ -1741,10 +1741,10 @@ export const EmbedChainInfos: ChainInfo[] = [
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = [
-  'https://app.osmosis.zone',
-  'https://app.oraidex.io',
-  'https://orderbook.oraidex.io',
-  'https://futures.oraidex.io'
+  'https://app.osmosis.zone'
+  // 'https://app.oraidex.io',
+  // 'https://orderbook.oraidex.io',
+  // 'https://futures.oraidex.io'
   // "http://10.10.20.75:3000/",
   // "https://pancakeswap.finance/",
 ];

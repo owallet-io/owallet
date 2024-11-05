@@ -2948,13 +2948,13 @@ export const ChainIdentifierToTxExplorerMap: Record<string, { name: string; txUr
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = [
-  'https://wallet.keplr.app',
-  'https://validator.keplr.app',
-  'https://chains.keplr.app',
-  'https://app.osmosis.zone',
-  'https://app.oraidex.io',
-  'https://orderbook.oraidex.io',
-  'https://futures.oraidex.io'
+  // 'https://wallet.keplr.app',
+  // 'https://validator.keplr.app',
+  // 'https://chains.keplr.app',
+  // 'https://app.osmosis.zone',
+  // 'https://app.oraidex.io',
+  // 'https://orderbook.oraidex.io',
+  // 'https://futures.oraidex.io'
 ];
 
 export const CommunityChainInfoRepo = {

@@ -296,6 +296,8 @@ export class KeyRingEthereumService {
     }
 
     const currentChainId = this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
+    console.log('currentChainId', origin, currentChainId);
+
     if (currentChainId == null) {
       if (method === 'owallet_initProviderState') {
         return {
@@ -660,6 +662,8 @@ export class KeyRingEthereumService {
           return result;
         }
         case 'wallet_switchEthereumChain': {
+          console.log('params', params);
+
           const param = (Array.isArray(params) && (params?.[0] as { chainId: string })) || undefined;
           if (!param?.chainId) {
             throw new Error('Invalid parameters: must provide a chain id.');

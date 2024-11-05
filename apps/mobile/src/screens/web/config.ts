@@ -4,7 +4,7 @@ import { ImageSourcePropType } from 'react-native';
 //   process.env.INJECTED_PROVIDER_URL ||
 //   "https://static.orai.io/injected-provider-merge.bundle.js";
 export const InjectedProviderUrl =
-  'https://raw.githubusercontent.com/owallet-io/owallet-provider/refs/heads/test/build-bundle/injected-provider-keyring.bundle.js?token=GHSAT0AAAAAACM3LPFVRC2IBTFC2ZD36TESZY3MSOQ';
+  'https://raw.githubusercontent.com/owallet-io/owallet-provider/refs/heads/test/build-bundle/injected-provider-keyring.bundle.js?token=GHSAT0AAAAAACM3LPFULTYW5IFRVIEK725EZZJ4OEQ';
 
 export type DAppInfo = {
   name: string;

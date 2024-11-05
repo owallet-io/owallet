@@ -1,12 +1,7 @@
-import {
-  Message,
-  MessageRequester,
-  OWalletError,
-  Result,
-} from "@owallet/router";
-import { JSONUint8Array } from "@owallet/router";
-import EventEmitter from "eventemitter3";
-import { RNRouterBackground, RNRouterUI } from "./rn-router";
+import { Message, MessageRequester, OWalletError, Result } from '@owallet/router';
+import { JSONUint8Array } from '@owallet/router';
+import EventEmitter from 'eventemitter3';
+import { RNRouterBackground, RNRouterUI } from './rn-router';
 
 export class RNMessageRequesterBase implements MessageRequester {
   constructor(
@@ -18,16 +13,13 @@ export class RNMessageRequesterBase implements MessageRequester {
       // By default, `getSender` returns the informations as internal sender.
       // If the sender is not internal, you should provider your own sender.
       return {
-        url: "react-native://internal",
-        origin: "react-native://internal",
+        url: 'react-native://internal',
+        origin: 'react-native://internal'
       };
     }
   ) {}
 
-  async sendMessage<M extends Message<unknown>>(
-    port: string,
-    msg: M
-  ): Promise<M extends Message<infer R> ? R : never> {
+  async sendMessage<M extends Message<unknown>>(port: string, msg: M): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
 
     const sender = this.getSender();
@@ -35,44 +27,40 @@ export class RNMessageRequesterBase implements MessageRequester {
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    msg["origin"] = sender.origin;
+    msg['origin'] = sender.origin;
 
-    if (this.eventEmitter.listenerCount("message") === 0) {
-      throw new Error("There is no router to send" + JSON.stringify(msg));
+    if (this.eventEmitter.listenerCount('message') === 0) {
+      throw new Error('There is no router to send' + JSON.stringify(msg));
     }
-    console.log(msg.type(), "start type");
+    console.log(msg.type(), 'start type');
     const result: Result = JSONUint8Array.unwrap(
-      await new Promise((resolve) => {
-        this.eventEmitter.emit("message", {
+      await new Promise(resolve => {
+        this.eventEmitter.emit('message', {
           message: {
             port,
             type: msg.type(),
-            msg: JSONUint8Array.wrap(msg),
+            msg: JSONUint8Array.wrap(msg)
           },
           sender: {
             // WARNING: Currently, handle the message only as internal.
-            id: "react-native",
+            id: 'react-native',
             url: sender.url,
-            resolver: resolve,
-          },
+            resolver: resolve
+          }
         });
       })
     );
-    console.log(msg.type(), result, "end type");
+    console.log(msg.type(), result, 'end type');
     if (!result) {
-      throw new Error("Null result");
+      throw new Error('Null result');
     }
 
     if (result.error) {
-      if (typeof result.error === "string") {
+      if (typeof result.error === 'string') {
         throw new Error(`${msg?.type()}: ${result.error}`);
       } else {
         console.error(msg?.type());
-        throw new OWalletError(
-          result.error?.module,
-          result.error?.code,
-          result.error?.message
-        );
+        throw new OWalletError(result.error?.module, result.error?.code, result.error?.message);
       }
     }
 
