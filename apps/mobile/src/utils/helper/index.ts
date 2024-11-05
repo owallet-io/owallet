@@ -814,7 +814,7 @@ export const sortChainsByPrice = (chains) => {
   if (!chains?.length) return [];
   return chains.sort(
     (a, b) =>
-      Number(b.balance.toDec().toString()) -
-      Number(a.balance.toDec().toString())
+      Number(b.balance?.toDec().toString()) -
+      Number(a.balance?.toDec().toString())
   );
 };

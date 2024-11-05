@@ -238,8 +238,9 @@ export class RootStore {
       // CosmosGovernanceQueries.use(),
       // CosmosGovernanceQueriesV1.use(),
       EthereumQueries.use({
-        coingeckoAPIBaseURL: "",
-        coingeckoAPIURI: "",
+        coingeckoAPIBaseURL: "https://satellite.keplr.app",
+        coingeckoAPIURI:
+          "/coingecko-token-info/coins/{coingeckoChainId}/contract/{contractAddress}",
       }),
       OasisQueries.use(),
       // TrxQueries.use(),

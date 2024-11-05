@@ -163,15 +163,8 @@ export const connectAndSignBtcWithLedger = async (
         if (!hex) {
           throw Error(`Missing 'txHex' for UTXO (txHash ${txid})`);
         }
-        // const utxoTx = Bitcoin.Transaction.fromHex(txid);
-        console.log(hex, "hex");
         const utxoTx = bitcoin.Transaction.fromHex(hex);
         const splittedTx = btcApp.splitTransaction(hex, utxoTx.hasWitnesses());
-        // const splittedTx = btcApp.splitTransaction(
-        //   hex,
-        //   keyDerivation === "84" /* no segwit support */
-        // );
-        console.log(splittedTx, "splittedTx");
         return [splittedTx, vout, null, null];
       });
       console.log(inputsData, "inputsData");

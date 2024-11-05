@@ -226,8 +226,7 @@ export const AccountBoxAll: FunctionComponent<{
           c.chainName.toLowerCase()
       );
 
-    // const dataMainnet = sortChainsByPrice(chainsInfoWithBalance);
-    const dataMainnet = [];
+    const dataMainnet = sortChainsByPrice(chainsInfoWithBalance || []);
 
     dataMainnet.map((data) => {
       const chainName = data.chainName;
@@ -235,10 +234,10 @@ export const AccountBoxAll: FunctionComponent<{
       const chainBalance = Number(data.balance?.toDec().toString());
 
       if (chainBalance > minimumPrice) {
-        const colorKey = Object.values(ChainIdEnum).indexOf(
-          chainId as ChainIdEnum
+        const colorKey = chainStore.chainInfosInUI.findIndex(
+          (chain) => chain.chainId === chainId
         );
-        const color = randomColors[colorKey];
+        const color = randomColors[colorKey] || colors["primary"];
 
         tmpChain.push({
           color,
@@ -259,6 +258,7 @@ export const AccountBoxAll: FunctionComponent<{
     });
     setChainListWithBalance(tmpChain);
     setSeries([...tmpSeries, otherValue]);
+    console.log(tmpSliceColor, "tmpSliceColor");
     setSliceColor([...tmpSliceColor, "#494949"]);
   }, [totalPriceBalance, account.addressDisplay]);
 
