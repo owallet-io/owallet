@@ -14,6 +14,7 @@ export const unknownToken: Currency = {
   coinMinimalDenom: "unknown",
   coinDenom: "UNKNOWN",
 };
+export const SkipBaseUrl = "https://go.skip.build";
 export const CoinGeckoGetPrice =
   process.env["KEPLR_EXT_COINGECKO_GETPRICE"] || "/simple/price";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
