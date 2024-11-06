@@ -65,6 +65,36 @@ export class GetKeyRingStatusMsg extends Message<{
   }
 }
 
+export class SimulateSignTronMsg extends Message<{
+  signedTxn: string;
+}> {
+  public static type() {
+    return "simulate-sign-tron";
+  }
+
+  constructor(
+    public readonly transaction: any,
+    public readonly vaultId: string,
+    public readonly coinType: number
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    // if (!this.msg) {
+    //   throw new OWalletError("keyring", 201, "msg sign tron not set");
+    // }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return SimulateSignTronMsg.type();
+  }
+}
+
 export class GetKeyRingStatusOnlyMsg extends Message<{
   status: KeyRingStatus;
 }> {

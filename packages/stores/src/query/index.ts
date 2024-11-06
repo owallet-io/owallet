@@ -1,7 +1,7 @@
 export * from "./queries";
 export * from "./chain-query";
 export * from "./balances";
-
+export * from "./evm-contract";
 export * from "./agoric";
 export * from "./cosmos";
 export * from "./cosmwasm";

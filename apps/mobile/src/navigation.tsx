@@ -76,6 +76,7 @@ import { EnableChainsScreen } from "@screens/register/enable-chains";
 import { WelcomeScreen } from "@screens/register/welcome";
 import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
 import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
+import { SendEvmNewScreen } from "./screens/send/send-evm-new";
 
 const Stack = createStackNavigator();
 const FullScreenModal = observer(() => {
@@ -425,7 +426,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             {/*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*/}
             <Stack.Screen name={SCREENS.Send} component={SendScreen} />
 
-            {/*  <Stack.Screen name={SCREENS.SendEvm} component={SendEvmScreen} />*/}
+            <Stack.Screen name={SCREENS.SendEvm} component={SendEvmNewScreen} />
             {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
             <Stack.Screen
               name={SCREENS.Transactions}

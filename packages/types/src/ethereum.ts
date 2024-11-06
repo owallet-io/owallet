@@ -1,9 +1,8 @@
-export enum EthSignType {
+export declare enum EthSignType {
   MESSAGE = "message",
   TRANSACTION = "transaction",
   EIP712 = "eip-712",
 }
-
 export interface EthTxLog {
   blockNumber: number;
   blockHash: string;
@@ -15,12 +14,10 @@ export interface EthTxLog {
   transactionHash: string;
   logIndex: number;
 }
-
-export enum EthTxStatus {
+export declare enum EthTxStatus {
   Success = "0x1",
   Failure = "0x0",
 }
-
 export interface EthTxReceipt {
   to: string;
   from: string;
@@ -40,13 +37,11 @@ export interface EthTxReceipt {
   type: number;
   status?: EthTxStatus;
 }
-
 export interface EVMInfo {
   chainId: number;
   rpc: string;
   websocket?: string;
 }
-
 export interface EthereumSignResponse {
   signingData: Uint8Array;
   signature: Uint8Array;

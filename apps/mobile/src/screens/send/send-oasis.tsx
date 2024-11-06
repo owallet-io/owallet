@@ -67,6 +67,9 @@ export const SendOasisScreen: FunctionComponent<{
     const balance = queryBalances
       .getQueryBech32Address(sender)
       .getBalance(currency);
+
+    console.log("balance", balance);
+
     const intl = useIntl();
     const sendConfigs = useSendOasisTxConfig(
       chainStore,
@@ -198,7 +201,7 @@ export const SendOasisScreen: FunctionComponent<{
       <PageWithBottom
         bottomGroup={
           <OWButton
-            label="Send"
+            label="Send Oasis"
             disabled={loadingSend || txConfigsValidate.interactionBlocked}
             loading={loadingSend}
             onPress={submitSend}

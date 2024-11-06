@@ -1,404 +1,191 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { registerModal } from "../base";
-
-import { Text, View, KeyboardAvoidingView, Platform } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { useStyle } from "../../styles";
-import { useStore } from "../../stores";
-
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { useUnmount } from "../../hooks";
-import { BottomSheetProps } from "@gorhom/bottom-sheet";
-import { navigationRef } from "../../router/root";
-import {
-  ChainIdEnum,
-  DenomHelper,
-  ExtensionKVStore,
-  formatAddress,
-  TRIGGER_TYPE,
-} from "@owallet/common";
-import { AsyncKVStore } from "@src/common";
+import { useStore } from "../../stores";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useStyle } from "../../styles";
 import {
   useAmountConfig,
-  useFeeTronConfig,
-  useGetFeeTron,
-  useRecipientConfig,
+  useFeeConfig,
+  useGasConfig,
+  useSenderConfig,
 } from "@owallet/hooks";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@owallet/unit";
-import OWText from "@src/components/text/ow-text";
-import { AmountCard, WasmExecutionMsgView } from "@src/modals/sign/components";
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { Bech32Address } from "@owallet/cosmos";
+import { Column, Columns } from "../../components/column";
+import { Text } from "react-native";
+import { Gutter } from "../../components/gutter";
+import { Box } from "../../components/box";
+import { XAxis } from "../../components/axis";
+import { CloseIcon } from "../../components/icon";
+import {
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
+import { FeeSummary } from "./components/fee-summary";
+// import {defaultRegistry} from './components/eth-tx/registry';
+import { CoinPretty, Dec } from "@owallet/unit";
+import { Buffer } from "buffer/";
+import { registerModal } from "@src/modals/base";
+import { defaultRegistry } from "@src/modals/sign/cosmos/message-registry";
+import { OWButton } from "@components/button";
+import OWText from "@components/text/ow-text";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { SignTronInteractionStore } from "@owallet/stores-core";
+import { TransactionType } from "@owallet/types";
+import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
 
-import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+export const SignTronModal = registerModal(
+  observer<{
+    interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
+  }>(({ interactionData }) => {
+    const { chainStore, signTronInteractionStore, queriesStore } = useStore();
 
-import FastImage from "react-native-fast-image";
-import { useTheme } from "@src/themes/theme-provider";
-import { FeeInSign } from "@src/modals/sign/fee";
-import ItemDetail from "@src/screens/transactions/components/item-details";
-import { metrics } from "@src/themes";
-import { formatContractAddress, shortenAddress } from "@src/utils/helper";
-
-export const SignTronModal: FunctionComponent<{
-  isOpen: boolean;
-  close: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
-}> = registerModal(
-  observer(() => {
-    const {
-      chainStore,
-      keyRingStore,
-      signInteractionStore,
-      accountStore,
-      queriesStore,
-      priceStore,
-    } = useStore();
-    const accountInfo = accountStore.getAccount(ChainIdEnum.TRON);
-    const addressTronBase58 = accountInfo.getAddressDisplay(
-      keyRingStore.keyRingLedgerAddresses
-    );
-    const [dataSign, setDataSign] = useState(null);
-    const [txInfo, setTxInfo] = useState();
-    const { waitingTronData } = signInteractionStore;
-
-    const getDataTx = async () => {
-      if (!waitingTronData) return;
-      const kvStore = new AsyncKVStore("keyring");
-      const triggerTxId = await kvStore.get(
-        `${TRIGGER_TYPE}:${waitingTronData.data.txID}`
-      );
-
-      setTxInfo(triggerTxId as any);
-      kvStore.set(`${TRIGGER_TYPE}:${waitingTronData.data.txID}`, null);
-    };
-
-    useUnmount(() => {
-      signInteractionStore.rejectAll();
-    });
-
+    const intl = useIntl();
     const style = useStyle();
 
-    const _onPressReject = () => {
+    const [isViewData, setIsViewData] = useState(false);
+
+    const chainId = interactionData.data.chainId;
+    // const chainInfo = chainStore.getChain(chainId);
+    // const signer = interactionData.data.signer;
+
+    // const senderConfig = useSenderConfig(chainStore, chainId, signer);
+    // const gasConfig = useGasConfig(chainStore, chainId);
+    // const amountConfig = useAmountConfig(chainStore, queriesStore, chainId, senderConfig);
+    // const feeConfig = useFeeConfig(chainStore, queriesStore, chainId, senderConfig, amountConfig, gasConfig);
+
+    // useEffect(() => {
+    //   const data = interactionData.data;
+    // }, [chainInfo.currencies, feeConfig, interactionData.data]);
+
+    // const signingDataText = useMemo(() => {
+    //   console.log('interactionData.data', interactionData.data);
+    // }, [interactionData.data]);
+
+    const approve = async () => {
       try {
-        signInteractionStore.rejectAll();
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    const queries = queriesStore.get(ChainIdEnum.TRON);
-
-    const amountConfig = useAmountConfig(
-      chainStore,
-      ChainIdEnum.TRON,
-      accountInfo.evmosHexAddress,
-      queries.queryBalances
-    );
-    const recipientConfig = useRecipientConfig(chainStore, ChainIdEnum.TRON);
-    const feeConfig = useFeeTronConfig(
-      chainStore,
-      ChainIdEnum.TRON,
-      accountInfo.evmosHexAddress,
-      queries.queryBalances,
-      queries
-    );
-
-    useEffect(() => {
-      if (txInfo && amountConfig) {
-        const toToken = txInfo?.parameters.find(
-          (item, index) => item.type === "address"
-        );
-
-        if (toToken?.value) {
-          const infoToken = chainStore
-            .getChain(ChainIdEnum.TRON)
-            .currencies.find((item, index) => {
-              const denom = new DenomHelper(item.coinMinimalDenom);
-              if (
-                denom?.contractAddress?.toLowerCase() ===
-                toToken?.value?.toLowerCase()
-              )
-                return true;
-              return false;
-            });
-
-          if (infoToken) amountConfig.setSendCurrency(infoToken);
-          return;
-        }
-      }
-    }, [txInfo, amountConfig]);
-
-    useEffect(() => {
-      if (dataSign) return;
-
-      if (waitingTronData) {
-        const dataTron = waitingTronData?.data;
-        getDataTx();
-        setDataSign(dataTron);
-        if (dataTron?.recipient) {
-          recipientConfig.setRawRecipient(dataTron?.recipient);
-        }
-        if (dataTron?.amount) {
-          amountConfig.setAmount(dataTron?.amount);
-        }
-        if (dataTron?.currency) {
-          amountConfig.setSendCurrency(dataTron?.currency);
-        }
-      }
-    }, [waitingTronData]);
-    const error = feeConfig.getError();
-    const txStateIsValid = error == null;
-
-    const { feeTrx, estimateEnergy, estimateBandwidth, feeLimit } =
-      useGetFeeTron(
-        addressTronBase58,
-        amountConfig,
-        recipientConfig,
-        queries.tron,
-        chainStore.getChain(ChainIdEnum.TRON),
-        keyRingStore,
-        txInfo
-      );
-    useEffect(() => {
-      if (feeTrx) {
-        feeConfig.setManualFee(feeTrx);
-      }
-      return () => {
-        feeConfig.setManualFee(null);
-      };
-    }, [feeTrx]);
-    const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
-    const _onPressApprove = async () => {
-      try {
-        //@ts-ignore
-        if (txInfo?.functionSelector) {
-          await signInteractionStore.approveTronAndWaitEnd({
-            ...waitingTronData?.data,
-          });
-        } else {
-          //@ts-ignore
-          await signInteractionStore.approveTronAndWaitEnd({
-            ...waitingTronData?.data,
-            amount: amountConfig?.getAmountPrimitive()?.amount,
-            feeLimit: feeLimitData,
-          });
-        }
-      } catch (error) {
-        signInteractionStore.rejectAll();
-        console.log("error approveTronAndWaitEnd", error);
-      }
-    };
-    //@ts-ignore
-    const txAmountInfo = txInfo?.parameters?.find(
-      (item, index) => item.type === "uint256"
-    );
-    const renderAmount = () => {
-      if (
-        txInfo?.functionSelector &&
-        !txInfo?.functionSelector?.startsWith("sendToCosmos")
-      )
-        return;
-      if (
-        !amountConfig.sendCurrency ||
-        !amountConfig.getAmountPrimitive().amount
-      )
-        return null;
-
-      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
-        return new CoinPretty(
-          amountConfig.sendCurrency,
-          new Dec(txAmountInfo?.value)
-        )
-          ?.maxDecimals(9)
-          ?.trim(true)
-          ?.toString();
-      } else {
-        return new CoinPretty(
-          amountConfig.sendCurrency,
-          new Dec(amountConfig.getAmountPrimitive().amount)
-        )
-          ?.maxDecimals(9)
-          ?.trim(true)
-          ?.toString();
-      }
-    };
-    const checkPrice = () => {
-      if (
-        !amountConfig.sendCurrency ||
-        !amountConfig.getAmountPrimitive().amount
-      )
-        return;
-      let coin = new CoinPretty(
-        amountConfig.sendCurrency,
-        new Dec(amountConfig.getAmountPrimitive().amount)
-      );
-      if (txAmountInfo && txAmountInfo?.value && amountConfig?.sendCurrency) {
-        coin = new CoinPretty(
-          amountConfig.sendCurrency,
-          new Dec(txAmountInfo?.value)
-        );
-      }
-      const totalPrice = priceStore.calculatePrice(coin);
-      return totalPrice?.toString();
-    };
-    const checkImageCoin = () => {
-      if (!amountConfig.sendCurrency) return;
-      if (amountConfig.sendCurrency?.coinImageUrl)
-        return (
-          <View
-            style={{
-              alignSelf: "center",
-              paddingVertical: 8,
-              backgroundColor: colors["neutral-icon-on-dark"],
-            }}
-          >
-            <FastImage
-              style={{
-                height: 30,
-                width: 30,
-                borderRadius: 999,
-              }}
-              source={{
-                uri: amountConfig.sendCurrency?.coinImageUrl,
-              }}
-            />
-          </View>
-        );
-      return null;
-    };
-    const { colors } = useTheme();
-    return (
-      <WrapViewModal
-        style={{
-          backgroundColor: colors["neutral-surface-card"],
-          maxHeight: metrics.screenHeight - 250,
-        }}
-        containerStyle={{
-          paddingBottom: 20,
-        }}
-        disabledScrollView={false}
-      >
-        <View style={{ paddingTop: 16 }}>
-          {/*<View>{renderedMsgs}</View>*/}
-          <OWText
-            size={16}
-            weight={"700"}
-            style={{
-              textAlign: "center",
-              paddingBottom: 20,
-            }}
-          >
-            {`Confirmation`.toUpperCase()}
-          </OWText>
-
-          {renderAmount() ? (
-            <AmountCard
-              imageCoin={checkImageCoin()}
-              amountStr={renderAmount()}
-              totalPrice={checkPrice()}
-              msg={txInfo?.functionSelector ? waitingTronData : null}
-            />
-          ) : (
-            dataSign && (
-              <ScrollView
-                style={{
-                  backgroundColor: colors["neutral-surface-bg"],
-                  padding: 16,
-                  borderRadius: 24,
-                  maxHeight: 300,
-                }}
-              >
-                <WasmExecutionMsgView msg={dataSign} />
-              </ScrollView>
+        await signTronInteractionStore.approveWithProceedNext(
+          interactionData.id,
+          Buffer.from(
+            Buffer.from(JSON.stringify(interactionData.data.data)).toString(
+              "hex"
             )
-          )}
+          ),
+          undefined,
+          async () => {
+            // noop
+          },
+          {
+            preDelay: 200,
+          }
+        );
+      } catch (e) {
+        console.log("error on sign Tron", e);
+      }
+    };
 
-          <View
-            style={{
-              backgroundColor: colors["neutral-surface-card"],
-              paddingHorizontal: 16,
-              paddingTop: 16,
-              borderRadius: 24,
-              marginBottom: 24,
-              marginTop: 2,
-            }}
+    return (
+      <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+        <OWText size={16} weight={"700"}>
+          Sign Tron
+        </OWText>
+        <Gutter size={24} />
+
+        <Columns sum={1} alignY="center">
+          <Text style={style.flatten(["h5", "color-label-default"])}>
+            <FormattedMessage id="page.sign.ethereum.tx.summary" />
+          </Text>
+
+          <Column weight={1} />
+
+          <ViewDataButton
+            isViewData={isViewData}
+            setIsViewData={setIsViewData}
+          />
+        </Columns>
+
+        <Gutter size={8} />
+
+        {isViewData ? (
+          <Box
+            maxHeight={128}
+            backgroundColor={style.get("color-gray-500").color}
+            padding={12}
+            borderRadius={6}
           >
-            {addressTronBase58 && (
-              <ItemReceivedToken
-                label={"From"}
-                valueDisplay={shortenAddress(addressTronBase58)}
-                value={addressTronBase58}
-              />
-            )}
-            {txInfo?.functionSelector && (
-              <ItemReceivedToken
-                label={"Method"}
-                valueDisplay={txInfo?.functionSelector}
-                btnCopy={false}
-              />
-            )}
-            {txInfo?.address && (
-              <ItemReceivedToken
-                label={"Contract"}
-                valueDisplay={formatContractAddress(txInfo?.address)}
-                value={txInfo?.address}
-              />
-            )}
-            {recipientConfig?.recipient && (
-              <ItemReceivedToken
-                label={"To"}
-                valueDisplay={shortenAddress(recipientConfig.recipient)}
-                value={recipientConfig.recipient}
-              />
-            )}
+            <ScrollView persistentScrollbar={true}>
+              <Text style={style.flatten(["body3", "color-text-middle"])}>
+                {"signingDataText"}
+              </Text>
+            </ScrollView>
+          </Box>
+        ) : (
+          <Box
+            padding={12}
+            minHeight={128}
+            maxHeight={240}
+            backgroundColor={style.get("color-gray-500").color}
+            borderRadius={6}
+          >
+            <Text>{"sign tron"}</Text>
+          </Box>
+        )}
 
-            {estimateBandwidth?.gt(new Int(0)) && (
-              <ItemDetail
-                label={"Bandwidth Fee"}
-                value={estimateBandwidth?.toString()}
-              />
-            )}
-            {estimateEnergy?.gt(new Int(0)) && (
-              <ItemDetail
-                label={"Energy Fee"}
-                value={new IntPretty(estimateEnergy?.toDec())?.toString()}
-              />
-            )}
-            <FeeInSign
-              feeConfig={feeConfig}
-              gasConfig={null}
-              signOptions={{ preferNoSetFee: true }}
-              isInternal={true}
-            />
-          </View>
-        </View>
+        <Gutter size={60} />
+        {/* {interactionData.isInternal && <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />} */}
 
-        <OWButtonGroup
-          labelApprove={"Confirm"}
-          labelClose={"Cancel"}
-          disabledApprove={!txStateIsValid}
-          disabledClose={signInteractionStore.isLoading}
-          loadingApprove={signInteractionStore.isLoading}
-          styleApprove={{
-            borderRadius: 99,
-            backgroundColor: !txStateIsValid
-              ? colors["primary-surface-disable"]
-              : colors["primary-surface-default"],
-          }}
-          textStyleApprove={{
-            color: colors["neutral-text-action-on-dark-bg"],
-          }}
-          onPressClose={_onPressReject}
-          onPressApprove={_onPressApprove}
-          styleClose={{
-            borderRadius: 99,
-            backgroundColor: colors["neutral-surface-action3"],
-          }}
+        <Gutter size={12} />
+
+        <OWButton
+          // size="large"
+          label={intl.formatMessage({
+            id: "button.approve",
+          })}
+          loading={signTronInteractionStore.isObsoleteInteraction(
+            interactionData.id
+          )}
+          onPress={approve}
+
+          // innerButtonStyle={style.flatten(['width-full'])}
         />
-      </WrapViewModal>
+
+        <Gutter size={24} />
+      </Box>
     );
-  }),
-  {
-    disableSafeArea: true,
-  }
+  })
 );
+
+export const ViewDataButton: FunctionComponent<{
+  isViewData: boolean;
+  setIsViewData: (value: boolean) => void;
+}> = ({ isViewData, setIsViewData }) => {
+  const style = useStyle();
+
+  return (
+    <TouchableWithoutFeedback
+      onPress={() => {
+        setIsViewData(!isViewData);
+      }}
+    >
+      <XAxis alignY="center">
+        <Text style={style.flatten(["text-button2", "color-label-default"])}>
+          <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
+        </Text>
+
+        <Gutter size={4} />
+
+        {isViewData ? (
+          <CloseIcon size={12} color={style.get("color-gray-100").color} />
+        ) : (
+          // <CodeBracketIcon
+          //   size={12}
+          //   color={style.get('color-gray-100').color}
+          // />
+          <OWIcon
+            size={12}
+            name={"tdesignbrackets"}
+            color={style.get("color-gray-100").color}
+          />
+        )}
+      </XAxis>
+    </TouchableWithoutFeedback>
+  );
+};

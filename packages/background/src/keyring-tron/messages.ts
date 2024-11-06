@@ -1,4 +1,4 @@
-import { Message } from "@owallet/router";
+import { Message, OWalletError } from "@owallet/router";
 import { Key, SettledResponses } from "@owallet/types";
 import { ROUTE } from "./constants";
 
@@ -65,5 +65,37 @@ export class GetTronKeysSettledMsg extends Message<SettledResponses<Key>> {
 
   type(): string {
     return GetTronKeysSettledMsg.type();
+  }
+}
+
+export class RequestSignTronMsg extends Message<{}> {
+  public static type() {
+    return "request-sign-tron";
+  }
+
+  constructor(public readonly chainId: string, public readonly data: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.data) {
+      throw new OWalletError("keyring", 231, "data not set");
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignTronMsg.type();
   }
 }

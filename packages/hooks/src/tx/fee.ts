@@ -8,7 +8,7 @@ import {
   UIProperties,
 } from "./types";
 import { TxChainSetter } from "./chain";
-import { ChainGetter } from "@owallet/stores";
+import { ChainGetter, CoinPrimitive } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Currency, FeeCurrency, StdFee } from "@owallet/types";
@@ -46,6 +46,14 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
   @observable
   protected _l1DataFee: Dec | undefined = undefined;
+
+  @observable
+  protected _manualFee:
+    | {
+        amount: string;
+        currency: FeeCurrency;
+      }[]
+    | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -171,6 +179,13 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     } else {
       this._fee = undefined;
     }
+    this._manualFee = undefined;
+  }
+
+  @action
+  setManualFee(fee: { amount: string; currency: FeeCurrency }[]) {
+    this._manualFee = fee;
+    this._fee = undefined;
   }
 
   @computed
@@ -310,6 +325,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     }[] = [];
 
     // If there is no fee currency, just return with empty fee amount.
+    if (this._manualFee) {
+      return this._manualFee;
+    }
     if (!this.fee) {
       res = [];
     } else if ("type" in this.fee) {
@@ -742,8 +760,14 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     (feeTypeOrManual: FeeType | "manual") => {
       const feeType =
         feeTypeOrManual === "manual" ? "average" : feeTypeOrManual;
+      console.log("feeType", feeType);
 
       const ethereumQueries = this.queriesStore.get(this.chainId).ethereum;
+      console.log(
+        "this.canEIP1559TxFeesAndReady()",
+        this.canEIP1559TxFeesAndReady()
+      );
+
       if (ethereumQueries && this.canEIP1559TxFeesAndReady()) {
         const feeHistory =
           ethereumQueries.queryEthereumFeeHistory.getQueryByFeeHistoryParams(
@@ -751,10 +775,15 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             ETH_FEE_HISTORY_NEWEST_BLOCK,
             ETH_FEE_HISTORY_REWARD_PERCENTILES
           ).feeHistory;
+        console.log("feeHistory", feeHistory);
+
         const latestBaseFeePerGas = parseInt(
           feeHistory?.baseFeePerGas?.[feeHistory?.baseFeePerGas.length - 1] ??
             "0"
         );
+
+        console.log("latestBaseFeePerGas", latestBaseFeePerGas);
+
         if (feeHistory != null && latestBaseFeePerGas !== 0) {
           const baseFeePerGasDec = new Dec(latestBaseFeePerGas).mul(
             ETH_FEE_SETTINGS_BY_FEE_TYPE[feeType].baseFeePercentageMultiplier
@@ -820,6 +849,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
               BigInt(maxPriorityFeePerGas)
             );
             const maxFeePerGas = baseFeePerGasDec.add(maxPriorityFeePerGasDec);
+
+            console.log("maxPriorityFeePerGasDec", maxPriorityFeePerGasDec);
+            console.log("maxFeePerGas", maxFeePerGas);
 
             return {
               maxPriorityFeePerGas: maxPriorityFeePerGasDec.truncateDec(),

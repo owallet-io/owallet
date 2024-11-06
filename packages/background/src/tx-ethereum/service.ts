@@ -38,6 +38,8 @@ export class BackgroundTxEthereumService {
         throw new Error("No EVM info provided");
       }
 
+      console.log("tx", chainId, [`0x${Buffer.from(tx).toString("hex")}`]);
+
       const sendRawTransactionResponse = await simpleFetch<{
         result?: string;
         error?: Error;

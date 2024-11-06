@@ -14,6 +14,8 @@ import { SuggestChainModal } from "@src/modals/permission/suggest-chain";
 import { BasicAccessModal } from "@src/modals/permission/basic-access";
 import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 import { SignBtcModal } from "@src/modals/sign/sign-btc";
+import { BasicAccessEVMModal } from "@src/modals/permission/basic-access-evm";
+import { SignTronModal } from "../../modals/sign/sign-tron";
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -22,6 +24,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       signEthereumInteractionStore,
       signOasisInteractionStore,
       signBtcInteractionStore,
+      signTronInteractionStore,
       permissionStore,
       chainSuggestStore,
       walletConnectStore,
@@ -56,6 +59,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     }, [walletConnectStore]);
 
     const mergedPermissionData = permissionStore.waitingPermissionMergedData;
+    const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
     // useEffect(() => {
     //   for (const data of permissionStore.waitingDatas) {
     //     // Currently, there is no modal to permit the permission of external apps.
@@ -80,7 +84,10 @@ export const InteractionModalsProivder: FunctionComponent = observer(
     //     });
     //   }
     // };
-
+    console.log(
+      signOasisInteractionStore.waitingData,
+      "signOasisInteractionStore.waitingData"
+    );
     return (
       <React.Fragment>
         {signInteractionStore.waitingData &&
@@ -97,14 +104,30 @@ export const InteractionModalsProivder: FunctionComponent = observer(
           />
         ) : null}
 
-        {signInteractionStore.waitingData &&
-        signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
-          <ADR36SignModal
+        {signOasisInteractionStore.waitingData ? (
+          <SignOasisModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            close={() => {
+              signOasisInteractionStore.rejectWithProceedNext(
+                signOasisInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signOasisInteractionStore.waitingData}
           />
         ) : null}
-
+        {signTronInteractionStore.waitingData ? (
+          <SignTronModal
+            isOpen={true}
+            close={() => {
+              signTronInteractionStore.rejectWithProceedNext(
+                signTronInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signTronInteractionStore.waitingData}
+          />
+        ) : null}
         {signEthereumInteractionStore.waitingData ? (
           <SignEthereumModal
             isOpen={true}
@@ -177,12 +200,8 @@ export const InteractionModalsProivder: FunctionComponent = observer(
                   return (
                     <WalletConnectAccessModal
                       isOpen={true}
-                      close={async () =>
-                        await permissionStore.rejectPermissionWithProceedNext(
-                          data.ids,
-                          () => {}
-                        )
-                      }
+                      // close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                      close={() => {}}
                       key={data.ids.join(",")}
                       data={data}
                     />
@@ -199,6 +218,28 @@ export const InteractionModalsProivder: FunctionComponent = observer(
                       () => {}
                     )
                   }
+                  // close={() => {}}
+                  key={data.ids.join(",")}
+                  data={data}
+                />
+              );
+            })()
+          : null}
+
+        {mergedDataForEVM && !mergedPermissionData
+          ? (() => {
+              const data = mergedDataForEVM;
+
+              return (
+                <BasicAccessEVMModal
+                  isOpen={true}
+                  close={async () =>
+                    await permissionStore.rejectPermissionWithProceedNext(
+                      data.ids,
+                      () => {}
+                    )
+                  }
+                  // close={() => {}}
                   key={data.ids.join(",")}
                   data={data}
                 />

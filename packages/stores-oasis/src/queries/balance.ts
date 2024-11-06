@@ -85,6 +85,7 @@ export class ObservableQueryOasisAccountBalanceRegistry
 {
   constructor(protected readonly sharedContext: QuerySharedContext) {}
 
+  // missing this
   getBalanceImpl(
     chainId: string,
     chainGetter: ChainGetter<ChainInfo>,

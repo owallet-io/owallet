@@ -122,11 +122,6 @@ export const useAutoFeeCurrencySelectionOnInit = (
               feeConfig.type
             );
 
-            // Osmosis의 경우는 fee의 spot price를 알아야 fee를 계산할 수 있다.
-            // 그런데 문제는 이게 쿼리가 필요하기 때문에 비동기적이라 response를 기다려야한다.
-            // 어쨋든 스왑에 의해서만 fee 계산이 이루어지기 때문에 fee로 Osmo가 0이였다면 이 로직까지 왔을리가 없고
-            // 어떤 갯수의 Osmo던지 스왑 이후에 fee가 0이 될수는 없기 때문에
-            // 0라면 단순히 response 준비가 안된것이라 확신할 수 있다.
             if (isOsmosis && fee.toDec().lte(new Dec(0))) {
               continue;
             }

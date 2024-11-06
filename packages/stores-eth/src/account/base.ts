@@ -1,7 +1,7 @@
 import { ChainGetter } from "@owallet/stores";
 import {
   AppCurrency,
-  EthSignType,
+  // EthSignType,
   EthTxReceipt,
   OWallet,
 } from "@owallet/types";
@@ -17,6 +17,12 @@ import {
 import { getAddress as getEthAddress } from "@ethersproject/address";
 import { action, makeObservable, observable } from "mobx";
 import { Interface } from "@ethersproject/abi";
+
+const EthSignType = {
+  MESSAGE: "message",
+  TRANSACTION: "transaction",
+  EIP712: "eip-712",
+};
 
 const opStackGasPriceOracleProxyAddress =
   "0x420000000000000000000000000000000000000F";

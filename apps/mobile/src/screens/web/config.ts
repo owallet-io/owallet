@@ -1,8 +1,10 @@
 import { ImageSourcePropType } from "react-native";
 
+// export const InjectedProviderUrl =
+//   process.env.INJECTED_PROVIDER_URL ||
+//   "https://static.orai.io/injected-provider-merge.bundle.js";
 export const InjectedProviderUrl =
-  process.env.INJECTED_PROVIDER_URL ||
-  "https://static.orai.io/injected-provider-merge.bundle.js";
+  "https://raw.githubusercontent.com/owallet-io/owallet-provider/refs/heads/test/build-bundle/injected-provider-keyring.bundle.js?token=GHSAT0AAAAAACM3LPFULTYW5IFRVIEK725EZZJ4OEQ";
 
 export type DAppInfo = {
   name: string;

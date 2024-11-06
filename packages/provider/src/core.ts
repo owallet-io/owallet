@@ -1051,8 +1051,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                 {}
               );
 
-              // 유저가 직접 side panel을 이미 열어논 상태일 수 있다.
-              // 이 경우는 무시하도록 한다.
               if (sidePanelPing) {
                 return;
               }
@@ -1075,7 +1073,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                 {}
               );
 
-              // extension에서 `web_accessible_resources`에 추가된 파일은 이렇게 접근이 가능함
               const fontUrl = chrome.runtime.getURL(
                 "/assets/Inter-SemiBold.ttf"
               );
@@ -1121,7 +1118,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                   ? !window.matchMedia("(prefers-color-scheme: dark)").matches
                   : owalletThemeOption === "light";
 
-              // 폰트와 애니메이션을 위한 스타일 요소를 head에 추가
               const styleElement = document.createElement("style");
               styleElement.appendChild(
                 document.createTextNode(fontFaceAndKeyFrames)
@@ -1136,7 +1132,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
               button.style.padding = "1rem 1.75rem 1rem 0.75rem";
-              button.style.zIndex = "2147483647"; // 페이지 상의 다른 요소보다 버튼이 위에 오도록 함
+              button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
               button.style.alignItems = "center";
@@ -1233,15 +1229,13 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
-              // 버튼을 추가하기 전에 한 번 더 이미 추가된 버튼이 있는지 확인
               const hasAlready = document.getElementById(
                 "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
                 let removed = false;
-                // 유저가 이 button이 아니라 다른 방식(직접 작업줄의 아이콘을 눌러서 등등)으로 side panel을 열수도 있다.
-                // 이 경우를 감지해서 side panel이 열렸으면 자동으로 이 버튼이 삭제되도록 한다.
+
                 const intervalId = setInterval(() => {
                   sendSimpleMessage<boolean>(
                     this.requester,
@@ -1260,11 +1254,8 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                   });
                 }, 300);
 
-                // 버튼을 body에 추가
                 document.body.appendChild(button);
 
-                // XXX: 현재 크롬의 버그로 인해서 밑의 코드가 동작할 수 없기 때문에 일단 주석처리한다.
-                // 버튼 클릭 이벤트 추가 (필요한 동작을 정의)
                 // button.addEventListener("click", () => {
                 //   this.protectedTryOpenSidePanelIfEnabled(true);
                 //
@@ -1348,6 +1339,8 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     }
 
     return new Promise((resolve, reject) => {
+      console.log("chainId with method", method, chainId);
+
       let f = false;
       sendSimpleMessage(
         this.requester,
@@ -1668,8 +1661,80 @@ class TronProvider extends EventEmitter implements ITronProvider {
       }, 100);
     });
   }
+
+  async getDefaultAddress(): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-tron",
+        "get-trx-keys-settled",
+        {}
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async sendTx(chainId: string, signedTx: unknown): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "background-tx-tron",
+        "send-tron-tx-to-background",
+        {
+          chainId,
+          signedTx,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async sign(chainId: string, data: object | string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-tron",
+        "request-sign-tron",
+        {
+          chainId,
+          data: JSON.stringify(data),
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
 }
-// IMPORTANT: 사이드 패널을 열어야하는 JSON-RPC 메소드들이 생길 때마다 여기에 추가해야한다.
+
 const sidePanelOpenNeededJSONRPCMethods = [
   "eth_sendTransaction",
   "personal_sign",

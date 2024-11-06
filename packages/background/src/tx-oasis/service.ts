@@ -1,13 +1,11 @@
 import { ChainsService } from "../chains";
-import { simpleFetch } from "@owallet/simple-fetch";
 import { Notification } from "../tx/types";
 import {
   Transaction,
   TransactionStatus,
   TransactionType,
 } from "@owallet/types";
-import { getOasisNic, OasisTransaction, retry, TW } from "@owallet/common";
-import * as oasis from "@oasisprotocol/client";
+import { getOasisNic, retry } from "@owallet/common";
 import { types } from "@oasisprotocol/client";
 import { hashSignedTransaction } from "@oasisprotocol/client/dist/consensus";
 

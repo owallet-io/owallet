@@ -1,5 +1,5 @@
 import { PlainObject, Vault } from "../vault";
-import { PubKeySecp256k1 } from "@owallet/crypto";
+import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainInfo, TransactionType } from "@owallet/types";
 import { types } from "@oasisprotocol/client";
 
@@ -26,7 +26,11 @@ export interface KeyRing {
     insensitive: PlainObject;
     sensitive: PlainObject;
   }>;
-
+  simulateSignTron?(
+    transaction: any,
+    vault: Vault,
+    coinType: number
+  ): string | Promise<string>;
   getPubKey(
     vault: Vault,
     coinType: number,
@@ -102,6 +106,28 @@ export interface KeyRingOasis {
     data: Uint8Array,
     chainInfo: ChainInfo
   ): types.SignatureSigned | Promise<types.SignatureSigned>;
+}
+
+export interface KeyRingTron {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): Uint8Array | Promise<Uint8Array>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: string,
+    chainInfo: ChainInfo
+  ): unknown | Promise<unknown>;
 }
 
 export interface ExportedKeyRingVault {

@@ -15,7 +15,8 @@ import { Text, View } from "react-native";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { Gutter } from "../../../../components/gutter";
 import { GuideBox } from "../../../../components/guide-box";
-
+import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@src/components/text/ow-text";
 export const FeeSummary: FunctionComponent<{
   feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
@@ -24,23 +25,21 @@ export const FeeSummary: FunctionComponent<{
 
   const intl = useIntl();
   const style = useStyle();
+  const colors = useTheme();
 
   return (
     <React.Fragment>
       <Box
         padding={16}
-        backgroundColor={style.get("color-gray-500").color}
+        backgroundColor={colors["neutral-surface-card"]}
         borderRadius={6}
       >
         <XAxis alignY="center">
-          <Text style={style.flatten(["color-text-high", "subtitle3"])}>
+          <OWText>
             <FormattedMessage id="page.sign.components.fee-summary.fee" />
-          </Text>
-
-          <View style={{ flex: 1 }} />
+          </OWText>
 
           {(() => {
-            console.log(feeConfig.fees, "feeConfig.fees");
             if (feeConfig.fees.length > 0) {
               return feeConfig.fees;
             }
@@ -63,40 +62,11 @@ export const FeeSummary: FunctionComponent<{
             )
             .map((text) => {
               return (
-                <Text style={style.flatten(["color-text-high", "subtitle3"])}>
+                <OWText style={style.flatten(["color-text-high", "subtitle3"])}>
                   {text}
-                </Text>
+                </OWText>
               );
             })}
-
-          <Gutter size={4} />
-
-          <Text style={style.flatten(["body2", "color-gray-300"])}>
-            {(() => {
-              let total: PricePretty | undefined;
-              let hasUnknown = false;
-              for (const fee of feeConfig.fees) {
-                if (!fee.currency.coinGeckoId) {
-                  hasUnknown = true;
-                  break;
-                } else {
-                  const price = priceStore.calculatePrice(fee);
-                  if (price) {
-                    if (!total) {
-                      total = price;
-                    } else {
-                      total = total.add(price);
-                    }
-                  }
-                }
-              }
-
-              if (hasUnknown || !total) {
-                return "(-)";
-              }
-              return `(${total.toString()})`;
-            })()}
-          </Text>
         </XAxis>
       </Box>
 

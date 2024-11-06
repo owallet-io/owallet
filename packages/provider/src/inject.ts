@@ -28,6 +28,7 @@ import {
   IBitcoinProvider,
   ITronProvider,
   TransactionType,
+  RequestArguments,
   TransactionBtcType,
 } from "@owallet/types";
 import {
@@ -74,14 +75,17 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
     }
   } else {
     console.warn(
-      `Failed to inject ${p} from owallet. Probably, other wallet is trying to intercept OWallet`
+      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`
     );
   }
 }
 
 export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
+  defineUnwritablePropertyIfPossible(window, "keplr", owallet);
   defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
+  defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
+  defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
   defineUnwritablePropertyIfPossible(
     window,
     "getOfflineSigner",
@@ -1527,5 +1531,46 @@ class TronProvider extends EventEmitter implements ITronProvider {
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod("getKeysSettled", [chainIds]);
+  }
+
+  sendRawTransaction(transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  }): Promise<object> {
+    throw new Error("Method not implemented.");
+  }
+
+  triggerSmartContract(
+    address: string,
+    functionSelector: string,
+    options: object,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any> {
+    throw new Error("Method not implemented.");
+  }
+
+  async sign(chainId: string, data: object): Promise<any> {
+    return await this._requestMethod("sign", [chainId, data]);
+  }
+
+  async sendTx(
+    chainId: string,
+    signedTx: types.SignatureSigned
+  ): Promise<string> {
+    return await this._requestMethod("sendTx", [chainId, signedTx]);
+  }
+
+  async getDefaultAddress(): Promise<SettledResponses<Key>> {
+    return this._requestMethod("getDefaultAddress", []);
+  }
+
+  async request(args: RequestArguments): Promise<any> {
+    return await this._requestMethod(
+      args.method as keyof ITronProvider,
+      args.params ? [args.params, args.chainId] : [[]]
+    );
   }
 }

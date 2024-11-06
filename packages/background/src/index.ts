@@ -10,6 +10,7 @@ import * as BackgroundTx from "./tx/internal";
 import * as BackgroundTxEthereum from "./tx-ethereum/internal";
 import * as BackgroundTxOasis from "./tx-oasis/internal";
 import * as BackgroundTxBtc from "./tx-btc/internal";
+import * as BackgroundTxTron from "./tx-tron/internal";
 import * as TokenCW20 from "./token-cw20/internal";
 import * as TokenERC20 from "./token-erc20/internal";
 import * as Interaction from "./interaction/internal";
@@ -187,7 +188,10 @@ export function init(
     chainsService,
     notification
   );
-
+  const backgroundTxTronService = new BackgroundTxTron.BackgroundTxTronService(
+    chainsService,
+    notification
+  );
   const phishingListService = new PhishingList.PhishingListService(
     {
       blockListUrl:
@@ -363,6 +367,11 @@ export function init(
     backgroundTxBtcService,
     permissionInteractiveService
   );
+  BackgroundTxTron.init(
+    router,
+    backgroundTxTronService,
+    permissionInteractiveService
+  );
   PhishingList.init(router, phishingListService);
   AutoLocker.init(router, autoLockAccountService);
   Analytics.init(router, analyticsService);
@@ -422,6 +431,7 @@ export function init(
       await backgroundTxEthereumService.init();
       await backgroundTxOasisService.init();
       await backgroundTxBtcService.init();
+      await backgroundTxTronService.init();
       await phishingListService.init();
       await autoLockAccountService.init();
       await permissionInteractiveService.init();

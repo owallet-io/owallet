@@ -25,6 +25,7 @@ import {
   toDisplay,
   getBase58Address,
   toAmount,
+  ChainIdEVM,
 } from "@owallet/common";
 import {
   oraichainNetwork,
@@ -164,9 +165,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const theme = appInitStore.getInitApp.theme;
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
-  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
-  const accountKawaiiCosmos = accountStore.getAccount(ChainIdEnum.KawaiiCosmos);
+  const accountEth = accountStore.getAccount(ChainIdEVM.Ethereum);
+  const accountTron = accountStore.getAccount(ChainIdEVM.TRON);
 
   const [sendToAddress, setSendToAddress] = useState(null);
   const [priceSettingModal, setPriceSettingModal] = useState(false);
@@ -380,7 +380,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
         metamaskAddress: eth ?? null,
-        kwtAddress: kwt ?? accountKawaiiCosmos.bech32Address,
         tronAddress: tron ?? null,
         cwStargate,
         tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
@@ -404,37 +403,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
     if (accountOrai.isNanoLedger) {
-      if (
-        keyRingStore.keyRingLedgerAddresses &&
-        Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0
-      ) {
-        setTimeout(() => {
-          handleFetchAmounts(
-            {
-              orai: accountOrai.bech32Address,
-              eth: keyRingStore.keyRingLedgerAddresses.eth ?? undefined,
-              tron: keyRingStore.keyRingLedgerAddresses.trx ?? undefined,
-              kwt: accountKawaiiCosmos.bech32Address,
-              tokenReload:
-                Number(tokenReload?.length) > 0 ? tokenReload : undefined,
-            },
-            customChainInfos
-          );
-        }, 800);
-      }
     } else if (
       accountOrai.bech32Address &&
-      accountEth.evmosHexAddress &&
-      accountTron.evmosHexAddress &&
-      accountKawaiiCosmos.bech32Address
+      accountEth.ethereumHexAddress &&
+      accountTron.base58Address
     ) {
       setTimeout(() => {
         handleFetchAmounts(
           {
             orai: accountOrai.bech32Address,
-            eth: accountEth.evmosHexAddress,
-            tron: getBase58Address(accountTron.evmosHexAddress),
-            kwt: accountKawaiiCosmos.bech32Address,
+            eth: accountEth.ethereumHexAddress,
+            tron: accountTron.base58Address,
+            kwt: null,
           },
           customChainInfos
         );
@@ -511,34 +491,39 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const getAddresses = () => {
     let evmAddress, tronAddress, cosmosAddress;
 
-    if (
-      accountOrai.isNanoLedger &&
-      keyRingStore?.keyRingLedgerAddresses?.cosmos
-    ) {
-      cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
+    if (originalFromToken.cosmosBased) {
+      cosmosAddress = accountStore.getAccount(
+        originalFromToken.chainId
+      ).bech32Address;
     } else {
-      if (originalFromToken.cosmosBased) {
-        cosmosAddress = accountStore.getAccount(
-          originalFromToken.chainId
-        ).bech32Address;
-      } else {
-        cosmosAddress = accountOrai.bech32Address;
-      }
+      cosmosAddress = accountOrai.bech32Address;
     }
 
-    if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-      evmAddress = keyRingStore.keyRingLedgerAddresses.eth;
-    } else {
-      evmAddress = accountEth.evmosHexAddress;
-    }
+    evmAddress = accountEth.ethereumHexAddress;
+    tronAddress = accountTron.base58Address;
+    // if (accountOrai.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.cosmos) {
+    //   cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
+    // } else {
+    //   if (originalFromToken.cosmosBased) {
+    //     cosmosAddress = accountStore.getAccount(originalFromToken.chainId).bech32Address;
+    //   } else {
+    //     cosmosAddress = accountOrai.bech32Address;
+    //   }
+    // }
 
-    if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-      tronAddress = keyRingStore.keyRingLedgerAddresses.trx;
-    } else {
-      if (accountTron) {
-        tronAddress = getBase58Address(accountTron.evmosHexAddress);
-      }
-    }
+    // if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
+    //   evmAddress = keyRingStore.keyRingLedgerAddresses.eth;
+    // } else {
+    //   evmAddress = accountEth.evmosHexAddress;
+    // }
+
+    // if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
+    //   tronAddress = keyRingStore.keyRingLedgerAddresses.trx;
+    // } else {
+    //   if (accountTron) {
+    //     tronAddress = getBase58Address(accountTron.evmosHexAddress);
+    //   }
+    // }
 
     return { cosmosAddress, evmAddress, tronAddress };
   };
@@ -674,7 +659,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       type: "success",
       onPress: async () => {
         const chainInfo = chainStore.getChain(originalFromToken.chainId);
-        if (chainInfo.raw.txExplorer && transactionHash) {
+        if (transactionHash) {
           await openLink(
             getTransactionUrl(originalFromToken.chainId, transactionHash)
           );
@@ -723,9 +708,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (differenceInSeconds > 10) {
       if (
         accountOrai.bech32Address &&
-        accountEth.evmosHexAddress &&
-        accountTron.evmosHexAddress &&
-        accountKawaiiCosmos.bech32Address
+        accountEth.ethereumHexAddress &&
+        accountTron.base58Address
       ) {
         const currentDate = Date.now();
         const differenceInMilliseconds = Math.abs(currentDate - refreshDate);

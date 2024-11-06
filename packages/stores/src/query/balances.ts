@@ -90,6 +90,7 @@ export class ObservableQueryBalancesImplMap {
 
     for (let i = 0; i < chainInfo.currencies.length; i++) {
       const currency = chainInfo.currencies[i];
+
       const balanceInner = this.getBalanceInner(currency);
       if (balanceInner) {
         result.push(balanceInner);

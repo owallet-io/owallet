@@ -5,7 +5,11 @@ import {
   OWalletError,
   Message,
 } from "@owallet/router";
-import { GetTronKeyMsg, GetTronKeysSettledMsg } from "./messages";
+import {
+  GetTronKeyMsg,
+  GetTronKeysSettledMsg,
+  RequestSignTronMsg,
+} from "./messages";
 import { KeyRingTronService } from "./service";
 import { PermissionInteractiveService } from "../permission-interactive";
 
@@ -25,7 +29,11 @@ export const getHandler: (
           service,
           permissionInteractionService
         )(env, msg as GetTronKeysSettledMsg);
-
+      case RequestSignTronMsg:
+        return handleRequestSignTronMsg(service, permissionInteractionService)(
+          env,
+          msg as RequestSignTronMsg
+        );
       default:
         throw new OWalletError("keyring", 221, "Unknown msg type");
     }
@@ -67,5 +75,24 @@ const handleGetTronKeysSettledMsg: (
     return await Promise.allSettled(
       msg.chainIds.map((chainId) => service.getKeySelected(chainId))
     );
+  };
+};
+const handleRequestSignTronMsg: (
+  service: KeyRingTronService,
+  permissionInteractionService: PermissionInteractiveService
+) => InternalHandler<RequestSignTronMsg> = (
+  service,
+  permissionInteractionService
+) => {
+  return async (env, msg) => {
+    await permissionInteractionService.ensureEnabled(
+      env,
+      [msg.chainId],
+      msg.origin
+    );
+
+    return (
+      await service.signTronSelected(env, msg.origin, msg.chainId, msg.data)
+    ).signature;
   };
 };

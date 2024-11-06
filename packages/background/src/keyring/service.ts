@@ -6,8 +6,8 @@ import {
   KeyRing,
   KeyRingStatus,
 } from "./types";
-import { Env, WEBPAGE_PORT } from "@owallet/router";
-import { PubKeySecp256k1 } from "@owallet/crypto";
+import { Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
+import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainsService } from "../chains";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { KVStore } from "@owallet/common";
@@ -1151,6 +1151,26 @@ export class KeyRingService {
       keyRing.sign(vault, coinType, data, digestMethod, chainInfo)
     );
   }
+
+  async simulateSignTron(transaction: any, vaultId: string, coinType: number) {
+    try {
+      const vault = this.vaultService.getVault("keyRing", vaultId);
+      const keyRing = this.getVaultKeyRing(vault);
+      const signedTxn = await keyRing.simulateSignTron(
+        transaction,
+        vault,
+        coinType
+      );
+      return { signedTxn };
+    } catch (error) {
+      throw new OWalletError(
+        "keyring",
+        500,
+        `Failed to simulate sign Tron: ${error.message}`
+      );
+    }
+  }
+
   getPubKeyWithVault(
     vault: Vault,
     coinType: number,

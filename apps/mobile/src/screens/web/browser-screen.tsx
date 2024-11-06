@@ -37,6 +37,7 @@ export const BrowserScreen = observer(() => {
   const { browserStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
+
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "all", title: "All" },

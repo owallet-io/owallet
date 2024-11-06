@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { makeObservable, observable, runInAction } from "mobx";
 import { DeepReadonly, UnionToIntersection } from "utility-types";
 import { ObservableQueryBalances } from "./balances";

@@ -30,6 +30,7 @@ import {
   ShowSensitiveLegacyKeyRingDataMsg,
   ExportKeyRingVaultsMsg,
   SearchKeyRingsMsg,
+  SimulateSignTronMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 
@@ -45,6 +46,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as GetKeyRingStatusMsg
         );
+      case SimulateSignTronMsg:
+        return handleSimulateSignTron(service)(env, msg as SimulateSignTronMsg);
       case GetKeyRingStatusOnlyMsg:
         return handleGetKeyRingStatusOnlyMsg(service)(
           env,
@@ -162,6 +165,18 @@ const handleGetKeyRingStatusOnlyMsg: (
     return {
       status: service.keyRingStatus,
     };
+  };
+};
+
+const handleSimulateSignTron: (
+  service: KeyRingService
+) => InternalHandler<SimulateSignTronMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.simulateSignTron(
+      msg.transaction,
+      msg.vaultId,
+      msg.coinType
+    );
   };
 };
 

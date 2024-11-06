@@ -60,7 +60,7 @@ export class SwapEvmWallet extends EvmWallet {
   constructor(isTronToken: boolean) {
     super();
     //@ts-ignore
-    this.ethereum = window.ethereum;
+    this.ethereum = window.owallet.ethereum || window.ethereum;
     this.isTronToken = isTronToken;
     //@ts-ignore
     this.tronWeb = window.tronWeb;

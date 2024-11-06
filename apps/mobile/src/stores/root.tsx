@@ -32,6 +32,7 @@ import {
   SignEthereumInteractionStore,
   SignInteractionStore,
   SignOasisInteractionStore,
+  SignTronInteractionStore,
   TokensStore,
 } from "@owallet/stores-core";
 import { AsyncKVStore } from "../common";
@@ -105,6 +106,7 @@ export class RootStore {
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
+  public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly signBtcInteractionStore: SignBtcInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly universalSwapStore: UniversalSwapStore;
@@ -125,7 +127,7 @@ export class RootStore {
       // CosmosGovernanceQueriesV1,
       EthereumQueries,
       OasisQueries,
-      // TrxQueries,
+      TrxQueries,
       BtcQueries
     ]
   >;
@@ -211,7 +213,9 @@ export class RootStore {
       this.interactionStore,
       CommunityChainInfoRepo
     );
-
+    this.signTronInteractionStore = new SignTronInteractionStore(
+      this.interactionStore
+    );
     this.queriesStore = new QueriesStore(
       new AsyncKVStore("store_queries"),
       this.chainStore,
@@ -243,7 +247,7 @@ export class RootStore {
           "/coingecko-token-info/coins/{coingeckoChainId}/contract/{contractAddress}",
       }),
       OasisQueries.use(),
-      // TrxQueries.use(),
+      TrxQueries.use(),
       BtcQueries.use()
     );
     this.browserStore = new BrowserStore();
@@ -513,14 +517,13 @@ export class RootStore {
       this.chainStore,
       this.queriesStore
     );
-    this.axelarEVMBridgeCurrencyRegistrar =
-      new AxelarEVMBridgeCurrencyRegistrar(
-        new AsyncKVStore("store_axelar_evm_bridge_currency_registrar"),
-        7 * 24 * 3600 * 1000,
-        this.chainStore,
-        this.queriesStore,
-        "ethereum"
-      );
+    // this.axelarEVMBridgeCurrencyRegistrar = new AxelarEVMBridgeCurrencyRegistrar(
+    //   new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore,
+    //   'ethereum'
+    // );
 
     // this.uiConfigStore = new UIConfigStore(
     //     {

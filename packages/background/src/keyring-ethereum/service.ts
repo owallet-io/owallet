@@ -3,7 +3,7 @@ import { KeyRingService } from "../keyring";
 import { InteractionService } from "../interaction";
 import { AnalyticsService } from "../analytics";
 import { Env, EthereumProviderRpcError, WEBPAGE_PORT } from "@owallet/router";
-import { ChainInfo, EthereumSignResponse, EthSignType } from "@owallet/types";
+import { ChainInfo, EthereumSignResponse } from "@owallet/types";
 import { Bech32Address } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import {
@@ -24,6 +24,12 @@ import { TokenERC20Service } from "../token-erc20";
 import { validateEVMChainId } from "./helper";
 import { runInAction } from "mobx";
 import { PermissionInteractiveService } from "../permission-interactive";
+
+const EthSignType = {
+  MESSAGE: "message",
+  TRANSACTION: "transaction",
+  EIP712: "eip-712",
+};
 
 export class KeyRingEthereumService {
   protected websocketSubscriptionMap = new Map<string, WebSocket>();
@@ -50,7 +56,7 @@ export class KeyRingEthereumService {
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: EthSignType
+    signType: any
   ): Promise<EthereumSignResponse> {
     return await this.signEthereum(
       env,
@@ -70,7 +76,7 @@ export class KeyRingEthereumService {
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: EthSignType
+    signType: any
   ): Promise<EthereumSignResponse> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
@@ -125,7 +131,10 @@ export class KeyRingEthereumService {
         keyType: keyInfo.type,
         keyInsensitive: keyInfo.insensitive,
       },
+
       async (res: { signingData: Uint8Array; signature?: Uint8Array }) => {
+        console.log("signType", signType);
+
         const { signature, signingData } = await (async () => {
           if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
             if (!res.signature || res.signature.length === 0) {
@@ -182,6 +191,8 @@ export class KeyRingEthereumService {
                   Buffer.from(serialize(unsignedTx).replace("0x", ""), "hex"),
                   "keccak256"
                 );
+
+                console.log("signature", signature);
 
                 return {
                   signingData: res.signingData,
@@ -257,6 +268,10 @@ export class KeyRingEthereumService {
               undefined,
               chainId
             );
+
+            console.log("tx.data", tx.data);
+            console.log("tx.signingData", signingData);
+
             if (
               (tx.data == null || tx.data === "0x") &&
               BigInt(tx.value) > 0 &&
@@ -271,6 +286,8 @@ export class KeyRingEthereumService {
 
             return "execute-contract";
           })();
+
+          console.log("ethTxType", ethTxType);
 
           this.analyticsService.logEventIgnoreError("evm_tx_signed", {
             chainId,
@@ -315,6 +332,8 @@ export class KeyRingEthereumService {
 
     const currentChainId =
       this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
+    console.log("currentChainId", origin, currentChainId);
+
     if (currentChainId == null) {
       if (method === "owallet_initProviderState") {
         return {
@@ -343,6 +362,8 @@ export class KeyRingEthereumService {
         );
       }
     }
+
+    console.log("method", method);
 
     const currentChainInfo =
       this.chainsService.getChainInfoOrThrow(currentChainId);
@@ -422,15 +443,16 @@ export class KeyRingEthereumService {
             providerId,
             chainId
           );
-          const nonce = parseInt(transactionCount, 16);
 
           const { from: sender, gas, ...restTx } = tx;
           const unsignedTx: UnsignedTransaction = {
             ...restTx,
             gasLimit: restTx?.gasLimit ?? gas,
             chainId: currentChainEVMInfo.chainId,
-            nonce,
+            nonce: transactionCount,
           };
+
+          console.log("unsignedTx", unsignedTx);
 
           const { signingData, signature } = await this.signEthereumSelected(
             env,
@@ -448,7 +470,6 @@ export class KeyRingEthereumService {
           if (isEIP1559) {
             signingTx.type = TransactionTypes.eip1559;
           }
-
           const signedTx = Buffer.from(
             serialize(signingTx, signature).replace("0x", ""),
             "hex"
@@ -460,6 +481,8 @@ export class KeyRingEthereumService {
             signedTx,
             {}
           );
+
+          console.log("txHash", txHash);
 
           return txHash;
         }
@@ -742,6 +765,8 @@ export class KeyRingEthereumService {
           return result;
         }
         case "wallet_switchEthereumChain": {
+          console.log("params", params);
+
           const param =
             (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
             undefined;

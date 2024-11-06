@@ -84,6 +84,12 @@ export enum ChainIdEnum {
   NEUTRON = "neutron-1",
 }
 
+export enum ChainIdEVM {
+  Ethereum = "eip155:1",
+  BNBChain = "eip155:56",
+  TRON = "eip155:728126428",
+}
+
 export enum KADOChainNameEnum {
   "Oraichain" = "ORAICHAIN",
   "juno-1" = "JUNO",

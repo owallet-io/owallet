@@ -49,14 +49,12 @@ export const AddressInput: FunctionComponent<{
   colors?: any;
   inputRight?: React.ReactNode;
   inputLeft?: React.ReactNode;
-
   recipientConfig: IRecipientConfig;
   memoConfig: IMemoConfig;
-
   disableAddressBook?: boolean;
-
   placeholder?: string;
   placeholderTextColor?: string;
+  disableAddressError?: boolean;
 }> = observer(
   ({
     labelStyle,
@@ -73,6 +71,7 @@ export const AddressInput: FunctionComponent<{
     inputRight,
     colors,
     topInInputContainer,
+    disableAddressError,
   }) => {
     const style = useStyle();
 
@@ -80,7 +79,9 @@ export const AddressInput: FunctionComponent<{
     //   recipientConfig.rawRecipient
     // );
 
-    const error = recipientConfig.uiProperties.error;
+    const error = disableAddressError
+      ? null
+      : recipientConfig.uiProperties.error;
 
     const errorText: string | undefined = useMemo(() => {
       if (error) {

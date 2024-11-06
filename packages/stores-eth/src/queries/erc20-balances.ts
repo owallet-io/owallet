@@ -78,7 +78,7 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
     );
 
     const erc20Denoms = tokenBalances
-      .filter((tokenBalance) => !tokenBalance?.includes("native"))
+      // .filter((tokenBalance) => !tokenBalance?.includes("native"))
       .map((tokenBalance) => `erc20:${tokenBalance}`);
     if (erc20Denoms) {
       chainInfo.addUnknownDenoms(...erc20Denoms);

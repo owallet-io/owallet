@@ -31,6 +31,7 @@ import {
   SearchKeyRingsMsg,
   SelectKeyRingMsg,
   ShowSensitiveKeyRingDataMsg,
+  SimulateSignTronMsg,
   UnlockKeyRingMsg,
 } from "@owallet/background";
 // import type { MultiAccounts } from "@owallet/background";
@@ -388,6 +389,15 @@ export class KeyRingStore {
 
   async searchKeyRings(searchText: string): Promise<KeyInfo[]> {
     const msg = new SearchKeyRingsMsg(searchText);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async simulateSignTron(
+    transaction: any,
+    vaultId: string,
+    coinType: number
+  ): Promise<any> {
+    const msg = new SimulateSignTronMsg(transaction, vaultId, coinType);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }

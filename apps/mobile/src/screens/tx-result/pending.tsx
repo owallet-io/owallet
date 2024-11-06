@@ -66,7 +66,6 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (isFocused) {
       const txHash = route.params.txHash;
-      console.log(txHash, "txHash pending");
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
       if (chainInfo.features.includes("btc") && txHash) {
@@ -99,6 +98,39 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           {
             maxRetries: 20,
             waitMsAfterError: 2000,
+            maxWaitMsAfterError: 4000,
+          }
+        );
+      }
+      if (chainInfo.features.includes("tron") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch(
+                  `https://tronscan.org/#/transaction/${txHash}`
+                );
+                if (data && status === 200) {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                  resolve();
+                }
+              } catch (error) {
+                reject();
+                console.log("error", error);
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
             maxWaitMsAfterError: 4000,
           }
         );

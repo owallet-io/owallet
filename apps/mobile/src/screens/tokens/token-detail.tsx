@@ -85,14 +85,14 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
     //     const itemTron = tronTokens?.find((t) => {
     //       return t.coinGeckoId === item.token.currency.coinGeckoId;
     //     });
-    //
+
     //     navigate(SCREENS.SendTron, {
     //       item: itemTron,
     //       currency: item.token.currency.coinDenom,
     //       contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
     //         .contractAddress,
     //     });
-    //
+
     //     return;
     //   }
     //   if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
@@ -115,7 +115,9 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
         chainId: item.chainInfo.chainId,
       });
-    } catch (err) {}
+    } catch (err) {
+      console.log("err", err, item.chainInfo.chainId);
+    }
   };
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);

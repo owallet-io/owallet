@@ -49,6 +49,16 @@ export const SendCosmosScreen: FunctionComponent<{
 
     const chainInfo = chainStore.getChain(chainId);
 
+    const navigation = useNavigation();
+    useEffect(() => {
+      if (appInitStore.getInitApp.isAllNetworks) return;
+      navigation.setOptions({
+        headerTitle: () => (
+          <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName} />
+        ),
+      });
+    }, [chainId]);
+
     const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
 
     const account = accountStore.getAccount(chainId);
@@ -187,6 +197,11 @@ export const SendCosmosScreen: FunctionComponent<{
 
     const historyType = "basic-send";
 
+    console.log(
+      "   sendConfigs.feeConfig.toStdFee()",
+      sendConfigs.feeConfig.toStdFee()
+    );
+
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
         try {
@@ -276,7 +291,7 @@ export const SendCosmosScreen: FunctionComponent<{
       <PageWithBottom
         bottomGroup={
           <OWButton
-            label="Send"
+            label="Send Cosmos"
             disabled={txConfigsValidate.interactionBlocked}
             loading={accountStore.getAccount(chainId).isSendingMsg === "send"}
             onPress={submitSend}
