@@ -52,20 +52,20 @@ export const App = () => {
     enableAnalytics();
     return () => {};
   }, []);
-  if (isInit) {
-    return (
-      <LottieView
-        source={require("@src/assets/animations/splashscreen.json")}
-        style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
-        resizeMode={"cover"}
-        autoPlay
-        loop={false}
-        onAnimationFinish={() => {
-          setIsInit(false);
-        }}
-      />
-    );
-  }
+  // if (isInit) {
+  //   return (
+  //     <LottieView
+  //       source={require("@src/assets/animations/splashscreen.json")}
+  //       style={{ width: metrics.screenWidth, height: metrics.screenHeight }}
+  //       resizeMode={"cover"}
+  //       autoPlay
+  //       loop={false}
+  //       onAnimationFinish={() => {
+  //         setIsInit(false);
+  //       }}
+  //     />
+  //   );
+  // }
   return (
     <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <GestureHandlerRootView
