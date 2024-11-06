@@ -41,6 +41,7 @@ import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useBIP44PathState } from "@screens/register/components/bip-path-44";
 
 interface FormData {
   name: string;
@@ -57,6 +58,8 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
           // registerConfig: RegisterConfig;
           words?: string;
           walletName?: string;
+          stepPrevious: number;
+          stepTotal: number;
         }
       >,
       string
@@ -70,10 +73,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const words: string = route.params?.words;
   const walletName: string = route.params?.walletName;
   const bip44Option = useBIP44Option();
-
-  // const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  // const [mode] = useState(registerConfig.mode);
-
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
   const [confirmCode, setConfirmCode] = useState(null);
@@ -105,61 +104,81 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
       return () => task.cancel();
     }, [])
   );
+  const navigation = useNavigation<StackNavProp>();
+  const bip44PathState = useBIP44PathState();
   const onVerifyMnemonic = async () => {
     if (isCreating) return;
     setIsCreating(true);
-    try {
-      const newWalletName =
-        walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
-      await chainStore.waitUntilInitialized();
-
-      await chainStore.updateChainInfosFromBackground();
-
-      let vaultId: unknown;
-      const mnemonic = trimWordsStr(words);
-
-      if (!isPrivateKey(mnemonic)) {
-        vaultId = await keyRingStore.newMnemonicKey(
-          mnemonic,
-          bip44Option.bip44HDPath,
-          newWalletName,
-          password
-        );
-      } else if (isPrivateKey(mnemonic)) {
-        const privateKey = Buffer.from(
-          mnemonic.trim().replace("0x", ""),
-          "hex"
-        );
-        vaultId = await keyRingStore.newPrivateKeyKey(
-          privateKey,
-          {},
-          newWalletName,
-          password
-        );
-      } else {
-        throw new Error("Invalid props");
-      }
-      if (typeof vaultId !== "string") {
-        throw new Error("Unknown error");
-      }
-
-      await chainStore.waitSyncedEnabledChains();
-      const chainIdentifiers = chainStore.chainInfos.map(
-        (item, index) => item.chainIdentifier
-      );
-      await chainStore.enableChainInfoInUIWithVaultId(
-        vaultId,
-        ...chainIdentifiers
-      );
-      setVaultId(vaultId);
-      resetTo(SCREENS.RegisterDone, {
-        password: password,
-        type: "new",
-        walletName,
-      });
-    } catch (err) {
-      console.log("errrr,", err);
-    }
+    // try {
+    //   const newWalletName =
+    //     walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
+    //   await chainStore.waitUntilInitialized();
+    //
+    //   await chainStore.updateChainInfosFromBackground();
+    //
+    //   let vaultId: unknown;
+    //   const mnemonic = trimWordsStr(words);
+    //
+    //   if (!isPrivateKey(mnemonic)) {
+    //     vaultId = await keyRingStore.newMnemonicKey(
+    //       mnemonic,
+    //       bip44Option.bip44HDPath,
+    //       newWalletName,
+    //       password
+    //     );
+    //   } else if (isPrivateKey(mnemonic)) {
+    //     const privateKey = Buffer.from(
+    //       mnemonic.trim().replace("0x", ""),
+    //       "hex"
+    //     );
+    //     vaultId = await keyRingStore.newPrivateKeyKey(
+    //       privateKey,
+    //       {},
+    //       newWalletName,
+    //       password
+    //     );
+    //   } else {
+    //     throw new Error("Invalid props");
+    //   }
+    //   if (typeof vaultId !== "string") {
+    //     throw new Error("Unknown error");
+    //   }
+    //
+    //   await chainStore.waitSyncedEnabledChains();
+    //   const chainIdentifiers = chainStore.chainInfos.map(
+    //     (item, index) => item.chainIdentifier
+    //   );
+    //   await chainStore.enableChainInfoInUIWithVaultId(
+    //     vaultId,
+    //     ...chainIdentifiers
+    //   );
+    //   setVaultId(vaultId);
+    //   resetTo(SCREENS.RegisterDone, {
+    //     password: password,
+    //     type: "new",
+    //     walletName,
+    //   });
+    // } catch (err) {
+    //   console.log("errrr,", err);
+    // }
+    navigation.reset({
+      routes: [
+        {
+          name: "Register.FinalizeKey",
+          params: {
+            name: route.params.walletName,
+            password: password,
+            stepPrevious: route.params.stepPrevious + 1,
+            stepTotal: route.params.stepTotal,
+            mnemonic: {
+              value: route.params.words,
+              bip44Path: bip44PathState.getPath(),
+              isFresh: true,
+            },
+          },
+        },
+      ],
+    });
   };
   const {
     control,

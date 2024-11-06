@@ -2,33 +2,39 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
   InteractionManager,
+  Platform,
+  StyleSheet,
   Text,
   TextInput as NativeTextInput,
+  View,
 } from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useStyle } from "../../../styles";
-import { Box } from "../../../components/box";
 import { Gutter } from "../../../components/gutter";
 import { XAxis } from "../../../components/axis";
 import { TextInput } from "../../../components/input";
-import { useForm } from "react-hook-form";
-import { Bip44PathView, useBIP44PathState } from "../components/bip-path-44";
-import { ScrollViewRegisterContainer } from "../components/scroll-view-register-container";
-import { VerticalCollapseTransition } from "../../../components/transition";
-import { NamePasswordInput } from "../components/name-password-input";
+import { Controller, useForm } from "react-hook-form";
 import { useEffectOnce } from "@hooks/use-effect-once";
-import { RootStackParamList } from "@src/router/root";
+import { goBack, navigate, RootStackParamList } from "@src/router/root";
 import { OWButton } from "@components/button";
+import { useTheme } from "@src/themes/theme-provider";
+import { RectButton, ScrollView } from "react-native-gesture-handler";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import OWIcon from "@components/ow-icon/ow-icon";
+import OWText from "@components/text/ow-text";
+import { metrics, spacing, typography } from "@src/themes";
+import { SCREENS } from "@common/constants";
+import { useStore } from "@src/stores";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
   const style = useStyle();
   const route =
     useRoute<RouteProp<RootStackParamList, "Register.VerifyMnemonic">>();
-
+  const bip44PathState = useBIP44PathState();
   const navigation = useNavigation<StackNavProp>();
-
+  const { keyRingStore } = useStore();
   const {
     control,
     handleSubmit,
@@ -50,14 +56,8 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const [inputs, setInputs] = useState<Record<number, string | undefined>>({});
   const [validatingStarted, setValidatingStarted] = useState<boolean>(false);
 
-  const bip44PathState = useBIP44PathState();
-  const [isOpenBip44PathView, setIsOpenBip44PathView] = React.useState(false);
-
-  // 그냥 첫번째 word input에 시작시 focus를 준다.
   const firstWordInputRef = React.useRef<NativeTextInput>(null);
   useEffectOnce(() => {
-    // XXX: 병맛이지만 RN에서 스크린이 변할때 바로 mount에서 focus를 주면 안드로이드에서 키보드가 안뜬다.
-    //      이 경우 settimeout을 쓰라지만... 그냥 스크린이 다 뜨면 포커스를 주는 것으로 한다.
     InteractionManager.runAfterInteractions(() => {
       firstWordInputRef.current?.focus();
     });
@@ -109,16 +109,27 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
     return true;
   };
-
+  const needPassword = keyRingStore.keyInfos.length === 0;
   const onSubmit = handleSubmit((data) => {
+    console.log(data, "data");
+    console.log(validate(), "validate()");
     if (validate()) {
+      if (needPassword) {
+        navigate(SCREENS.RegisterNewPincode, {
+          walletName: data.name,
+          words: route.params.mnemonic,
+          stepTotal: route.params.stepTotal,
+          stepPrevious: route.params.stepPrevious,
+        });
+        return;
+      }
       navigation.reset({
         routes: [
           {
             name: "Register.FinalizeKey",
             params: {
               name: data.name,
-              password: data.password,
+              password: "",
               stepPrevious: route.params.stepPrevious + 1,
               stepTotal: route.params.stepTotal,
               mnemonic: {
@@ -132,114 +143,217 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       });
     }
   });
-
-  return (
-    <ScrollViewRegisterContainer
-      paragraph={`${intl.formatMessage({
-        id: "pages.register.components.header.header-step.title",
-      })} ${route.params.stepPrevious + 1}/${route.params.stepTotal}`}
-      bottomButton={{
-        text: intl.formatMessage({
-          id: "button.next",
-        }),
-        size: "large",
-        onPress: onSubmit,
-      }}
-      paddingX={20}
-    >
-      <Gutter size={12} />
-
-      <Text style={style.flatten(["color-text-low", "body1", "text-center"])}>
-        <FormattedMessage id="pages.register.verify-mnemonic.paragraph" />
-      </Text>
-
-      <Gutter size={12} />
-
-      <Box
-        width="100%"
-        alignX="center"
-        alignY="center"
-        paddingX={55}
-        paddingY={25}
-        backgroundColor={style.get("color-gray-600").color}
-        borderRadius={8}
-        style={{ gap: 16 }}
-      >
-        {verifyingWords.map(({ index, word }, i) => {
-          return (
-            <XAxis alignY="center" key={index}>
-              <Text style={style.flatten(["subtitle2", "color-gray-100"])}>
-                <FormattedMessage
-                  id="pages.register.verify-mnemonic.verifying-box.word"
-                  values={{ index: index + 1 }}
-                />
-              </Text>
-
-              <Gutter size={16} />
-
-              <TextInput
-                ref={i === 0 ? firstWordInputRef : secondWordInputRef}
-                autoCapitalize="none"
-                containerStyle={{ width: 120 }}
-                onChangeText={(text) => {
-                  setInputs({
-                    ...inputs,
-                    [index]: text,
-                  });
-                }}
-                errorBorder={(() => {
-                  if (validatingStarted) {
-                    return inputs[index]?.trim() !== word;
-                  }
-                  return false;
-                })()}
-                returnKeyType={"next"}
-                onSubmitEditing={() => {
-                  if (i === 0) {
-                    secondWordInputRef.current?.focus();
-                  } else {
-                    setFocus("name");
-                  }
-                }}
-              />
-            </XAxis>
-          );
-        })}
-      </Box>
-
-      <Gutter size={20} />
-
-      <NamePasswordInput
-        control={control}
-        errors={errors}
-        getValues={getValues}
-        setFocus={setFocus}
-        onSubmit={onSubmit}
+  const { colors } = useTheme();
+  const styles = useStyles();
+  const renderWalletName = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label=""
+        topInInputContainer={
+          <View style={{ paddingBottom: 4 }}>
+            <OWText>Wallet Name</OWText>
+          </View>
+        }
+        returnKeyType="next"
+        inputStyle={{
+          width: metrics.screenWidth - 32,
+          borderColor: colors["neutral-border-strong"],
+        }}
+        style={{ fontWeight: "600", paddingLeft: 4, fontSize: 15 }}
+        inputLeft={
+          <OWIcon
+            size={20}
+            name="wallet-outline"
+            color={colors["primary-text-action"]}
+          />
+        }
+        placeholder={"Your name"}
+        error={errors.name?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+        onSubmitEditing={onSubmit}
       />
-
-      <Gutter size={16} />
-
-      <VerticalCollapseTransition collapsed={isOpenBip44PathView}>
-        <Box alignX="center">
-          <OWButton
-            label={intl.formatMessage({ id: "button.advanced" })}
-            size="small"
-            type="secondary"
-            onPress={() => {
-              setIsOpenBip44PathView(true);
+    );
+  };
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <TouchableOpacity onPress={goBack} style={styles.goBack}>
+          <OWIcon
+            size={16}
+            color={colors["neutral-icon-on-light"]}
+            name="arrow-left"
+          />
+        </TouchableOpacity>
+        <View
+          style={[
+            styles.aic,
+            styles.title,
+            {
+              paddingHorizontal: 20,
+            },
+          ]}
+        >
+          <OWText variant="heading" style={{ textAlign: "center" }} typo="bold">
+            Verify recovery phrase
+          </OWText>
+          <OWText
+            variant={"body2"}
+            size={14}
+            color={colors["neutral-text-body"]}
+            style={{
+              textAlign: "center",
+              paddingTop: 10,
             }}
+          >
+            The purpose of this process is to ensure that you have written down
+            your recovery phrase.
+          </OWText>
+
+          <View
+            style={{
+              alignItems: "center",
+              paddingVertical: 16,
+            }}
+          >
+            {verifyingWords.map(({ index, word }, i) => {
+              return (
+                <XAxis alignY="center" key={index}>
+                  <Text style={style.flatten(["subtitle2", "color-gray-100"])}>
+                    <FormattedMessage
+                      id="pages.register.verify-mnemonic.verifying-box.word"
+                      values={{ index: index + 1 }}
+                    />
+                  </Text>
+
+                  <Gutter size={16} />
+
+                  <TextInput
+                    ref={i === 0 ? firstWordInputRef : secondWordInputRef}
+                    autoCapitalize="none"
+                    containerStyle={{ width: 120 }}
+                    onChangeText={(text) => {
+                      setInputs({
+                        ...inputs,
+                        [index]: text,
+                      });
+                    }}
+                    errorBorder={(() => {
+                      if (validatingStarted) {
+                        return inputs[index]?.trim() !== word;
+                      }
+                      return false;
+                    })()}
+                    returnKeyType={"next"}
+                    onSubmitEditing={() => {
+                      if (i === 0) {
+                        secondWordInputRef.current?.focus();
+                      } else {
+                        setFocus("name");
+                      }
+                    }}
+                  />
+                </XAxis>
+              );
+            })}
+          </View>
+          <Controller
+            control={control}
+            rules={{
+              required: "Name is required",
+            }}
+            render={renderWalletName}
+            name={"name"}
           />
-        </Box>
-      </VerticalCollapseTransition>
-      {
-        <VerticalCollapseTransition collapsed={!isOpenBip44PathView}>
-          <Bip44PathView
-            state={bip44PathState}
-            setIsOpen={setIsOpenBip44PathView}
+        </View>
+      </ScrollView>
+
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32,
+            }}
+            label={"Next"}
+            onPress={onSubmit}
           />
-        </VerticalCollapseTransition>
-      }
-      <Gutter size={16} />
-    </ScrollViewRegisterContainer>
+        </View>
+      </View>
+    </View>
   );
 });
+
+const useStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    titleHeaderView: {
+      fontSize: 24,
+      lineHeight: 34,
+      fontWeight: "700",
+      color: colors["text-title-login"],
+    },
+    headerView: {
+      height: 72,
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    containerContentScroll: {
+      paddingTop: Platform.OS == "android" ? 50 : 0,
+      paddingHorizontal: spacing["page-pad"],
+    },
+    headerContainer: {
+      height: 72,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    container: {
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: "space-between",
+      height: "100%",
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    signIn: {
+      width: "100%",
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors["neutral-border-default"],
+      padding: 16,
+    },
+    aic: {
+      // alignItems: "center",
+      paddingBottom: 20,
+    },
+    rc: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    goBack: {
+      backgroundColor: colors["neutral-surface-action3"],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+      marginLeft: 16,
+    },
+    borderInput: {
+      borderColor: colors["border-purple-100-gray-800"],
+      backgroundColor: "transparent",
+      borderWidth: 1,
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8,
+    },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24,
+    },
+  });
+};

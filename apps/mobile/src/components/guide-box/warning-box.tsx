@@ -7,6 +7,7 @@ import { Stack } from "../stack";
 import { Text } from "react-native";
 import { Path, Svg } from "react-native-svg";
 import { IconProps } from "@components/icon";
+import { useTheme } from "@src/themes/theme-provider";
 // import {IconProps} from '../icon/types';
 
 export const WarningBox: FunctionComponent<Omit<GuideBoxProps, "color">> = ({
@@ -16,7 +17,7 @@ export const WarningBox: FunctionComponent<Omit<GuideBoxProps, "color">> = ({
   bottom,
 }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   return (
     <Box borderRadius={8} padding={18}>
       <Stack gutter={8}>
@@ -30,7 +31,12 @@ export const WarningBox: FunctionComponent<Omit<GuideBoxProps, "color">> = ({
           {titleRight}
         </Columns>
         {paragraph ? (
-          <Text style={style.flatten(["body2", "color-white"])}>
+          <Text
+            style={{
+              ...style.flatten(["body2", "color-white"]),
+              color: colors["neutral-text-title"],
+            }}
+          >
             {paragraph}
           </Text>
         ) : null}

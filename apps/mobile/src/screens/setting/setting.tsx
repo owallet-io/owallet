@@ -54,7 +54,6 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   //   (keyStore) => keyStore.selected
   // );
   const selectedKeyInfo = keyRingStore.selectedKeyInfo;
-  console.log(selectedKeyInfo.name, "selectedKeyInfo");
   const _onPressCountryModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
