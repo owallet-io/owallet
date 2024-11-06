@@ -10,11 +10,6 @@ import {
 import { KeyRing, KeyRingBtc } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
-import { getKeyPairByMnemonic } from "@owallet/bitcoin/build/helpers";
-import * as bitcoin from "bitcoinjs-lib";
-import { networks } from "@owallet/bitcoin/build/networks";
-import bip32 = networks.bitcoin.bip32;
-import { Utxos } from "@owallet/stores-btc/build/queries/types";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");

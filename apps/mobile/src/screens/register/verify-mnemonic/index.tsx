@@ -26,6 +26,7 @@ import OWText from "@components/text/ow-text";
 import { metrics, spacing, typography } from "@src/themes";
 import { SCREENS } from "@common/constants";
 import { useStore } from "@src/stores";
+import { useBIP44PathState } from "@screens/register/components/bip-path-44";
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const intl = useIntl();

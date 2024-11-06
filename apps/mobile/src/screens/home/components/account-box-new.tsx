@@ -755,23 +755,6 @@ export const AccountBoxAll: FunctionComponent<{
                   navigate(SCREENS.BuyFiat);
                   return;
                 }
-                // if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                //   navigate(SCREENS.SendTron, {
-                //     currency:
-                //       chainStore.current.stakeCurrency.coinMinimalDenom,
-                //   });
-                // } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                //   navigate(SCREENS.SendOasis, {
-                //     currency:
-                //       chainStore.current.stakeCurrency.coinMinimalDenom,
-                //   });
-                // } else if (chainStore.current.networkType === "bitcoin") {
-                //   navigate(SCREENS.SendBtc);
-                // } else if (chainStore.current.networkType === "evm") {
-                //   navigate(SCREENS.SendEvm);
-                // } else {
-                //   navigate(SCREENS.NewSend);
-                // }
                 navigate(SCREENS.Send, {
                   coinMinimalDenom:
                     chainStore.current.feeCurrencies?.[0].coinMinimalDenom,

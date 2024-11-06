@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useState } from "react";
-import { KeyRingStatus } from "@owallet/background";
 import { NavigationContainer } from "@react-navigation/native";
 import { useStore } from "./stores";
 import { observer } from "mobx-react-lite";
@@ -13,9 +12,7 @@ import { SCREENS, SCREENS_OPTIONS } from "./common/constants";
 import { MainTabNavigation } from "./navigations";
 import { useTheme } from "./themes/theme-provider";
 import { PincodeUnlockScreen } from "./screens/unlock/pincode-unlock";
-import { RecoverPhraseScreen } from "./screens/register/mnemonic/recover-phrase";
-import { TokenDetailsScreen, TokensScreen } from "./screens/tokens";
-import { BackupMnemonicScreen } from "./screens/register/mnemonic/backup-mnemonic";
+import { TokenDetailsScreen } from "./screens/tokens";
 import { RegisterEndScreen } from "./screens/register/end";
 import { RegisterDoneScreen } from "./screens/register/done";
 import { NewLedgerScreen } from "./screens/register/ledger";
@@ -30,9 +27,6 @@ import { DelegateDetailScreen } from "./screens/stake/delegate/delegate-detail";
 import { RedelegateScreen } from "./screens/stake/redelegate";
 import { UndelegateScreen } from "./screens/stake/undelegate";
 import { SendScreen } from "./screens/send";
-import { PincodeScreen } from "./screens/pincode/pincode";
-import { SendCosmosScreen } from "./screens/send/send-cosmos";
-import { SendEvmScreen } from "./screens/send/send-evm";
 import TxTransactionsScreen from "./screens/transactions/tx-transaction-screen";
 import { HistoryDetail } from "./screens/transactions/history-detail";
 import { CameraScreen } from "./screens/camera";
@@ -45,8 +39,6 @@ import {
   TxSuccessResultScreen,
 } from "./screens/tx-result";
 import BuyFiat from "./screens/home/buy-fiat";
-import { SendTronScreen } from "./screens/send/send-tron";
-import { SendBtcScreen } from "./screens/send/send-btc";
 import { OnboardingIntroScreen } from "./screens/onboarding";
 import { RegisterIntroScreen } from "./screens/register";
 import { NewPincodeScreen } from "./screens/register/register-pincode";
@@ -67,7 +59,6 @@ import OWButtonIcon from "@components/button/ow-button-icon";
 import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
 import LottieView from "lottie-react-native";
 import { metrics } from "./themes";
-import { Text, View } from "react-native";
 import { ChainIdEnum } from "@owallet/common";
 import { ConnectLedgerScreen } from "@screens/register/connect-ledger";
 import { ConnectHardwareWalletScreen } from "@screens/register/connect-hardware";
@@ -77,6 +68,7 @@ import { WelcomeScreen } from "@screens/register/welcome";
 import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
 import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
 import { SendEvmNewScreen } from "./screens/send/send-evm-new";
+import { RecoverMnemonicScreen } from "@screens/register/recover-mnemonic";
 
 const Stack = createStackNavigator();
 const FullScreenModal = observer(() => {
@@ -330,24 +322,12 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
             <Stack.Screen
               name={SCREENS.RegisterRecoverPhrase}
-              component={RecoverPhraseScreen}
+              component={RecoverMnemonicScreen}
             />
             <Stack.Screen
               name={SCREENS.RegisterNewPincode}
               component={NewPincodeScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.BackupMnemonic}*/}
-            {/*    component={BackupMnemonicScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen*/}
-            {/*    options={{*/}
-            {/*      headerShown: false,*/}
-            {/*    }}*/}
-            {/*    name={SCREENS.RegisterMain}*/}
-            {/*    component={NewMnemonicScreen}*/}
-            {/*  />*/}
-
             <Stack.Screen
               name={SCREENS.RegisterVerifyMnemonic}
               component={VerifyMnemonicScreen}
@@ -360,18 +340,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.RegisterDone}
               component={RegisterDoneScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterRecoverMnemonicMain}*/}
-            {/*    component={RecoverMnemonicScreen}*/}
-            {/*  />*/}
             <Stack.Screen
               name={SCREENS.RegisterNewMnemonic}
               component={NewMnemonicScreen}
             />
-            {/*<Stack.Screen*/}
-            {/*  name={SCREENS.RegisterRecoverPhraseMain}*/}
-            {/*  component={RecoverPhraseScreen}*/}
-            {/*/>*/}
             <Stack.Screen
               name={SCREENS.RegisterNewLedger}
               component={ConnectHardwareWalletScreen}
@@ -380,11 +352,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.ConnectNewLedger}
               component={ConnectLedgerScreen}
             />
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.RegisterNewLedgerMain}*/}
-            {/*    component={NewLedgerScreen}*/}
-            {/*  />*/}
-            {/*  <Stack.Screen name={SCREENS.Tokens} component={TokensScreen} />*/}
             <Stack.Screen name={SCREENS.Nfts} component={NftsScreen} />
             <Stack.Screen
               name={SCREENS.NftsDetail}
@@ -412,22 +379,12 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.Undelegate}
               component={UndelegateScreen}
             />
-            {/*  <Stack.Screen name={SCREENS.Send} component={SendScreen} />*/}
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.PincodeScreen}*/}
-            {/*    component={PincodeScreen}*/}
-            {/*  />*/}
 
             {/*  <Stack.Screen*/}
             {/*    name={SCREENS.SettingBackupMnemonic}*/}
             {/*    component={BackupMnemonicScreen}*/}
             {/*  />*/}
-            {/*  /!*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*!/*/}
-            {/*<Stack.Screen name={SCREENS.NewSend} component={SendCosmosScreen} />*/}
             <Stack.Screen name={SCREENS.Send} component={SendScreen} />
-
-            <Stack.Screen name={SCREENS.SendEvm} component={SendEvmNewScreen} />
-            {/*  <Stack.Screen name={SCREENS.SendOasis} component={SendEvmScreen} />*/}
             <Stack.Screen
               name={SCREENS.Transactions}
               component={TxTransactionsScreen}
@@ -456,8 +413,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
 
             <Stack.Screen name={SCREENS.BuyFiat} component={BuyFiat} />
-            {/*  <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />*/}
-            {/*  <Stack.Screen name={SCREENS.SendBtc} component={SendBtcScreen} />*/}
             <Stack.Screen
               name={SCREENS.TxFailedResult}
               component={TxFailedResultScreen}
