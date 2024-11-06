@@ -42,6 +42,7 @@ import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBIP44PathState } from "@screens/register/components/bip-path-44";
+import { Buffer } from "buffer";
 
 interface FormData {
   name: string;
@@ -69,10 +70,6 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
 
-  // const registerConfig = useRegisterConfig(keyRingStore, []);
-  const words: string = route.params?.words;
-  const walletName: string = route.params?.walletName;
-  const bip44Option = useBIP44Option();
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
   const [confirmCode, setConfirmCode] = useState(null);
@@ -83,18 +80,8 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-  const [vaultId, setVaultId] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [isScreenTransitionEnded, setIsScreenTransitionEnded] = useState(false);
-  const [candidateAddresses, setCandidateAddresses] = useState<
-    {
-      chainId: string;
-      bech32Addresses: {
-        coinType: number;
-        address: string;
-      }[];
-    }[]
-  >([]);
   useFocusEffect(
     React.useCallback(() => {
       const task = InteractionManager.runAfterInteractions(() => {
@@ -109,24 +96,48 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const onVerifyMnemonic = async () => {
     if (isCreating) return;
     setIsCreating(true);
-    navigation.reset({
-      routes: [
-        {
-          name: "Register.FinalizeKey",
-          params: {
-            name: route.params.walletName,
-            password: password,
-            stepPrevious: route.params.stepPrevious + 1,
-            stepTotal: route.params.stepTotal,
-            mnemonic: {
-              value: route.params.words,
-              bip44Path: bip44PathState.getPath(),
-              isFresh: true,
+    if (isPrivateKey(route.params.words)) {
+      const privateKey = Buffer.from(
+        route.params.words.trim().replace("0x", ""),
+        "hex"
+      );
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              privateKey: {
+                hexValue: privateKey.toString("hex"),
+                meta: {},
+              },
             },
           },
-        },
-      ],
-    });
+        ],
+      });
+    } else {
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              mnemonic: {
+                value: route.params.words,
+                bip44Path: bip44PathState.getPath(),
+                isFresh: true,
+              },
+            },
+          },
+        ],
+      });
+    }
   };
   const {
     control,

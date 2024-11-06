@@ -144,6 +144,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
             }}
           />
           <WordsCard words={words} />
+          <CopyToClipboard text={words.join(" ")} />
         </View>
       </ScrollView>
 
@@ -203,11 +204,12 @@ export const CopyToClipboard: FunctionComponent<{ text: string }> = ({
               id: "pages.register.components.copy-to-clipboard.button-before",
             })
       }
-      textStyle={{
-        color: style.flatten([hasCopied ? "color-green-400" : "color-gray-50"])
-          .color,
-      }}
-      size="large"
+      // textStyle={{
+      //   color: style.flatten([hasCopied ? "color-green-400" : "color-gray-50"])
+      //     .color,
+      // }}
+      size="small"
+      type={"secondary"}
       onPress={async () => {
         await Clipboard.setString(text);
 
@@ -217,16 +219,7 @@ export const CopyToClipboard: FunctionComponent<{ text: string }> = ({
           setHasCopied(false);
         }, 1000);
       }}
-      iconRight={
-        hasCopied ? (
-          <LottieView
-            source={require("@assets/animations/loading_owallet.json")}
-            loop={false}
-            autoPlay
-            style={style.flatten(["width-20", "height-20"])}
-          />
-        ) : undefined
-      }
+      iconRight={hasCopied ? <CheckIcon /> : undefined}
     />
   );
 };
@@ -372,22 +365,22 @@ const WordsCard: FunctionComponent<{
             flex: 1,
           }}
         />
-        <OWButton
-          style={styles.padIcon}
-          onPress={onCopy}
-          icon={
-            isTimedOut ? (
-              <CheckIcon />
-            ) : (
-              <OWIcon
-                name="copy"
-                color={colors["icon-primary-surface-default-gray"]}
-                size={20}
-              />
-            )
-          }
-          type="link"
-        />
+        {/*<OWButton*/}
+        {/*  style={styles.padIcon}*/}
+        {/*  onPress={onCopy}*/}
+        {/*  icon={*/}
+        {/*    isTimedOut ? (*/}
+        {/*      <CheckIcon />*/}
+        {/*    ) : (*/}
+        {/*      <OWIcon*/}
+        {/*        name="copy"*/}
+        {/*        color={colors["icon-primary-surface-default-gray"]}*/}
+        {/*        size={20}*/}
+        {/*      />*/}
+        {/*    )*/}
+        {/*  }*/}
+        {/*  type="link"*/}
+        {/*/>*/}
       </View>
     </View>
   );

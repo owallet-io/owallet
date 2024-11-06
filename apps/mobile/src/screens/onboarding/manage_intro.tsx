@@ -76,7 +76,7 @@ const ManageIntroScreen: FunctionComponent = () => {
             <OWText
               size={18}
               weight={"800"}
-              color={colors["nertural-text-title"]}
+              color={colors["neutral-text-title"]}
             >
               OWallet
             </OWText>
@@ -94,14 +94,14 @@ const ManageIntroScreen: FunctionComponent = () => {
           <OWText
             style={styles.label}
             weight="800"
-            color={colors["nertural-text-title"]}
+            color={colors["neutral-text-title"]}
           >
             LEVERAGE EXPERIENCES
           </OWText>
           <OWText
             style={styles.label}
             weight="800"
-            color={colors["nertural-text-title"]}
+            color={colors["neutral-text-title"]}
           >
             WITH POWER OF AI
           </OWText>

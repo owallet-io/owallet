@@ -11,7 +11,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 // import {RootStackParamList, StackNavProp} from '../../../navigation';
-import { InteractionManager, Text, View } from "react-native";
+import { Image, InteractionManager, StyleSheet, View } from "react-native";
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -23,6 +23,10 @@ import { ViewRegisterContainer } from "../components/view-register-container";
 import { Buffer } from "buffer/";
 import { FormattedMessage } from "react-intl";
 import { RootStackParamList } from "@src/router/root";
+import { metrics } from "@src/themes";
+import { PageWithView } from "@components/page";
+import { useTheme } from "@src/themes/theme-provider";
+import { Text } from "@components/text";
 
 const SimpleProgressBar: FunctionComponent<{
   progress: number;
@@ -101,13 +105,31 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
 
   const [queryRoughlyDone, setQueryRoughlyDone] = useState(false);
   const [queryProgress, setQueryProgress] = useState(0);
+  const { colors } = useTheme();
+
+  const styles = styling(colors);
+  const [count, setCount] = useState(0);
   const unmounted = useRef(false);
   useEffect(() => {
     return () => {
       unmounted.current = true;
     };
   }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((prevCount) => {
+        if (prevCount === 3) {
+          return 1; // Reset to 1
+        } else {
+          return prevCount + 1; // Increment count
+        }
+      });
+    }, 600); // Interval in milliseconds
 
+    return () => {
+      clearInterval(interval); // Clean up interval on component unmount
+    };
+  }, []);
   useEffect(() => {
     if (!isScreenTransitionEnded) {
       return;
@@ -372,39 +394,133 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
   ]);
 
   return (
-    <ViewRegisterContainer
-      forceEnableTopSafeArea={true}
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
+    // <ViewRegisterContainer
+    //   forceEnableTopSafeArea={true}
+    //   contentContainerStyle={{
+    //     flexGrow: 1,
+    //     alignItems: "center",
+    //   }}
+    // >
+    //   <View style={{ flex: 1 }} />
+    //   <LottieView
+    //     source={require("@assets/animations/loading_owallet.json")}
+    //     loop={true}
+    //     autoPlay={true}
+    //     style={{ width: "80%", aspectRatio: 1 }}
+    //   />
+    //   <View
+    //     style={{
+    //       flex: 2,
+    //     }}
+    //   />
+    //   <Text style={style.flatten(["subtitle3", "color-text-low"])}>
+    //     <FormattedMessage id="pages.register.finalize-key.loading.text" />
+    //   </Text>
+    //   <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
+    //     <SimpleProgressBar progress={queryProgress} />
+    //   </Box>
+    //   <Text style={style.flatten(["body2", "color-text-low", "text-center"])}>
+    //     ({(queryProgress * 100).toFixed(0)}%/ 100%)
+    //   </Text>
+    //   <View
+    //     style={{
+    //       flex: 1,
+    //     }}
+    //   />
+    // </ViewRegisterContainer>
+    <PageWithView
+      disableSafeArea
+      style={{
+        backgroundColor: colors["neutral-surface-card"],
+        justifyContent: "space-between",
       }}
     >
-      <View style={{ flex: 1 }} />
-      <LottieView
-        source={require("@assets/animations/loading_owallet.json")}
-        loop={true}
-        autoPlay={true}
-        style={{ width: "80%", aspectRatio: 1 }}
-      />
       <View
         style={{
-          flex: 2,
+          display: "flex",
+          alignItems: "center",
         }}
-      />
-      <Text style={style.flatten(["subtitle3", "color-text-low"])}>
-        <FormattedMessage id="pages.register.finalize-key.loading.text" />
-      </Text>
-      <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
-        <SimpleProgressBar progress={queryProgress} />
-      </Box>
-      <Text style={style.flatten(["body2", "color-text-low", "text-center"])}>
-        ({(queryProgress * 100).toFixed(0)}%/ 100%)
-      </Text>
-      <View
-        style={{
-          flex: 1,
-        }}
-      />
-    </ViewRegisterContainer>
+      >
+        <View>
+          <View style={styles.container}>
+            <Image
+              style={{
+                width: metrics.screenWidth,
+                height: metrics.screenWidth,
+              }}
+              source={require("@assets/image/img-bg.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </View>
+          <View style={styles.containerCheck}>
+            <Image
+              style={styles.img}
+              source={require("@assets/image/logo_group.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <Text size={28} weight={"700"} style={styles.text}>
+              {"CREATING"}
+            </Text>
+            <Text size={28} weight={"700"} style={styles.text}>
+              YOUR WALLET
+              {Array.from({ length: count }, (_, index) => ".").map((d) => {
+                return (
+                  <Text size={28} weight={"700"} style={styles.text}>
+                    {d}
+                  </Text>
+                );
+              })}
+            </Text>
+            <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
+              <SimpleProgressBar progress={queryProgress} />
+            </Box>
+            <Text
+              style={{
+                ...style.flatten(["body2", "color-text-low", "text-center"]),
+                color: colors["neutral-text-title"],
+              }}
+            >
+              ({(queryProgress * 100).toFixed(0)}%/ 100%)
+            </Text>
+          </View>
+          {/*<Text style={style.flatten(["subtitle3", "color-text-low"])}>*/}
+          {/*  <FormattedMessage id="pages.register.finalize-key.loading.text" />*/}
+          {/*</Text>*/}
+        </View>
+      </View>
+    </PageWithView>
   );
 });
+const styling = (colors) =>
+  StyleSheet.create({
+    btnDone: {
+      width: "100%",
+      alignItems: "center",
+      padding: 16,
+      marginBottom: 42,
+    },
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "absolute",
+      top: 0,
+    },
+    containerCheck: {
+      alignItems: "center",
+      justifyContent: "center",
+      width: metrics.screenWidth,
+      height: metrics.screenHeight,
+    },
+    text: {
+      color: colors["neutral-text-title"],
+      lineHeight: 34,
+    },
+    img: {
+      width: metrics.screenWidth / 1.6,
+      height: metrics.screenWidth / 1.6,
+      marginBottom: 32,
+    },
+  });

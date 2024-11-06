@@ -232,7 +232,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
                 headerRight: () => (
                   <HeaderRightButton
                     onPress={() => {
-                      // analyticsStore.logEvent("Add additional account started");
                       navigate(SCREENS.RegisterIntro, {
                         canBeBack: true,
                       });
@@ -296,7 +295,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
             />
             <Stack.Screen
               name="Register.FinalizeKey"
-              options={{ headerShown: false }}
+              // options={{ headerShown: false }}
               component={FinalizeKeyScreen}
             />
             <Stack.Screen
