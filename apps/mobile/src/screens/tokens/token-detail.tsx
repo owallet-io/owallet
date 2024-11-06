@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { spacing } from "../../themes";
-import { _keyExtract } from "../../utils/helper";
 import { navigate, setOptions } from "../../router/root";
 import { useTheme } from "@src/themes/theme-provider";
 import { StyleSheet, View, InteractionManager, Clipboard } from "react-native";
@@ -9,18 +8,9 @@ import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
 import { metrics } from "@src/themes";
-import { API } from "@src/common/api";
 import { useSimpleTimer } from "@src/hooks";
-// import { PageHeader } from "@src/components/header/header-new";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SCREENS } from "@src/common/constants";
-import {
-  ChainIdEnum,
-  DenomHelper,
-  getBase58Address,
-  TRC20_LIST,
-  unknownToken,
-} from "@owallet/common";
+import { DenomHelper, unknownToken } from "@owallet/common";
 import {
   maskedNumber,
   removeDataInParentheses,
@@ -32,13 +22,10 @@ import { ViewToken } from "@src/stores/huge-queries";
 import { CoinPretty, PricePretty } from "@owallet/unit";
 import { HistoryByToken } from "@src/screens/transactions/history-by-token";
 import { PageWithScrollView } from "@src/components/page";
-import { tracking } from "@src/utils/tracking";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import MoreModal from "../home/components/more-modal";
-import { HeaderOptions } from "@react-navigation/elements";
-import { StackNavigationOptions } from "@react-navigation/stack";
 import { OWHeaderTitle } from "@components/header";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
@@ -69,47 +56,10 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const account = allAccountStore.getAccount(item.chainInfo.chainId);
 
   const address =
-    item.token.currency.type === "legacy"
+    item.token.currency?.type === "legacy"
       ? account.btcLegacyAddress
       : account.addressDisplay;
   const onPressToken = async () => {
-    // chainStore.selectChain(item.chainInfo.chainId);
-    // await chainStore.saveLastViewChainId();
-
-    // if (chainStore.current.networkType === "bitcoin") {
-    //   navigate(SCREENS.SendBtc);
-    //   return;
-    // }
-    // if (chainStore.current.networkType === "evm") {
-    //   if (item.chainInfo.chainId === ChainIdEnum.TRON) {
-    //     const itemTron = tronTokens?.find((t) => {
-    //       return t.coinGeckoId === item.token.currency.coinGeckoId;
-    //     });
-
-    //     navigate(SCREENS.SendTron, {
-    //       item: itemTron,
-    //       currency: item.token.currency.coinDenom,
-    //       contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-    //         .contractAddress,
-    //     });
-
-    //     return;
-    //   }
-    //   if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
-    //     navigate(SCREENS.SendOasis, {
-    //       currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-    //     });
-    //     return;
-    //   }
-    //   navigate(SCREENS.SendEvm, {
-    //     currency: item.token.currency.coinDenom,
-    //     contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-    //       .contractAddress,
-    //     coinGeckoId: item.token.currency.coinGeckoId,
-    //   });
-    //   return;
-    // }
-
     try {
       navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
@@ -270,7 +220,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               onPress={() => {
                 navigate(SCREENS.QRScreen, {
                   chainId: item.chainInfo.chainId,
-                  isBtcLegacy: item.token.currency.type === "legacy",
+                  isBtcLegacy: item.token.currency?.type === "legacy",
                 });
                 return;
               }}
