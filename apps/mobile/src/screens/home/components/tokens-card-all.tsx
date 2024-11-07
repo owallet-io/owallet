@@ -240,9 +240,9 @@ const TokenItem: FC<{
     });
     return;
   };
-  // const price24h = item.token?.currency?.coinGeckoId
-  //   ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
-  //   : 0;
+  const price24h = item.token?.currency?.coinGeckoId
+    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+    : 0;
   return (
     <TouchableOpacity
       onPress={() => {
@@ -285,19 +285,19 @@ const TokenItem: FC<{
 
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token?.currency?.coinDenom)}
-              {/*<Text*/}
-              {/*  size={12}*/}
-              {/*  color={*/}
-              {/*    price24h < 0*/}
-              {/*      ? colors["error-text-body"]*/}
-              {/*      : colors["success-text-body"]*/}
-              {/*  }*/}
-              {/*  style={styles.profit}*/}
-              {/*>*/}
-              {/*  {price24h > 0 ? "+" : ""}*/}
-              {/*  {maskedNumber(price24h, 2, 2)}%*/}
-              {/*</Text>*/}
+              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
+              <Text
+                size={12}
+                color={
+                  price24h < 0
+                    ? colors["error-text-body"]
+                    : colors["success-text-body"]
+                }
+                style={styles.profit}
+              >
+                {price24h > 0 ? "+" : ""}
+                {maskedNumber(price24h, 2, 2)}%
+              </Text>
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}
