@@ -22,11 +22,12 @@ import { defaultSpringConfig } from "../../../styles/spring";
 import { ViewRegisterContainer } from "../components/view-register-container";
 import { Buffer } from "buffer/";
 import { FormattedMessage } from "react-intl";
-import { RootStackParamList } from "@src/router/root";
+import { resetTo, RootStackParamList } from "@src/router/root";
 import { metrics } from "@src/themes";
 import { PageWithView } from "@components/page";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "@components/text";
+import { SCREENS } from "@common/constants";
 
 const SimpleProgressBar: FunctionComponent<{
   progress: number;
@@ -365,22 +366,34 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
       queryRoughlyDone
     ) {
       onceRef.current = true;
-
-      navigation.reset({
-        routes: [
-          {
-            name: "Register.EnableChain",
-            params: {
-              vaultId,
-              candidateAddresses,
-              isFresh: mnemonic?.isFresh ?? false,
-              stepPrevious: stepPrevious,
-              stepTotal: stepTotal,
-              password: password,
+      if (ledger) {
+        navigation.reset({
+          routes: [
+            {
+              name: "Register.EnableChain",
+              params: {
+                vaultId,
+                candidateAddresses,
+                isFresh: mnemonic?.isFresh ?? false,
+                stepPrevious: stepPrevious,
+                stepTotal: stepTotal,
+                password: password,
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+        return;
+      }
+      (async () => {
+        const chainsEnable = chainStore.chainInfos.map(
+          (chainInfo, index) => chainInfo.chainIdentifier
+        );
+        await chainStore.enableChainInfoInUIWithVaultId(
+          vaultId,
+          ...chainsEnable
+        );
+        resetTo(SCREENS.STACK.MainTab);
+      })();
     }
   }, [
     candidateAddresses,

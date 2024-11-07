@@ -25,11 +25,11 @@ export const SettingRemoveAccountItem: FunctionComponent<{
       const vaultId = keyRingStore.selectedKeyInfo.id;
       if (vaultId) {
         await keyRingStore.deleteKeyRing(vaultId, passcode);
+        modalStore.close();
         if (keyRingStore.isEmpty) {
           resetTo(SCREENS.STACK.PincodeUnlock);
           return;
         }
-        modalStore.close();
       }
     } catch (err) {
       showToast({

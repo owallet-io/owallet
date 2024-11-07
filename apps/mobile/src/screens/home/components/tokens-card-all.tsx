@@ -35,14 +35,6 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
-import { ChainInfo } from "@owallet/types";
-import { QueryError } from "@owallet/stores";
-// export interface ViewToken {
-//   token: CoinPretty;
-//   chainInfo: ChainInfo;
-//   isFetching: boolean;
-//   error: QueryError<any> | undefined;
-// }
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   // dataTokens: ViewToken[];
