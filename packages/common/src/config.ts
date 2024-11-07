@@ -213,7 +213,8 @@ export const EmbedChainInfos: ChainInfo[] = [
         contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
         coinDecimals: 6,
         coinGeckoId: "airight",
-        coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
       },
       {
         coinDenom: "TON",
@@ -284,7 +285,8 @@ export const EmbedChainInfos: ChainInfo[] = [
           "orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd",
         coinDecimals: 6,
         coinGeckoId: "bitcoin",
-        coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
       },
       {
         type: "cw20",
@@ -294,7 +296,8 @@ export const EmbedChainInfos: ChainInfo[] = [
         contractAddress: "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
         coinDecimals: 6,
         coinGeckoId: "oraidex",
-        coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/oraix.png",
       },
       {
         type: "cw20",
@@ -342,28 +345,6 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinGeckoId: "injective-protocol",
         coinImageUrl:
           "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png",
-      },
-      {
-        type: "cw20",
-        coinDenom: "KWT",
-        coinMinimalDenom:
-          "cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands",
-        contractAddress: "orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5",
-        coinDecimals: 6,
-        coinGeckoId: "kawaii-islands",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-      },
-      {
-        type: "cw20",
-        coinDenom: "MILKY",
-        coinMinimalDenom:
-          "cw20:orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw:Milky Token",
-        contractAddress: "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw",
-        coinDecimals: 6,
-        coinGeckoId: "milky-token",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
       },
       {
         coinDenom: "WETH",
@@ -530,7 +511,6 @@ export const EmbedChainInfos: ChainInfo[] = [
       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     rpc: "https://bridge-v2.rpc.orai.io",
     rest: "https://bridge-v2.lcd.orai.io",
-    networkType: "cosmos",
     stakeCurrency: {
       coinDenom: "ORAIB",
       coinMinimalDenom: "uoraib",
@@ -559,7 +539,8 @@ export const EmbedChainInfos: ChainInfo[] = [
           coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
           coinDecimals: 18,
           coinGeckoId: "airight",
-          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
         },
         {
           coinDenom: "BEP20 USDT",
@@ -765,6 +746,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     currencies: [
       {
+        type: "erc20",
         coinDenom: "OCH",
         coinMinimalDenom: "erc20:0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
         contractAddress: "0x19373EcBB4B8cC2253D70F2a246fa299303227Ba",
@@ -774,6 +756,7 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
       },
       {
+        type: "erc20",
         coinDenom: "ORAI",
         coinMinimalDenom: "erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5",
         contractAddress: "0x4c11249814f11b9346808179cf06e71ac328c1b5",
@@ -783,13 +766,14 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
       {
+        type: "erc20",
         coinDenom: "ORAIX",
         coinMinimalDenom: "erc20:0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
         contractAddress: "0x2d869aE129e308F94Cc47E66eaefb448CEe0d03e",
         coinDecimals: 18,
         coinGeckoId: "oraidex",
         coinImageUrl:
-          "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/oraix.png",
+          "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/oraix.png",
       },
       {
         coinDenom: "ETH",
@@ -837,6 +821,7 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
       },
       {
+        type: "erc20",
         coinDenom: "ORAI",
         coinMinimalDenom: "erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
         coinDecimals: 18,
@@ -845,12 +830,13 @@ export const EmbedChainInfos: ChainInfo[] = [
           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
       {
+        type: "erc20",
         coinDenom: "AIRI",
         coinMinimalDenom: "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f",
         coinDecimals: 18,
         coinGeckoId: "airight",
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
+          "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
       },
     ],
     feeCurrencies: [
@@ -2420,6 +2406,53 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   ],
   //   features: [],
   // },
+  {
+    chainId: "Neutaro-1",
+    chainName: "Neutaro",
+    rpc: "https://neutaro.rpc.orai.io",
+    rest: "https://neutaro.lcd.orai.io",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
+    currencies: [
+      {
+        coinDenom: "NTMPI",
+        coinMinimalDenom: "uneutaro",
+        coinDecimals: 6,
+        coinGeckoId: "neutaro",
+        coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          ...this.stakeCurrency,
+          gasPriceStep: {
+            low: 0.01,
+            average: 0.025,
+            high: 0.03,
+          },
+        },
+      ];
+    },
+    stakeCurrency: {
+      coinDenom: "NTMPI",
+      coinMinimalDenom: "uneutaro",
+      coinGeckoId: "neutaro",
+      coinImageUrl: "https://asset.brandfetch.io/idKrUw6EdO/ids9m0Bt_7.png",
+      coinDecimals: 6,
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
+    txExplorer: {
+      name: "Neutaro",
+      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
+      //TODO: Not found account explorer for neutaro
+      accountUrl: "https://nms1.neutaro.tech/account/{address}",
+    },
+  },
   {
     rpc: "https://rpc-neutron.keplr.app",
     rest: "https://lcd-neutron.keplr.app",

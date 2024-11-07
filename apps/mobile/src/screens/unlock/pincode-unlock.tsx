@@ -50,7 +50,7 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
   tryEnabled: boolean
@@ -82,8 +82,6 @@ export const waitAccountInit = async (
 
     await new Promise<void>((resolve) => {
       const disposal = autorun(() => {
-        // account init은 동시에 발생했을때 debounce가 되므로
-        // 첫번째꺼 하나만 확인해도 된다.
         if (
           accountStore.getAccount(chainStore.chainInfos[0].chainId)
             .bech32Address
@@ -385,10 +383,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       setNumericPad(true);
     }
   }, [appInitStore.getInitApp.passcodeType]);
-
-  useEffect(() => {
-    appInitStore.selectAllNetworks(true);
-  }, []);
 
   const pinRef = useRef(null);
   const numpadRef = useRef(null);

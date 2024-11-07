@@ -16,7 +16,7 @@ import { Mixpanel } from "mixpanel-react-native";
 import { tracking } from "@src/utils/tracking";
 import { StakeCardAll } from "./components/stake-card-all";
 import { NewThemeModal } from "@src/modals/theme-modal/theme";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
 // import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
@@ -40,8 +40,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const orai = chainStore.getChain(ChainIdEnum.Oraichain);
-  console.log(orai.currencies, "orai.currencies");
+  // useEffect(() => {
+  //   for (const embedChainInfo of EmbedChainInfos) {
+  //     const hasChain = chainStore.hasChain(embedChainInfo.chainId);
+  //     if(!hasChain) continue;
+  //     const chainInfo = chainStore.getChain(embedChainInfo.chainId);
+  //     chainInfo.addCurrencies(...embedChainInfo.currencies)
+  //   }
+  // }, []);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)

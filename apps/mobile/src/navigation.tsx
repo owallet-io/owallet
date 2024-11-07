@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useStore } from "./stores";
 import { observer } from "mobx-react-lite";
@@ -59,7 +59,7 @@ import OWButtonIcon from "@components/button/ow-button-icon";
 import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
 import LottieView from "lottie-react-native";
 import { metrics } from "./themes";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
 import { ConnectLedgerScreen } from "@screens/register/connect-ledger";
 import { ConnectHardwareWalletScreen } from "@screens/register/connect-hardware";
 import { FinalizeKeyScreen } from "@screens/register/finalize-key";
@@ -73,6 +73,7 @@ import { RecoverMnemonicScreen } from "@screens/register/recover-mnemonic";
 const Stack = createStackNavigator();
 const FullScreenModal = observer(() => {
   const { appInitStore, chainStore } = useStore();
+
   if (appInitStore.getInitApp.wallet === "osmosis") {
     return (
       <LottieView

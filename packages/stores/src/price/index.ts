@@ -259,7 +259,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (!coinPrices24h) {
       return undefined;
     }
-    console.log(coinPrices24h, "coinPrices24h");
     return coinPrices24h[`${vsCurrency}_24h_change`];
   }
   protected async waitUntilInitialized(): Promise<void> {
