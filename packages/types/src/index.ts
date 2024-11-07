@@ -14,3 +14,4 @@ export * from "./address";
 export * from "./oasis";
 export * from "./btc";
 export * from "./tron";
+export * from "./txs";

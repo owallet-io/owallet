@@ -34,7 +34,7 @@ import {
 } from "@owallet/types";
 import { notification } from "@stores/notification";
 import { API } from "@common/api";
-import { TXSLcdRest } from "@screens/tx-result/types";
+import { TXSLcdRest } from "@owallet/types";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, allAccountStore } = useStore();
@@ -96,10 +96,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   resolve();
                 }
               } catch (error) {
-                reject();
                 console.log("error", error);
-                isPendingGoToResult.current = true;
-                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+                reject();
+                throw Error(error);
               }
               reject();
             });

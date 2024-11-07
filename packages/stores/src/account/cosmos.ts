@@ -10,8 +10,14 @@ import {
   SignDoc,
   StdFee,
   StdSignDoc,
+  TXSLcdRest,
 } from "@owallet/types";
-import { DenomHelper, escapeHTML, sortObjectByKey } from "@owallet/common";
+import {
+  DenomHelper,
+  escapeHTML,
+  retry,
+  sortObjectByKey,
+} from "@owallet/common";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Any } from "@owallet/proto-types/google/protobuf/any";
 import {
@@ -326,7 +332,75 @@ export class CosmosAccountImpl {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
+    if (this.chainId?.includes("Oraichain") && txHash) {
+      retry(
+        () => {
+          return new Promise<void>(async (resolve, reject) => {
+            try {
+              const { status, data } = await simpleFetch<TXSLcdRest>(
+                `${
+                  this.chainGetter.getChain(this.chainId).rest
+                }/cosmos/tx/v1beta1/txs/${Buffer.from(txHash).toString("hex")}`
+              );
+              if (data && status === 200) {
+                const tx = { ...data?.tx_response } as any;
+                this.base.setTxTypeInProgress("");
 
+                // After sending tx, the balances is probably changed due to the fee.
+                const feeDenoms: string[] = (() => {
+                  if ("fee" in signDoc) {
+                    return signDoc.fee.amount.map((amount) => amount.denom);
+                  } else if ("authInfoBytes" in signDoc) {
+                    const authInfo = AuthInfo.decode(signDoc.authInfoBytes);
+                    return (
+                      authInfo.fee?.amount.map((amount) => amount.denom) ?? []
+                    );
+                  } else {
+                    return [];
+                  }
+                })();
+                for (const feeDenom of feeDenoms) {
+                  const bal = this.queries.queryBalances
+                    .getQueryBech32Address(this.base.bech32Address)
+                    .balances.find(
+                      (bal) => bal.currency.coinMinimalDenom === feeDenom
+                    );
+
+                  if (bal) {
+                    bal.fetch();
+                  }
+                }
+
+                // Always add the tx hash data.
+                if (data.tx_response && !data.tx_response.txhash) {
+                  tx.hash = Buffer.from(txHash).toString("hex");
+                }
+
+                if (this.txOpts.preTxEvents?.onFulfill) {
+                  this.txOpts.preTxEvents.onFulfill(this.chainId, tx);
+                }
+
+                if (onFulfill) {
+                  onFulfill(tx);
+                }
+                resolve();
+              }
+            } catch (error) {
+              console.log("error", error);
+              reject();
+              throw Error(error);
+            }
+            reject();
+          });
+        },
+        {
+          maxRetries: 10,
+          waitMsAfterError: 500,
+          maxWaitMsAfterError: 1000,
+        }
+      );
+      return;
+    }
     const txTracer = new TendermintTxTracer(
       this.chainGetter.getChain(this.chainId).rpc,
       "/websocket",
