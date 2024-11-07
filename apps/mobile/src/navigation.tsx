@@ -69,6 +69,7 @@ import { NewMnemonicScreen } from "@screens/register/new-mnemonic";
 import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
 import { SendEvmNewScreen } from "./screens/send/send-evm-new";
 import { RecoverMnemonicScreen } from "@screens/register/recover-mnemonic";
+import { BackupMnemonicScreen } from "@screens/register/backup-mnemonic";
 
 const Stack = createStackNavigator();
 const FullScreenModal = observer(() => {
@@ -380,10 +381,10 @@ export const AppNavigation: FunctionComponent = observer(() => {
               component={UndelegateScreen}
             />
 
-            {/*  <Stack.Screen*/}
-            {/*    name={SCREENS.SettingBackupMnemonic}*/}
-            {/*    component={BackupMnemonicScreen}*/}
-            {/*  />*/}
+            <Stack.Screen
+              name={SCREENS.SettingBackupMnemonic}
+              component={BackupMnemonicScreen}
+            />
             <Stack.Screen name={SCREENS.Send} component={SendScreen} />
             <Stack.Screen
               name={SCREENS.Transactions}

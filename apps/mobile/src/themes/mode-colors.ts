@@ -247,7 +247,7 @@ const modeColors = {
   "neutral-icon-disable": ["#494949", "#C6C8CE"],
   // II.Primary
   "primary-surface-disable": ["#5C00A3", "#EBD1FF"],
-  "primary-surface-subtle": ["#3D006B", "#F4E5FF"],
+  "primary-surface-subtle": ["#3D006B", "#3A344B"],
   "primary-surface-active": ["#5C00A3", "#C170FF"],
   "primary-surface-default": ["#9D81EB", "#5C00A3"],
   "primary-surface-pressed": ["#A22DFF", "#7C00DB"],
