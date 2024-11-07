@@ -40,14 +40,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  // useEffect(() => {
-  //   for (const embedChainInfo of EmbedChainInfos) {
-  //     const hasChain = chainStore.hasChain(embedChainInfo.chainId);
-  //     if(!hasChain) continue;
-  //     const chainInfo = chainStore.getChain(embedChainInfo.chainId);
-  //     chainInfo.addCurrencies(...embedChainInfo.currencies)
-  //   }
-  // }, []);
+  useEffect(() => {
+    for (const embedChainInfo of EmbedChainInfos) {
+      const hasChain = chainStore.hasChain(embedChainInfo.chainId);
+      if (!hasChain) continue;
+      const chainInfo = chainStore.getChain(embedChainInfo.chainId);
+      chainInfo.addCurrencies(...embedChainInfo.currencies);
+    }
+  }, []);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
