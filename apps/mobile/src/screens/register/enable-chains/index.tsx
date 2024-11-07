@@ -44,6 +44,7 @@ import CheckBox from "react-native-check-box";
 import OWText from "@components/text/ow-text";
 import { unknownToken } from "@owallet/common";
 import { SCREENS } from "@common/constants";
+import { resetTo } from "@src/router/root";
 
 class QueryCandidateAddressesSortBalanceChainInfos {
   @observable.ref
@@ -269,9 +270,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
         candidateAddresses
       )
   );
-  // candidateAddresses는 어차피 처음부터 route로부터 제공받거나 useEffectOnce에서 한번만 바뀐다.
-  // ref을 유지하므로 밑의 로직이 성능상 문제는 없음...
-  // 이걸 setCandidateAddresses에서 처리하지 않는건 렌더링과 mobx의 reactivity를 동일한 시점에 일으키기 위함임.
   queryCandidateAddressesSortBalanceChainInfos.setCandidateAddresses(
     candidateAddresses
   );
@@ -302,7 +300,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
   useEffectOnce(() => {
     if (candidateAddresses.length === 0) {
       (async () => {
-        // TODO: 이거 뭔가 finalize-key scene이랑 공통 hook 쓸 수 잇게 하던가 함수를 공유해야할 듯...?
         const candidateAddresses: {
           chainId: string;
           bech32Addresses: {
@@ -375,7 +372,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
 
         if (keyRingStore.needKeyCoinTypeFinalize(vaultId, chainInfo)) {
           if (candidateAddress.bech32Addresses.length === 1) {
-            // finalize-key scene을 통하지 않고도 이 scene으로 들어올 수 있는 경우가 있기 때문에...
             keyRingStore.finalizeKeyCoinType(
               vaultId,
               candidateAddress.chainId,
@@ -455,9 +451,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
   ]);
 
   const [enabledChainIdentifiers, setEnabledChainIdentifiers] = useState(() => {
-    // We assume that the chain store can be already initialized.
-    // candidateAddresses가 prop으로 제공되지 않으면 얘는 무조건 초기값을 가진다.
-    // useState의 initial state 기능을 사용해서 이를 보장한다는 점을 참고...
     const enabledChainIdentifiers: string[] =
       chainStore.enabledChainIdentifiers;
 
@@ -490,19 +483,11 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
           .getBalance(chainInfo.stakeCurrency || chainInfo.currencies[0]);
 
         if (queryBalance?.response?.data) {
-          // A bit tricky. The stake coin is currently only native, and in this case,
-          // we can check whether the asset exists or not by checking the response.
           const data = queryBalance.response.data as any;
           if (
             data.balances &&
             Array.isArray(data.balances) &&
             data.balances.length > 0 &&
-            // nomic은 지들이 대충 구현한 가짜 rest를 쓰는데...
-            // 얘네들이 구현한게 cosmos-sdk의 실제 동작과 약간 차이가 있음
-            // cosmos-sdk에서는 balacne가 0인거는 response에 포함되지 않지만
-            // nomic은 대충 만들어서 balance가 0인거도 response에 포함됨
-            // 그래서 밑의 줄이 없으면 nomic이 무조건 enable된채로 시작되기 때문에
-            // 이 문제를 해결하기 위해서 로직을 추가함
             data.balances.find((bal: any) => {
               return (
                 bal.amount &&
@@ -838,20 +823,21 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
 
           if (needFinalizeCoinType.length > 0) {
             sceneMovedToSelectDerivation.current = true;
-            navigation.reset({
-              routes: [
-                {
-                  name: "Register.SelectDerivationPath",
-                  params: {
-                    vaultId,
-                    chainIds: needFinalizeCoinType,
-                    totalCount: needFinalizeCoinType.length,
-                    password,
-                    skipWelcome,
-                  },
-                },
-              ],
-            });
+            resetTo(SCREENS.STACK.MainTab);
+            // navigation.reset({
+            //   routes: [
+            //     {
+            //       name: "Register.SelectDerivationPath",
+            //       params: {
+            //         vaultId,
+            //         chainIds: needFinalizeCoinType,
+            //         totalCount: needFinalizeCoinType.length,
+            //         password,
+            //         skipWelcome,
+            //       },
+            //     },
+            //   ],
+            // });
           } else {
             if (keyType === "ledger") {
               if (!fallbackBtcLedgerApp) {

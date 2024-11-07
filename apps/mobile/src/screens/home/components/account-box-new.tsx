@@ -24,6 +24,7 @@ import {
   ChainIdEnum,
   DenomDydx,
   removeDataInParentheses,
+  zeroDec,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -104,7 +105,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.price;
           } else {
-            result = result.add(bal.price);
+            result = result.add(bal.price || zeroDec);
           }
         }
       }
@@ -118,7 +119,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.price;
           } else {
-            result = result.add(bal.price);
+            result = result.add(bal.price || zeroDec);
           }
         }
       }
@@ -127,7 +128,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.viewToken.price;
           } else {
-            result = result.add(bal.viewToken.price);
+            result = result.add(bal.viewToken.price || zeroDec);
           }
         }
       }
@@ -141,7 +142,7 @@ export const AccountBoxAll: FunctionComponent<{
           priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
           new Dec(0)
         );
-      return availableTotalPrice.add(stakedTotalPrice);
+      return availableTotalPrice.add(stakedTotalPrice || zeroDec);
     }, [availableTotalPrice, stakedTotalPrice]) || initPrice;
   const availableTotalPriceByChain =
     useMemo(() => {
@@ -151,7 +152,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.price;
           } else {
-            result = result.add(bal.price);
+            result = result.add(bal.price || zeroDec);
           }
         }
       }
@@ -167,7 +168,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.price;
           } else {
-            result = result.add(bal.price);
+            result = result.add(bal.price || zeroDec);
           }
         }
       }
@@ -178,7 +179,7 @@ export const AccountBoxAll: FunctionComponent<{
           if (!result) {
             result = bal.viewToken.price;
           } else {
-            result = result.add(bal.viewToken.price);
+            result = result.add(bal.viewToken.price || zeroDec);
           }
         }
       }
@@ -192,7 +193,7 @@ export const AccountBoxAll: FunctionComponent<{
           priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
           new Dec(0)
         );
-      return availableTotalPriceByChain.add(stakedTotalPriceByChain);
+      return availableTotalPriceByChain.add(stakedTotalPriceByChain || zeroDec);
     }, [availableTotalPriceByChain, stakedTotalPriceByChain]) || initPrice;
 
   useEffect(() => {
@@ -212,7 +213,7 @@ export const AccountBoxAll: FunctionComponent<{
             if (!result) {
               result = bal.price;
             } else {
-              result = result.add(bal.price);
+              result = result.add(bal.price || zeroDec);
             }
           }
         }
@@ -255,7 +256,6 @@ export const AccountBoxAll: FunctionComponent<{
     });
     setChainListWithBalance(tmpChain);
     setSeries([...tmpSeries, otherValue]);
-    console.log(tmpSliceColor, "tmpSliceColor");
     setSliceColor([...tmpSliceColor, "#494949"]);
   }, [totalPriceBalance, account.addressDisplay]);
 
@@ -401,7 +401,7 @@ export const AccountBoxAll: FunctionComponent<{
   const renderAvailableperStaked = () => {
     if (!availableTotalPrice?.toDec() || !stakedTotalPrice?.toDec()) return;
     const totalNum =
-      stakedTotalPrice?.toDec()?.add(availableTotalPrice?.toDec()) ||
+      stakedTotalPrice?.toDec()?.add(availableTotalPrice?.toDec() || zeroDec) ||
       new Dec(0);
     if (!totalNum || totalNum.lte(new Dec(0))) return;
     const percentAvailable = availableTotalPrice
