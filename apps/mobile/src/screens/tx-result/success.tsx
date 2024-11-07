@@ -23,6 +23,7 @@ import { ChainIdHelper } from "@owallet/cosmos";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { OWButton } from "@components/button";
+import { useTheme } from "@src/themes/theme-provider";
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 
@@ -73,7 +74,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   // const navigation = useNavigation();
-
+  const { colors } = useTheme();
   return (
     <Box style={style.flatten(["flex-grow-1", "items-center"])}>
       <View style={style.flatten(["absolute-fill"])}>

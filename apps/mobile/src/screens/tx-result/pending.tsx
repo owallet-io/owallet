@@ -34,6 +34,7 @@ import {
 } from "@owallet/types";
 import { notification } from "@stores/notification";
 import { API } from "@common/api";
+import { TXSLcdRest } from "@screens/tx-result/types";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, allAccountStore } = useStore();
@@ -68,6 +69,49 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       const txHash = route.params.txHash;
       const isEvmTx = route.params.isEvmTx;
       const chainInfo = chainStore.getChain(chainId);
+      if (chainInfo.chainId?.includes("Oraichain") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch<TXSLcdRest>(
+                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
+                );
+                console.log(data, "data");
+                if (data?.tx_response?.code === 0) {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                  resolve();
+                } else {
+                  isPendingGoToResult.current = true;
+                  navigate(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    isEvmTx,
+                  });
+                  resolve();
+                }
+              } catch (error) {
+                reject();
+                console.log("error", error);
+                isPendingGoToResult.current = true;
+                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 1000,
+          }
+        );
+        return;
+      }
       if (chainInfo.features.includes("btc") && txHash) {
         retry(
           () => {
@@ -101,6 +145,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             maxWaitMsAfterError: 4000,
           }
         );
+        return;
       }
       if (chainInfo.features.includes("tron") && txHash) {
         retry(
@@ -134,6 +179,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             maxWaitMsAfterError: 4000,
           }
         );
+        return;
       }
       if (chainInfo.features.includes("oasis") && txHash) {
         simpleFetch(
