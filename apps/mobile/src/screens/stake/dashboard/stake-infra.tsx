@@ -147,9 +147,10 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 <TouchableOpacity
                   key={index}
                   onPress={() => {
-                    // navigate(SCREENS.StakeDashboard,{chainId:chainInfo.chainId});
-                    // return;
-                    // handlePressStake(chainInfo, item.validator);
+                    chainStore.selectChain(item.chainId);
+                    navigate(SCREENS.Delegate, {
+                      validatorAddress: item.validator,
+                    });
                   }}
                   style={{
                     backgroundColor: colors["neutral-surface-card"],
@@ -186,10 +187,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                       size={32}
                       style={{
                         borderRadius: 999,
-                        // tintColor:
-                        //   item.chainId === ChainIdEnum.Oraichain
-                        //     ? colors["neutral-text-title"]
-                        //     : null,
                       }}
                       source={{
                         uri: chainInfo.stakeCurrency.coinImageUrl,
@@ -213,44 +210,6 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
                 </TouchableOpacity>
               );
             })}
-
-            {/*<TouchableOpacity*/}
-            {/*  onPress={() => {*/}
-            {/*    const chainInfo = chainStore.getChain(ChainIdEnum.Osmosis);*/}
-            {/*    handlePressStake(chainInfo, owalletOsmosisAddress);*/}
-            {/*  }}*/}
-            {/*  style={{*/}
-            {/*    backgroundColor: colors["neutral-surface-card-brutal"],*/}
-            {/*    borderRadius: 16,*/}
-            {/*    borderWidth: 2,*/}
-            {/*    borderColor: colors["neutral-border-brutal"],*/}
-            {/*    width: metrics.screenWidth / 2.25,*/}
-            {/*  }}*/}
-            {/*>*/}
-            {/*  <View style={{ padding: 16 }}>*/}
-            {/*    <Image*/}
-            {/*      style={{*/}
-            {/*        width: 32,*/}
-            {/*        height: 32,*/}
-            {/*      }}*/}
-            {/*      source={require("../../../assets/logo/osmosis.png")}*/}
-            {/*    />*/}
-            {/*    <OWText*/}
-            {/*      style={{ marginTop: 12, marginBottom: 8 }}*/}
-            {/*      weight={"500"}*/}
-            {/*    >*/}
-            {/*      Stake OSMO*/}
-            {/*    </OWText>*/}
-
-            {/*    <OWText*/}
-            {/*      color={colors["success-text-body"]}*/}
-            {/*      size={16}*/}
-            {/*      weight="500"*/}
-            {/*    >*/}
-            {/*      APR: {owalletOsmosis ?? "0.00"}%*/}
-            {/*    </OWText>*/}
-            {/*  </View>*/}
-            {/*</TouchableOpacity>*/}
           </ScrollView>
         </View>
       </View>
