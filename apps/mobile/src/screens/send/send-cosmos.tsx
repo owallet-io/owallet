@@ -28,12 +28,17 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
 import { AsyncKVStore } from "@src/common";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { BACKGROUND_PORT, Message } from "@owallet/router";
 import { SendTxAndRecordMsg } from "@owallet/background";
 import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
 import { showToast } from "@utils/helper";
+import { RecipientInput } from "@components/input/reciepient-input";
+import { useFocusAfterRouting } from "@hooks/use-focus";
+import { VerticalCollapseTransition } from "@components/transition";
+import { Text } from "@components/text";
+import { Gutter } from "@components/gutter";
 
 export const SendCosmosScreen: FunctionComponent<{
   chainId: string;
@@ -60,7 +65,7 @@ export const SendCosmosScreen: FunctionComponent<{
     }, [chainId]);
 
     const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
-
+    const addressRef = useFocusAfterRouting();
     const account = accountStore.getAccount(chainId);
     const queryBalances = queriesStore.get(chainId).queryBalances;
     const sender = account.bech32Address;
@@ -197,11 +202,6 @@ export const SendCosmosScreen: FunctionComponent<{
 
     const historyType = "basic-send";
 
-    console.log(
-      "   sendConfigs.feeConfig.toStdFee()",
-      sendConfigs.feeConfig.toStdFee()
-    );
-
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
         try {
@@ -321,17 +321,37 @@ export const SendCosmosScreen: FunctionComponent<{
             >
               <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
-              <AddressInput
-                colors={colors}
-                placeholder="Enter address"
-                label=""
+              {/*<AddressInput*/}
+              {/*  colors={colors}*/}
+              {/*  placeholder="Enter address"*/}
+              {/*  label=""*/}
+              {/*  recipientConfig={sendConfigs.recipientConfig}*/}
+              {/*  memoConfig={sendConfigs.memoConfig}*/}
+              {/*  labelStyle={styles.sendlabelInput}*/}
+              {/*  containerStyle={{*/}
+              {/*    marginBottom: 12,*/}
+              {/*  }}*/}
+              {/*  inputContainerStyle={styles.inputContainerAddress}*/}
+              {/*/>*/}
+              <RecipientInput
+                ref={addressRef}
+                historyType={historyType}
                 recipientConfig={sendConfigs.recipientConfig}
                 memoConfig={sendConfigs.memoConfig}
-                labelStyle={styles.sendlabelInput}
-                containerStyle={{
-                  marginBottom: 12,
-                }}
-                inputContainerStyle={styles.inputContainerAddress}
+                currency={sendConfigs.amountConfig.currency}
+                permitAddressBookSelfKeyInfo={false}
+                // bottom={
+                //     <VerticalCollapseTransition
+                //         collapsed={!isIBCRecipientSetAuto}
+                //         transitionAlign="top">
+                //         <Gutter size={8} />
+                //
+                //         <Text
+                //             style={style.flatten(['text-caption2', 'color-platinum-200'])}>
+                //             <FormattedMessage id="page.send.amount.ibc-send-recipient-auto-filled" />
+                //         </Text>
+                //     </VerticalCollapseTransition>
+                // }
               />
             </OWCard>
             <OWCard
@@ -414,34 +434,6 @@ export const SendCosmosScreen: FunctionComponent<{
                 gasConfig={sendConfigs.gasConfig}
                 gasSimulator={gasSimulator}
               />
-              {/*<View style={styles.containerFee}>*/}
-              {/*  <OWText*/}
-              {/*    color={colors["neutral-text-title"]}*/}
-              {/*    weight="600"*/}
-              {/*    size={16}*/}
-              {/*  >*/}
-              {/*    Transaction fee*/}
-              {/*  </OWText>*/}
-              {/*  <TouchableOpacity*/}
-              {/*    style={{ flexDirection: "row" }}*/}
-              {/*    onPress={_onPressFee}*/}
-              {/*  >*/}
-              {/*    <OWText*/}
-              {/*      color={colors["primary-text-action"]}*/}
-              {/*      weight="600"*/}
-              {/*      size={16}*/}
-              {/*    >*/}
-              {/*      {capitalizedText(sendConfigs.feeConfig.feeType)}:{" "}*/}
-              {/*      {priceStore*/}
-              {/*        .calculatePrice(sendConfigs.feeConfig.fee)*/}
-              {/*        ?.toString()}{" "}*/}
-              {/*    </OWText>*/}
-              {/*    <DownArrowIcon*/}
-              {/*      height={11}*/}
-              {/*      color={colors["primary-text-action"]}*/}
-              {/*    />*/}
-              {/*  </TouchableOpacity>*/}
-              {/*</View>*/}
 
               <OWText color={colors["neutral-text-title"]}>Memo</OWText>
 
