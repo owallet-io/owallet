@@ -18,7 +18,7 @@ import { Toggle } from "../../toggle";
 import { Columns } from "../../column";
 import { Gutter } from "../../gutter";
 import { Text, View } from "react-native";
-import { Button } from "../../button";
+import { Button, OWButton } from "../../button";
 // import {TextInput} from '../text-input/text-input';
 import { Dropdown } from "../../dropdown";
 import { Dec } from "@owallet/unit";
@@ -29,6 +29,7 @@ import { XAxis } from "../../axis";
 import OWText from "@components/text/ow-text";
 import { registerModal } from "@src/modals/base";
 import { TextInput } from "@components/input";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 
 export const TransactionBtcFeeModal = registerModal(
   observer<{
@@ -83,62 +84,14 @@ export const TransactionBtcFeeModal = registerModal(
     }, [feeConfig.type, feeConfigCurrencyString]);
 
     return (
-      <Box paddingX={12} paddingBottom={12}>
-        {/*<BaseModalHeader*/}
-        {/*  title={intl.formatMessage({*/}
-        {/*    id: 'components.input.fee-control.modal.title',*/}
-        {/*  })}*/}
-        {/*  titleStyle={style.flatten(['h4', 'text-left'])}*/}
-        {/*  style={style.flatten(['padding-left-8'])}*/}
-        {/*/>*/}
-        <OWText>
-          {intl.formatMessage({
-            id: "components.input.fee-control.modal.title",
-          })}
-        </OWText>
-        <Gutter size={12} />
-
-        <XAxis alignY="center">
-          {/*<Label*/}
-          {/*  content={}*/}
-          {/*/>*/}
-          <OWText>
-            {intl.formatMessage({
-              id: "components.input.fee-control.modal.fee-title",
-            })}
-          </OWText>
-          <View style={{ flex: 1 }} />
-
-          {!disableAutomaticFeeSet ? (
-            <React.Fragment>
-              <Box
-                width={6}
-                height={6}
-                borderRadius={999}
-                backgroundColor={style.get("color-blue-400").color}
-              />
-              <Gutter size={8} />
-
-              <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
-                <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
-              </Text>
-
-              <Gutter size={8} />
-
-              <Toggle
-                on={uiConfigStore.rememberLastFeeOption}
-                onChange={(v) => uiConfigStore.setRememberLastFeeOption(v)}
-              />
-            </React.Fragment>
-          ) : null}
-        </XAxis>
-
-        <Gutter size={6} />
-
-        <FeeSelector feeConfig={feeConfig} />
-
-        <Gutter size={12} />
-
+      <WrapViewModal
+        style={{
+          paddingHorizontal: 0,
+        }}
+        title="SET FEE"
+        disabledScrollView={false}
+        subTitle={"The fee required to successfully conduct a transaction"}
+      >
         <Dropdown
           label={intl.formatMessage({
             id: "components.input.fee-control.modal.fee-token-dropdown-label",
@@ -183,42 +136,56 @@ export const TransactionBtcFeeModal = registerModal(
           }}
           size="large"
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            paddingVertical: 10,
+          }}
+        >
+          {!disableAutomaticFeeSet ? (
+            <React.Fragment>
+              <Box
+                width={6}
+                height={6}
+                borderRadius={999}
+                backgroundColor={style.get("color-blue-400").color}
+              />
+              <Gutter size={8} />
 
-        <Gutter size={12} />
-        {disableAutomaticFeeSet ? (
-          <React.Fragment>
-            <Gutter size={12} />
-            <GuideBox
-              title={intl.formatMessage({
-                id: "components.input.fee-control.modal.guide.external-fee-set",
-              })}
-              backgroundColor={style.get("color-gray-500").color}
-            />
-          </React.Fragment>
-        ) : null}
+              <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
+                <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
+              </Text>
 
-        <VerticalCollapseTransition collapsed={!showChangesApplied}>
-          <Gutter size={12} />
+              <Gutter size={8} />
 
-          <GuideBox
-            color="safe"
-            title={intl.formatMessage({
-              id: "components.input.fee-control.modal.notification.changes-applied",
-            })}
-          />
-        </VerticalCollapseTransition>
+              <Toggle
+                on={uiConfigStore.rememberLastFeeOption}
+                onChange={(v) => uiConfigStore.setRememberLastFeeOption(v)}
+              />
+            </React.Fragment>
+          ) : null}
+        </View>
 
-        <Gutter size={12} />
-
-        <Button
-          text={intl.formatMessage({
-            id: "button.close",
-          })}
-          color="secondary"
-          size="large"
-          onPress={() => setIsOpen(false)}
+        <FeeSelector feeConfig={feeConfig} />
+        <OWButton
+          label="Confirm"
+          onPress={async () => {
+            setIsOpen(false);
+          }}
+          style={[
+            {
+              marginTop: 20,
+              borderRadius: 999,
+            },
+          ]}
+          textStyle={{
+            fontSize: 14,
+            fontWeight: "600",
+          }}
         />
-      </Box>
+      </WrapViewModal>
     );
   })
 );
