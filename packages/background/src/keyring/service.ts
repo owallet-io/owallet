@@ -581,19 +581,18 @@ export class KeyRingService {
     signDoc: SignDoc,
     signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
+    const coinType = await this.chainsService.getChainCoinType(chainId);
+
+    // sign get here
+    const key = await this.keyRing.getKey(chainId, coinType);
+    const bech32Address = new Bech32Address(key.address).toBech32(
+      (await this.chainsService.getChainInfo(chainId)).bech32Config
+        .bech32PrefixAccAddr
+    );
+    if (signer !== bech32Address) {
+      throw new Error("Signer mismatched");
+    }
     try {
-      const coinType = await this.chainsService.getChainCoinType(chainId);
-
-      // sign get here
-      const key = await this.keyRing.getKey(chainId, coinType);
-      const bech32Address = new Bech32Address(key.address).toBech32(
-        (await this.chainsService.getChainInfo(chainId)).bech32Config
-          .bech32PrefixAccAddr
-      );
-      if (signer !== bech32Address) {
-        throw new Error("Signer mismatched");
-      }
-
       const newSignDocBytes = (await this.interactionService.waitApprove(
         env,
         "/sign",

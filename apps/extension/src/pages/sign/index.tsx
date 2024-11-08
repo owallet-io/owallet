@@ -39,6 +39,7 @@ enum Tab {
   Details,
   Data,
 }
+
 const cx = cn.bind(style);
 
 const RenderTab: FunctionComponent = observer(
@@ -359,9 +360,9 @@ export const SignPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-         Show the informations of tx when the sign data is delivered.
-         If sign data not delivered yet, show the spinner alternatively.
-         */
+                 Show the informations of tx when the sign data is delivered.
+                 If sign data not delivered yet, show the spinner alternatively.
+                 */
         isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
@@ -513,25 +514,28 @@ export const SignPage: FunctionComponent = observer(() => {
                       data-loading={signInteractionStore.isLoading}
                       loading={signInteractionStore.isLoading}
                       onClick={async (e) => {
-                        e.preventDefault();
+                        try {
+                          e.preventDefault();
 
-                        if (needSetIsProcessing) {
-                          setIsProcessing(true);
-                        }
-
-                        if (signDocHelper.signDocWrapper) {
-                          await signInteractionStore.approveAndWaitEnd(
-                            signDocHelper.signDocWrapper
-                          );
-                        }
-
-                        history.goBack();
-
-                        if (
-                          interactionInfo.interaction &&
-                          !interactionInfo.interactionInternal
-                        ) {
-                          window.close();
+                          if (needSetIsProcessing) {
+                            setIsProcessing(true);
+                          }
+                          if (signDocHelper.signDocWrapper) {
+                            await signInteractionStore.approveAndWaitEnd(
+                              signDocHelper.signDocWrapper
+                            );
+                          }
+                        } catch (e) {
+                          throw Error("Transaction Rejected");
+                        } finally {
+                          if (
+                            interactionInfo.interaction &&
+                            !interactionInfo.interactionInternal
+                          ) {
+                            window.close();
+                          } else {
+                            history.goBack();
+                          }
                         }
                       }}
                     >
