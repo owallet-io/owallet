@@ -581,35 +581,34 @@ export class KeyRingService {
     signDoc: SignDoc,
     signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
-    const coinType = await this.chainsService.getChainCoinType(chainId);
-
-    // sign get here
-    const key = await this.keyRing.getKey(chainId, coinType);
-    const bech32Address = new Bech32Address(key.address).toBech32(
-      (await this.chainsService.getChainInfo(chainId)).bech32Config
-        .bech32PrefixAccAddr
-    );
-    if (signer !== bech32Address) {
-      throw new Error("Signer mismatched");
-    }
-
-    const newSignDocBytes = (await this.interactionService.waitApprove(
-      env,
-      "/sign",
-      "request-sign",
-      {
-        msgOrigin,
-        chainId,
-        mode: "direct",
-        signDocBytes: SignDoc.encode(signDoc).finish(),
-        signer,
-        signOptions,
-      }
-    )) as Uint8Array;
-
-    const newSignDoc = SignDoc.decode(newSignDocBytes);
-
     try {
+      const coinType = await this.chainsService.getChainCoinType(chainId);
+
+      // sign get here
+      const key = await this.keyRing.getKey(chainId, coinType);
+      const bech32Address = new Bech32Address(key.address).toBech32(
+        (await this.chainsService.getChainInfo(chainId)).bech32Config
+          .bech32PrefixAccAddr
+      );
+      if (signer !== bech32Address) {
+        throw new Error("Signer mismatched");
+      }
+
+      const newSignDocBytes = (await this.interactionService.waitApprove(
+        env,
+        "/sign",
+        "request-sign",
+        {
+          msgOrigin,
+          chainId,
+          mode: "direct",
+          signDocBytes: SignDoc.encode(signDoc).finish(),
+          signer,
+          signOptions,
+        }
+      )) as Uint8Array;
+
+      const newSignDoc = SignDoc.decode(newSignDocBytes);
       const signature = await this.keyRing.sign(
         env,
         chainId,
@@ -621,6 +620,8 @@ export class KeyRingService {
         signed: newSignDoc,
         signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
+    } catch (e) {
+      throw Error("Transaction Rejected");
     } finally {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
