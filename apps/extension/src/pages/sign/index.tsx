@@ -35,6 +35,8 @@ import { DataModal } from "./modals/data-modal";
 import { WalletStatus } from "@owallet/stores";
 import { Address } from "../../components/address";
 
+const mixpanel = globalThis.mixpanel as Mixpanel;
+
 enum Tab {
   Details,
   Data,
@@ -360,9 +362,9 @@ export const SignPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-                 Show the informations of tx when the sign data is delivered.
-                 If sign data not delivered yet, show the spinner alternatively.
-                 */
+                         Show the informations of tx when the sign data is delivered.
+                         If sign data not delivered yet, show the spinner alternatively.
+                         */
         isLoaded ? (
           <div className={style.container}>
             <div style={{ height: "75%", overflow: "scroll", padding: 16 }}>
@@ -526,6 +528,12 @@ export const SignPage: FunctionComponent = observer(() => {
                             );
                           }
                         } catch (e) {
+                          if (mixpanel) {
+                            mixpanel.track("OWallet - Message Before Sign", {
+                              msgData: signDocJsonAll,
+                              errorMsg: JSON.stringify(e),
+                            });
+                          }
                           throw Error("Transaction Rejected");
                         } finally {
                           if (
