@@ -9,8 +9,6 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Box } from "../../box";
-// import {BaseModalHeader} from '../../modal';
-// import {Label} from '../label';
 import { useStyle } from "../../../styles";
 import { FeeSelector } from "./fee-selector";
 import { Toggle } from "../../toggle";
@@ -18,16 +16,16 @@ import { Columns } from "../../column";
 import { Gutter } from "../../gutter";
 import { Text, View } from "react-native";
 import { Button } from "../../button";
-// import {TextInput} from '../text-input/text-input';
 import { Dropdown } from "../../dropdown";
 import { Dec } from "@owallet/unit";
-// import {registerCardModal} from '../../modal/card';
 import { VerticalCollapseTransition } from "../../transition";
 import { GuideBox } from "../../guide-box";
 import { XAxis } from "../../axis";
 import OWText from "@components/text/ow-text";
 import { registerModal } from "@src/modals/base";
 import { TextInput } from "@components/input";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { OWButton } from "@components/button";
 
 export const TransactionFeeModal = registerModal(
   observer<{
@@ -126,62 +124,14 @@ export const TransactionFeeModal = registerModal(
       ]);
 
       return (
-        <Box paddingX={12} paddingBottom={12}>
-          {/*<BaseModalHeader*/}
-          {/*  title={intl.formatMessage({*/}
-          {/*    id: 'components.input.fee-control.modal.title',*/}
-          {/*  })}*/}
-          {/*  titleStyle={style.flatten(['h4', 'text-left'])}*/}
-          {/*  style={style.flatten(['padding-left-8'])}*/}
-          {/*/>*/}
-          <OWText>
-            {intl.formatMessage({
-              id: "components.input.fee-control.modal.title",
-            })}
-          </OWText>
-          <Gutter size={12} />
-
-          <XAxis alignY="center">
-            {/*<Label*/}
-            {/*  content={}*/}
-            {/*/>*/}
-            <OWText>
-              {intl.formatMessage({
-                id: "components.input.fee-control.modal.fee-title",
-              })}
-            </OWText>
-            <View style={{ flex: 1 }} />
-
-            {!disableAutomaticFeeSet ? (
-              <React.Fragment>
-                <Box
-                  width={6}
-                  height={6}
-                  borderRadius={999}
-                  backgroundColor={style.get("color-blue-400").color}
-                />
-                <Gutter size={8} />
-
-                <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
-                  <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
-                </Text>
-
-                <Gutter size={8} />
-
-                <Toggle
-                  on={uiConfigStore.rememberLastFeeOption}
-                  onChange={(v) => uiConfigStore.setRememberLastFeeOption(v)}
-                />
-              </React.Fragment>
-            ) : null}
-          </XAxis>
-
-          <Gutter size={6} />
-
-          <FeeSelector feeConfig={feeConfig} />
-
-          <Gutter size={12} />
-
+        <WrapViewModal
+          style={{
+            paddingHorizontal: 0,
+          }}
+          title="SET FEE"
+          disabledScrollView={false}
+          subTitle={"The fee required to successfully conduct a transaction"}
+        >
           <Dropdown
             label={intl.formatMessage({
               id: "components.input.fee-control.modal.fee-token-dropdown-label",
@@ -226,145 +176,56 @@ export const TransactionFeeModal = registerModal(
             }}
             size="large"
           />
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-end",
+              paddingVertical: 10,
+            }}
+          >
+            {!disableAutomaticFeeSet ? (
+              <React.Fragment>
+                <Box
+                  width={6}
+                  height={6}
+                  borderRadius={999}
+                  backgroundColor={style.get("color-blue-400").color}
+                />
+                <Gutter size={8} />
 
-          <Gutter size={12} />
+                <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
+                  <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
+                </Text>
 
-          {(() => {
-            if (gasSimulator) {
-              if (gasSimulator.uiProperties.error) {
-                return (
-                  <GuideBox
-                    color="danger"
-                    title={intl.formatMessage({
-                      id: "components.input.fee-control.modal.guide-title",
-                    })}
-                    paragraph={
-                      gasSimulator.uiProperties.error.message ||
-                      gasSimulator.uiProperties.error.toString()
-                    }
-                  />
-                );
-              }
+                <Gutter size={8} />
 
-              if (gasSimulator.uiProperties.warning) {
-                return (
-                  <GuideBox
-                    color="warning"
-                    title={intl.formatMessage({
-                      id: "components.input.fee-control.modal.guide-title",
-                    })}
-                    paragraph={
-                      gasSimulator.uiProperties.warning.message ||
-                      gasSimulator.uiProperties.warning.toString()
-                    }
-                  />
-                );
-              }
-            }
-          })()}
+                <Toggle
+                  on={uiConfigStore.rememberLastFeeOption}
+                  onChange={(v) => uiConfigStore.setRememberLastFeeOption(v)}
+                />
+              </React.Fragment>
+            ) : null}
+          </View>
 
-          {isGasSimulatorEnabled ? (
-            <TextInput
-              label={intl.formatMessage({
-                id: "components.input.fee-control.modal.gas-adjustment-label",
-              })}
-              value={gasSimulator?.gasAdjustmentValue}
-              onChangeText={(text) => {
-                gasSimulator?.setGasAdjustmentValue(text);
-              }}
-              inputRight={
-                isGasSimulatorUsable && gasSimulator ? (
-                  <React.Fragment>
-                    <Columns sum={1} alignY="center">
-                      <Text
-                        style={style.flatten(["subtitle3", "color-gray-200"])}
-                      >
-                        <FormattedMessage id="components.input.fee-control.modal.auto-title" />
-                      </Text>
-
-                      <Gutter size={8} />
-                      <Toggle
-                        on={gasSimulator.enabled}
-                        onChange={(isOpen) => {
-                          gasSimulator?.setEnabled(isOpen);
-                        }}
-                      />
-                    </Columns>
-
-                    <Gutter size={6} />
-                  </React.Fragment>
-                ) : null
-              }
-            />
-          ) : (
-            <TextInput
-              label={intl.formatMessage({
-                id: "components.input.fee-control.modal.gas-amount-label",
-              })}
-              value={gasConfig.value}
-              onChangeText={(text) => {
-                gasConfig.setValue(text);
-              }}
-              inputRight={
-                isGasSimulatorUsable && gasSimulator ? (
-                  <React.Fragment>
-                    <Columns sum={1} alignY="center">
-                      <Text
-                        style={style.flatten(["subtitle3", "color-gray-200"])}
-                      >
-                        <FormattedMessage id="components.input.fee-control.modal.auto-title" />
-                      </Text>
-
-                      <Gutter size={8} />
-                      <Toggle
-                        on={gasSimulator.enabled}
-                        onChange={(isOpen) => {
-                          gasSimulator?.setEnabled(isOpen);
-                        }}
-                      />
-                    </Columns>
-
-                    <Gutter size={6} />
-                  </React.Fragment>
-                ) : null
-              }
-            />
-          )}
-
-          {disableAutomaticFeeSet ? (
-            <React.Fragment>
-              <Gutter size={12} />
-              <GuideBox
-                title={intl.formatMessage({
-                  id: "components.input.fee-control.modal.guide.external-fee-set",
-                })}
-                backgroundColor={style.get("color-gray-500").color}
-              />
-            </React.Fragment>
-          ) : null}
-
-          <VerticalCollapseTransition collapsed={!showChangesApplied}>
-            <Gutter size={12} />
-
-            <GuideBox
-              color="safe"
-              title={intl.formatMessage({
-                id: "components.input.fee-control.modal.notification.changes-applied",
-              })}
-            />
-          </VerticalCollapseTransition>
-
-          <Gutter size={12} />
-
-          <Button
-            text={intl.formatMessage({
-              id: "button.close",
-            })}
-            color="secondary"
-            size="large"
-            onPress={() => setIsOpen(false)}
+          <FeeSelector feeConfig={feeConfig} />
+          <OWButton
+            label="Confirm"
+            onPress={async () => {
+              setIsOpen(false);
+            }}
+            style={[
+              {
+                marginTop: 20,
+                borderRadius: 999,
+              },
+            ]}
+            textStyle={{
+              fontSize: 14,
+              fontWeight: "600",
+            }}
           />
-        </Box>
+        </WrapViewModal>
       );
     }
   )

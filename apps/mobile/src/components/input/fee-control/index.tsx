@@ -207,90 +207,111 @@ export const FeeControl: FunctionComponent<{
     return (
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          borderBottomColor: colors["neutral-border-default"],
+          width: "100%",
           borderBottomWidth: 1,
           paddingVertical: 16,
+          borderBottomColor: colors["neutral-border-default"],
+
           marginBottom: 8,
-          alignItems: "center",
         }}
       >
-        <OWText color={colors["neutral-text-title"]} weight="600" size={16}>
-          Tx Fee
-        </OWText>
-        <TouchableOpacity
-          style={{ flexDirection: "row", alignItems: "center" }}
-          onPress={() => setIsModalOpen(true)}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+
+            alignItems: "center",
+          }}
         >
-          <View
-            style={{
-              alignItems: "center",
-              paddingRight: 8,
-              flexDirection: "row",
-            }}
+          <OWText color={colors["neutral-text-title"]} weight="600" size={16}>
+            Tx Fee
+          </OWText>
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={() => setIsModalOpen(true)}
           >
-            <OWText
-              color={colors["primary-text-action"]}
-              weight="500"
-              size={16}
+            <View
+              style={{
+                alignItems: "center",
+                paddingRight: 8,
+                flexDirection: "row",
+              }}
             >
-              {capitalizedText(feeConfig.type)}
-              {": "}
-            </OWText>
-            <OWText
-              color={colors["primary-text-action"]}
-              weight="600"
-              size={16}
-            >
-              {(() => {
-                let total: PricePretty | undefined;
-                let hasUnknown = false;
-                for (const fee of feeConfig.fees) {
-                  if (!fee.currency.coinGeckoId) {
-                    hasUnknown = true;
-                    break;
-                  } else {
-                    const price = priceStore.calculatePrice(fee);
-                    if (price) {
-                      if (!total) {
-                        total = price;
-                      } else {
-                        total = total.add(price);
+              <OWText
+                color={colors["primary-text-action"]}
+                weight="500"
+                size={16}
+              >
+                {capitalizedText(feeConfig.type)}
+                {": "}
+              </OWText>
+              <OWText
+                color={colors["primary-text-action"]}
+                weight="600"
+                size={16}
+              >
+                {(() => {
+                  let total: PricePretty | undefined;
+                  let hasUnknown = false;
+                  for (const fee of feeConfig.fees) {
+                    if (!fee.currency.coinGeckoId) {
+                      hasUnknown = true;
+                      break;
+                    } else {
+                      const price = priceStore.calculatePrice(fee);
+                      if (price) {
+                        if (!total) {
+                          total = price;
+                        } else {
+                          total = total.add(price);
+                        }
                       }
                     }
                   }
-                }
 
-                if (hasUnknown || !total) {
-                  return "-";
-                }
-                return `${total.toString()}`;
-              })()}
-            </OWText>
-          </View>
-          {/*{!disableAutomaticFeeSet && uiConfigStore.rememberLastFeeOption ? (*/}
-          {/*    <React.Fragment>*/}
+                  if (hasUnknown || !total) {
+                    return "-";
+                  }
+                  return `${total.toString()}`;
+                })()}
+              </OWText>
+            </View>
+            {feeConfig.uiProperties.loadingState ||
+            gasSimulator?.uiProperties.loadingState ? (
+              <LoadingSpinner
+                size={14}
+                color={colors["background-btn-primary"]}
+              />
+            ) : (
+              <DownArrowIcon
+                height={14}
+                color={colors["primary-text-action"]}
+              />
+            )}
+          </TouchableOpacity>
 
-          {/*        <Box*/}
-          {/*            width={6}*/}
-          {/*            height={6}*/}
-          {/*            borderRadius={999}*/}
-          {/*            backgroundColor={style.get("color-blue-400").color}*/}
-          {/*        />*/}
-          {/*        <Gutter size={8}/>*/}
-          {/*    </React.Fragment>*/}
-          {/*) : null}*/}
-          {feeConfig.uiProperties.loadingState ||
-          gasSimulator?.uiProperties.loadingState ? (
-            <LoadingSpinner
-              size={14}
-              color={colors["background-btn-primary"]}
+          {isBtc ? (
+            <TransactionBtcFeeModal
+              isOpen={isModalOpen}
+              close={() => setIsModalOpen(false)}
+              setIsOpen={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
             />
           ) : (
-            <DownArrowIcon height={11} color={colors["primary-text-action"]} />
+            <TransactionFeeModal
+              isOpen={isModalOpen}
+              close={() => setIsModalOpen(false)}
+              setIsOpen={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig as IFeeConfig}
+              gasConfig={gasConfig}
+              gasSimulator={gasSimulator}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
+            />
           )}
-        </TouchableOpacity>
+        </View>
         {hasError ? (
           <Box width="100%">
             <Gutter size={16} />
@@ -342,27 +363,6 @@ export const FeeControl: FunctionComponent<{
             />
           </Box>
         ) : null}
-        {isBtc ? (
-          <TransactionBtcFeeModal
-            isOpen={isModalOpen}
-            close={() => setIsModalOpen(false)}
-            setIsOpen={() => setIsModalOpen(false)}
-            senderConfig={senderConfig}
-            feeConfig={feeConfig}
-            disableAutomaticFeeSet={disableAutomaticFeeSet}
-          />
-        ) : (
-          <TransactionFeeModal
-            isOpen={isModalOpen}
-            close={() => setIsModalOpen(false)}
-            setIsOpen={() => setIsModalOpen(false)}
-            senderConfig={senderConfig}
-            feeConfig={feeConfig as IFeeConfig}
-            gasConfig={gasConfig}
-            gasSimulator={gasSimulator}
-            disableAutomaticFeeSet={disableAutomaticFeeSet}
-          />
-        )}
       </View>
     );
   }

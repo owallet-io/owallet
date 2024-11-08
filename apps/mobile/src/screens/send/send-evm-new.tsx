@@ -518,33 +518,12 @@ export const SendEvmNewScreen: FunctionComponent<{
               }}
               type="normal"
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  borderBottomColor: colors["neutral-border-default"],
-                  borderBottomWidth: 1,
-                  paddingVertical: 16,
-                  marginBottom: 8,
-                }}
-              >
-                {/* <OWText color={colors['neutral-text-title']} weight="600" size={16}>
-                Transaction fee
-              </OWText> */}
-                <FeeControl
-                  senderConfig={sendConfigs.senderConfig}
-                  feeConfig={sendConfigs.feeConfig}
-                  gasConfig={sendConfigs.gasConfig}
-                  gasSimulator={gasSimulator}
-                />
-                {/* <TouchableOpacity style={{ flexDirection: 'row' }} onPress={_onPressFee}>
-                <OWText color={colors['primary-text-action']} weight="600" size={16}>
-                  {capitalizedText(sendConfigs.feeConfig.feeType)}:{' '}
-                  {priceStore.calculatePrice(sendConfigs.feeConfig.fee)?.toString()}{' '}
-                </OWText>
-                <DownArrowIcon height={11} color={colors['primary-text-action']} />
-              </TouchableOpacity> */}
-              </View>
+              <FeeControl
+                senderConfig={sendConfigs.senderConfig}
+                feeConfig={sendConfigs.feeConfig}
+                gasConfig={sendConfigs.gasConfig}
+                gasSimulator={gasSimulator}
+              />
             </OWCard>
           </View>
         </ScrollView>

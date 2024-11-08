@@ -10,6 +10,7 @@ import {
 } from "react-native-gesture-handler";
 import { XAxis } from "../axis";
 import OWIcon from "@components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
 
 export interface DropdownItemProps {
   key: string;
@@ -80,7 +81,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
       return true;
     });
   }, [allowSearch, items, searchText, searchExcludedKeys]);
-
+  const { colors } = useTheme();
   return (
     <Box zIndex={1}>
       {label ? <Label content={label} /> : null}
@@ -89,20 +90,12 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
         <Box
           alignY="center"
           height={size === "small" ? 44 : 52}
-          backgroundColor={style.get("color-gray-700").color}
+          backgroundColor={colors["neutral-surface-bg2"]}
           paddingX={16}
           paddingY={10}
           borderRadius={8}
           borderWidth={1}
-          borderColor={
-            color === "text-input"
-              ? isOpen
-                ? style.get("color-gray-200").color
-                : style.get("color-gray-400").color
-              : isOpen
-              ? style.get("color-gray-200").color
-              : style.get("color-gray-500").color
-          }
+          borderColor={colors["neutral-surface-bg2"]}
           style={StyleSheet.flatten([itemContainerStyle])}
         >
           <XAxis alignY="center">
@@ -119,13 +112,11 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
                 onChangeText={(text) => {
                   setSearchText(text);
                 }}
-                selectionColor={style.get("color-gray-50").color}
+                selectionColor={colors["neutral-text-title"]}
                 style={{
                   padding: 0,
                   borderWidth: 1,
-                  color: selectedItemKey
-                    ? style.get("color-gray-50").color
-                    : style.get("color-gray-300").color,
+                  color: colors["neutral-text-title"],
                 }}
               />
             </Box>
@@ -209,7 +200,7 @@ const DropdownItem: FunctionComponent<{
   closeDropdown: () => void;
 }> = ({ item, onSelect, closeDropdown }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   return (
     <TouchableWithoutFeedback
       style={{ zIndex: 2 }}
@@ -225,7 +216,9 @@ const DropdownItem: FunctionComponent<{
         paddingY={15}
         backgroundColor={style.get("color-gray-600").color}
       >
-        <Text style={style.flatten(["color-text-high"])}>{item.label}</Text>
+        <Text style={{ color: colors["neutral-text-title"] }}>
+          {item.label}
+        </Text>
       </Box>
     </TouchableWithoutFeedback>
   );

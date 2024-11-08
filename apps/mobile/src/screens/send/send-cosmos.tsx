@@ -320,19 +320,6 @@ export const SendCosmosScreen: FunctionComponent<{
               ]}
             >
               <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
-
-              {/*<AddressInput*/}
-              {/*  colors={colors}*/}
-              {/*  placeholder="Enter address"*/}
-              {/*  label=""*/}
-              {/*  recipientConfig={sendConfigs.recipientConfig}*/}
-              {/*  memoConfig={sendConfigs.memoConfig}*/}
-              {/*  labelStyle={styles.sendlabelInput}*/}
-              {/*  containerStyle={{*/}
-              {/*    marginBottom: 12,*/}
-              {/*  }}*/}
-              {/*  inputContainerStyle={styles.inputContainerAddress}*/}
-              {/*/>*/}
               <RecipientInput
                 ref={addressRef}
                 historyType={historyType}
@@ -340,18 +327,6 @@ export const SendCosmosScreen: FunctionComponent<{
                 memoConfig={sendConfigs.memoConfig}
                 currency={sendConfigs.amountConfig.currency}
                 permitAddressBookSelfKeyInfo={false}
-                // bottom={
-                //     <VerticalCollapseTransition
-                //         collapsed={!isIBCRecipientSetAuto}
-                //         transitionAlign="top">
-                //         <Gutter size={8} />
-                //
-                //         <Text
-                //             style={style.flatten(['text-caption2', 'color-platinum-200'])}>
-                //             <FormattedMessage id="page.send.amount.ibc-send-recipient-auto-filled" />
-                //         </Text>
-                //     </VerticalCollapseTransition>
-                // }
               />
             </OWCard>
             <OWCard
