@@ -68,8 +68,6 @@ export const ModalNetwork: FC<{
     return item;
   });
 
-  console.log("chainsInfoWithBalance", chainsInfoWithBalance);
-
   const mainnet = chainsInfoWithBalance.filter(
     (item, index) =>
       !item?.chainName?.toLowerCase()?.includes("test") &&

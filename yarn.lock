@@ -5975,7 +5975,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.21, @oraichain/oraidex-common@npm:^1.1.23":
+"@oraichain/oraidex-common@npm:^1.1.21":
   version: 1.1.23
   resolution: "@oraichain/oraidex-common@npm:1.1.23"
   dependencies:
@@ -5996,6 +5996,30 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
   checksum: ad33ba9f1feedd74ca1d6e68a31d943915620061a6352aaa98c4553c04e840c453233aade4cbb5ebc9461461f081ae12efc4a0c4dc4250e49768e9a131d2dddc
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-common@npm:^1.1.28":
+  version: 1.1.28
+  resolution: "@oraichain/oraidex-common@npm:1.1.28"
+  dependencies:
+    "@cosmjs/amino": 0.31.3
+    "@cosmjs/cosmwasm-stargate": 0.31.3
+    "@cosmjs/crypto": 0.31.3
+    "@cosmjs/proto-signing": 0.31.3
+    "@cosmjs/stargate": 0.31.3
+    "@cosmjs/tendermint-rpc": 0.31.3
+    "@ethersproject/providers": ^5.0.10
+    "@injectivelabs/sdk-ts": 1.12.1
+    "@keplr-wallet/types": ^0.11.38
+    "@oraichain/oraidex-contracts-sdk": latest
+    axios: 1.7.2
+    axios-extensions: 3.1.7
+    bignumber.js: ^9.1.2
+    cosmjs-types: 0.8.0
+    ethers: ^5.0.15
+    tronweb: 6.0.0-beta.4
+  checksum: 3aeb6824d49160f4d407063a8bba5316ee11ac59896f77e1a3df923aaed08fe6904a30bca5a4d657740ddb129fc00bd11ad908bc63cfaadc9da589505b9ab626
   languageName: node
   linkType: hard
 
@@ -24378,7 +24402,7 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.23
+    "@oraichain/oraidex-common": ^1.1.28
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.14
@@ -25894,7 +25918,7 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.23
+    "@oraichain/oraidex-common": ^1.1.28
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.12
