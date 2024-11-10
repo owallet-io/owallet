@@ -2,6 +2,7 @@ import React, { FunctionComponent, PropsWithChildren } from "react";
 import { useStyle } from "../../styles";
 import { Box } from "../box";
 import { DimensionValue } from "react-native";
+import { useTheme } from "@src/themes/theme-provider";
 
 export interface SkeletonProps {
   isNotReady?: boolean;
@@ -39,7 +40,7 @@ export const Skeleton: FunctionComponent<PropsWithChildren<SkeletonProps>> = ({
         return 256;
     }
   };
-
+  const { colors } = useTheme();
   return (
     <Box position="relative" minWidth={isNotReady ? dummyMinWidth : undefined}>
       {isNotReady ? (
@@ -47,8 +48,8 @@ export const Skeleton: FunctionComponent<PropsWithChildren<SkeletonProps>> = ({
           position="absolute"
           backgroundColor={
             layer === 0
-              ? style.get("color-gray-600").color
-              : style.get("color-gray-500").color
+              ? colors["neutral-surface-action"]
+              : colors["neutral-surface-action3"]
           }
           zIndex={10}
           borderRadius={getBorderRadius()}

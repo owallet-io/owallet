@@ -45,8 +45,9 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
           (chain) =>
             !EmbedChainInfos.some(
               (embedChain) => embedChain.chainId === chain.chainId
-            ) && !/test|dev/i.test(chain?.chainName)
-          // && !chain?.chainId.includes("eip155")
+            ) &&
+            !/test|dev/i.test(chain?.chainName) &&
+            !chain?.chainId.includes("eip155")
         );
         const sortedChains = chainsFilter.sort((a, b) => {
           const aHasChainInfo = chainInfoExists(a.chainId);
@@ -82,7 +83,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         } catch (e) {
           showToast({
             type: "danger",
-            message: "This chain does not support enabling.",
+            message: "Rejected",
           });
           console.log(e, "err add chain");
         }
