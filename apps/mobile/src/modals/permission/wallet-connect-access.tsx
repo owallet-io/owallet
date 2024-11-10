@@ -16,6 +16,8 @@ import { Gutter } from "@components/gutter";
 import { XAxis } from "@components/axis";
 import { OWButton } from "@components/button";
 import { registerModal } from "@src/modals/base";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 // import * as ExpoImage from 'expo-image';
 // import {Box} from '../box';
 // import {registerCardModal} from './card';
@@ -59,71 +61,75 @@ export const WalletConnectAccessModal = registerModal(
         return peerMeta.icons[peerMeta.icons.length - 1];
       }
     }, [peerMeta?.icons]);
-
+    const { colors } = useTheme();
     return (
-      <Box paddingX={12} paddingBottom={12}>
-        <OWText size={16} weight={"700"}>
-          {intl.formatMessage({
-            id: "page.permission.requesting-connection-title",
-          })}
-        </OWText>
-        <Gutter size={32} />
+      <WrapViewModal
+        title={intl.formatMessage({
+          id: "page.permission.requesting-connection-title",
+        })}
+      >
+        <Box paddingX={12} paddingBottom={12}>
+          <Gutter size={32} />
 
-        <Box alignX="center">
-          <Image
-            style={{ width: 74, height: 75 }}
-            source={logoUrl}
-            contentFit="contain"
-          />
-        </Box>
-
-        <Gutter size={16} />
-
-        <Text
-          style={style.flatten(["body2", "color-text-middle", "text-center"])}
-        >
-          <FormattedMessage
-            id="wallet-connect.information-text"
-            values={{
-              appName,
-              chainIds,
-            }}
-          />
-        </Text>
-
-        <Gutter size={16} />
-
-        <XAxis>
-          <OWButton
-            size="large"
-            fullWidth={false}
-            label={intl.formatMessage({ id: "button.reject" })}
-            // color="secondary"
-            style={{ flex: 1, width: "100%" }}
-            onPress={async () => {
-              await permissionStore.rejectPermissionWithProceedNext(
-                data.ids,
-                () => {}
-              );
-            }}
-          />
+          <Box alignX="center">
+            <Image
+              style={{ width: 74, height: 75 }}
+              source={{
+                uri: logoUrl,
+              }}
+              // contentFit="contain"
+            />
+          </Box>
 
           <Gutter size={16} />
 
-          <OWButton
-            fullWidth={false}
-            size="large"
-            label={intl.formatMessage({ id: "button.approve" })}
-            style={{ flex: 1, width: "100%" }}
-            onPress={async () => {
-              await permissionStore.approvePermissionWithProceedNext(
-                data.ids,
-                () => {}
-              );
+          <OWText
+            style={{
+              ...style.flatten(["body2", "text-center"]),
+              color: colors["neutral-text-body"],
             }}
-          />
-        </XAxis>
-      </Box>
+          >
+            <FormattedMessage
+              id="wallet-connect.information-text"
+              values={{
+                appName,
+                chainIds,
+              }}
+            />
+          </OWText>
+
+          <Gutter size={16} />
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await permissionStore.rejectPermissionWithProceedNext(
+                  data.ids,
+                  () => {}
+                );
+              }}
+            />
+
+            <Gutter size={16} />
+
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await permissionStore.approvePermissionWithProceedNext(
+                  data.ids,
+                  () => {}
+                );
+              }}
+            />
+          </XAxis>
+        </Box>
+      </WrapViewModal>
     );
   })
 );

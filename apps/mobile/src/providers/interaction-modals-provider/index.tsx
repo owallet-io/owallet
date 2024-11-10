@@ -200,8 +200,13 @@ export const InteractionModalsProivder: FunctionComponent = observer(
                   return (
                     <WalletConnectAccessModal
                       isOpen={true}
-                      // close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
-                      close={() => {}}
+                      close={async () =>
+                        await permissionStore.rejectPermissionWithProceedNext(
+                          data.ids,
+                          () => {}
+                        )
+                      }
+                      // close={() => {}}
                       key={data.ids.join(",")}
                       data={data}
                     />

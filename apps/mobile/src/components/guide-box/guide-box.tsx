@@ -2,11 +2,11 @@ import React, { FunctionComponent } from "react";
 import { GuideBoxProps } from "./types";
 import { Column, Columns } from "../column";
 import { Box } from "../box";
-import { InformationIcon } from "../icon/information";
 import { useStyle } from "../../styles";
 import { Stack } from "../stack";
 import { StyleSheet, Text } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
+import OWText from "@components/text/ow-text";
 
 export const GuideBox: FunctionComponent<GuideBoxProps> = ({
   title,
@@ -86,14 +86,14 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
         </Columns>
         {paragraph ? (
           typeof paragraph === "string" ? (
-            <Text
+            <OWText
               style={StyleSheet.flatten([
                 style.flatten(["body2"]),
                 { color: paragraphColor },
               ])}
             >
               {paragraph}
-            </Text>
+            </OWText>
           ) : (
             paragraph
           )

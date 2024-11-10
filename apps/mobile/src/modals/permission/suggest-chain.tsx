@@ -36,6 +36,7 @@ import images from "@assets/images";
 import { Skeleton } from "@components/skeleton";
 import OWText from "@components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 // import {WCMessageRequester} from '../../stores/wallet-connect/msg-requester.ts';
 
 export const SuggestChainModal = registerModal(
@@ -121,60 +122,62 @@ const SuggestChainPageImpl: FunctionComponent<{
   }, []);
 
   return (
-    <Box key={waitingData.id} paddingX={12} paddingBottom={12}>
-      {(() => {
-        if (isLoadingPlaceholder) {
+    <WrapViewModal>
+      <Box key={waitingData.id} paddingX={12} paddingBottom={12}>
+        {(() => {
+          if (isLoadingPlaceholder) {
+            return (
+              <CommunityInfo
+                isNotReady={isLoadingPlaceholder}
+                origin={originUrl}
+                chainInfo={waitingData.data.chainInfo}
+              />
+            );
+          }
+
+          if (communityChainInfo) {
+            return (
+              <CommunityInfo
+                isNotReady={false}
+                origin={originUrl}
+                chainInfo={communityChainInfo}
+                communityChainInfoUrl={chainSuggestStore.getCommunityChainInfoUrl(
+                  communityChainInfo.chainId
+                )}
+              />
+            );
+          }
+
           return (
-            <CommunityInfo
-              isNotReady={isLoadingPlaceholder}
+            <RawInfo
               origin={originUrl}
               chainInfo={waitingData.data.chainInfo}
+              communityChainInfoRepoUrl={
+                chainSuggestStore.communityChainInfoRepoUrl
+              }
             />
           );
-        }
-
-        if (communityChainInfo) {
-          return (
-            <CommunityInfo
-              isNotReady={false}
-              origin={originUrl}
-              chainInfo={communityChainInfo}
-              communityChainInfoUrl={chainSuggestStore.getCommunityChainInfoUrl(
-                communityChainInfo.chainId
-              )}
-            />
-          );
-        }
-
-        return (
-          <RawInfo
-            origin={originUrl}
-            chainInfo={waitingData.data.chainInfo}
-            communityChainInfoRepoUrl={
-              chainSuggestStore.communityChainInfoRepoUrl
-            }
+        })()}
+        <XAxis>
+          <OWButton
+            size="large"
+            label={intl.formatMessage({ id: "button.reject" })}
+            type="secondary"
+            style={{ flex: 1, width: "100%" }}
+            onPress={reject}
           />
-        );
-      })()}
-      <XAxis>
-        <OWButton
-          size="large"
-          label={intl.formatMessage({ id: "button.reject" })}
-          type="secondary"
-          style={{ flex: 1, width: "100%" }}
-          onPress={reject}
-        />
 
-        <Gutter size={16} />
+          <Gutter size={16} />
 
-        <OWButton
-          size="large"
-          label={intl.formatMessage({ id: "button.approve" })}
-          style={{ flex: 1, width: "100%" }}
-          onPress={approve}
-        />
-      </XAxis>
-    </Box>
+          <OWButton
+            size="large"
+            label={intl.formatMessage({ id: "button.approve" })}
+            style={{ flex: 1, width: "100%" }}
+            onPress={approve}
+          />
+        </XAxis>
+      </Box>
+    </WrapViewModal>
   );
 });
 
