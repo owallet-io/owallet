@@ -32,6 +32,10 @@ import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
 import { RootStackParamList } from "@src/router/root";
+import { PageWithBottom } from "@components/page/page-with-bottom";
+import { OWButton } from "@components/button";
+import { ScrollView } from "react-native-gesture-handler";
+import { metrics } from "@src/themes";
 
 export type Step = "unknown" | "connected" | "app";
 
@@ -345,66 +349,80 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
   );
 
   return (
-    <ScrollViewRegisterContainer
-      paragraph={`${intl.formatMessage({
-        id: "pages.register.components.header.header-step.title",
-      })} ${stepPrevious + 1}/${stepTotal}`}
-      bottomButton={{
-        text: intl.formatMessage({ id: "button.connect" }),
-        size: "large",
-        loading: isLoading,
-        onPress: connectLedger,
-      }}
-      paddingX={20}
+    <PageWithBottom
+      // paragraph={`${intl.formatMessage({
+      //   id: "pages.register.components.header.header-step.title",
+      // })} ${stepPrevious + 1}/${stepTotal}`}
+      bottomGroup={
+        <OWButton
+          label={intl.formatMessage({ id: "button.connect" })}
+          loading={isLoading}
+          onPress={connectLedger}
+        />
+      }
+      style={[
+        {
+          marginTop: 20,
+          width: metrics.screenWidth / 2.3,
+          borderRadius: 999,
+        },
+      ]}
+      // textStyle={styles.txtBtnSend}
+      // paddingX={20}
     >
-      <Box
-        backgroundColor={style.get("color-gray-600").color}
-        borderRadius={25}
-        paddingX={30}
-        marginTop={12}
-        paddingY={36}
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <StepView
-          step={1}
-          paragraph={intl.formatMessage({
-            id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
-          })}
-          icon={
-            <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
-              <LedgerIcon size={60} />
-            </Box>
-          }
-          focused={step === "unknown"}
-          completed={step !== "unknown"}
-        />
+        <Box
+          backgroundColor={style.get("color-gray-600").color}
+          borderRadius={25}
+          paddingX={30}
+          marginTop={12}
+          paddingY={36}
+        >
+          <StepView
+            step={1}
+            paragraph={intl.formatMessage({
+              id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
+            })}
+            icon={
+              <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
+                <LedgerIcon size={60} />
+              </Box>
+            }
+            focused={step === "unknown"}
+            completed={step !== "unknown"}
+          />
 
-        <Gutter size={20} />
+          <Gutter size={20} />
 
-        <StepView
-          step={2}
-          paragraph={intl.formatMessage(
-            { id: "pages.register.connect-ledger.open-app-step-paragraph" },
-            { app: propApp }
-          )}
-          icon={
-            <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
-              {(() => {
-                switch (propApp) {
-                  case "Terra":
-                    return <TerraIcon size={60} />;
-                  case "Ethereum":
-                    return <EthereumIcon size={60} />;
-                  default:
-                    return <CosmosIcon size={60} />;
-                }
-              })()}
-            </Box>
-          }
-          focused={step === "connected"}
-          completed={step === "app"}
-        />
-      </Box>
-    </ScrollViewRegisterContainer>
+          <StepView
+            step={2}
+            paragraph={intl.formatMessage(
+              { id: "pages.register.connect-ledger.open-app-step-paragraph" },
+              { app: propApp }
+            )}
+            icon={
+              <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
+                {(() => {
+                  switch (propApp) {
+                    case "Terra":
+                      return <TerraIcon size={60} />;
+                    case "Ethereum":
+                      return <EthereumIcon size={60} />;
+                    default:
+                      return <CosmosIcon size={60} />;
+                  }
+                })()}
+              </Box>
+            }
+            focused={step === "connected"}
+            completed={step === "app"}
+          />
+        </Box>
+      </ScrollView>
+    </PageWithBottom>
   );
 });
 
