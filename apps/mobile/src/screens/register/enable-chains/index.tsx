@@ -645,13 +645,7 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
   }, [chainStore.chainInfos, enabledChainIdentifiers]);
 
   const replaceToWelcomePage = () => {
-    if (skipWelcome) {
-      navigation.reset({ routes: [{ name: "Home" }] });
-    } else {
-      navigation.reset({
-        routes: [{ name: "Register.Welcome", params: { password } }],
-      });
-    }
+    resetTo(SCREENS.STACK.MainTab);
   };
 
   const enabledChainIdentifiersInPage = useMemo(() => {

@@ -31,7 +31,12 @@ import Btc from "@ledgerhq/hw-app-btc";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
-import { goBack, RootStackParamList } from "@src/router/root";
+import {
+  goBack,
+  navigate,
+  resetTo,
+  RootStackParamList,
+} from "@src/router/root";
 import { PageWithBottom } from "@components/page/page-with-bottom";
 import { OWButton } from "@components/button";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
@@ -42,6 +47,7 @@ import { Controller } from "react-hook-form";
 import { RectButton } from "@components/rect-button";
 import { SelectItemModal } from "@src/modals/select-item-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { SCREENS } from "@common/constants";
 
 export type Step = "unknown" | "connected" | "app";
 
@@ -75,7 +81,7 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
 
   const [step, setStep] = useState<Step>("unknown");
   const [isLoading, setIsLoading] = useState(false);
-
+  const needPassword = keyRingStore.keyInfos.length === 0;
   const connectLedger = async () => {
     setIsLoading(true);
 
@@ -92,9 +98,6 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
     if (propApp === "Ethereum") {
       let ethApp = new Eth(transport);
 
-      // Ensure that the keplr can connect to ethereum app on ledger.
-      // getAppConfiguration() works even if the ledger is on screen saver mode.
-      // To detect the screen saver mode, we should request the address before using.
       try {
         await ethApp.getAddress(`m/44'/60'/'0/0/0`);
       } catch (e) {
@@ -136,28 +139,39 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
           await chainStore.enableChainInfoInUI(
             ...appendModeInfo.afterEnableChains
           );
-          navigation.reset({
-            routes: [{ name: "Register.Welcome", params: { password } }],
-          });
+          resetTo(SCREENS.STACK.MainTab);
         } else {
-          navigation.reset({
-            routes: [
-              {
-                name: "Register.FinalizeKey",
-                params: {
-                  name,
-                  password,
-                  stepPrevious: stepPrevious + 1,
-                  stepTotal,
-                  ledger: {
-                    pubKey: pubKey.toBytes(),
-                    bip44Path,
-                    app: propApp,
+          if (needPassword) {
+            navigate(SCREENS.RegisterNewPincode, {
+              walletName: name,
+              ledger: {
+                pubKey: pubKey.toBytes(),
+                bip44Path,
+                app: propApp,
+              },
+              stepTotal: 3,
+              stepPrevious: 1,
+            });
+          } else {
+            navigation.reset({
+              routes: [
+                {
+                  name: "Register.FinalizeKey",
+                  params: {
+                    name,
+                    password,
+                    stepPrevious: stepPrevious + 1,
+                    stepTotal,
+                    ledger: {
+                      pubKey: pubKey.toBytes(),
+                      bip44Path,
+                      app: propApp,
+                    },
                   },
                 },
-              },
-            ],
-          });
+              ],
+            });
+          }
         }
       } catch (e) {
         console.log(e);
@@ -211,8 +225,6 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
             verify: false,
           }
         );
-        console.log(res, "res");
-        console.log(res44, "res44");
         const pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, "hex"));
         const pubKey44 = new PubKeySecp256k1(
           Buffer.from(res44.publicKey, "hex")
@@ -234,30 +246,43 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
           await chainStore.enableChainInfoInUI(
             ...appendModeInfo.afterEnableChains
           );
-          navigation.reset({
-            routes: [{ name: "Register.Welcome", params: { password } }],
-          });
+          resetTo(SCREENS.STACK.MainTab);
         } else {
-          navigation.reset({
-            routes: [
-              {
-                name: "Register.FinalizeKey",
-                params: {
-                  name,
-                  password,
-                  stepPrevious: stepPrevious + 1,
-                  stepTotal,
-                  ledger: {
-                    pubKey: pubKey.toBytes(),
-                    pubKey44: pubKey44.toBytes(),
-                    bip44Path,
-                    app: `${propApp}84`,
-                    app44: `${propApp}44`,
+          if (needPassword) {
+            navigate(SCREENS.RegisterNewPincode, {
+              walletName: name,
+              ledger: {
+                pubKey: pubKey.toBytes(),
+                pubKey44: pubKey44.toBytes(),
+                bip44Path,
+                app: `${propApp}84`,
+                app44: `${propApp}44`,
+              },
+              stepTotal: 3,
+              stepPrevious: 1,
+            });
+          } else {
+            navigation.reset({
+              routes: [
+                {
+                  name: "Register.FinalizeKey",
+                  params: {
+                    name,
+                    password,
+                    stepPrevious: stepPrevious + 1,
+                    stepTotal,
+                    ledger: {
+                      pubKey: pubKey.toBytes(),
+                      pubKey44: pubKey44.toBytes(),
+                      bip44Path,
+                      app: `${propApp}84`,
+                      app44: `${propApp}44`,
+                    },
                   },
                 },
-              },
-            ],
-          });
+              ],
+            });
+          }
         }
       } catch (e) {
         console.log(e, "err btc");
@@ -279,9 +304,6 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
         throw new Error("Device is locked");
       }
 
-      // XXX: You must not check "error_message".
-      //      If "error_message" is not "No errors",
-      //      probably it doesn't mean that the device is not connected.
       setStep("connected");
     } catch (e) {
       console.log(e);
@@ -312,28 +334,39 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
         await chainStore.enableChainInfoInUI(
           ...appendModeInfo.afterEnableChains
         );
-        navigation.reset({
-          routes: [{ name: "Register.Welcome", params: { password } }],
-        });
+        resetTo(SCREENS.STACK.MainTab);
       } else {
-        navigation.reset({
-          routes: [
-            {
-              name: "Register.FinalizeKey",
-              params: {
-                name,
-                password,
-                stepPrevious: stepPrevious + 1,
-                stepTotal,
-                ledger: {
-                  pubKey: res.compressed_pk,
-                  bip44Path,
-                  app: propApp,
+        if (needPassword) {
+          navigate(SCREENS.RegisterNewPincode, {
+            walletName: name,
+            ledger: {
+              pubKey: res.compressed_pk,
+              bip44Path,
+              app: propApp,
+            },
+            stepTotal: 3,
+            stepPrevious: 1,
+          });
+        } else {
+          navigation.reset({
+            routes: [
+              {
+                name: "Register.FinalizeKey",
+                params: {
+                  name,
+                  password,
+                  stepPrevious: stepPrevious + 1,
+                  stepTotal,
+                  ledger: {
+                    pubKey: res.compressed_pk,
+                    bip44Path,
+                    app: propApp,
+                  },
                 },
               },
-            },
-          ],
-        });
+            ],
+          });
+        }
       }
     } else {
       setStep("connected");
@@ -344,7 +377,6 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
     setIsLoading(false);
   };
 
-  // 최초에 자동으로 ledger 연결을 한번 시도함.
   useFocusEffect(
     React.useCallback(() => {
       InteractionManager.runAfterInteractions(() => {
@@ -356,77 +388,6 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
   const styles = useStyles();
   const { colors } = useTheme();
   return (
-    // <PageWithBottom
-    //   bottomGroup={
-    //     <OWButton
-    //       label={intl.formatMessage({ id: "button.connect" })}
-    //       loading={isLoading}
-    //       onPress={connectLedger}
-    //     />
-    //   }
-    //   style={[
-    //     {
-    //       marginTop: 20,
-    //       width: metrics.screenWidth / 2.3,
-    //       borderRadius: 999,
-    //     },
-    //   ]}
-    //   // textStyle={styles.txtBtnSend}
-    //   // paddingX={20}
-    // >
-    //   <ScrollView
-    //     keyboardShouldPersistTaps="handled"
-    //     showsVerticalScrollIndicator={false}
-    //   >
-    //     <Box
-    //       backgroundColor={style.get("color-gray-600").color}
-    //       borderRadius={25}
-    //       paddingX={30}
-    //       marginTop={12}
-    //       paddingY={36}
-    //     >
-    //       <StepView
-    //         step={1}
-    //         paragraph={intl.formatMessage({
-    //           id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
-    //         })}
-    //         icon={
-    //           <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
-    //             <LedgerIcon size={60} />
-    //           </Box>
-    //         }
-    //         focused={step === "unknown"}
-    //         completed={step !== "unknown"}
-    //       />
-    //
-    //       <Gutter size={20} />
-    //
-    //       <StepView
-    //         step={2}
-    //         paragraph={intl.formatMessage(
-    //           { id: "pages.register.connect-ledger.open-app-step-paragraph" },
-    //           { app: propApp }
-    //         )}
-    //         icon={
-    //           <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
-    //             {(() => {
-    //               switch (propApp) {
-    //                 case "Terra":
-    //                   return <TerraIcon size={60} />;
-    //                 case "Ethereum":
-    //                   return <EthereumIcon size={60} />;
-    //                 default:
-    //                   return <CosmosIcon size={60} />;
-    //               }
-    //             })()}
-    //           </Box>
-    //         }
-    //         focused={step === "connected"}
-    //         completed={step === "app"}
-    //       />
-    //     </Box>
-    //   </ScrollView>
-    // </PageWithBottom>
     <View style={styles.container}>
       <ScrollView
         keyboardShouldPersistTaps="handled"

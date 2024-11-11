@@ -286,15 +286,15 @@ export const AppNavigation: FunctionComponent = observer(() => {
               name={SCREENS.ManageChain}
               component={SelectChainsScreen}
             />
-            <Stack.Screen
-              name="Register.EnableChain"
-              component={EnableChainsScreen}
-            />
-            <Stack.Screen
-              name="Register.Welcome"
-              options={{ headerShown: false }}
-              component={WelcomeScreen}
-            />
+            {/*<Stack.Screen*/}
+            {/*  name="Register.EnableChain"*/}
+            {/*  component={EnableChainsScreen}*/}
+            {/*/>*/}
+            {/*<Stack.Screen*/}
+            {/*  name="Register.Welcome"*/}
+            {/*  options={{ headerShown: false }}*/}
+            {/*  component={WelcomeScreen}*/}
+            {/*/>*/}
             <Stack.Screen
               name="Register.FinalizeKey"
               // options={{ headerShown: false }}

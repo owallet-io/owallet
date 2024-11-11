@@ -28,6 +28,8 @@ import { FormattedMessage } from "react-intl";
 import { registerModal } from "@src/modals/base";
 import OWText from "@components/text/ow-text";
 import { OWButton } from "@components/button";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
 
 enum BLEPermissionGrantStatus {
   NotInit = "notInit",
@@ -344,14 +346,15 @@ const LedgerNanoBLESelector: FunctionComponent<{
       setIsConnecting(false);
     }
   };
-
+  const { colors } = useTheme();
   return (
-    <OWButton
+    <RectButton
       // rippleColor={style.get("color-rect-button-default-ripple").color}
       // underlayColor={style.get("color-rect-button-default-underlay").color}
-      // activeOpacity={0.2}
+      activeOpacity={0.2}
       style={{
         borderRadius: 8,
+        backgroundColor: colors["neutral-surface-pressed"],
       }}
       onPress={async () => {
         await testLedgerConnection();
@@ -359,13 +362,18 @@ const LedgerNanoBLESelector: FunctionComponent<{
     >
       <Box style={style.flatten(["height-74", "padding-x-16"])} alignY="center">
         <XAxis alignY="center">
-          <Svg width="32" height="32" fill="none" viewBox="0 0 32 32">
-            <Rect width="32" height="32" fill="#2E2E32" rx="16" />
-            <Path
-              fill="#72747B"
-              d="M19.23 22.992V24H24v-4.543h-1.073v3.535H19.23zM19.23 8v1.007h3.697v3.536H24V8h-4.77zm-4.513 4.543h-1.072v6.914h4.837v-.909h-3.765v-6.005zM8 19.457V24h4.77v-1.008H9.073v-3.535H8zM8 8v4.543h1.073V9.007h3.697V8H8z"
-            />
-          </Svg>
+          {/*<Svg width="32" height="32" fill="none" viewBox="0 0 32 32">*/}
+          {/*  <Rect width="32" height="32" fill="#2E2E32" rx="16" />*/}
+          {/*  <Path*/}
+          {/*    fill="#72747B"*/}
+          {/*    d="M19.23 22.992V24H24v-4.543h-1.073v3.535H19.23zM19.23 8v1.007h3.697v3.536H24V8h-4.77zm-4.513 4.543h-1.072v6.914h4.837v-.909h-3.765v-6.005zM8 19.457V24h4.77v-1.008H9.073v-3.535H8zM8 8v4.543h1.073V9.007h3.697V8H8z"*/}
+          {/*  />*/}
+          {/*</Svg>*/}
+          <OWIcon
+            size={32}
+            name={"wallet-ledger"}
+            color={colors["neutral-icon-on-light"]}
+          />
           <Gutter size={12} />
           <YAxis>
             <OWText style={style.flatten(["subtitle2"])}>{deviceName}</OWText>
@@ -393,6 +401,6 @@ const LedgerNanoBLESelector: FunctionComponent<{
           </YAxis>
         </XAxis>
       </Box>
-    </OWButton>
+    </RectButton>
   );
 };
