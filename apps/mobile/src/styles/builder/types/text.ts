@@ -1,82 +1,75 @@
-import { FontWeightNumbers } from "../uilts";
-import {
-  EnumFontStyle,
-  EnumTextAlign,
-  EnumTextTransform,
-  StaticStylesDefinitions,
-} from "./common";
+import { FontWeightNumbers } from '../uilts';
+import { EnumFontStyle, EnumTextAlign, EnumTextTransform, StaticStylesDefinitions } from './common';
 export const StaticTextStyles = {
   italic: {
-    fontStyle: "italic" as EnumFontStyle,
+    fontStyle: 'italic' as EnumFontStyle
   },
-  "not-italic": {
-    fontStyle: "normal" as EnumFontStyle,
+  'not-italic': {
+    fontStyle: 'normal' as EnumFontStyle
   },
-  "font-thin": {
-    fontWeight: "100" as FontWeightNumbers,
-    fontFamily: "Inter-Thin",
+  'font-thin': {
+    fontWeight: '100' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Thin'
   },
-  "font-extralight": {
-    fontWeight: "200" as FontWeightNumbers,
-    fontFamily: "Inter-SemiLight",
+  'font-extralight': {
+    fontWeight: '200' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-SemiLight'
   },
-  "font-light": {
-    fontWeight: "300" as FontWeightNumbers,
-    fontFamily: "Inter-Light",
+  'font-light': {
+    fontWeight: '300' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Light'
   },
-  "font-normal": {
-    fontWeight: "400" as FontWeightNumbers,
-    fontFamily: "Inter-Regular",
+  'font-normal': {
+    fontWeight: '400' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Regular'
   },
-  "font-medium": {
-    fontWeight: "500" as FontWeightNumbers,
-    fontFamily: "Inter-Medium",
+  'font-medium': {
+    fontWeight: '500' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Medium'
   },
-  "font-semibold": {
-    fontWeight: "600" as FontWeightNumbers,
-    fontFamily: "Inter-SemiBold",
+  'font-semibold': {
+    fontWeight: '600' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-SemiBold'
   },
-  "font-bold": {
-    fontWeight: "700" as FontWeightNumbers,
-    fontFamily: "Inter-Bold",
+  'font-bold': {
+    fontWeight: '700' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Bold'
   },
-  "font-extrabold": {
-    fontWeight: "800" as FontWeightNumbers,
-    fontFamily: "Inter-ExtraBold",
+  'font-extrabold': {
+    fontWeight: '800' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-ExtraBold'
   },
-  "font-black": {
-    fontWeight: "900" as FontWeightNumbers,
-    fontFamily: "Inter-Black",
+  'font-black': {
+    fontWeight: '900' as FontWeightNumbers,
+    fontFamily: 'SpaceGrotesk-Black'
   },
   uppercase: {
-    textTransform: "uppercase" as EnumTextTransform,
+    textTransform: 'uppercase' as EnumTextTransform
   },
   lowercase: {
-    textTransform: "lowercase" as EnumTextTransform,
+    textTransform: 'lowercase' as EnumTextTransform
   },
   capitalize: {
-    textTransform: "capitalize" as EnumTextTransform,
+    textTransform: 'capitalize' as EnumTextTransform
   },
-  "normal-case": {
-    textTransform: "none" as EnumTextTransform,
+  'normal-case': {
+    textTransform: 'none' as EnumTextTransform
   },
-  "text-auto": {
-    textAlign: "auto" as EnumTextAlign,
+  'text-auto': {
+    textAlign: 'auto' as EnumTextAlign
   },
-  "text-left": {
-    textAlign: "left" as EnumTextAlign,
+  'text-left': {
+    textAlign: 'left' as EnumTextAlign
   },
-  "text-right": {
-    textAlign: "right" as EnumTextAlign,
+  'text-right': {
+    textAlign: 'right' as EnumTextAlign
   },
-  "text-center": {
-    textAlign: "center" as EnumTextAlign,
+  'text-center': {
+    textAlign: 'center' as EnumTextAlign
   },
-  "text-justify": {
-    textAlign: "justify" as EnumTextAlign,
-  },
+  'text-justify': {
+    textAlign: 'justify' as EnumTextAlign
+  }
 };
 
-export type StyleBuilderTextDefinitions = StaticStylesDefinitions<
-  typeof StaticTextStyles
->;
+export type StyleBuilderTextDefinitions = StaticStylesDefinitions<typeof StaticTextStyles>;

@@ -25,7 +25,6 @@ import { useTheme } from "@src/themes/theme-provider";
 export const BasicAccessModal = registerModal(
   observer<{
     isOpen: boolean;
-    // close: (isOpen: boolean) => void;
 
     data: {
       ids: string[];
@@ -43,6 +42,8 @@ export const BasicAccessModal = registerModal(
         })
         .join(", ");
     }, [data]);
+
+    console.log('get here');
 
     const chainIds = useMemo(() => {
       return data?.chainIds.join(", ");
