@@ -5,8 +5,15 @@ import { ChainsUIService } from '../chains-ui';
 import { Key } from '@owallet/types';
 import { KeyRingCosmosService } from '../keyring-cosmos';
 import { KeyRingTronBaseService } from './keyring-base';
-import { DEFAULT_FEE_LIMIT_TRON, TronWebProvider } from '@owallet/common';
+import {
+  ChainIdEVM,
+  DEFAULT_FEE_LIMIT_TRON,
+  EXTRA_FEE_LIMIT_TRON,
+  getBase58Address,
+  TronWebProvider
+} from '@owallet/common';
 import { APP_PORT, Env } from '@owallet/router';
+import { Int } from '@owallet/unit';
 
 export class KeyRingTronService {
   constructor(
@@ -34,6 +41,96 @@ export class KeyRingTronService {
     return this.keyRingCosmosService.getKey(vaultId, chainId);
   }
 
+  async requestTronAddress(env: Env, origin: string): Promise<object> {
+    const vaultId = this.keyRingService.selectedVaultId;
+    const key = await this.getKey(vaultId, ChainIdEVM.TRON);
+    const res = {
+      name: key.name,
+      hex: key.ethereumHexAddress,
+      base58: getBase58Address(key.ethereumHexAddress)
+    };
+
+    return res;
+  }
+
+  async requestTriggerSmartContract(
+    _: Env,
+    chainId: string,
+    data: {
+      address: string;
+      functionSelector: string;
+      options: { feeLimit?: number };
+      parameters;
+      issuerAddress: string;
+    }
+  ): Promise<{
+    result: any;
+    transaction: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    };
+  }> {
+    try {
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
+
+      const chainParameters = await tronWeb.trx.getChainParameters();
+
+      const triggerConstantContract = await tronWeb.transactionBuilder.triggerConstantContract(
+        data.address,
+        data.functionSelector,
+        {
+          ...data.options,
+          feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100)
+        },
+        data.parameters,
+        data.issuerAddress
+      );
+      const energyFee = chainParameters.find(({ key }) => key === 'getEnergyFee');
+      const feeLimit = new Int(energyFee.value)
+        .mul(new Int(triggerConstantContract.energy_used))
+        .add(new Int(EXTRA_FEE_LIMIT_TRON));
+
+      const triggerSmartContract = await tronWeb.transactionBuilder.triggerSmartContract(
+        data.address,
+        data.functionSelector,
+        {
+          ...data.options,
+          feeLimit: feeLimit?.toString(),
+          callValue: 0
+        },
+        data.parameters,
+        data.issuerAddress
+      );
+
+      return triggerSmartContract;
+    } catch (error) {
+      console.log(error, 'error');
+      throw error;
+    }
+  }
+
+  async requestSendRawTransaction(
+    _: Env,
+    chainId: string,
+    transaction: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    }
+  ) {
+    try {
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const tronWeb = TronWebProvider(chainInfo.rpc);
+      return await tronWeb.trx.sendRawTransaction(transaction);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async signTronSelected(
     env: Env,
     origin: string,
@@ -43,8 +140,6 @@ export class KeyRingTronService {
     signingData: Uint8Array;
     signature?: any;
   }> {
-    console.log('data signTronSelected', data);
-
     return await this.signTron(env, origin, this.keyRingService.selectedVaultId, chainId, data);
   }
 

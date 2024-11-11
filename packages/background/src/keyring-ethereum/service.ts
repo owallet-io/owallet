@@ -117,8 +117,6 @@ export class KeyRingEthereumService {
       },
 
       async (res: { signingData: Uint8Array; signature?: Uint8Array }) => {
-        console.log('signType', signType);
-
         const { signature, signingData } = await (async () => {
           if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
             if (!res.signature || res.signature.length === 0) {
@@ -169,8 +167,6 @@ export class KeyRingEthereumService {
                   Buffer.from(serialize(unsignedTx).replace('0x', ''), 'hex'),
                   'keccak256'
                 );
-
-                console.log('signature', signature);
 
                 return {
                   signingData: res.signingData,
@@ -240,9 +236,6 @@ export class KeyRingEthereumService {
               chainId
             );
 
-            console.log('tx.data', tx.data);
-            console.log('tx.signingData', signingData);
-
             if ((tx.data == null || tx.data === '0x') && BigInt(tx.value) > 0 && contractBytecode === '0x') {
               return 'send-native';
             }
@@ -253,8 +246,6 @@ export class KeyRingEthereumService {
 
             return 'execute-contract';
           })();
-
-          console.log('ethTxType', ethTxType);
 
           this.analyticsService.logEventIgnoreError('evm_tx_signed', {
             chainId,
@@ -313,8 +304,6 @@ export class KeyRingEthereumService {
         return this.request<T>(env, origin, method, params, providerId, chainId);
       }
     }
-
-    console.log('method', method);
 
     const currentChainInfo = this.chainsService.getChainInfoOrThrow(currentChainId);
     const currentChainEVMInfo = this.chainsService.getEVMInfoOrThrow(currentChainId);

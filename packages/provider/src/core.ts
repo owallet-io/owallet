@@ -35,7 +35,7 @@ import Long from 'long';
 import { Buffer } from 'buffer/';
 import { OWalletCoreTypes } from './core-types';
 import EventEmitter from 'events';
-import { TW } from '@owallet/common';
+import { ChainIdEVM, TW } from '@owallet/common';
 import { types } from '@oasisprotocol/client';
 
 export class OWallet implements IOWallet, OWalletCoreTypes {
@@ -840,10 +840,10 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                 {}
               );
 
-              const fontUrl = chrome.runtime.getURL('/assets/Inter-SemiBold.ttf');
+              const fontUrl = chrome.runtime.getURL('/assets/SpaceGrotesk-SemiBold.ttf');
               const fontFaceAndKeyFrames = `
                 @font-face {
-                  font-family: 'Inter-SemiBold-OWallet';
+                  font-family: 'SpaceGrotesk-SemiBold';
                   src: url('${fontUrl}') format('truetype');
                   font-weight: 600;
                   font-style: normal;
@@ -900,7 +900,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.style.display = 'flex';
               button.style.alignItems = 'center';
 
-              button.style.fontFamily = 'Inter-SemiBold-OWallet';
+              button.style.fontFamily = 'SpaceGrotesk-SemiBold';
               button.style.fontWeight = '600';
 
               // button.style.cursor = "pointer";
@@ -1299,11 +1299,15 @@ class TronProvider extends EventEmitter implements ITronProvider {
     });
   }
 
-  async getDefaultAddress(): Promise<SettledResponses<Key>> {
+  async tron_requestAccounts(): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
-      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'get-trx-keys-settled', {})
-        .then(resolve)
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'request-get-tron-address', {})
+        .then(res => {
+          console.log('res', res);
+
+          resolve(res);
+        })
         .catch(reject)
         .finally(() => (f = true));
 
@@ -1347,6 +1351,111 @@ class TronProvider extends EventEmitter implements ITronProvider {
 
       setTimeout(() => {
         if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async sendRawTransaction(transaction): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'request-send-raw-transaction', {
+        data: JSON.stringify(transaction)
+      })
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async triggerSmartContract(
+    address: any,
+    functionSelector: string,
+    options: object,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      console.log('{ address, functionSelector, options, parameters, issuerAddress }', {
+        ...address
+      });
+
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'trigger-smart-contract', {
+        chainId: ChainIdEVM.TRON,
+        data: JSON.stringify({ ...address })
+      })
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  protected async protectedEnableAccess(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'permission-interactive', 'enable-access-for-evm', {})
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async request<T = unknown>({
+    method,
+    params,
+    providerId,
+    chainId
+  }: {
+    method: string;
+    params?: readonly unknown[] | Record<string, unknown>;
+    providerId?: string;
+    chainId?: string;
+  }): Promise<T> {
+    if (typeof method !== 'string') {
+      throw new Error('Invalid paramater: `method` must be a string');
+    }
+
+    console.log('request tron', method);
+
+    if (method !== 'owallet_initProviderState') {
+      await this.protectedEnableAccess();
+    }
+
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'request-json-rpc-to-evm', {
+        method,
+        params,
+        providerId,
+        chainId
+      })
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f && sidePanelOpenNeededJSONRPCMethods.includes(method)) {
           this.owallet.protectedTryOpenSidePanelIfEnabled();
         }
       }, 100);

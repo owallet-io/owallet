@@ -163,6 +163,22 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
         />
       ) : null}
 
+      {mergedDataForEVM && !mergedPermissionData
+        ? (() => {
+            const data = mergedDataForEVM;
+
+            return (
+              <BasicAccessEVMModal
+                isOpen={true}
+                // close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                close={() => {}}
+                key={data.ids.join(',')}
+                data={data}
+              />
+            );
+          })()
+        : null}
+
       {mergedPermissionData
         ? (() => {
             const data = mergedPermissionData;
@@ -183,24 +199,8 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
             return (
               <BasicAccessModal
                 isOpen={true}
-                close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
-                // close={() => {}}
-                key={data.ids.join(',')}
-                data={data}
-              />
-            );
-          })()
-        : null}
-
-      {mergedDataForEVM && !mergedPermissionData
-        ? (() => {
-            const data = mergedDataForEVM;
-
-            return (
-              <BasicAccessEVMModal
-                isOpen={true}
-                close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
-                // close={() => {}}
+                // close={async () => await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {})}
+                close={() => {}}
                 key={data.ids.join(',')}
                 data={data}
               />

@@ -38,6 +38,7 @@ import Long from 'long';
 import { OWalletCoreTypes } from './core-types';
 import EventEmitter from 'events';
 import { types } from '@oasisprotocol/client';
+import { ChainIdEVM } from '@owallet/common';
 
 export interface ProxyRequest {
   type: 'proxy-request';
@@ -78,6 +79,8 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, 'ethereum', owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, 'tronWeb', owallet.tron);
   defineUnwritablePropertyIfPossible(window, 'tronLink', owallet.tron);
+  defineUnwritablePropertyIfPossible(window, 'tronWeb_owallet', owallet.tron);
+  defineUnwritablePropertyIfPossible(window, 'tronLink_owallet', owallet.tron);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSigner', owallet.getOfflineSigner);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSignerOnlyAmino', owallet.getOfflineSignerOnlyAmino);
   defineUnwritablePropertyIfPossible(window, 'getOfflineSignerAuto', owallet.getOfflineSignerAuto);
@@ -110,6 +113,8 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         return;
       }
 
+      console.log('message.method', message.method);
+
       try {
         if (!message.id) {
           throw new Error('Empty id');
@@ -133,8 +138,10 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
         if (
           !owallet[message.method] ||
-          (message.method !== 'ethereum' && typeof owallet[message.method] !== 'function')
+          (message.method !== 'ethereum' && message.method !== 'tron' && typeof owallet[message.method] !== 'function')
         ) {
+          console.log(`Invalid method: ${message.method}`);
+
           throw new Error(`Invalid method: ${message.method}`);
         }
 
@@ -323,25 +330,32 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
           } else if (method === 'tron') {
             const tronProviderMethod = message.tronProviderMethod;
 
+            console.log('tronProviderMethod', tronProviderMethod);
+
             //@ts-ignore
             if (tronProviderMethod?.startsWith('protected')) {
               throw new Error('Rejected');
             }
             if (tronProviderMethod === undefined || typeof owallet.tron[tronProviderMethod] !== 'function') {
+              console.log('tronProviderMethod', tronProviderMethod, typeof owallet.tron[tronProviderMethod]);
+
               throw new Error(
                 //@ts-ignore
-                `${message?.tronProviderMethod} is not function or invalid Oasis provider method`
+                `${message?.tronProviderMethod} is not function or invalid Tron provider method`
               );
             }
 
             const messageArgs = JSONUint8Array.unwrap(message.args);
 
+            // @ts-ignore
             return await owallet.tron[tronProviderMethod](
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               ...(typeof messageArgs === 'string' ? JSON.parse(messageArgs) : messageArgs)
             );
           }
+
+          console.log('owallet[method]', method);
 
           return await owallet[method](
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -1295,6 +1309,48 @@ class TronProvider extends EventEmitter implements ITronProvider {
     });
   };
 
+  trx = {
+    sign: async (transaction: object): Promise<object> => {
+      return await this._requestMethod('sign', [ChainIdEVM.TRON, transaction]);
+    },
+    sendRawTransaction: async (transaction: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    }): Promise<object> => {
+      return await this._requestMethod('sendRawTransaction', [ChainIdEVM.TRON, transaction]);
+    }
+  };
+
+  transactionBuilder = {
+    triggerSmartContract: async (
+      address: string,
+      functionSelector: string,
+      options: object,
+      parameters: any[],
+      issuerAddress: string
+    ): Promise<any> => {
+      if (!address || !functionSelector || !issuerAddress) {
+        throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
+      }
+
+      const parametersConvert = parameters.map(par =>
+        par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
+      );
+
+      return await this._requestMethod('triggerSmartContract', [
+        {
+          address,
+          functionSelector,
+          options,
+          parameters: parametersConvert,
+          issuerAddress
+        }
+      ]);
+    }
+  };
+
   async getKey(chainId: string): Promise<Key> {
     return await this._requestMethod('getKey', [chainId]);
   }
@@ -1309,7 +1365,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
     txID: string;
     visible?: boolean;
   }): Promise<object> {
-    throw new Error('Method not implemented.');
+    return this._requestMethod('sendRawTransaction', [transaction]);
   }
 
   triggerSmartContract(
@@ -1319,7 +1375,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
     parameters: any[],
     issuerAddress: string
   ): Promise<any> {
-    throw new Error('Method not implemented.');
+    return this._requestMethod('triggerSmartContract', [address, functionSelector, options, parameters, issuerAddress]);
   }
 
   async sign(chainId: string, data: object): Promise<any> {
@@ -1330,8 +1386,10 @@ class TronProvider extends EventEmitter implements ITronProvider {
     return await this._requestMethod('sendTx', [chainId, signedTx]);
   }
 
-  async getDefaultAddress(): Promise<SettledResponses<Key>> {
-    return this._requestMethod('getDefaultAddress', []);
+  async tron_requestAccounts(): Promise<SettledResponses<Key>> {
+    const result = await this._requestMethod('tron_requestAccounts', []);
+    localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
+    return result;
   }
 
   async request(args: RequestArguments): Promise<any> {
