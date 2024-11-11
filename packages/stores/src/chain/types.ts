@@ -60,6 +60,7 @@ export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {
   readonly rest: string;
   readonly rpc: string;
   readonly grpc: string | undefined;
+  readonly txExplorer: ChainInfo["txExplorer"];
   readonly walletUrl: string | undefined;
   readonly walletUrlForStaking: string | undefined;
   readonly chainSymbolImageUrl: string | undefined;

@@ -39,6 +39,7 @@ import { useFocusAfterRouting } from "@hooks/use-focus";
 import { VerticalCollapseTransition } from "@components/transition";
 import { Text } from "@components/text";
 import { Gutter } from "@components/gutter";
+import { TxFailedResultScreen } from "@screens/tx-result";
 
 export const SendCosmosScreen: FunctionComponent<{
   chainId: string;
@@ -256,6 +257,14 @@ export const SendCosmosScreen: FunctionComponent<{
                 navigate(SCREENS.TxPendingResult, {
                   chainId,
                   txHash: Buffer.from(txHash).toString("hex"),
+                  data: {
+                    amount: sendConfigs.amountConfig.amount[0],
+                    fee: sendConfigs.feeConfig.fees[0],
+                    type: "send",
+                    from: sender,
+                    to: sendConfigs.recipientConfig.recipient,
+                    memo: sendConfigs.memoConfig.memo,
+                  },
                 });
               },
               onFulfill: (tx: any) => {
