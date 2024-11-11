@@ -1,26 +1,12 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import {
-  AppState,
-  AppStateStatus,
-  InteractionManager,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
-import { useStore } from "../../stores";
-import { observer } from "mobx-react-lite";
-import { usePrevious } from "../../hooks";
-import { useTheme } from "@src/themes/theme-provider";
-import { useFocusEffect } from "@react-navigation/native";
-import { ChainInfoWithEmbed, ChainUpdaterService } from "@owallet/background";
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { AppState, AppStateStatus, InteractionManager, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { useStore } from '../../stores';
+import { observer } from 'mobx-react-lite';
+import { usePrevious } from '../../hooks';
+import { useTheme } from '@src/themes/theme-provider';
+import { useFocusEffect } from '@react-navigation/native';
+import { ChainInfoWithEmbed, ChainUpdaterService } from '@owallet/background';
 import {
   addressToPublicKey,
   API,
@@ -32,52 +18,38 @@ import {
   getOasisNic,
   getRpcByChainId,
   MapChainIdToNetwork,
-  parseRpcBalance,
-} from "@owallet/common";
-import { AccountBoxAll } from "./components/account-box-new";
-import { EarningCardNew } from "./components/earning-card-new";
-import { InjectedProviderUrl } from "../web/config";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-} from "@owallet/unit";
-import { chainInfos, network } from "@oraichain/oraidex-common";
-import { useCoinGeckoPrices } from "@owallet/hooks";
-import { debounce } from "lodash";
-import { MainTabHome } from "./components";
-import { sha256 } from "sha.js";
-import { Mixpanel } from "mixpanel-react-native";
-import { tracking } from "@src/utils/tracking";
-import { StakeCardAll } from "./components/stake-card-all";
-import { ChainInfoInner } from "@owallet/stores";
-import Web3 from "web3";
-import { fromBinary, toBinary } from "@cosmjs/cosmwasm-stargate";
-import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
-import { ViewToken } from "@src/stores/huge-queries";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AddressBtcType } from "@owallet/types";
+  parseRpcBalance
+} from '@owallet/common';
+import { AccountBoxAll } from './components/account-box-new';
+import { EarningCardNew } from './components/earning-card-new';
+import { InjectedProviderUrl } from '../web/config';
+import { initPrice } from '@src/screens/home/hooks/use-multiple-assets';
+import { CoinPretty, Dec, DecUtils, IntPretty, PricePretty } from '@owallet/unit';
+import { chainInfos, network } from '@oraichain/oraidex-common';
+import { useCoinGeckoPrices } from '@owallet/hooks';
+import { debounce } from 'lodash';
+import { MainTabHome } from './components';
+import { sha256 } from 'sha.js';
+import { Mixpanel } from 'mixpanel-react-native';
+import { tracking } from '@src/utils/tracking';
+import { StakeCardAll } from './components/stake-card-all';
+import { ChainInfoInner } from '@owallet/stores';
+import Web3 from 'web3';
+import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
+import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
+import { ViewToken } from '@src/stores/huge-queries';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AddressBtcType } from '@owallet/types';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const [isLoading, setIsLoading] = React.useState(false);
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    browserStore,
-    appInitStore,
-    keyRingStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, browserStore, appInitStore, keyRingStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
@@ -86,28 +58,22 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const currentChainId = currentChain?.chainId;
   const account = accountStore.getAccount(chainStore.current.chainId);
 
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
-  const previousChainStoreIsInitializing = usePrevious(
-    chainStoreIsInitializing,
-    true
-  );
+  const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
 
   useEffect(() => {
-    tracking("Home Screen");
+    tracking('Home Screen');
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
-        .then((res) => {
+        .then(res => {
           return res.text();
         })
-        .then((res) => {
+        .then(res => {
           browserStore.update_inject(res);
         })
-        .catch((err) => console.log(err));
+        .catch(err => console.log(err));
     });
   }, []);
 
@@ -126,11 +92,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
-      if (state === "active") {
+      if (state === 'active') {
         checkAndUpdateChainInfo();
       }
     };
-    const subscription = AppState.addEventListener("change", appStateHandler);
+    const subscription = AppState.addEventListener('change', appStateHandler);
     return () => {
       subscription.remove();
     };
@@ -139,8 +105,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   useFocusEffect(
     useCallback(() => {
       if (
-        (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
-          !chainStoreIsInitializing) ||
+        (chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) ||
         currentChainId !== previousChainId
       ) {
         checkAndUpdateChainInfo();
@@ -150,14 +115,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       previousChainStoreIsInitializing,
       currentChainId,
       previousChainId,
-      checkAndUpdateChainInfo,
+      checkAndUpdateChainInfo
     ])
   );
   useEffect(() => {
-    if (
-      appInitStore.getChainInfos?.length <= 0 ||
-      !appInitStore.getChainInfos
-    ) {
+    if (appInitStore.getChainInfos?.length <= 0 || !appInitStore.getChainInfos) {
       appInitStore.updateChainInfos(chainInfos);
     }
   }, []);
@@ -170,19 +132,15 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const queries = queriesStore.get(chainStore.current.chainId);
       // Because the components share the states related to the queries,
       // fetching new query responses here would make query responses on all other components also refresh.
-      if (chainStore.current.networkType === "bitcoin") {
-        await queries.bitcoin.queryBitcoinBalance
-          .getQueryBalance(account.bech32Address)
-          .waitFreshResponse();
+      if (chainStore.current.networkType === 'bitcoin') {
+        await queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address).waitFreshResponse();
         return;
       } else {
         await Promise.all([
           priceStore.waitFreshResponse(),
-          ...queries.queryBalances
-            .getQueryBech32Address(address)
-            .balances.map((bal) => {
-              return bal.waitFreshResponse();
-            }),
+          ...queries.queryBalances.getQueryBech32Address(address).balances.map(bal => {
+            return bal.waitFreshResponse();
+          })
         ]);
       }
     } catch (e) {
@@ -204,22 +162,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   // Debounced function to apply pending updates
   const applyPendingUpdates = debounce(() => {
     if (pendingUpdates.length > 0) {
-      setDataBalances((prev) => {
+      console.log('pendingUpdates', pendingUpdates);
+
+      setDataBalances(prev => {
         // Create a Map to hold unique balances by coinMinimalDenom
         const balanceMap = new Map<string, ViewToken>();
         const sortedArray = [];
 
         // Function to insert an item into the sorted array and map
         function insertAndSort(item) {
-          const key = `${item.chainInfo.chainId}-${
-            item.typeAddress || item.token.currency.coinMinimalDenom
-          }`;
+          const key = `${item.chainInfo.chainId}-${item.typeAddress || item.token.currency.coinMinimalDenom}`;
 
           // If the item already exists, remove it from the sorted array
           if (balanceMap.has(key)) {
-            const existingIndex = sortedArray.findIndex(
-              (v) => v === balanceMap.get(key)
-            );
+            const existingIndex = sortedArray.findIndex(v => v === balanceMap.get(key));
             sortedArray.splice(existingIndex, 1);
           }
 
@@ -258,20 +214,17 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, 100);
   const cacheDataAsync = async (cacheKey: string, data: ViewToken[]) => {
     try {
-      const dataHandled = data.map((item) => ({
+      const dataHandled = data.map(item => ({
         token: {
           currency: item.token.currency,
-          balance: item.token.toCoin().amount,
+          balance: item.token.toCoin().amount
         },
         chainId: item.chainInfo.chainId,
-        typeAddress: item.typeAddress || "",
+        typeAddress: item.typeAddress || ''
       }));
-      await AsyncStorage.setItem(
-        `cachedDataBalances-${cacheKey}`,
-        JSON.stringify(dataHandled)
-      );
+      await AsyncStorage.setItem(`cachedDataBalances-${cacheKey}`, JSON.stringify(dataHandled));
     } catch (e) {
-      console.error("Failed to save data to cache", e);
+      console.error('Failed to save data to cache', e);
     }
   };
   // const loadCachedData = async (cacheKey: string) => {
@@ -318,16 +271,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     let result: PricePretty | undefined;
 
     for (const bal of dataBalances) {
-      const key = `${bal.chainInfo.chainId}-${
-        bal.typeAddress || bal.token.currency.coinMinimalDenom
-      }`;
+      const key = `${bal.chainInfo.chainId}-${bal.typeAddress || bal.token.currency.coinMinimalDenom}`;
       const priceString = bal.price?.toDec()?.toString();
 
-      if (
-        bal.price &&
-        (!processedItemsTotalPrice.has(key) ||
-          processedItemsTotalPrice.get(key) !== priceString)
-      ) {
+      if (bal.price && (!processedItemsTotalPrice.has(key) || processedItemsTotalPrice.get(key) !== priceString)) {
         if (!result) {
           result = bal.price;
         } else {
@@ -343,18 +290,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const availableTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined;
 
-    for (const bal of dataBalances.filter(
-      (token) => token.chainInfo.chainId === chainStore.current.chainId
-    )) {
-      const key = `${bal.chainInfo.chainId}-${
-        bal.typeAddress || bal.token.currency.coinMinimalDenom
-      }`;
+    for (const bal of dataBalances.filter(token => token.chainInfo.chainId === chainStore.current.chainId)) {
+      const key = `${bal.chainInfo.chainId}-${bal.typeAddress || bal.token.currency.coinMinimalDenom}`;
       const priceString = bal.price?.toDec()?.toString();
 
       if (
         bal.price &&
-        (!processedItemsTotalPriceByChain.has(key) ||
-          processedItemsTotalPriceByChain.get(key) !== priceString)
+        (!processedItemsTotalPriceByChain.has(key) || processedItemsTotalPriceByChain.get(key) !== priceString)
       ) {
         if (!result) {
           result = bal.price;
@@ -399,10 +341,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           await fetchFunction(address, chainInfo);
         }
       } catch (error) {
-        console.error(
-          `Error fetching balance for ${chainInfo.chainId}:`,
-          error
-        );
+        console.error(`Error fetching balance for ${chainInfo.chainId}:`, error);
       } finally {
         pendingOperations--;
         if (pendingOperations === 1) {
@@ -410,11 +349,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           setIsLoading(false);
         } else if (pendingOperations === 0) {
           if (!availableTotalPrice || !accountOrai.bech32Address) return;
-          const hashedAddress = new sha256()
-            .update(accountOrai.bech32Address)
-            .digest("hex");
+          const hashedAddress = new sha256().update(accountOrai.bech32Address).digest('hex');
 
-          const amount = new IntPretty(availableTotalPrice || "0")
+          const amount = new IntPretty(availableTotalPrice || '0')
             .maxDecimals(2)
             .shrink(true)
             .trim(true)
@@ -422,12 +359,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             .inequalitySymbol(true);
           const logEvent = {
             userId: hashedAddress,
-            totalPrice: amount?.toString() || "0",
-            currency: priceStore.defaultVsCurrency,
+            totalPrice: amount?.toString() || '0',
+            currency: priceStore.defaultVsCurrency
           };
 
           if (mixpanel) {
-            mixpanel.track("OWallet - Assets Managements", logEvent);
+            mixpanel.track('OWallet - Assets Managements', logEvent);
           }
         }
       }
@@ -436,54 +373,44 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
   const fetchAllBalances = async () => {
     setIsLoading(true);
-    for (const chainInfo of chainStore.chainInfosInUI.filter(
-      (chainInfo) => !chainInfo.chainName?.toLowerCase()?.includes("test")
-    )) {
+    for (const chainInfo of chainStore.chainInfosInUI) {
       const address = accountStore
         .getAccount(chainInfo.chainId)
         .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+
       if (!address) {
         continue;
       }
 
       switch (chainInfo.networkType) {
-        case "cosmos":
+        case 'cosmos':
           if (chainInfo.chainId === ChainIdEnum.Oraichain) {
             handleFetch(getBalanceCW20Oraichain, address, chainInfo);
           }
           handleFetch(getBalanceNativeCosmos, address, chainInfo);
+
           break;
-        case "evm":
+        case 'evm':
           handleFetch(getBalanceNativeEvm, address, chainInfo);
-          if (
-            chainInfo.chainId === ChainIdEnum.BNBChain ||
-            chainInfo.chainId === ChainIdEnum.Ethereum
-          ) {
+          if (chainInfo.chainId === ChainIdEnum.BNBChain || chainInfo.chainId === ChainIdEnum.Ethereum) {
             handleFetch(getBalancesErc20, address, chainInfo);
           } else if (chainInfo.chainId === ChainIdEnum.TRON) {
             handleFetch(getBalancessTrc20, address, chainInfo);
           }
           break;
-        case "bitcoin":
-          const legacyAddress = accountStore.getAccount(
-            ChainIdEnum.Bitcoin
-          ).legacyAddress;
+        case 'bitcoin':
+          const legacyAddress = accountStore.getAccount(ChainIdEnum.Bitcoin).legacyAddress;
 
           handleFetch(getBalanceBtc, address, chainInfo, AddressBtcType.Bech32);
           if (legacyAddress) {
-            handleFetch(
-              getBalanceBtc,
-              legacyAddress,
-              chainInfo,
-              AddressBtcType.Legacy
-            );
+            handleFetch(getBalanceBtc, legacyAddress, chainInfo, AddressBtcType.Legacy);
           }
           break;
       }
     }
-    const isFirst = await AsyncStorage.getItem("isFirst");
+    const isFirst = await AsyncStorage.getItem('isFirst');
     if (!isFirst) {
-      await AsyncStorage.setItem("isFirst", "true");
+      await AsyncStorage.setItem('isFirst', 'true');
       setTimeout(() => {
         fetchAllBalances();
       }, 3000);
@@ -498,14 +425,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }, 700);
     return () => {};
   }, [accountOrai.bech32Address]);
-  const getBalanceBtc = async (
-    address,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>,
-    type: AddressBtcType
-  ) => {
+  const getBalanceBtc = async (address, chainInfo: ChainInfoInner<ChainInfoWithEmbed>, type: AddressBtcType) => {
     const data = await API.getBtcBalance({
       address,
-      baseUrl: chainInfo.rest,
+      baseUrl: chainInfo.rest
     });
     if (data) {
       const totalBtc = data.reduce((acc, curr) => acc + curr.value, 0);
@@ -519,19 +442,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
             chainInfo,
             isFetching: false,
             error: null,
-            typeAddress: type,
-          },
+            typeAddress: type
+          }
         ]);
       }
     }
   };
-  const getBalanceNativeCosmos = async (
-    address: string,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-  ) => {
+  const getBalanceNativeCosmos = async (address: string, chainInfo: ChainInfoInner<ChainInfoWithEmbed>) => {
     const { balances } = await API.getAllBalancesNativeCosmos({
       address,
-      baseUrl: chainInfo.rest,
+      baseUrl: chainInfo.rest
     });
 
     const balanceObj = balances.reduce((obj, { denom, amount }) => {
@@ -552,12 +472,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           price: priceStore.calculatePrice(token),
           chainInfo,
           isFetching: false,
-          error: null,
+          error: null
         });
       } else if (MapChainIdToNetwork[chainInfo.chainId]) {
-        const str = `${
-          MapChainIdToNetwork[chainInfo.chainId]
-        }%2B${new URLSearchParams(denom).toString().replace("=", "")}`;
+        const str = `${MapChainIdToNetwork[chainInfo.chainId]}%2B${new URLSearchParams(denom)
+          .toString()
+          .replace('=', '')}`;
         allTokensAddress.push(str);
       }
     });
@@ -565,14 +485,13 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     if (allTokensAddress.length > 0) {
       const tokenInfos = await API.getMultipleTokenInfo({
-        tokenAddresses: allTokensAddress.join(","),
+        tokenAddresses: allTokensAddress.join(',')
       });
       if (!tokenInfos) return;
       const newCurrencies = tokenInfos
-        .map((tokeninfo) => {
+        .map(tokeninfo => {
           const existingToken = chainInfo.currencies.find(
-            (item) =>
-              item.coinDenom?.toUpperCase() === tokeninfo.abbr?.toUpperCase()
+            item => item.coinDenom?.toUpperCase() === tokeninfo.abbr?.toUpperCase()
           );
 
           if (!existingToken) {
@@ -581,19 +500,16 @@ export const HomeScreen: FunctionComponent = observer((props) => {
               coinDenom: tokeninfo.abbr,
               coinGeckoId: tokeninfo.coingeckoId,
               coinDecimals: tokeninfo.decimal,
-              coinMinimalDenom: tokeninfo.denom,
+              coinMinimalDenom: tokeninfo.denom
             };
 
-            const token = new CoinPretty(
-              infoToken,
-              balanceObj[tokeninfo.denom]
-            );
+            const token = new CoinPretty(infoToken, balanceObj[tokeninfo.denom]);
             newDataBalances.push({
               token,
               price: priceStore.calculatePrice(token),
               chainInfo,
               isFetching: false,
-              error: null,
+              error: null
             });
 
             return infoToken;
@@ -614,95 +530,70 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     try {
       const account = accountStore.getAccount(ChainIdEnum.Oraichain);
-      const client = await CWStargate.init(
-        account,
-        ChainIdEnum.Oraichain,
-        chainInfo.rpc
-      );
+      const client = await CWStargate.init(account, ChainIdEnum.Oraichain, chainInfo.rpc);
 
-      const tokensCw20 = chainInfo.currencies.filter(
-        (item) => new DenomHelper(item.coinMinimalDenom).contractAddress
-      );
+      const tokensCw20 = chainInfo.currencies.filter(item => new DenomHelper(item.coinMinimalDenom).contractAddress);
       if (!tokensCw20) return;
       const multicall = new MulticallQueryClient(client, network.multicall);
       const res = await multicall.aggregate({
-        queries: tokensCw20.map((t) => ({
+        queries: tokensCw20.map(t => ({
           address: new DenomHelper(t.coinMinimalDenom).contractAddress,
-          data,
-        })),
+          data
+        }))
       });
 
-      const newDataBalances = res.return_data.reduce(
-        (acc, { success, data }, index) => {
-          if (success) {
-            const balanceRes = fromBinary(data);
-            const currency = chainInfo.currencyMap.get(
-              tokensCw20[index].coinMinimalDenom
-            );
+      const newDataBalances = res.return_data.reduce((acc, { success, data }, index) => {
+        if (success) {
+          const balanceRes = fromBinary(data);
+          const currency = chainInfo.currencyMap.get(tokensCw20[index].coinMinimalDenom);
 
-            if (currency) {
-              const token = new CoinPretty(currency, balanceRes.balance);
-              acc.push({
-                token,
-                price: priceStore.calculatePrice(token),
-                chainInfo,
-                isFetching: false,
-                error: null,
-              });
-            }
+          if (currency) {
+            const token = new CoinPretty(currency, balanceRes.balance);
+            acc.push({
+              token,
+              price: priceStore.calculatePrice(token),
+              chainInfo,
+              isFetching: false,
+              error: null
+            });
           }
-          return acc;
-        },
-        []
-      );
+        }
+        return acc;
+      }, []);
       updateDataBalances(newDataBalances);
     } catch (error) {
-      console.error("Error fetching CW20 balance:", error);
+      console.error('Error fetching CW20 balance:', error);
     }
   };
-  const getBalancesErc20 = async (
-    address: string,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-  ) => {
+  const getBalancesErc20 = async (address: string, chainInfo: ChainInfoInner<ChainInfoWithEmbed>) => {
     try {
       const network = MapChainIdToNetwork[chainInfo.chainId];
-      const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+      const contractWeth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
       const res = await API.getAllBalancesEvm({ address, network });
 
       //Filter err res weth from tatumjs// NOT support weth on Ethereum
-      const balances =
-        res?.result?.filter(
-          (item) => item.tokenAddress?.toLowerCase() !== contractWeth
-        ) || [];
+      const balances = res?.result?.filter(item => item.tokenAddress?.toLowerCase() !== contractWeth) || [];
       if (balances.length === 0) return;
 
-      const tokenAddresses = balances
-        .map(({ tokenAddress }) => `${network}%2B${tokenAddress}`)
-        .join(",");
+      const tokenAddresses = balances.map(({ tokenAddress }) => `${network}%2B${tokenAddress}`).join(',');
       const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
 
-      const existingCurrencies = new Set(
-        chainInfo.currencies.map((currency) =>
-          currency.coinDenom?.toUpperCase()
-        )
-      );
+      const existingCurrencies = new Set(chainInfo.currencies.map(currency => currency.coinDenom?.toUpperCase()));
 
       const newCurrencies = tokenInfos
         .filter(
           (tokenInfo, index) =>
             !existingCurrencies.has(tokenInfo.abbr?.toUpperCase()) &&
-            tokenInfos.findIndex(
-              (c) => c.contractAddress === tokenInfo.contractAddress
-            ) === index
+            tokenInfos.findIndex(c => c.contractAddress === tokenInfo.contractAddress) === index
         )
-        .map((tokenInfo) => ({
+        .map(tokenInfo => ({
           coinImageUrl: tokenInfo.imgUrl,
           coinDenom: tokenInfo.abbr,
           coinGeckoId: tokenInfo.coingeckoId,
           coinDecimals: tokenInfo.decimal,
           coinMinimalDenom: `erc20:${tokenInfo.contractAddress}:${tokenInfo.name}`,
-          contractAddress: tokenInfo.contractAddress,
+          contractAddress: tokenInfo.contractAddress
         }));
 
       if (newCurrencies.length > 0) {
@@ -711,43 +602,33 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       // console.log(newCurrencies, "newCurrencies");
 
       const newDataBalances = chainInfo.currencies
-        .map((item) => {
+        .map(item => {
           const balance = balances.find(
-            (balance) =>
+            balance =>
               balance.tokenAddress.toLowerCase() ===
-              new DenomHelper(
-                item.coinMinimalDenom
-              )?.contractAddress.toLowerCase()
+              new DenomHelper(item.coinMinimalDenom)?.contractAddress.toLowerCase()
           );
           if (!balance) return undefined;
-          const token = new CoinPretty(
-            item,
-            new Dec(balance.balance).mul(
-              DecUtils.getTenExponentN(item.coinDecimals)
-            )
-          );
+          const token = new CoinPretty(item, new Dec(balance.balance).mul(DecUtils.getTenExponentN(item.coinDecimals)));
 
           return {
             token,
             price: priceStore.calculatePrice(token),
             chainInfo,
             isFetching: false,
-            error: null,
+            error: null
           };
         })
-        .filter((balance) => balance !== undefined);
+        .filter(balance => balance !== undefined);
 
       if (newDataBalances.length > 0) {
         updateDataBalances(newDataBalances);
       }
     } catch (error) {
-      console.error("Error fetching ERC-20 balances:", error);
+      console.error('Error fetching ERC-20 balances:', error);
     }
   };
-  const getBalanceNativeEvm = async (
-    address: string,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-  ) => {
+  const getBalanceNativeEvm = async (address: string, chainInfo: ChainInfoInner<ChainInfoWithEmbed>) => {
     try {
       if (chainInfo.chainId === ChainIdEnum.Oasis) {
         getBalanceOasis(address, chainInfo);
@@ -764,113 +645,87 @@ export const HomeScreen: FunctionComponent = observer((props) => {
           price: priceStore.calculatePrice(token),
           chainInfo,
           isFetching: false,
-          error: null,
-        },
+          error: null
+        }
       ]);
     } catch (error) {
-      console.log(error, chainInfo.chainName, "error native evm");
+      console.log(error, chainInfo.chainName, 'error native evm');
     }
   };
-  const getBalancessTrc20 = async (
-    address: string,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-  ) => {
+  const getBalancessTrc20 = async (address: string, chainInfo: ChainInfoInner<ChainInfoWithEmbed>) => {
     try {
       const res = await API.getAllBalancesEvm({
         address: getBase58Address(address),
-        network: MapChainIdToNetwork[chainInfo.chainId],
+        network: MapChainIdToNetwork[chainInfo.chainId]
       });
 
       if (!res?.trc20) return;
       const tokenAddresses = res?.trc20
         .map((item, index) => {
-          return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${
-            Object.keys(item)[0]
-          }`;
+          return `${MapChainIdToNetwork[chainInfo.chainId]}%2B${Object.keys(item)[0]}`;
         })
-        .join(",");
+        .join(',');
       const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
 
-      const existingCurrencies = new Set(
-        chainInfo.currencies.map((currency) =>
-          currency.coinDenom?.toUpperCase()
-        )
-      );
+      const existingCurrencies = new Set(chainInfo.currencies.map(currency => currency.coinDenom?.toUpperCase()));
 
       const newCurrencies = tokenInfos
         .filter(
           (tokenInfo, index) =>
             !existingCurrencies.has(tokenInfo.abbr?.toUpperCase()) &&
-            tokenInfos.findIndex(
-              (c) => c.contractAddress === tokenInfo.contractAddress
-            ) === index
+            tokenInfos.findIndex(c => c.contractAddress === tokenInfo.contractAddress) === index
         )
-        .map((tokenInfo) => ({
+        .map(tokenInfo => ({
           coinImageUrl: tokenInfo.imgUrl,
           coinDenom: tokenInfo.abbr,
           coinGeckoId: tokenInfo.coingeckoId,
           coinDecimals: tokenInfo.decimal,
-          coinMinimalDenom: `erc20:${getEvmAddress(
-            tokenInfo.contractAddress
-          )}:${tokenInfo.name}`,
-          contractAddress: tokenInfo.contractAddress,
+          coinMinimalDenom: `erc20:${getEvmAddress(tokenInfo.contractAddress)}:${tokenInfo.name}`,
+          contractAddress: tokenInfo.contractAddress
         }));
       chainInfo.addCurrencies(...newCurrencies);
       const newDataBalances = chainInfo.currencies
-        .map((item) => {
+        .map(item => {
           const contract = res.trc20.find(
-            (obj) =>
-              Object.keys(obj)[0] ===
-              getBase58Address(
-                new DenomHelper(item.coinMinimalDenom)?.contractAddress
-              )
+            obj => Object.keys(obj)[0] === getBase58Address(new DenomHelper(item.coinMinimalDenom)?.contractAddress)
           );
 
           if (!contract) return undefined;
 
-          const token = new CoinPretty(
-            item,
-            Number(Object.values(contract)[0])
-          );
+          const token = new CoinPretty(item, Number(Object.values(contract)[0]));
 
           return {
             token,
             price: priceStore.calculatePrice(token),
             chainInfo,
             isFetching: false,
-            error: null,
+            error: null
           };
         })
-        .filter((balance) => balance !== undefined);
+        .filter(balance => balance !== undefined);
 
       if (newDataBalances.length > 0) {
         updateDataBalances(newDataBalances);
       }
     } catch (e) {
-      console.log(e, "err get Trc20 balances");
+      console.log(e, 'err get Trc20 balances');
     }
   };
-  const getBalanceOasis = async (
-    address: string,
-    chainInfo: ChainInfoInner<ChainInfoWithEmbed>
-  ) => {
+  const getBalanceOasis = async (address: string, chainInfo: ChainInfoInner<ChainInfoWithEmbed>) => {
     const nic = getOasisNic(chainInfo.raw.grpc);
     const publicKey = await addressToPublicKey(address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
     const grpcBalance = parseRpcBalance(account);
     if (grpcBalance) {
-      const token = new CoinPretty(
-        chainInfo.stakeCurrency,
-        grpcBalance.available
-      );
+      const token = new CoinPretty(chainInfo.stakeCurrency, grpcBalance.available);
       updateDataBalances([
         {
           token,
           price: priceStore.calculatePrice(token),
           chainInfo,
           isFetching: false,
-          error: null,
-        },
+          error: null
+        }
       ]);
     }
   };
@@ -905,23 +760,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         dataTokens={
           appInitStore.getInitApp.isAllNetworks
             ? dataBalances
-            : dataBalances.filter(
-                (token) =>
-                  token.chainInfo.chainId === chainStore.current.chainId
-              )
+            : dataBalances.filter(token => token.chainInfo.chainId === chainStore.current.chainId)
         }
       />
     </PageWithScrollViewInBottomTabView>
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 4,
-      backgroundColor: colors["neutral-surface-bg"],
+      backgroundColor: colors['neutral-surface-bg']
     },
     containerEarnStyle: {
-      backgroundColor: colors["neutral-surface-bg2"],
-    },
+      backgroundColor: colors['neutral-surface-bg2']
+    }
   });
