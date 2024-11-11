@@ -612,8 +612,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl:
       'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png',
     txExplorer: {
-      name: 'Scanium',
-      txUrl: 'https://scanium.io/elys/tx/{txHash}'
+      name: '',
+      txUrl: ''
     }
   },
   {
