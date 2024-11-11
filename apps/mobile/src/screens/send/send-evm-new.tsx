@@ -30,6 +30,9 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { AsyncKVStore } from "@src/common";
 import { FeeControl } from "@src/components/input/fee-control";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { Buffer } from "buffer";
 
 enum EthTxStatus {
   Success = "0x1",
@@ -366,6 +369,20 @@ export const SendEvmNewScreen: FunctionComponent<{
                       balance.fetch();
                     }
                   });
+              },
+              onBroadcasted: (txHash) => {
+                ethereumAccount.setIsSendingTx(false);
+                navigate(SCREENS.TxPendingResult, {
+                  chainId,
+                  txHash: Buffer.from(txHash).toString("hex"),
+                  data: {
+                    amount: sendConfigs.amountConfig.amount[0],
+                    fee: sendConfigs.feeConfig.fees[0],
+                    type: "send",
+                    from: sender,
+                    to: sendConfigs.recipientConfig.recipient,
+                  },
+                });
               },
             });
             ethereumAccount.setIsSendingTx(false);
