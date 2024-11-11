@@ -10,6 +10,8 @@ import {
 } from "react-native-gesture-handler";
 import { XAxis } from "../axis";
 import OWIcon from "@components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@components/text/ow-text";
 
 export interface DropdownItemProps {
   key: string;
@@ -80,7 +82,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
       return true;
     });
   }, [allowSearch, items, searchText, searchExcludedKeys]);
-
+  const { colors } = useTheme();
   return (
     <Box zIndex={1}>
       {label ? <Label content={label} /> : null}
@@ -89,20 +91,12 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
         <Box
           alignY="center"
           height={size === "small" ? 44 : 52}
-          backgroundColor={style.get("color-gray-700").color}
+          backgroundColor={colors["neutral-surface-bg2"]}
           paddingX={16}
           paddingY={10}
           borderRadius={8}
           borderWidth={1}
-          borderColor={
-            color === "text-input"
-              ? isOpen
-                ? style.get("color-gray-200").color
-                : style.get("color-gray-400").color
-              : isOpen
-              ? style.get("color-gray-200").color
-              : style.get("color-gray-500").color
-          }
+          borderColor={colors["neutral-surface-bg2"]}
           style={StyleSheet.flatten([itemContainerStyle])}
         >
           <XAxis alignY="center">
@@ -119,29 +113,31 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
                 onChangeText={(text) => {
                   setSearchText(text);
                 }}
-                selectionColor={style.get("color-gray-50").color}
+                selectionColor={colors["neutral-text-title"]}
                 style={{
                   padding: 0,
                   borderWidth: 1,
-                  color: selectedItemKey
-                    ? style.get("color-gray-50").color
-                    : style.get("color-gray-300").color,
+                  color: colors["neutral-text-title"],
                 }}
               />
             </Box>
 
-            <Text
-              style={style.flatten([
-                "body2",
-                selectedItemKey ? "color-gray-50" : "color-gray-300",
-                isOpen && allowSearch ? "display-none" : "opacity-100",
-              ])}
+            <OWText
+              style={{
+                ...style.flatten([
+                  "body2",
+                  isOpen && allowSearch ? "display-none" : "opacity-100",
+                ]),
+                color: selectedItemKey
+                  ? colors["neutral-text-title"]
+                  : colors["neutral-text-body"],
+              }}
             >
               {selectedItemKey
                 ? items.find((item) => item.key === selectedItemKey)?.label ??
                   placeholder
                 : placeholder}
-            </Text>
+            </OWText>
 
             <Box style={{ flex: 1 }} />
 
@@ -152,7 +148,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
             <OWIcon
               size={24}
               name={"arrow_down_2"}
-              color={style.get("color-white").color}
+              color={colors["neutral-text-title"]}
             />
           </XAxis>
         </Box>
@@ -166,7 +162,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
                 "width-full",
                 "overflow-hidden",
                 isOpen && filteredItems.length > 0 ? "flex" : "display-none",
-                "background-color-gray-600",
+                // "background-color-gray-600",
                 "border-width-1",
                 "border-color-gray-500",
                 "border-radius-6",
@@ -199,8 +195,9 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
 
 const Divider = () => {
   const style = useStyle();
+  const { colors } = useTheme();
 
-  return <Box height={1} backgroundColor={style.get("color-gray-500").color} />;
+  return <Box height={1} backgroundColor={colors["neutral-border-default"]} />;
 };
 
 const DropdownItem: FunctionComponent<{
@@ -209,7 +206,7 @@ const DropdownItem: FunctionComponent<{
   closeDropdown: () => void;
 }> = ({ item, onSelect, closeDropdown }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   return (
     <TouchableWithoutFeedback
       style={{ zIndex: 2 }}
@@ -223,9 +220,11 @@ const DropdownItem: FunctionComponent<{
         height={52}
         paddingX={24}
         paddingY={15}
-        backgroundColor={style.get("color-gray-600").color}
+        backgroundColor={colors["neutral-surface-bg"]}
       >
-        <Text style={style.flatten(["color-text-high"])}>{item.label}</Text>
+        <OWText style={{ color: colors["neutral-text-title"] }}>
+          {item.label}
+        </OWText>
       </Box>
     </TouchableWithoutFeedback>
   );

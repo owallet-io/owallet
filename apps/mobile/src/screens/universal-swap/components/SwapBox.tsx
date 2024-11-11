@@ -116,13 +116,15 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <View
                   style={{
                     marginRight: 4,
-                    backgroundColor: colors["neutral-surface-action"],
+                    backgroundColor: colors["icon"],
                     borderRadius: 99,
                   }}
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>
@@ -159,13 +161,15 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
                 <View
                   style={{
                     marginRight: 4,
-                    backgroundColor: colors["neutral-surface-action"],
+                    backgroundColor: colors["icon"],
                     borderRadius: 99,
                   }}
                 >
                   <OWIcon
                     type="images"
-                    source={{ uri: chainIcon?.Icon }}
+                    source={{
+                      uri: chainIcon?.Icon ?? chainInfo.chainSymbolImageUrl,
+                    }}
                     size={20}
                   />
                 </View>

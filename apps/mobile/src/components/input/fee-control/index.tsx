@@ -1,31 +1,41 @@
-import React, { FunctionComponent, useLayoutEffect, useState } from 'react';
-import { IFeeConfig, IGasConfig, IGasSimulator, InsufficientFeeError, ISenderConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useStore } from '../../../stores';
-import { autorun } from 'mobx';
-import { CoinPretty, Dec, PricePretty } from '@owallet/unit';
-import { Columns } from '../../column';
-import { Box } from '../../box';
-import { Text } from 'react-native';
-import { useStyle } from '../../../styles';
-import { Gutter } from '../../gutter';
-// import {IconButton} from '../../icon-button';
-// import {AdjustmentsHorizontalIcon} from '../../icon/adjustments-horizontal';
-import { TransactionFeeModal } from './transaction-fee-modal';
-import { GuideBox } from '../../guide-box';
-import { UIConfigStore } from '../../../stores/ui-config';
-import { IChainStore, IQueriesStore } from '@owallet/stores';
-import { SVGLoadingIcon } from '../../spinner';
-// import {InformationModal} from '../../modal/infoModal';
-// import {InformationOutlinedIcon} from '../../icon/information-outlined';
-import OwButtonIcon from '@components/button/ow-button-icon';
-import OWIcon from '@components/ow-icon/ow-icon';
-import { InformationModal } from '@src/modals/fee/infoModal';
+import React, { FunctionComponent, useLayoutEffect, useState } from "react";
+import {
+  IBtcFeeConfig,
+  IFeeConfig,
+  IGasConfig,
+  IGasSimulator,
+  InsufficientFeeError,
+  ISenderConfig,
+} from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useStore } from "../../../stores";
+import { autorun } from "mobx";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { Columns } from "../../column";
+import { Box } from "../../box";
+import { StyleSheet, Text, View } from "react-native";
+import { useStyle } from "../../../styles";
+import { Gutter } from "../../gutter";
+import { TransactionFeeModal } from "./transaction-fee-modal";
+import { GuideBox } from "../../guide-box";
+import { UIConfigStore } from "../../../stores/ui-config";
+import { IChainStore, IQueriesStore } from "@owallet/stores";
+import { LoadingSpinner, SVGLoadingIcon } from "../../spinner";
+import OwButtonIcon from "@components/button/ow-button-icon";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { InformationModal } from "@src/modals/fee/infoModal";
+import { TransactionBtcFeeModal } from "@components/input/fee-control/transaction-btc-fee-modal";
+import { metrics, spacing } from "@src/themes";
+import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@components/text/ow-text";
+import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import { capitalizedText } from "@utils/helper";
+import { DownArrowIcon } from "@components/icon";
 
 export const useFeeOptionSelectionOnInit = (
   uiConfigStore: UIConfigStore,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -33,16 +43,19 @@ export const useFeeOptionSelectionOnInit = (
       return;
     }
 
-    if (feeConfig.fees.length === 0 && feeConfig.selectableFeeCurrencies.length > 0) {
+    if (
+      feeConfig.fees.length === 0 &&
+      feeConfig.selectableFeeCurrencies.length > 0
+    ) {
       if (uiConfigStore.rememberLastFeeOption && uiConfigStore.lastFeeOption) {
         feeConfig.setFee({
           type: uiConfigStore.lastFeeOption,
-          currency: feeConfig.selectableFeeCurrencies[0]
+          currency: feeConfig.selectableFeeCurrencies[0],
         });
       } else {
         feeConfig.setFee({
-          type: 'average',
-          currency: feeConfig.selectableFeeCurrencies[0]
+          type: "average",
+          currency: feeConfig.selectableFeeCurrencies[0],
         });
       }
     }
@@ -52,7 +65,7 @@ export const useFeeOptionSelectionOnInit = (
     feeConfig.fees,
     feeConfig.selectableFeeCurrencies,
     uiConfigStore.lastFeeOption,
-    uiConfigStore.rememberLastFeeOption
+    uiConfigStore.rememberLastFeeOption,
   ]);
 };
 
@@ -60,7 +73,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
   chainStore: IChainStore,
   queriesStore: IQueriesStore,
   senderConfig: ISenderConfig,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -84,7 +97,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
     const disposer = autorun(() => {
       if (
         !skip &&
-        feeConfig.type !== 'manual' &&
+        feeConfig.type !== "manual" &&
         feeConfig.selectableFeeCurrencies.length > 0 &&
         feeConfig.fees.length > 0
       ) {
@@ -93,19 +106,27 @@ export const useAutoFeeCurrencySelectionOnInit = (
           .queryBalances.getQueryBech32Address(senderConfig.sender);
 
         const currentFeeCurrency = feeConfig.fees[0].currency;
-        const currentFeeCurrencyBal = queryBalances.getBalanceFromCurrency(currentFeeCurrency);
+        const currentFeeCurrencyBal =
+          queryBalances.getBalanceFromCurrency(currentFeeCurrency);
 
-        const currentFee = feeConfig.getFeeTypePrettyForFeeCurrency(currentFeeCurrency, feeConfig.type);
+        const currentFee = feeConfig.getFeeTypePrettyForFeeCurrency(
+          currentFeeCurrency,
+          feeConfig.type
+        );
         if (currentFeeCurrencyBal.toDec().lt(currentFee.toDec())) {
           const isOsmosis =
             chainStore.hasChain(feeConfig.chainId) &&
-            chainStore.getChain(feeConfig.chainId).hasFeature('osmosis-txfees');
+            chainStore.getChain(feeConfig.chainId).hasFeature("osmosis-txfees");
 
           // Not enough balances for fee.
           // Try to find other fee currency to send.
           for (const feeCurrency of feeConfig.selectableFeeCurrencies) {
-            const feeCurrencyBal = queryBalances.getBalanceFromCurrency(feeCurrency);
-            const fee = feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, feeConfig.type);
+            const feeCurrencyBal =
+              queryBalances.getBalanceFromCurrency(feeCurrency);
+            const fee = feeConfig.getFeeTypePrettyForFeeCurrency(
+              feeCurrency,
+              feeConfig.type
+            );
 
             if (isOsmosis && fee.toDec().lte(new Dec(0))) {
               continue;
@@ -114,10 +135,13 @@ export const useAutoFeeCurrencySelectionOnInit = (
             if (feeCurrencyBal.toDec().gte(fee.toDec())) {
               feeConfig.setFee({
                 type: feeConfig.type,
-                currency: feeCurrency
+                currency: feeCurrency,
               });
               const uiProperties = feeConfig.uiProperties;
-              skip = !uiProperties.loadingState && uiProperties.error == null && uiProperties.warning == null;
+              skip =
+                !uiProperties.loadingState &&
+                uiProperties.error == null &&
+                uiProperties.warning == null;
               return;
             }
           }
@@ -130,215 +154,275 @@ export const useAutoFeeCurrencySelectionOnInit = (
       skip = true;
       disposer();
     };
-  }, [chainStore, disableAutomaticFeeSet, feeConfig, feeConfig.chainId, queriesStore, senderConfig.sender]);
+  }, [
+    chainStore,
+    disableAutomaticFeeSet,
+    feeConfig,
+    feeConfig.chainId,
+    queriesStore,
+    senderConfig.sender,
+  ]);
 };
 
 export const FeeControl: FunctionComponent<{
   senderConfig: ISenderConfig;
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
 
   disableAutomaticFeeSet?: boolean;
-}> = observer(({ senderConfig, feeConfig, gasConfig, gasSimulator, disableAutomaticFeeSet }) => {
-  const { queriesStore, priceStore, chainStore, uiConfigStore } = useStore();
-  const intl = useIntl();
-  const style = useStyle();
+}> = observer(
+  ({
+    senderConfig,
+    feeConfig,
+    gasConfig,
+    gasSimulator,
+    disableAutomaticFeeSet,
+  }) => {
+    const { queriesStore, priceStore, chainStore, uiConfigStore } = useStore();
+    const intl = useIntl();
+    const style = useStyle();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const hasError = feeConfig.uiProperties.error || feeConfig.uiProperties.warning;
-  useFeeOptionSelectionOnInit(uiConfigStore, feeConfig, disableAutomaticFeeSet);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+    const hasError =
+      feeConfig.uiProperties.error || feeConfig.uiProperties.warning;
+    useFeeOptionSelectionOnInit(
+      uiConfigStore,
+      feeConfig,
+      disableAutomaticFeeSet
+    );
 
-  useAutoFeeCurrencySelectionOnInit(chainStore, queriesStore, senderConfig, feeConfig, disableAutomaticFeeSet);
+    useAutoFeeCurrencySelectionOnInit(
+      chainStore,
+      queriesStore,
+      senderConfig,
+      feeConfig,
+      disableAutomaticFeeSet
+    );
+    const chainInfo = chainStore.getChain(feeConfig.chainId);
+    const isBtc = chainInfo.features.includes("btc");
+    const { colors } = useTheme();
+    const styles = styling(colors);
+    return (
+      <View
+        style={{
+          width: "100%",
+          borderBottomWidth: 1,
+          paddingVertical: 16,
+          borderBottomColor: colors["neutral-border-default"],
 
-  return (
-    <Box style={style.flatten(['width-full'])} alignX="center" paddingTop={16} paddingBottom={8}>
-      <Columns sum={1} alignY="center">
-        {disableAutomaticFeeSet ? (
-          <React.Fragment>
-            <OwButtonIcon
-              icon={
-                // <InformationOutlinedIcon
-                //   size={20}
-                //   color={style.get('color-gray-300').color}
-                // />
-                <OWIcon size={20} name={'tdesignmap-information'} color={style.get('color-gray-300').color} />
-              }
-              style={style.flatten(['width-32', 'height-32', 'border-radius-16'])}
-              // containerStyle={}
-              onPress={() => setIsInfoModalOpen(true)}
+          marginBottom: 8,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+
+            alignItems: "center",
+          }}
+        >
+          <OWText color={colors["neutral-text-title"]} weight="600" size={16}>
+            Tx Fee
+          </OWText>
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={() => setIsModalOpen(true)}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                paddingRight: 8,
+                flexDirection: "row",
+              }}
+            >
+              <OWText
+                color={colors["primary-text-action"]}
+                weight="500"
+                size={16}
+              >
+                {capitalizedText(feeConfig.type)}
+                {": "}
+              </OWText>
+              <OWText
+                color={colors["primary-text-action"]}
+                weight="600"
+                size={16}
+              >
+                {(() => {
+                  let total: PricePretty | undefined;
+                  let hasUnknown = false;
+                  for (const fee of feeConfig.fees) {
+                    if (!fee.currency.coinGeckoId) {
+                      hasUnknown = true;
+                      break;
+                    } else {
+                      const price = priceStore.calculatePrice(fee);
+                      if (price) {
+                        if (!total) {
+                          total = price;
+                        } else {
+                          total = total.add(price);
+                        }
+                      }
+                    }
+                  }
+
+                  if (hasUnknown || !total) {
+                    return "-";
+                  }
+                  return `${total.toString()}`;
+                })()}
+              </OWText>
+            </View>
+            {feeConfig.uiProperties.loadingState ||
+            gasSimulator?.uiProperties.loadingState ? (
+              <LoadingSpinner
+                size={14}
+                color={colors["background-btn-primary"]}
+              />
+            ) : (
+              <DownArrowIcon
+                height={14}
+                color={colors["primary-text-action"]}
+              />
+            )}
+          </TouchableOpacity>
+
+          {isBtc ? (
+            <TransactionBtcFeeModal
+              isOpen={isModalOpen}
+              close={() => setIsModalOpen(false)}
+              setIsOpen={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
             />
+          ) : (
+            <TransactionFeeModal
+              isOpen={isModalOpen}
+              close={() => setIsModalOpen(false)}
+              setIsOpen={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig as IFeeConfig}
+              gasConfig={gasConfig}
+              gasSimulator={gasSimulator}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
+            />
+          )}
+        </View>
+        {hasError ? (
+          <Box width="100%">
+            <Gutter size={16} />
 
-            <Gutter size={4} />
-          </React.Fragment>
-        ) : null}
+            <GuideBox
+              hideInformationIcon={true}
+              color="warning"
+              title={
+                (() => {
+                  if (feeConfig.uiProperties.error) {
+                    if (
+                      feeConfig.uiProperties.error instanceof
+                      InsufficientFeeError
+                    ) {
+                      return intl.formatMessage({
+                        id: "components.input.fee-control.error.insufficient-fee",
+                      });
+                    }
 
-        <Text style={style.flatten(['body2', hasError ? 'color-yellow-400' : 'color-white'])}>
-          <FormattedMessage
-            id="components.input.fee-control.fee"
-            values={{
-              assets: (() => {
-                if (feeConfig.fees.length > 0) {
-                  return feeConfig.fees;
-                }
-                const chainInfo = chainStore.getChain(feeConfig.chainId);
-
-                return [new CoinPretty(chainInfo.stakeCurrency || chainInfo.currencies[0], new Dec(0))];
-              })()
-                .map(fee =>
-                  fee.maxDecimals(6).inequalitySymbol(true).trim(true).shrink(true).hideIBCMetadata(true).toString()
-                )
-                .join('+')
-            }}
-          />
-        </Text>
-
-        <Gutter size={4} />
-
-        <Text style={style.flatten(['body2', 'color-gray-300'])}>
-          {(() => {
-            let total: PricePretty | undefined;
-            let hasUnknown = false;
-            for (const fee of feeConfig.fees) {
-              if (!fee.currency.coinGeckoId) {
-                hasUnknown = true;
-                break;
-              } else {
-                const price = priceStore.calculatePrice(fee);
-                if (price) {
-                  if (!total) {
-                    total = price;
-                  } else {
-                    total = total.add(price);
+                    return (
+                      feeConfig.uiProperties.error.message ||
+                      feeConfig.uiProperties.error.toString()
+                    );
                   }
-                }
+
+                  if (feeConfig.uiProperties.warning) {
+                    return (
+                      feeConfig.uiProperties.warning.message ||
+                      feeConfig.uiProperties.warning.toString()
+                    );
+                  }
+
+                  if (gasConfig.uiProperties.error) {
+                    return (
+                      gasConfig.uiProperties.error.message ||
+                      gasConfig.uiProperties.error.toString()
+                    );
+                  }
+
+                  if (gasConfig.uiProperties.warning) {
+                    return (
+                      gasConfig.uiProperties.warning.message ||
+                      gasConfig.uiProperties.warning.toString()
+                    );
+                  }
+                })() ?? ""
               }
-            }
-
-            if (hasUnknown || !total) {
-              return '-';
-            }
-            return `(${total.toString()})`;
-          })()}
-        </Text>
-
-        {!disableAutomaticFeeSet && uiConfigStore.rememberLastFeeOption ? (
-          <React.Fragment>
-            <Gutter size={8} />
-
-            <Box width={6} height={6} borderRadius={999} backgroundColor={style.get('color-blue-400').color} />
-          </React.Fragment>
+              titleStyle={{ textAlign: "center" }}
+            />
+          </Box>
         ) : null}
-
-        <Gutter size={8} />
-        <OwButtonIcon
-          name={'tdesignadjustment'}
-          sizeIcon={20}
-          colorIcon={style.get('color-gray-300').color}
-          // icon={
-          //   // <InformationOutlinedIcon
-          //   //   size={20}
-          //   //   color={style.get('color-gray-300').color}
-          //   // />
-          //   <OWIcon size={20} name={"tdesignadjustment"} color={style.get('color-gray-300').color} />
-          // }
-          style={style.flatten(['width-32', 'height-32', 'border-radius-16', 'background-color-gray-500'])}
-          // containerStyle={}
-          onPress={() => setIsModalOpen(true)}
-        />
-        {/*<IconButton*/}
-        {/*  icon={*/}
-        {/*    <AdjustmentsHorizontalIcon*/}
-        {/*      size={20}*/}
-        {/*      color={*/}
-        {/*        style.get(hasError ? 'color-yellow-400' : 'color-white').color*/}
-        {/*      }*/}
-        {/*    />*/}
-        {/*  }*/}
-        {/*  style={style.flatten(['border-radius-64'])}*/}
-        {/*  containerStyle={style.flatten([*/}
-        {/*    'width-32',*/}
-        {/*    'height-32',*/}
-        {/*    'border-radius-16',*/}
-        {/*    'background-color-gray-500',*/}
-        {/*  ])}*/}
-        {/*  onPress={() => setIsModalOpen(true)}*/}
-        {/*/>*/}
-
-        {feeConfig.uiProperties.loadingState || gasSimulator?.uiProperties.loadingState ? (
-          <React.Fragment>
-            <Gutter size={8} />
-
-            <Box width={24} height={24} alignX="center" alignY="center">
-              <SVGLoadingIcon color={'white'} size={20} />
-            </Box>
-          </React.Fragment>
-        ) : null}
-      </Columns>
-
-      {hasError ? (
-        <Box width="100%">
-          <Gutter size={16} />
-
-          <GuideBox
-            hideInformationIcon={true}
-            color="warning"
-            title={
-              (() => {
-                if (feeConfig.uiProperties.error) {
-                  if (feeConfig.uiProperties.error instanceof InsufficientFeeError) {
-                    return intl.formatMessage({
-                      id: 'components.input.fee-control.error.insufficient-fee'
-                    });
-                  }
-
-                  return feeConfig.uiProperties.error.message || feeConfig.uiProperties.error.toString();
-                }
-
-                if (feeConfig.uiProperties.warning) {
-                  return feeConfig.uiProperties.warning.message || feeConfig.uiProperties.warning.toString();
-                }
-
-                if (gasConfig.uiProperties.error) {
-                  return gasConfig.uiProperties.error.message || gasConfig.uiProperties.error.toString();
-                }
-
-                if (gasConfig.uiProperties.warning) {
-                  return gasConfig.uiProperties.warning.message || gasConfig.uiProperties.warning.toString();
-                }
-              })() ?? ''
-            }
-            titleStyle={{ textAlign: 'center' }}
-          />
-        </Box>
-      ) : null}
-
-      <TransactionFeeModal
-        isOpen={isModalOpen}
-        close={() => setIsModalOpen(false)}
-        setIsOpen={() => setIsModalOpen(false)}
-        senderConfig={senderConfig}
-        feeConfig={feeConfig}
-        gasConfig={gasConfig}
-        gasSimulator={gasSimulator}
-        disableAutomaticFeeSet={disableAutomaticFeeSet}
-      />
-
-      <InformationModal
-        isOpen={isInfoModalOpen}
-        close={() => setIsInfoModalOpen(false)}
-        title={intl.formatMessage({
-          id: 'components.input.fee-control.tooltip.external-fee-set'
-        })}
-        paragraph={intl.formatMessage({
-          id: 'components.input.fee-control.modal.guide.external-fee-set'
-        })}
-      />
-    </Box>
-  );
-});
+      </View>
+    );
+  }
+);
 
 const noop = (..._args: any[]) => {
   // noop
 };
+const styling = (colors) =>
+  StyleSheet.create({
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    inputContainerAddress: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerEstimatePrice: {
+      alignSelf: "flex-end",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    containerFee: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+      paddingVertical: 16,
+      marginBottom: 8,
+    },
+    sendInputRoot: {
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      backgroundColor: colors["primary"],
+      borderRadius: 24,
+    },
+    sendlabelInput: {
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-text-body"],
+    },
+    inputContainerMemo: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerStyle: {
+      backgroundColor: colors["neutral-surface-bg2"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
+    errorBorder: {
+      borderWidth: 2,
+      borderColor: colors["error-border-default"],
+    },
+  });

@@ -1,4 +1,4 @@
-import { AppCurrency, FeeCurrency, StdFee } from "@owallet/types";
+import { AppCurrency, FeeCurrency, StdBtcFee, StdFee } from "@owallet/types";
 import { CoinPretty, Dec } from "@owallet/unit";
 
 export interface ITxChainSetter {
@@ -39,6 +39,33 @@ export interface ISenderConfig extends ITxChainSetter {
   setValue(value: string): void;
 
   sender: string;
+
+  uiProperties: UIProperties;
+}
+
+export interface IBtcFeeConfig extends ITxChainSetter {
+  type: FeeType | "manual";
+
+  setFee(
+    fee:
+      | {
+          type: FeeType;
+          currency: FeeCurrency;
+        }
+      | CoinPretty
+      | CoinPretty[]
+      | undefined
+  ): void;
+
+  selectableFeeCurrencies: FeeCurrency[];
+
+  toStdFee(): StdBtcFee;
+  fees: CoinPretty[];
+
+  getFeeTypePrettyForFeeCurrency(
+    currency: FeeCurrency,
+    feeType: FeeType
+  ): CoinPretty;
 
   uiProperties: UIProperties;
 }
@@ -109,7 +136,7 @@ export interface IAmountConfig extends IBaseAmountConfig {
   currency: AppCurrency;
   setCurrency(currency: AppCurrency | undefined): void;
   canUseCurrency(currency: AppCurrency): boolean;
-
+  amountNotSubFee?: string;
   // Zero means unset.
   fraction: number;
   setFraction(fraction: number): void;

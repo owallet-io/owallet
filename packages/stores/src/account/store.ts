@@ -1,10 +1,15 @@
 //@ts-nocheck
-import { ChainedFunctionifyTuple, HasMapStore, IObject, mergeStores } from '../common';
-import { ChainGetter } from '../chain';
-import { AccountSetBase, AccountSetBaseSuper, AccountSetOpts } from './base';
-import { UnionToIntersection } from 'utility-types';
-import { AccountSharedContext } from './context';
-import { OWallet } from '@owallet/types';
+import {
+  ChainedFunctionifyTuple,
+  HasMapStore,
+  IObject,
+  mergeStores,
+} from "../common";
+import { ChainGetter } from "../chain";
+import { AccountSetBase, AccountSetBaseSuper, AccountSetOpts } from "./base";
+import { UnionToIntersection } from "utility-types";
+import { AccountSharedContext } from "./context";
+import { OWallet } from "@owallet/types";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export interface IAccountStore<T extends IObject = {}> {
@@ -13,7 +18,9 @@ export interface IAccountStore<T extends IObject = {}> {
 }
 
 export interface IAccountStoreWithInjects<Injects extends Array<IObject>> {
-  getAccount(chainId: string): AccountSetBase & UnionToIntersection<Injects[number]>;
+  getAccount(
+    chainId: string
+  ): AccountSetBase & UnionToIntersection<Injects[number]>;
   hasAccount(chainId: string): boolean;
 }
 
@@ -56,7 +63,11 @@ export class AccountStore<
         storeOptsCreator(chainId)
       );
 
-      return mergeStores(accountSetBase, [this.chainGetter, chainId], ...this.accountSetCreators);
+      return mergeStores(
+        accountSetBase,
+        [this.chainGetter, chainId],
+        ...this.accountSetCreators
+      );
     });
 
     this.accountSetCreators = accountSetCreators;

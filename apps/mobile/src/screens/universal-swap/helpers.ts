@@ -13,6 +13,7 @@ import {
   TokenItemType,
   BigDecimal,
   TON_ORAICHAIN_DENOM,
+  COSMOS_CHAIN_ID_COMMON,
 } from "@oraichain/oraidex-common";
 import { showToast } from "@src/utils/helper";
 import { API } from "@src/common/api";
@@ -70,10 +71,10 @@ export const handleErrorSwap = (message: string) => {
 export const getProtocolsSmartRoute = (
   fromToken: TokenItemType,
   toToken: TokenItemType,
-  useIbcWasm: boolean
+  { useAlphaIbcWasm, useIbcWasm }
 ) => {
   const protocols = ["Oraidex", "OraidexV3"];
-  if (useIbcWasm) return protocols;
+  if (useIbcWasm && !useAlphaIbcWasm) return protocols;
 
   const allowOsmosisProtocols = [
     "injective-1",
@@ -81,6 +82,7 @@ export const getProtocolsSmartRoute = (
     "noble-1",
     "osmosis-1",
     "cosmoshub-4",
+    "celestia",
   ];
   const isAllowOsmosisProtocol =
     allowOsmosisProtocols.includes(fromToken.chainId) ||
@@ -89,11 +91,28 @@ export const getProtocolsSmartRoute = (
   if (isAllowOsmosisProtocol) return [...protocols, "Osmosis"];
   return protocols;
 };
+export const isAllowAlphaIbcWasm = (
+  fromToken: TokenItemType,
+  toToken: TokenItemType
+) => {
+  if (
+    !fromToken.cosmosBased &&
+    (toToken.chainId === COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID ||
+      toToken.chainId === COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID)
+  )
+    return true;
 
-export const isAllowAlphaSmartRouter = () => true;
+  // from chainId and to chainId is CELESTIA_CHAIN_ID
+  if (
+    [toToken.chainId, fromToken.chainId].includes(
+      COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID
+    )
+  )
+    return true;
+  return false;
+};
 
 const toCoinGeckoIds = ["osmosis", "cosmos", "oraichain-token", "usd-coin"];
-
 const listAllowSmartRoute = {
   "osmosis-1-Oraichain": {
     fromCoinGeckoIds: ["osmosis"],
@@ -113,29 +132,6 @@ const listAllowSmartRoute = {
   },
 };
 
-// export const isAllowAlphaSmartRouter = (fromToken, toToken, isAIRoute) => {
-//   const isOraichain = fromToken.chainId === "Oraichain";
-//   // const notAllowChainId = ['Neutaro-1'];
-//   const allowTokenTon = [
-//     fromToken.contractAddress,
-//     fromToken.denom,
-//     toToken.contractAddress,
-//     toToken.denom,
-//   ]
-//     .filter(Boolean)
-//     .includes(TON_ORAICHAIN_DENOM);
-
-//   if (allowTokenTon) return true;
-//   // if (notAllowChainId.includes(fromToken.chainId) || notAllowChainId.includes(toToken.chainId)) return false;
-//   if (isOraichain && !toToken.cosmosBased) return false;
-//   if (isOraichain) return isAIRoute;
-
-//   if (fromToken.cosmosBased && toToken.cosmosBased) return true;
-//   if (fromToken.cosmosBased && !toToken.cosmosBased) return true;
-//   if (!fromToken.cosmosBased) return true;
-//   return false;
-// };
-
 /**
  * This function check status using ibc wasm
  * Example:  Oraichain -> Oraichain + Cosmos (false) | Oraichain -> Evm (true) | Evm -> Evm + Oraichain + Cosmos (true) | Cosmos -> Cosmos + Oraichain (false) | Cosmos -> Evm (true)
@@ -153,6 +149,14 @@ export const isAllowIBCWasm = (
   const toTokenIsOraichain = toToken.chainId === "Oraichain";
   const toTokenIsCosmos = toToken.cosmosBased;
 
+  // from chainId and to chainId is CELESTIA_CHAIN_ID
+  if (
+    [toToken.chainId, fromToken.chainId].includes(
+      COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID
+    )
+  )
+    return false;
+
   // Oraichain -> Oraichain or Cosmos
   if (fromTokenIsOraichain) {
     if (toToken.chainId == "Neutaro-1") return true;
@@ -169,7 +173,18 @@ export const isAllowIBCWasm = (
   )
     return false;
   // Evm -> Oraichain or Cosmos
-  if (!fromTokenIsCosmos) return true;
+  if (!fromTokenIsCosmos) {
+    // Evm -> INJ or TIA
+    if (
+      toToken.chainId === COSMOS_CHAIN_ID_COMMON.INJECTVE_CHAIN_ID ||
+      toToken.chainId === COSMOS_CHAIN_ID_COMMON.CELESTIA_CHAIN_ID
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   // Cosmos -> Cosmos or Oraichain
   if (fromTokenIsCosmos && toTokenIsCosmos) {
     const key = [fromToken, toToken].map((e) => e.chainId).join("-");

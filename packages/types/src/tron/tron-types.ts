@@ -1,6 +1,6 @@
-import { SettledResponses } from '../settled';
-import EventEmitter from 'events';
-import { Key } from '../wallet';
+import { SettledResponses } from "../settled";
+import EventEmitter from "events";
+import { Key } from "../wallet";
 
 export interface ITronProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;

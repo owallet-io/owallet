@@ -1,5 +1,6 @@
 import {
   IAmountConfig,
+  IBtcFeeConfig,
   IFeeConfig,
   ISenderConfig,
   UIProperties,
@@ -31,7 +32,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   protected _fraction: number = 0;
 
   @observable.ref
-  protected _feeConfig: IFeeConfig | undefined = undefined;
+  protected _feeConfig: IFeeConfig | IBtcFeeConfig | undefined = undefined;
 
   constructor(
     chainGetter: ChainGetter,
@@ -44,15 +45,32 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     makeObservable(this);
   }
 
-  get feeConfig(): IFeeConfig | undefined {
+  get feeConfig(): IFeeConfig | IBtcFeeConfig | undefined {
     return this._feeConfig;
   }
 
   @action
-  setFeeConfig(feeConfig: IFeeConfig | undefined) {
+  setFeeConfig(feeConfig: IFeeConfig | IBtcFeeConfig | undefined) {
     this._feeConfig = feeConfig;
   }
+  @computed
+  get amountNotSubFee(): string {
+    if (this.fraction > 0) {
+      let result = this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.senderConfig.sender)
+        .getBalanceFromCurrency(this.currency);
 
+      return result
+        .mul(new Dec(this.fraction))
+        .trim(true)
+        .locale(false)
+        .hideDenom(true)
+        .toString();
+    }
+
+    return this._value?.replace(",", ".");
+  }
   @computed
   get value(): string {
     if (this.fraction > 0) {
@@ -100,10 +118,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       } else {
         amount = new Dec(this.value);
       }
-    } catch {
+    } catch (e) {
+      console.log(e, "err");
       amount = new Dec(0);
     }
-
     return [
       new CoinPretty(
         this.currency,

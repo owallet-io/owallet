@@ -112,7 +112,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
   const isSecret20 = false;
 
   const queries = queriesStore.get(selectedChain.chainId);
-  const query = queries.evmContract.queryErc20ContractInfo;
+  const query = queries.ethereum.queryEthereumERC20ContractInfo;
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
@@ -128,7 +128,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
 
           if (data && data.imgUrl) {
             setCoingeckoImg(data.imgUrl);
-            setCoingeckoID(data.coingeckoId);
+            setCoingeckoID(data.coingeckoId || "");
           } else {
             throw new Error("Image URL not found for the Coingecko ID.");
           }
@@ -164,7 +164,7 @@ export const AddTokenEVMScreen: FunctionComponent<{
   useEffect(() => {
     getTokenCoingeckoId();
     if (tokenInfo) {
-      setValue("name", tokenInfo.name);
+      // setValue("name", tokenInfo.name);
       setValue("symbol", tokenInfo.symbol);
       setValue("decimals", tokenInfo.decimals?.toString());
     }
@@ -189,17 +189,24 @@ export const AddTokenEVMScreen: FunctionComponent<{
 
   const submit = handleSubmit(async (data: any) => {
     try {
-      if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
+      if (tokenInfo?.decimals != null && tokenInfo.symbol) {
         setLoading(true);
 
+        // const currency: AppCurrency = {
+        //   contractAddress: data?.contractAddress,
+        //   coinMinimalDenom: `erc20:${data?.contractAddress}`,
+        //   coinDenom: tokenInfo.symbol,
+        //   coinDecimals: tokenInfo.decimals,
+        //   coinGeckoId: coingeckoId,
+        //   coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
+        //   type: "erc20",
+        // };
         const currency: AppCurrency = {
-          contractAddress: data?.contractAddress,
-          coinMinimalDenom: `erc20:${data?.contractAddress}:${tokenInfo.name}`,
+          type: "erc20",
+          contractAddress: contractAddress,
+          coinMinimalDenom: `erc20:${contractAddress}`,
           coinDenom: tokenInfo.symbol,
           coinDecimals: tokenInfo.decimals,
-          coinGeckoId: coingeckoId,
-          coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
-          type: "erc20",
         };
 
         await tokensStore.addToken(selectedChain.chainId, currency);
@@ -331,42 +338,42 @@ export const AddTokenEVMScreen: FunctionComponent<{
               </OWText>
             ) : null}
           </TouchableOpacity>
-          <Controller
-            control={control}
-            rules={{
-              required: "Name is required",
-            }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  inputStyle={{
-                    borderColor: errors.name?.message
-                      ? colors["error-border-default"]
-                      : colors["neutral-border-strong"],
-                    borderRadius: 12,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  style={styles.textInput}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  label=""
-                  topInInputContainer={
-                    <View style={{ paddingBottom: 4 }}>
-                      <OWText>Name</OWText>
-                    </View>
-                  }
-                  returnKeyType="next"
-                  placeholder={"Enter token name"}
-                  editable={true}
-                />
-              );
-            }}
-            name="name"
-            defaultValue={tokenInfo?.name}
-          />
+          {/*<Controller*/}
+          {/*  control={control}*/}
+          {/*  rules={{*/}
+          {/*    required: "Name is required",*/}
+          {/*  }}*/}
+          {/*  render={({ field: { onChange, onBlur, value, ref } }) => {*/}
+          {/*    return (*/}
+          {/*      <TextInput*/}
+          {/*        inputStyle={{*/}
+          {/*          borderColor: errors.name?.message*/}
+          {/*            ? colors["error-border-default"]*/}
+          {/*            : colors["neutral-border-strong"],*/}
+          {/*          borderRadius: 12,*/}
+          {/*        }}*/}
+          {/*        onBlur={onBlur}*/}
+          {/*        onChangeText={onChange}*/}
+          {/*        value={value}*/}
+          {/*        style={styles.textInput}*/}
+          {/*        onSubmitEditing={() => {*/}
+          {/*          submit();*/}
+          {/*        }}*/}
+          {/*        label=""*/}
+          {/*        topInInputContainer={*/}
+          {/*          <View style={{ paddingBottom: 4 }}>*/}
+          {/*            <OWText>Name</OWText>*/}
+          {/*          </View>*/}
+          {/*        }*/}
+          {/*        returnKeyType="next"*/}
+          {/*        placeholder={"Enter token name"}*/}
+          {/*        editable={true}*/}
+          {/*      />*/}
+          {/*    );*/}
+          {/*  }}*/}
+          {/*  name="name"*/}
+          {/*  defaultValue={tokenInfo?.name}*/}
+          {/*/>*/}
           <Controller
             control={control}
             rules={{

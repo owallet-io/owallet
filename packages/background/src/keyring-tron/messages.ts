@@ -1,10 +1,10 @@
-import { Message, OWalletError } from '@owallet/router';
-import { Key, SettledResponses } from '@owallet/types';
-import { ROUTE } from './constants';
+import { Message, OWalletError } from "@owallet/router";
+import { Key, SettledResponses } from "@owallet/types";
+import { ROUTE } from "./constants";
 
 export class GetTronKeyMsg extends Message<Key> {
   public static type() {
-    return 'get-trx-key';
+    return "get-trx-key";
   }
 
   constructor(public readonly chainId: string) {
@@ -13,7 +13,7 @@ export class GetTronKeyMsg extends Message<Key> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chainId is not set');
+      throw new Error("chainId is not set");
     }
   }
 
@@ -32,7 +32,7 @@ export class GetTronKeyMsg extends Message<Key> {
 
 export class GetTronKeysSettledMsg extends Message<SettledResponses<Key>> {
   public static type() {
-    return 'get-trx-keys-settled';
+    return "get-trx-keys-settled";
   }
 
   constructor(public readonly chainIds: string[]) {
@@ -41,7 +41,7 @@ export class GetTronKeysSettledMsg extends Message<SettledResponses<Key>> {
 
   validateBasic(): void {
     if (!this.chainIds || this.chainIds.length === 0) {
-      throw new Error('chainIds are not set');
+      throw new Error("chainIds are not set");
     }
 
     const seen = new Map<string, boolean>();
@@ -70,7 +70,7 @@ export class GetTronKeysSettledMsg extends Message<SettledResponses<Key>> {
 
 export class RequestSignTronMsg extends Message<{}> {
   public static type() {
-    return 'request-sign-tron';
+    return "request-sign-tron";
   }
 
   constructor(public readonly chainId: string, public readonly data: string) {
@@ -79,11 +79,11 @@ export class RequestSignTronMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new OWalletError('keyring', 270, 'chain id not set');
+      throw new OWalletError("keyring", 270, "chain id not set");
     }
 
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 

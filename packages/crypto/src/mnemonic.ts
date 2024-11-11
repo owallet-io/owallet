@@ -96,4 +96,15 @@ export class Mnemonic {
     }
     return privateKey;
   }
+  static generateKeyPairFromMasterSeed(
+    seed: Uint8Array,
+    path: string = `m/44'/118'/0'/0/0`
+  ): Uint8Array {
+    const masterSeed = bip32.fromBase58(bs58check.encode(seed));
+    const keyPair = masterSeed.derivePath(path);
+    if (!keyPair) {
+      throw new Error("null keyPair");
+    }
+    return keyPair;
+  }
 }

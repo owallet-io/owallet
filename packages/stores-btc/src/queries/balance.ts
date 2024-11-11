@@ -56,7 +56,6 @@ export class ObservableQueryBtcAccountBalanceImpl
 
     if (!totalBtc) return new CoinPretty(currency, new Int(0)).ready(false);
     return new CoinPretty(currency, new Int(totalBtc)).ready(false);
-    // return new CoinPretty(currency, new Int(BigInt(this.response.data)));
   }
 
   @computed

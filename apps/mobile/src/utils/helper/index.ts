@@ -4,7 +4,6 @@ import { find } from "lodash";
 import moment from "moment";
 import { AppCurrency } from "@owallet/types";
 import get from "lodash/get";
-import { TxsHelper } from "@src/stores/txs/helpers/txs-helper";
 import { showMessage, MessageOptions } from "react-native-flash-message";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { Linking } from "react-native";
@@ -687,10 +686,6 @@ export const getCurrencyByMinimalDenom = (
 
 export const isNegative = (number) => number <= 0;
 
-export function createTxsHelper() {
-  return new TxsHelper();
-}
-
 export function shortenAddress(address, digits = 6): string {
   if (address) {
     const firstDigits = address.substring(0, digits);
@@ -811,9 +806,10 @@ export function numberWithCommas(number) {
 }
 
 export const sortChainsByPrice = (chains) => {
+  if (!chains?.length) return [];
   return chains.sort(
     (a, b) =>
-      Number(b.balance.toDec().toString()) -
-      Number(a.balance.toDec().toString())
+      Number(b.balance?.toDec().toString()) -
+      Number(a.balance?.toDec().toString())
   );
 };

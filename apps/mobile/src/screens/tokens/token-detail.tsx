@@ -1,37 +1,34 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { spacing } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
-import { navigate, setOptions } from '../../router/root';
-import { useTheme } from '@src/themes/theme-provider';
-import { StyleSheet, View, InteractionManager, Clipboard } from 'react-native';
-import OWText from '@src/components/text/ow-text';
-import { useStore } from '@src/stores';
-import { OWButton } from '@src/components/button';
-import { metrics } from '@src/themes';
-import { API } from '@src/common/api';
-import { useSimpleTimer } from '@src/hooks';
-// import { PageHeader } from "@src/components/header/header-new";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SCREENS } from '@src/common/constants';
-import { ChainIdEnum, DenomHelper, getBase58Address, TRC20_LIST, unknownToken } from '@owallet/common';
-import { maskedNumber, removeDataInParentheses, shortenAddress } from '@src/utils/helper';
-import { CheckIcon } from '@src/components/icon';
-import { TokenChart } from '@src/screens/home/components/token-chart';
-import { ViewToken } from '@src/stores/huge-queries';
-import { CoinPretty, PricePretty } from '@owallet/unit';
-import { HistoryByToken } from '@src/screens/transactions/history-by-token';
-import { PageWithScrollView } from '@src/components/page';
-import { tracking } from '@src/utils/tracking';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { OWBox } from '@src/components/card';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import MoreModal from '../home/components/more-modal';
-import { HeaderOptions } from '@react-navigation/elements';
-import { StackNavigationOptions } from '@react-navigation/stack';
-import { OWHeaderTitle } from '@components/header';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { spacing } from "../../themes";
+import { navigate, setOptions } from "../../router/root";
+import { useTheme } from "@src/themes/theme-provider";
+import { StyleSheet, View, InteractionManager, Clipboard } from "react-native";
+import OWText from "@src/components/text/ow-text";
+import { useStore } from "@src/stores";
+import { OWButton } from "@src/components/button";
+import { metrics } from "@src/themes";
+import { useSimpleTimer } from "@src/hooks";
+import { SCREENS } from "@src/common/constants";
+import { DenomHelper, unknownToken } from "@owallet/common";
+import {
+  maskedNumber,
+  removeDataInParentheses,
+  shortenAddress,
+} from "@src/utils/helper";
+import { CheckIcon } from "@src/components/icon";
+import { TokenChart } from "@src/screens/home/components/token-chart";
+import { ViewToken } from "@src/stores/huge-queries";
+import { CoinPretty, PricePretty } from "@owallet/unit";
+import { HistoryByToken } from "@src/screens/transactions/history-by-token";
+import { PageWithScrollView } from "@src/components/page";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { OWBox } from "@src/components/card";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import MoreModal from "../home/components/more-modal";
+import { OWHeaderTitle } from "@components/header";
 
-export const TokenDetailsScreen: FunctionComponent = observer(props => {
+export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, allAccountStore, keyRingStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { colors } = useTheme();
@@ -58,78 +55,28 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
 
   const account = allAccountStore.getAccount(item.chainInfo.chainId);
 
-  const address = item.token.currency.type === 'legacy' ? account.btcLegacyAddress : account.addressDisplay;
+  const address =
+    item.token.currency?.type === "legacy"
+      ? account.btcLegacyAddress
+      : account.addressDisplay;
   const onPressToken = async () => {
-    // chainStore.selectChain(item.chainInfo.chainId);
-    // await chainStore.saveLastViewChainId();
-
-    // if (chainStore.current.networkType === "bitcoin") {
-    //   navigate(SCREENS.SendBtc);
-    //   return;
-    // }
-    // if (chainStore.current.networkType === "evm") {
-    //   if (item.chainInfo.chainId === ChainIdEnum.TRON) {
-    //     const itemTron = tronTokens?.find((t) => {
-    //       return t.coinGeckoId === item.token.currency.coinGeckoId;
-    //     });
-
-    //     navigate(SCREENS.SendTron, {
-    //       item: itemTron,
-    //       currency: item.token.currency.coinDenom,
-    //       contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-    //         .contractAddress,
-    //     });
-
-    //     return;
-    //   }
-    //   if (item.chainInfo.chainId === ChainIdEnum.Oasis) {
-    //     navigate(SCREENS.SendOasis, {
-    //       currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-    //     });
-    //     return;
-    //   }
-    //   navigate(SCREENS.SendEvm, {
-    //     currency: item.token.currency.coinDenom,
-    //     contractAddress: new DenomHelper(item.token.currency.coinMinimalDenom)
-    //       .contractAddress,
-    //     coinGeckoId: item.token.currency.coinGeckoId,
-    //   });
-    //   return;
-    // }
-
     try {
-      const chainInfo = chainStore.getChain(item.chainInfo.chainId);
-
-      if (chainInfo.evm && !chainInfo.features.includes('tron')) {
-        // if (chainInfo.features.includes('tron')) {
-        //   navigate(SCREENS.SendTron, {
-        //     coinMinimalDenom: item.token.currency.coinMinimalDenom,
-        //     chainId: item.chainInfo.chainId
-        //   });
-        //   return;
-        // }
-        navigate(SCREENS.SendEvm, {
-          coinMinimalDenom: item.token.currency.coinMinimalDenom,
-          chainId: item.chainInfo.chainId
-        });
-        return;
-      }
       navigate(SCREENS.Send, {
         coinMinimalDenom: item.token.currency.coinMinimalDenom,
-        chainId: item.chainInfo.chainId
+        chainId: item.chainInfo.chainId,
       });
     } catch (err) {
-      console.log('err', err, item.chainInfo.chainId);
+      console.log("err", err, item.chainInfo.chainId);
     }
   };
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
   const denomHelper = new DenomHelper(item.token.currency.coinMinimalDenom);
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <OWHeaderTitle chainData={item.chainInfo} />
+      headerTitle: () => <OWHeaderTitle chainData={item.chainInfo} />,
     });
   }, [item.chainInfo]);
-  console.log(item.token.toCoin().amount, 'item.token');
+  console.log(item.token.toCoin().amount, "item.token");
   return (
     <>
       <MoreModal
@@ -137,13 +84,13 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
         isOpen={isMoreOpen}
         bottomSheetModalConfig={{
           enablePanDownToClose: false,
-          enableOverDrag: false
+          enableOverDrag: false,
         }}
       />
 
       <PageWithScrollView
         style={{
-          marginBottom: 60
+          marginBottom: 60,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -153,14 +100,18 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
               type="secondary"
               textStyle={{
                 fontSize: 14,
-                fontWeight: '600',
-                color: colors['neutral-text-action-on-light-bg']
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
               }}
               iconRight={
                 isTimedOut ? (
                   <CheckIcon />
                 ) : (
-                  <OWIcon size={18} name="tdesigncopy" color={colors['neutral-text-action-on-light-bg']} />
+                  <OWIcon
+                    size={18}
+                    name="tdesigncopy"
+                    color={colors["neutral-text-action-on-light-bg"]}
+                  />
                 )
               }
               style={styles.copy}
@@ -174,8 +125,8 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
           <View style={styles.overview}>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center'
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
               <View style={styles.iconWrap}>
@@ -184,24 +135,33 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
                   type="images"
                   source={{
                     uri:
-                      item.token?.currency?.coinImageUrl?.includes('missing.png') || !item.token?.currency?.coinImageUrl
+                      item.token?.currency?.coinImageUrl?.includes(
+                        "missing.png"
+                      ) || !item.token?.currency?.coinImageUrl
                         ? unknownToken.coinImageUrl
-                        : item.token?.currency?.coinImageUrl
+                        : item.token?.currency?.coinImageUrl,
                   }}
                   size={24}
                 />
               </View>
 
               <OWText variant="bigText" style={styles.labelTotalAmount}>
-                {' '}
+                {" "}
                 {maskedNumber(
-                  new CoinPretty(item.token.currency, item.token.toCoin().amount).hideDenom(true).trim(true).toString()
-                )}{' '}
+                  new CoinPretty(
+                    item.token.currency,
+                    item.token.toCoin().amount
+                  )
+                    .hideDenom(true)
+                    .trim(true)
+                    .toString(),
+                  6
+                )}{" "}
                 {removeDataInParentheses(item.token.currency.coinDenom)}
               </OWText>
             </View>
 
-            <OWText style={styles.profit} color={colors['neutral-text-body']}>
+            <OWText style={styles.profit} color={colors["neutral-text-body"]}>
               {new PricePretty(fiatCurrency, item.price)?.toString()}
             </OWText>
           </View>
@@ -209,9 +169,9 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
           <View
             style={{
               height: 1,
-              width: '100%',
-              backgroundColor: colors['neutral-border-default'],
-              marginBottom: 8
+              width: "100%",
+              backgroundColor: colors["neutral-border-default"],
+              marginBottom: 8,
             }}
           />
 
@@ -219,36 +179,48 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
             <OWButton
               textStyle={{
                 fontSize: 15,
-                fontWeight: '600',
-                color: colors['neutral-text-action-on-light-bg']
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
               }}
-              icon={<OWIcon color={colors['neutral-text-action-on-light-bg']} name={'tdesignsend'} size={20} />}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignsend"}
+                  size={20}
+                />
+              }
               type="link"
               style={styles.getStarted}
-              label={'Send'}
+              label={"Send"}
               onPress={onPressToken}
             />
             <View
               style={{
                 width: 1,
-                height: '100%',
-                backgroundColor: colors['neutral-border-default']
+                height: "100%",
+                backgroundColor: colors["neutral-border-default"],
               }}
             />
             <OWButton
               style={styles.getStarted}
-              icon={<OWIcon color={colors['neutral-text-action-on-light-bg']} name={'tdesignqrcode'} size={20} />}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignqrcode"}
+                  size={20}
+                />
+              }
               type="link"
               textStyle={{
                 fontSize: 15,
-                fontWeight: '600',
-                color: colors['neutral-text-action-on-light-bg']
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
               }}
               label="Receive"
               onPress={() => {
                 navigate(SCREENS.QRScreen, {
                   chainId: item.chainInfo.chainId,
-                  isBtcLegacy: item.token.currency.type === 'legacy'
+                  isBtcLegacy: item.token.currency?.type === "legacy",
                 });
                 return;
               }}
@@ -256,20 +228,26 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
             <View
               style={{
                 width: 1,
-                height: '100%',
-                backgroundColor: colors['neutral-border-default']
+                height: "100%",
+                backgroundColor: colors["neutral-border-default"],
               }}
             />
             <OWButton
               textStyle={{
                 fontSize: 15,
-                fontWeight: '600',
-                color: colors['neutral-text-action-on-light-bg']
+                fontWeight: "600",
+                color: colors["neutral-text-action-on-light-bg"],
               }}
-              icon={<OWIcon color={colors['neutral-text-action-on-light-bg']} name={'tdesignellipsis'} size={20} />}
+              icon={
+                <OWIcon
+                  color={colors["neutral-text-action-on-light-bg"]}
+                  name={"tdesignellipsis"}
+                  size={20}
+                />
+              }
               type="link"
               style={styles.getStarted}
-              label={'More'}
+              label={"More"}
               onPress={() => {
                 setMoreModalOpen(true);
               }}
@@ -287,17 +265,22 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
             borderTopRightRadius: 24,
             borderTopLeftRadius: 24,
             marginTop: 16,
-            paddingBottom: 32
+            paddingBottom: 32,
+            backgroundColor: colors["neutral-surface-card"],
           }}
         >
           <View
             style={{
               paddingVertical: 16,
               borderBottomWidth: 1,
-              borderBottomColor: colors['neutral-border-default']
+              borderBottomColor: colors["neutral-border-default"],
             }}
           >
-            <OWText color={colors['neutral-text-body']} size={16} weight={'500'}>
+            <OWText
+              color={colors["neutral-text-body"]}
+              size={16}
+              weight={"500"}
+            >
               History
             </OWText>
           </View>
@@ -309,30 +292,34 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
       </PageWithScrollView>
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           bottom: 50,
-          alignSelf: 'center'
+          alignSelf: "center",
         }}
       >
         <OWButton
           label="Swap"
           onPress={() => {
-            navigation.navigate('SendNavigation', {
+            navigation.navigate("SendNavigation", {
               params: {
-                chain: item.chainInfo.chainId
-              }
+                chain: item.chainInfo.chainId,
+              },
             });
           }}
           icon={
-            <View style={{ transform: [{ rotate: '130deg' }] }}>
-              <OWIcon color={colors['neutral-text-action-on-dark-bg']} name={'tdesign_swap'} size={20} />
+            <View style={{ transform: [{ rotate: "130deg" }] }}>
+              <OWIcon
+                color={colors["neutral-text-action-on-dark-bg"]}
+                name={"tdesign_swap"}
+                size={20}
+              />
             </View>
           }
           style={[
             styles.bottomBtn,
             {
-              width: metrics.screenWidth - 32
-            }
+              width: metrics.screenWidth - 32,
+            },
           ]}
           textStyle={styles.txtBtnSend}
         />
@@ -341,94 +328,95 @@ export const TokenDetailsScreen: FunctionComponent = observer(props => {
   );
 });
 
-const useStyles = colors => {
+const useStyles = (colors) => {
   return StyleSheet.create({
     containerOWBox: {
       marginTop: 0,
       marginHorizontal: 16,
       width: metrics.screenWidth - 32,
-      padding: spacing['16'],
-      borderRadius: 24
+      padding: spacing["16"],
+      borderRadius: 24,
+      backgroundColor: colors["neutral-surface-card"],
     },
     overview: {
       marginTop: 12,
       marginBottom: 16,
-      alignItems: 'center'
+      alignItems: "center",
     },
     labelTotalAmount: {
-      color: colors['neutral-text-heading'],
-      fontWeight: '500'
+      color: colors["neutral-text-heading"],
+      fontWeight: "500",
     },
     profit: {
-      fontWeight: '400',
-      lineHeight: 20
+      fontWeight: "400",
+      lineHeight: 20,
     },
     labelName: {
-      paddingLeft: spacing['6'],
+      paddingLeft: spacing["6"],
       paddingRight: 10,
-      fontWeight: '600',
+      fontWeight: "600",
       fontSize: 16,
-      color: colors['neutral-text-title']
+      color: colors["neutral-text-title"],
     },
     infoIcon: {
-      width: spacing['26'],
-      borderRadius: spacing['26'],
-      height: spacing['26']
+      width: spacing["26"],
+      borderRadius: spacing["26"],
+      height: spacing["26"],
     },
     btnAcc: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingBottom: spacing['2']
+      display: "flex",
+      flexDirection: "row",
+      alignItems: "center",
+      paddingBottom: spacing["2"],
     },
     containerInfoAccount: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignSelf: 'center'
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignSelf: "center",
     },
     getStarted: {
       borderRadius: 999,
       width: metrics.screenWidth / 4.45,
-      height: 32
+      height: 32,
     },
     copy: {
       borderRadius: 999,
       width: metrics.screenWidth / 2.5,
-      height: 32
+      height: 32,
     },
     btnGroup: {
-      flexDirection: 'row',
-      justifyContent: 'space-between'
+      flexDirection: "row",
+      justifyContent: "space-between",
     },
     containerLoading: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
       top: 30,
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 1000
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
     },
     container: {},
     iconWrap: {
       width: 32,
       height: 32,
       borderRadius: 999,
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden',
-      backgroundColor: colors['neutral-icon-on-dark']
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+      backgroundColor: colors["neutral-icon-on-light"],
     },
     bottomBtn: {
       marginTop: 20,
       width: metrics.screenWidth / 2.3,
-      borderRadius: 999
+      borderRadius: 999,
     },
     txtBtnSend: {
       fontSize: 16,
-      fontWeight: '600',
-      color: colors['neutral-text-action-on-dark-bg']
-    }
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
   });
 };

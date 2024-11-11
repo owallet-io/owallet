@@ -188,6 +188,7 @@ export const TokenChart: FC<{
         marginTop: 16,
         borderRadius: 24,
         paddingHorizontal: 0,
+        backgroundColor: colors["neutral-surface-card"],
       }}
     >
       <View

@@ -1,7 +1,14 @@
-import { ChainGetter } from '../../chain';
-import { HasMapStore, ObservableJsonRPCQuery, QuerySharedContext } from '../../common';
+import { ChainGetter } from "../../chain";
+import {
+  HasMapStore,
+  ObservableJsonRPCQuery,
+  QuerySharedContext,
+} from "../../common";
 
-export class ObservableEvmChainJsonRpcQuery<T = unknown, E = unknown> extends ObservableJsonRPCQuery<T, E> {
+export class ObservableEvmChainJsonRpcQuery<
+  T = unknown,
+  E = unknown
+> extends ObservableJsonRPCQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
   protected readonly chainGetter: ChainGetter;
@@ -15,7 +22,7 @@ export class ObservableEvmChainJsonRpcQuery<T = unknown, E = unknown> extends Ob
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
-    super(sharedContext, chainInfo?.rpc, '', method, params);
+    super(sharedContext, chainInfo?.rpc, "", method, params);
 
     this._chainId = chainId;
     this.chainGetter = chainGetter;
@@ -26,9 +33,10 @@ export class ObservableEvmChainJsonRpcQuery<T = unknown, E = unknown> extends Ob
   }
 }
 
-export class ObservableEvmChainJsonRpcQueryMap<T = unknown, E = unknown> extends HasMapStore<
-  ObservableEvmChainJsonRpcQuery<T, E>
-> {
+export class ObservableEvmChainJsonRpcQueryMap<
+  T = unknown,
+  E = unknown
+> extends HasMapStore<ObservableEvmChainJsonRpcQuery<T, E>> {
   constructor(
     protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,

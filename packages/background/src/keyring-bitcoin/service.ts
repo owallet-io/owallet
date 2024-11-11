@@ -3,16 +3,15 @@ import { KeyRing, KeyRingService } from "../keyring";
 
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import { ChainInfo, Key } from "@owallet/types";
-import { KeyRingCosmosService } from "../keyring-cosmos";
+import { ChainInfo, Key, TransactionType } from "@owallet/types";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
-import { PubKeySecp256k1 } from "@owallet/crypto";
-import { Vault, VaultService } from "../vault";
-import * as oasis from "@oasisprotocol/client";
 import { KeyRingBtcBaseService } from "./keyring-base";
-import { getAddress } from "@owallet/bitcoin";
 import * as bitcoin from "bitcoinjs-lib";
 import { Buffer } from "buffer";
+import { Env } from "@owallet/router";
+import * as oasis from "@oasisprotocol/client";
+import { KeyRingCosmosService } from "../keyring-cosmos";
+import { BtcAccountBase } from "@owallet/stores-btc";
 
 export class KeyRingBtcService {
   constructor(
@@ -48,7 +47,6 @@ export class KeyRingBtcService {
           "hex"
         ),
       }).address;
-      console.log(legacyAddress, "legacyAddress2");
       const pubKeyBip84 = await this.keyRingBtcBaseService.getPubKeyBip84(
         chainId,
         vaultId
@@ -73,5 +71,126 @@ export class KeyRingBtcService {
     } catch (e) {
       console.error(e, "err get key btc");
     }
+  }
+
+  async signBtcSelected(
+    env: Env,
+    origin: string,
+    chainId: string,
+    signer: string,
+    message: Uint8Array,
+    signType: "legacy" | "bech32"
+  ): Promise<{
+    signingData: Uint8Array;
+    signature?: string;
+  }> {
+    return await this.signBtc(
+      env,
+      origin,
+      this.keyRingService.selectedVaultId,
+      chainId,
+      signer,
+      message,
+      signType
+    );
+  }
+
+  async signBtc(
+    env: Env,
+    origin: string,
+    vaultId: string,
+    chainId: string,
+    signer: string,
+    message: Uint8Array,
+    signType: "legacy" | "bech32"
+  ): Promise<{
+    signingData: Uint8Array;
+    signature?: string;
+  }> {
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    if (chainInfo.hideInUI) {
+      throw new Error("Can't sign for hidden chain");
+    }
+    const isBtcChain = this.chainsService.isBtcChain(chainId);
+
+    if (!isBtcChain) {
+      throw new Error("Invalid Btc chain");
+    }
+
+    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+    if (!keyInfo) {
+      throw new Error("Null key info");
+    }
+
+    if (keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
+    }
+
+    try {
+      const isValid = BtcAccountBase.isBtcAddress(signer);
+      if (!isValid) {
+        throw Error("Invalid Btc Address");
+      }
+    } catch {
+      throw Error("Invalid Btc Address");
+    }
+
+    const key = await this.getKey(vaultId, chainId);
+    if (
+      (signType === "bech32" && signer !== key.bech32Address) ||
+      (signType === "legacy" && signer !== key.btcLegacyAddress)
+    ) {
+      throw new Error("Signer mismatched");
+    }
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-btc",
+      "request-sign-btc",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: key.pubKey,
+        message,
+        signType,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: {
+        signingData: Uint8Array;
+        signature?: string;
+        inputs: any;
+        outputs: any;
+      }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            return {
+              signingData: res.signingData,
+              signature: res.signature,
+            };
+          } else {
+            console.log(res.inputs, res.outputs, "res.inputs");
+            const signature = await this.keyRingBtcBaseService.sign(
+              chainId,
+              vaultId,
+              res.signingData,
+              res.inputs,
+              res.outputs,
+              signType
+            );
+            return {
+              signingData: res.signingData,
+              signature: signature,
+            };
+          }
+        })();
+      }
+    );
   }
 }

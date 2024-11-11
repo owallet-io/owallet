@@ -1,1 +1,1 @@
-export * from './evm-chain-json-rpc';
+export * from "./evm-chain-json-rpc";

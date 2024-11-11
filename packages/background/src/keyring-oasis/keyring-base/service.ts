@@ -20,10 +20,6 @@ export class KeyRingOasisBaseService {
     makeObservable(this);
   }
 
-  // getPubKeySelected(chainId: string): Promise<PubKeySecp256k1> {
-  //   return this.getPubKey(chainId, this.selectedVaultId);
-  // }
-
   getPubKey(chainId: string, vaultId: string): Promise<Uint8Array> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
@@ -72,15 +68,6 @@ export class KeyRingOasisBaseService {
 
     throw new Error("Unsupported keyRing vault");
   }
-  // getPubKey(vault: Vault): Uint8Array {
-  //   const publicKeyBytes = Buffer.from(
-  //     vault.insensitive["publicKey"] as string,
-  //     "hex"
-  //   );
-  //
-  //   return new Uint8Array(publicKeyBytes);
-  // }
-
   async sign(
     chainId: string,
     vaultId: string,

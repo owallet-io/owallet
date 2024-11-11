@@ -1,41 +1,63 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { InteractionManager, RefreshControl, ScrollView, StyleSheet } from 'react-native';
-import { useStore } from '../../stores';
-import { observer } from 'mobx-react-lite';
-import { useTheme } from '@src/themes/theme-provider';
-import { AccountBoxAll } from './components/account-box-new';
-import { InjectedProviderUrl } from '../web/config';
-import { MainTabHome } from './components';
-import { Mixpanel } from 'mixpanel-react-native';
-import { tracking } from '@src/utils/tracking';
-import { StakeCardAll } from './components/stake-card-all';
-import { NewThemeModal } from '@src/modals/theme/new-theme';
+import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import { PageWithScrollViewInBottomTabView } from "../../components/page";
+import {
+  InteractionManager,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { useStore } from "../../stores";
+import { observer } from "mobx-react-lite";
+import { useTheme } from "@src/themes/theme-provider";
+import { AccountBoxAll } from "./components/account-box-new";
+import { InjectedProviderUrl } from "../web/config";
+import { MainTabHome } from "./components";
+import { Mixpanel } from "mixpanel-react-native";
+import { tracking } from "@src/utils/tracking";
+import { StakeCardAll } from "./components/stake-card-all";
+import { NewThemeModal } from "@src/modals/theme-modal/theme";
+import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
+// import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
-  const query = queriesStore.get(chainStore.chainInfos[0].chainId).cosmos.queryRPCStatus;
+  const query = queriesStore.get(chainStore.chainInfos[0].chainId).cosmos
+    .queryRPCStatus;
   return query.response == null && query.error == null;
 };
 const mixpanel = globalThis.mixpanel as Mixpanel;
-export const HomeScreen: FunctionComponent = observer(props => {
+export const HomeScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const { chainStore, queriesStore, priceStore, appInitStore, browserStore, allAccountStore } = useStore();
+  const {
+    chainStore,
+    queriesStore,
+    priceStore,
+    appInitStore,
+    browserStore,
+    allAccountStore,
+  } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
+  useEffect(() => {
+    for (const embedChainInfo of EmbedChainInfos) {
+      const hasChain = chainStore.hasChain(embedChainInfo.chainId);
+      if (!hasChain) continue;
+      const chainInfo = chainStore.getChain(embedChainInfo.chainId);
+      chainInfo.addCurrencies(...embedChainInfo.currencies);
+    }
+  }, []);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       fetch(InjectedProviderUrl)
-        .then(res => {
+        .then((res) => {
           return res.text();
         })
-        .then(res => {
+        .then((res) => {
           browserStore.update_inject(res);
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
     });
   }, []);
 
@@ -54,16 +76,26 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
     for (const chainInfo of chainStore.chainInfosInUI) {
       let account = allAccountStore.getAccount(chainInfo.chainId);
-      if (account.addressDisplay === '') {
+      if (account.addressDisplay === "") {
         continue;
       }
       const queries = queriesStore.get(chainInfo.chainId);
-      const queryBalance = queries.queryBalances.getQueryBech32Address(account.addressDisplay);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.addressDisplay);
+      const queryBalance = queries.queryBalances.getQueryBech32Address(
+        account.addressDisplay
+      );
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.addressDisplay
+      );
       queryBalance.fetch();
       queryRewards.fetch();
-      const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.addressDisplay);
-      const queryDelegation = queries.cosmos.queryDelegations.getQueryBech32Address(account.addressDisplay);
+      const queryUnbonding =
+        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+          account.addressDisplay
+        );
+      const queryDelegation =
+        queries.cosmos.queryDelegations.getQueryBech32Address(
+          account.addressDisplay
+        );
       queryUnbonding.fetch();
       queryDelegation.fetch();
     }
@@ -71,7 +103,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, _] = useState(false);
   return (
     <PageWithScrollViewInBottomTabView
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
@@ -91,13 +125,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
-      paddingBottom: 12,
-      backgroundColor: colors['neutral-surface-bg']
+      paddingBottom: 4,
+      backgroundColor: colors["neutral-surface-bg"],
     },
     containerEarnStyle: {
-      backgroundColor: colors['neutral-surface-bg2']
-    }
+      backgroundColor: colors["neutral-surface-bg2"],
+    },
   });

@@ -16,25 +16,24 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
   const onGoBack = () => {
     modalStore.close();
   };
-  const index = keyRingStore.multiKeyStoreInfo.findIndex(
-    (keyStore) => keyStore.selected
-  );
-  const keyStore = keyRingStore.multiKeyStoreInfo[index];
+
+  const keyStore = keyRingStore.selectedKeyInfo;
   const onVerifyPincode = async (passcode, isPrivateKey) => {
     modalStore.close();
     try {
-      if (index >= 0) {
-        const privateData = await keyRingStore.showKeyRing(
-          index,
-          passcode,
-          chainStore.current.chainId,
-          isPrivateKey
-        );
-        navigate(SCREENS.SettingBackupMnemonic, {
-          privateData,
-          privateDataType: isPrivateKey ? "private-key" : "mnemonic",
-        });
-      }
+      const privateData = await keyRingStore.showKeyRing(
+        keyStore.id,
+        passcode
+        // chainStore.current.chainId,
+        // isPrivateKey
+      );
+      navigate(SCREENS.SettingBackupMnemonic, {
+        privateData,
+        // privateDataType:"mnemonic"
+        privateDataType:
+          keyStore.type === "private-key" ? "private-key" : "mnemonic",
+      });
+
       modalStore.close();
     } catch (err) {
       showToast({
@@ -65,7 +64,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-      {keyStore?.type === "mnemonic" && (
+      {keyStore?.type !== "ledger" && (
         <BasicSettingItem
           icon="tdesignlink"
           paragraph={"Reveal secret phrase"}
@@ -74,18 +73,18 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           }}
         />
       )}
-      {keyStore?.type !== "ledger" &&
-        !appInitStore.getInitApp.isAllNetworks &&
-        chainStore.current.chainId !== ChainIdEnum.Oasis && (
-          <BasicSettingItem
-            icon="md_key"
-            paragraph={"Reveal Private Key"}
-            onPress={() => {
-              if (chainStore.current.chainId === ChainIdEnum.Oasis) return;
-              _onPressPincodekModal(true);
-            }}
-          />
-        )}
+      {/*{keyStore?.type !== "ledger" &&*/}
+      {/*  !appInitStore.getInitApp.isAllNetworks &&*/}
+      {/*  chainStore.current.chainId !== ChainIdEnum.Oasis && (*/}
+      {/*    <BasicSettingItem*/}
+      {/*      icon="md_key"*/}
+      {/*      paragraph={"Reveal Private Key"}*/}
+      {/*      onPress={() => {*/}
+      {/*        if (chainStore.current.chainId === ChainIdEnum.Oasis) return;*/}
+      {/*        _onPressPincodekModal(true);*/}
+      {/*      }}*/}
+      {/*    />*/}
+      {/*  )}*/}
     </React.Fragment>
   );
 });

@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
-import { IFeeConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { useStyle } from '../../../styles';
-import { Text, View } from 'react-native';
-import { FormattedMessage } from 'react-intl';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import React, { FunctionComponent } from "react";
+import { IFeeConfig } from "@owallet/hooks";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { useStyle } from "../../../styles";
+import { Text, View } from "react-native";
+import { FormattedMessage } from "react-intl";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 export const FeeSelector: FunctionComponent<{
   feeConfig: IFeeConfig;
@@ -13,7 +13,10 @@ export const FeeSelector: FunctionComponent<{
   const { priceStore } = useStore();
   const style = useStyle();
 
-  const feeCurrency = feeConfig.fees.length > 0 ? feeConfig.fees[0].currency : feeConfig.selectableFeeCurrencies[0];
+  const feeCurrency =
+    feeConfig.fees.length > 0
+      ? feeConfig.fees[0].currency
+      : feeConfig.selectableFeeCurrencies[0];
 
   if (!feeCurrency) {
     return null;
@@ -25,8 +28,8 @@ export const FeeSelector: FunctionComponent<{
         <TouchableWithoutFeedback
           onPress={() => {
             feeConfig.setFee({
-              type: 'low',
-              currency: feeCurrency
+              type: "low",
+              currency: feeCurrency,
             });
           }}
         >
@@ -35,7 +38,7 @@ export const FeeSelector: FunctionComponent<{
               borderTopLeftRadius: 8,
               borderBottomLeftRadius: 8,
               borderRightWidth: 1,
-              borderRightColor: 'black'
+              borderRightColor: "black",
             }}
           >
             <Text>
@@ -44,14 +47,17 @@ export const FeeSelector: FunctionComponent<{
 
             {feeCurrency.coinGeckoId ? (
               <Text>
-                {priceStore.calculatePrice(feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, 'low'))?.toString() ||
-                  '-'}
+                {priceStore
+                  .calculatePrice(
+                    feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, "low")
+                  )
+                  ?.toString() || "-"}
               </Text>
             ) : null}
 
             <Text>
               {feeConfig
-                .getFeeTypePrettyForFeeCurrency(feeCurrency, 'low')
+                .getFeeTypePrettyForFeeCurrency(feeCurrency, "low")
                 .maxDecimals(6)
                 .inequalitySymbol(true)
                 .trim(true)
@@ -66,8 +72,8 @@ export const FeeSelector: FunctionComponent<{
         <TouchableWithoutFeedback
           onPress={() => {
             feeConfig.setFee({
-              type: 'average',
-              currency: feeCurrency
+              type: "average",
+              currency: feeCurrency,
             });
           }}
         >
@@ -79,14 +85,19 @@ export const FeeSelector: FunctionComponent<{
             {feeCurrency.coinGeckoId ? (
               <Text>
                 {priceStore
-                  .calculatePrice(feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, 'average'))
-                  ?.toString() || '-'}
+                  .calculatePrice(
+                    feeConfig.getFeeTypePrettyForFeeCurrency(
+                      feeCurrency,
+                      "average"
+                    )
+                  )
+                  ?.toString() || "-"}
               </Text>
             ) : null}
 
             <Text>
               {feeConfig
-                .getFeeTypePrettyForFeeCurrency(feeCurrency, 'average')
+                .getFeeTypePrettyForFeeCurrency(feeCurrency, "average")
                 .maxDecimals(6)
                 .inequalitySymbol(true)
                 .trim(true)
@@ -101,8 +112,8 @@ export const FeeSelector: FunctionComponent<{
         <TouchableWithoutFeedback
           onPress={() => {
             feeConfig.setFee({
-              type: 'high',
-              currency: feeCurrency
+              type: "high",
+              currency: feeCurrency,
             });
           }}
         >
@@ -111,7 +122,7 @@ export const FeeSelector: FunctionComponent<{
               borderTopRightRadius: 8,
               borderBottomRightRadius: 8,
               borderLeftWidth: 1,
-              borderLeftColor: 'black'
+              borderLeftColor: "black",
             }}
           >
             <Text>
@@ -120,14 +131,20 @@ export const FeeSelector: FunctionComponent<{
 
             {feeCurrency.coinGeckoId ? (
               <Text>
-                {priceStore.calculatePrice(feeConfig.getFeeTypePrettyForFeeCurrency(feeCurrency, 'high'))?.toString() ||
-                  '-'}
+                {priceStore
+                  .calculatePrice(
+                    feeConfig.getFeeTypePrettyForFeeCurrency(
+                      feeCurrency,
+                      "high"
+                    )
+                  )
+                  ?.toString() || "-"}
               </Text>
             ) : null}
 
             <Text>
               {feeConfig
-                .getFeeTypePrettyForFeeCurrency(feeCurrency, 'high')
+                .getFeeTypePrettyForFeeCurrency(feeCurrency, "high")
                 .maxDecimals(6)
                 .inequalitySymbol(true)
                 .trim(true)

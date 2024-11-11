@@ -46,22 +46,22 @@ jobs:
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
+        run: yarn
 
       - name: Install mobile packages
-        working-directory: packages/mobile
+        working-directory: apps/mobile
         run: yarn --silent
 
       - name: Build Libs
         run: yarn build:libs
 
       - name: Build provider
-        working-directory: packages/mobile
+        working-directory: apps/mobile
         run: yarn build:provider
         env:
           CI: false
       - name: Deploy on AppCenter
-        working-directory: packages/mobile
+        working-directory: apps/mobile
         run: |
           yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
           yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"

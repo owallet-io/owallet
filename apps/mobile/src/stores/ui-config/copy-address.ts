@@ -1,8 +1,8 @@
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { ChainStore } from '../chain';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { computedFn } from 'mobx-utils';
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
+import { ChainStore } from "../chain";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { computedFn } from "mobx-utils";
 
 export class CopyAddressConfig {
   protected readonly kvStore: KVStore;
@@ -12,13 +12,15 @@ export class CopyAddressConfig {
   protected readonly vaultToConfigMap = new Map<string, string[]>();
 
   constructor(kvStore: KVStore, protected readonly chainStore: ChainStore) {
-    this.kvStore = new PrefixKVStore(kvStore, 'copy-address');
+    this.kvStore = new PrefixKVStore(kvStore, "copy-address");
 
     makeObservable(this);
   }
 
   async init(): Promise<void> {
-    const saved = await this.kvStore.get<Record<string, string[]>>('vault-to-config-map');
+    const saved = await this.kvStore.get<Record<string, string[]>>(
+      "vault-to-config-map"
+    );
     if (saved) {
       runInAction(() => {
         for (const [key, value] of Object.entries(saved)) {
@@ -30,7 +32,7 @@ export class CopyAddressConfig {
       const js = toJS(this.vaultToConfigMap);
       // @ts-ignore
       const obj = Object.fromEntries(js);
-      this.kvStore.set<Record<string, string[]>>('vault-to-config-map', obj);
+      this.kvStore.set<Record<string, string[]>>("vault-to-config-map", obj);
     });
 
     await this.chainStore.waitUntilInitialized();
@@ -69,7 +71,9 @@ export class CopyAddressConfig {
       }
 
       runInAction(() => {
-        const chainIdentifiers = this.vaultToConfigMap.get(this.chainStore.lastSyncedEnabledChainsVaultId);
+        const chainIdentifiers = this.vaultToConfigMap.get(
+          this.chainStore.lastSyncedEnabledChainsVaultId
+        );
         if (chainIdentifiers) {
           for (let i = 0; i < chainIdentifiers.length; i++) {
             const chainIdentifier = chainIdentifiers[i];
@@ -83,20 +87,24 @@ export class CopyAddressConfig {
     });
   }
 
-  isBookmarkedChain = computedFn((vaultId: string, chainId: string): boolean => {
-    const chainIdentifiers = this.vaultToConfigMap.get(vaultId);
-    if (!chainIdentifiers) {
-      return false;
+  isBookmarkedChain = computedFn(
+    (vaultId: string, chainId: string): boolean => {
+      const chainIdentifiers = this.vaultToConfigMap.get(vaultId);
+      if (!chainIdentifiers) {
+        return false;
+      }
+      return chainIdentifiers.includes(ChainIdHelper.parse(chainId).identifier);
     }
-    return chainIdentifiers.includes(ChainIdHelper.parse(chainId).identifier);
-  });
+  );
 
   //NOTE mobx가 strict-mode일때는 action내에서만 상태를 변경해야 되므로 일단 runInAction처리를 함
   bookmarkChain(vaultId: string, chainId: string): void {
     runInAction(() => {
       const chainIdentifiers = this.vaultToConfigMap.get(vaultId);
       if (!chainIdentifiers) {
-        this.vaultToConfigMap.set(vaultId, [ChainIdHelper.parse(chainId).identifier]);
+        this.vaultToConfigMap.set(vaultId, [
+          ChainIdHelper.parse(chainId).identifier,
+        ]);
         return;
       }
       if (!chainIdentifiers.includes(ChainIdHelper.parse(chainId).identifier)) {
@@ -111,7 +119,9 @@ export class CopyAddressConfig {
       if (!chainIdentifiers) {
         return;
       }
-      const index = chainIdentifiers.indexOf(ChainIdHelper.parse(chainId).identifier);
+      const index = chainIdentifiers.indexOf(
+        ChainIdHelper.parse(chainId).identifier
+      );
       if (index >= 0) {
         chainIdentifiers.splice(index, 1);
       }

@@ -27,10 +27,15 @@ import { ScrollViewRegisterContainer } from "../components/scroll-view-register-
 import { AppHRP, CosmosApp } from "@owallet/ledger-cosmos";
 import Transport from "@ledgerhq/hw-transport";
 import Eth from "@ledgerhq/hw-app-eth";
+import Btc from "@ledgerhq/hw-app-btc";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
 import { RootStackParamList } from "@src/router/root";
+import { PageWithBottom } from "@components/page/page-with-bottom";
+import { OWButton } from "@components/button";
+import { ScrollView } from "react-native-gesture-handler";
+import { metrics } from "@src/themes";
 
 export type Step = "unknown" | "connected" | "app";
 
@@ -52,7 +57,11 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
     password,
   } = route.params;
 
-  if (!Object.keys(AppHRP).includes(propApp) && propApp !== "Ethereum") {
+  if (
+    !Object.keys(AppHRP).includes(propApp) &&
+    propApp !== "Ethereum" &&
+    propApp !== "Bitcoin"
+  ) {
     throw new Error(`Unsupported app: ${propApp}`);
   }
 
@@ -154,6 +163,106 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
       setIsLoading(false);
 
       return;
+    } else if (propApp === "Bitcoin") {
+      let btcApp = new Btc(transport);
+      try {
+        await btcApp.getWalletPublicKey("84'/0'/'0/0/0");
+        await btcApp.getWalletPublicKey("44'/0'/'0/0/0");
+      } catch (e) {
+        console.log(e, "err2");
+        // Device is locked or user is in home sceen or other app.
+        if (
+          e?.message.includes("(0x6b0c)") ||
+          e?.message.includes("(0x6511)") ||
+          e?.message.includes("(0x6e00)")
+        ) {
+          setStep("connected");
+        } else {
+          console.log(e);
+          setStep("unknown");
+          await transport.close();
+
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      transport = await LedgerUtils.tryAppOpen(transport, propApp);
+      btcApp = new Btc(transport);
+
+      try {
+        const res = await btcApp.getWalletPublicKey(
+          `84'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+          {
+            format: "bech32",
+            verify: false,
+          }
+        );
+        const res44 = await btcApp.getWalletPublicKey(
+          `44'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+          {
+            format: "legacy",
+            verify: false,
+          }
+        );
+        console.log(res, "res");
+        console.log(res44, "res44");
+        const pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, "hex"));
+        const pubKey44 = new PubKeySecp256k1(
+          Buffer.from(res44.publicKey, "hex")
+        );
+
+        setStep("app");
+
+        if (appendModeInfo) {
+          await keyRingStore.appendLedgerKeyApp(
+            appendModeInfo.vaultId,
+            pubKey.toBytes(true),
+            `${propApp}84`
+          );
+          await keyRingStore.appendLedgerKeyApp(
+            appendModeInfo.vaultId,
+            pubKey44.toBytes(true),
+            `${propApp}44`
+          );
+          await chainStore.enableChainInfoInUI(
+            ...appendModeInfo.afterEnableChains
+          );
+          navigation.reset({
+            routes: [{ name: "Register.Welcome", params: { password } }],
+          });
+        } else {
+          navigation.reset({
+            routes: [
+              {
+                name: "Register.FinalizeKey",
+                params: {
+                  name,
+                  password,
+                  stepPrevious: stepPrevious + 1,
+                  stepTotal,
+                  ledger: {
+                    pubKey: pubKey.toBytes(),
+                    pubKey44: pubKey44.toBytes(),
+                    bip44Path,
+                    app: `${propApp}84`,
+                    app44: `${propApp}44`,
+                  },
+                },
+              },
+            ],
+          });
+        }
+      } catch (e) {
+        console.log(e, "err btc");
+        setStep("connected");
+      }
+
+      await transport.close();
+
+      setIsLoading(false);
+
+      return;
     }
 
     let app = new CosmosApp(propApp, transport);
@@ -240,66 +349,80 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
   );
 
   return (
-    <ScrollViewRegisterContainer
-      paragraph={`${intl.formatMessage({
-        id: "pages.register.components.header.header-step.title",
-      })} ${stepPrevious + 1}/${stepTotal}`}
-      bottomButton={{
-        text: intl.formatMessage({ id: "button.connect" }),
-        size: "large",
-        loading: isLoading,
-        onPress: connectLedger,
-      }}
-      paddingX={20}
+    <PageWithBottom
+      // paragraph={`${intl.formatMessage({
+      //   id: "pages.register.components.header.header-step.title",
+      // })} ${stepPrevious + 1}/${stepTotal}`}
+      bottomGroup={
+        <OWButton
+          label={intl.formatMessage({ id: "button.connect" })}
+          loading={isLoading}
+          onPress={connectLedger}
+        />
+      }
+      style={[
+        {
+          marginTop: 20,
+          width: metrics.screenWidth / 2.3,
+          borderRadius: 999,
+        },
+      ]}
+      // textStyle={styles.txtBtnSend}
+      // paddingX={20}
     >
-      <Box
-        backgroundColor={style.get("color-gray-600").color}
-        borderRadius={25}
-        paddingX={30}
-        marginTop={12}
-        paddingY={36}
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <StepView
-          step={1}
-          paragraph={intl.formatMessage({
-            id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
-          })}
-          icon={
-            <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
-              <LedgerIcon size={60} />
-            </Box>
-          }
-          focused={step === "unknown"}
-          completed={step !== "unknown"}
-        />
+        <Box
+          backgroundColor={style.get("color-gray-600").color}
+          borderRadius={25}
+          paddingX={30}
+          marginTop={12}
+          paddingY={36}
+        >
+          <StepView
+            step={1}
+            paragraph={intl.formatMessage({
+              id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
+            })}
+            icon={
+              <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
+                <LedgerIcon size={60} />
+              </Box>
+            }
+            focused={step === "unknown"}
+            completed={step !== "unknown"}
+          />
 
-        <Gutter size={20} />
+          <Gutter size={20} />
 
-        <StepView
-          step={2}
-          paragraph={intl.formatMessage(
-            { id: "pages.register.connect-ledger.open-app-step-paragraph" },
-            { app: propApp }
-          )}
-          icon={
-            <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
-              {(() => {
-                switch (propApp) {
-                  case "Terra":
-                    return <TerraIcon size={60} />;
-                  case "Ethereum":
-                    return <EthereumIcon size={60} />;
-                  default:
-                    return <CosmosIcon size={60} />;
-                }
-              })()}
-            </Box>
-          }
-          focused={step === "connected"}
-          completed={step === "app"}
-        />
-      </Box>
-    </ScrollViewRegisterContainer>
+          <StepView
+            step={2}
+            paragraph={intl.formatMessage(
+              { id: "pages.register.connect-ledger.open-app-step-paragraph" },
+              { app: propApp }
+            )}
+            icon={
+              <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
+                {(() => {
+                  switch (propApp) {
+                    case "Terra":
+                      return <TerraIcon size={60} />;
+                    case "Ethereum":
+                      return <EthereumIcon size={60} />;
+                    default:
+                      return <CosmosIcon size={60} />;
+                  }
+                })()}
+              </Box>
+            }
+            focused={step === "connected"}
+            completed={step === "app"}
+          />
+        </Box>
+      </ScrollView>
+    </PageWithBottom>
   );
 });
 

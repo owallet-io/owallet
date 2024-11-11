@@ -1,6 +1,6 @@
 import { AppCurrency } from "@owallet/types";
 import { ChainStore, IQueriesStore } from "@owallet/stores";
-import { DenomHelper, KVStore } from "@owallet/common";
+import { DenomHelper, EmbedChainInfos, KVStore } from "@owallet/common";
 import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
 import { EthereumQueries } from "./queries";
 
@@ -82,7 +82,20 @@ export class ERC20CurrencyRegistrar {
     const queries = this.queriesStore.get(chainId);
 
     const contractAddress = denomHelper.denom.replace("erc20:", "");
-
+    // const config = this.chainStore.getChain(chainId).forceFindCurrency(denomHelper.denom);
+    // console.log(config,"config");
+    // if(config.coinDecimals !== 0){
+    //   return {
+    //     value: {
+    //       coinMinimalDenom: config.coinMinimalDenom,
+    //       coinDenom: config.coinDenom,
+    //       coinDecimals: config.coinDecimals,
+    //       coinGeckoId: config.coinGeckoId,
+    //       coinImageUrl: config.coinImageUrl,
+    //     },
+    //     done: true,
+    //   };
+    // }
     const cached = this.cacheERC20Metadata.get(contractAddress);
     if (cached) {
       if (Date.now() - cached.timestamp < this.cacheDuration) {

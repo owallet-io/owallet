@@ -1,11 +1,11 @@
 export const PopupSize = {
   width: 360,
-  // OWallet's default popup height is 600px.
+  // Keplr's default popup height is 600px.
   // Remember that below height includes status bar of OS.
   // If actual height excluded status bar is lesser than 600px,
   // it is hard to manage scroll bar of popup.
   // So, we need to add additional value to make sure that the actual height is greater than 600px.
-  height: 960,
+  height: 580,
 };
 
 const lastWindowIds: Record<string, number | undefined> = {};
@@ -114,7 +114,7 @@ export function fitPopupWindow() {
     return;
   }
 
-  // window.resizeTo(PopupSize.width + gap.width, PopupSize.height + gap.height);
+  window.resizeTo(PopupSize.width + gap.width, PopupSize.height + gap.height);
 }
 
 /**

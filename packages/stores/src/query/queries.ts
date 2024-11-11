@@ -1,11 +1,16 @@
 //@ts-nocheck
-import { makeObservable, observable, runInAction } from 'mobx';
-import { DeepReadonly, UnionToIntersection } from 'utility-types';
-import { ObservableQueryBalances } from './balances';
-import { IObject, mergeStores, ChainedFunctionifyTuple, QuerySharedContext } from '../common';
-import { ChainGetter } from '../chain';
-import { KVStore, MultiGet } from '@owallet/common';
-import { ObservableSimpleQuery } from './simple';
+import { makeObservable, observable, runInAction } from "mobx";
+import { DeepReadonly, UnionToIntersection } from "utility-types";
+import { ObservableQueryBalances } from "./balances";
+import {
+  IObject,
+  mergeStores,
+  ChainedFunctionifyTuple,
+  QuerySharedContext,
+} from "../common";
+import { ChainGetter } from "../chain";
+import { KVStore, MultiGet } from "@owallet/common";
+import { ObservableSimpleQuery } from "./simple";
 
 export interface QueriesSetBase {
   readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
@@ -17,7 +22,11 @@ export const createQueriesSetBase = (
   chainGetter: ChainGetter
 ): QueriesSetBase => {
   return {
-    queryBalances: new ObservableQueryBalances(sharedContext, chainId, chainGetter)
+    queryBalances: new ObservableQueryBalances(
+      sharedContext,
+      chainId,
+      chainGetter
+    ),
   };
 };
 
@@ -30,7 +39,10 @@ export interface IQueriesStore<T extends IObject = {}> {
 
 export class QueriesStore<Injects extends Array<IObject>> {
   @observable.shallow
-  protected queriesMap: Map<string, QueriesSetBase & UnionToIntersection<Injects[number]>> = new Map();
+  protected queriesMap: Map<
+    string,
+    QueriesSetBase & UnionToIntersection<Injects[number]>
+  > = new Map();
 
   protected readonly queriesCreators: ChainedFunctionifyTuple<
     QueriesSetBase,
@@ -61,7 +73,7 @@ export class QueriesStore<Injects extends Array<IObject>> {
     >
   ) {
     this.sharedContext = new QuerySharedContext(kvStore, {
-      responseDebounceMs: this.options.responseDebounceMs ?? 0
+      responseDebounceMs: this.options.responseDebounceMs ?? 0,
     });
     this.queriesCreators = queriesCreators;
 
@@ -70,9 +82,15 @@ export class QueriesStore<Injects extends Array<IObject>> {
     makeObservable(this);
   }
 
-  get(chainId: string): DeepReadonly<QueriesSetBase & UnionToIntersection<Injects[number]>> {
+  get(
+    chainId: string
+  ): DeepReadonly<QueriesSetBase & UnionToIntersection<Injects[number]>> {
     if (!this.queriesMap.has(chainId)) {
-      const queriesSetBase = createQueriesSetBase(this.sharedContext, chainId, this.chainGetter);
+      const queriesSetBase = createQueriesSetBase(
+        this.sharedContext,
+        chainId,
+        this.chainGetter
+      );
       runInAction(() => {
         const merged = mergeStores(
           queriesSetBase,
@@ -85,6 +103,8 @@ export class QueriesStore<Injects extends Array<IObject>> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return this.queriesMap.get(chainId)! as DeepReadonly<QueriesSetBase & UnionToIntersection<Injects[number]>>;
+    return this.queriesMap.get(chainId)! as DeepReadonly<
+      QueriesSetBase & UnionToIntersection<Injects[number]>
+    >;
   }
 }

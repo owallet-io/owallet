@@ -5,6 +5,7 @@ import { Box } from "@components/box";
 import { useStyle } from "@src/styles";
 import { Columns } from "@components/column";
 import { Gutter } from "@components/gutter";
+import OWText from "@components/text/ow-text";
 
 export const MessageItem: FunctionComponent<{
   icon: React.ReactElement;
@@ -15,14 +16,14 @@ export const MessageItem: FunctionComponent<{
   return (
     <Box padding={16}>
       <Columns sum={1}>
-        <Box alignX="center" alignY="top">
-          {icon}
-        </Box>
+        {/*<Box alignX="center" alignY="top">*/}
+        {/*  {icon}*/}
+        {/*</Box>*/}
 
-        <Gutter size={8} />
+        {/*<Gutter size={8} />*/}
 
         <Box style={{ flexShrink: 1 }} alignY="center">
-          <Text style={style.flatten(["color-text-high", "h5"])}>{title}</Text>
+          <OWText style={style.flatten(["h5"])}>{title}</OWText>
           <Gutter size={2} />
           <Box>{content}</Box>
         </Box>

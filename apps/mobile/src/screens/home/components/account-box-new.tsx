@@ -24,6 +24,7 @@ import {
   ChainIdEnum,
   DenomDydx,
   removeDataInParentheses,
+  zeroDec,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -42,9 +43,16 @@ import images from "@src/assets/images";
 import PieChart from "react-native-pie-chart";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
-import { initPrice } from "../hooks/use-multiple-assets";
 import MoreModal from "./more-modal";
-
+export const initPrice = new PricePretty(
+  {
+    currency: "usd",
+    symbol: "$",
+    maxDecimals: 2,
+    locale: "en-US",
+  },
+  new Dec("0")
+);
 const widthAndHeight = 100;
 const colorList = [
   "#81ACEB",
@@ -96,94 +104,109 @@ export const AccountBoxAll: FunctionComponent<{
   const chainId = chainStore.current.chainId;
   const account = allAccountStore.getAccount(chainId);
 
-  const availableTotalPrice =
-    useMemo(() => {
-      let result: PricePretty | undefined;
-      for (const bal of hugeQueriesStore.allKnownBalances) {
-        if (bal.price) {
-          if (!result) {
-            result = bal.price;
-          } else {
-            result = result.add(bal.price);
-          }
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined = initPrice;
+    for (const bal of hugeQueriesStore.allKnownBalances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price || zeroDec);
         }
       }
-      return result;
-    }, [hugeQueriesStore.allKnownBalances]) || initPrice;
-  const stakedTotalPrice =
-    useMemo(() => {
-      let result: PricePretty | undefined;
-      for (const bal of hugeQueriesStore.delegations) {
-        if (bal.price) {
-          if (!result) {
-            result = bal.price;
-          } else {
-            result = result.add(bal.price);
-          }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, account?.addressDisplay]);
+  const stakedTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined = initPrice;
+    for (const bal of hugeQueriesStore.delegations) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price || zeroDec);
         }
       }
-      for (const bal of hugeQueriesStore.unbondings) {
-        if (bal.viewToken.price) {
-          if (!result) {
-            result = bal.viewToken.price;
-          } else {
-            result = result.add(bal.viewToken.price);
-          }
+    }
+    for (const bal of hugeQueriesStore.unbondings) {
+      if (bal.viewToken.price) {
+        if (!result) {
+          result = bal.viewToken.price;
+        } else {
+          result = result.add(bal.viewToken.price || zeroDec);
         }
       }
-      return result;
-    }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]) ||
-    initPrice;
-  const totalPriceBalance =
-    useMemo(() => {
-      return availableTotalPrice.add(stakedTotalPrice);
-    }, [availableTotalPrice, stakedTotalPrice]) || initPrice;
-  const availableTotalPriceByChain =
-    useMemo(() => {
-      let result: PricePretty | undefined;
-      for (const bal of hugeQueriesStore.getAllBalancesByChainId(chainId)) {
-        if (bal.price) {
-          if (!result) {
-            result = bal.price;
-          } else {
-            result = result.add(bal.price);
-          }
+    }
+    return result;
+  }, [
+    hugeQueriesStore.delegations,
+    hugeQueriesStore.unbondings,
+    account?.addressDisplay,
+  ]);
+  const totalPriceBalance = useMemo(() => {
+    if (!availableTotalPrice)
+      return new PricePretty(
+        priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
+        new Dec(0)
+      );
+    return availableTotalPrice.add(stakedTotalPrice || zeroDec);
+  }, [availableTotalPrice, stakedTotalPrice, account?.addressDisplay]);
+  const availableTotalPriceByChain = useMemo(() => {
+    let result: PricePretty | undefined = initPrice;
+    for (const bal of hugeQueriesStore.getAllBalancesByChainId(chainId)) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price || zeroDec);
         }
       }
-      return result;
-    }, [chainId]) || initPrice;
-  const stakedTotalPriceByChain =
-    useMemo(() => {
-      let result: PricePretty | undefined;
-      for (const bal of hugeQueriesStore.delegations.filter(
-        (delegation) => delegation.chainInfo.chainId === chainId
-      )) {
-        if (bal.price) {
-          if (!result) {
-            result = bal.price;
-          } else {
-            result = result.add(bal.price);
-          }
+    }
+    return result;
+  }, [chainId, account?.addressDisplay]);
+  const stakedTotalPriceByChain = useMemo(() => {
+    let result: PricePretty | undefined = initPrice;
+    for (const bal of hugeQueriesStore.delegations.filter(
+      (delegation) => delegation.chainInfo.chainId === chainId
+    )) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price || zeroDec);
         }
       }
-      for (const bal of hugeQueriesStore.unbondings.filter(
-        (unbonding) => unbonding.viewToken.chainInfo.chainId === chainId
-      )) {
-        if (bal.viewToken.price) {
-          if (!result) {
-            result = bal.viewToken.price;
-          } else {
-            result = result.add(bal.viewToken.price);
-          }
+    }
+    for (const bal of hugeQueriesStore.unbondings.filter(
+      (unbonding) => unbonding.viewToken.chainInfo.chainId === chainId
+    )) {
+      if (bal.viewToken.price) {
+        if (!result) {
+          result = bal.viewToken.price;
+        } else {
+          result = result.add(bal.viewToken.price || zeroDec);
         }
       }
-      return result;
-    }, [hugeQueriesStore.delegations, chainId, hugeQueriesStore.unbondings]) ||
-    initPrice;
-  const totalPriceByChain =
-    useMemo(() => {
-      return availableTotalPriceByChain.add(stakedTotalPriceByChain);
-    }, [availableTotalPriceByChain, stakedTotalPriceByChain]) || initPrice;
+    }
+    return result;
+  }, [
+    hugeQueriesStore.delegations,
+    chainId,
+    hugeQueriesStore.unbondings,
+    account?.addressDisplay,
+  ]);
+  const totalPriceByChain = useMemo(() => {
+    if (!availableTotalPriceByChain)
+      return new PricePretty(
+        priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
+        new Dec(0)
+      );
+    return availableTotalPriceByChain.add(stakedTotalPriceByChain || zeroDec);
+  }, [
+    availableTotalPriceByChain,
+    stakedTotalPriceByChain,
+    account?.addressDisplay,
+  ]);
 
   useEffect(() => {
     const tmpChain = [];
@@ -202,7 +225,7 @@ export const AccountBoxAll: FunctionComponent<{
             if (!result) {
               result = bal.price;
             } else {
-              result = result.add(bal.price);
+              result = result.add(bal.price || zeroDec);
             }
           }
         }
@@ -216,18 +239,15 @@ export const AccountBoxAll: FunctionComponent<{
           c.chainName.toLowerCase()
       );
 
-    const dataMainnet = sortChainsByPrice(chainsInfoWithBalance);
+    const dataMainnet = sortChainsByPrice(chainsInfoWithBalance || []);
 
     dataMainnet.map((data) => {
       const chainName = data.chainName;
-      const chainId = data.chainId;
       const chainBalance = Number(data.balance?.toDec().toString());
 
       if (chainBalance > minimumPrice) {
-        const colorKey = Object.values(ChainIdEnum).indexOf(
-          chainId as ChainIdEnum
-        );
-        const color = randomColors[colorKey];
+        const color =
+          randomColors[Math.floor(Math.random() * colorList.length)];
 
         tmpChain.push({
           color,
@@ -393,7 +413,7 @@ export const AccountBoxAll: FunctionComponent<{
   const renderAvailableperStaked = () => {
     if (!availableTotalPrice?.toDec() || !stakedTotalPrice?.toDec()) return;
     const totalNum =
-      stakedTotalPrice?.toDec()?.add(availableTotalPrice?.toDec()) ||
+      stakedTotalPrice?.toDec()?.add(availableTotalPrice?.toDec() || zeroDec) ||
       new Dec(0);
     if (!totalNum || totalNum.lte(new Dec(0))) return;
     const percentAvailable = availableTotalPrice
@@ -747,23 +767,6 @@ export const AccountBoxAll: FunctionComponent<{
                   navigate(SCREENS.BuyFiat);
                   return;
                 }
-                // if (chainStore.current.chainId === ChainIdEnum.TRON) {
-                //   navigate(SCREENS.SendTron, {
-                //     currency:
-                //       chainStore.current.stakeCurrency.coinMinimalDenom,
-                //   });
-                // } else if (chainStore.current.chainId === ChainIdEnum.Oasis) {
-                //   navigate(SCREENS.SendOasis, {
-                //     currency:
-                //       chainStore.current.stakeCurrency.coinMinimalDenom,
-                //   });
-                // } else if (chainStore.current.networkType === "bitcoin") {
-                //   navigate(SCREENS.SendBtc);
-                // } else if (chainStore.current.networkType === "evm") {
-                //   navigate(SCREENS.SendEvm);
-                // } else {
-                //   navigate(SCREENS.NewSend);
-                // }
                 navigate(SCREENS.Send, {
                   coinMinimalDenom:
                     chainStore.current.feeCurrencies?.[0].coinMinimalDenom,

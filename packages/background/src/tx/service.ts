@@ -4,6 +4,8 @@ import { Notification } from "./types";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { Buffer } from "buffer/";
 import { retry } from "@owallet/common";
+import { TXSLcdRest } from "@owallet/types";
+import { AuthInfo } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 
 interface CosmosSdkError {
   codespace: string;
@@ -90,7 +92,49 @@ export class BackgroundTxService {
       }
 
       const txHash = Buffer.from(txResponse.txhash, "hex");
+      if (chainInfo?.chainId?.includes("Oraichain") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch<TXSLcdRest>(
+                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
+                );
+                if (data && status === 200) {
+                  const tx = { ...data?.tx_response } as any;
 
+                  if (options.onFulfill) {
+                    if (!tx.hash) {
+                      tx.hash = txHash;
+                    }
+                    options.onFulfill(tx);
+                  }
+
+                  if (!options.silent) {
+                    BackgroundTxService.processTxResultNotification(
+                      this.notification,
+                      tx
+                    );
+                  }
+
+                  resolve();
+                }
+              } catch (error) {
+                console.log("error", error);
+                reject();
+                throw Error(error);
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 1000,
+          }
+        );
+        return;
+      }
       retry(
         () => {
           return new Promise<void>((resolve, reject) => {

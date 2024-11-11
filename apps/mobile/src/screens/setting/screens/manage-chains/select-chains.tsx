@@ -83,7 +83,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         } catch (e) {
           showToast({
             type: "danger",
-            message: "This chain does not support enabling.",
+            message: "Rejected",
           });
           console.log(e, "err add chain");
         }
@@ -191,8 +191,10 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         <OWFlatList
           loading={isLoading}
           style={styles.flatList}
-          data={chains.filter((chain, index) =>
-            chain.chainName?.toLowerCase().includes(keyword?.toLowerCase())
+          data={chains.filter(
+            (chain, index) =>
+              chain.chainName?.toLowerCase().includes(keyword?.toLowerCase()) ||
+              chain.chainId?.toLowerCase().includes(keyword?.toLowerCase())
           )}
           renderItem={renderChain}
           keyExtractor={_keyExtract}

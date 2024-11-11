@@ -1,6 +1,6 @@
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { autorun, makeObservable, observable, runInAction } from 'mobx';
-import { ChainStore } from '../chain';
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import { autorun, makeObservable, observable, runInAction } from "mobx";
+import { ChainStore } from "../chain";
 
 export class AutoLockConfig {
   protected readonly kvStore: KVStore;
@@ -9,18 +9,18 @@ export class AutoLockConfig {
   protected _isEnableAutoLock = false;
 
   constructor(kvStore: KVStore, protected readonly chainStore: ChainStore) {
-    this.kvStore = new PrefixKVStore(kvStore, 'auto-lock');
+    this.kvStore = new PrefixKVStore(kvStore, "auto-lock");
 
     makeObservable(this);
   }
 
   async init(): Promise<void> {
-    const saved = await this.kvStore.get<boolean>('auto-lock');
+    const saved = await this.kvStore.get<boolean>("auto-lock");
     runInAction(() => {
       this._isEnableAutoLock = saved || false;
     });
     autorun(() => {
-      this.kvStore.set('auto-lock', this._isEnableAutoLock);
+      this.kvStore.set("auto-lock", this._isEnableAutoLock);
     });
   }
 

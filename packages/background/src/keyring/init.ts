@@ -1,5 +1,5 @@
-import { Router } from '@owallet/router';
-import { KeyRingService } from './service';
+import { Router } from "@owallet/router";
+import { KeyRingService } from "./service";
 import {
   GetIsLockedMsg,
   GetKeyRingStatusMsg,
@@ -25,10 +25,10 @@ import {
   ShowSensitiveLegacyKeyRingDataMsg,
   ExportKeyRingVaultsMsg,
   SearchKeyRingsMsg,
-  SimulateSignTronMsg
-} from './messages';
-import { ROUTE } from './constants';
-import { getHandler } from './handler';
+  SimulateSignTronMsg,
+} from "./messages";
+import { ROUTE } from "./constants";
+import { getHandler } from "./handler";
 
 export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(GetIsLockedMsg);

@@ -151,7 +151,7 @@ const modeColors = {
   ],
   // item
   item: ["#2B2D3B", "#fff"],
-  icon: ["#E2DEEB", "#5F5E77"],
+  icon: ["#E2DEEB", "#E2DEEB"],
   "icon-primary-default-gray": ["#717177", colorsCode["primary-default"]],
   // text
   label: ["#fff", "#3A3A3C"],
@@ -247,7 +247,7 @@ const modeColors = {
   "neutral-icon-disable": ["#494949", "#C6C8CE"],
   // II.Primary
   "primary-surface-disable": ["#5C00A3", "#EBD1FF"],
-  "primary-surface-subtle": ["#3D006B", "#F4E5FF"],
+  "primary-surface-subtle": ["#3D006B", "#3A344B"],
   "primary-surface-active": ["#5C00A3", "#C170FF"],
   "primary-surface-default": ["#9D81EB", "#5C00A3"],
   "primary-surface-pressed": ["#A22DFF", "#7C00DB"],
@@ -411,7 +411,7 @@ const osmosisColors = {
   "neutral-text-body2": ["#615D85", "#494949"],
   "neutral-text-body3": ["#615D85", "#909298"],
   "neutral-text-action-on-dark-bg": ["#F3F2F4", "#FBFBFB"],
-  "neutral-text-action-on-light-bg": ["#080522", "#242325"],
+  "neutral-text-action-on-light-bg": ["#F3F2F4", "#242325"],
   "neutral-text-disable": ["#615D85", "#C6C8CE"],
   "neutral-icon-on-dark": ["#080522", "#FBFBFB"],
   "neutral-icon-on-light": ["#FBFBFB", "#242325"],
@@ -581,8 +581,8 @@ const injectiveColors = {
   "neutral-text-body": ["#727583", "#6A6B71"],
   "neutral-text-body2": ["#4E5364", "#494949"],
   "neutral-text-body3": ["#4E5364", "#909298"],
-  "neutral-text-action-on-dark-bg": ["#FBFBFB", "#FBFBFB"],
-  "neutral-text-action-on-light-bg": ["#14151A", "#242325"],
+  "neutral-text-action-on-dark-bg": ["#4E5364", "#FBFBFB"],
+  "neutral-text-action-on-light-bg": ["#FBFBFB", "#242325"],
   "neutral-text-disable": ["#4E5364", "#C6C8CE"],
   "neutral-icon-on-dark": ["#F2F2F4", "#FBFBFB"],
   "neutral-icon-on-light": ["#F2F2F4", "#242325"],

@@ -26,6 +26,8 @@ import Svg, { Path, Rect } from "react-native-svg";
 import { RectButton } from "react-native-gesture-handler";
 import { FormattedMessage } from "react-intl";
 import { registerModal } from "@src/modals/base";
+import OWText from "@components/text/ow-text";
+import { OWButton } from "@components/button";
 
 enum BLEPermissionGrantStatus {
   NotInit = "notInit",
@@ -229,9 +231,9 @@ export const LedgerBLETransportModal = registerModal<{
       <XAxis alignY="center">
         <Gutter size={8} />
 
-        <Text style={style.flatten(["color-white", "text-left", "h4"])}>
+        <OWText style={style.flatten(["text-left", "h4"])}>
           Finding Ledger
-        </Text>
+        </OWText>
 
         <Gutter size={6} />
 
@@ -251,12 +253,12 @@ export const LedgerBLETransportModal = registerModal<{
           if (devices.length === 0) {
             return (
               <Box paddingX={8} paddingBottom={32}>
-                <Text style={style.flatten(["color-text-low", "body2"])}>
+                <OWText style={style.flatten(["body2"])}>
                   <FormattedMessage id="components.ledger-modal.paragraph-1" />
-                </Text>
-                <Text style={style.flatten(["color-text-low", "body2"])}>
+                </OWText>
+                <OWText style={style.flatten(["body2"])}>
                   <FormattedMessage id="components.ledger-modal.paragraph-2" />
-                </Text>
+                </OWText>
               </Box>
             );
           }
@@ -299,20 +301,14 @@ export const LedgerBLETransportModal = registerModal<{
                 />
               </Svg>
               <Gutter size={16} />
-              <Text
-                style={style.flatten([
-                  "body2",
-                  "color-text-high",
-                  "text-center",
-                ])}
-              >
+              <OWText style={style.flatten(["body2", "text-center"])}>
                 <FormattedMessage id="components.ledger-modal.permission-error" />
-              </Text>
+              </OWText>
               <Gutter size={16} />
-              <Button
-                containerStyle={style.flatten(["margin-top-16"])}
+              <OWButton
+                style={style.flatten(["margin-top-16"])}
                 textStyle={style.flatten(["margin-x-8", "normal-case"])}
-                text="Open app setting"
+                label="Open app setting"
                 onPress={async () => {
                   await Linking.openSettings();
                 }}
@@ -350,10 +346,10 @@ const LedgerNanoBLESelector: FunctionComponent<{
   };
 
   return (
-    <RectButton
-      rippleColor={style.get("color-rect-button-default-ripple").color}
-      underlayColor={style.get("color-rect-button-default-underlay").color}
-      activeOpacity={0.2}
+    <OWButton
+      // rippleColor={style.get("color-rect-button-default-ripple").color}
+      // underlayColor={style.get("color-rect-button-default-underlay").color}
+      // activeOpacity={0.2}
       style={{
         borderRadius: 8,
       }}
@@ -372,33 +368,31 @@ const LedgerNanoBLESelector: FunctionComponent<{
           </Svg>
           <Gutter size={12} />
           <YAxis>
-            <Text style={style.flatten(["subtitle2", "color-gray-10"])}>
-              {deviceName}
-            </Text>
+            <OWText style={style.flatten(["subtitle2"])}>{deviceName}</OWText>
 
             {error ? (
               <React.Fragment>
                 <Gutter size={6} />
-                <Text style={style.flatten(["subtitle3", "color-gray-300"])}>
+                <OWText style={style.flatten(["subtitle3"])}>
                   <FormattedMessage
                     id="components.ledger-modal.connection-error"
                     values={{ error: error.message || error.toString() }}
                   />
-                </Text>
+                </OWText>
               </React.Fragment>
             ) : null}
 
             {isConnecting ? (
               <React.Fragment>
                 <Gutter size={6} />
-                <Text style={style.flatten(["subtitle3", "color-gray-300"])}>
+                <OWText style={style.flatten(["subtitle3"])}>
                   <FormattedMessage id="components.ledger-modal.connecting" />
-                </Text>
+                </OWText>
               </React.Fragment>
             ) : null}
           </YAxis>
         </XAxis>
       </Box>
-    </RectButton>
+    </OWButton>
   );
 };

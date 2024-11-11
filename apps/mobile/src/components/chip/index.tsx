@@ -2,6 +2,7 @@ import React, { FunctionComponent } from "react";
 import { useStyle } from "../../styles";
 import { View } from "react-native";
 import { Text } from "@src/components/text";
+import OWText from "@components/text/ow-text";
 
 export const Chip: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";
@@ -48,15 +49,7 @@ export const Chip: FunctionComponent<{
         ]
       )}
     >
-      <Text
-        style={style.flatten([
-          "text-overline",
-          "text-center",
-          textColorDefinition as any,
-        ])}
-      >
-        {text}
-      </Text>
+      <OWText>{text}</OWText>
     </View>
   );
 };

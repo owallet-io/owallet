@@ -4,13 +4,17 @@ import style from "../style.module.scss";
 import { Button } from "../../../components/common/button";
 import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
+import { isRunningInSidePanel } from "src/utils/side-panel";
 
 export const DataModal: FunctionComponent<{
   onClose: () => void;
   renderData: () => ReactElement;
 }> = observer(({ onClose, renderData }) => {
   return (
-    <div className={style.feeModal} style={{ height: "100vh" }}>
+    <div
+      className={style.feeModal}
+      style={{ height: isRunningInSidePanel() ? "100vh" : 580 }}
+    >
       <div
         style={{
           display: "flex",

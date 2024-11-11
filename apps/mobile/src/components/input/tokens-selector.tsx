@@ -19,6 +19,7 @@ import { ObservableQueryBalanceInner } from "@owallet/stores";
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
 import {
+  capitalizedText,
   extractDataInParentheses,
   removeDataInParentheses,
 } from "@src/utils/helper";
@@ -34,6 +35,9 @@ export const TokenView: FunctionComponent<{
   const { colors } = useTheme();
 
   const name = balance.token?.currency?.coinDenom;
+  const denomHelper = new DenomHelper(
+    balance.token?.currency?.coinMinimalDenom
+  );
   const getName = () => {
     return removeDataInParentheses(name);
   };
@@ -47,10 +51,14 @@ export const TokenView: FunctionComponent<{
   if (name.includes("factory")) {
     contractAddress = "Factory";
   }
+  const isBtc = balance?.chainInfo.features?.includes("btc");
+  if (denomHelper.type && isBtc) {
+    contractAddress = capitalizedText(denomHelper.type);
+  }
+
   if (extractDataInParentheses(name)) {
     contractAddress = extractDataInParentheses(name);
   }
-  // const tokenPrice = priceStore.calculatePrice(amount);
   return (
     <View
       style={{

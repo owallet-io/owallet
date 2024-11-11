@@ -1,7 +1,14 @@
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { action, autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
-import Joi from 'joi';
-import { simpleFetch } from '@owallet/simple-fetch';
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
+import Joi from "joi";
+import { simpleFetch } from "@owallet/simple-fetch";
 
 interface VersionHistory {
   version: string;
@@ -29,17 +36,17 @@ const Schema = Joi.object<{
               title: Joi.string().required(),
               image: Joi.object({
                 default: Joi.string().required(),
-                light: Joi.string().required()
+                light: Joi.string().required(),
               }).optional(),
               aspectRatio: Joi.string().optional(),
-              paragraph: Joi.string().required()
+              paragraph: Joi.string().required(),
             })
           )
           .min(1)
-          .required()
+          .required(),
       })
     )
-    .required()
+    .required(),
 });
 
 export class ChangelogConfig {
@@ -56,14 +63,16 @@ export class ChangelogConfig {
     | undefined = undefined;
 
   constructor(kvStore: KVStore) {
-    this.kvStore = new PrefixKVStore(kvStore, 'change-log-config');
+    this.kvStore = new PrefixKVStore(kvStore, "change-log-config");
 
     makeObservable(this);
   }
 
   async init(lastVersion: string, currentVersion: string): Promise<void> {
     {
-      const saved = await this.kvStore.get<ChangelogConfig['_lastInfo']>('lastInfo');
+      const saved = await this.kvStore.get<ChangelogConfig["_lastInfo"]>(
+        "lastInfo"
+      );
       if (saved) {
         runInAction(() => {
           this._lastInfo = saved;
@@ -77,16 +86,25 @@ export class ChangelogConfig {
     }
 
     autorun(() => {
-      this.kvStore.set<ChangelogConfig['_lastInfo']>('lastInfo', toJS(this._lastInfo));
+      this.kvStore.set<ChangelogConfig["_lastInfo"]>(
+        "lastInfo",
+        toJS(this._lastInfo)
+      );
     });
   }
 
   // Todo: Extension과 Mobile의 Version 정보가 달라서 수정 필요
-  protected async fetchVersion(lastVersion: string, currentVersion: string): Promise<void> {
+  protected async fetchVersion(
+    lastVersion: string,
+    currentVersion: string
+  ): Promise<void> {
     try {
       const res = await simpleFetch<{
         versions: VersionHistory[];
-      }>(process.env['KEPLR_EXT_CONFIG_SERVER'] || '', `/changelog-mobile/${lastVersion}/${currentVersion}`);
+      }>(
+        process.env["KEPLR_EXT_CONFIG_SERVER"] || "",
+        `/changelog-mobile/${lastVersion}/${currentVersion}`
+      );
 
       const validated = await Schema.validateAsync(res.data);
       runInAction(() => {
@@ -94,7 +112,7 @@ export class ChangelogConfig {
           lastVersion,
           currentVersion,
           cleared: false,
-          histories: validated.versions
+          histories: validated.versions,
         };
       });
     } catch (e) {
@@ -108,7 +126,7 @@ export class ChangelogConfig {
     if (this._lastInfo) {
       this._lastInfo = {
         ...this._lastInfo,
-        cleared: true
+        cleared: true,
       };
     }
   }

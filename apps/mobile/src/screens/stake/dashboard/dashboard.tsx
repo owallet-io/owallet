@@ -67,7 +67,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (appInitStore.getInitApp.isAllNetworks) {
+    if (!route.params?.chainId && appInitStore.getInitApp.isAllNetworks) {
       navigation.setOptions({
         headerLeft: null,
       });
@@ -75,7 +75,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
     }
     navigation.setOptions({
       headerLeft: () => {
-        if (navigation.canGoBack()) {
+        if (navigation.canGoBack() && route.params?.chainId) {
           return (
             <OWButtonIcon
               colorIcon={colors["neutral-icon-on-light"]}
@@ -105,7 +105,8 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
       showsVerticalScrollIndicator={false}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      {chainInfo.features.includes("not-support-staking") ? (
+      {chainInfo.features.includes("not-support-staking") ||
+      chainInfo.chainId?.includes("eip155") ? (
         <View
           style={{
             position: "relative",

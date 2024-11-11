@@ -1,8 +1,11 @@
-import { QueriesSetBase, ChainGetter, QuerySharedContext } from '@owallet/stores';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQueryAccountTron } from './account';
-import { ObservableQueryTrxAccountBalanceRegistry } from './balance';
-import { ObservableQueryChainParameterTron } from './chain-parameters';
+import {
+  QueriesSetBase,
+  ChainGetter,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryAccountTron } from "./account";
+import { ObservableQueryChainParameterTron } from "./chain-parameters";
 export interface TrxQueries {
   tron: TrxQueriesImpl;
 }
@@ -21,10 +24,15 @@ export const TrxQueries = {
       chainGetter: ChainGetter
     ) => {
       return {
-        tron: new TrxQueriesImpl(queriesSetBase, sharedContext, chainId, chainGetter)
+        tron: new TrxQueriesImpl(
+          queriesSetBase,
+          sharedContext,
+          chainId,
+          chainGetter
+        ),
       };
     };
-  }
+  },
 };
 
 export class TrxQueriesImpl {
@@ -37,7 +45,15 @@ export class TrxQueriesImpl {
     protected chainGetter: ChainGetter
   ) {
     // base.queryBalances.addBalanceRegistry(new ObservableQueryTrxAccountBalanceRegistry(sharedContext));
-    this.queryAccount = new ObservableQueryAccountTron(sharedContext, chainId, chainGetter);
-    this.queryChainParameter = new ObservableQueryChainParameterTron(sharedContext, chainId, chainGetter);
+    this.queryAccount = new ObservableQueryAccountTron(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
+    this.queryChainParameter = new ObservableQueryChainParameterTron(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
   }
 }

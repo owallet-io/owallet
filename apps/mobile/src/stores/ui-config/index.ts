@@ -1,27 +1,35 @@
 /**
  * Store the config related to UI.
  */
-import { action, autorun, computed, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { KVStore } from '@owallet/common';
-import { CoinGeckoPriceStore } from '@owallet/stores';
-import { KeyRingStore } from '@owallet/stores-core';
-import { FiatCurrency } from '@owallet/types';
-import { CopyAddressConfig } from './copy-address';
-import { ChainStore } from '../chain';
-import { AddressBookConfig } from './address-book';
-import { MessageRequester } from '@owallet/router';
-import { AutoLockConfig } from './auto-lock';
-import { IBCSwapConfig } from './ibc-swap';
-import { SelectWalletConfig } from './select-wallet';
-import { ChangelogConfig } from './changelog';
+import {
+  action,
+  autorun,
+  computed,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
+import { KVStore } from "@owallet/common";
+import { CoinGeckoPriceStore } from "@owallet/stores";
+import { KeyRingStore } from "@owallet/stores-core";
+import { FiatCurrency } from "@owallet/types";
+import { CopyAddressConfig } from "./copy-address";
+import { ChainStore } from "../chain";
+import { AddressBookConfig } from "./address-book";
+import { MessageRequester } from "@owallet/router";
+import { AutoLockConfig } from "./auto-lock";
+import { IBCSwapConfig } from "./ibc-swap";
+import { SelectWalletConfig } from "./select-wallet";
+import { ChangelogConfig } from "./changelog";
 // import {APP_VERSION} from '../../../constants';
-import { NewChainSuggestionConfig } from './new-chain';
+import { NewChainSuggestionConfig } from "./new-chain";
 
 export interface UIConfigOptions {
   isDeveloperMode: boolean;
   hideLowBalance: boolean;
   rememberLastFeeOption: boolean;
-  lastFeeOption: 'low' | 'average' | 'high' | false;
+  lastFeeOption: "low" | "average" | "high" | false;
   show24HChangesInMagePage: boolean;
 
   useWebHIDLedger: boolean;
@@ -54,18 +62,18 @@ export class UIConfigStore {
     lastFeeOption: false,
     show24HChangesInMagePage: true,
 
-    useWebHIDLedger: false
+    useWebHIDLedger: false,
   };
 
-  protected _platform: 'mobile' = 'mobile';
+  protected _platform: "mobile" = "mobile";
 
-  protected _installedVersion: string = '';
-  protected _currentVersion: string = '';
+  protected _installedVersion: string = "";
+  protected _currentVersion: string = "";
 
   @observable
   protected _languageOptions: LanguageOption = {
-    language: 'en',
-    isAutomatic: true
+    language: "en",
+    isAutomatic: true,
   };
 
   // Struct is required for compatibility with recipient config hook
@@ -78,7 +86,7 @@ export class UIConfigStore {
     | undefined = undefined;
 
   @observable
-  protected _fiatCurrency: string = 'usd';
+  protected _fiatCurrency: string = "usd";
 
   constructor(
     protected readonly kvStores: {
@@ -95,7 +103,10 @@ export class UIConfigStore {
     }
   ) {
     this.kvStore = kvStores.kvStore;
-    this.copyAddressConfig = new CopyAddressConfig(kvStores.kvStore, chainStore);
+    this.copyAddressConfig = new CopyAddressConfig(
+      kvStores.kvStore,
+      chainStore
+    );
     this.autoLockConfig = new AutoLockConfig(kvStores.kvStore, chainStore);
     this.addressBookConfig = new AddressBookConfig(
       kvStores.addressBookKVStore,
@@ -106,7 +117,11 @@ export class UIConfigStore {
     this.ibcSwapConfig = new IBCSwapConfig(kvStores.kvStore, chainStore);
     this.selectWalletConfig = new SelectWalletConfig(kvStores.kvStore);
     this.changelogConfig = new ChangelogConfig(kvStores.kvStore);
-    this.newChainSuggestionConfig = new NewChainSuggestionConfig(kvStores.kvStore, chainStore, this.changelogConfig);
+    this.newChainSuggestionConfig = new NewChainSuggestionConfig(
+      kvStores.kvStore,
+      chainStore,
+      this.changelogConfig
+    );
 
     this._icnsInfo = _icnsInfo;
 
@@ -120,53 +135,59 @@ export class UIConfigStore {
   }
 
   protected async init() {
-    let lastVersion = await this.kvStore.get<string>('lastVersion');
+    let lastVersion = await this.kvStore.get<string>("lastVersion");
     // 여기서 number 0가 나올 수 있는건 일종의 실수이다.
     // 이전에 version 처리가 명확하지 않았던 때에 0로 일단 넣어놨었다...
     // 근데 0은 정상 버전일리가 없기 때문에 일단 대충 "2.0.0"으로 취급한다.
     // @ts-ignore
     if (lastVersion === 0) {
-      lastVersion = '2.0.0';
+      lastVersion = "2.0.0";
     }
     {
-      this._currentVersion = '2.0.0';
+      this._currentVersion = "2.0.0";
 
-      const installedVersion = await this.kvStore.get<string>('installedVersion');
+      const installedVersion = await this.kvStore.get<string>(
+        "installedVersion"
+      );
       if (!installedVersion) {
         if (lastVersion) {
           // installedVersion은 처음부터 존재했던게 아니라 중간에 추가되었기 때문에 정확하게 알 수 없다.
           // 유저가 실제로 install 했던 버전이거나 installedVersion이 추가되기 직전에 유저가 마지막으로 사용했던 버전을 나타낸다.
-          await this.kvStore.set('installedVersion', lastVersion);
+          await this.kvStore.set("installedVersion", lastVersion);
           this._installedVersion = lastVersion;
         } else {
-          await this.kvStore.set('installedVersion', this._currentVersion);
+          await this.kvStore.set("installedVersion", this._currentVersion);
           this._installedVersion = this._currentVersion;
         }
       } else {
         this._installedVersion = installedVersion;
       }
 
-      await this.kvStore.set('lastVersion', this._currentVersion);
+      await this.kvStore.set("lastVersion", this._currentVersion);
     }
 
     {
-      const saved = await this.kvStore.get<string>('fiatCurrency');
-      this.selectFiatCurrency(saved || 'usd');
+      const saved = await this.kvStore.get<string>("fiatCurrency");
+      this.selectFiatCurrency(saved || "usd");
       autorun(() => {
-        this.kvStore.set('fiatCurrency', this._fiatCurrency);
+        this.kvStore.set("fiatCurrency", this._fiatCurrency);
       });
     }
 
     {
-      const saved = await this.kvStore.get<LanguageOption>('app_language_options');
-      this.selectLanguageOptions(saved?.language ? saved : { language: 'en', isAutomatic: true });
+      const saved = await this.kvStore.get<LanguageOption>(
+        "app_language_options"
+      );
+      this.selectLanguageOptions(
+        saved?.language ? saved : { language: "en", isAutomatic: true }
+      );
       autorun(() => {
-        this.kvStore.set('app_language_options', this._languageOptions);
+        this.kvStore.set("app_language_options", this._languageOptions);
       });
     }
 
     {
-      const saved = await this.kvStore.get<Partial<UIConfigOptions>>('options');
+      const saved = await this.kvStore.get<Partial<UIConfigOptions>>("options");
       if (saved) {
         runInAction(() => {
           for (const [key, value] of Object.entries(saved)) {
@@ -178,7 +199,7 @@ export class UIConfigStore {
       }
 
       autorun(() => {
-        this.kvStore.set('options', toJS(this._options));
+        this.kvStore.set("options", toJS(this._options));
       });
     }
 
@@ -188,8 +209,14 @@ export class UIConfigStore {
       this.autoLockConfig.init(),
       this.ibcSwapConfig.init(),
       this.selectWalletConfig.init(),
-      this.changelogConfig.init(lastVersion || this._currentVersion, this._currentVersion),
-      this.newChainSuggestionConfig.init(this._installedVersion, this._currentVersion)
+      this.changelogConfig.init(
+        lastVersion || this._currentVersion,
+        this._currentVersion
+      ),
+      this.newChainSuggestionConfig.init(
+        this._installedVersion,
+        this._currentVersion
+      ),
     ]);
 
     runInAction(() => {
@@ -201,7 +228,7 @@ export class UIConfigStore {
     return this._options;
   }
 
-  get platform(): 'mobile' {
+  get platform(): "mobile" {
     return this._platform;
   }
 
@@ -233,17 +260,18 @@ export class UIConfigStore {
   }
 
   @action
-  setLastFeeOption(value: 'low' | 'average' | 'high' | false) {
+  setLastFeeOption(value: "low" | "average" | "high" | false) {
     this.options.lastFeeOption = value;
   }
 
-  get lastFeeOption(): 'low' | 'average' | 'high' | false {
+  get lastFeeOption(): "low" | "average" | "high" | false {
     return this.options.lastFeeOption;
   }
 
   @action
   toggleShow24HChangesInMagePage() {
-    this.options.show24HChangesInMagePage = !this.options.show24HChangesInMagePage;
+    this.options.show24HChangesInMagePage =
+      !this.options.show24HChangesInMagePage;
   }
 
   get show24HChangesInMagePage(): boolean {
@@ -255,16 +283,16 @@ export class UIConfigStore {
     let fiatCurrency = this._fiatCurrency;
     if (!fiatCurrency) {
       // TODO: How to handle "automatic"?
-      fiatCurrency = 'usd';
+      fiatCurrency = "usd";
     }
 
     return {
       ...(this.priceStore.supportedVsCurrencies[fiatCurrency] ?? {
-        currency: 'usd',
-        symbol: '$',
+        currency: "usd",
+        symbol: "$",
         maxDecimals: 2,
-        locale: 'en-US'
-      })
+        locale: "en-US",
+      }),
     };
   }
 

@@ -70,15 +70,9 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     chainInfo: ChainInfo
   ): Promise<oasis.types.SignatureSigned> {
     const parsedData = JSON.parse(Buffer.from(data).toString());
-    console.log(parsedData, "parsedData");
     const { amount, to } = parsedData;
     const privKey = await this.getPrivKey(vault);
     const signer = signerFromPrivateKey(privKey);
-    console.log(amount, "amount");
-    console.log(
-      parseRoseStringToBigNumber(amount).toString(),
-      "parseRoseStringToBigNumber(amount).toString()"
-    );
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
     console.log(bigIntAmount, to, "bigIntAmount");
     if (!chainInfo.grpc || !chainInfo.features.includes("oasis"))

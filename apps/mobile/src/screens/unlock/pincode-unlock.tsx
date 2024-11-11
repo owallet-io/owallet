@@ -50,6 +50,7 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
+import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
   tryEnabled: boolean
@@ -81,8 +82,6 @@ export const waitAccountInit = async (
 
     await new Promise<void>((resolve) => {
       const disposal = autorun(() => {
-        // account init은 동시에 발생했을때 debounce가 되므로
-        // 첫번째꺼 하나만 확인해도 된다.
         if (
           accountStore.getAccount(chainStore.chainInfos[0].chainId)
             .bech32Address
@@ -287,7 +286,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
-    hugeQueriesStore,
   } = useStore();
   tracking(`Unlock Screen`);
   const navigation = useNavigation();
@@ -306,6 +304,22 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
     navigateToHomeOnce.current = true;
   };
+
+  const selectChain = async () => {
+    if (appInitStore.getInitApp.wallet === "osmosis") {
+      chainStore.selectChain(ChainIdEnum.Osmosis);
+      // await chainStore.saveLastViewChainId();
+      appInitStore.selectAllNetworks(false);
+    } else if (appInitStore.getInitApp.wallet === "injective") {
+      chainStore.selectChain(ChainIdEnum.Injective);
+      // await chainStore.saveLastViewChainId();
+      appInitStore.selectAllNetworks(false);
+    }
+  };
+
+  useEffect(() => {
+    selectChain();
+  }, [appInitStore.getInitApp.wallet]);
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,
@@ -369,10 +383,6 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       setNumericPad(true);
     }
   }, [appInitStore.getInitApp.passcodeType]);
-
-  useEffect(() => {
-    appInitStore.selectAllNetworks(true);
-  }, []);
 
   const pinRef = useRef(null);
   const numpadRef = useRef(null);
@@ -718,7 +728,7 @@ const styling = (colors) =>
     },
     aic: {
       alignItems: "center",
-      paddingBottom: 20,
+      paddingBottom: 10,
     },
     rc: {
       flexDirection: "row",
@@ -731,7 +741,7 @@ const styling = (colors) =>
     },
     buttonItemStyle: {
       backgroundColor: colors["neutral-surface-action3"],
-      width: 110,
+      width: metrics.screenWidth / 3.65,
       height: 80,
       borderRadius: 8,
     },
@@ -739,7 +749,7 @@ const styling = (colors) =>
       backgroundColor: colors["neutral-surface-action3"],
       padding: 4,
       borderRadius: 999,
-      marginTop: 32,
+      marginTop: 12,
     },
     switchText: {
       paddingHorizontal: 24,

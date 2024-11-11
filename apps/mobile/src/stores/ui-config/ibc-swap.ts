@@ -1,9 +1,9 @@
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { action, autorun, makeObservable, observable, runInAction } from 'mobx';
-import { ChainStore } from '../chain';
-import { computedFn } from 'mobx-utils';
-import { AppCurrency } from '@owallet/types';
-import { IChainInfoImpl } from '@owallet/stores';
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
+import { ChainStore } from "../chain";
+import { computedFn } from "mobx-utils";
+import { AppCurrency } from "@owallet/types";
+import { IChainInfoImpl } from "@owallet/stores";
 
 export class IBCSwapConfig {
   protected readonly kvStore: KVStore;
@@ -11,21 +11,21 @@ export class IBCSwapConfig {
   // 사실 UI 관련된 얘들은 ui config store 밑에 넣거나... 다른 곳으로 빠지는게 맞는 것 같지만...
   // 일단은 귀찮아서 여기서 처리한다...
   @observable
-  protected _lastAmountInChainId: string = '';
+  protected _lastAmountInChainId: string = "";
   @observable
-  protected _lastAmountInMinimalDenom: string = '';
+  protected _lastAmountInMinimalDenom: string = "";
   @observable
-  protected _lastAmountOutChainId: string = '';
+  protected _lastAmountOutChainId: string = "";
   @observable
-  protected _lastAmountOutMinimalDenom: string = '';
+  protected _lastAmountOutMinimalDenom: string = "";
 
   @observable
-  protected _lastSlippage: string = '0.5';
+  protected _lastSlippage: string = "0.5";
   @observable
   protected _lastSlippageIsCustom: boolean = false;
 
   constructor(kvStore: KVStore, protected readonly chainStore: ChainStore) {
-    this.kvStore = new PrefixKVStore(kvStore, 'ibc-swap');
+    this.kvStore = new PrefixKVStore(kvStore, "ibc-swap");
 
     makeObservable(this);
   }
@@ -36,7 +36,7 @@ export class IBCSwapConfig {
       lastAmountInMinimalDenom: string;
       lastAmountOutChainId: string;
       lastAmountOutMinimalDenom: string;
-    }>('ibc-swap-amount-in-out-info');
+    }>("ibc-swap-amount-in-out-info");
     if (saved) {
       runInAction(() => {
         if (saved.lastAmountInChainId) {
@@ -57,7 +57,7 @@ export class IBCSwapConfig {
     const savedSlippage = await this.kvStore.get<{
       lastSlippage: string;
       lastSlippageIsCustom: boolean;
-    }>('ibc-swap-slippage');
+    }>("ibc-swap-slippage");
     if (savedSlippage) {
       runInAction(() => {
         if (savedSlippage.lastSlippage != null) {
@@ -70,18 +70,18 @@ export class IBCSwapConfig {
     }
 
     autorun(() => {
-      this.kvStore.set('ibc-swap-amount-in-out-info', {
+      this.kvStore.set("ibc-swap-amount-in-out-info", {
         lastAmountInChainId: this._lastAmountInChainId,
         lastAmountInMinimalDenom: this._lastAmountInMinimalDenom,
         lastAmountOutChainId: this._lastAmountOutChainId,
-        lastAmountOutMinimalDenom: this._lastAmountOutMinimalDenom
+        lastAmountOutMinimalDenom: this._lastAmountOutMinimalDenom,
       });
     });
 
     autorun(() => {
-      this.kvStore.set('ibc-swap-slippage', {
+      this.kvStore.set("ibc-swap-slippage", {
         lastSlippage: this._lastSlippage,
-        lastSlippageIsCustom: this._lastSlippageIsCustom
+        lastSlippageIsCustom: this._lastSlippageIsCustom,
       });
     });
   }
@@ -105,7 +105,9 @@ export class IBCSwapConfig {
 
   getAmountInCurrency = computedFn((): AppCurrency => {
     if (this._lastAmountInMinimalDenom) {
-      const currency = this.getAmountInChainInfo().findCurrency(this._lastAmountInMinimalDenom);
+      const currency = this.getAmountInChainInfo().findCurrency(
+        this._lastAmountInMinimalDenom
+      );
       if (currency) {
         return currency;
       }
@@ -120,12 +122,17 @@ export class IBCSwapConfig {
   }
 
   getAmountOutChainInfo = computedFn((): IChainInfoImpl => {
-    if (this._lastAmountOutChainId && this.chainStore.hasChain(this._lastAmountOutChainId)) {
+    if (
+      this._lastAmountOutChainId &&
+      this.chainStore.hasChain(this._lastAmountOutChainId)
+    ) {
       return this.chainStore.getChain(this._lastAmountOutChainId);
     }
 
-    if (this.getAmountInChainInfo().chainIdentifier !== 'osmosis') {
-      const findIndex = this.chainStore.chainInfosInUI.findIndex(c => c.chainIdentifier === 'osmosis');
+    if (this.getAmountInChainInfo().chainIdentifier !== "osmosis") {
+      const findIndex = this.chainStore.chainInfosInUI.findIndex(
+        (c) => c.chainIdentifier === "osmosis"
+      );
       if (findIndex >= 0) {
         return this.chainStore.chainInfosInUI[findIndex];
       }
@@ -137,8 +144,11 @@ export class IBCSwapConfig {
 
     // Enabled된 체인들이 한개만 있을수도 있다는 점을 고려해야한다. 그러므로 chain infos in ui에서 두번째 체인을 찾을 수 없다면
     // 그것과 상관없이 chain infos에서 찾는다.
-    const find = this.chainStore.chainInfos.find(chainInfo => {
-      return chainInfo.chainIdentifier !== this.getAmountInChainInfo().chainIdentifier;
+    const find = this.chainStore.chainInfos.find((chainInfo) => {
+      return (
+        chainInfo.chainIdentifier !==
+        this.getAmountInChainInfo().chainIdentifier
+      );
     });
     if (find) {
       return find;
@@ -153,7 +163,9 @@ export class IBCSwapConfig {
 
   getAmountOutCurrency = computedFn((): AppCurrency => {
     if (this._lastAmountOutMinimalDenom) {
-      return this.getAmountOutChainInfo().forceFindCurrency(this._lastAmountOutMinimalDenom);
+      return this.getAmountOutChainInfo().forceFindCurrency(
+        this._lastAmountOutMinimalDenom
+      );
     }
 
     return this.getAmountOutChainInfo().currencies[0];
@@ -185,7 +197,7 @@ export class IBCSwapConfig {
   get slippageIsValid(): boolean {
     const trim = this.slippage.trim();
 
-    if (trim === '') {
+    if (trim === "") {
       return false;
     }
 
@@ -203,7 +215,7 @@ export class IBCSwapConfig {
   }
 
   async removeStatesWhenErrorOccurredDuringRendering() {
-    await this.kvStore.set('ibc-swap-amount-in-out-info', null);
-    await this.kvStore.set('ibc-swap-slippage', null);
+    await this.kvStore.set("ibc-swap-amount-in-out-info", null);
+    await this.kvStore.set("ibc-swap-slippage", null);
   }
 }

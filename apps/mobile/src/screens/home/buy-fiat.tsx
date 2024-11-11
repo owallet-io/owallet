@@ -22,11 +22,10 @@ const BuyFiat = observer(() => {
   const cryptoList = "ORAI, USDT, USDC".split(", ").join(",");
 
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountEth = accountStore.getAccount(ChainIdEnum.Ethereum);
 
   useEffect(() => {
     setAccounts(`${"ORAICHAIN"}:${accountOrai.bech32Address}`);
-  }, [accountEth.evmosHexAddress]);
+  }, [accountOrai.bech32Address]);
   useEffect(() => {
     tracking("Buy ORAI KADO Screen");
   }, []);

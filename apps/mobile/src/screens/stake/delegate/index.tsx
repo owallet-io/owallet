@@ -45,6 +45,7 @@ import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
 import { AsyncKVStore } from "@src/common";
 import { LoadingSpinner } from "@components/spinner";
+import { FeeControl } from "@components/input/fee-control";
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -577,88 +578,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               }}
               type="normal"
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  borderBottomColor: colors["neutral-border-default"],
-                  borderBottomWidth: 1,
-                  paddingVertical: 16,
-                  marginBottom: 8,
-                  alignItems: "center",
-                }}
-              >
-                <OWText
-                  color={colors["neutral-text-title"]}
-                  weight="600"
-                  size={16}
-                >
-                  Transaction fee
-                </OWText>
-                <TouchableOpacity
-                  style={{ flexDirection: "row", alignItems: "center" }}
-                  onPress={_onPressFee}
-                >
-                  <View
-                    style={{
-                      alignItems: "center",
-                      paddingRight: 8,
-                    }}
-                  >
-                    <OWText
-                      color={colors["primary-text-action"]}
-                      weight="600"
-                      size={14}
-                    >
-                      {capitalizedText(sendConfigs.feeConfig.type)}
-                    </OWText>
-                    <OWText
-                      color={colors["primary-text-action"]}
-                      weight="500"
-                      size={12}
-                    >
-                      {(() => {
-                        if (sendConfigs.feeConfig.fees.length > 0) {
-                          return sendConfigs.feeConfig.fees;
-                        }
-                        const chainInfo = chainStore.getChain(
-                          sendConfigs.feeConfig.chainId
-                        );
-
-                        return [
-                          new CoinPretty(
-                            chainInfo.stakeCurrency || chainInfo.currencies[0],
-                            new Dec(0)
-                          ),
-                        ];
-                      })()
-                        .map((fee) =>
-                          fee
-                            .maxDecimals(6)
-                            .inequalitySymbol(true)
-                            .trim(true)
-                            .shrink(true)
-                            .hideIBCMetadata(true)
-                            .toString()
-                        )
-                        .join("+")}
-                    </OWText>
-                  </View>
-
-                  {sendConfigs.feeConfig.uiProperties.loadingState ||
-                  gasSimulator?.uiProperties.loadingState ? (
-                    <LoadingSpinner
-                      size={14}
-                      color={colors["background-btn-primary"]}
-                    />
-                  ) : (
-                    <DownArrowIcon
-                      height={11}
-                      color={colors["primary-text-action"]}
-                    />
-                  )}
-                </TouchableOpacity>
-              </View>
+              <FeeControl
+                senderConfig={sendConfigs.senderConfig}
+                feeConfig={sendConfigs.feeConfig}
+                gasConfig={sendConfigs.gasConfig}
+                gasSimulator={gasSimulator}
+              />
             </OWCard>
           </View>
         ) : null}

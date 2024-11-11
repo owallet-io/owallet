@@ -1391,7 +1391,8 @@ Salt: ${salt}`;
       !chainId.startsWith("nim_") &&
       !chainId.startsWith("dimension_") &&
       !chainId.startsWith("zetachain_") &&
-      !chainId.startsWith("eip155:")
+      !chainId.startsWith("eip155:") &&
+      !chainId.startsWith("bitcoin")
     ) {
       throw new OWalletError(
         "keyring",

@@ -35,14 +35,6 @@ import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
-import { ChainInfo } from "@owallet/types";
-import { QueryError } from "@owallet/stores";
-// export interface ViewToken {
-//   token: CoinPretty;
-//   chainInfo: ChainInfo;
-//   isFetching: boolean;
-//   error: QueryError<any> | undefined;
-// }
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   // dataTokens: ViewToken[];
@@ -240,9 +232,9 @@ const TokenItem: FC<{
     });
     return;
   };
-  // const price24h = item.token?.currency?.coinGeckoId
-  //   ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
-  //   : 0;
+  const price24h = item.token?.currency?.coinGeckoId
+    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+    : 0;
   return (
     <TouchableOpacity
       onPress={() => {
@@ -285,19 +277,19 @@ const TokenItem: FC<{
 
           <View style={styles.pl12}>
             <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token?.currency?.coinDenom)}
-              {/*<Text*/}
-              {/*  size={12}*/}
-              {/*  color={*/}
-              {/*    price24h < 0*/}
-              {/*      ? colors["error-text-body"]*/}
-              {/*      : colors["success-text-body"]*/}
-              {/*  }*/}
-              {/*  style={styles.profit}*/}
-              {/*>*/}
-              {/*  {price24h > 0 ? "+" : ""}*/}
-              {/*  {maskedNumber(price24h, 2, 2)}%*/}
-              {/*</Text>*/}
+              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
+              <Text
+                size={12}
+                color={
+                  price24h < 0
+                    ? colors["error-text-body"]
+                    : colors["success-text-body"]
+                }
+                style={styles.profit}
+              >
+                {price24h > 0 ? "+" : ""}
+                {maskedNumber(price24h, 2, 2)}%
+              </Text>
             </Text>
             <Text weight="400" color={colors["neutral-text-body"]}>
               {item?.chainInfo?.chainName}

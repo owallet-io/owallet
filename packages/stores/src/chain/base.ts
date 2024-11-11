@@ -74,8 +74,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           continue;
         } else if (reaction) {
           found = true;
-          // 로직상 reaction은 reactive할 필요가 없기 때문에
-          // 그냥 여기서 바꾼다.
           prior.reaction = reaction;
         }
       }
@@ -378,7 +376,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   @action
-  protected addOrReplaceCurrency(currency: AppCurrency) {
+  addOrReplaceCurrency(currency: AppCurrency) {
     if (this.currencyMap.has(currency.coinMinimalDenom)) {
       const index = this.registeredCurrencies.findIndex(
         (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom

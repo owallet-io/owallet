@@ -1,50 +1,55 @@
-import { ChainGetter } from '@owallet/stores';
+import { ChainGetter } from "@owallet/stores";
 import {
   AppCurrency,
   // EthSignType,
   EthTxReceipt,
-  OWallet
-} from '@owallet/types';
-import { DenomHelper, retry } from '@owallet/common';
-import { erc20ContractInterface } from '../constants';
-import { hexValue } from '@ethersproject/bytes';
-import { parseUnits } from '@ethersproject/units';
-import { TransactionTypes, UnsignedTransaction, serialize } from '@ethersproject/transactions';
-import { getAddress as getEthAddress } from '@ethersproject/address';
-import { action, makeObservable, observable } from 'mobx';
-import { Interface } from '@ethersproject/abi';
+  OWallet,
+} from "@owallet/types";
+import { DenomHelper, retry } from "@owallet/common";
+import { erc20ContractInterface } from "../constants";
+import { hexValue } from "@ethersproject/bytes";
+import { parseUnits } from "@ethersproject/units";
+import {
+  TransactionTypes,
+  UnsignedTransaction,
+  serialize,
+} from "@ethersproject/transactions";
+import { getAddress as getEthAddress } from "@ethersproject/address";
+import { action, makeObservable, observable } from "mobx";
+import { Interface } from "@ethersproject/abi";
 
 const EthSignType = {
-  MESSAGE: 'message',
-  TRANSACTION: 'transaction',
-  EIP712: 'eip-712'
+  MESSAGE: "message",
+  TRANSACTION: "transaction",
+  EIP712: "eip-712",
 };
 
-const opStackGasPriceOracleProxyAddress = '0x420000000000000000000000000000000000000F';
+const opStackGasPriceOracleProxyAddress =
+  "0x420000000000000000000000000000000000000F";
 const opStackGasPriceOracleProxyABI = new Interface([
   {
     constant: true,
     inputs: [],
-    name: 'implementation',
+    name: "implementation",
     outputs: [
       {
-        name: '',
-        type: 'address'
-      }
+        name: "",
+        type: "address",
+      },
     ],
     payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  }
+    stateMutability: "view",
+    type: "function",
+  },
 ]);
 const opStackGasPriceOracleABI = new Interface([
   {
-    inputs: [{ internalType: 'bytes', name: '_data', type: 'bytes' }],
-    name: 'getL1Fee',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  }
+    inputs: [{ internalType: "bytes", name: "_data", type: "bytes" }],
+    name: "getL1Fee",
+    outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+    stateMutability: "view",
+    type: "function",
+  },
 ]);
 
 export class EthereumAccountBase {
@@ -72,7 +77,7 @@ export class EthereumAccountBase {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const evmInfo = chainInfo.evm;
     if (!evmInfo) {
-      throw new Error('No EVM chain info provided');
+      throw new Error("No EVM chain info provided");
     }
 
     const { to, value, data } = unsignedTx;
@@ -80,20 +85,20 @@ export class EthereumAccountBase {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const owallet = (await this.getOWallet())!;
     const gasEstimated = await owallet.ethereum.request<string>({
-      method: 'eth_estimateGas',
+      method: "eth_estimateGas",
       params: [
         {
           from: sender,
           to,
           value,
-          data
-        }
+          data,
+        },
       ],
-      chainId: this.chainId
+      chainId: this.chainId,
     });
 
     return {
-      gasUsed: parseInt(gasEstimated)
+      gasUsed: parseInt(gasEstimated),
     };
   }
 
@@ -101,7 +106,7 @@ export class EthereumAccountBase {
     currency,
     amount,
     sender,
-    recipient
+    recipient,
   }: {
     currency: AppCurrency;
     amount: string;
@@ -109,23 +114,30 @@ export class EthereumAccountBase {
     recipient: string;
   }) {
     // If the recipient address is invalid, the sender address will be used as the recipient for gas estimating gas.
-    const tempRecipient = EthereumAccountBase.isEthereumHexAddressWithChecksum(recipient) ? recipient : sender;
+    const tempRecipient = EthereumAccountBase.isEthereumHexAddressWithChecksum(
+      recipient
+    )
+      ? recipient
+      : sender;
 
     const parsedAmount = parseUnits(amount, currency.coinDecimals);
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
     const unsignedTx: UnsignedTransaction = (() => {
       switch (denomHelper.type) {
-        case 'erc20':
+        case "erc20":
           return {
             to: denomHelper.contractAddress,
-            value: '0x0',
-            data: erc20ContractInterface.encodeFunctionData('transfer', [tempRecipient, hexValue(parsedAmount)])
+            value: "0x0",
+            data: erc20ContractInterface.encodeFunctionData("transfer", [
+              tempRecipient,
+              hexValue(parsedAmount),
+            ]),
           };
         default:
           return {
             to: tempRecipient,
-            value: hexValue(parsedAmount)
+            value: hexValue(parsedAmount),
           };
       }
     })();
@@ -135,38 +147,43 @@ export class EthereumAccountBase {
 
   async simulateOpStackL1Fee(unsignedTx: UnsignedTransaction): Promise<string> {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    if (!chainInfo.features.includes('op-stack-l1-data-fee')) {
+    if (!chainInfo.features.includes("op-stack-l1-data-fee")) {
       throw new Error("The chain isn't built with OP Stack");
     }
 
     const evmInfo = chainInfo.evm;
     if (!evmInfo) {
-      throw new Error('No EVM chain info provided');
+      throw new Error("No EVM chain info provided");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const owallet = (await this.getOWallet())!;
     const implementationAddress = await owallet.ethereum.request<string>({
-      method: 'eth_call',
+      method: "eth_call",
       params: [
         {
           to: opStackGasPriceOracleProxyAddress,
-          data: opStackGasPriceOracleProxyABI.encodeFunctionData('implementation')
-        }
+          data: opStackGasPriceOracleProxyABI.encodeFunctionData(
+            "implementation"
+          ),
+        },
       ],
-      chainId: this.chainId
+      chainId: this.chainId,
     });
-    const gasPriceOracleContractAddress = '0x' + implementationAddress.slice(26);
+    const gasPriceOracleContractAddress =
+      "0x" + implementationAddress.slice(26);
 
     const l1Fee = await owallet.ethereum.request<string>({
-      method: 'eth_call',
+      method: "eth_call",
       params: [
         {
           to: gasPriceOracleContractAddress,
-          data: opStackGasPriceOracleABI.encodeFunctionData('getL1Fee', [serialize(unsignedTx)])
-        }
+          data: opStackGasPriceOracleABI.encodeFunctionData("getL1Fee", [
+            serialize(unsignedTx),
+          ]),
+        },
       ],
-      chainId: this.chainId
+      chainId: this.chainId,
     });
 
     return l1Fee;
@@ -179,7 +196,7 @@ export class EthereumAccountBase {
     gasLimit,
     maxFeePerGas,
     maxPriorityFeePerGas,
-    gasPrice
+    gasPrice,
   }: {
     currency: AppCurrency;
     amount: string;
@@ -192,7 +209,7 @@ export class EthereumAccountBase {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const evmInfo = chainInfo.evm;
     if (!evmInfo) {
-      throw new Error('No EVM chain info provided');
+      throw new Error("No EVM chain info provided");
     }
     const parsedAmount = parseUnits(amount, currency.coinDecimals);
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
@@ -201,30 +218,33 @@ export class EthereumAccountBase {
         ? {
             maxFeePerGas: hexValue(Number(maxFeePerGas)),
             maxPriorityFeePerGas: hexValue(Number(maxPriorityFeePerGas)),
-            gasLimit: hexValue(gasLimit)
+            gasLimit: hexValue(gasLimit),
           }
         : {
-            gasPrice: hexValue(Number(gasPrice ?? '0')),
-            gasLimit: hexValue(gasLimit)
+            gasPrice: hexValue(Number(gasPrice ?? "0")),
+            gasLimit: hexValue(gasLimit),
           };
 
     // Support EIP-1559 transaction only.
     const unsignedTx: UnsignedTransaction = (() => {
       switch (denomHelper.type) {
-        case 'erc20':
+        case "erc20":
           return {
             chainId: evmInfo.chainId,
             to: denomHelper.contractAddress,
-            value: '0x0',
-            data: erc20ContractInterface.encodeFunctionData('transfer', [to, hexValue(parsedAmount)]),
-            ...feeObject
+            value: "0x0",
+            data: erc20ContractInterface.encodeFunctionData("transfer", [
+              to,
+              hexValue(parsedAmount),
+            ]),
+            ...feeObject,
           };
         default:
           return {
             chainId: evmInfo.chainId,
             to,
             value: hexValue(parsedAmount),
-            ...feeObject
+            ...feeObject,
           };
       }
     })();
@@ -245,37 +265,46 @@ export class EthereumAccountBase {
       const chainInfo = this.chainGetter.getChain(this.chainId);
       const evmInfo = chainInfo.evm;
       if (!evmInfo) {
-        throw new Error('No EVM info provided');
+        throw new Error("No EVM info provided");
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
       const transactionCount = await owallet.ethereum.request<string>({
-        method: 'eth_getTransactionCount',
-        params: [sender, 'pending'],
-        chainId: this.chainId
+        method: "eth_getTransactionCount",
+        params: [sender, "pending"],
+        chainId: this.chainId,
       });
       unsignedTx = {
         ...unsignedTx,
-        nonce: parseInt(transactionCount)
+        nonce: parseInt(transactionCount),
       };
 
       const signEthereum = owallet.signEthereum.bind(owallet);
 
-      const signature = await signEthereum(this.chainId, sender, JSON.stringify(unsignedTx), EthSignType.TRANSACTION);
+      const signature = await signEthereum(
+        this.chainId,
+        sender,
+        JSON.stringify(unsignedTx),
+        EthSignType.TRANSACTION
+      );
 
-      const isEIP1559 = !!unsignedTx.maxFeePerGas || !!unsignedTx.maxPriorityFeePerGas;
+      const isEIP1559 =
+        !!unsignedTx.maxFeePerGas || !!unsignedTx.maxPriorityFeePerGas;
       if (isEIP1559) {
         unsignedTx.type = TransactionTypes.eip1559;
       }
 
-      const signedTx = Buffer.from(serialize(unsignedTx, signature).replace('0x', ''), 'hex');
+      const signedTx = Buffer.from(
+        serialize(unsignedTx, signature).replace("0x", ""),
+        "hex"
+      );
 
       const sendEthereumTx = owallet.sendEthereumTx.bind(owallet);
       const txHash = await sendEthereumTx(this.chainId, signedTx);
       if (!txHash) {
-        throw new Error('No tx hash responded');
+        throw new Error("No tx hash responded");
       }
 
       if (onTxEvents?.onBroadcasted) {
@@ -286,9 +315,9 @@ export class EthereumAccountBase {
         () => {
           return new Promise<void>(async (resolve, reject) => {
             const txReceipt = await owallet.ethereum.request<EthTxReceipt>({
-              method: 'eth_getTransactionReceipt',
+              method: "eth_getTransactionReceipt",
               params: [txHash],
-              chainId: this.chainId
+              chainId: this.chainId,
             });
             if (txReceipt) {
               onTxEvents?.onFulfill?.(txReceipt);
@@ -301,7 +330,7 @@ export class EthereumAccountBase {
         {
           maxRetries: 10,
           waitMsAfterError: 500,
-          maxWaitMsAfterError: 4000
+          maxWaitMsAfterError: 4000,
         }
       );
 
@@ -317,7 +346,9 @@ export class EthereumAccountBase {
 
   static isEthereumHexAddressWithChecksum(hexAddress: string): boolean {
     const isHexAddress = !!hexAddress.match(/^0x[0-9A-Fa-f]*$/);
-    const isChecksumAddress = !!hexAddress.match(/([A-F].*[a-f])|([a-f].*[A-F])/);
+    const isChecksumAddress = !!hexAddress.match(
+      /([A-F].*[a-f])|([a-f].*[A-F])/
+    );
     if (!isHexAddress || hexAddress.length !== 42) {
       return false;
     }

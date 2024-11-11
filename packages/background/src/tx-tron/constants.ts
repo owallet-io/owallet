@@ -1,1 +1,1 @@
-export const ROUTE = 'background-tx-tron';
+export const ROUTE = "background-tx-tron";

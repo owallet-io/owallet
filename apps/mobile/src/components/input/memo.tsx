@@ -17,6 +17,7 @@ export const MemoInput: FunctionComponent<{
   memoConfig: MemoConfig;
   multiline?: boolean;
   editable?: boolean;
+  isBottomSheet?: boolean;
   topInInputContainer?: React.ReactNode;
 }> = observer(
   ({
@@ -33,9 +34,11 @@ export const MemoInput: FunctionComponent<{
     multiline,
     topInInputContainer,
     editable,
+    isBottomSheet,
   }) => {
     return (
       <TextInput
+        isBottomSheet={isBottomSheet}
         topInInputContainer={topInInputContainer}
         label={label}
         labelStyle={labelStyle}

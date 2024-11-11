@@ -1,5 +1,6 @@
 import {
   IBaseAmountConfig,
+  IBtcFeeConfig,
   IFeeConfig,
   IGasConfig,
   IGasSimulator,
@@ -15,7 +16,7 @@ export const useTxConfigsValidate = (configs: {
   recipientConfig?: IRecipientConfig;
   gasConfig?: IGasConfig;
   amountConfig?: IBaseAmountConfig;
-  feeConfig?: IFeeConfig;
+  feeConfig?: IFeeConfig | IBtcFeeConfig;
   memoConfig?: IMemoConfig;
   channelConfig?: IIBCChannelConfig;
   gasSimulator?: IGasSimulator;

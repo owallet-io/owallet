@@ -1,16 +1,16 @@
-import { DenomHelper, parseRpcBalance } from '@owallet/common';
+import { DenomHelper, parseRpcBalance } from "@owallet/common";
 import {
   BalanceRegistry,
   ChainGetter,
   IObservableQueryBalanceImpl,
   ObservableQuery,
-  QuerySharedContext
-} from '@owallet/stores';
-import { AppCurrency, ChainInfo } from '@owallet/types';
-import { CoinPretty, Int } from '@owallet/unit';
-import { computed, makeObservable } from 'mobx';
-import * as oasis from '@oasisprotocol/client';
-import { staking } from '@oasisprotocol/client';
+  QuerySharedContext,
+} from "@owallet/stores";
+import { AppCurrency, ChainInfo } from "@owallet/types";
+import { CoinPretty, Int } from "@owallet/unit";
+import { computed, makeObservable } from "mobx";
+import * as oasis from "@oasisprotocol/client";
+import { staking } from "@oasisprotocol/client";
 
 export class ObservableQueryOasisAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -23,7 +23,7 @@ export class ObservableQueryOasisAccountBalanceImpl
     protected readonly denomHelper: DenomHelper,
     protected readonly bech32Address: string
   ) {
-    super(sharedContext, '', '');
+    super(sharedContext, "", "");
 
     makeObservable(this);
   }
@@ -37,7 +37,9 @@ export class ObservableQueryOasisAccountBalanceImpl
   get balance(): CoinPretty {
     const denom = this.denomHelper.denom;
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const currency = chainInfo.currencies.find(cur => cur.coinMinimalDenom === denom);
+    const currency = chainInfo.currencies.find(
+      (cur) => cur.coinMinimalDenom === denom
+    );
     if (!currency) {
       throw new Error(`Unknown currency: ${denom}`);
     }
@@ -57,7 +59,9 @@ export class ObservableQueryOasisAccountBalanceImpl
     return chainInfo.forceFindCurrency(denom);
   }
 
-  protected override async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: any }> {
+  protected override async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: any }> {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const nic = new oasis.client.NodeInternal(chainInfo.grpc);
     const publicKey = await staking.addressFromBech32(this.bech32Address);
@@ -65,16 +69,20 @@ export class ObservableQueryOasisAccountBalanceImpl
     const grpcBalance = parseRpcBalance(account);
     return {
       headers: {},
-      data: grpcBalance.available
+      data: grpcBalance.available,
     };
   }
 
   protected override getCacheKey(): string {
-    return `${super.getCacheKey()}-${this.bech32Address}-${this.denomHelper.denom}`;
+    return `${super.getCacheKey()}-${this.bech32Address}-${
+      this.denomHelper.denom
+    }`;
   }
 }
 
-export class ObservableQueryOasisAccountBalanceRegistry implements BalanceRegistry {
+export class ObservableQueryOasisAccountBalanceRegistry
+  implements BalanceRegistry
+{
   constructor(protected readonly sharedContext: QuerySharedContext) {}
 
   // missing this
@@ -86,7 +94,14 @@ export class ObservableQueryOasisAccountBalanceRegistry implements BalanceRegist
   ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
-    if (!chainInfo.features.includes('oasis') || denomHelper.type !== 'native') return;
-    return new ObservableQueryOasisAccountBalanceImpl(this.sharedContext, chainId, chainGetter, denomHelper, address);
+    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
+      return;
+    return new ObservableQueryOasisAccountBalanceImpl(
+      this.sharedContext,
+      chainId,
+      chainGetter,
+      denomHelper,
+      address
+    );
   }
 }

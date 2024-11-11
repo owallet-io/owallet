@@ -1,7 +1,7 @@
 export declare enum EthSignType {
-  MESSAGE = 'message',
-  TRANSACTION = 'transaction',
-  EIP712 = 'eip-712'
+  MESSAGE = "message",
+  TRANSACTION = "transaction",
+  EIP712 = "eip-712",
 }
 export interface EthTxLog {
   blockNumber: number;
@@ -15,8 +15,8 @@ export interface EthTxLog {
   logIndex: number;
 }
 export declare enum EthTxStatus {
-  Success = '0x1',
-  Failure = '0x0'
+  Success = "0x1",
+  Failure = "0x0",
 }
 export interface EthTxReceipt {
   to: string;

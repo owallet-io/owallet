@@ -2,11 +2,12 @@ import React, { FunctionComponent } from "react";
 import { GuideBoxProps } from "./types";
 import { Column, Columns } from "../column";
 import { Box } from "../box";
-import { InformationIcon } from "../icon/information";
 import { useStyle } from "../../styles";
 import { Stack } from "../stack";
 import { StyleSheet, Text } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const GuideBox: FunctionComponent<GuideBoxProps> = ({
   title,
@@ -19,6 +20,7 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
   backgroundColor,
 }) => {
   const style = useStyle();
+  const { colors } = useTheme();
   const paragraphColor = (() => {
     switch (color) {
       case "safe":
@@ -28,7 +30,7 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
       case "danger":
         return style.get("color-red-300").color;
       default:
-        return style.get("color-gray-300").color;
+        return colors["neutral-text-body"];
     }
   })();
   const titleColor = (() => {
@@ -40,7 +42,7 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
       case "danger":
         return style.get("color-red-300").color;
       default:
-        return style.get("color-gray-100").color;
+        return colors["neutral-text-body"];
     }
   })();
   const innerBackgroundColor = (() => {
@@ -49,14 +51,14 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
     }
 
     switch (color) {
-      case "safe":
-        return style.get("color-green-800").color;
-      case "warning":
-        return style.get("color-yellow-800").color;
-      case "danger":
-        return style.get("color-red-800").color;
+      // case "safe":
+      //   return style.get("color-green-800").color;
+      // case "warning":
+      //   return style.get("color-yellow-800").color;
+      // case "danger":
+      //   return style.get("color-red-800").color;
       default:
-        return style.get("color-gray-600").color;
+        return colors["neutral-surface-bg2"];
     }
   })();
 
@@ -86,14 +88,14 @@ export const GuideBox: FunctionComponent<GuideBoxProps> = ({
         </Columns>
         {paragraph ? (
           typeof paragraph === "string" ? (
-            <Text
+            <OWText
               style={StyleSheet.flatten([
                 style.flatten(["body2"]),
                 { color: paragraphColor },
               ])}
             >
               {paragraph}
-            </Text>
+            </OWText>
           ) : (
             paragraph
           )

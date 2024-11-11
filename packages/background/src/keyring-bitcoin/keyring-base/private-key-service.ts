@@ -2,11 +2,11 @@ import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { KeyRingPrivateKeyService } from "../../keyring-private-key";
 import { Vault, VaultService } from "../../vault";
-import { HDKey } from "@owallet/common";
-import { KeyRing } from "../../keyring";
+import { compileMemo, HDKey, signSignatureBtc } from "@owallet/common";
+import { KeyRing, KeyRingBtc } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
-
-export class KeyRingBtcPrivateKeyService implements KeyRing {
+import * as bitcoin from "bitcoinjs-lib";
+export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
   constructor(
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingPrivateKeyService
@@ -20,7 +20,7 @@ export class KeyRingBtcPrivateKeyService implements KeyRing {
 
   getPubKey(
     vault: Vault,
-    coinType: number,
+    _coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
     if (!chainInfo?.features.includes("gen-address")) {
@@ -37,30 +37,20 @@ export class KeyRingBtcPrivateKeyService implements KeyRing {
     vault: Vault,
     _coinType: number,
     data: Uint8Array,
-    digestMethod: "sha256" | "keccak256"
-  ): {
-    readonly r: Uint8Array;
-    readonly s: Uint8Array;
-    readonly v: number | null;
-  } {
-    // const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
-    //     "privateKey"
-    //     ] as string;
-    // const privateKey = new PrivKeySecp256k1(Buffer.from(privateKeyText, "hex"));
-    //
-    // let digest = new Uint8Array();
-    // switch (digestMethod) {
-    //     case "sha256":
-    //         digest = Hash.sha256(data);
-    //         break;
-    //     case "keccak256":
-    //         digest = Hash.keccak256(data);
-    //         break;
-    //     default:
-    //         throw new Error(`Unknown digest method: ${digestMethod}`);
-    // }
-    //
-    // return privateKey.signDigest32(digest);
-    return;
+    inputs: any,
+    outputs: any,
+    _signType: "legacy" | "bech32"
+  ): string {
+    const keyPair = this.getKeyPair(vault);
+    return signSignatureBtc(keyPair, data, inputs, outputs);
+  }
+  private getKeyPair(vault: Vault) {
+    const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
+      "privateKey"
+    ] as string;
+    const privateKey = Buffer.from(privateKeyText, "hex");
+    if (!privateKey) throw Error("Private Key is not Empty");
+    //@ts-ignore
+    return bitcoin.ECPair.fromPrivateKey(privateKey);
   }
 }

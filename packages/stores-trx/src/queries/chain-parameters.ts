@@ -1,6 +1,11 @@
-import { ChainGetter, HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { Int } from '@owallet/unit';
-import { computed, makeObservable } from 'mobx';
+import {
+  ChainGetter,
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { Int } from "@owallet/unit";
+import { computed, makeObservable } from "mobx";
 
 export interface ChainParameters {
   tronParameters: TronParameter[];
@@ -11,12 +16,20 @@ export interface TronParameter {
   value: number;
 }
 
-export class ObservableChainQuery<T = unknown, E = unknown> extends ObservableQuery<T, E> {
+export class ObservableChainQuery<
+  T = unknown,
+  E = unknown
+> extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
   protected readonly chainGetter: ChainGetter;
 
-  constructor(sharedContext: QuerySharedContext, chainId: string, chainGetter: ChainGetter, url: string) {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter,
+    url: string
+  ) {
     const chainInfo = chainGetter.getChain(chainId);
 
     super(sharedContext, chainInfo.rest, url);
@@ -31,7 +44,11 @@ export class ObservableChainQuery<T = unknown, E = unknown> extends ObservableQu
 }
 
 export class ObservableQueryChainParameterTronInner extends ObservableChainQuery<ChainParameters> {
-  constructor(sharedContext: QuerySharedContext, chainId: string, chainGetter: ChainGetter) {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
     super(sharedContext, chainId, chainGetter, `/api/chainparameters`);
 
     makeObservable(this);
@@ -42,7 +59,9 @@ export class ObservableQueryChainParameterTronInner extends ObservableChainQuery
     if (!this.response?.data?.tronParameters) {
       return new Int(1000);
     }
-    const price = this.response.data.tronParameters.find(({ key }) => key === 'getTransactionFee');
+    const price = this.response.data.tronParameters.find(
+      ({ key }) => key === "getTransactionFee"
+    );
     if (!price) return new Int(1000);
     return new Int(price.value);
   }
@@ -51,7 +70,9 @@ export class ObservableQueryChainParameterTronInner extends ObservableChainQuery
     if (!this.response?.data?.tronParameters) {
       return new Int(420);
     }
-    const price = this.response.data.tronParameters.find(({ key }) => key === 'getEnergyFee');
+    const price = this.response.data.tronParameters.find(
+      ({ key }) => key === "getEnergyFee"
+    );
     if (!price) return new Int(420);
     return new Int(price.value);
   }
@@ -64,11 +85,19 @@ export class ObservableQueryChainParameterTron extends HasMapStore<ObservableQue
     protected readonly chainGetter: ChainGetter
   ) {
     super((key: string) => {
-      return new ObservableQueryChainParameterTronInner(this.sharedContext, this.chainId, this.chainGetter);
+      return new ObservableQueryChainParameterTronInner(
+        this.sharedContext,
+        this.chainId,
+        this.chainGetter
+      );
     });
   }
 
   getQueryChainParameters(): ObservableQueryChainParameterTronInner {
-    return new ObservableQueryChainParameterTronInner(this.sharedContext, this.chainId, this.chainGetter);
+    return new ObservableQueryChainParameterTronInner(
+      this.sharedContext,
+      this.chainId,
+      this.chainGetter
+    );
   }
 }

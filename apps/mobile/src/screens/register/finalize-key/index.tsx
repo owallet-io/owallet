@@ -11,7 +11,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 // import {RootStackParamList, StackNavProp} from '../../../navigation';
-import { InteractionManager, Text, View } from "react-native";
+import { Image, InteractionManager, StyleSheet, View } from "react-native";
 import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
@@ -22,7 +22,12 @@ import { defaultSpringConfig } from "../../../styles/spring";
 import { ViewRegisterContainer } from "../components/view-register-container";
 import { Buffer } from "buffer/";
 import { FormattedMessage } from "react-intl";
-import { RootStackParamList } from "@src/router/root";
+import { resetTo, RootStackParamList } from "@src/router/root";
+import { metrics } from "@src/themes";
+import { PageWithView } from "@components/page";
+import { useTheme } from "@src/themes/theme-provider";
+import { Text } from "@components/text";
+import { SCREENS } from "@common/constants";
 
 const SimpleProgressBar: FunctionComponent<{
   progress: number;
@@ -101,13 +106,31 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
 
   const [queryRoughlyDone, setQueryRoughlyDone] = useState(false);
   const [queryProgress, setQueryProgress] = useState(0);
+  const { colors } = useTheme();
+
+  const styles = styling(colors);
+  const [count, setCount] = useState(0);
   const unmounted = useRef(false);
   useEffect(() => {
     return () => {
       unmounted.current = true;
     };
   }, []);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((prevCount) => {
+        if (prevCount === 3) {
+          return 1; // Reset to 1
+        } else {
+          return prevCount + 1; // Increment count
+        }
+      });
+    }, 600); // Interval in milliseconds
 
+    return () => {
+      clearInterval(interval); // Clean up interval on component unmount
+    };
+  }, []);
   useEffect(() => {
     if (!isScreenTransitionEnded) {
       return;
@@ -116,14 +139,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     (async () => {
       // Chain store should be initialized before creating the key.
       await chainStore.waitUntilInitialized();
-
-      // background에서의 체인 정보의 변경사항 (ochain-registry로부터의) 등을 sync 해야한다.
-      // 사실 문제가 되는 부분은 유저가 install한 직후이다.
-      // 유저가 install한 직후에 바로 register page를 열도록 background가 짜여져있기 때문에
-      // 이 경우 background에서 chains service가 체인 정보를 업데이트하기 전에 register page가 열린다.
-      // 그 결과 chain image가 제대로 표시되지 않는다.
-      // 또한 background와 체인 정보가 맞지 않을 확률이 높기 때문에 잠재적으로도 문제가 될 수 있다.
-      // 이 문제를 해결하기 위해서 밑의 한줄이 존재한다.
       await chainStore.updateChainInfosFromBackground();
 
       let vaultId: unknown;
@@ -143,6 +158,15 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           password
         );
       } else if (ledger) {
+        if (ledger?.app44 && ledger?.pubKey44) {
+          vaultId = await keyRingStore.newLedgerKey(
+            ledger.pubKey44,
+            ledger.app44,
+            ledger.bip44Path,
+            name,
+            password
+          );
+        }
         vaultId = await keyRingStore.newLedgerKey(
           ledger.pubKey,
           ledger.app,
@@ -285,7 +309,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           const targetCurrency =
             chainInfo.stakeCurrency || chainInfo.currencies[0];
           if (targetCurrency.coinGeckoId) {
-            // Push coingecko id to priceStore.
             priceStore.getPrice(targetCurrency.coinGeckoId);
           }
         }
@@ -294,10 +317,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
         promises.push(priceStore.waitFreshResponse());
 
         if (promises.length >= 10) {
-          // RN에서 한번에 많은 쿼리를 처리하면 느리진다...
-          // 이 문제를 해결할수가 없기 때문에 query가 처리된 비율에 따라 progress를 계산하고 0.8(80%) 이상의 쿼리가 처리되고
-          // 그 후 3초를 더 기다리고 넘긴다...
-          // (최대 기다리는 시간은 15초)
           let once = false;
           setTimeout(() => {
             if (!once) {
@@ -338,39 +357,43 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [candidateAddresses]);
 
-  // XXX: sceneTransition은 method마다 ref이 변한다.
-  //      onceRef이 없으면 무한루프에 빠진다.
-  //      처음에 이걸 고려 안해서 이런 문제가 생겨버렸는데
-  //      수정할 시간이 없으니 일단 대충 처리한다.
   const onceRef = useRef<boolean>(false);
   useEffect(() => {
     if (
       !onceRef.current &&
       candidateAddresses.length > 0 &&
       vaultId &&
-      // RN에서 한번에 많은 쿼리를 처리하면 느리진다...
-      // 이 문제를 해결할수가 없기 때문에 query가 처리된 비율에 따라 progress를 계산하고 0.8(80%) 이상의 쿼리가 처리되고
-      // 그 후 3초를 더 기다리고 넘긴다...
-      // (최대 기다리는 시간은 15초)
       queryRoughlyDone
     ) {
       onceRef.current = true;
-
-      navigation.reset({
-        routes: [
-          {
-            name: "Register.EnableChain",
-            params: {
-              vaultId,
-              candidateAddresses,
-              isFresh: mnemonic?.isFresh ?? false,
-              stepPrevious: stepPrevious,
-              stepTotal: stepTotal,
-              password: password,
+      if (ledger) {
+        navigation.reset({
+          routes: [
+            {
+              name: "Register.EnableChain",
+              params: {
+                vaultId,
+                candidateAddresses,
+                isFresh: mnemonic?.isFresh ?? false,
+                stepPrevious: stepPrevious,
+                stepTotal: stepTotal,
+                password: password,
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+        return;
+      }
+      (async () => {
+        const chainsEnable = chainStore.chainInfos.map(
+          (chainInfo, index) => chainInfo.chainIdentifier
+        );
+        await chainStore.enableChainInfoInUIWithVaultId(
+          vaultId,
+          ...chainsEnable
+        );
+        resetTo(SCREENS.STACK.MainTab);
+      })();
     }
   }, [
     candidateAddresses,
@@ -384,39 +407,133 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
   ]);
 
   return (
-    <ViewRegisterContainer
-      forceEnableTopSafeArea={true}
-      contentContainerStyle={{
-        flexGrow: 1,
-        alignItems: "center",
+    // <ViewRegisterContainer
+    //   forceEnableTopSafeArea={true}
+    //   contentContainerStyle={{
+    //     flexGrow: 1,
+    //     alignItems: "center",
+    //   }}
+    // >
+    //   <View style={{ flex: 1 }} />
+    //   <LottieView
+    //     source={require("@assets/animations/loading_owallet.json")}
+    //     loop={true}
+    //     autoPlay={true}
+    //     style={{ width: "80%", aspectRatio: 1 }}
+    //   />
+    //   <View
+    //     style={{
+    //       flex: 2,
+    //     }}
+    //   />
+    //   <Text style={style.flatten(["subtitle3", "color-text-low"])}>
+    //     <FormattedMessage id="pages.register.finalize-key.loading.text" />
+    //   </Text>
+    //   <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
+    //     <SimpleProgressBar progress={queryProgress} />
+    //   </Box>
+    //   <Text style={style.flatten(["body2", "color-text-low", "text-center"])}>
+    //     ({(queryProgress * 100).toFixed(0)}%/ 100%)
+    //   </Text>
+    //   <View
+    //     style={{
+    //       flex: 1,
+    //     }}
+    //   />
+    // </ViewRegisterContainer>
+    <PageWithView
+      disableSafeArea
+      style={{
+        backgroundColor: colors["neutral-surface-card"],
+        justifyContent: "space-between",
       }}
     >
-      <View style={{ flex: 1 }} />
-      <LottieView
-        source={require("@assets/animations/loading_owallet.json")}
-        loop={true}
-        autoPlay={true}
-        style={{ width: "80%", aspectRatio: 1 }}
-      />
       <View
         style={{
-          flex: 2,
+          display: "flex",
+          alignItems: "center",
         }}
-      />
-      <Text style={style.flatten(["subtitle3", "color-text-low"])}>
-        <FormattedMessage id="pages.register.finalize-key.loading.text" />
-      </Text>
-      <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
-        <SimpleProgressBar progress={queryProgress} />
-      </Box>
-      <Text style={style.flatten(["body2", "color-text-low", "text-center"])}>
-        ({(queryProgress * 100).toFixed(0)}%/ 100%)
-      </Text>
-      <View
-        style={{
-          flex: 1,
-        }}
-      />
-    </ViewRegisterContainer>
+      >
+        <View>
+          <View style={styles.container}>
+            <Image
+              style={{
+                width: metrics.screenWidth,
+                height: metrics.screenWidth,
+              }}
+              source={require("@assets/image/img-bg.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </View>
+          <View style={styles.containerCheck}>
+            <Image
+              style={styles.img}
+              source={require("@assets/image/logo_group.png")}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <Text size={28} weight={"700"} style={styles.text}>
+              {"CREATING"}
+            </Text>
+            <Text size={28} weight={"700"} style={styles.text}>
+              YOUR WALLET
+              {Array.from({ length: count }, (_, index) => ".").map((d) => {
+                return (
+                  <Text size={28} weight={"700"} style={styles.text}>
+                    {d}
+                  </Text>
+                );
+              })}
+            </Text>
+            <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
+              <SimpleProgressBar progress={queryProgress} />
+            </Box>
+            <Text
+              style={{
+                ...style.flatten(["body2", "color-text-low", "text-center"]),
+                color: colors["neutral-text-title"],
+              }}
+            >
+              ({(queryProgress * 100).toFixed(0)}%/ 100%)
+            </Text>
+          </View>
+          {/*<Text style={style.flatten(["subtitle3", "color-text-low"])}>*/}
+          {/*  <FormattedMessage id="pages.register.finalize-key.loading.text" />*/}
+          {/*</Text>*/}
+        </View>
+      </View>
+    </PageWithView>
   );
 });
+const styling = (colors) =>
+  StyleSheet.create({
+    btnDone: {
+      width: "100%",
+      alignItems: "center",
+      padding: 16,
+      marginBottom: 42,
+    },
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      position: "absolute",
+      top: 0,
+    },
+    containerCheck: {
+      alignItems: "center",
+      justifyContent: "center",
+      width: metrics.screenWidth,
+      height: metrics.screenHeight,
+    },
+    text: {
+      color: colors["neutral-text-title"],
+      lineHeight: 34,
+    },
+    img: {
+      width: metrics.screenWidth / 1.6,
+      height: metrics.screenWidth / 1.6,
+      marginBottom: 32,
+    },
+  });

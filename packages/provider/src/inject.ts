@@ -1239,6 +1239,12 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod('getKeysSettled', [chainIds]);
   }
+  async sign(chainId: string, signer: string, data: string | Uint8Array, type: TransactionBtcType): Promise<string> {
+    return await this._requestMethod('sign', [chainId, signer, data, type]);
+  }
+  async sendTx(chainId: string, signedTx: string): Promise<string> {
+    return await this._requestMethod('sendTx', [chainId, signedTx]);
+  }
 }
 class TronProvider extends EventEmitter implements ITronProvider {
   constructor(

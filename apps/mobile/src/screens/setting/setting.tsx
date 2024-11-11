@@ -36,6 +36,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
     modalStore,
     accountStore,
     appInitStore,
+    chainStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
@@ -53,7 +54,6 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   //   (keyStore) => keyStore.selected
   // );
   const selectedKeyInfo = keyRingStore.selectedKeyInfo;
-  console.log(selectedKeyInfo.name, "selectedKeyInfo");
   const _onPressCountryModal = () => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
@@ -251,9 +251,9 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
             <SettingBiometricLockItem />
           ) : null}
-          {/*{canShowPrivateData(keyRingStore.keyRingType) && (*/}
-          {/*  <SettingViewPrivateDataItem />*/}
-          {/*)}*/}
+          {canShowPrivateData(keyRingStore.selectedKeyInfo.type) && (
+            <SettingViewPrivateDataItem />
+          )}
           <SettingRemoveAccountItem />
         </OWCard>
 
