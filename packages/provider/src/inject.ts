@@ -28,7 +28,8 @@ import {
   IBitcoinProvider,
   ITronProvider,
   TransactionType,
-  RequestArguments
+  RequestArguments,
+  TransactionBtcType
 } from '@owallet/types';
 import { Result, JSONUint8Array, EthereumProviderRpcError } from '@owallet/router';
 import { OWalletEnigmaUtils } from './enigma';
