@@ -28,6 +28,7 @@ import { Text } from '../../components/common/text';
 import { DataModal } from './modals/data-modal';
 import { WalletStatus } from '@owallet/stores';
 import { Address } from '../../components/address';
+import { toast } from 'react-toastify';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -460,6 +461,8 @@ export const SignPage: FunctionComponent = observer(() => {
                             await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
                           }
                         } catch (e) {
+                          console.log('error on send', e);
+
                           if (mixpanel) {
                             mixpanel.track('OWallet - Message Before Sign', {
                               msgData: signDocJsonAll,
