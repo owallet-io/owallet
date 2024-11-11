@@ -13,10 +13,6 @@ export const SettingSwitchHideTestnet: FunctionComponent<{
   const [toggle, setToggle] = useState(appInitStore.getInitApp.hideTestnet ? true : false);
 
   useEffect(() => {
-    appInitStore.updateHideTestnet(!toggle);
-  }, []);
-
-  useEffect(() => {
     handleUpdateHideTestnet(toggle);
   }, [toggle, appInitStore.getInitApp.hideTestnet]);
 
