@@ -15,6 +15,8 @@ import { Image, Text } from "react-native";
 import { useStyle } from "@src/styles";
 import { IMessageRenderer } from "@src/modals/sign/cosmos/types";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const ExecuteContractMessage: IMessageRenderer = {
   process(chainId: string, msg) {
@@ -91,10 +93,15 @@ const ExecuteContractMessagePretty: FunctionComponent<{
   });
 
   const isSecretWasm = chainStore.getChain(chainId).hasFeature("secretwasm");
-
+  const { colors } = useTheme();
   return (
     <React.Fragment>
-      <Text style={style.flatten(["body3", "color-text-middle"])}>
+      <OWText
+        style={{
+          ...style.flatten(["body3"]),
+          color: colors["neutral-text-body"],
+        }}
+      >
         <FormattedMessage
           id="page.sign.components.messages.execute-wasm-contract.paragraph"
           values={{
@@ -111,7 +118,7 @@ const ExecuteContractMessagePretty: FunctionComponent<{
               .join(","),
           }}
         />
-      </Text>
+      </OWText>
 
       {/*<Gutter size={6} />*/}
       <WasmMessageView

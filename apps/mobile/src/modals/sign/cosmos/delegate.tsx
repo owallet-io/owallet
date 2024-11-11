@@ -10,6 +10,8 @@ import { Image, Text } from "react-native";
 import { useStore } from "@src/stores";
 import { useStyle } from "@src/styles";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const DelegateMessage: IMessageRenderer = {
   process(chainId: string, msg) {
@@ -71,9 +73,14 @@ const DelegateMessagePretty: FunctionComponent<{
     .get(chainId)
     .cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
     .getValidator(validatorAddress)?.description.moniker;
-
+  const { colors } = useTheme();
   return (
-    <Text style={style.flatten(["body3", "color-text-middle"])}>
+    <OWText
+      style={{
+        ...style.flatten(["body3"]),
+        color: colors["neutral-text-body"],
+      }}
+    >
       <FormattedMessage
         id="page.sign.components.messages.delegate.paragraph"
         values={{
@@ -85,6 +92,6 @@ const DelegateMessagePretty: FunctionComponent<{
           ),
         }}
       />
-    </Text>
+    </OWText>
   );
 });

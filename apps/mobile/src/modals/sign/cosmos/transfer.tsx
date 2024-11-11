@@ -11,8 +11,10 @@ import { useStyle } from "@src/styles";
 import { Box } from "@components/box";
 import { Gutter } from "@components/gutter";
 import { XAxis } from "@components/axis";
-import { Button } from "@components/button";
+import { Button, OWButton } from "@components/button";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const TransferMessage: IMessageRenderer = {
   process(chainId: string, msg) {
@@ -80,10 +82,15 @@ const TransferMessagePretty: FunctionComponent<{
 
   const currency = chainStore.getChain(chainId).forceFindCurrency(amount.denom);
   const coinPretty = new CoinPretty(currency, amount.amount);
-
+  const { colors } = useTheme();
   return (
     <React.Fragment>
-      <Text style={style.flatten(["body3", "color-text-middle"])}>
+      <OWText
+        style={{
+          ...style.flatten(["body3"]),
+          color: colors["neutral-text-body"],
+        }}
+      >
         <FormattedMessage
           id="page.sign.components.messages.transfer.paragraph"
           values={{
@@ -95,7 +102,7 @@ const TransferMessagePretty: FunctionComponent<{
             ),
           }}
         />
-      </Text>
+      </OWText>
 
       {ibcMemo ? (
         <Box>
@@ -103,10 +110,15 @@ const TransferMessagePretty: FunctionComponent<{
 
           {isOpen ? (
             <React.Fragment>
-              <Text
+              <OWText
                 style={StyleSheet.flatten([
-                  style.flatten(["body3", "color-text-middle"]),
-                  { width: 240, margin: 0, marginBottom: 8 },
+                  style.flatten(["body3"]),
+                  {
+                    width: 240,
+                    margin: 0,
+                    marginBottom: 8,
+                    color: colors["neutral-text-body"],
+                  },
                 ])}
               >
                 {isOpen
@@ -118,17 +130,18 @@ const TransferMessagePretty: FunctionComponent<{
                       }
                     })()
                   : ""}
-              </Text>
+              </OWText>
             </React.Fragment>
           ) : null}
           <XAxis>
-            <Button
-              size="extra-small"
-              color="secondary"
-              containerStyle={{
-                backgroundColor: style.get("color-gray-400").color,
-              }}
-              text={
+            <OWButton
+              fullWidth={false}
+              size="small"
+              type="secondary"
+              // containerStyle={{
+              //   backgroundColor: style.get("color-gray-400").color,
+              // }}
+              label={
                 isOpen
                   ? intl.formatMessage({
                       id: "page.sign.components.messages.wasm-message-view.close-button",
