@@ -10,6 +10,7 @@ import {
   useGasConfig,
   useGasSimulator,
   useSenderConfig,
+  useTxConfigsValidate,
   useZeroAllowedGasConfig,
 } from "@owallet/hooks";
 // import {BaseModalHeader} from '../../components/modal';
@@ -331,6 +332,14 @@ export const SignEthereumModal = registerModal(
         console.log(e);
       }
     };
+    const txConfigsValidate = useTxConfigsValidate({
+      senderConfig,
+      gasConfig: gasConfig,
+      amountConfig,
+      feeConfig,
+      memoConfig: null,
+    });
+    const buttonDisabled = txConfigsValidate.interactionBlocked;
     return (
       <WrapViewModal
         title={intl.formatMessage({
@@ -421,6 +430,7 @@ export const SignEthereumModal = registerModal(
             <OWButton
               type={"primary"}
               size="large"
+              disabled={buttonDisabled}
               label={intl.formatMessage({ id: "button.approve" })}
               style={{ flex: 1, width: "100%" }}
               onPress={approve}

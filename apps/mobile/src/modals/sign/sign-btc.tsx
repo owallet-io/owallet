@@ -11,6 +11,7 @@ import {
   useMemoConfig,
   useRecipientConfig,
   useSenderConfig,
+  useTxConfigsValidate,
 } from "@owallet/hooks";
 import { Column, Columns } from "../../components/column";
 import { Text } from "react-native";
@@ -49,6 +50,9 @@ import { handleBtcPreSignByLedger } from "@src/modals/sign/util/handle-btc-sign"
 import { useLedgerBLE } from "@src/providers/ledger-ble";
 import { OWalletError } from "@owallet/router";
 import { ErrModuleLedgerSign } from "@src/modals/sign/util/ledger-types";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
+
 export const SignBtcModal = registerModal(
   observer<{
     interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
@@ -221,7 +225,14 @@ export const SignBtcModal = registerModal(
       memoConfig
     );
     console.log(feeConfig.fees, "feeConfig");
-
+    const txConfigsValidate = useTxConfigsValidate({
+      senderConfig,
+      gasConfig: null,
+      amountConfig,
+      feeConfig,
+      memoConfig,
+    });
+    const buttonDisabled = txConfigsValidate.interactionBlocked;
     useEffect(() => {
       const data = interactionData.data;
       const unsignedTx: UnsignedBtcTransaction = JSON.parse(
@@ -300,98 +311,117 @@ export const SignBtcModal = registerModal(
         setIsLedgerInteracting(false);
       }
     };
-
+    const { colors } = useTheme();
     return (
-      <Box style={style.flatten(["padding-12", "padding-top-0"])}>
-        <OWText size={16} weight={"700"}>
-          {intl.formatMessage({
-            id: "page.sign.ethereum.tx.title",
-          })}
-        </OWText>
-        <Gutter size={24} />
+      <WrapViewModal
+        title={intl.formatMessage({
+          id: "page.sign.ethereum.tx.title",
+        })}
+      >
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+          <Gutter size={24} />
 
-        <Columns sum={1} alignY="center">
-          <Text style={style.flatten(["h5", "color-label-default"])}>
-            <FormattedMessage id="page.sign.ethereum.tx.summary" />
-          </Text>
+          <Columns sum={1} alignY="center">
+            <OWText style={style.flatten(["h5"])}>
+              <FormattedMessage id="page.sign.ethereum.tx.summary" />
+            </OWText>
 
-          <Column weight={1} />
+            <Column weight={1} />
 
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
+          </Columns>
 
-        <Gutter size={8} />
+          <Gutter size={8} />
 
-        {isViewData ? (
-          <Box
-            maxHeight={128}
-            backgroundColor={style.get("color-gray-500").color}
-            padding={12}
-            borderRadius={6}
-          >
-            <ScrollView persistentScrollbar={true}>
-              <Text style={style.flatten(["body3", "color-text-middle"])}>
-                {signingDataText}
-              </Text>
-            </ScrollView>
-          </Box>
-        ) : (
-          <Box
-            padding={12}
-            minHeight={128}
-            maxHeight={240}
-            backgroundColor={style.get("color-gray-500").color}
-            borderRadius={6}
-          >
-            {
-              //@ts-ignore
-              defaultRegistry.render(
-                interactionData.data.chainId,
-                JSON.parse(Buffer.from(interactionData.data.message).toString())
-              ).content
-            }
-          </Box>
-        )}
+          {isViewData ? (
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
+              <ScrollView persistentScrollbar={true}>
+                <OWText style={style.flatten(["body3"])}>
+                  {signingDataText}
+                </OWText>
+              </ScrollView>
+            </Box>
+          ) : (
+            <Box
+              padding={12}
+              minHeight={128}
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
+              {
+                //@ts-ignore
+                defaultRegistry.render(
+                  interactionData.data.chainId,
+                  JSON.parse(
+                    Buffer.from(interactionData.data.message).toString()
+                  )
+                ).content
+              }
+            </Box>
+          )}
 
-        <Gutter size={60} />
-        {interactionData.isInternal && (
-          <FeeSummary feeConfig={feeConfig} gasConfig={null} />
-        )}
+          {interactionData.isInternal && (
+            <FeeSummary feeConfig={feeConfig} gasConfig={null} />
+          )}
 
-        <Gutter size={12} />
-        {ledgerInteractingError ? (
-          <React.Fragment>
-            <LedgerGuideBox
-              data={{
-                keyInsensitive: interactionData.data.keyInsensitive,
-                isBtc: !!chainInfo.features?.includes("btc"),
+          <Gutter size={12} />
+          {ledgerInteractingError ? (
+            <React.Fragment>
+              <LedgerGuideBox
+                data={{
+                  keyInsensitive: interactionData.data.keyInsensitive,
+                  isBtc: !!chainInfo.features?.includes("btc"),
+                }}
+                isLedgerInteracting={isLedgerInteracting}
+                ledgerInteractingError={ledgerInteractingError}
+              />
+
+              <Gutter size={12} />
+            </React.Fragment>
+          ) : null}
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signBtcInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
               }}
-              isLedgerInteracting={isLedgerInteracting}
-              ledgerInteractingError={ledgerInteractingError}
             />
 
-            <Gutter size={12} />
-          </React.Fragment>
-        ) : null}
-        <OWButton
-          // size="large"
-          label={intl.formatMessage({
-            id: "button.approve",
-          })}
-          loading={
-            signBtcInteractionStore.isObsoleteInteraction(interactionData.id) ||
-            isLedgerInteracting
-          }
-          onPress={approve}
+            <Gutter size={16} />
 
-          // innerButtonStyle={style.flatten(['width-full'])}
-        />
-
-        <Gutter size={24} />
-      </Box>
+            <OWButton
+              disabled={buttonDisabled}
+              type={"primary"}
+              size="large"
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={approve}
+              loading={
+                signBtcInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
+              }
+            />
+          </XAxis>
+          {/*<Gutter size={24} />*/}
+        </Box>
+      </WrapViewModal>
     );
   })
 );
@@ -409,9 +439,9 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(["text-button2", "color-label-default"])}>
+        <OWText style={style.flatten(["text-button2"])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
-        </Text>
+        </OWText>
 
         <Gutter size={4} />
 
