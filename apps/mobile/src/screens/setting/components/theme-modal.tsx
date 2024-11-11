@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { typography, metrics } from "../../../themes";
-import { capitalizeFirstLetter, _keyExtract } from "../../../utils/helper";
-import { Text } from "@src/components/text";
-import { AppInit } from "@src/stores/app_init";
-import { ModalStore } from "../../../stores/modal";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import OWFlatList from "@src/components/page/ow-flat-list";
-import { ChainStore } from "@owallet/stores";
-import { ChainIdEnum } from "@owallet/common";
-import OWText from "@src/components/text/ow-text";
-import { navigate } from "@src/router/root";
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { typography, metrics } from '../../../themes';
+import { capitalizeFirstLetter, _keyExtract } from '../../../utils/helper';
+import { Text } from '@src/components/text';
+import { AppInit } from '@src/stores/app_init';
+import { ModalStore } from '../../../stores/modal';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { ChainStore } from '@owallet/stores';
+import { ChainIdEnum } from '@owallet/common';
+import OWText from '@src/components/text/ow-text';
+import { navigate } from '@src/router/root';
 
 interface ThemeModalProps {
   modalStore: ModalStore;
@@ -19,28 +19,24 @@ interface ThemeModalProps {
 }
 
 const themes = [
-  { label: "light", isNew: false },
-  { label: "dark", isNew: false },
-  { label: "osmosis", isNew: true },
-  { label: "injective", isNew: true },
+  { label: 'light', isNew: false },
+  { label: 'dark', isNew: false },
+  { label: 'osmosis', isNew: true },
+  { label: 'injective', isNew: true }
 ];
 
-export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
-  appInitStore,
-  modalStore,
-  colors,
-}) => {
-  const onChooseTheme = async (item) => {
-    console.log(item.label, "item.label");
-    if (item.label !== "light" && item.label !== "dark") {
-      appInitStore.updateTheme("dark");
+export const ThemeModal: FunctionComponent<ThemeModalProps> = ({ appInitStore, modalStore, colors }) => {
+  const onChooseTheme = async item => {
+    console.log(item.label, 'item.label');
+    if (item.label !== 'light' && item.label !== 'dark') {
+      appInitStore.updateTheme('dark');
       appInitStore.updateWalletTheme(item.label);
     } else {
       appInitStore.updateTheme(item.label);
-      appInitStore.updateWalletTheme("owallet");
+      appInitStore.updateWalletTheme('owallet');
     }
     modalStore.close();
-    navigate("FullScreenModal");
+    navigate('FullScreenModal');
   };
 
   const renderTheme = ({ item }) => {
@@ -48,7 +44,7 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
 
     let selected = false;
 
-    if (appInitStore.getInitApp.wallet === "owallet") {
+    if (appInitStore.getInitApp.wallet === 'owallet') {
       if (appInitStore.getInitApp.theme === item.label) {
         selected = true;
       }
@@ -59,45 +55,21 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
     }
 
     switch (item.label) {
-      case "light":
-        icon = (
-          <OWIcon
-            type={"images"}
-            style={styles.img}
-            source={require("@src/assets/images/theme-light.png")}
-          />
-        );
+      case 'light':
+        icon = <OWIcon type={'images'} style={styles.img} source={require('@src/assets/images/theme-light.png')} />;
         break;
-      case "dark":
-        icon = (
-          <OWIcon
-            type={"images"}
-            style={styles.img}
-            source={require("@src/assets/images/theme-dark.png")}
-          />
-        );
+      case 'dark':
+        icon = <OWIcon type={'images'} style={styles.img} source={require('@src/assets/images/theme-dark.png')} />;
         break;
-      case "osmosis":
-        icon = (
-          <OWIcon
-            type={"images"}
-            style={styles.img}
-            source={require("@src/assets/images/theme-osmo.png")}
-          />
-        );
+      case 'osmosis':
+        icon = <OWIcon type={'images'} style={styles.img} source={require('@src/assets/images/theme-osmo.png')} />;
         break;
-      case "injective":
-        icon = (
-          <OWIcon
-            type={"images"}
-            style={styles.img}
-            source={require("@src/assets/images/theme-inj.png")}
-          />
-        );
+      case 'injective':
+        icon = <OWIcon type={'images'} style={styles.img} source={require('@src/assets/images/theme-inj.png')} />;
         break;
 
       default:
-        icon = <OWIcon name="tdesign_moon" color={colors["white"]} size={18} />;
+        icon = <OWIcon name="tdesign_moon" color={colors['white']} size={18} />;
         break;
     }
 
@@ -109,25 +81,16 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
         style={{
           width: metrics.screenWidth / 2.3,
           height: metrics.screenWidth / 2,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
         {icon}
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           {selected ? (
-            <OWIcon
-              name={"tdesigncheck-circle-filled"}
-              color={colors["primary-surface-default"]}
-              size={14}
-            />
+            <OWIcon name={'tdesigncheck-circle-filled'} color={colors['primary-surface-default']} size={14} />
           ) : null}
-          <OWText
-            style={{ marginLeft: 4 }}
-            size={16}
-            weight="600"
-            color={colors["neutral-text-title"]}
-          >
+          <OWText style={{ marginLeft: 4 }} size={16} weight="600" color={colors['neutral-text-title']}>
             {capitalizeFirstLetter(item.label)}
           </OWText>
         </View>
@@ -138,19 +101,19 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
   return (
     <View
       style={{
-        backgroundColor: colors["neutral-surface-card"],
+        backgroundColor: colors['neutral-surface-card']
       }}
     >
       <View
         style={{
-          alignSelf: "center",
+          alignSelf: 'center'
         }}
       >
         <Text
           style={{
             ...typography.h6,
-            fontWeight: "900",
-            color: colors["neutral-text-title"],
+            fontWeight: '900',
+            color: colors['neutral-text-title']
           }}
         >
           {`THEME`}
@@ -158,20 +121,19 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
       </View>
       <View
         style={{
-          marginTop: 16,
+          marginTop: 16
         }}
       >
         <OWFlatList
           data={themes}
           renderItem={renderTheme}
-          keyExtractor={(item) => item.id}
+          keyExtractor={item => item.id}
           numColumns={2}
           columnWrapperStyle={styles.row}
           ListFooterComponent={
             <View style={{ marginTop: 12 }}>
-              <Text color={colors["neutral-text-body"]} size={13}>
-                Seamlessly experience the Osmosis and Injective themes on
-                OWallet
+              <Text color={colors['neutral-text-body']} size={13}>
+                Seamlessly experience the Osmosis and Injective themes on OWallet
               </Text>
             </View>
           }
@@ -183,14 +145,14 @@ export const ThemeModal: FunctionComponent<ThemeModalProps> = ({
 
 const styles = StyleSheet.create({
   row: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between'
   },
   itemContainer: {
     padding: 24,
-    alignItems: "center",
+    alignItems: 'center'
   },
   img: {
     width: metrics.screenWidth / 2.4,
-    height: metrics.screenWidth / 2.3,
-  },
+    height: metrics.screenWidth / 2.3
+  }
 });

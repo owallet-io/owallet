@@ -19,6 +19,23 @@ import { useRelayerFeeToken, useTokenFee } from './use-relayer-fees';
 
 export const SIMULATE_INIT_AMOUNT = 1;
 
+export const getRouterConfig = (options?: {
+  path?: string;
+  protocols?: string[];
+  dontAllowSwapAfter?: string[];
+  maxSplits?: number;
+  ignoreFee?: boolean;
+}) => {
+  return {
+    url: 'https://osor.oraidex.io',
+    path: options?.path ?? '/smart-router/alpha-router',
+    protocols: options?.protocols ?? ['Oraidex', 'OraidexV3'],
+    dontAllowSwapAfter: options?.dontAllowSwapAfter ?? ['Oraidex', 'OraidexV3'],
+    maxSplits: options?.maxSplits,
+    ignoreFee: options?.ignoreFee ?? false
+  };
+};
+
 /**
  * Simulate token fee between fromToken & toToken
  * @param originalFromToken
@@ -50,9 +67,14 @@ const useEstimateAmount = (
   simulateOption?: {
     useAlphaSmartRoute?: boolean;
     useIbcWasm?: boolean;
+    useAlphaIbcWasm?: boolean;
+    isAvgSimulate?: boolean;
+    path?: string;
     protocols?: string[];
-  },
-  isAIRoute?: boolean
+    dontAllowSwapAfter?: string[];
+    maxSplits?: number;
+    ignoreFee?: boolean;
+  }
 ) => {
   const [amountLoading, setAmountLoading] = useState(false);
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
@@ -115,15 +137,10 @@ const useEstimateAmount = (
           originalAmount: initAmount,
           routerClient,
           routerOption: {
-            useAlphaSmartRoute: simulateOption?.useAlphaSmartRoute,
+            useAlphaIbcWasm: simulateOption?.useAlphaIbcWasm,
             useIbcWasm: simulateOption?.useIbcWasm
           },
-          routerConfig: {
-            url: 'https://osor.oraidex.io',
-            path: '/smart-router/alpha-router',
-            protocols: simulateOption?.protocols ?? ['Oraidex', 'OraidexV3'],
-            dontAllowSwapAfter: ['Oraidex', 'OraidexV3']
-          }
+          routerConfig: getRouterConfig(simulateOption)
         });
         setAmountLoading(false);
         setImpactWarning(0);
@@ -278,11 +295,11 @@ const useEstimateAmount = (
     } else {
       setSwapAmount([0, 0]);
     }
-  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken, isAIRoute]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client, isAIRoute]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
 
   return {
     minimumReceive,

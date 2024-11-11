@@ -43,7 +43,7 @@ import {
   getSpecialCoingecko,
   isAllowIBCWasm,
   getProtocolsSmartRoute,
-  isAllowAlphaSmartRouter
+  isAllowAlphaIbcWasm
 } from './helpers';
 import { Mixpanel } from 'mixpanel-react-native';
 import { metrics } from '@src/themes';
@@ -220,9 +220,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromTokenDenom,
     toTokenDenom
   );
+
+  const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-  const useAlphaSmartRouter = isAllowAlphaSmartRouter();
-  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, useIbcWasm);
+  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, {
+    useIbcWasm,
+    useAlphaIbcWasm
+  });
+
+  const simulateOption = {
+    useAlphaIbcWasm,
+    useIbcWasm,
+    protocols,
+    maxSplits: useAlphaIbcWasm ? 1 : 10,
+    dontAllowSwapAfter: useAlphaIbcWasm ? [''] : undefined
+  };
+
   const {
     minimumReceive,
     isWarningSlippage,
@@ -245,12 +258,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     client,
     setSwapAmount,
     handleErrorSwap,
-    {
-      useAlphaSmartRoute: useAlphaSmartRouter,
-      useIbcWasm: useIbcWasm,
-      protocols
-    },
-    isAIRoute
+    simulateOption
   );
 
   const { usdPriceShowFrom, usdPriceShowTo, bridgeTokenFee, estSwapFee, totalFeeEst } = useFee({
@@ -327,6 +335,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
     if (accountOrai.isNanoLedger) {
+      // if (keyRingStore.keyRingLedgerAddresses && Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
+      //   setTimeout(() => {
+      //     handleFetchAmounts(
+      //       {
+      //         orai: accountOrai.bech32Address,
+      //         eth: accountEth.ethereumHexAddress,
+      //         tron: accountTron.base58Address,
+      //         kwt: null
+      //       },
+      //       customChainInfos
+      //     );
+      //   }, 800);
+      // }
     } else if (accountOrai.bech32Address && accountEth.ethereumHexAddress && accountTron.base58Address) {
       setTimeout(() => {
         handleFetchAmounts(
@@ -334,7 +355,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             orai: accountOrai.bech32Address,
             eth: accountEth.ethereumHexAddress,
             tron: accountTron.base58Address,
-            kwt: null
+            kwt: undefined
           },
           customChainInfos
         );
@@ -468,7 +489,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toAmount: `${toAmountToken}`,
       fromNetwork: originalFromToken.chainId,
       toNetwork: originalToToken.chainId,
-      useAlphaSmartRouter,
+      isAlphaIbcWasm: useAlphaIbcWasm,
       priceOfFromTokenInUsd: usdPriceShowFrom,
       priceOfToTokenInUsd: usdPriceShowTo
     };
@@ -496,9 +517,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       simulateAmount = toAmount(simulateData.displayAmount, originalToToken.decimals).toString();
     }
 
-    const alphaSmartRoutes = useAlphaSmartRouter ? simulateData?.routes : undefined;
+    const alphaSmartRoutes = simulateData?.routes;
 
-    const affiliateAddress = 'orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n';
     const universalSwapData = {
       sender: { cosmos: cosmosAddress, evm: evmAddress, tron: tronAddress },
       originalFromToken: originalFromToken,
@@ -514,7 +534,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       fromAmount: fromAmountToken,
       relayerFee,
       alphaSmartRoutes,
-      affiliates: [{ address: affiliateAddress, basis_points_fee: '25' }]
+      affiliates: [{ address: AFFILIATE_ADDRESS, basis_points_fee: '25' }]
     } as UniversalSwapData;
 
     let compileSwapData = sendToAddress ? { ...universalSwapData, recipientAddress: sendToAddress } : universalSwapData;
@@ -529,7 +549,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       //@ts-ignore
       evmWallet,
       swapOptions: {
-        isAlphaSmartRouter: useAlphaSmartRouter,
+        isAlphaIbcWasm: useAlphaIbcWasm,
         isIbcWasm: useIbcWasm
       }
     });
@@ -544,7 +564,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       type: 'success',
       onPress: async () => {
         const chainInfo = chainStore.getChain(originalFromToken.chainId);
-        if (transactionHash) {
+        if (chainInfo.txExplorer && transactionHash) {
           await openLink(getTransactionUrl(originalFromToken.chainId, transactionHash));
         }
       }

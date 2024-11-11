@@ -4830,6 +4830,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@keplr-wallet/types@npm:^0.11.38":
+  version: 0.11.64
+  resolution: "@keplr-wallet/types@npm:0.11.64"
+  dependencies:
+    axios: ^0.27.2
+    long: ^4.0.0
+  checksum: d1d281cdb4c2f61ad46cad158559746927a65a4274170208c3ed712dd550bd623c058fea5cd08d0c1f7806c9856f3c901807f8946cd6cbc99f871b4ce03f94a9
+  languageName: node
+  linkType: hard
+
 "@kiruse/serde@npm:^0.8.0-rc.6":
   version: 0.8.0-rc.6
   resolution: "@kiruse/serde@npm:0.8.0-rc.6"
@@ -5883,6 +5893,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oraichain/oraidex-common@npm:^1.1.27":
+  version: 1.1.28
+  resolution: "@oraichain/oraidex-common@npm:1.1.28"
+  dependencies:
+    "@cosmjs/amino": 0.31.3
+    "@cosmjs/cosmwasm-stargate": 0.31.3
+    "@cosmjs/crypto": 0.31.3
+    "@cosmjs/proto-signing": 0.31.3
+    "@cosmjs/stargate": 0.31.3
+    "@cosmjs/tendermint-rpc": 0.31.3
+    "@ethersproject/providers": ^5.0.10
+    "@injectivelabs/sdk-ts": 1.12.1
+    "@keplr-wallet/types": ^0.11.38
+    "@oraichain/oraidex-contracts-sdk": latest
+    axios: 1.7.2
+    axios-extensions: 3.1.7
+    bignumber.js: ^9.1.2
+    cosmjs-types: 0.8.0
+    ethers: ^5.0.15
+    tronweb: 6.0.0-beta.4
+  checksum: 3aeb6824d49160f4d407063a8bba5316ee11ac59896f77e1a3df923aaed08fe6904a30bca5a4d657740ddb129fc00bd11ad908bc63cfaadc9da589505b9ab626
+  languageName: node
+  linkType: hard
+
 "@oraichain/oraidex-contracts-build@npm:^1.0.22":
   version: 1.0.36
   resolution: "@oraichain/oraidex-contracts-build@npm:1.0.36"
@@ -5897,7 +5931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.11, @oraichain/oraidex-universal-swap@npm:^1.1.12":
+"@oraichain/oraidex-universal-swap@npm:^1.1.12":
   version: 1.1.12
   resolution: "@oraichain/oraidex-universal-swap@npm:1.1.12"
   dependencies:
@@ -5909,6 +5943,34 @@ __metadata:
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
   checksum: e6a82324001c83f5da70f919c7969e94a2806b04271dac1726903f707ffe0860337173b1fa8f0d788719574894e34462b4895218bf12d9053cb9e4c77bc233f1
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-universal-swap@npm:^1.1.19":
+  version: 1.1.19
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.19"
+  dependencies:
+    "@oraichain/common": ^1.0.3
+    "@oraichain/oraidex-common": ^1.1.27
+    "@oraichain/oraidex-contracts-sdk": ^1.0.49
+    "@oraichain/osor-api-contracts-sdk": ^1.0.2
+    bech32: 1.1.4
+    ethers: ^5.0.15
+    tronweb: 5.3.2
+    ts-protoc-gen: ^0.15.0
+  checksum: 9dff254f4869b95e9b735c36623d6ab54e177e36fb4613c37ed978ca44aa17f8604f386ae22b701746760266e774cddd03dad40cf41eb1c4b326d55c287b5c92
+  languageName: node
+  linkType: hard
+
+"@oraichain/osor-api-contracts-sdk@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@oraichain/osor-api-contracts-sdk@npm:1.0.2"
+  dependencies:
+    "@cosmjs/amino": 0.31.3
+    "@cosmjs/cosmwasm-stargate": 0.31.3
+    "@cosmjs/crypto": 0.31.3
+    "@cosmjs/proto-signing": 0.31.3
+  checksum: f1e96016b17e9daf73ad45f69e0fdb4802a02aa5a375c9a91c481200d4c858e5503a8fd3510540c72dd6818b03fb323b2dd4214082afeb9bd1369a24a8d57bb5
   languageName: node
   linkType: hard
 
@@ -24196,7 +24258,7 @@ __metadata:
     "@oraichain/oraidex-common": ^1.1.21
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.11
+    "@oraichain/oraidex-universal-swap": ^1.1.19
     "@owallet/stores-btc": "*"
     "@owallet/stores-oasis": "*"
     "@owallet/stores-trx": "*"
