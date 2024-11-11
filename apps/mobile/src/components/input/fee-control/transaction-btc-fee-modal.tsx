@@ -30,6 +30,7 @@ import OWText from "@components/text/ow-text";
 import { registerModal } from "@src/modals/base";
 import { TextInput } from "@components/input";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const TransactionBtcFeeModal = registerModal(
   observer<{
@@ -82,7 +83,7 @@ export const TransactionBtcFeeModal = registerModal(
       prevFeeConfigType.current = feeConfig.type;
       prevFeeConfigCurrency.current = feeConfigCurrencyString;
     }, [feeConfig.type, feeConfigCurrencyString]);
-
+    const { colors } = useTheme();
     return (
       <WrapViewModal
         style={{
@@ -154,9 +155,14 @@ export const TransactionBtcFeeModal = registerModal(
               />
               <Gutter size={8} />
 
-              <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
+              <OWText
+                style={{
+                  ...style.flatten(["subtitle3"]),
+                  color: colors["neutral-text-body"],
+                }}
+              >
                 <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
-              </Text>
+              </OWText>
 
               <Gutter size={8} />
 

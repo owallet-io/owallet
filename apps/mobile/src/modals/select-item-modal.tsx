@@ -9,6 +9,7 @@ import { Box } from "@components/box";
 import { useStyle } from "@src/styles";
 import { RectButton } from "@components/rect-button";
 import { XAxis } from "@components/axis";
+import OWText from "@components/text/ow-text";
 // import {RectButton} from '../rect-button';
 // import {XAxis} from '../axis';
 
@@ -53,9 +54,7 @@ const SelectOption: FunctionComponent<{
       onPress={onPress}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(["body1", "color-text-high", "flex-1"])}>
-          {title}
-        </Text>
+        <OWText style={style.flatten(["body1", "flex-1"])}>{title}</OWText>
 
         <OptionToggle selected={selected} />
       </XAxis>

@@ -10,7 +10,7 @@ import {
 } from "@react-navigation/native";
 // import {RootStackParamList, StackNavProp} from '../../../navigation';
 import { Box } from "../../../components/box";
-import { InteractionManager, Text } from "react-native";
+import { InteractionManager, StyleSheet, Text, View } from "react-native";
 import { XAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
 import {
@@ -31,11 +31,17 @@ import Btc from "@ledgerhq/hw-app-btc";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
-import { RootStackParamList } from "@src/router/root";
+import { goBack, RootStackParamList } from "@src/router/root";
 import { PageWithBottom } from "@components/page/page-with-bottom";
 import { OWButton } from "@components/button";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { metrics } from "@src/themes";
+import OWIcon from "@components/ow-icon/ow-icon";
+import OWText from "@components/text/ow-text";
+import { Controller } from "react-hook-form";
+import { RectButton } from "@components/rect-button";
+import { SelectItemModal } from "@src/modals/select-item-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export type Step = "unknown" | "connected" | "app";
 
@@ -347,35 +353,97 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
   );
-
+  const styles = useStyles();
+  const { colors } = useTheme();
   return (
-    <PageWithBottom
-      // paragraph={`${intl.formatMessage({
-      //   id: "pages.register.components.header.header-step.title",
-      // })} ${stepPrevious + 1}/${stepTotal}`}
-      bottomGroup={
-        <OWButton
-          label={intl.formatMessage({ id: "button.connect" })}
-          loading={isLoading}
-          onPress={connectLedger}
-        />
-      }
-      style={[
-        {
-          marginTop: 20,
-          width: metrics.screenWidth / 2.3,
-          borderRadius: 999,
-        },
-      ]}
-      // textStyle={styles.txtBtnSend}
-      // paddingX={20}
-    >
+    // <PageWithBottom
+    //   bottomGroup={
+    //     <OWButton
+    //       label={intl.formatMessage({ id: "button.connect" })}
+    //       loading={isLoading}
+    //       onPress={connectLedger}
+    //     />
+    //   }
+    //   style={[
+    //     {
+    //       marginTop: 20,
+    //       width: metrics.screenWidth / 2.3,
+    //       borderRadius: 999,
+    //     },
+    //   ]}
+    //   // textStyle={styles.txtBtnSend}
+    //   // paddingX={20}
+    // >
+    //   <ScrollView
+    //     keyboardShouldPersistTaps="handled"
+    //     showsVerticalScrollIndicator={false}
+    //   >
+    //     <Box
+    //       backgroundColor={style.get("color-gray-600").color}
+    //       borderRadius={25}
+    //       paddingX={30}
+    //       marginTop={12}
+    //       paddingY={36}
+    //     >
+    //       <StepView
+    //         step={1}
+    //         paragraph={intl.formatMessage({
+    //           id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
+    //         })}
+    //         icon={
+    //           <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
+    //             <LedgerIcon size={60} />
+    //           </Box>
+    //         }
+    //         focused={step === "unknown"}
+    //         completed={step !== "unknown"}
+    //       />
+    //
+    //       <Gutter size={20} />
+    //
+    //       <StepView
+    //         step={2}
+    //         paragraph={intl.formatMessage(
+    //           { id: "pages.register.connect-ledger.open-app-step-paragraph" },
+    //           { app: propApp }
+    //         )}
+    //         icon={
+    //           <Box style={{ opacity: step !== "connected" ? 0.5 : 1 }}>
+    //             {(() => {
+    //               switch (propApp) {
+    //                 case "Terra":
+    //                   return <TerraIcon size={60} />;
+    //                 case "Ethereum":
+    //                   return <EthereumIcon size={60} />;
+    //                 default:
+    //                   return <CosmosIcon size={60} />;
+    //               }
+    //             })()}
+    //           </Box>
+    //         }
+    //         focused={step === "connected"}
+    //         completed={step === "app"}
+    //       />
+    //     </Box>
+    //   </ScrollView>
+    // </PageWithBottom>
+    <View style={styles.container}>
       <ScrollView
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        style={{
+          paddingHorizontal: 16,
+        }}
       >
+        <TouchableOpacity onPress={goBack} style={styles.goBack}>
+          <OWIcon
+            size={16}
+            color={colors["neutral-icon-on-light"]}
+            name="arrow-left"
+          />
+        </TouchableOpacity>
         <Box
-          backgroundColor={style.get("color-gray-600").color}
+          backgroundColor={colors["neutral-surface-bg"]}
           borderRadius={25}
           paddingX={30}
           marginTop={12}
@@ -422,7 +490,21 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
           />
         </Box>
       </ScrollView>
-    </PageWithBottom>
+
+      <View style={styles.aic}>
+        <View style={styles.signIn}>
+          <OWButton
+            style={{
+              borderRadius: 32,
+            }}
+            textStyle={{ color: colors["neutral-text-action-on-dark-bg"] }}
+            label={intl.formatMessage({ id: "button.connect" })}
+            loading={isLoading}
+            onPress={connectLedger}
+          />
+        </View>
+      </View>
+    </View>
   );
 });
 
@@ -435,11 +517,12 @@ const StepView: FunctionComponent<{
   completed: boolean;
 }> = ({ step, paragraph, icon, focused, completed }) => {
   const style = useStyle();
+  const { colors } = useTheme();
   return (
     <Box
       borderRadius={18}
       backgroundColor={
-        focused ? style.get("color-gray-500").color : "transparent"
+        focused ? colors["neutral-surface-pressed"] : "transparent"
       }
       paddingX={16}
       paddingY={20}
@@ -451,29 +534,101 @@ const StepView: FunctionComponent<{
 
         <Box style={{ flex: 1 }}>
           <XAxis alignY="center">
-            <Text style={style.flatten(["h3", "color-text-high"])}>
+            <OWText style={style.flatten(["h3"])}>
               <FormattedMessage
                 id="pages.register.connect-ledger.step-text"
                 values={{ step }}
               />
-            </Text>
+            </OWText>
             {completed ? (
               <React.Fragment>
                 <Gutter size={4} />
 
                 <CheckIcon
-                  size={24}
+                  width={24}
+                  height={24}
                   color={style.get("color-text-high").color}
                 />
               </React.Fragment>
             ) : null}
           </XAxis>
 
-          <Text style={style.flatten(["body2", "color-text-middle"])}>
+          <OWText
+            style={{
+              ...style.flatten(["body2"]),
+              color: colors["neutral-text-body"],
+            }}
+          >
             {paragraph}
-          </Text>
+          </OWText>
         </Box>
       </XAxis>
     </Box>
   );
+};
+
+const useStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    mnemonicInput: {
+      width: metrics.screenWidth - 40,
+      paddingLeft: 20,
+      paddingRight: 20,
+      paddingVertical: 10,
+      backgroundColor: "transparent",
+    },
+    borderInput: {
+      borderColor: colors["primary-surface-default"],
+      borderWidth: 2,
+      backgroundColor: "transparent",
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8,
+    },
+
+    container: {
+      paddingTop: metrics.screenHeight / 14,
+      justifyContent: "space-between",
+      height: "100%",
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    signIn: {
+      width: "100%",
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors["neutral-border-default"],
+      padding: 16,
+    },
+    aic: {
+      paddingBottom: 20,
+    },
+    rc: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    title: {
+      paddingHorizontal: 16,
+      paddingTop: 24,
+    },
+    goBack: {
+      backgroundColor: colors["neutral-surface-action3"],
+      borderRadius: 999,
+      width: 44,
+      height: 44,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    paste: {
+      paddingHorizontal: 16,
+      paddingBottom: 24,
+      width: "100%",
+    },
+    pasteBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "flex-end",
+    },
+  });
 };
