@@ -98,14 +98,14 @@ export class BackgroundTxService {
             return new Promise<void>(async (resolve, reject) => {
               try {
                 const { status, data } = await simpleFetch<TXSLcdRest>(
-                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
+                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txResponse.txhash}`
                 );
                 if (data && status === 200) {
                   const tx = { ...data?.tx_response } as any;
 
                   if (options.onFulfill) {
                     if (!tx.hash) {
-                      tx.hash = txHash;
+                      tx.hash = data?.tx_response.txhash;
                     }
                     options.onFulfill(tx);
                   }
@@ -133,7 +133,7 @@ export class BackgroundTxService {
             maxWaitMsAfterError: 1000,
           }
         );
-        return;
+        return txHash;
       }
       retry(
         () => {

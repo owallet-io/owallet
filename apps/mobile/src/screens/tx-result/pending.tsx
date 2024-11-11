@@ -86,7 +86,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (isFocused) {
       const isEvmTx = chainId?.includes("eip155");
-
+      console.log(txHash, "txHash");
       if (chainInfo.chainId?.includes("Oraichain") && txHash) {
         retry(
           () => {
