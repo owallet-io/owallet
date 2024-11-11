@@ -370,6 +370,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
+    txExplorer: {
+      name: "Oraiscan",
+      txUrl: "https://scan.orai.io/txs/{txHash}",
+      accountUrl: "https://scan.orai.io/account/{address}",
+    },
   },
   {
     rpc: "https://sapphire.oasis.io",
@@ -3049,6 +3054,15 @@ export const ChainIdentifierToTxExplorerMap: Record<
     name: "Mintscan",
     txUrl: "https://www.mintscan.io/cosmos/tx/{txHash}",
   },
+  Oraichain: {
+    name: "Oraiscan",
+    txUrl: "https://scan.orai.io/txs/{txHash}",
+  },
+  Neutaro: {
+    name: "Neutaro",
+    txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
+  },
+
   osmosis: {
     name: "Mintscan",
     txUrl: "https://www.mintscan.io/osmosis/tx/{txHash}",

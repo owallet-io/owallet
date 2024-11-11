@@ -457,7 +457,9 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   get grpc(): string {
     return this._embedded.grpc;
   }
-
+  get txExplorer(): ChainInfo["txExplorer"] {
+    return this._embedded.txExplorer;
+  }
   get walletUrl(): string | undefined {
     return this._embedded.walletUrl;
   }

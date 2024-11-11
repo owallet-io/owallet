@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import {
   RouteProp,
   useIsFocused,
@@ -7,21 +7,20 @@ import {
 } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { useStyle } from "../../styles";
-import { TendermintTxTracer } from "@owallet/cosmos";
+import { ChainIdHelper, TendermintTxTracer } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import LottieView from "lottie-react-native";
-// import {SimpleGradient} from '../../components/svg';
-// import {ArrowRightIcon} from '../../components/icon/arrow-right';
-// import {StackNavProp} from '../../navigation';
 import { Box } from "../../components/box";
-// import {TextButton} from '../../components/text-button';
-// import {useNotification} from '../../hooks/notification';
 import { FormattedMessage, useIntl } from "react-intl";
-// import {EthTxReceipt, EthTxStatus} from '@owallet/types';
 import { simpleFetch } from "@owallet/simple-fetch";
-import { Network, retry, urlTxHistory } from "@owallet/common";
+import {
+  ChainIdentifierToTxExplorerMap,
+  Network,
+  retry,
+  urlTxHistory,
+} from "@owallet/common";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { OWButton } from "@components/button";
@@ -32,12 +31,23 @@ import {
   ResDetailAllTx,
   TxBtcInfo,
 } from "@owallet/types";
-import { notification } from "@stores/notification";
-import { API } from "@common/api";
 import { TXSLcdRest } from "@owallet/types";
+import { CoinPretty, Dec } from "@owallet/unit";
+import _ from "lodash";
+import { PageWithBottom } from "@components/page/page-with-bottom";
+import { ScrollView } from "react-native-gesture-handler";
+import { HeaderTx } from "@screens/tx-result/components/header-tx";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "@utils/helper";
+import ItemReceivedToken from "@screens/transactions/components/item-received-token";
+import { useTheme } from "@src/themes/theme-provider";
+import { metrics } from "@src/themes";
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
-  const { chainStore, allAccountStore } = useStore();
+  const { chainStore, allAccountStore, priceStore } = useStore();
   const intl = useIntl();
 
   const isPendingGoToResult = useRef(false);
@@ -50,7 +60,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         {
           chainId: string;
           txHash: string;
-          isEvmTx?: boolean;
+          data?: {
+            memo: string;
+            fee: CoinPretty;
+            fromAddress: string;
+            toAddress: string;
+            amount: CoinPretty;
+            type: string;
+          };
         }
       >,
       string
@@ -60,15 +77,16 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const chainId = route.params.chainId;
   const account = allAccountStore.getAccount(chainId);
   const style = useStyle();
+  const params = route.params;
+  const chainInfo = chainStore.getChain(chainId);
   const navigation = useNavigation();
 
   const isFocused = useIsFocused();
-
+  const txHash = route.params?.txHash;
   useEffect(() => {
     if (isFocused) {
-      const txHash = route.params.txHash;
-      const isEvmTx = route.params.isEvmTx;
-      const chainInfo = chainStore.getChain(chainId);
+      const isEvmTx = chainId?.includes("eip155");
+
       if (chainInfo.chainId?.includes("Oraichain") && txHash) {
         retry(
           () => {
@@ -83,7 +101,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxSuccessResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                   resolve();
                 } else {
@@ -91,7 +109,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxFailedResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                   resolve();
                 }
@@ -127,7 +145,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxSuccessResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                   resolve();
                 }
@@ -159,7 +177,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxSuccessResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                   resolve();
                 }
@@ -167,7 +185,11 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 reject();
                 console.log("error", error);
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+                navigate(SCREENS.TxFailedResult, {
+                  chainId,
+                  txHash,
+                  data: params.data,
+                });
               }
               reject();
             });
@@ -190,11 +212,19 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               if (!itemList?.txHash) return;
               if (itemList?.txHash === txHash && itemList.status) {
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+                navigate(SCREENS.TxSuccessResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                });
                 return;
               } else {
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+                navigate(SCREENS.TxFailedResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                });
                 return;
               }
             }
@@ -243,14 +273,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   navigate(SCREENS.TxSuccessResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                 } else {
                   isPendingGoToResult.current = true;
                   navigate(SCREENS.TxFailedResult, {
                     chainId,
                     txHash,
-                    isEvmTx,
+                    data: params?.data,
                   });
                 }
                 resolve();
@@ -276,10 +306,18 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
             if (tx.code == null || tx.code === 0) {
               isPendingGoToResult.current = true;
-              navigate(SCREENS.TxSuccessResult, { chainId, txHash, isEvmTx });
+              navigate(SCREENS.TxSuccessResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              });
             } else {
               isPendingGoToResult.current = true;
-              navigate(SCREENS.TxFailedResult, { chainId, txHash, isEvmTx });
+              navigate(SCREENS.TxFailedResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              });
             }
           })
           .catch((e) => {
@@ -291,130 +329,168 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         };
       }
     }
-  }, [
-    chainId,
-    chainStore,
-    isFocused,
-    navigation,
-    route.params.txHash,
-    route.params.isEvmTx,
-  ]);
+  }, [chainId, chainStore, isFocused, navigation, route.params.txHash]);
 
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const dataItem =
+    params?.data &&
+    _.pickBy(params?.data, function (value, key) {
+      return (
+        key !== "memo" &&
+        key !== "fee" &&
+        key !== "amount" &&
+        key !== "currency" &&
+        key !== "type"
+      );
+    });
+  const zeroCoin = new CoinPretty(chainInfo.feeCurrencies[0], new Dec(0));
+  const txExplorer = useMemo(() => {
+    return ChainIdentifierToTxExplorerMap[
+      ChainIdHelper.parse(chainId).identifier
+    ];
+  }, [chainId]);
+  const handleUrl = (txHash) => {
+    return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
+      "{txHash}",
+      chainInfo.features.includes("btc") ||
+        chainInfo.features.includes("oasis") ||
+        chainInfo.features.includes("tron") ||
+        chainId?.includes("eip155")
+        ? txHash.toLowerCase()
+        : txHash.toUpperCase()
+    );
+  };
+  const handleOnExplorer = async () => {
+    if ((chainInfo?.txExplorer || txExplorer) && txHash) {
+      const url = handleUrl(txHash);
+      await openLink(url);
+    }
+  };
+
+  const amount = params?.data?.amount || zeroCoin;
+  const fee = params?.data?.fee || zeroCoin;
   return (
-    <Box style={style.flatten(["flex-grow-1", "items-center"])}>
-      <View style={style.flatten(["absolute-fill"])}>
-        {/*<SimpleGradient*/}
-        {/*  degree={*/}
-        {/*    style.get('tx-result-screen-pending-gradient-background').degree*/}
-        {/*  }*/}
-        {/*  stops={*/}
-        {/*    style.get('tx-result-screen-pending-gradient-background').stops*/}
-        {/*  }*/}
-        {/*  fallbackAndroidImage={*/}
-        {/*    style.get('tx-result-screen-pending-gradient-background')*/}
-        {/*      .fallbackAndroidImage*/}
-        {/*  }*/}
-        {/*/>*/}
-      </View>
-      <View style={style.flatten(["flex-2"])} />
-      <View
-        style={style.flatten([
-          "width-122",
-          "height-122",
-          "border-width-8",
-          "border-color-blue-300",
-          "border-radius-64",
-        ])}
-      >
-        <Box
-          alignX="center"
-          alignY="center"
-          style={{
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 10,
-            ...style.flatten(["absolute"]),
-          }}
-        >
-          <LottieView
-            source={require("@assets/animations/loading_owallet.json")}
-            colorFilters={[
-              {
-                keypath: "#dot01",
-                color: style.flatten(["color-blue-300"]).color,
-              },
-              {
-                keypath: "#dot02",
-                color: style.flatten(["color-blue-300"]).color,
-              },
-              {
-                keypath: "#dot03",
-                color: style.flatten(["color-blue-300"]).color,
-              },
-            ]}
-            autoPlay
-            loop
-            style={{ width: 150, height: 150 }}
+    <PageWithBottom
+      bottomGroup={
+        <View style={styles.containerBottomButton}>
+          <Text style={styles.txtPending}>
+            The transaction is still pending. {"\n"}
+            You can check the status on {chainInfo?.raw?.txExplorer?.name}
+          </Text>
+          <OWButton
+            label="View on Explorer"
+            onPress={handleOnExplorer}
+            style={styles.btnExplorer}
+            textStyle={styles.txtViewOnExplorer}
           />
-        </Box>
+        </View>
+      }
+    >
+      <View style={styles.containerBox}>
+        {/*<PageHeader title={"Transaction details"} />*/}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HeaderTx
+            type={capitalizedText(params?.data?.type) || "Send"}
+            imageType={
+              <Image
+                style={styles.imageType}
+                fadeDuration={0}
+                resizeMode="stretch"
+                source={require("../../assets/image/transactions/process_pedding.gif")}
+              />
+            }
+            amount={`${params?.data?.type === "send" ? "-" : ""}${amount
+              ?.shrink(true)
+              ?.trim(true)
+              ?.toString()}`}
+            price={priceStore.calculatePrice(amount)?.toString()}
+          />
+          <View style={styles.cardBody}>
+            {dataItem &&
+              Object.keys(dataItem).map(function (key) {
+                return (
+                  <ItemReceivedToken
+                    label={capitalizedText(key)}
+                    valueDisplay={
+                      dataItem?.[key] &&
+                      formatContractAddress(dataItem?.[key], 20)
+                    }
+                    value={dataItem?.[key]}
+                  />
+                );
+              })}
+
+            <ItemReceivedToken
+              label={"Fee"}
+              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee) || "$0"
+              })`}
+              btnCopy={false}
+            />
+            <ItemReceivedToken
+              label={"Memo"}
+              valueDisplay={params?.data?.memo || "-"}
+              btnCopy={false}
+            />
+          </View>
+        </ScrollView>
       </View>
-
-      <Text
-        style={style.flatten([
-          "mobile-h3",
-          "color-text-high",
-          "margin-top-82",
-          "margin-bottom-32",
-        ])}
-      >
-        <FormattedMessage id="page.tx-result-pending.title" />
-      </Text>
-
-      {/* To match the height of text with other tx result screens,
-         set the explicit height to upper view*/}
-      <View
-        style={StyleSheet.flatten([
-          style.flatten(["padding-x-66"]),
-          {
-            overflow: "visible",
-          },
-        ])}
-      >
-        <Text
-          style={style.flatten([
-            "subtitle2",
-            "text-center",
-            "color-text-middle",
-          ])}
-        >
-          <FormattedMessage id="page.tx-result-pending.paragraph" />
-        </Text>
-      </View>
-
-      <Box paddingX={48} height={116} marginTop={58} alignX="center">
-        <OWButton
-          type={"link"}
-          style={style.flatten(["flex-1"])}
-          size="large"
-          label={intl.formatMessage({
-            id: "page.tx-result-pending.go-to-home-button",
-          })}
-          iconRight={(color) => (
-            <View style={style.flatten(["margin-left-8"])}>
-              {/*<ArrowRightIcon color={color} size={18} />*/}
-              <OWIcon name={"tdesignarrow-right"} size={18} color={color} />
-            </View>
-          )}
-          onPress={() => {
-            isPendingGotoHome.current = true;
-            // navigate(SCREENS.Home);
-            resetTo(SCREENS.STACK.MainTab);
-          }}
-        />
-      </Box>
-
-      <View style={style.flatten(["flex-2"])} />
-    </Box>
+    </PageWithBottom>
   );
 });
+const styling = (colors) => {
+  return StyleSheet.create({
+    containerSuccess: {
+      backgroundColor: colors["highlight-surface-subtle"],
+      width: "100%",
+      paddingHorizontal: 12,
+      paddingVertical: 2,
+      borderRadius: 99,
+      alignSelf: "center",
+    },
+    containerBottomButton: {
+      width: "100%",
+      paddingHorizontal: 16,
+      paddingTop: 16,
+    },
+    btnApprove: {
+      borderRadius: 99,
+      backgroundColor: colors["primary-surface-default"],
+    },
+    cardBody: {
+      padding: 16,
+      borderRadius: 24,
+      marginHorizontal: 16,
+      backgroundColor: colors["neutral-surface-card"],
+    },
+    viewNetwork: {
+      flexDirection: "row",
+      paddingTop: 6,
+    },
+    imgNetwork: {
+      height: 20,
+      width: 20,
+      backgroundColor: colors["neutral-icon-on-dark"],
+    },
+    containerBox: {
+      flex: 1,
+    },
+    txtPending: {
+      textAlign: "center",
+      paddingVertical: 16,
+    },
+    txtViewOnExplorer: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    btnExplorer: {
+      borderRadius: 99,
+    },
+    imageType: {
+      width: metrics.screenWidth - 104,
+      height: 12,
+    },
+  });
+};
