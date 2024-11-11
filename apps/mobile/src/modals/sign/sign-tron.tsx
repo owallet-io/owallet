@@ -31,6 +31,8 @@ import OWIcon from "@components/ow-icon/ow-icon";
 import { SignTronInteractionStore } from "@owallet/stores-core";
 import { TransactionType } from "@owallet/types";
 import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const SignTronModal = registerModal(
   observer<{
@@ -81,74 +83,88 @@ export const SignTronModal = registerModal(
         console.log("error on sign Tron", e);
       }
     };
-
+    const { colors } = useTheme();
     return (
-      <Box style={style.flatten(["padding-12", "padding-top-0"])}>
-        <OWText size={16} weight={"700"}>
-          Sign Tron
-        </OWText>
-        <Gutter size={24} />
+      <WrapViewModal
+        title={intl.formatMessage({
+          id: "page.sign.ethereum.tx.title",
+        })}
+      >
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+          <Gutter size={24} />
 
-        <Columns sum={1} alignY="center">
-          <Text style={style.flatten(["h5", "color-label-default"])}>
-            <FormattedMessage id="page.sign.ethereum.tx.summary" />
-          </Text>
+          <Columns sum={1} alignY="center">
+            <OWText style={style.flatten(["h5"])}>
+              <FormattedMessage id="page.sign.ethereum.tx.summary" />
+            </OWText>
 
-          <Column weight={1} />
+            <Column weight={1} />
 
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
+          </Columns>
 
-        <Gutter size={8} />
+          <Gutter size={8} />
 
-        {isViewData ? (
-          <Box
-            maxHeight={128}
-            backgroundColor={style.get("color-gray-500").color}
-            padding={12}
-            borderRadius={6}
-          >
-            <ScrollView persistentScrollbar={true}>
-              <Text style={style.flatten(["body3", "color-text-middle"])}>
-                {"signingDataText"}
-              </Text>
-            </ScrollView>
-          </Box>
-        ) : (
-          <Box
-            padding={12}
-            minHeight={128}
-            maxHeight={240}
-            backgroundColor={style.get("color-gray-500").color}
-            borderRadius={6}
-          >
-            <Text>{"sign tron"}</Text>
-          </Box>
-        )}
-
-        <Gutter size={60} />
-        {/* {interactionData.isInternal && <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />} */}
-
-        <Gutter size={12} />
-
-        <OWButton
-          // size="large"
-          label={intl.formatMessage({
-            id: "button.approve",
-          })}
-          loading={signTronInteractionStore.isObsoleteInteraction(
-            interactionData.id
+          {isViewData ? (
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
+              <ScrollView persistentScrollbar={true}>
+                <OWText style={style.flatten(["body3"])}>
+                  {"signingDataText"}
+                </OWText>
+              </ScrollView>
+            </Box>
+          ) : (
+            <Box
+              padding={12}
+              minHeight={128}
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
+              <Text>{"sign tron"}</Text>
+            </Box>
           )}
-          onPress={approve}
 
-          // innerButtonStyle={style.flatten(['width-full'])}
-        />
+          <Gutter size={60} />
+          {/* {interactionData.isInternal && <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />} */}
 
-        <Gutter size={24} />
-      </Box>
+          <Gutter size={12} />
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signTronInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
+              }}
+            />
+
+            <Gutter size={16} />
+
+            <OWButton
+              type={"primary"}
+              size="large"
+              // disabled={buttonDisabled}
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={approve}
+            />
+          </XAxis>
+        </Box>
+      </WrapViewModal>
     );
   })
 );

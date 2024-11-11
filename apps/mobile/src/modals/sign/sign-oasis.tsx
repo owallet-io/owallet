@@ -187,6 +187,7 @@ import {
   useFeeConfig,
   useGasConfig,
   useSenderConfig,
+  useTxConfigsValidate,
 } from "@owallet/hooks";
 import { Column, Columns } from "../../components/column";
 import { Text } from "react-native";
@@ -210,6 +211,8 @@ import OWIcon from "@components/ow-icon/ow-icon";
 import { SignOasisInteractionStore } from "@owallet/stores-core";
 import { TransactionType } from "@owallet/types";
 import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
+import { useTheme } from "@src/themes/theme-provider";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 
 export const SignOasisModal = registerModal(
   observer<{
@@ -220,7 +223,7 @@ export const SignOasisModal = registerModal(
     const intl = useIntl();
     const style = useStyle();
 
-    const [isViewData, setIsViewData] = useState(false);
+    const [isViewData, setIsViewData] = useState(true);
 
     const chainId = interactionData.data.chainId;
     const chainInfo = chainStore.getChain(chainId);
@@ -299,88 +302,98 @@ export const SignOasisModal = registerModal(
         console.log(e);
       }
     };
-
+    const { colors } = useTheme();
     return (
-      <Box style={style.flatten(["padding-12", "padding-top-0"])}>
-        <OWText size={16} weight={"700"}>
-          {intl.formatMessage({
-            id: isTxSigning
-              ? "page.sign.ethereum.tx.title"
-              : "page.sign.ethereum.title",
-          })}
-        </OWText>
-        <Gutter size={24} />
+      <WrapViewModal
+        title={intl.formatMessage({
+          id: "page.sign.ethereum.tx.title",
+        })}
+      >
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+          <Gutter size={24} />
 
-        <Columns sum={1} alignY="center">
-          <Text style={style.flatten(["h5", "color-label-default"])}>
-            <FormattedMessage id="page.sign.ethereum.tx.summary" />
-          </Text>
+          <Columns sum={1} alignY="center">
+            <OWText style={style.flatten(["h5"])}>
+              <FormattedMessage id="page.sign.ethereum.tx.summary" />
+            </OWText>
 
-          <Column weight={1} />
+            <Column weight={1} />
 
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
+          </Columns>
 
-        <Gutter size={8} />
+          <Gutter size={8} />
 
-        {isViewData ? (
-          <Box
-            maxHeight={128}
-            backgroundColor={style.get("color-gray-500").color}
-            padding={12}
-            borderRadius={6}
-          >
-            <ScrollView persistentScrollbar={true}>
-              <Text style={style.flatten(["body3", "color-text-middle"])}>
-                {signingDataText}
-              </Text>
-            </ScrollView>
-          </Box>
-        ) : (
-          <Box
-            padding={12}
-            minHeight={128}
-            maxHeight={240}
-            backgroundColor={style.get("color-gray-500").color}
-            borderRadius={6}
-          >
-            {
-              //@ts-ignore
-              defaultRegistry.render(
-                interactionData.data.chainId,
-                JSON.parse(
-                  Buffer.from(interactionData.data.message).toString()
-                ) as UnsignedOasisTransaction
-              ).content
-            }
-          </Box>
-        )}
-
-        <Gutter size={60} />
-        {interactionData.isInternal && (
-          <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />
-        )}
-
-        <Gutter size={12} />
-
-        <OWButton
-          // size="large"
-          label={intl.formatMessage({
-            id: "button.approve",
-          })}
-          loading={signOasisInteractionStore.isObsoleteInteraction(
-            interactionData.id
+          {isViewData ? (
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
+              <ScrollView persistentScrollbar={true}>
+                <OWText style={style.flatten(["body3"])}>
+                  {signingDataText}
+                </OWText>
+              </ScrollView>
+            </Box>
+          ) : (
+            <Box
+              padding={12}
+              minHeight={128}
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
+              {
+                //@ts-ignore
+                defaultRegistry.render(
+                  interactionData.data.chainId,
+                  JSON.parse(
+                    Buffer.from(interactionData.data.message).toString()
+                  ) as UnsignedOasisTransaction
+                ).content
+              }
+            </Box>
           )}
-          onPress={approve}
 
-          // innerButtonStyle={style.flatten(['width-full'])}
-        />
+          {/*<Gutter size={60} />*/}
+          {interactionData.isInternal && (
+            <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />
+          )}
 
-        <Gutter size={24} />
-      </Box>
+          <Gutter size={12} />
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signOasisInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
+              }}
+            />
+
+            <Gutter size={16} />
+
+            <OWButton
+              type={"primary"}
+              size="large"
+              // disabled={buttonDisabled}
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={approve}
+            />
+          </XAxis>
+        </Box>
+      </WrapViewModal>
     );
   })
 );
@@ -398,9 +411,9 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(["text-button2", "color-label-default"])}>
+        <OWText style={style.flatten(["text-button2"])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
-        </Text>
+        </OWText>
 
         <Gutter size={4} />
 
