@@ -83,7 +83,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(({ children
   //     });
   //   }
   // };
-  console.log(signOasisInteractionStore.waitingData, 'signOasisInteractionStore.waitingData');
   return (
     <React.Fragment>
       {signInteractionStore.waitingData && !signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
