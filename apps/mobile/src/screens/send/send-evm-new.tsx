@@ -372,9 +372,10 @@ export const SendEvmNewScreen: FunctionComponent<{
               },
               onBroadcasted: (txHash) => {
                 ethereumAccount.setIsSendingTx(false);
+                console.log(txHash, "txHash onbroadcast");
                 navigate(SCREENS.TxPendingResult, {
                   chainId,
-                  txHash: Buffer.from(txHash).toString("hex"),
+                  txHash: txHash,
                   data: {
                     amount: sendConfigs.amountConfig.amount[0],
                     fee: sendConfigs.feeConfig.fees[0],
