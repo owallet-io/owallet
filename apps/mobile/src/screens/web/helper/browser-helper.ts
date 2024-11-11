@@ -1,14 +1,14 @@
-import images from "@src/assets/images";
-import { capitalizedText, limitString } from "@src/utils/helper";
+import images from '@src/assets/images';
+import { capitalizedText, limitString } from '@src/utils/helper';
 
 export const explorerData = [
   {
     images: images.img_scan,
     logo: images.dapps_scan_logo,
-    title: "Oraichain Scan",
-    subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/",
-  },
+    title: 'Oraichain Scan',
+    subTitle: 'The Oraichain blockchain explorer',
+    url: 'https://scan.orai.io/'
+  }
 ];
 export const aiData = [
   // {
@@ -33,93 +33,137 @@ export const aiData = [
   //   url: "https://layer.orai.io/",
   // },
 ];
+export const OsmoData = [
+  {
+    images: images.img_osmosis,
+    logo: null,
+    title: '',
+    subTitle: '',
+    url: 'https://app.oraidex.io/',
+    fit: 'contain'
+  },
+  {
+    images: images.img_osmohall,
+    logo: null,
+    title: '',
+    subTitle: '',
+    url: 'https://app.oraidex.io/',
+    fit: 'contain'
+  }
+];
+export const InjData = [
+  {
+    images: images.img_helix,
+    logo: null,
+    title: '',
+    subTitle: '',
+    url: 'https://app.oraidex.io/',
+    fit: 'contain'
+  },
+  {
+    images: images.img_mito,
+    logo: null,
+    title: '',
+    subTitle: '',
+    url: 'https://app.oraidex.io/',
+    fit: 'contain'
+  },
+  {
+    images: images.img_hydro,
+    logo: null,
+    title: '',
+    subTitle: '',
+    url: 'https://app.oraidex.io/',
+    fit: 'contain'
+  }
+];
 export const defiData = [
   {
     images: images.img_oraidex,
     logo: images.dapps_dex_logo,
-    title: "OraiDEX",
-    subTitle: "Universal swap, Bridge and earn tokens",
-    url: "https://app.oraidex.io/",
+    title: 'OraiDEX',
+    subTitle: 'Universal swap, Bridge and earn tokens',
+    url: 'https://app.oraidex.io/'
   },
   {
     images: images.img_homebase,
     logo: images.dapps_gpu_logo,
-    title: "GPU Staking",
-    subTitle: "Compound staking to earn GPU demand and block rewards",
-    url: "https://hub.orai.io/gpu-staking",
+    title: 'GPU Staking',
+    subTitle: 'Compound staking to earn GPU demand and block rewards',
+    url: 'https://hub.orai.io/gpu-staking'
   },
   {
     images: images.img_orderbook,
     logo: images.dapps_orderbook_logo,
-    title: "Orderbook",
-    subTitle: "Decentralized spot trading",
-    url: "https://orderbook.oraidex.io/",
+    title: 'Orderbook',
+    subTitle: 'Decentralized spot trading',
+    url: 'https://orderbook.oraidex.io/'
   },
   {
     images: images.img_fu,
     logo: images.dapps_future_logo,
-    title: "Futures",
-    subTitle: "Derivatives Trading",
-    url: "https://futures.oraidex.io/",
+    title: 'Futures',
+    subTitle: 'Derivatives Trading',
+    url: 'https://futures.oraidex.io/'
   },
   {
     images: images.img_orchai,
     logo: images.dapps_orchai_logo,
-    title: "Orchai",
-    subTitle: "Low-code DeFi Management",
-    url: "https://app.orchai.io/",
-  },
+    title: 'Orchai',
+    subTitle: 'Low-code DeFi Management',
+    url: 'https://app.orchai.io/'
+  }
 ];
 export const dataAll = [
   {
     images: images.img_homebase,
     logo: images.dapps_oraichain_logo,
-    title: "Homebase",
-    subTitle: "Start your Oraichain journey now",
-    url: "https://hub.orai.io/",
+    title: 'Homebase',
+    subTitle: 'Start your Oraichain journey now',
+    url: 'https://hub.orai.io/'
   },
   ...defiData,
   ...explorerData,
-  ...aiData,
+  ...aiData
 ];
 
-export const getFavicon = (url) => {
+export const getFavicon = url => {
   const serviceGG =
-    "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
-  if (!url) return serviceGG + "https://orai.io";
+    'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=';
+  if (!url) return serviceGG + 'https://orai.io';
   return serviceGG + url;
 };
 export const dataBookMarks = [
   {
-    url: getFavicon("https://app.oraidex.io"),
-    name: "oraidex",
-    link: "https://app.oraidex.io",
+    url: getFavicon('https://app.oraidex.io'),
+    name: 'oraidex',
+    link: 'https://app.oraidex.io'
   },
   {
-    url: getFavicon("https://orai.io"),
-    name: "oraichain",
-    link: "https://orai.io",
-  },
+    url: getFavicon('https://orai.io'),
+    name: 'oraichain',
+    link: 'https://orai.io'
+  }
 ];
 
 function extractDomainName(url) {
   if (!url) return;
   let domain = null;
-  const withoutProtocol = url.replace(/^https?:\/\//, "");
-  const withoutPath = withoutProtocol.split("/")[0];
-  let parts = withoutPath.split(".");
-  if (parts[0] === "www") {
+  const withoutProtocol = url.replace(/^https?:\/\//, '');
+  const withoutPath = withoutProtocol.split('/')[0];
+  let parts = withoutPath.split('.');
+  if (parts[0] === 'www') {
     parts.shift();
   }
   parts.pop();
-  domain = parts.join(" ");
+  domain = parts.join(' ');
   return capitalizedText(limitString(domain, 16));
 }
 
 export const getNameBookmark = (name: string) => {
   if (!name) return;
   const bookmarkName = name.toLowerCase();
-  if (name.startsWith("http")) {
+  if (name.startsWith('http')) {
     return extractDomainName(bookmarkName);
   }
   return capitalizedText(limitString(bookmarkName, 16));
