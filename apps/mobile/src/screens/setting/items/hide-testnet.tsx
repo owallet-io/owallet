@@ -4,11 +4,12 @@ import { Toggle } from '../../../components/toggle';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import delay from 'delay';
+import { ChainIdEnum } from '@owallet/common';
 
 export const SettingSwitchHideTestnet: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
-  const { appInitStore } = useStore();
+  const { appInitStore, chainStore } = useStore();
 
   const [toggle, setToggle] = useState(appInitStore.getInitApp.hideTestnet ? true : false);
 
@@ -19,6 +20,13 @@ export const SettingSwitchHideTestnet: FunctionComponent<{
   const handleUpdateHideTestnet = async toggle => {
     await delay(130);
     appInitStore.updateHideTestnet(!toggle);
+
+    if (!toggle && chainStore.current.chainName.toLocaleLowerCase().includes('test')) {
+      appInitStore.selectAllNetworks(true);
+
+      chainStore.selectChain(ChainIdEnum.Oraichain);
+      await chainStore.saveLastViewChainId();
+    }
   };
   return (
     <React.Fragment>

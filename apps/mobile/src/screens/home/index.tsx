@@ -756,14 +756,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      <NewThemeModal
+      {/* <NewThemeModal
         isOpen={isThemOpen}
         close={() => {
           setThemeOpen(false);
           appInitStore.updateSelectTheme();
         }}
         colors={colors}
-      />
+      /> */}
       <AccountBoxAll
         isLoading={isLoading}
         totalBalanceByChain={availableTotalPriceByChain || initPrice}
