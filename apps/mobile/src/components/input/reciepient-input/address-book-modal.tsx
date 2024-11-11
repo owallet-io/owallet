@@ -7,22 +7,19 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { RecentSendHistory } from "@owallet/background";
 import { AppCurrency, Key } from "@owallet/types";
 import { useStore } from "../../../stores";
-// import {HorizontalRadioGroup} from '../../radio-group';
-import { YAxis } from "../../axis";
 import { Stack } from "../../stack";
-import { Text } from "react-native";
-// import {AddressItem} from '../../address-item';
-// import {EmptyView, EmptyViewText} from '../../empty-view';
-// import {registerCardModal} from '../../modal/card';
+import { Text, View } from "react-native";
 import { ScrollView } from "../../scroll-view/common-scroll-view";
 import { useStyle } from "../../../styles";
 import { DenomHelper } from "@owallet/common";
 import { Bech32Address } from "@owallet/cosmos";
 import { registerModal } from "@src/modals/base";
 import OWText from "@components/text/ow-text";
-import RadioGroup from "react-native-radio-buttons-group";
 import { AddressItem } from "@components/address-item";
 import { OWEmpty } from "@components/empty";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { OWButton } from "@components/button";
+import { useTheme } from "@src/themes/theme-provider";
 
 type Type = "recent" | "contacts" | "accounts";
 
@@ -160,12 +157,9 @@ export const AddressBookModal = registerModal(
               }
 
               if (isEvmChain) {
-                const hexAddress = Bech32Address.fromBech32(
-                  account.bech32Address
-                ).toHex(true);
                 acc.push({
                   name: account.name,
-                  address: hexAddress,
+                  address: account.ethereumHexAddress,
                   isSelf,
                 });
               }
@@ -178,172 +172,159 @@ export const AddressBookModal = registerModal(
           }
         }
       })();
-
+      const { colors } = useTheme();
+      const navBar = [
+        {
+          id: "recent",
+          label: intl.formatMessage({
+            id: "components.address-book-modal.recent-tab",
+          }),
+        },
+        {
+          id: "contacts",
+          label: intl.formatMessage({
+            id: "components.address-book-modal.contacts-tab",
+          }),
+        },
+        {
+          id: "accounts",
+          label: intl.formatMessage({
+            id: "components.address-book-modal.my-wallets-tab",
+          }),
+        },
+      ];
       return (
-        <Box paddingX={12} paddingBottom={12}>
-          {/*<BaseModalHeader*/}
-          {/*  title={intl.formatMessage({*/}
-          {/*    id: 'components.address-book-modal.title',*/}
-          {/*  })}*/}
-          {/*  titleStyle={style.flatten(['padding-bottom-6', 'text-left'])}*/}
-          {/*  style={style.flatten(['padding-left-8'])}*/}
-          {/*/>*/}
-          <OWText size={16}>
-            {intl.formatMessage({
-              id: "components.address-book-modal.title",
-            })}
-          </OWText>
-          <YAxis alignX="left">
-            <RadioGroup
-              layout={"row"}
-              radioButtons={[
-                {
-                  id: "recent",
-                  label: intl.formatMessage({
-                    id: "components.address-book-modal.recent-tab",
-                  }),
-                },
-                {
-                  id: "contacts",
-                  label: intl.formatMessage({
-                    id: "components.address-book-modal.contacts-tab",
-                  }),
-                },
-                {
-                  id: "accounts",
-                  label: intl.formatMessage({
-                    id: "components.address-book-modal.my-wallets-tab",
-                  }),
-                },
-              ]}
-              onPress={(key) => {
-                setType(key as Type);
+        <WrapViewModal
+          title={intl.formatMessage({
+            id: "components.address-book-modal.title",
+          })}
+        >
+          <Box paddingX={12} paddingBottom={12}>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingTop: 8,
+                paddingBottom: 24,
+                marginHorizontal: -27,
               }}
-              selectedId={type}
-            />
-            {/*<HorizontalRadioGroup*/}
-            {/*    selectedKey={type}*/}
-            {/*    size="large"*/}
-            {/*    */}
-            {/*    onSelect={key => {*/}
-            {/*        setType(key as Type);*/}
-            {/*    }}*/}
-            {/*    itemMinWidth={92}*/}
-            {/*/>*/}
-          </YAxis>
+            >
+              {navBar.map((item) => {
+                return (
+                  <OWButton
+                    key={item.id}
+                    size={"medium"}
+                    type="link"
+                    fullWidth={false}
+                    label={item.label}
+                    textStyle={{
+                      color:
+                        item.id === type
+                          ? colors["primary-surface-default"]
+                          : colors["neutral-text-body"],
+                      fontWeight: item.id === type ? "600" : "500",
+                      fontSize: item.id === type ? 15 : 14,
+                    }}
+                    onPress={() => setType(item.id as Type)}
+                    style={[
+                      {
+                        borderRadius: 0,
+                        flex: 1,
+                      },
+                      type === item.id
+                        ? {
+                            borderBottomColor:
+                              colors["primary-surface-default"],
+                            borderBottomWidth: 2,
+                          }
+                        : {
+                            borderBottomColor: colors["neutral-border-default"],
+                            borderBottomWidth: 1,
+                          },
+                    ]}
+                  />
+                );
+              })}
+            </View>
 
-          <ScrollView isGestureScrollView={true} style={{ height: 450 }}>
-            {datas.length > 0 ? (
-              <Stack gutter={12}>
-                {(() => {
-                  if (type !== "accounts" || !permitSelfKeyInfo) {
-                    return datas.map((data, i) => {
-                      return (
-                        <AddressItem
-                          key={i}
-                          timestamp={data.timestamp}
-                          name={data.name}
-                          address={data.address}
-                          memo={data.memo}
-                          isShowMemo={type !== "accounts"}
-                          onClick={() => {
-                            recipientConfig.setValue(data.address);
-                            memoConfig.setValue(data.memo ?? "");
-                            setIsOpen(false);
-                          }}
-                        />
-                      );
-                    });
-                  }
-
-                  const selfAccount = datas.find((data) => data.isSelf);
-                  const otherAccounts = datas.filter((data) => !data.isSelf);
-
-                  return (
-                    <React.Fragment>
-                      {selfAccount ? (
-                        <React.Fragment>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: "#FEFEFE",
-                              fontWeight: "600",
-                            }}
-                          >
-                            <FormattedMessage id="components.address-book-modal.current-wallet" />
-                          </Text>
+            <ScrollView isGestureScrollView={true} style={{ height: 450 }}>
+              {datas.length > 0 ? (
+                <Stack gutter={12}>
+                  {(() => {
+                    if (type !== "accounts" || !permitSelfKeyInfo) {
+                      return datas.map((data, i) => {
+                        return (
                           <AddressItem
-                            name={selfAccount.name}
-                            address={selfAccount.address}
-                            isShowMemo={false}
+                            key={i}
+                            timestamp={data.timestamp}
+                            name={data.name}
+                            address={data.address}
+                            memo={data.memo}
+                            isShowMemo={type !== "accounts"}
                             onClick={() => {
-                              recipientConfig.setValue(selfAccount.address);
+                              recipientConfig.setValue(data.address);
+                              memoConfig.setValue(data.memo ?? "");
+                              setIsOpen(false);
                             }}
-                            highlight={true}
                           />
-                        </React.Fragment>
-                      ) : null}
+                        );
+                      });
+                    }
 
-                      {otherAccounts.length > 0 ? (
-                        <React.Fragment>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              color: "#FEFEFE",
-                              fontWeight: "600",
-                            }}
-                          >
-                            <FormattedMessage id="components.address-book-modal.other-wallet" />
-                          </Text>
-                          {otherAccounts.map((data, i) => {
-                            return (
-                              <AddressItem
-                                key={i}
-                                name={data.name}
-                                address={data.address}
-                                isShowMemo={false}
-                                onClick={() => {
-                                  recipientConfig.setValue(data.address);
-                                  setIsOpen(false);
-                                }}
-                              />
-                            );
-                          })}
-                        </React.Fragment>
-                      ) : null}
-                    </React.Fragment>
-                  );
-                })()}
-              </Stack>
-            ) : (
-              <Box alignX="center" alignY="center" height={400}>
-                {/*<EmptyView>*/}
-                {/*    {(() => {*/}
-                {/*        switch (type) {*/}
-                {/*            case 'accounts':*/}
-                {/*                return (*/}
-                {/*                    <EmptyViewText*/}
-                {/*                        text={intl.formatMessage({*/}
-                {/*                            id: 'components.address-book-modal.empty-view-accounts',*/}
-                {/*                        })}*/}
-                {/*                    />*/}
-                {/*                );*/}
-                {/*            default:*/}
-                {/*                return (*/}
-                {/*                    <EmptyViewText*/}
-                {/*                        text={intl.formatMessage({*/}
-                {/*                            id: 'components.address-book-modal.empty-view-default',*/}
-                {/*                        })}*/}
-                {/*                    />*/}
-                {/*                );*/}
-                {/*        }*/}
-                {/*    })()}*/}
-                {/*</EmptyView>*/}
-                <OWEmpty />
-              </Box>
-            )}
-          </ScrollView>
-        </Box>
+                    const selfAccount = datas.find((data) => data.isSelf);
+                    const otherAccounts = datas.filter((data) => !data.isSelf);
+
+                    return (
+                      <React.Fragment>
+                        {selfAccount ? (
+                          <React.Fragment>
+                            <OWText size={12} weight={"600"}>
+                              <FormattedMessage id="components.address-book-modal.current-wallet" />
+                            </OWText>
+                            <AddressItem
+                              name={selfAccount.name}
+                              address={selfAccount.address}
+                              isShowMemo={false}
+                              onClick={() => {
+                                recipientConfig.setValue(selfAccount.address);
+                              }}
+                              highlight={true}
+                            />
+                          </React.Fragment>
+                        ) : null}
+
+                        {otherAccounts.length > 0 ? (
+                          <React.Fragment>
+                            <OWText size={12} weight={"600"}>
+                              <FormattedMessage id="components.address-book-modal.other-wallet" />
+                            </OWText>
+                            {otherAccounts.map((data, i) => {
+                              return (
+                                <AddressItem
+                                  key={i}
+                                  name={data.name}
+                                  address={data.address}
+                                  isShowMemo={false}
+                                  onClick={() => {
+                                    recipientConfig.setValue(data.address);
+                                    setIsOpen(false);
+                                  }}
+                                />
+                              );
+                            })}
+                          </React.Fragment>
+                        ) : null}
+                      </React.Fragment>
+                    );
+                  })()}
+                </Stack>
+              ) : (
+                <Box alignX="center" alignY="center" height={400}>
+                  <OWEmpty />
+                </Box>
+              )}
+            </ScrollView>
+          </Box>
+        </WrapViewModal>
       );
     }
   )
