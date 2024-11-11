@@ -11,6 +11,7 @@ import {
 import { XAxis } from "../axis";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@components/text/ow-text";
 
 export interface DropdownItemProps {
   key: string;
@@ -121,18 +122,22 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
               />
             </Box>
 
-            <Text
-              style={style.flatten([
-                "body2",
-                selectedItemKey ? "color-gray-50" : "color-gray-300",
-                isOpen && allowSearch ? "display-none" : "opacity-100",
-              ])}
+            <OWText
+              style={{
+                ...style.flatten([
+                  "body2",
+                  isOpen && allowSearch ? "display-none" : "opacity-100",
+                ]),
+                color: selectedItemKey
+                  ? colors["neutral-text-title"]
+                  : colors["neutral-text-body"],
+              }}
             >
               {selectedItemKey
                 ? items.find((item) => item.key === selectedItemKey)?.label ??
                   placeholder
                 : placeholder}
-            </Text>
+            </OWText>
 
             <Box style={{ flex: 1 }} />
 
@@ -143,7 +148,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
             <OWIcon
               size={24}
               name={"arrow_down_2"}
-              color={style.get("color-white").color}
+              color={colors["neutral-text-title"]}
             />
           </XAxis>
         </Box>
@@ -157,7 +162,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
                 "width-full",
                 "overflow-hidden",
                 isOpen && filteredItems.length > 0 ? "flex" : "display-none",
-                "background-color-gray-600",
+                // "background-color-gray-600",
                 "border-width-1",
                 "border-color-gray-500",
                 "border-radius-6",
@@ -190,8 +195,9 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
 
 const Divider = () => {
   const style = useStyle();
+  const { colors } = useTheme();
 
-  return <Box height={1} backgroundColor={style.get("color-gray-500").color} />;
+  return <Box height={1} backgroundColor={colors["neutral-border-default"]} />;
 };
 
 const DropdownItem: FunctionComponent<{
@@ -214,11 +220,11 @@ const DropdownItem: FunctionComponent<{
         height={52}
         paddingX={24}
         paddingY={15}
-        backgroundColor={style.get("color-gray-600").color}
+        backgroundColor={colors["neutral-surface-bg"]}
       >
-        <Text style={{ color: colors["neutral-text-title"] }}>
+        <OWText style={{ color: colors["neutral-text-title"] }}>
           {item.label}
-        </Text>
+        </OWText>
       </Box>
     </TouchableWithoutFeedback>
   );

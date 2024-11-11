@@ -37,10 +37,12 @@ import { OWButton } from "@components/button";
 import OWText from "@components/text/ow-text";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { AsyncKVStore } from "@src/common";
-import { FeeControl } from "@src/screens/components/fee-control";
 // import { EthSignType } from '@owallet/types';
 import Web3 from "web3";
 import { useTheme } from "@src/themes/theme-provider";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import OWButtonGroup from "@components/button/OWButtonGroup";
+import { FeeControl } from "@components/input/fee-control";
 
 const EthSignType = {
   MESSAGE: "message",
@@ -61,7 +63,7 @@ export const SignEthereumModal = registerModal(
       ethereumAccountStore,
     } = useStore();
 
-    const colors = useTheme();
+    const { colors } = useTheme();
 
     const intl = useIntl();
     const style = useStyle();
@@ -310,7 +312,7 @@ export const SignEthereumModal = registerModal(
       }
     }, [signingDataBuff, signType]);
 
-    const [isViewData, setIsViewData] = useState(false);
+    const [isViewData, setIsViewData] = useState(true);
 
     const approve = async () => {
       try {
@@ -329,97 +331,103 @@ export const SignEthereumModal = registerModal(
         console.log(e);
       }
     };
-
     return (
-      <Box
-        backgroundColor={colors["neutral-surface-card"]}
-        style={style.flatten(["padding-12", "padding-top-0"])}
+      <WrapViewModal
+        title={intl.formatMessage({
+          id: isTxSigning
+            ? "page.sign.ethereum.tx.title"
+            : "page.sign.ethereum.title",
+        })}
       >
-        <OWText size={16} weight={"700"}>
-          {intl.formatMessage({
-            id: isTxSigning
-              ? "page.sign.ethereum.tx.title"
-              : "page.sign.ethereum.title",
-          })}
-        </OWText>
-        <Gutter size={24} />
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+          <Gutter size={24} />
 
-        <Columns sum={1} alignY="center">
-          <OWText
-            color={colors["neutral-text-body"]}
-            style={style.flatten(["h5"])}
-          >
-            <FormattedMessage id="page.sign.ethereum.tx.summary" />
-          </OWText>
+          <Columns sum={1} alignY="center">
+            <OWText
+              color={colors["neutral-text-body"]}
+              style={style.flatten(["h5"])}
+            >
+              <FormattedMessage id="page.sign.ethereum.tx.summary" />
+            </OWText>
 
-          <Column weight={1} />
+            <Column weight={1} />
 
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
+          </Columns>
 
-        <Gutter size={8} />
+          <Gutter size={8} />
 
-        {isViewData ? (
-          <Box
-            maxHeight={128}
-            backgroundColor={style.get("color-gray-500").color}
-            padding={12}
-            borderRadius={6}
-          >
-            <ScrollView persistentScrollbar={true}>
-              <OWText style={style.flatten(["body3", "color-text-middle"])}>
-                {signingDataText}
-              </OWText>
-            </ScrollView>
-          </Box>
-        ) : (
-          <Box
-            padding={12}
-            minHeight={128}
-            maxHeight={240}
-            backgroundColor={style.get("color-gray-500").color}
-            borderRadius={6}
-          >
-            {
-              //@ts-ignore
-              defaultRegistry.render(
-                interactionData.data.chainId,
-                JSON.parse(
-                  Buffer.from(interactionData.data.message).toString()
-                ) as UnsignedTransaction
-              ).content
-            }
-          </Box>
-        )}
-
-        <Gutter size={12} />
-
-        <FeeControl
-          feeConfig={feeConfig}
-          senderConfig={senderConfig}
-          gasConfig={gasConfig}
-          gasSimulator={gasSimulator}
-          isForEVMTx
-        />
-
-        <OWButton
-          // size="large"
-          label={intl.formatMessage({
-            id: "button.approve",
-          })}
-          loading={signEthereumInteractionStore.isObsoleteInteraction(
-            interactionData.id
+          {isViewData ? (
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
+              <ScrollView persistentScrollbar={true}>
+                <OWText style={style.flatten(["body3"])}>
+                  {signingDataText}
+                </OWText>
+              </ScrollView>
+            </Box>
+          ) : (
+            <Box
+              padding={12}
+              minHeight={128}
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
+              {
+                //@ts-ignore
+                defaultRegistry.render(
+                  interactionData.data.chainId,
+                  JSON.parse(
+                    Buffer.from(interactionData.data.message).toString()
+                  ) as UnsignedTransaction
+                ).content
+              }
+            </Box>
           )}
-          onPress={approve}
 
-          // innerButtonStyle={style.flatten(['width-full'])}
-        />
+          <Gutter size={12} />
 
-        <Gutter size={24} />
-      </Box>
+          <FeeControl
+            feeConfig={feeConfig}
+            senderConfig={senderConfig}
+            gasConfig={gasConfig}
+            gasSimulator={gasSimulator}
+          />
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signEthereumInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
+              }}
+            />
+
+            <Gutter size={16} />
+
+            <OWButton
+              type={"primary"}
+              size="large"
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={approve}
+            />
+          </XAxis>
+        </Box>
+      </WrapViewModal>
     );
   })
 );
@@ -429,7 +437,7 @@ export const ViewDataButton: FunctionComponent<{
   setIsViewData: (value: boolean) => void;
 }> = ({ isViewData, setIsViewData }) => {
   const style = useStyle();
-  const colors = useTheme();
+  const { colors } = useTheme();
 
   return (
     <TouchableWithoutFeedback
