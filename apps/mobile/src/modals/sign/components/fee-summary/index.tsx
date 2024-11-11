@@ -30,12 +30,18 @@ export const FeeSummary: FunctionComponent<{
   return (
     <React.Fragment>
       <Box
-        padding={16}
+        // padding={16}
         backgroundColor={colors["neutral-surface-card"]}
         borderRadius={6}
       >
-        <XAxis alignY="center">
-          <OWText>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingVertical: 16,
+          }}
+        >
+          <OWText size={16} weight={"600"}>
             <FormattedMessage id="page.sign.components.fee-summary.fee" />
           </OWText>
 
@@ -62,12 +68,12 @@ export const FeeSummary: FunctionComponent<{
             )
             .map((text) => {
               return (
-                <OWText style={style.flatten(["color-text-high", "subtitle3"])}>
+                <OWText size={16} weight={"600"}>
                   {text}
                 </OWText>
               );
             })}
-        </XAxis>
+        </View>
       </Box>
 
       {feeConfig.uiProperties.error || feeConfig.uiProperties.warning ? (

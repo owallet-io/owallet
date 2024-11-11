@@ -50,6 +50,8 @@ import CheckBox from "react-native-check-box";
 import { OWButton } from "@components/button";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { FeeControl } from "@components/input/fee-control";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const SignModal = registerModal(
   observer<{
@@ -386,190 +388,226 @@ export const SignModal = registerModal(
         }
       }
     };
-
+    const { colors } = useTheme();
     return (
-      <Box style={style.flatten(["padding-12", "padding-top-0"])}>
-        {/*<BaseModalHeader*/}
-        {/*    title={intl.formatMessage({id: 'page.sign.cosmos.tx.title'})}*/}
-        {/*    titleStyle={style.flatten(['h3'])}*/}
-        {/*/>*/}
-        <OWText>Sign Cosmos</OWText>
-        <Gutter size={24} />
+      <WrapViewModal
+        title={intl.formatMessage({ id: "page.sign.cosmos.tx.title" })}
+      >
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+          <Gutter size={24} />
 
-        <Columns sum={1} alignY="center">
-          <Text style={style.flatten(["h5", "color-blue-400"])}>
-            {msgs.length}
-          </Text>
-
-          <Gutter size={4} />
-
-          <Text style={style.flatten(["h5", "color-label-default"])}>
-            <FormattedMessage id="page.sign.cosmos.tx.messages" />
-          </Text>
-
-          <Column weight={1} />
-
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
-
-        <Gutter size={8} />
-
-        {isViewData ? (
-          <Box
-            maxHeight={128}
-            backgroundColor={style.get("color-gray-500").color}
-            padding={12}
-            borderRadius={6}
-          >
-            <ScrollView isGestureScrollView={true} persistentScrollbar={true}>
-              <Text style={style.flatten(["body3", "color-text-middle"])}>
-                {JSON.stringify(signDocHelper.signDocJson, null, 2)}
-              </Text>
-            </ScrollView>
-          </Box>
-        ) : (
-          <Box
-            maxHeight={240}
-            backgroundColor={style.get("color-gray-500").color}
-            borderRadius={6}
-          >
-            <FlatList
-              isGestureFlatList={true}
-              data={[...msgs]}
-              renderItem={({ item, index }) => {
-                const r = defaultRegistry.render(
-                  chainId,
-                  // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
-                  //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
-                  //      일단 이렇게 처리하고 넘어간다.
-                  defaultProtoCodec,
-                  item
-                );
-
-                return (
-                  <MessageItem
-                    key={index}
-                    icon={r.icon}
-                    title={r.title}
-                    content={r.content}
-                  />
-                );
+          <Columns sum={1} alignY="center">
+            <OWText
+              style={{
+                ...style.flatten(["h5"]),
+                color: colors["neutral-text-body"],
               }}
-              ItemSeparatorComponent={Divider}
+            >
+              {msgs.length}
+            </OWText>
+
+            <Gutter size={4} />
+
+            <OWText
+              style={{
+                ...style.flatten(["h5"]),
+                color: colors["neutral-text-body"],
+              }}
+            >
+              <FormattedMessage id="page.sign.cosmos.tx.messages" />
+            </OWText>
+
+            <Column weight={1} />
+
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
             />
-          </Box>
-        )}
+          </Columns>
 
-        <Gutter size={12} />
+          <Gutter size={8} />
 
-        {preferNoSetMemo ? (
-          <ReadonlyMemo memo={memoConfig.memo} />
-        ) : (
-          <MemoInput memoConfig={memoConfig} />
-        )}
+          {isViewData ? (
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
+              <ScrollView persistentScrollbar={true}>
+                <OWText style={style.flatten(["body3"])}>
+                  {JSON.stringify(signDocHelper.signDocJson, null, 2)}
+                </OWText>
+              </ScrollView>
+            </Box>
+          ) : (
+            <Box
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
+              <FlatList
+                // isGestureFlatList={true}
+                data={[...msgs]}
+                renderItem={({ item, index }) => {
+                  const r = defaultRegistry.render(
+                    chainId,
+                    // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
+                    //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
+                    //      일단 이렇게 처리하고 넘어간다.
+                    defaultProtoCodec,
+                    item
+                  );
 
-        <Gutter size={60} />
-        {(() => {
-          if (interactionData.isInternal && preferNoSetFee) {
-            return <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />;
-          }
+                  return (
+                    <MessageItem
+                      key={index}
+                      icon={r.icon}
+                      title={r.title}
+                      content={r.content}
+                    />
+                  );
+                }}
+                ItemSeparatorComponent={Divider}
+              />
+            </Box>
+          )}
 
-          return (
-            <FeeControl
-              feeConfig={feeConfig}
-              senderConfig={senderConfig}
-              gasConfig={gasConfig}
-              disableAutomaticFeeSet={preferNoSetFee}
+          <Gutter size={12} />
+
+          {preferNoSetMemo ? (
+            <ReadonlyMemo memo={memoConfig.memo} />
+          ) : (
+            <MemoInput
+              label={"Memo"}
+              isBottomSheet={true}
+              memoConfig={memoConfig}
             />
-            // <></>
-          );
-        })()}
+          )}
 
-        <Gutter size={12} />
+          {/*<Gutter size={60} />*/}
+          {(() => {
+            if (interactionData.isInternal && preferNoSetFee) {
+              return <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />;
+            }
 
-        {isHighFee ? (
-          <React.Fragment>
-            <HighFeeWarning
-              checked={isHighFeeApproved}
-              onChange={(v) => setIsHighFeeApproved(v)}
-            />
+            return (
+              <FeeControl
+                feeConfig={feeConfig}
+                senderConfig={senderConfig}
+                gasConfig={gasConfig}
+                disableAutomaticFeeSet={preferNoSetFee}
+              />
+              // <></>
+            );
+          })()}
 
-            <Gutter size={12} />
-          </React.Fragment>
-        ) : null}
+          <Gutter size={12} />
 
-        {isSendAuthzGrant ? (
-          <React.Fragment>
-            <GuideBox
-              color="warning"
-              title={intl.formatMessage({
-                id: "page.sign.cosmos.tx.authz-send-grant.warning-title",
-              })}
-              titleRight={
-                <Box>
-                  <CheckBox
-                    checked={isSendAuthzGrantChecked}
-                    onPress={(checked) => {
-                      setIsSendAuthzGrantChecked(checked);
-                    }}
-                  />
-                </Box>
+          {isHighFee ? (
+            <React.Fragment>
+              <HighFeeWarning
+                checked={isHighFeeApproved}
+                onChange={(v) => setIsHighFeeApproved(v)}
+              />
+
+              <Gutter size={12} />
+            </React.Fragment>
+          ) : null}
+
+          {isSendAuthzGrant ? (
+            <React.Fragment>
+              <GuideBox
+                color="warning"
+                title={intl.formatMessage({
+                  id: "page.sign.cosmos.tx.authz-send-grant.warning-title",
+                })}
+                titleRight={
+                  <Box>
+                    <CheckBox
+                      checked={isSendAuthzGrantChecked}
+                      onPress={(checked) => {
+                        setIsSendAuthzGrantChecked(checked);
+                      }}
+                    />
+                  </Box>
+                }
+              />
+
+              <Gutter size={12} />
+            </React.Fragment>
+          ) : null}
+
+          {isLedgerAndDirect ? (
+            <React.Fragment>
+              <GuideBox
+                color="warning"
+                title={intl.formatMessage({
+                  id: "page.sign.cosmos.tx.warning-title",
+                })}
+                paragraph={intl.formatMessage({
+                  id: "page.sign.cosmos.tx.warning-paragraph",
+                })}
+              />
+
+              <Gutter size={12} />
+            </React.Fragment>
+          ) : null}
+
+          {ledgerInteractingError ? (
+            <React.Fragment>
+              <LedgerGuideBox
+                data={{
+                  keyInsensitive: interactionData.data.keyInsensitive,
+                  isEthereum:
+                    "eip712" in interactionData.data &&
+                    interactionData.data.eip712 != null,
+                }}
+                isLedgerInteracting={isLedgerInteracting}
+                ledgerInteractingError={ledgerInteractingError}
+              />
+
+              <Gutter size={12} />
+            </React.Fragment>
+          ) : null}
+
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              disabled={
+                signInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
               }
-            />
-
-            <Gutter size={12} />
-          </React.Fragment>
-        ) : null}
-
-        {isLedgerAndDirect ? (
-          <React.Fragment>
-            <GuideBox
-              color="warning"
-              title={intl.formatMessage({
-                id: "page.sign.cosmos.tx.warning-title",
-              })}
-              paragraph={intl.formatMessage({
-                id: "page.sign.cosmos.tx.warning-paragraph",
-              })}
-            />
-
-            <Gutter size={12} />
-          </React.Fragment>
-        ) : null}
-
-        {ledgerInteractingError ? (
-          <React.Fragment>
-            <LedgerGuideBox
-              data={{
-                keyInsensitive: interactionData.data.keyInsensitive,
-                isEthereum:
-                  "eip712" in interactionData.data &&
-                  interactionData.data.eip712 != null,
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
               }}
-              isLedgerInteracting={isLedgerInteracting}
-              ledgerInteractingError={ledgerInteractingError}
             />
 
-            <Gutter size={12} />
-          </React.Fragment>
-        ) : null}
+            <Gutter size={16} />
 
-        <OWButton
-          label={"approve"}
-          loading={
-            signInteractionStore.isObsoleteInteraction(interactionData.id) ||
-            isLedgerInteracting
-          }
-          onPress={approve}
-          disabled={buttonDisabled}
-          fullWidth={false}
-        />
-
-        <Gutter size={24} />
-      </Box>
+            <OWButton
+              type={"primary"}
+              size="large"
+              loading={
+                signInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
+              }
+              disabled={buttonDisabled}
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              onPress={approve}
+            />
+          </XAxis>
+        </Box>
+      </WrapViewModal>
     );
   })
 );
@@ -599,9 +637,9 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(["text-button2", "color-label-default"])}>
+        <OWText style={style.flatten(["text-button2"])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
-        </Text>
+        </OWText>
 
         <Gutter size={4} />
 
@@ -623,30 +661,27 @@ export const ReadonlyMemo: FunctionComponent<{
   memo: string;
 }> = ({ memo }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   return (
     <Box
-      backgroundColor={style.get("color-gray-500").color}
+      // backgroundColor={style.get("color-gray-500").color}
+      backgroundColor={colors["neutral-surface-bg"]}
       borderRadius={6}
       padding={16}
     >
       <XAxis alignY="center">
-        <Text style={style.flatten(["color-text-middle", "subtitle3"])}>
-          Memo
-        </Text>
-        <Text
+        <OWText style={style.flatten(["subtitle3"])}>Memo</OWText>
+        <OWText
           style={{
             flex: 1,
-            color: memo
-              ? style.get("color-white").color
-              : style.get("color-gray-300").color,
+            color: colors["neutral-text-body"],
             textAlign: "right",
           }}
         >
           {memo || (
             <FormattedMessage id="page.sign.cosmos.tx.readonly-memo.empty" />
           )}
-        </Text>
+        </OWText>
       </XAxis>
     </Box>
   );
