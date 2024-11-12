@@ -116,7 +116,7 @@ export const AccountBoxAll: FunctionComponent<{
       }
     }
     return result;
-  }, [hugeQueriesStore.allKnownBalances, account?.addressDisplay]);
+  }, [hugeQueriesStore.allKnownBalances, chainId, account?.addressDisplay]);
   const stakedTotalPrice = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.delegations) {
@@ -142,6 +142,7 @@ export const AccountBoxAll: FunctionComponent<{
     hugeQueriesStore.delegations,
     hugeQueriesStore.unbondings,
     account?.addressDisplay,
+    chainId,
   ]);
   const totalPriceBalance = useMemo(() => {
     if (!availableTotalPrice)
@@ -150,7 +151,7 @@ export const AccountBoxAll: FunctionComponent<{
         new Dec(0)
       );
     return availableTotalPrice.add(stakedTotalPrice || zeroDec);
-  }, [availableTotalPrice, stakedTotalPrice, account?.addressDisplay]);
+  }, [availableTotalPrice, stakedTotalPrice, chainId, account?.addressDisplay]);
   const availableTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.getAllBalancesByChainId(chainId)) {
@@ -206,6 +207,7 @@ export const AccountBoxAll: FunctionComponent<{
     availableTotalPriceByChain,
     stakedTotalPriceByChain,
     account?.addressDisplay,
+    chainId,
   ]);
 
   useEffect(() => {
