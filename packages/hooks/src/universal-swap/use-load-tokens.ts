@@ -40,7 +40,6 @@ export type LoadTokenParams = {
   metamaskAddress?: string;
   oraiAddress?: string;
   tronAddress?: string;
-  kwtAddress?: string;
   cwStargate?: CWStargateType;
   tokenReload?: Array<any>;
   customChainInfos?: Array<any>;
@@ -89,7 +88,7 @@ const timer = {};
 
 async function loadTokens(
   universalSwapStore: any,
-  { oraiAddress, metamaskAddress, tronAddress, kwtAddress, cwStargate, tokenReload, customChainInfos }: LoadTokenParams
+  { oraiAddress, metamaskAddress, tronAddress, cwStargate, tokenReload, customChainInfos }: LoadTokenParams
 ) {
   const customEvmTokens = uniqBy(
     customChainInfos.filter(
@@ -108,10 +107,8 @@ async function loadTokens(
           // case get address when keplr ledger not support kawaii
           timer[oraiAddress] = setTimeout(async () => {
             await Promise.all([
-              loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress, tokenReload),
-              loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
-              // different cointype but also require keplr connected by checking oraiAddress
-              loadKawaiiSubnetAmount(universalSwapStore, kwtAddress, tokenReload)
+              loadTokensCosmos(universalSwapStore, oraiAddress, tokenReload),
+              loadCw20Balance(universalSwapStore, oraiAddress, cwStargate)
             ]);
           }, 500);
         }
@@ -149,10 +146,8 @@ async function loadTokens(
     // case get address when keplr ledger not support kawaii
     timer[oraiAddress] = setTimeout(async () => {
       await Promise.all([
-        loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress, tokenReload),
-        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
-        // different cointype but also require keplr connected by checking oraiAddress
-        loadKawaiiSubnetAmount(universalSwapStore, kwtAddress, tokenReload)
+        loadTokensCosmos(universalSwapStore, oraiAddress, tokenReload),
+        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate)
       ]);
     }, 500);
   }
@@ -193,7 +188,7 @@ export const genAddressCosmos = (info, address118) => {
   return { cosmosAddress };
 };
 
-async function loadTokensCosmos(updateAmounts: any, kwtAddress: string, oraiAddress: string, tokenReload?: Array<any>) {
+async function loadTokensCosmos(updateAmounts: any, oraiAddress: string, tokenReload?: Array<any>) {
   if (!oraiAddress) return;
   let cosmosInfos = chainInfos.filter(
     chainInfo => chainInfo.networkType === 'cosmos' || chainInfo.bip44.coinType === 118
@@ -415,23 +410,6 @@ async function loadEvmAmounts(
   }
 
   universalSwapStore.updateAmounts(amountDetails);
-}
-
-export async function loadKawaiiSubnetAmount(universalSwapStore: any, kwtAddress: string, tokenReload?: any) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
-  try {
-    loadNativeBalance(universalSwapStore, kwtAddress, kawaiiInfo);
-
-    const kwtSubnetAddress = getEvmAddress(kwtAddress);
-    const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
-    //@ts-ignore
-    let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload));
-
-    universalSwapStore.updateAmounts(amountDetails);
-  } catch (err) {
-    console.log('loadKawaiiSubnetAmount err', err);
-  }
 }
 
 export function useLoadTokens(universalSwapStore: any): (params: LoadTokenParams) => Promise<void> {

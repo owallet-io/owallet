@@ -285,7 +285,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       orai?: string;
       eth?: string;
       tron?: string;
-      kwt?: string;
       tokenReload?: Array<any>;
     },
     customChainInfos?: Array<any>
@@ -342,7 +341,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       //         orai: accountOrai.bech32Address,
       //         eth: accountEth.ethereumHexAddress,
       //         tron: accountTron.base58Address,
-      //         kwt: null
       //       },
       //       customChainInfos
       //     );
@@ -354,8 +352,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {
             orai: accountOrai.bech32Address,
             eth: accountEth.ethereumHexAddress,
-            tron: accountTron.base58Address,
-            kwt: undefined
+            tron: accountTron.base58Address
           },
           customChainInfos
         );
