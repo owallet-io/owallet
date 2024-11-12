@@ -1,9 +1,6 @@
-import { TokenItemType } from "@oraichain/oraidex-common";
-import {
-  SwapDirection,
-  UniversalSwapHelper,
-} from "@oraichain/oraidex-universal-swap";
-import { useEffect, useState } from "react";
+import { TokenItemType } from '@oraichain/oraidex-common';
+import { SwapDirection, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
+import { useEffect, useState } from 'react';
 
 /**
  * Simulate token fee between fromToken & toToken
@@ -25,12 +22,8 @@ export const useFilterToken = (
   fromTokenDenom: string,
   toTokenDenom: string
 ) => {
-  const [filteredToTokens, setFilteredToTokens] = useState(
-    [] as TokenItemType[]
-  );
-  const [filteredFromTokens, setFilteredFromTokens] = useState(
-    [] as TokenItemType[]
-  );
+  const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
+  const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
 
   useEffect(() => {
     const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(

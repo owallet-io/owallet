@@ -5893,7 +5893,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.27":
+"@oraichain/oraidex-common@npm:^1.1.27, @oraichain/oraidex-common@npm:^1.1.28":
   version: 1.1.28
   resolution: "@oraichain/oraidex-common@npm:1.1.28"
   dependencies:
@@ -24255,7 +24255,7 @@ __metadata:
     "@oraichain/common-contracts-build": ^1.0.35
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.21
+    "@oraichain/oraidex-common": ^1.1.28
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.19

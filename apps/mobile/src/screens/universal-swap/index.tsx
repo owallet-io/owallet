@@ -290,7 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     },
     customChainInfos?: Array<any>
   ) => {
-    const { orai, eth, tron, kwt, tokenReload } = params;
+    const { orai, eth, tron, tokenReload } = params;
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -630,6 +630,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleReverseDirection = () => {
     if (
       UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
+      //@ts-ignore
       !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
     )
       return;
