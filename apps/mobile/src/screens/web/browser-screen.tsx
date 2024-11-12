@@ -27,17 +27,17 @@ export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
   tracking(`Browser Screen`);
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
   const [index, setIndex] = React.useState(0);
-  // const [routes] = React.useState([
-  //   { key: 'all', title: 'All' },
-  //   { key: 'defi', title: 'DeFi' },
-  //   // { key: "ai", title: "AI" },
-  //   { key: 'explorer', title: 'Explorer' }
-  // ]);
   const [routes] = React.useState([
+    { key: 'all', title: 'All' },
+    { key: 'defi', title: 'DeFi' },
+    // { key: "ai", title: "AI" },
+    { key: 'explorer', title: 'Explorer' }
+  ]);
+  const [routesWithTheme] = React.useState([
     { key: 'oraichain', title: 'Oraichain' },
     { key: 'osmosis', title: 'Osmosis' },
     { key: 'injective', title: 'Injective' }
@@ -298,8 +298,8 @@ export const BrowserScreen = observer(() => {
       </View> */}
 
       <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderDApps}
+        navigationState={{ index, routes: appInitStore.getInitApp.wallet === 'owallet' ? routes : routesWithTheme }}
+        renderScene={appInitStore.getInitApp.wallet === 'owallet' ? renderScene : renderDApps}
         onIndexChange={setIndex}
         renderTabBar={renderTabBar}
         initialLayout={{ width: layout.width }}
