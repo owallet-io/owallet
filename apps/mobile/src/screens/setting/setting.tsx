@@ -251,7 +251,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
             <SettingBiometricLockItem />
           ) : null}
-          {canShowPrivateData(keyRingStore.selectedKeyInfo.type) && (
+          {canShowPrivateData(keyRingStore?.selectedKeyInfo?.type) && (
             <SettingViewPrivateDataItem />
           )}
           <SettingRemoveAccountItem />
