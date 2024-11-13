@@ -282,7 +282,7 @@ export function init(
     new KeyRingBtcBaseService(chainsService, vaultService, [
       new KeyRingBtcMnemonicService(vaultService, keyringBaseMnemonic),
       new KeyRingBtcPrivateKeyService(vaultService, keyringBasePrivateKey),
-      new KeyRingBtcLedgerService(),
+      new KeyRingBtcLedgerService(vaultService, keyringBaseLedger),
     ])
   );
   const autoLockAccountService = new AutoLocker.AutoLockAccountService(

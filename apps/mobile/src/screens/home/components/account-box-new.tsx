@@ -116,7 +116,12 @@ export const AccountBoxAll: FunctionComponent<{
       }
     }
     return result;
-  }, [hugeQueriesStore.allKnownBalances, chainId, account?.addressDisplay]);
+  }, [
+    hugeQueriesStore.allKnownBalances,
+    chainId,
+    appInitStore.getInitApp.isAllNetworks,
+    account?.addressDisplay,
+  ]);
   const stakedTotalPrice = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.delegations) {
@@ -151,7 +156,13 @@ export const AccountBoxAll: FunctionComponent<{
         new Dec(0)
       );
     return availableTotalPrice.add(stakedTotalPrice || zeroDec);
-  }, [availableTotalPrice, stakedTotalPrice, chainId, account?.addressDisplay]);
+  }, [
+    availableTotalPrice,
+    stakedTotalPrice,
+    chainId,
+    appInitStore.getInitApp.isAllNetworks,
+    account?.addressDisplay,
+  ]);
   const availableTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.getAllBalancesByChainId(chainId)) {
@@ -164,7 +175,7 @@ export const AccountBoxAll: FunctionComponent<{
       }
     }
     return result;
-  }, [chainId, account?.addressDisplay]);
+  }, [chainId, account?.addressDisplay, appInitStore.getInitApp.isAllNetworks]);
   const stakedTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.delegations.filter(
@@ -195,6 +206,7 @@ export const AccountBoxAll: FunctionComponent<{
     chainId,
     hugeQueriesStore.unbondings,
     account?.addressDisplay,
+    appInitStore.getInitApp.isAllNetworks,
   ]);
   const totalPriceByChain = useMemo(() => {
     if (!availableTotalPriceByChain)
@@ -208,6 +220,7 @@ export const AccountBoxAll: FunctionComponent<{
     stakedTotalPriceByChain,
     account?.addressDisplay,
     chainId,
+    appInitStore.getInitApp.isAllNetworks,
   ]);
 
   useEffect(() => {
@@ -271,7 +284,11 @@ export const AccountBoxAll: FunctionComponent<{
     setChainListWithBalance(tmpChain);
     setSeries([...tmpSeries, otherValue]);
     setSliceColor([...tmpSliceColor, "#494949"]);
-  }, [totalPriceBalance, account.addressDisplay]);
+  }, [
+    totalPriceBalance,
+    account.addressDisplay,
+    appInitStore.getInitApp.isAllNetworks,
+  ]);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
   const chainAddress = account.addressDisplay;

@@ -47,6 +47,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       const chainInfo = chainStore.getChain(embedChainInfo.chainId);
       chainInfo.addCurrencies(...embedChainInfo.currencies);
     }
+    appInitStore.selectAllNetworks(true);
   }, []);
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
