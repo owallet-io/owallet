@@ -102,7 +102,7 @@ export class RequestSignTronMsg extends Message<{}> {
 
 export class RequestTriggerSmartContractMsg extends Message<{}> {
   public static type() {
-    return 'trigger-smart-contract';
+    return "trigger-smart-contract";
   }
 
   constructor(public readonly chainId: string, public readonly data: string) {
@@ -111,7 +111,7 @@ export class RequestTriggerSmartContractMsg extends Message<{}> {
 
   validateBasic(): void {
     if (!this.data) {
-      throw new OWalletError('keyring', 231, 'data not set');
+      throw new OWalletError("keyring", 231, "data not set");
     }
   }
 
@@ -130,7 +130,7 @@ export class RequestTriggerSmartContractMsg extends Message<{}> {
 
 export class RequestSendRawTransactionMsg extends Message<object> {
   public static type() {
-    return 'request-send-raw-transaction';
+    return "request-send-raw-transaction";
   }
 
   constructor(
@@ -147,11 +147,11 @@ export class RequestSendRawTransactionMsg extends Message<object> {
 
   validateBasic(): void {
     if (!this.chainId) {
-      throw new Error('chain id not set');
+      throw new Error("chain id not set");
     }
 
     if (!this.data) {
-      throw new Error('data not set');
+      throw new Error("data not set");
     }
   }
 
@@ -160,7 +160,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   route(): string {
-    return 'keyring';
+    return "keyring";
   }
 
   type(): string {
@@ -170,7 +170,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
 
 export class RequestGetTronAddressMsg extends Message<{}> {
   public static type() {
-    return 'request-get-tron-address';
+    return "request-get-tron-address";
   }
 
   constructor() {

@@ -39,8 +39,8 @@ const SimpleProgressBar: FunctionComponent<{
   useEffect(() => {
     animProgress.value = withSpring(progress, defaultSpringConfig);
   }, [animProgress, progress]);
-
-  const barColor = style.get("color-blue-400").color;
+  const { colors } = useTheme();
+  const barColor = colors["primary-surface-pressed"];
   const animatedStyle = useAnimatedStyle(() => {
     return {
       height: 8,
