@@ -385,12 +385,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const { cosmosAddress, evmAddress, tronAddress } = getAddresses();
     const amountsBalance = await fetchBalances();
 
-    const tokenFromNetwork = chainStore.getChain(originalFromToken.chainId).chainName;
-    const tokenToNetwork = chainStore.getChain(originalToToken.chainId).chainName;
-
     tracking(
       `Universal Swap`,
-      `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${tokenFromNetwork};toNetwork=${tokenToNetwork};`
+      `fromToken=${originalFromToken.name};toToken=${originalToToken.name};fromNetwork=${originalFromToken.chainId};toNetwork=${originalToToken.chainId};`
     );
 
     const logEvent = createLogEvent(accountOrai.bech32Address);
@@ -402,6 +399,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         handleSuccess(result.transactionHash);
       }
     } catch (error) {
+      console.log('handleSwapError', error);
+
       await handleSwapError(error, retryCount);
     } finally {
       if (mixpanel) {
@@ -509,9 +508,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       originalFromToken.chainId !== originalToToken.chainId &&
       !originalFromToken.cosmosBased &&
       !originalToToken.cosmosBased;
-    let simulateAmount = simulateData.amount;
+    let simulateAmount = simulateData?.amount;
     if (isInjectiveProtocol || isKawaiiChain || isDifferentChainAndNotCosmosBased) {
-      simulateAmount = toAmount(simulateData.displayAmount, originalToToken.decimals).toString();
+      simulateAmount = toAmount(simulateData?.displayAmount, originalToToken.decimals).toString();
     }
 
     const alphaSmartRoutes = simulateData?.routes;
@@ -580,7 +579,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const handleSwapError = async (error, retryCount) => {
-    console.log('error handleSubmit', error);
+    console.log('error handleSwapError', error);
     handleErrorSwap(error?.message ?? error?.ex?.message);
     setSwapLoading(false);
     if (
@@ -600,6 +599,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onRefresh = async () => {
     setLoadingRefresh(true);
+    setSwapLoading(false);
     const currentDate = Date.now();
     const differenceInMilliseconds = Math.abs(currentDate - refreshDate);
     const differenceInSeconds = differenceInMilliseconds / 1000;
