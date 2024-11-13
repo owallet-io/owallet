@@ -26,6 +26,7 @@ import { registerModal } from "@src/modals/base";
 import { TextInput } from "@components/input";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { OWButton } from "@components/button";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const TransactionFeeModal = registerModal(
   observer<{
@@ -122,7 +123,7 @@ export const TransactionFeeModal = registerModal(
         gasConfig.gas,
         isGasSimulatorEnabled,
       ]);
-
+      const { colors } = useTheme();
       return (
         <WrapViewModal
           style={{
@@ -194,9 +195,14 @@ export const TransactionFeeModal = registerModal(
                 />
                 <Gutter size={8} />
 
-                <Text style={style.flatten(["subtitle3", "color-gray-200"])}>
+                <OWText
+                  style={{
+                    ...style.flatten(["subtitle3"]),
+                    color: colors["neutral-text-body"],
+                  }}
+                >
                   <FormattedMessage id="components.input.fee-control.modal.remember-last-fee-option" />
-                </Text>
+                </OWText>
 
                 <Gutter size={8} />
 

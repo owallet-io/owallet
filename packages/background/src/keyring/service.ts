@@ -79,8 +79,6 @@ export class KeyRingService {
       }
     });
 
-    // service worker가 active 상태가 되는 경우라면
-    // 첫번째 autorun에서 analytics는 무시되어야한다.
     let isStarted = false;
     await runIfOnlyAppStart("analytics/keyring-service", async () => {
       isStarted = true;
@@ -603,6 +601,7 @@ export class KeyRingService {
     if (vaults.length === 0) {
       throw new Error("Key ring is empty");
     }
+
     return vaults[0].id;
   }
 

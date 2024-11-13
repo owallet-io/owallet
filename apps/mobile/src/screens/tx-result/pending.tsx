@@ -25,12 +25,7 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { OWButton } from "@components/button";
 import OWIcon from "@components/ow-icon/ow-icon";
-import {
-  EthTxReceipt,
-  EthTxStatus,
-  ResDetailAllTx,
-  TxBtcInfo,
-} from "@owallet/types";
+import { EthTxReceipt, ResDetailAllTx, TxBtcInfo } from "@owallet/types";
 import { TXSLcdRest } from "@owallet/types";
 import { CoinPretty, Dec } from "@owallet/unit";
 import _ from "lodash";
@@ -45,7 +40,10 @@ import {
 import ItemReceivedToken from "@screens/transactions/components/item-received-token";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
-
+enum EthTxStatus {
+  Success = "0x1",
+  Failure = "0x0",
+}
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore, allAccountStore, priceStore } = useStore();
   const intl = useIntl();
@@ -86,7 +84,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (isFocused) {
       const isEvmTx = chainId?.includes("eip155");
-
+      console.log(txHash, "txHash");
       if (chainInfo.chainId?.includes("Oraichain") && txHash) {
         retry(
           () => {
@@ -240,53 +238,57 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               if (chainInfo.evm === undefined) {
                 return reject();
               }
-
-              const txReceiptResponse = await simpleFetch<{
-                result: EthTxReceipt | null;
-                error?: Error;
-              }>(chainInfo.evm.rpc, {
-                method: "POST",
-                headers: {
-                  "content-type": "application/json",
-                },
-                body: JSON.stringify({
-                  jsonrpc: "2.0",
-                  method: "eth_getTransactionReceipt",
-                  params: [txHash],
-                  id: 1,
-                }),
-              });
-
-              if (txReceiptResponse.data.error) {
-                console.error(txReceiptResponse.data.error);
-                resolve();
-              }
-
-              const txReceipt = txReceiptResponse.data.result;
-              if (txReceipt) {
-                if (isPendingGotoHome.current) {
-                  return resolve();
+              try {
+                const txReceiptResponse = await simpleFetch<{
+                  result: EthTxReceipt | null;
+                  error?: Error;
+                }>(chainInfo.evm.rpc, {
+                  method: "POST",
+                  headers: {
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: "eth_getTransactionReceipt",
+                    params: [txHash],
+                    id: 1,
+                  }),
+                });
+                console.log(txReceiptResponse, "txReceiptResponse");
+                if (txReceiptResponse.data.error) {
+                  console.error(txReceiptResponse.data.error);
+                  resolve();
                 }
 
-                if (txReceipt.status === EthTxStatus.Success) {
-                  isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxSuccessResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
-                } else {
-                  isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxFailedResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
-                }
-                resolve();
-              }
+                const txReceipt = txReceiptResponse.data.result;
+                if (txReceipt) {
+                  if (isPendingGotoHome.current) {
+                    return resolve();
+                  }
 
-              reject();
+                  if (txReceipt.status === EthTxStatus.Success) {
+                    isPendingGoToResult.current = true;
+                    navigate(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    });
+                  } else {
+                    isPendingGoToResult.current = true;
+                    navigate(SCREENS.TxFailedResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    });
+                  }
+                  resolve();
+                }
+
+                reject();
+              } catch (e) {
+                reject();
+                throw Error(e);
+              }
             });
           },
           {
@@ -376,7 +378,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         <View style={styles.containerBottomButton}>
           <Text style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on {chainInfo?.raw?.txExplorer?.name}
+            You can check the status on {chainInfo?.txExplorer?.name}
           </Text>
           <OWButton
             label="View on Explorer"

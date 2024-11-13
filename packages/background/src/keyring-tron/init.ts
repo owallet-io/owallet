@@ -1,16 +1,16 @@
-import { Router } from '@owallet/router';
-import { KeyRingTronService } from './service';
+import { Router } from "@owallet/router";
+import { KeyRingTronService } from "./service";
 import {
   GetTronKeyMsg,
   GetTronKeysSettledMsg,
   RequestGetTronAddressMsg,
   RequestSendRawTransactionMsg,
   RequestSignTronMsg,
-  RequestTriggerSmartContractMsg
-} from './messages';
-import { ROUTE } from './constants';
-import { getHandler } from './handler';
-import { PermissionInteractiveService } from '../permission-interactive';
+  RequestTriggerSmartContractMsg,
+} from "./messages";
+import { ROUTE } from "./constants";
+import { getHandler } from "./handler";
+import { PermissionInteractiveService } from "../permission-interactive";
 
 export function init(
   router: Router,

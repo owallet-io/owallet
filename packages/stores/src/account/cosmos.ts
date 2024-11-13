@@ -342,6 +342,7 @@ export class CosmosAccountImpl {
                   this.chainGetter.getChain(this.chainId).rest
                 }/cosmos/tx/v1beta1/txs/${Buffer.from(txHash).toString("hex")}`
               );
+              console.log(data, "data");
               if (data && status === 200) {
                 const tx = { ...data?.tx_response } as any;
                 this.base.setTxTypeInProgress("");
@@ -399,7 +400,6 @@ export class CosmosAccountImpl {
           maxWaitMsAfterError: 1000,
         }
       );
-      return;
     }
     const txTracer = new TendermintTxTracer(
       this.chainGetter.getChain(this.chainId).rpc,

@@ -312,8 +312,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                           wallet: account.bech32Address,
                           validator: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.amount[0],
-                          fee: sendConfigs.feeConfig.toStdFee(),
-                          currency: sendConfigs.amountConfig.sendCurrency,
+                          fee: sendConfigs.feeConfig.fees[0],
                         },
                       });
                     },

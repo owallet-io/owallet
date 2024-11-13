@@ -159,10 +159,12 @@ export const TextInput = React.forwardRef<
               style.flatten([
                 "absolute",
                 "text-caption2",
-                "color-error",
+                // "color-error",
+
                 "margin-top-2",
                 "margin-left-4",
               ]),
+              { color: colors["error-text-body"] },
               props.errorLabelStyle,
             ])}
           >

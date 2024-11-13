@@ -129,7 +129,7 @@ export const NewAmountInput: FunctionComponent<{
             maxLength={20}
             value={amountConfig.value}
             onChangeText={(text) => {
-              amountConfig.setValue(text);
+              amountConfig.setValue(text?.replace(",", "."));
             }}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}

@@ -3,15 +3,17 @@ import { PubKeySecp256k1 } from "@owallet/crypto";
 import { OWalletError } from "@owallet/router";
 import { ChainInfo } from "@owallet/types";
 import { KeyRingBtc } from "../../keyring";
-import { PlainObject, Vault } from "../../vault";
+import { PlainObject, Vault, VaultService } from "../../vault";
+import { KeyRingLedgerService } from "../../keyring-ledger";
 
 export class KeyRingBtcLedgerService implements KeyRingBtc {
-  async init(): Promise<void> {
-    // TODO: ?
-  }
+  constructor(
+    protected readonly vaultService: VaultService,
+    protected readonly baseKeyringService: KeyRingLedgerService
+  ) {}
 
   supportedKeyRingType(): string {
-    return "ledger";
+    return this.baseKeyringService.supportedKeyRingType();
   }
 
   createKeyRingVault(
@@ -26,15 +28,7 @@ export class KeyRingBtcLedgerService implements KeyRingBtc {
     insensitive: PlainObject;
     sensitive: PlainObject;
   }> {
-    return Promise.resolve({
-      insensitive: {
-        [app]: {
-          pubKey: Buffer.from(pubKey).toString("hex"),
-        },
-        bip44Path,
-      },
-      sensitive: {},
-    });
+    return this.baseKeyringService.createKeyRingVault(pubKey, app, bip44Path);
   }
 
   getPubKey(

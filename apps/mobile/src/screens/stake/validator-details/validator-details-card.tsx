@@ -42,6 +42,7 @@ import { SCREENS } from "@src/common/constants";
 import { useNavigation } from "@react-navigation/native";
 import { OWHeaderTitle } from "@components/header";
 import { OWBox } from "@components/card";
+import { useIntl } from "react-intl";
 
 const defaultGasPerDelegation = 140000;
 const renderIconValidator = (
@@ -178,7 +179,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       Number(staked.trim(true).shrink(true).hideDenom(true).maxDecimals(6)) > 0
     );
   }, [validatorAddress]);
-
+  const intl = useIntl();
   const renderTextDetail = (label: string) => {
     switch (label) {
       case "Commission":
@@ -238,34 +239,35 @@ export const ValidatorDetailsCard: FunctionComponent<{
         "",
         {},
         {
-          onBroadcasted: (txHash) => {
-            // analyticsStore.logEvent('complete_claim', {
-            //   chainId: viewToken.chainInfo.chainId,
-            //   chainName: viewToken.chainInfo.chainName,
-            // });
-            // navigation.navigate('TxPending', {
-            //   chainId,
-            //   txHash: Buffer.from(txHash).toString('hex'),
-            // });
-            const validatorObject = convertArrToObject([validatorAddress]);
-            // tracking(`Claim ${rewards?.currency.coinDenom}`);
-            navigate(SCREENS.TxPendingResult, {
-              chainId: initialChainId,
-              txHash: Buffer.from(txHash).toString("hex"),
-              data: {
-                ...validatorObject,
-                type: "claim",
-                amount: rewards,
-                currency: rewards?.currency,
-              },
-            });
-          },
+          // onBroadcasted: (txHash) => {
+          //   const validatorObject = convertArrToObject([validatorAddress]);
+          //   navigate(SCREENS.TxPendingResult, {
+          //     chainId: initialChainId,
+          //     txHash: Buffer.from(txHash).toString("hex"),
+          //     data: {
+          //       ...validatorObject,
+          //       type: "claim",
+          //       amount: rewards,
+          //     },
+          //   });
+          // },
           onFulfill: (tx: any) => {
             if (tx.code != null && tx.code !== 0) {
               console.log(tx.log ?? tx.raw_log);
-
+              showToast({
+                type: "danger",
+                message: intl.formatMessage({
+                  id: "error.transaction-failed",
+                }),
+              });
               return;
             }
+            showToast({
+              type: "success",
+              message: intl.formatMessage({
+                id: "notification.transaction-success",
+              }),
+            });
           },
         }
       );
@@ -505,6 +507,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                           borderRadius: 999,
                           marginBottom: 10,
                         }}
+                        loading={account.isSendingMsg === "withdrawRewards"}
                         size={"small"}
                         fullWidth={false}
                         label={"Claimable"}

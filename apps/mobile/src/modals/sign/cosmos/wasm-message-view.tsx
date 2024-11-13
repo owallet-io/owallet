@@ -8,6 +8,9 @@ import { XAxis } from "../../../components/axis";
 import { Button } from "../../../components/button";
 import { StyleSheet, Text, View } from "react-native";
 import { useStyle } from "../../../styles";
+import { OWButton } from "@components/button";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const WasmMessageView: FunctionComponent<{
   chainId: string;
@@ -39,12 +42,12 @@ export const WasmMessageView: FunctionComponent<{
           const nonce = cipherText.slice(0, 32);
           cipherText = cipherText.slice(64);
 
-          const keplr = await accountStore.getAccount(chainId).getKeplr();
-          if (!keplr) {
-            throw new Error("Can't get the keplr API");
+          const owallet = await accountStore.getAccount(chainId).getOWallet();
+          if (!owallet) {
+            throw new Error("Can't get the owallet API");
           }
 
-          const enigmaUtils = keplr.getEnigmaUtils(chainId);
+          const enigmaUtils = owallet.getEnigmaUtils(chainId);
           let plainText = Buffer.from(
             await enigmaUtils.decrypt(cipherText, nonce)
           );
@@ -63,30 +66,36 @@ export const WasmMessageView: FunctionComponent<{
       })();
     }
   }, [accountStore, chainId, isSecretWasm, msg]);
-
+  const { colors } = useTheme();
   return (
     <Box>
       {isOpen ? (
         <React.Fragment>
-          <Text
+          <OWText
             style={StyleSheet.flatten([
-              style.flatten(["body3", "color-text-middle"]),
-              { width: 240, margin: 0, marginBottom: 8 },
+              style.flatten(["body3"]),
+              {
+                width: 240,
+                margin: 0,
+                marginBottom: 8,
+                color: colors["neutral-text-body"],
+              },
             ])}
           >
             {isOpen ? detailsMsg : ""}
-          </Text>
+          </OWText>
           {warningMsg ? <View>{warningMsg}</View> : null}
         </React.Fragment>
       ) : null}
       <XAxis>
-        <Button
-          size="extra-small"
-          color="secondary"
-          containerStyle={{
-            backgroundColor: style.get("color-gray-400").color,
-          }}
-          text={
+        <OWButton
+          fullWidth={false}
+          size="small"
+          type="secondary"
+          // style={{
+          //   backgroundColor: style.get("color-gray-400").color,
+          // }}
+          label={
             isOpen
               ? intl.formatMessage({
                   id: "page.sign.components.messages.wasm-message-view.close-button",

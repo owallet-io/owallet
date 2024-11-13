@@ -30,6 +30,11 @@ import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import { AsyncKVStore } from "@src/common";
 import { FeeControl } from "@src/components/input/fee-control";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { Buffer } from "buffer";
+import { RecipientInput } from "@components/input/reciepient-input";
+import { useFocusAfterRouting } from "@hooks/use-focus";
 
 enum EthTxStatus {
   Success = "0x1",
@@ -70,7 +75,7 @@ export const SendEvmNewScreen: FunctionComponent<{
     const balance = queryBalances
       .getQueryEthereumHexAddress(sender)
       .getBalance(currency);
-
+    const addressRef = useFocusAfterRouting();
     const sendConfigs = useSendMixedIBCTransferConfig(
       chainStore,
       queriesStore,
@@ -299,7 +304,7 @@ export const SendEvmNewScreen: FunctionComponent<{
       | undefined
     >(undefined);
 
-    const historyType = isIBCTransfer ? "basic-send/ibc" : "basic-send";
+    const historyType = "basic-send";
 
     const [isSendingIBCToken, setIsSendingIBCToken] = useState(false);
     useEffect(() => {
@@ -367,6 +372,21 @@ export const SendEvmNewScreen: FunctionComponent<{
                     }
                   });
               },
+              onBroadcasted: (txHash) => {
+                ethereumAccount.setIsSendingTx(false);
+                console.log(txHash, "txHash onbroadcast");
+                navigate(SCREENS.TxPendingResult, {
+                  chainId,
+                  txHash: txHash,
+                  data: {
+                    amount: sendConfigs.amountConfig.amount[0],
+                    fee: sendConfigs.feeConfig.fees[0],
+                    type: "send",
+                    from: sender,
+                    to: sendConfigs.recipientConfig.recipient,
+                  },
+                });
+              },
             });
             ethereumAccount.setIsSendingTx(false);
           }
@@ -428,21 +448,29 @@ export const SendEvmNewScreen: FunctionComponent<{
             >
               <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
 
-              <AddressInput
-                colors={colors}
-                placeholder="Enter address"
-                label=""
+              {/*<AddressInput*/}
+              {/*  colors={colors}*/}
+              {/*  placeholder="Enter address"*/}
+              {/*  label=""*/}
+              {/*  recipientConfig={sendConfigs.recipientConfig}*/}
+              {/*  memoConfig={null}*/}
+              {/*  labelStyle={styles.sendlabelInput}*/}
+              {/*  containerStyle={{*/}
+              {/*    marginBottom: 12,*/}
+              {/*  }}*/}
+              {/*  inputContainerStyle={{*/}
+              {/*    backgroundColor: colors["neutral-surface-card"],*/}
+              {/*    borderWidth: 0,*/}
+              {/*    paddingHorizontal: 0,*/}
+              {/*  }}*/}
+              {/*/>*/}
+              <RecipientInput
+                ref={addressRef}
+                historyType={historyType}
                 recipientConfig={sendConfigs.recipientConfig}
-                memoConfig={null}
-                labelStyle={styles.sendlabelInput}
-                containerStyle={{
-                  marginBottom: 12,
-                }}
-                inputContainerStyle={{
-                  backgroundColor: colors["neutral-surface-card"],
-                  borderWidth: 0,
-                  paddingHorizontal: 0,
-                }}
+                memoConfig={sendConfigs.memoConfig}
+                currency={sendConfigs.amountConfig.currency}
+                permitAddressBookSelfKeyInfo={false}
               />
             </OWCard>
             <OWCard

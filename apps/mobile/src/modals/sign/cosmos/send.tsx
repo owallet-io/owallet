@@ -11,6 +11,8 @@ import { Image, Text } from "react-native";
 import { useStore } from "@src/stores";
 import { useStyle } from "@src/styles";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const SendMessage: IMessageRenderer = {
   process(chainId: string, msg) {
@@ -67,9 +69,14 @@ const SendMessagePretty: FunctionComponent<{
 
     return new CoinPretty(currency, coin.amount);
   });
-
+  const { colors } = useTheme();
   return (
-    <Text style={style.flatten(["body3", "color-text-middle"])}>
+    <OWText
+      style={{
+        ...style.flatten(["body3"]),
+        color: colors["neutral-text-body"],
+      }}
+    >
       <FormattedMessage
         id="page.sign.components.messages.send.paragraph"
         values={{
@@ -80,11 +87,11 @@ const SendMessagePretty: FunctionComponent<{
             })
             .join(", "),
           b: (...chunks: any) => (
-            <Text style={{ fontWeight: "bold" }}>{chunks}</Text>
+            <OWText style={{ fontWeight: "bold" }}>{chunks}</OWText>
           ),
           br: "\n",
         }}
       />
-    </Text>
+    </OWText>
   );
 });

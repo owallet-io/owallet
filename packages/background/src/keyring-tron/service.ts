@@ -1,19 +1,20 @@
-import { ChainsService } from '../chains';
-import { KeyRingService } from '../keyring';
-import { InteractionService } from '../interaction';
-import { ChainsUIService } from '../chains-ui';
-import { Key } from '@owallet/types';
-import { KeyRingCosmosService } from '../keyring-cosmos';
-import { KeyRingTronBaseService } from './keyring-base';
+import { ChainsService } from "../chains";
+import { KeyRingService } from "../keyring";
+import { InteractionService } from "../interaction";
+import { ChainsUIService } from "../chains-ui";
+import { Key } from "@owallet/types";
+import { KeyRingCosmosService } from "../keyring-cosmos";
+import { KeyRingTronBaseService } from "./keyring-base";
 import {
   ChainIdEVM,
   DEFAULT_FEE_LIMIT_TRON,
   EXTRA_FEE_LIMIT_TRON,
   getBase58Address,
-  TronWebProvider
-} from '@owallet/common';
-import { APP_PORT, Env } from '@owallet/router';
-import { Int } from '@owallet/unit';
+  TronWebProvider,
+} from "@owallet/common";
+import { APP_PORT, Env } from "@owallet/router";
+import { Int } from "@owallet/unit";
+import { Bech32Address } from "@owallet/cosmos";
 
 export class KeyRingTronService {
   constructor(
@@ -22,8 +23,7 @@ export class KeyRingTronService {
     protected readonly interactionService: InteractionService,
     protected readonly chainsUIService: ChainsUIService,
     protected readonly msgPrivilegedOrigins: string[],
-    protected readonly keyRingTronBaseService: KeyRingTronBaseService,
-    protected readonly keyRingCosmosService: KeyRingCosmosService
+    protected readonly keyRingTronBaseService: KeyRingTronBaseService
   ) {}
 
   async init() {
@@ -34,11 +34,36 @@ export class KeyRingTronService {
   }
 
   async getKeySelected(chainId: string): Promise<Key> {
-    return this.keyRingCosmosService.getKeySelected(chainId);
+    return await this.getKey(this.keyRingService.selectedVaultId, chainId);
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    return this.keyRingCosmosService.getKey(vaultId, chainId);
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    const pubKey = await this.keyRingTronBaseService.getPubKey(
+      chainId,
+      vaultId
+    );
+    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+    if (!keyInfo) {
+      throw new Error("Null key info");
+    }
+
+    const address = pubKey.getEthAddress();
+
+    const bech32Address = new Bech32Address(address);
+
+    return {
+      name: this.keyRingService.getKeyRingName(vaultId),
+      algo: "ethsecp256k1",
+      pubKey: pubKey.toBytes(),
+      address,
+      bech32Address: bech32Address.toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      ),
+      ethereumHexAddress: bech32Address.toHex(true),
+      isNanoLedger: keyInfo.type === "ledger",
+      isKeystone: keyInfo.type === "keystone",
+    };
   }
 
   async requestTronAddress(env: Env, origin: string): Promise<object> {
@@ -47,7 +72,7 @@ export class KeyRingTronService {
     const res = {
       name: key.name,
       hex: key.ethereumHexAddress,
-      base58: getBase58Address(key.ethereumHexAddress)
+      base58: getBase58Address(key.ethereumHexAddress),
     };
 
     return res;
@@ -78,36 +103,40 @@ export class KeyRingTronService {
 
       const chainParameters = await tronWeb.trx.getChainParameters();
 
-      const triggerConstantContract = await tronWeb.transactionBuilder.triggerConstantContract(
-        data.address,
-        data.functionSelector,
-        {
-          ...data.options,
-          feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100)
-        },
-        data.parameters,
-        data.issuerAddress
+      const triggerConstantContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          data.parameters,
+          data.issuerAddress
+        );
+      const energyFee = chainParameters.find(
+        ({ key }) => key === "getEnergyFee"
       );
-      const energyFee = chainParameters.find(({ key }) => key === 'getEnergyFee');
       const feeLimit = new Int(energyFee.value)
         .mul(new Int(triggerConstantContract.energy_used))
         .add(new Int(EXTRA_FEE_LIMIT_TRON));
 
-      const triggerSmartContract = await tronWeb.transactionBuilder.triggerSmartContract(
-        data.address,
-        data.functionSelector,
-        {
-          ...data.options,
-          feeLimit: feeLimit?.toString(),
-          callValue: 0
-        },
-        data.parameters,
-        data.issuerAddress
-      );
+      const triggerSmartContract =
+        await tronWeb.transactionBuilder.triggerSmartContract(
+          data.address,
+          data.functionSelector,
+          {
+            ...data.options,
+            feeLimit: feeLimit?.toString(),
+            callValue: 0,
+          },
+          data.parameters,
+          data.issuerAddress
+        );
 
       return triggerSmartContract;
     } catch (error) {
-      console.log(error, 'error');
+      console.log(error, "error");
       throw error;
     }
   }
@@ -140,7 +169,13 @@ export class KeyRingTronService {
     signingData: Uint8Array;
     signature?: any;
   }> {
-    return await this.signTron(env, origin, this.keyRingService.selectedVaultId, chainId, data);
+    return await this.signTron(
+      env,
+      origin,
+      this.keyRingService.selectedVaultId,
+      chainId,
+      data
+    );
   }
 
   async signTron(
@@ -160,47 +195,53 @@ export class KeyRingTronService {
     const isTronChain = this.chainsService.isTronChain(chainId);
 
     if (!isTronChain) {
-      throw new Error('Invalid Tron chain');
+      throw new Error("Invalid Tron chain");
     }
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     const key = await this.getKey(vaultId, chainId);
 
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-tron',
-      'request-sign-tron',
+      "/sign-tron",
+      "request-sign-tron",
       {
         origin,
         chainId,
         pubKey: key.pubKey,
         data,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { signingData: Uint8Array; signature?: any }) => {
         return await (async () => {
-          if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
             if (!res.signature) {
-              throw new Error('Frontend should provide signature');
+              throw new Error("Frontend should provide signature");
             }
 
             return {
               signingData: res.signingData,
-              signature: res.signature
+              signature: res.signature,
             };
           } else {
-            const signature = await this.keyRingTronBaseService.sign(chainId, vaultId, data);
+            const signature = await this.keyRingTronBaseService.sign(
+              chainId,
+              vaultId,
+              data
+            );
             return {
               signingData: res.signingData,
-              signature: signature
+              signature: signature,
             };
           }
         })();

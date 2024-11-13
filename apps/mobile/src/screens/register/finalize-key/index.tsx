@@ -39,8 +39,8 @@ const SimpleProgressBar: FunctionComponent<{
   useEffect(() => {
     animProgress.value = withSpring(progress, defaultSpringConfig);
   }, [animProgress, progress]);
-
-  const barColor = style.get("color-blue-400").color;
+  const { colors } = useTheme();
+  const barColor = colors["primary-surface-pressed"];
   const animatedStyle = useAnimatedStyle(() => {
     return {
       height: 8,
@@ -366,24 +366,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
       queryRoughlyDone
     ) {
       onceRef.current = true;
-      if (ledger) {
-        navigation.reset({
-          routes: [
-            {
-              name: "Register.EnableChain",
-              params: {
-                vaultId,
-                candidateAddresses,
-                isFresh: mnemonic?.isFresh ?? false,
-                stepPrevious: stepPrevious,
-                stepTotal: stepTotal,
-                password: password,
-              },
-            },
-          ],
-        });
-        return;
-      }
       (async () => {
         const chainsEnable = chainStore.chainInfos.map(
           (chainInfo, index) => chainInfo.chainIdentifier
@@ -407,40 +389,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
   ]);
 
   return (
-    // <ViewRegisterContainer
-    //   forceEnableTopSafeArea={true}
-    //   contentContainerStyle={{
-    //     flexGrow: 1,
-    //     alignItems: "center",
-    //   }}
-    // >
-    //   <View style={{ flex: 1 }} />
-    //   <LottieView
-    //     source={require("@assets/animations/loading_owallet.json")}
-    //     loop={true}
-    //     autoPlay={true}
-    //     style={{ width: "80%", aspectRatio: 1 }}
-    //   />
-    //   <View
-    //     style={{
-    //       flex: 2,
-    //     }}
-    //   />
-    //   <Text style={style.flatten(["subtitle3", "color-text-low"])}>
-    //     <FormattedMessage id="pages.register.finalize-key.loading.text" />
-    //   </Text>
-    //   <Box marginTop={21} marginBottom={12} paddingX={28} width="100%">
-    //     <SimpleProgressBar progress={queryProgress} />
-    //   </Box>
-    //   <Text style={style.flatten(["body2", "color-text-low", "text-center"])}>
-    //     ({(queryProgress * 100).toFixed(0)}%/ 100%)
-    //   </Text>
-    //   <View
-    //     style={{
-    //       flex: 1,
-    //     }}
-    //   />
-    // </ViewRegisterContainer>
     <PageWithView
       disableSafeArea
       style={{
@@ -498,9 +446,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
               ({(queryProgress * 100).toFixed(0)}%/ 100%)
             </Text>
           </View>
-          {/*<Text style={style.flatten(["subtitle3", "color-text-low"])}>*/}
-          {/*  <FormattedMessage id="pages.register.finalize-key.loading.text" />*/}
-          {/*</Text>*/}
         </View>
       </View>
     </PageWithView>

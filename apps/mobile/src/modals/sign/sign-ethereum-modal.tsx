@@ -13,22 +13,15 @@ import {
   useTxConfigsValidate,
   useZeroAllowedGasConfig,
 } from "@owallet/hooks";
-// import {BaseModalHeader} from '../../components/modal';
 import { Column, Columns } from "../../components/column";
 import { Gutter } from "../../components/gutter";
 import { Box } from "../../components/box";
 import { XAxis } from "../../components/axis";
 import { CloseIcon } from "../../components/icon";
-// import {CodeBracketIcon} from '../../components/icon/code-bracket';
-// import {registerCardModal} from '../../components/modal/card';
-// import {SpecialButton} from '../../components/special-button';
-// import {ScrollView} from '../../components/scroll-view/common-scroll-view';
 import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
-import { FeeSummary } from "./components/fee-summary";
-// import {defaultRegistry} from './components/eth-tx/registry';
 import { UnsignedTransaction } from "@ethersproject/transactions";
 import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { Buffer } from "buffer/";
@@ -44,6 +37,11 @@ import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import OWButtonGroup from "@components/button/OWButtonGroup";
 import { FeeControl } from "@components/input/fee-control";
+import { OWalletError } from "@owallet/router";
+import { LedgerGuideBox } from "@components/guide-box/ledger-guide-box";
+import { ErrModuleLedgerSign } from "@src/modals/sign/util/ledger-types";
+import { handleEthereumPreSignByLedger } from "@src/modals/sign/util/handle-eth-sign";
+import { useLedgerBLE } from "@src/providers/ledger-ble";
 
 const EthSignType = {
   MESSAGE: "message",
@@ -70,7 +68,10 @@ export const SignEthereumModal = registerModal(
     const style = useStyle();
 
     const { message, signType, signer, chainId } = interactionData.data;
-
+    const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
+    const [ledgerInteractingError, setLedgerInteractingError] = useState<
+      Error | undefined
+    >(undefined);
     const account = accountStore.getAccount(chainId);
     const ethereumAccount = ethereumAccountStore.getAccount(chainId);
     const chainInfo = chainStore.getChain(chainId);
@@ -312,15 +313,25 @@ export const SignEthereumModal = registerModal(
           return signingDataBuff.toString("hex");
       }
     }, [signingDataBuff, signType]);
-
+    const ledgerBLE = useLedgerBLE();
     const [isViewData, setIsViewData] = useState(true);
 
     const approve = async () => {
       try {
+        let signature;
+        if (interactionData.data.keyType === "ledger") {
+          setIsLedgerInteracting(true);
+          setLedgerInteractingError(undefined);
+          signature = await handleEthereumPreSignByLedger(
+            interactionData,
+            Buffer.from(signingDataText),
+            ledgerBLE.getTransport
+          );
+        }
         await signEthereumInteractionStore.approveWithProceedNext(
           interactionData.id,
           Buffer.from(signingDataText),
-          undefined,
+          signature,
           async () => {
             // noop
           },
@@ -330,6 +341,17 @@ export const SignEthereumModal = registerModal(
         );
       } catch (e) {
         console.log(e);
+        if (e instanceof OWalletError) {
+          if (e.module === ErrModuleLedgerSign) {
+            setLedgerInteractingError(e);
+          } else {
+            setLedgerInteractingError(undefined);
+          }
+        } else {
+          setLedgerInteractingError(undefined);
+        }
+      } finally {
+        setIsLedgerInteracting(false);
       }
     };
     return (
@@ -402,7 +424,15 @@ export const SignEthereumModal = registerModal(
             gasConfig={gasConfig}
             gasSimulator={gasSimulator}
           />
-
+          <LedgerGuideBox
+            data={{
+              keyInsensitive: interactionData.data.keyInsensitive,
+              isEthereum: true,
+            }}
+            isLedgerInteracting={isLedgerInteracting}
+            ledgerInteractingError={ledgerInteractingError}
+            // isInternal={interactionData.isInternal}
+          />
           <XAxis>
             <OWButton
               size="large"
@@ -424,6 +454,11 @@ export const SignEthereumModal = registerModal(
               size="large"
               label={intl.formatMessage({ id: "button.approve" })}
               style={{ flex: 1, width: "100%" }}
+              loading={
+                signEthereumInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
+              }
               onPress={approve}
             />
           </XAxis>

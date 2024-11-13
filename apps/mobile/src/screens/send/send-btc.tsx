@@ -105,6 +105,14 @@ export const SendBtcScreen: FunctionComponent<{
                 navigate(SCREENS.TxPendingResult, {
                   chainId,
                   txHash,
+                  data: {
+                    amount: sendConfigs.amountConfig.amount[0],
+                    fee: sendConfigs.feeConfig.fees[0],
+                    type: "send",
+                    from: sender,
+                    to: sendConfigs.recipientConfig.recipient,
+                    memo: sendConfigs.memoConfig.memo,
+                  },
                 });
               },
               onFulfill: (txReceipt) => {

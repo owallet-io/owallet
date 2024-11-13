@@ -18,6 +18,9 @@ import { RadioButton } from "react-native-radio-buttons-group";
 import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { PricePretty } from "@owallet/unit";
 import { tracking } from "@src/utils/tracking";
+import { SCREENS } from "@common/constants";
+import { navigate } from "@src/router/root";
+import { useBIP44PathState } from "@screens/register/components/bip-path-44";
 
 export const NetworkModal: FC<{
   hideAllNetwork?: boolean;
@@ -29,7 +32,14 @@ export const NetworkModal: FC<{
     tracking("Modal Select Network Screen");
   }, []);
 
-  const { modalStore, chainStore, appInitStore, hugeQueriesStore } = useStore();
+  const {
+    modalStore,
+    chainStore,
+    appInitStore,
+    keyRingStore,
+    hugeQueriesStore,
+    allAccountStore,
+  } = useStore();
   const styles = styling(colors);
 
   useEffect(() => {
@@ -43,7 +53,16 @@ export const NetworkModal: FC<{
       setActiveTab("mainnet");
     }
   }, [appInitStore.getInitApp.hideTestnet]);
-
+  const getApp = (chainId: string) => {
+    if (!chainId) return;
+    const chainInfo = chainStore.getChain(chainId);
+    if (chainId.includes("eip155") || chainId.includes("inj")) {
+      return "Ethereum";
+    } else if (chainInfo.features.includes("btc")) {
+      return "Bitcoin";
+    }
+    return;
+  };
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
       modalStore.close();
@@ -51,8 +70,40 @@ export const NetworkModal: FC<{
       if (!item?.chainId) {
         appInitStore.selectAllNetworks(true);
       } else {
-        chainStore.selectChain(item?.chainId);
-        appInitStore.selectAllNetworks(false);
+        if (keyRingStore.selectedKeyInfo.type === "ledger") {
+          const account = allAccountStore.getAccount(item?.chainId);
+          if (account?.addressDisplay) {
+            chainStore.selectChain(item?.chainId);
+          } else {
+            const bip44Path =
+              keyRingStore.selectedKeyInfo.insensitive["bip44Path"];
+            if (!bip44Path) {
+              throw new Error("bip44Path not found");
+            }
+            const app = getApp(item?.chainId);
+            if (!app) return;
+            navigate(SCREENS.ConnectNewLedger, {
+              name: "",
+              password: "",
+              stepPrevious: 1,
+              stepTotal: 3,
+              bip44Path: bip44Path,
+              app: app,
+              appendModeInfo: {
+                vaultId: keyRingStore.selectedKeyInfo.id,
+                afterEnableChains: chainStore.chainInfos.map(
+                  (chain) => chain.chainId
+                ),
+              },
+            });
+          }
+          appInitStore.selectAllNetworks(false);
+        } else {
+          chainStore.selectChain(item?.chainId);
+          appInitStore.selectAllNetworks(false);
+        }
+
+        // const chainInfo = chainStore.getChain(item?.chainId);
       }
     } catch (error) {
       showToast({

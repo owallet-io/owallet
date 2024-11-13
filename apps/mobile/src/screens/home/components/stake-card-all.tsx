@@ -16,7 +16,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
-import { tracking } from "@src/utils/tracking";
+// import { tracking } from "@src/utils/tracking";
 import { action, makeObservable, observable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import {
@@ -860,6 +860,7 @@ const ClaimTokenItem: FunctionComponent<{
     }
 
     try {
+      setIsSimulating(false);
       await tx.send(
         {
           gas: gas.toString(),

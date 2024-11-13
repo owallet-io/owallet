@@ -77,67 +77,6 @@ export const RecipientInput = observer(
     const { colors } = useTheme();
     return (
       <React.Fragment>
-        {/*<TextInput*/}
-        {/*  ref={ref}*/}
-        {/*  autoCapitalize="none"*/}
-        {/*  label={intl.formatMessage({*/}
-        {/*    id: 'components.input.recipient-input.wallet-address-label',*/}
-        {/*  })}*/}
-        {/*  value={recipientConfig.value}*/}
-        {/*  autoComplete="off"*/}
-        {/*  onChangeText={value => {*/}
-        {/*    if (*/}
-        {/*      // If icns is possible and users enters ".", complete bech32 prefix automatically.*/}
-        {/*      'isICNSEnabled' in recipientConfig &&*/}
-        {/*      recipientConfig.isICNSEnabled &&*/}
-        {/*      value.length > 0 &&*/}
-        {/*      value[value.length - 1] === '.' &&*/}
-        {/*      numOfCharacter(value, '.') === 1 &&*/}
-        {/*      numOfCharacter(recipientConfig.value, '.') === 0*/}
-        {/*    ) {*/}
-        {/*      value = value + recipientConfig.icnsExpectedBech32Prefix;*/}
-        {/*    }*/}
-
-        {/*    recipientConfig.setValue(value);*/}
-        {/*  }}*/}
-        {/*  inputRight={*/}
-        {/*    memoConfig ? (*/}
-        {/*      <OWButtonIcon*/}
-        {/*        icon={*/}
-        {/*          // <UserIcon*/}
-        {/*          //   size={24}*/}
-        {/*          //   color={style.get('color-gray-10').color}*/}
-        {/*          // />*/}
-        {/*            <OWIcon name={"tdesignuser"} size={24} color={style.get('color-gray-10').color} />*/}
-        {/*        }*/}
-        {/*        style={style.flatten(['padding-4', 'border-radius-64'])}*/}
-        {/*        onPress={() => {*/}
-        {/*          setIsOpenAddressBookModal(true);*/}
-        {/*        }}*/}
-        {/*      />*/}
-        {/*    ) : null*/}
-        {/*  }*/}
-        {/*  // isLoading={isICNSFetching}*/}
-        {/*  paragraph={(() => {*/}
-        {/*    if (isICNSName && !recipientConfig.uiProperties.error) {*/}
-        {/*      return recipientConfig.recipient;*/}
-        {/*    }*/}
-        {/*  })()}*/}
-        {/*  bottomInInputContainer={bottom}*/}
-        {/*  error={(() => {*/}
-        {/*    const uiProperties = recipientConfig.uiProperties;*/}
-
-        {/*    const err = uiProperties.error || uiProperties.warning;*/}
-
-        {/*    if (err instanceof EmptyAddressError) {*/}
-        {/*      return;*/}
-        {/*    }*/}
-
-        {/*    if (err) {*/}
-        {/*      return err.message || err.toString();*/}
-        {/*    }*/}
-        {/*  })()}*/}
-        {/*/>*/}
         <TextInput
           multiline
           label={""}

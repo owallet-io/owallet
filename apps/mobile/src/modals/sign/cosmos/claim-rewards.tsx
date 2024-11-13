@@ -11,6 +11,8 @@ import { Image, Text } from "react-native";
 import { useStore } from "@src/stores";
 import { useStyle } from "@src/styles";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 // import {useStyle} from '../../styles';
 
 export const ClaimRewardsMessage: IMessageRenderer = {
@@ -70,19 +72,24 @@ const ClaimRewardsMessagePretty: FunctionComponent<{
     .get(chainId)
     .cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
     .getValidator(validatorAddress)?.description.moniker;
-
+  const { colors } = useTheme();
   return (
-    <Text style={style.flatten(["body3", "color-text-middle"])}>
+    <OWText
+      style={{
+        ...style.flatten(["body3"]),
+        color: colors["neutral-text-body"],
+      }}
+    >
       <FormattedMessage
         id="page.sign.components.messages.claim-rewards.paragraph"
         values={{
           validator:
             moniker || Bech32Address.shortenAddress(validatorAddress, 28),
           b: (...chunks: any) => (
-            <Text style={{ fontWeight: "bold" }}>{chunks}</Text>
+            <OWText style={{ fontWeight: "bold" }}>{chunks}</OWText>
           ),
         }}
       />
-    </Text>
+    </OWText>
   );
 });

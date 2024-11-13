@@ -10,6 +10,10 @@ import { Gutter } from "../gutter";
 import { Bech32Address } from "@owallet/cosmos";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import OWIcon from "@components/ow-icon/ow-icon";
+import { useTheme } from "@src/themes/theme-provider";
+import OWText from "@components/text/ow-text";
+import { shortenAddress } from "@utils/helper";
+// import OWIcon from "@components/ow-icon/ow-icon";
 
 export const AddressItem: FunctionComponent<{
   timestamp?: number;
@@ -33,22 +37,22 @@ export const AddressItem: FunctionComponent<{
 }) => {
   const intl = useIntl();
   const style = useStyle();
-
+  const { colors } = useTheme();
   return (
     <TouchableWithoutFeedback onPress={onClick}>
       <Box
         paddingX={16}
-        paddingY={20}
-        backgroundColor={style.get("color-gray-600").color}
+        paddingY={16}
+        backgroundColor={colors["neutral-surface-action"]}
         borderRadius={6}
-        borderWidth={highlight ? 1 : undefined}
-        borderColor={highlight ? style.get("color-gray-400").color : undefined}
+        // borderWidth={highlight ? 1 : undefined}
+        // borderColor={highlight ? style.get("color-gray-400").color : undefined}
       >
         <Columns sum={1} alignY="center">
           <YAxis>
             {timestamp ? (
               <React.Fragment>
-                <Text style={style.flatten(["h5", "color-white"])}>
+                <OWText style={style.flatten(["h5"])}>
                   <FormattedMessage
                     id="components.address-item.sent-on-date"
                     values={{
@@ -59,17 +63,17 @@ export const AddressItem: FunctionComponent<{
                       }),
                     }}
                   />
-                </Text>
+                </OWText>
 
-                <Gutter size={8} />
+                <Gutter size={4} />
               </React.Fragment>
             ) : null}
 
             {name ? (
               <React.Fragment>
-                <Text style={style.flatten(["h5", "color-white"])}>{name}</Text>
+                <OWText style={style.flatten(["h5"])}>{name}</OWText>
 
-                <Gutter size={8} />
+                <Gutter size={4} />
               </React.Fragment>
             ) : null}
 
@@ -77,24 +81,41 @@ export const AddressItem: FunctionComponent<{
               <OWIcon
                 name={"tdesignuser"}
                 size={12}
-                color={style.get("color-white").color}
+                color={colors["neutral-icon-on-light"]}
               />
               <Gutter size={4} />
-              <Text style={style.flatten(["body2", "color-gray-200"])}>
-                {Bech32Address.shortenAddress(address, 30)}
-              </Text>
+              <OWText
+                style={{
+                  ...style.flatten(["body2"]),
+                  color: colors["neutral-text-body"],
+                  flexWrap: "wrap",
+                  paddingRight: 20,
+                }}
+              >
+                {shortenAddress(address, 16)}
+              </OWText>
             </XAxis>
 
             {isShowMemo ? (
               <XAxis alignY="center">
                 {memo ? (
-                  <Text style={style.flatten(["body2", "color-gray-200"])}>
+                  <Text
+                    style={{
+                      ...style.flatten(["body2"]),
+                      color: colors["neutral-text-body"],
+                    }}
+                  >
                     {memo}
                   </Text>
                 ) : (
-                  <Text style={style.flatten(["body2", "color-gray-300"])}>
+                  <OWText
+                    style={{
+                      ...style.flatten(["body2"]),
+                      color: colors["neutral-text-body"],
+                    }}
+                  >
                     <FormattedMessage id="components.address-item.empty-memo" />
-                  </Text>
+                  </OWText>
                 )}
               </XAxis>
             ) : null}

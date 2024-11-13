@@ -11,6 +11,8 @@ import { Image, Text } from "react-native";
 import { useStyle } from "@src/styles";
 import { useStore } from "@src/stores";
 import images from "@assets/images";
+import OWText from "@components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const UndelegateMessage: IMessageRenderer = {
   process(chainId: string, msg) {
@@ -71,9 +73,14 @@ const UndelegateMessagePretty: FunctionComponent<{
     .get(chainId)
     .cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded)
     .getValidator(validatorAddress)?.description.moniker;
-
+  const { colors } = useTheme();
   return (
-    <Text style={style.flatten(["body3", "color-text-middle"])}>
+    <OWText
+      style={{
+        ...style.flatten(["body3"]),
+        color: colors["neutral-text-body"],
+      }}
+    >
       <FormattedMessage
         id="page.sign.components.messages.undelegate.paragraph"
         values={{
@@ -85,6 +92,6 @@ const UndelegateMessagePretty: FunctionComponent<{
           br: "\n",
         }}
       />
-    </Text>
+    </OWText>
   );
 });

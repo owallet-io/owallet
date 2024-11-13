@@ -58,6 +58,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
         {
           // registerConfig: RegisterConfig;
           words?: string;
+          ledger?: any;
           walletName?: string;
           stepPrevious: number;
           stepTotal: number;
@@ -96,6 +97,22 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const onVerifyMnemonic = async () => {
     if (isCreating) return;
     setIsCreating(true);
+    if (route.params?.ledger) {
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              ledger: route.params?.ledger,
+            },
+          },
+        ],
+      });
+    }
     if (isPrivateKey(route.params.words)) {
       const privateKey = Buffer.from(
         route.params.words.trim().replace("0x", ""),
