@@ -1,16 +1,9 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStyle } from '../../styles';
-import {
-  useAmountConfig,
-  useFeeConfig,
-  useGasConfig,
-  useGetFeeTron,
-  useSenderConfig,
-  useSendTronTxConfig
-} from '@owallet/hooks';
+import { useGetFeeTron, useSendTronTxConfig } from '@owallet/hooks';
 import { Column, Columns } from '../../components/column';
 import { Text, View } from 'react-native';
 import { Gutter } from '../../components/gutter';
@@ -18,21 +11,15 @@ import { Box } from '../../components/box';
 import { XAxis } from '../../components/axis';
 import { CloseIcon } from '../../components/icon';
 import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { FeeSummary } from './components/fee-summary';
-// import {defaultRegistry} from './components/eth-tx/registry';
-import { CoinPretty, Dec } from '@owallet/unit';
 import { Buffer } from 'buffer/';
 import { registerModal } from '@src/modals/base';
-import { defaultRegistry } from '@src/modals/sign/cosmos/message-registry';
 import { OWButton } from '@components/button';
 import OWText from '@components/text/ow-text';
 import OWIcon from '@components/ow-icon/ow-icon';
 import { SignTronInteractionStore } from '@owallet/stores-core';
-import { TransactionType } from '@owallet/types';
-import { UnsignedOasisTransaction } from '@owallet/stores-oasis';
 import WrapViewModal from '@src/modals/wrap/wrap-view-modal';
 import { useTheme } from '@src/themes/theme-provider';
-import { toDecimal, toDisplay } from '@owallet/common';
+import { toDisplay } from '@owallet/common';
 
 export const SignTronModal = registerModal(
   observer<{
@@ -48,20 +35,21 @@ export const SignTronModal = registerModal(
     const chainId = interactionData.data.chainId;
     const account = tronAccountStore.getAccount(chainId);
     const addressToFetch = account.ethereumHexAddress;
+    const data = JSON.parse(interactionData?.data?.data);
 
-    const data = JSON.parse(JSON.parse(interactionData?.data?.data));
+    const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
 
     const chainInfo = chainStore.getChain(chainId);
-    const currency = chainInfo.forceFindCurrency(data.coinMinimalDenom);
+    const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
     const queries = queriesStore.get(chainId);
 
     const sendConfigs = useSendTronTxConfig(chainStore, queriesStore, chainId, addressToFetch, 1);
     sendConfigs.amountConfig.setCurrency(currency);
-    sendConfigs.recipientConfig.setValue(data.recipient || '');
-    const displayAmount = toDisplay(data.amount, chainInfo.stakeCurrency.coinDecimals);
+    sendConfigs.recipientConfig.setValue(parsedData.recipient || '');
+    const displayAmount = toDisplay(parsedData.amount, chainInfo.stakeCurrency.coinDecimals);
     sendConfigs.amountConfig.setValue(displayAmount.toString());
-    const { feeTrx } = useGetFeeTron(
-      data.address,
+    const feeResult = useGetFeeTron(
+      parsedData.address,
       sendConfigs.amountConfig,
       sendConfigs.recipientConfig,
       queries.tron,
@@ -72,10 +60,8 @@ export const SignTronModal = registerModal(
     );
 
     const signingDataText = useMemo(() => {
-      return typeof interactionData.data.data === 'string'
-        ? interactionData.data.data
-        : JSON.stringify(interactionData.data.data);
-    }, [interactionData.data]);
+      return JSON.stringify(parsedData);
+    }, [parsedData]);
 
     const approve = async () => {
       try {
@@ -130,28 +116,30 @@ export const SignTronModal = registerModal(
               backgroundColor={colors['neutral-surface-bg']}
               borderRadius={6}
             >
-              <Text>{`${signingDataText}`}</Text>
+              <OWText style={style.flatten(['body3'])}>{`${signingDataText}`}</OWText>
             </Box>
           )}
 
           <Gutter size={24} />
-          {/* {interactionData.isInternal && <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />} */}
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              paddingVertical: 16
-            }}
-          >
-            <OWText size={16} weight={'600'}>
-              <FormattedMessage id="page.sign.components.fee-summary.fee" />
-            </OWText>
-            <OWText size={16} weight={'600'}>
-              {toDisplay(feeTrx?.amount, chainInfo.stakeCurrency.coinDecimals) ?? 0}{' '}
-              {feeTrx?.denom?.toUpperCase() ?? chainInfo.feeCurrencies[0].coinDenom}
-            </OWText>
-          </View>
+          {feeResult ? (
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingVertical: 16
+              }}
+            >
+              <OWText size={16} weight={'600'}>
+                <FormattedMessage id="page.sign.components.fee-summary.fee" />
+              </OWText>
+              <OWText size={16} weight={'600'}>
+                {toDisplay(feeResult?.feeTrx?.amount, chainInfo.stakeCurrency.coinDecimals) ?? 0}{' '}
+                {feeResult?.feeTrx?.denom?.toUpperCase() ?? chainInfo.feeCurrencies[0].coinDenom}
+              </OWText>
+            </View>
+          ) : null}
+
           <Gutter size={12} />
 
           <XAxis>
@@ -203,10 +191,6 @@ export const ViewDataButton: FunctionComponent<{
         {isViewData ? (
           <CloseIcon size={12} color={style.get('color-gray-100').color} />
         ) : (
-          // <CodeBracketIcon
-          //   size={12}
-          //   color={style.get('color-gray-100').color}
-          // />
           <OWIcon size={12} name={'tdesignbrackets'} color={style.get('color-gray-100').color} />
         )}
       </XAxis>
