@@ -1083,19 +1083,22 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     if (typeof method !== 'string') {
       throw new Error('Invalid paramater: `method` must be a string');
     }
+
     if (method !== 'owallet_initProviderState') {
       await this.protectedEnableAccess();
     }
 
+    if (method === 'wallet_switchEthereumChain') {
+      this.chainId = `eip155:${parseInt(chainId, 16)}`;
+    }
+    let currentChainId = chainId ?? this.chainId;
     return new Promise((resolve, reject) => {
-      console.log('chainId with method', method, chainId);
-
       let f = false;
       sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-ethereum', 'request-json-rpc-to-evm', {
         method,
         params,
         providerId,
-        chainId
+        chainId: currentChainId
       })
         .then(resolve)
         .catch(reject)

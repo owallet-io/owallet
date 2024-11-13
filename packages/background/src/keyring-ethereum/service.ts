@@ -295,8 +295,13 @@ export class KeyRingEthereumService {
       throw new Error('The chain id must be provided for the internal message.');
     }
 
-    const currentChainId = this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
-    console.log('currentChainId', origin, currentChainId);
+    let currentChainId = this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
+
+    if (currentChainId.startsWith('0x')) {
+      currentChainId = `eip155:${parseInt(currentChainId, 16)}`;
+    }
+
+    console.log('currentChainId 2', currentChainId);
 
     if (currentChainId == null) {
       if (method === 'owallet_initProviderState') {
@@ -318,6 +323,8 @@ export class KeyRingEthereumService {
 
     const currentChainInfo = this.chainsService.getChainInfoOrThrow(currentChainId);
     const currentChainEVMInfo = this.chainsService.getEVMInfoOrThrow(currentChainId);
+
+    console.log('currentChainEVMInfo', currentChainEVMInfo);
 
     const pubkey = await this.keyRingService.getPubKeySelected(currentChainInfo.chainId);
     const selectedAddress = `0x${Buffer.from(pubkey.getEthAddress()).toString('hex')}`;
