@@ -19,7 +19,7 @@ export class KeyRingTronBaseService {
   //   return this.getPubKey(chainId, this.selectedVaultId);
   // }
 
-  getPubKey(chainId: string, vaultId: string): Promise<Uint8Array> {
+  getPubKey(chainId: string, vaultId: string): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
     }
@@ -49,7 +49,7 @@ export class KeyRingTronBaseService {
     vault: Vault,
     coinType: number,
     chainInfo: ChainInfo
-  ): Promise<Uint8Array> {
+  ): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
     }

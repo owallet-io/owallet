@@ -14,6 +14,7 @@ import {
 } from "@owallet/common";
 import { APP_PORT, Env } from "@owallet/router";
 import { Int } from "@owallet/unit";
+import { Bech32Address } from "@owallet/cosmos";
 
 export class KeyRingTronService {
   constructor(
@@ -22,8 +23,7 @@ export class KeyRingTronService {
     protected readonly interactionService: InteractionService,
     protected readonly chainsUIService: ChainsUIService,
     protected readonly msgPrivilegedOrigins: string[],
-    protected readonly keyRingTronBaseService: KeyRingTronBaseService,
-    protected readonly keyRingCosmosService: KeyRingCosmosService
+    protected readonly keyRingTronBaseService: KeyRingTronBaseService
   ) {}
 
   async init() {
@@ -34,11 +34,36 @@ export class KeyRingTronService {
   }
 
   async getKeySelected(chainId: string): Promise<Key> {
-    return this.keyRingCosmosService.getKeySelected(chainId);
+    return await this.getKey(this.keyRingService.selectedVaultId, chainId);
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    return this.keyRingCosmosService.getKey(vaultId, chainId);
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    const pubKey = await this.keyRingTronBaseService.getPubKey(
+      chainId,
+      vaultId
+    );
+    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+    if (!keyInfo) {
+      throw new Error("Null key info");
+    }
+
+    const address = pubKey.getEthAddress();
+
+    const bech32Address = new Bech32Address(address);
+
+    return {
+      name: this.keyRingService.getKeyRingName(vaultId),
+      algo: "ethsecp256k1",
+      pubKey: pubKey.toBytes(),
+      address,
+      bech32Address: bech32Address.toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      ),
+      ethereumHexAddress: bech32Address.toHex(true),
+      isNanoLedger: keyInfo.type === "ledger",
+      isKeystone: keyInfo.type === "keystone",
+    };
   }
 
   async requestTronAddress(env: Env, origin: string): Promise<object> {

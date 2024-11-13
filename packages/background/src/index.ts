@@ -74,6 +74,7 @@ import {
   KeyRingTronBaseService,
   KeyRingTronPrivateKeyService,
   KeyRingTronMnemonicService,
+  KeyRingTronLedgerService,
 } from "./keyring-tron";
 import {
   KeyRingBtcBaseService,
@@ -270,8 +271,8 @@ export function init(
     new KeyRingTronBaseService(chainsService, vaultService, [
       new KeyRingTronMnemonicService(vaultService, keyringBaseMnemonic),
       new KeyRingTronPrivateKeyService(vaultService, keyringBasePrivateKey),
-    ]),
-    keyRingCosmosService
+      new KeyRingTronLedgerService(vaultService, keyringBaseLedger),
+    ])
   );
   const keyRingBitcoinService = new KeyRingBitcoin.KeyRingBtcService(
     chainsService,

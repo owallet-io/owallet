@@ -120,7 +120,7 @@ export interface KeyRingTron {
     vault: Vault,
     coinType: number,
     chainInfo: ChainInfo
-  ): Uint8Array | Promise<Uint8Array>;
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
 
   sign(
     vault: Vault,
