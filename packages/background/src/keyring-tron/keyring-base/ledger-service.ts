@@ -40,7 +40,8 @@ export class KeyRingTronLedgerService implements KeyRingTron {
     coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
-    return this.baseKeyringLedgerService.getPubKey(vault, coinType, chainInfo);
+    throw new Error("Not found pubKey");
+    // return this.baseKeyringLedgerService.getPubKey(vault, coinType, chainInfo);
   }
 
   sign(): string {
