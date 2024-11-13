@@ -333,20 +333,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     universalSwapStore.clearAmounts();
     universalSwapStore.setLoaded(false);
     const customChainInfos = chainInfos;
-    if (accountOrai.isNanoLedger) {
-      // if (keyRingStore.keyRingLedgerAddresses && Object.keys(keyRingStore.keyRingLedgerAddresses).length > 0) {
-      //   setTimeout(() => {
-      //     handleFetchAmounts(
-      //       {
-      //         orai: accountOrai.bech32Address,
-      //         eth: accountEth.ethereumHexAddress,
-      //         tron: accountTron.base58Address,
-      //       },
-      //       customChainInfos
-      //     );
-      //   }, 800);
-      // }
-    } else if (accountOrai.bech32Address && accountEth.ethereumHexAddress && accountTron.base58Address) {
+    if (accountOrai.bech32Address && accountEth.ethereumHexAddress && accountTron.base58Address) {
       setTimeout(() => {
         handleFetchAmounts(
           {
@@ -422,29 +409,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     evmAddress = accountEth.ethereumHexAddress;
     tronAddress = accountTron.base58Address;
-    // if (accountOrai.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.cosmos) {
-    //   cosmosAddress = keyRingStore.keyRingLedgerAddresses.cosmos;
-    // } else {
-    //   if (originalFromToken.cosmosBased) {
-    //     cosmosAddress = accountStore.getAccount(originalFromToken.chainId).bech32Address;
-    //   } else {
-    //     cosmosAddress = accountOrai.bech32Address;
-    //   }
-    // }
-
-    // if (accountEth.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.eth) {
-    //   evmAddress = keyRingStore.keyRingLedgerAddresses.eth;
-    // } else {
-    //   evmAddress = accountEth.evmosHexAddress;
-    // }
-
-    // if (accountTron.isNanoLedger && keyRingStore?.keyRingLedgerAddresses?.trx) {
-    //   tronAddress = keyRingStore.keyRingLedgerAddresses.trx;
-    // } else {
-    //   if (accountTron) {
-    //     tronAddress = getBase58Address(accountTron.evmosHexAddress);
-    //   }
-    // }
 
     return { cosmosAddress, evmAddress, tronAddress };
   };
@@ -541,6 +505,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     };
 
     const universalSwapHandler = new UniversalSwapHandler(compileSwapData, {
+      //@ts-ignore
       cosmosWallet,
       //@ts-ignore
       evmWallet,
@@ -626,6 +591,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleReverseDirection = () => {
     if (
+      //@ts-ignore
       UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
       //@ts-ignore
       !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
