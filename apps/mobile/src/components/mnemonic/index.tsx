@@ -79,8 +79,8 @@ export const BackupWordChip: FunctionComponent<{
             fontWeight: "600",
             padding: 4,
             color: empty
-              ? colors["primary-surface-default"]
-              : colors["primary-surface-default"],
+              ? colors["neutral-text-title"]
+              : colors["primary-text-default"],
           }}
         >
           {index}
