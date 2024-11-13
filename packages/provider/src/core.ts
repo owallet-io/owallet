@@ -1421,13 +1421,18 @@ class TronProvider extends EventEmitter implements ITronProvider {
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       let f = false;
-      console.log('{ address, functionSelector, options, parameters, issuerAddress }', {
-        ...address
-      });
+      console.log(
+        '{ address, functionSelector, options, parameters, issuerAddress }',
+        address,
+        functionSelector,
+        parameters,
+        issuerAddress,
+        options
+      );
 
       sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-tron', 'trigger-smart-contract', {
         chainId: ChainIdEVM.TRON,
-        data: JSON.stringify({ ...address })
+        data: JSON.stringify({ address, functionSelector, parameters, issuerAddress, options })
       })
         .then(resolve)
         .catch(reject)

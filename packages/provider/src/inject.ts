@@ -1347,13 +1347,11 @@ class TronProvider extends EventEmitter implements ITronProvider {
       );
 
       return await this._requestMethod('triggerSmartContract', [
-        {
-          address,
-          functionSelector,
-          options,
-          parameters: parametersConvert,
-          issuerAddress
-        }
+        address,
+        functionSelector,
+        options,
+        parametersConvert,
+        issuerAddress
       ]);
     }
   };

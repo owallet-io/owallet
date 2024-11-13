@@ -23,8 +23,6 @@ export const SelectNetworkModal: FunctionComponent<{
 }> = registerModal(({ close, selectedChainFilter, setChainFilter, tokenList }) => {
   const safeAreaInsets = useSafeAreaInsets();
 
-  console.log('tokenList', tokenList);
-
   const { colors } = useTheme();
   const [keyword, setKeyword] = useState('');
 
