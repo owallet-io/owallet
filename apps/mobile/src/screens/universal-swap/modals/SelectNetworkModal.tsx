@@ -82,13 +82,9 @@ export const SelectNetworkModal: FunctionComponent<{
     setChains(tmpChainInfos);
   }, [keyword]);
 
-  console.log('chains', chains);
-
   const _renderItem = ({ item }) => {
     let selected = item?.chainId === selectedChainFilter;
     let formatedChainID = item?.chainId;
-
-    console.log('formatedChainID', formatedChainID);
 
     if (item?.chainId.toString().startsWith('eip155')) {
       const evmChainId = Number(item?.chainId.toString().split(':')?.[1]);
@@ -101,8 +97,6 @@ export const SelectNetworkModal: FunctionComponent<{
     }
 
     const tokenListByChain = tokenList.filter(t => t.chainId === formatedChainID);
-
-    console.log('tokenListByChain', formatedChainID, tokenListByChain);
 
     if (tokenListByChain.length <= 0) {
       return null;
@@ -191,7 +185,8 @@ export const SelectNetworkModal: FunctionComponent<{
                 fontWeight: '400'
               }}
             >
-              ${!item.chainId ? maskedNumber(totalUsd) : maskedNumber(chainAssets?.[item.chainId]?.sum)}
+              {`${item.balance?.toString()}`}
+              {/* ${!item.chainId ? maskedNumber(totalUsd) : maskedNumber(chainAssets?.[item.chainId]?.sum)} */}
             </Text>
           </View>
         </View>
@@ -252,7 +247,7 @@ export const SelectNetworkModal: FunctionComponent<{
           textAlign: 'center'
         }}
       >
-        {`choose network 2`.toUpperCase()}
+        {`choose network`.toUpperCase()}
       </Text>
       <View style={styles.header}>
         <View style={styles.searchInput}>
