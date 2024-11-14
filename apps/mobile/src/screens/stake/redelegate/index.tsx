@@ -222,6 +222,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               }
               navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString('hex'),
+                from: 'stake',
                 data: {
                   type: 'redelegate',
                   wallet: account.bech32Address,

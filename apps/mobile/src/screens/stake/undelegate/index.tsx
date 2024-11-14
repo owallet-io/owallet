@@ -149,6 +149,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         }
         navigate(SCREENS.TxPendingResult, {
           txHash: Buffer.from(result?.hash).toString('hex'),
+          from: 'stake',
           data: {
             type: 'unstake',
             wallet: account.bech32Address,

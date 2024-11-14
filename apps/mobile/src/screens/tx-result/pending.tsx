@@ -7,7 +7,7 @@ import { Text } from '@src/components/text';
 
 import { metrics } from '../../themes';
 import { useTheme } from '@src/themes/theme-provider';
-import { capitalizedText, formatContractAddress, openLink } from '../../utils/helper';
+import { capitalizedText, formatContractAddress, openLink, showToast } from '../../utils/helper';
 import { ChainIdEnum } from '@owallet/common';
 import { API } from '@src/common/api';
 import { OwalletEvent, TRON_ID } from '@owallet/common';
@@ -21,7 +21,7 @@ import { BondStatus, CoinPrimitive } from '@owallet/stores';
 import _ from 'lodash';
 import { HeaderTx } from '@src/screens/tx-result/components/header-tx';
 import { TendermintTxTracer } from '@owallet/cosmos';
-import { navigate, resetTo } from '@src/router/root';
+import { goBack, navigate, resetTo } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
@@ -40,7 +40,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           txHash: string;
           tronWeb?: any;
           title: string;
+          from?: string;
           data?: {
+            type?: string;
             memo: string;
             fee: StdFee;
             fromAddress: string;
@@ -126,7 +128,15 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         }
       }
       setTimeout(() => {
-        resetTo(SCREENS.STACK.MainTab);
+        if (params?.from === 'stake') {
+          goBack();
+        } else {
+          resetTo(SCREENS.STACK.MainTab);
+        }
+        showToast({
+          message: 'Transaction submitted',
+          type: 'success'
+        });
       }, 6000);
     }
   }, []);

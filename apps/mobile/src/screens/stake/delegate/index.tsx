@@ -265,6 +265,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                       }
                       navigate(SCREENS.TxPendingResult, {
                         txHash: Buffer.from(txHash).toString('hex'),
+                        from: 'stake',
                         data: {
                           type: 'stake',
                           wallet: account.bech32Address,
