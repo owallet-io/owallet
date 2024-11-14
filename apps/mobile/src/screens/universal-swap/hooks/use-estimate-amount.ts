@@ -217,10 +217,7 @@ const useEstimateAmount = (
       const data = await getSimulateSwap();
       const defaultRouterSwap = { amount: '0', displayAmount: 0, routes: [] };
       const routersSwapData =
-        fromAmountToken && data
-          ? //@ts-ignore
-            { ...data, routes: data?.routes?.routes ?? [] }
-          : defaultRouterSwap;
+        fromAmountToken && data ? { ...data, routes: data?.routes?.routes ?? [] } : defaultRouterSwap;
 
       const usdPriceShowFrom = (prices?.[originalFromToken?.coinGeckoId] * fromAmountToken).toFixed(6);
       const usdPriceShowTo = (prices?.[originalToToken?.coinGeckoId] * data?.displayAmount).toFixed(6);
