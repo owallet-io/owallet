@@ -148,7 +148,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/DogeBNB",
           coinDecimals: 8,
-          coinGeckoId: "the-open-network",
+          coinGeckoId: "dogecoin",
           coinImageUrl:
             "https://assets.coingecko.com/coins/images/5/standard/dogecoin.png?1696501409",
         },
