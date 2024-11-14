@@ -204,3 +204,4 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          NODE_OPTIONS: "--max_old_space_size=4096"
