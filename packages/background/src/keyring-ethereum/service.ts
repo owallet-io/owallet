@@ -301,7 +301,7 @@ export class KeyRingEthereumService {
       currentChainId = `eip155:${parseInt(currentChainId, 16)}`;
     }
 
-    console.log('currentChainId 2', currentChainId);
+    console.log('currentChainId', currentChainId);
 
     if (currentChainId == null) {
       if (method === 'owallet_initProviderState') {
@@ -323,8 +323,6 @@ export class KeyRingEthereumService {
 
     const currentChainInfo = this.chainsService.getChainInfoOrThrow(currentChainId);
     const currentChainEVMInfo = this.chainsService.getEVMInfoOrThrow(currentChainId);
-
-    console.log('currentChainEVMInfo', currentChainEVMInfo);
 
     const pubkey = await this.keyRingService.getPubKeySelected(currentChainInfo.chainId);
     const selectedAddress = `0x${Buffer.from(pubkey.getEthAddress()).toString('hex')}`;
@@ -402,8 +400,6 @@ export class KeyRingEthereumService {
             nonce: transactionCount
           };
 
-          console.log('unsignedTx', unsignedTx);
-
           const { signingData, signature } = await this.signEthereumSelected(
             env,
             origin,
@@ -414,6 +410,8 @@ export class KeyRingEthereumService {
           );
 
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
+
+          console.log('signingTx', signingTx);
 
           const isEIP1559 = !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
           if (isEIP1559) {
