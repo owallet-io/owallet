@@ -55,6 +55,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const srcValidator =
@@ -216,6 +217,9 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 `Switch Validator`,
                 `validatorFrom=${srcValidator?.description.moniker};validatorTo=${dstValidator?.description.moniker};`
               );
+              if (chainInfo.raw?.txExplorer?.txUrl === '') {
+                account.setIsSendingMsgs(false);
+              }
               navigate(SCREENS.TxPendingResult, {
                 txHash: Buffer.from(txHash).toString('hex'),
                 data: {
