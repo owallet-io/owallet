@@ -6,12 +6,18 @@ import {
   EvmResponse,
   Networks,
   ethToTronAddress,
+  chainInfos,
 } from "@oraichain/oraidex-common";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { IEthereumProvider, ITronProvider, OWallet } from "@owallet/types";
 import { ethers } from "ethers";
-import { ChainIdEVM } from "@owallet/common";
+import {
+  ChainIdEnum,
+  ChainIdEVM,
+  DEFAULT_FEE_LIMIT_TRON,
+  TronWebProvider,
+} from "@owallet/common";
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -131,6 +137,20 @@ export class SwapEvmWallet extends EvmWallet {
         ethToTronAddress(issuerAddress)
       );
 
+      const tronWeb = TronWebProvider();
+
+      const triggerContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          address,
+          functionSelector,
+          {
+            ...options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          parameters,
+          ethToTronAddress(issuerAddress)
+        );
+
       if (!transaction.result || !transaction.result.result) {
         throw new Error(
           "Unknown trigger error: " + JSON.stringify(transaction.transaction)
@@ -138,23 +158,23 @@ export class SwapEvmWallet extends EvmWallet {
       }
 
       // sign from inject tronWeb
-      const singedTransaction = (await this.tronWeb.sign(
-        ChainIdEVM.TRON,
-        transaction.transaction
-      )) as {
+      const singedTransaction = (await this.tronWeb.sign(ChainIdEVM.TRON, {
+        ...transaction.transaction,
+        energy_used: triggerContract.energy_used,
+      })) as {
         raw_data: any;
         raw_data_hex: string;
+        energy_used?: string;
         txID: string;
         visible?: boolean;
       };
 
-      const result = (await this.tronWeb.sendRawTransaction(
-        singedTransaction
-      )) as {
-        txid?: string;
-      };
-      if (result) {
-        return { transactionHash: result.txid };
+      // const result = (await this.tronWeb.sendRawTransaction(singedTransaction, ChainIdEVM.TRON)) as {
+      //   txid?: string;
+      // };
+
+      if (singedTransaction) {
+        return { transactionHash: singedTransaction.txID };
       }
     } catch (error) {
       console.log("error", error);

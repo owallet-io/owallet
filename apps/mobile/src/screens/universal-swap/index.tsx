@@ -25,8 +25,8 @@ import {
   toDisplay,
   getBase58Address,
   toAmount,
+  ChainIdEVM,
 } from "@owallet/common";
-import { ChainIdEVM } from "@owallet/types";
 import {
   oraichainNetwork,
   Networks,

@@ -49,9 +49,7 @@ export const SignTronModal = registerModal(
     const parsedData = typeof data === "string" ? JSON.parse(data) : data;
 
     const chainInfo = chainStore.getChain(chainId);
-    const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
     const queries = queriesStore.get(chainId);
-
     const sendConfigs = useSendTronTxConfig(
       chainStore,
       queriesStore,
@@ -59,22 +57,27 @@ export const SignTronModal = registerModal(
       addressToFetch,
       1
     );
-    sendConfigs.amountConfig.setCurrency(currency);
-    sendConfigs.recipientConfig.setValue(parsedData.recipient || "");
-    const displayAmount = toDisplay(
-      parsedData.amount,
-      chainInfo.stakeCurrency.coinDecimals
-    );
-    sendConfigs.amountConfig.setValue(displayAmount.toString());
+
+    if (!parsedData.raw_data_hex) {
+      const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
+      sendConfigs.amountConfig.setCurrency(currency);
+      sendConfigs.recipientConfig.setValue(parsedData.recipient || "");
+      const displayAmount = toDisplay(
+        parsedData.amount,
+        chainInfo.stakeCurrency.coinDecimals
+      );
+      sendConfigs.amountConfig.setValue(displayAmount.toString());
+    }
+
     const feeResult = useGetFeeTron(
-      parsedData.address,
+      account.base58Address,
       sendConfigs.amountConfig,
       sendConfigs.recipientConfig,
       queries.tron,
       chainInfo,
       keyRingStore.selectedKeyInfo.id,
       keyRingStore,
-      null
+      parsedData.raw_data_hex ? parsedData : null
     );
 
     const signingDataText = useMemo(() => {
@@ -167,7 +170,11 @@ export const SignTronModal = registerModal(
               <OWText size={16} weight={"600"}>
                 <FormattedMessage id="page.sign.components.fee-summary.fee" />
               </OWText>
-              <OWText size={16} weight={"600"}>
+              <OWText
+                size={16}
+                weight={"600"}
+                color={colors["primary-surface-default"]}
+              >
                 {toDisplay(
                   feeResult?.feeTrx?.amount,
                   chainInfo.stakeCurrency.coinDecimals
