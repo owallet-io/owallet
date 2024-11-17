@@ -52,6 +52,7 @@ import { OWalletError } from "@owallet/router";
 import { ErrModuleLedgerSign } from "@src/modals/sign/util/ledger-types";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { FeeControl } from "@components/input/fee-control";
 
 export const SignBtcModal = registerModal(
   observer<{
@@ -369,10 +370,23 @@ export const SignBtcModal = registerModal(
             </Box>
           )}
 
-          {interactionData.isInternal && (
-            <FeeSummary feeConfig={feeConfig} gasConfig={null} />
-          )}
+          {/*{interactionData.isInternal && (*/}
+          {/*  <FeeSummary feeConfig={feeConfig} gasConfig={null} />*/}
+          {/*)}*/}
+          {(() => {
+            if (interactionData.isInternal) {
+              return <FeeSummary feeConfig={feeConfig} gasConfig={null} />;
+            }
 
+            return (
+              <FeeControl
+                feeConfig={feeConfig}
+                senderConfig={senderConfig}
+                gasConfig={null}
+                gasSimulator={null}
+              />
+            );
+          })()}
           <Gutter size={12} />
           {ledgerInteractingError ? (
             <React.Fragment>
