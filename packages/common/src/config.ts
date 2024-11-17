@@ -3206,10 +3206,12 @@ export const PrivilegedOrigins: string[] = [
 ];
 
 export const CommunityChainInfoRepo = {
-  organizationName: "owallet-io",
-  repoName: "owallet",
+  organizationName: "chainapsis",
+  repoName: "keplr-chain-registry",
   branchName: "main",
-  alternativeURL: "https://github.com/owallet-io/owallet",
+  alternativeURL: process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
+    ? process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
+    : undefined,
 };
 
 export const APR_API_URL =
