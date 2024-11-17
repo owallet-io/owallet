@@ -577,7 +577,8 @@ export const DetailsBrowserScreen = observer((props) => {
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
                 // style={visible && percent < 1 ? { flex: 0, height: 0, opacity: 0 } : {}}
-                // cacheEnabled={true}
+                cacheEnabled={false}
+                incognito={true}
                 injectedJavaScriptBeforeContentLoadedForMainFrameOnly={false}
                 injectedJavaScriptForMainFrameOnly={false}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}

@@ -102,7 +102,7 @@ export const FiatCurrencies: FiatCurrency[] = [
   },
 ];
 
-export const AmplitudeApiKey = process.env["KEPLR_EXT_AMPLITUDE_API_KEY"] || "";
+export const AmplitudeApiKey = "";
 
 export const ICNSInfo = {
   chainId: "osmosis-1",
@@ -153,9 +153,6 @@ export const FiatOnRampServiceInfos: FiatOnRampServiceInfo[] = [
   },
 ];
 
-// 현재는 osmosis밖에 지원하지 않는다.
-// 코드 자체가 osmosis에 종속되어 있기 때문에, 다른 체인을 지원하려면 코드를 수정해야 한다.
-// 단지 미래에 달라질 가능성이 있어보여서 빼놨을 뿐임
 export const SwapVenue: {
   name: string;
   chainId: string;
@@ -3199,18 +3196,20 @@ export const ChainIdentifierToTxExplorerMap: Record<
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = [
-  "https://wallet.keplr.app",
-  "https://validator.keplr.app",
-  "https://chains.keplr.app",
+  "https://app.oraidex.io",
+  "https://futures.oraidex.io",
+  "https://orderbook.oraidex.io",
+  "https://hub.orai.io",
+  "https://scan.orai.io",
+  "https://multisig.orai.io",
+  "http://192.168.10.21:3000",
 ];
 
 export const CommunityChainInfoRepo = {
-  organizationName: "chainapsis",
-  repoName: "keplr-chain-registry",
+  organizationName: "owallet-io",
+  repoName: "owallet",
   branchName: "main",
-  alternativeURL: process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    ? process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    : undefined,
+  alternativeURL: "https://github.com/owallet-io/owallet",
 };
 
 export const APR_API_URL =
@@ -3218,8 +3217,6 @@ export const APR_API_URL =
 
 export const SCAMPORPOSAL_API_URL =
   "https://phishing-block-list-chainapsis.vercel.app";
-
-export const COMMUNITY_CHAIN_URL = "https://chains.keplr.app";
 
 export const APP_STORE_URL = "https://itunes.apple.com";
 export const PLAY_STORE_URL = "https://play.google.com";

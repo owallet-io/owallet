@@ -1,16 +1,28 @@
-import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { IInputSelectToken } from '../types';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { Text } from '@src/components/text';
-import { BalanceText } from './BalanceText';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { find } from 'lodash';
-import _debounce from 'lodash/debounce';
-import { tokensIcon } from '@oraichain/oraidex-common';
-import { useStore } from '@src/stores';
-import { maskedNumber } from '@src/utils/helper';
-import { unknownToken } from '@owallet/common';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { IInputSelectToken } from "../types";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { Text } from "@src/components/text";
+import { BalanceText } from "./BalanceText";
+import { TypeTheme, useTheme } from "@src/themes/theme-provider";
+import { find } from "lodash";
+import _debounce from "lodash/debounce";
+import { tokensIcon } from "@oraichain/oraidex-common";
+import { useStore } from "@src/stores";
+import { maskedNumber } from "@src/utils/helper";
+import { unknownToken } from "@owallet/common";
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -19,13 +31,13 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   onOpenTokenModal,
   editable,
   loading,
-  impactWarning
+  impactWarning,
 }) => {
   const { colors } = useTheme();
   const { appInitStore, chainStore } = useStore();
 
   const styles = styling(colors);
-  const [txt, setText] = useState('0');
+  const [txt, setText] = useState("0");
   const [tokenIcon, setTokenIcon] = useState(null);
 
   const prices = appInitStore.getInitApp.prices;
@@ -42,43 +54,54 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
     setText(Number(Number(amount).toFixed(6)).toString());
   }, [amount]);
 
-  const handleChangeAmount = amount => {
+  const handleChangeAmount = (amount) => {
     onChangeAmount(Number(Number(amount).toFixed(6)).toString());
   };
 
   const debounceFn = useCallback(_debounce(handleChangeAmount, 1000), []);
 
   useEffect(() => {
-    const tokenIcon = find(tokensIcon, tk => tk.coinGeckoId === tokenActive.coinGeckoId);
+    const tokenIcon = find(
+      tokensIcon,
+      (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
+    );
     let chainId = tokenActive.chainId;
-    if (tokenActive.chainId.startsWith('0x')) {
+    if (tokenActive.chainId.startsWith("0x")) {
       chainId = `eip155:${parseInt(tokenActive.chainId, 16)}`;
     }
 
     const chainInfo = chainStore.getChain(chainId);
     const currencies = tokenActive.chainId ? chainInfo.currencies : [];
-    const tokenIconFromLocal = currencies.find(tk => tk.coinGeckoId === tokenActive.coinGeckoId);
+    const tokenIconFromLocal = currencies.find(
+      (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
+    );
     setTokenIcon(tokenIcon ? tokenIcon : tokenIconFromLocal);
   }, [tokenActive]);
 
   return (
     <View style={[styles.containerInputSelectToken]}>
-      <TouchableOpacity onPress={onOpenTokenModal} style={styles.btnChainContainer}>
+      <TouchableOpacity
+        onPress={onOpenTokenModal}
+        style={styles.btnChainContainer}
+      >
         <View
           style={{
             width: 33,
             height: 33,
             borderRadius: 999,
-            backgroundColor: colors['icon'],
-            alignItems: 'center',
-            justifyContent: 'center'
+            backgroundColor: colors["icon"],
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <OWIcon
             style={{ borderRadius: 999 }}
             type="images"
             source={{
-              uri: tokenIcon?.Icon || tokenIcon?.coinImageUrl || unknownToken.coinImageUrl
+              uri:
+                tokenIcon?.Icon ||
+                tokenIcon?.coinImageUrl ||
+                unknownToken.coinImageUrl,
             }}
             size={30}
           />
@@ -86,11 +109,15 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
-            <Text weight="600" size={16} color={colors['neutral-text-action']}>
+            <Text weight="600" size={16} color={colors["neutral-text-action"]}>
               {tokenActive?.name}
             </Text>
           </View>
-          <OWIcon color={colors['neutral-icon-on-light']} name="down" size={16} />
+          <OWIcon
+            color={colors["neutral-icon-on-light"]}
+            name="down"
+            size={16}
+          />
         </View>
       </TouchableOpacity>
 
@@ -98,10 +125,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
         {loading ? (
           <View
             style={{
-              backgroundColor: colors['neutral-surface-card'],
+              backgroundColor: colors["neutral-surface-card"],
               zIndex: 999,
-              alignContent: 'center',
-              justifyContent: 'center'
+              alignContent: "center",
+              justifyContent: "center",
             }}
           >
             <ActivityIndicator />
@@ -115,34 +142,34 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
               value={txt}
               onFocus={() => {
                 if (!txt || Number(txt) === 0) {
-                  setText('');
+                  setText("");
                 }
               }}
-              onChangeText={t => {
-                const newAmount = t.replace(/,/g, '.');
+              onChangeText={(t) => {
+                const newAmount = t.replace(/,/g, ".");
                 setText(newAmount.toString());
                 debounceFn(newAmount);
               }}
-              defaultValue={amount ?? '0'}
+              defaultValue={amount ?? "0"}
               onBlur={() => {
                 handleChangeAmount(txt);
               }}
               keyboardType="numeric"
               style={[styles.textInput, styles.colorInput]}
-              placeholderTextColor={colors['neutral-text-title']}
+              placeholderTextColor={colors["neutral-text-title"]}
             />
-            <View style={{ alignSelf: 'flex-end' }}>
-              <BalanceText color={colors['neutral-text-body3']} weight="500">
-                ≈ ${maskedNumber(currencyValue) || 0}{' '}
+            <View style={{ alignSelf: "flex-end" }}>
+              <BalanceText color={colors["neutral-text-body3"]} weight="500">
+                ≈ ${maskedNumber(currencyValue) || 0}{" "}
                 {impactWarning && impactWarning > 0 ? (
                   <Text
                     weight="500"
                     color={
                       impactWarning > 10
-                        ? colors['error-text-body']
+                        ? colors["error-text-body"]
                         : impactWarning > 5
-                        ? colors['warning-text-body']
-                        : colors['neutral-text-body3']
+                        ? colors["warning-text-body"]
+                        : colors["neutral-text-body3"]
                     }
                   >{`(-${impactWarning.toFixed(2)}%)`}</Text>
                 ) : null}
@@ -157,54 +184,54 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
 export default InputSelectToken;
 
-const styling = (colors: TypeTheme['colors']) =>
+const styling = (colors: TypeTheme["colors"]) =>
   StyleSheet.create({
     mt_4: {
-      marginTop: -4
+      marginTop: -4,
     },
     colorInput: {
-      color: colors['neutral-text-title'],
-      fontWeight: '500'
+      color: colors["neutral-text-title"],
+      fontWeight: "500",
     },
     pr4: {
-      paddingRight: 4
+      paddingRight: 4,
     },
     labelSymbol: {
-      paddingRight: 5
+      paddingRight: 5,
     },
     itemTopBtn: {
-      flexDirection: 'row',
-      alignItems: 'center'
+      flexDirection: "row",
+      alignItems: "center",
     },
     mtde5: {
-      marginTop: -5
+      marginTop: -5,
     },
     textInput: {
-      width: '100%',
+      width: "100%",
       fontSize: 22,
-      paddingVertical: 0
+      paddingVertical: 0,
     },
     containerInput: {
       flex: 1,
-      alignItems: 'flex-end'
+      alignItems: "flex-end",
     },
     ml8: {
-      paddingLeft: 8
+      paddingLeft: 8,
     },
     btnChainContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       borderRadius: 999,
-      backgroundColor: colors['neutral-surface-action'],
+      backgroundColor: colors["neutral-surface-action"],
       paddingHorizontal: 12,
       height: 54,
       borderWidth: 1,
-      borderColor: colors['neutral-surface-pressed']
+      borderColor: colors["neutral-surface-pressed"],
     },
     containerInputSelectToken: {
-      width: '100%',
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingBottom: 8
-    }
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      paddingBottom: 8,
+    },
   });
