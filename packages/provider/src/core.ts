@@ -1774,14 +1774,6 @@ class TronProvider extends EventEmitter implements ITronProvider {
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       let f = false;
-      console.log(
-        "{ address, functionSelector, options, parameters, issuerAddress }",
-        address,
-        functionSelector,
-        parameters,
-        issuerAddress,
-        options
-      );
 
       sendSimpleMessage(
         this.requester,

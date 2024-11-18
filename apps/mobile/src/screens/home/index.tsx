@@ -12,8 +12,6 @@ import { useTheme } from "@src/themes/theme-provider";
 import { AccountBoxAll } from "./components/account-box-new";
 import { InjectedProviderUrl } from "../web/config";
 import { MainTabHome } from "./components";
-import { Mixpanel } from "mixpanel-react-native";
-import { tracking } from "@src/utils/tracking";
 import { StakeCardAll } from "./components/stake-card-all";
 import { NewThemeModal } from "@src/modals/theme-modal/theme";
 import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
@@ -25,7 +23,6 @@ export const useIsNotReady = () => {
     .queryRPCStatus;
   return query.response == null && query.error == null;
 };
-const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
 
@@ -37,7 +34,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     browserStore,
     allAccountStore,
+    bitcoinAccountStore,
   } = useStore();
+
+  const accountBtc = bitcoinAccountStore.getAccount(ChainIdEnum.Bitcoin);
+
+  console.log("accountBtc", accountBtc.pubKey);
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   useEffect(() => {
