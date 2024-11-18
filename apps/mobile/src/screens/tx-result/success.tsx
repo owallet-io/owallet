@@ -64,7 +64,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   >();
 
   const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId || current.chainId;
 
   const { params } = route;
   const txHash = params?.txHash;

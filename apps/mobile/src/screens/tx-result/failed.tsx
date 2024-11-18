@@ -54,7 +54,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
   >();
 
   const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId || current.chainId;
   const { params } = route;
 
   const { colors, images } = useTheme();
