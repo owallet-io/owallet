@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
 import {
   RouteProp,
+  StackActions,
   useIsFocused,
   useNavigation,
   useRoute,
@@ -96,26 +97,28 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           () => {
             return new Promise<void>(async (resolve, reject) => {
               try {
-                console.log("zo day");
                 const { status, data } = await simpleFetch<TXSLcdRest>(
                   `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
                 );
-                console.log(data, "data");
                 if (data?.tx_response?.code === 0) {
                   isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxSuccessResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
                   resolve();
                 } else {
                   isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxFailedResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxFailedResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
                   resolve();
                 }
               } catch (error) {
@@ -147,11 +150,13 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                     return resolve();
                   }
                   isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxSuccessResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
                   resolve();
                 }
                 reject();
@@ -179,22 +184,26 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 );
                 if (data && status === 200) {
                   isPendingGoToResult.current = true;
-                  navigate(SCREENS.TxSuccessResult, {
-                    chainId,
-                    txHash,
-                    data: params?.data,
-                  });
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
                   resolve();
                 }
               } catch (error) {
                 reject();
                 console.log("error", error);
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxFailedResult, {
-                  chainId,
-                  txHash,
-                  data: params.data,
-                });
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
               }
               reject();
             });
@@ -217,19 +226,23 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               if (!itemList?.txHash) return;
               if (itemList?.txHash === txHash && itemList.status) {
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxSuccessResult, {
-                  chainId,
-                  txHash,
-                  data: params?.data,
-                });
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
                 return;
               } else {
                 isPendingGoToResult.current = true;
-                navigate(SCREENS.TxFailedResult, {
-                  chainId,
-                  txHash,
-                  data: params?.data,
-                });
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
                 return;
               }
             }
@@ -275,18 +288,22 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
                   if (txReceipt.status === EthTxStatus.Success) {
                     isPendingGoToResult.current = true;
-                    navigate(SCREENS.TxSuccessResult, {
-                      chainId,
-                      txHash,
-                      data: params?.data,
-                    });
+                    navigation.dispatch(
+                      StackActions.replace(SCREENS.TxSuccessResult, {
+                        chainId,
+                        txHash,
+                        data: params?.data,
+                      })
+                    );
                   } else {
                     isPendingGoToResult.current = true;
-                    navigate(SCREENS.TxFailedResult, {
-                      chainId,
-                      txHash,
-                      data: params?.data,
-                    });
+                    navigation.dispatch(
+                      StackActions.replace(SCREENS.TxFailedResult, {
+                        chainId,
+                        txHash,
+                        data: params?.data,
+                      })
+                    );
                   }
                   resolve();
                 }
@@ -315,18 +332,22 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
             if (tx.code == null || tx.code === 0) {
               isPendingGoToResult.current = true;
-              navigate(SCREENS.TxSuccessResult, {
-                chainId,
-                txHash,
-                data: params?.data,
-              });
+              navigation.dispatch(
+                StackActions.replace(SCREENS.TxSuccessResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                })
+              );
             } else {
               isPendingGoToResult.current = true;
-              navigate(SCREENS.TxFailedResult, {
-                chainId,
-                txHash,
-                data: params?.data,
-              });
+              navigation.dispatch(
+                StackActions.replace(SCREENS.TxFailedResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                })
+              );
             }
           })
           .catch((e) => {
