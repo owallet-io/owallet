@@ -558,7 +558,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: "uoraib",
       coinDecimals: 6,
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     },
     bip44: {
       coinType: 118,
@@ -608,7 +608,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     features: ["stargate", "ibc-transfer", "cosmwasm"],
     txExplorer: {
-      name: "OraiBridgescan",
+      name: "Orai Bridge Scan",
       txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
       accountUrl: "https://scan.bridge.orai.io/account/{address}",
     },
@@ -3242,7 +3242,6 @@ export const PrivilegedOrigins: string[] = [
   "https://hub.orai.io",
   "https://scan.orai.io",
   "https://multisig.orai.io",
-  "http://192.168.1.5:3000",
   "https://develop-v3.oraiswap-frontend.pages.dev",
 ];
 
