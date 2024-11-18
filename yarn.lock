@@ -1981,6 +1981,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@chain-registry/types@npm:^0.50.15":
+  version: 0.50.15
+  resolution: "@chain-registry/types@npm:0.50.15"
+  checksum: 15c3d5d920f73cdbf82b7caf096b07c169a496b75754c8799354cf71c8d8dffc3c78c81952e56309750b100871ad90af2e46c80149b7117bf66452c374f368a8
+  languageName: node
+  linkType: hard
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -6213,6 +6220,7 @@ __metadata:
     bip39: ^3.0.2
     bootstrap: 5.3.3
     buffer: ^6.0.3
+    chain-registry: ^1.69.36
     classnames: ^2.2.6
     clean-webpack-plugin: ^4.0.0
     copy-webpack-plugin: ^5.0.4
@@ -13214,6 +13222,15 @@ __metadata:
   dependencies:
     "@chain-registry/types": ^0.45.77
   checksum: 6e99ffa78625a01b0f652fc0d600149577d9e8bd40ffaa757d602c41ce66b0377e90cfa4a96d21d396e60e3e75af0a71234841ad587981674d191d49c512ed40
+  languageName: node
+  linkType: hard
+
+"chain-registry@npm:^1.69.36":
+  version: 1.69.36
+  resolution: "chain-registry@npm:1.69.36"
+  dependencies:
+    "@chain-registry/types": ^0.50.15
+  checksum: 660bece7e0f37d176615edc9fccc5b4fdd929c1af8e1ceddebf108497e137997dbc95d5e6fa1d64411817c95cc7ace25d78e3db548ea28ea8683783686e98eda
   languageName: node
   linkType: hard
 

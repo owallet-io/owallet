@@ -47,6 +47,7 @@
     "bip39": "^3.0.2",
     "bootstrap": "5.3.3",
     "buffer": "^6.0.3",
+    "chain-registry": "^1.69.36",
     "classnames": "^2.2.6",
     "delay": "^4.4.0",
     "ethers": "5.7.2",
