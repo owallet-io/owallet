@@ -144,6 +144,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
         },
         {
+          coinDenom: "DOGE",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/DogeBNB",
+          coinDecimals: 8,
+          coinGeckoId: "dogecoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/5/standard/dogecoin.png?1696501409",
+        },
+        {
           coinDenom: "PEPE",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE",
@@ -528,50 +537,50 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: 'https://rpc.testnet.elys.network:443',
-    rest: 'https://api.testnet.elys.network',
-    chainId: 'elystestnet-1',
-    chainName: 'Elys Network Testnet',
-    networkType: 'cosmos',
+    rpc: "https://rpc.testnet.elys.network:443",
+    rest: "https://api.testnet.elys.network",
+    chainId: "elystestnet-1",
+    chainName: "Elys Network Testnet",
+    networkType: "cosmos",
     stakeCurrency: {
-      coinDenom: 'ELYS',
-      coinMinimalDenom: 'uelys',
+      coinDenom: "ELYS",
+      coinMinimalDenom: "uelys",
       coinDecimals: 6,
       coinImageUrl:
-        'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png',
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png",
       gasPriceStep: {
         low: 0.01,
         average: 0.025,
-        high: 0.03
-      }
+        high: 0.03,
+      },
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config('elys'),
+    bech32Config: Bech32Address.defaultBech32Config("elys"),
     currencies: [
       {
-        coinDenom: 'ELYS',
-        coinMinimalDenom: 'uelys',
+        coinDenom: "ELYS",
+        coinMinimalDenom: "uelys",
         coinDecimals: 6,
         coinImageUrl:
-          'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png'
-      }
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png",
+      },
     ],
     get feeCurrencies() {
       return [
         {
-          coinDenom: 'ELYS',
-          coinMinimalDenom: 'uelys',
+          coinDenom: "ELYS",
+          coinMinimalDenom: "uelys",
           coinDecimals: 6,
           gasPriceStep: {
             low: 0.01,
             average: 0.025,
-            high: 0.03
+            high: 0.03,
           },
           coinImageUrl:
-            'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png'
-        }
+            "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png",
+        },
         // {
         //   coinDenom: 'USDC',
         //   coinMinimalDenom: 'ibc/2180E84E20F5679FCC760D8C165B60F42065DEF7F46A72B447CFF1B7DC6C0A65',
@@ -601,13 +610,13 @@ export const EmbedChainInfos: AppChainInfo[] = [
       ];
     },
     coinType: 118,
-    features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
     chainSymbolImageUrl:
-      'https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png',
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/elystestnet/chain.png",
     txExplorer: {
-      name: '',
-      txUrl: ''
-    }
+      name: "",
+      txUrl: "",
+    },
   },
   {
     rpc: "https://osmosis.rpc.orai.io",
