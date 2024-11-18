@@ -522,9 +522,9 @@ export const SignModal = registerModal(
                 titleRight={
                   <Box>
                     <CheckBox
-                      checked={isSendAuthzGrantChecked}
-                      onPress={(checked) => {
-                        setIsSendAuthzGrantChecked(checked);
+                      isChecked={isSendAuthzGrantChecked}
+                      onClick={(checked) => {
+                        setIsSendAuthzGrantChecked(!isSendAuthzGrantChecked);
                       }}
                     />
                   </Box>
