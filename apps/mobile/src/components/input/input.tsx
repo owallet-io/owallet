@@ -26,7 +26,7 @@ export const TextInput = React.forwardRef<
 
     label?: string;
     error?: string;
-
+    errorBorder?: boolean;
     paragraph?: React.ReactNode;
 
     topInInputContainer?: React.ReactNode;
@@ -86,7 +86,10 @@ export const TextInput = React.forwardRef<
           ),
           {
             backgroundColor: "transparent",
-            borderColor: colors["border-input-login"],
+            borderColor:
+              props.errorBorder || !!props.error
+                ? colors["error-border-default"]
+                : colors["border-input-login"],
             paddingHorizontal: 12,
             paddingVertical: 12,
           },

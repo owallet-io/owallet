@@ -332,7 +332,11 @@ export class CosmosAccountImpl {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
-    if (this.chainId?.includes("Oraichain") && txHash) {
+    if (
+      (this.chainId?.includes("Oraichain") ||
+        this.chainId?.includes("oraibridge-subnet-2")) &&
+      txHash
+    ) {
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {

@@ -84,12 +84,18 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (isFocused) {
       const isEvmTx = chainId?.includes("eip155");
+      console.log(chainId?.includes("oraibridge-subnet-2"), chainId, "oraib");
       console.log(txHash, "txHash");
-      if (chainInfo.chainId?.includes("Oraichain") && txHash) {
+      if (
+        (chainInfo.chainId?.includes("Oraichain") ||
+          chainId?.includes("oraibridge-subnet-2")) &&
+        txHash
+      ) {
         retry(
           () => {
             return new Promise<void>(async (resolve, reject) => {
               try {
+                console.log("zo day");
                 const { status, data } = await simpleFetch<TXSLcdRest>(
                   `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
                 );
