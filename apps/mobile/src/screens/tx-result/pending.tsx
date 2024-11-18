@@ -40,6 +40,7 @@ import {
 import ItemReceivedToken from "@screens/transactions/components/item-received-token";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
+import OWText from "@components/text/ow-text";
 enum EthTxStatus {
   Success = "0x1",
   Failure = "0x0",
@@ -382,10 +383,10 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     <PageWithBottom
       bottomGroup={
         <View style={styles.containerBottomButton}>
-          <Text style={styles.txtPending}>
+          <OWText style={styles.txtPending}>
             The transaction is still pending. {"\n"}
             You can check the status on {chainInfo?.txExplorer?.name}
-          </Text>
+          </OWText>
           <OWButton
             label="View on Explorer"
             onPress={handleOnExplorer}
