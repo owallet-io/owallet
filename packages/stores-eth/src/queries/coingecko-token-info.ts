@@ -2,29 +2,13 @@ import {
   ChainGetter,
   HasMapStore,
   ObservableQuery,
+  QueryResponse,
   QuerySharedContext,
 } from "@owallet/stores";
 import { makeObservable } from "mobx";
-export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<{
-  id: string;
-  symbol: string;
-  name: string;
-  web_slug: string;
-  asset_platform_id: string;
-  image: {
-    thumb: string;
-    small: string;
-    large: string;
-  };
-  contract_address: string;
-  detail_platforms: Record<
-    string,
-    {
-      decimal_place: number;
-      contract_address: string;
-    }
-  >;
-}> {
+import { ITokenInfoRes, TokenInfo } from "@owallet/types";
+import { Network } from "@owallet/common";
+export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITokenInfoRes> {
   constructor(
     sharedContext: QuerySharedContext,
     coingeckoAPIBaseURL: string,
@@ -44,20 +28,19 @@ export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<{
   }
 
   get symbol(): string | undefined {
-    return this.response?.data?.symbol.toUpperCase();
+    return this.response?.data?.data?.abbr?.toUpperCase();
   }
 
   get decimals(): number | undefined {
-    return this.response?.data?.detail_platforms[this.coingeckoChainId]
-      ?.decimal_place;
+    return this.response?.data?.data?.decimal;
   }
 
   get coingeckoId(): string | undefined {
-    return this.response?.data?.id;
+    return this.response?.data?.data?.coingeckoId;
   }
 
   get logoURI(): string | undefined {
-    return this.response?.data?.image.small;
+    return this.response?.data?.data?.imgUrl;
   }
 }
 
@@ -95,6 +78,7 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
 
 const coingeckoChainIdMap: Record<string, string> = {
   "eip155:1": "ethereum",
+  "eip155:56": Network.BINANCE_SMART_CHAIN,
   "eip155:10": "optimistic-ethereum",
   "eip155:137": "polygon-pos",
   "eip155:8453": "base",

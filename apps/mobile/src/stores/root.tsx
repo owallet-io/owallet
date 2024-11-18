@@ -2,6 +2,7 @@ import {
   APR_API_URL,
   CommunityChainInfoRepo,
   EmbedChainInfos,
+  urlTxHistory,
 } from "@owallet/common";
 
 import {
@@ -242,9 +243,8 @@ export class RootStore {
       // CosmosGovernanceQueries.use(),
       // CosmosGovernanceQueriesV1.use(),
       EthereumQueries.use({
-        coingeckoAPIBaseURL: "https://satellite.keplr.app",
-        coingeckoAPIURI:
-          "/coingecko-token-info/coins/{coingeckoChainId}/contract/{contractAddress}",
+        coingeckoAPIBaseURL: urlTxHistory,
+        coingeckoAPIURI: "v1/token-info/{coingeckoChainId}/{contractAddress}",
       }),
       OasisQueries.use(),
       TrxQueries.use(),

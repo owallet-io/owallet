@@ -33,6 +33,9 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
     coinType: number,
     chainInfo: ChainInfo
   ): Promise<PubKeySecp256k1> {
+    if (!chainInfo?.features.includes("tron")) {
+      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    }
     return this.baseKeyringService.getPubKey(vault, coinType, chainInfo);
   }
 
@@ -42,6 +45,9 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
     data: string,
     chainInfo: ChainInfo
   ): Promise<unknown> {
+    if (!chainInfo?.features.includes("tron")) {
+      throw new Error(`${chainInfo.chainId} not support sign from base`);
+    }
     const parsedData = JSON.parse(JSON.parse(data));
 
     const privateKeyText = this.vaultService.decrypt(vault.sensitive)[

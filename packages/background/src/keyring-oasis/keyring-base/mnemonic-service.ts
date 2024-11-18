@@ -41,9 +41,13 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     coinType: number,
     chainInfo: ChainInfo
   ): Promise<Uint8Array> {
-    if (!chainInfo?.features.includes("gen-address")) {
+    if (
+      !chainInfo?.features.includes("gen-address") ||
+      !chainInfo?.features.includes("oasis")
+    ) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
+
     const bip44Path = this.getBIP44PathFromVault(vault);
 
     const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;

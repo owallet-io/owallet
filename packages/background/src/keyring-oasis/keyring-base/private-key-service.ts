@@ -33,7 +33,10 @@ export class KeyRingOasisPrivateKeyService implements KeyRingOasis {
   }
 
   getPubKey(vault: Vault, coinType: number, chainInfo: ChainInfo): Uint8Array {
-    if (!chainInfo?.features.includes("gen-address")) {
+    if (
+      !chainInfo?.features.includes("gen-address") ||
+      !chainInfo?.features.includes("oasis")
+    ) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
     const publicKeyBytes = Buffer.from(
