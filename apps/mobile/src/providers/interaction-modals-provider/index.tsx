@@ -191,7 +191,13 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               );
             })()
           : null}
-
+        {signInteractionStore.waitingData &&
+        signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
+          <ADR36SignModal
+            isOpen={true}
+            close={() => signInteractionStore.rejectAll()}
+          />
+        ) : null}
         {mergedDataForEVM
           ? (() => {
               const data = mergedDataForEVM;
