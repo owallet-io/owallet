@@ -5,18 +5,14 @@ import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { showToast } from '@src/utils/helper';
 import { observer } from 'mobx-react-lite';
-import React, { useRef, useCallback, useState, useEffect, FunctionComponent } from 'react';
+import React, { useRef, useState, useEffect, FunctionComponent } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { OWBox } from '../../../components/card';
 import { useStore } from '../../../stores';
 import { metrics, spacing } from '../../../themes';
-// import { tracking } from "@src/utils/tracking";
 import { action, makeObservable, observable } from 'mobx';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { DenomDydx, removeDataInParentheses, unknownToken } from '@owallet/common';
-import { ObservableQueryRewardsInner } from '@owallet/stores';
+import { removeDataInParentheses, unknownToken } from '@owallet/common';
 import { AminoSignResponse, BroadcastMode, FeeCurrency, StdSignDoc } from '@owallet/types';
-import { useSendTxConfig } from '@owallet/hooks';
 import { DefaultGasPriceStep } from '@owallet/hooks';
 import { PrivilegeCosmosSignAminoWithdrawRewardsMsg, SendTxMsg } from '@owallet/background';
 import { isSimpleFetchError } from '@owallet/simple-fetch';
@@ -53,9 +49,7 @@ const zeroDec = new Dec(0);
 
 export const StakeCardAll = observer(({}) => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
-  // const style = useStyle();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isPressingExpandButton, setIsPressingExpandButton] = useState(false);
   const intl = useIntl();
 
   const statesRef = useRef(new Map<string, ClaimAllEachState>());
@@ -546,15 +540,11 @@ export const StakeCardAll = observer(({}) => {
   // };
 
   const claimAll = () => {
-    // analyticsStore.logEvent('click_claimAll');
-
     if (viewTokens.length > 0) {
       setIsExpanded(true);
     }
 
     if (isLedger || isKeystone) {
-      // Ledger에서 현실적으로 이 기능을 처리해주기 난감하다.
-      // disable하기보다는 일단 눌렀을때 expand를 시켜주고 아무것도 하지 않는다.
       return;
     }
 
@@ -583,7 +573,6 @@ export const StakeCardAll = observer(({}) => {
       const tx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
 
       (async () => {
-        // feemarket feature가 있는 경우 이후의 로직에서 사용할 수 있는 fee currency를 찾아야하기 때문에 undefined로 시작시킨다.
         let feeCurrency = chainInfo.hasFeature('feemarket')
           ? undefined
           : chainInfo.feeCurrencies.find(cur => cur.coinMinimalDenom === chainInfo.stakeCurrency?.coinMinimalDenom);
