@@ -95,6 +95,8 @@
     "libsodium": "file:./etc/noop",
     "libsodium-wrappers": "file:./etc/noop",
     "node-sass": "file:./etc/noop",
+    "@oraichain/oraidex-universal-swap": "^1.1.21",
+    "@oraichain/oraidex-common": "^1.1.32",
     "@ethersproject/abstract-provider": "=5.6.0",
     "@ethersproject/abstract-signer": "=5.6.0",
     "@ethersproject/address": "=5.6.0",

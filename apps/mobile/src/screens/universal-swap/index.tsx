@@ -180,7 +180,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : BigInt(0);
 
   const onMaxFromAmount = (finalAmount: number) => {
-    setSwapAmount([finalAmount, toAmountToken]);
+    setSwapAmount([parseFloat(finalAmount.toString()), toAmountToken]);
   };
 
   const isEvmSwap = UniversalSwapHelper.isEvmSwappable({
@@ -217,10 +217,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(originalFromToken, originalToToken);
   const useIbcWasm = isAllowIBCWasm(originalFromToken, originalToToken);
-  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, {
-    useIbcWasm,
-    useAlphaIbcWasm
-  });
+  const protocols = getProtocolsSmartRoute(originalFromToken, originalToToken, { useIbcWasm, useAlphaIbcWasm });
 
   const simulateOption = {
     useAlphaIbcWasm,
@@ -635,6 +632,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setFromNetwork(toNetwork);
     setToNetwork(fromNetwork);
     setSwapTokens([toTokenDenom, fromTokenDenom]);
+
     setSwapAmount([0, 0]);
   };
 
@@ -666,6 +664,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (listFromToken.length > 0) {
         setFromNetwork(network);
         setSwapTokens([listFromToken[0].denom, toTokenDenom]);
+
         setSwapAmount([0, 0]);
       } else {
         handleErrorSwap('There is no token to swap!');
