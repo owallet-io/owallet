@@ -1339,7 +1339,8 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       await this.protectedEnableAccess();
     }
 
-    if (method === "wallet_switchEthereumChain") {
+    if (method === "wallet_switchEthereumChain" && !isNaN(Number(chainId))) {
+      console.log(chainId, "test ");
       this.chainId = `eip155:${parseInt(chainId, 16)}`;
     }
     let currentChainId = chainId ?? this.chainId;
