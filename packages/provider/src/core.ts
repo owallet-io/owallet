@@ -1096,6 +1096,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       }
     }
     let currentChainId = chainId ?? this.chainId;
+
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(this.requester, BACKGROUND_PORT, 'keyring-ethereum', 'request-json-rpc-to-evm', {
