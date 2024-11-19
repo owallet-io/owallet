@@ -1,19 +1,19 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { registerModal } from "@src/modals/base";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text } from "@src/components/text";
-import { OWButton } from "@src/components/button";
-import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics, typography } from "@src/themes";
-import { DEFAULT_SLIPPAGE } from "@owallet/common";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { TextInput } from "@src/components/input";
-import { getPathInfo } from "../helpers";
-import FastImage from "react-native-fast-image";
-import { isNegative, maskedNumber } from "@src/utils/helper";
-import { assets } from "chain-registry";
-import { chainIcons } from "@oraichain/oraidex-common";
+import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { registerModal } from '@src/modals/base';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text } from '@src/components/text';
+import { OWButton } from '@src/components/button';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import { metrics, typography } from '@src/themes';
+import { DEFAULT_SLIPPAGE } from '@owallet/common';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { TextInput } from '@src/components/input';
+import { getPathInfo } from '../helpers';
+import FastImage from 'react-native-fast-image';
+import { isNegative, maskedNumber } from '@src/utils/helper';
+import { assets } from 'chain-registry';
+import { chainIcons } from '@oraichain/oraidex-common';
 
 export const PriceSettingModal: FunctionComponent<{
   close: () => void;
@@ -42,7 +42,7 @@ export const PriceSettingModal: FunctionComponent<{
     swapFee,
     bridgeFee,
     relayerFee,
-    ratio,
+    ratio
   }) => {
     const safeAreaInsets = useSafeAreaInsets();
 
@@ -71,10 +71,10 @@ export const PriceSettingModal: FunctionComponent<{
         <>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginVertical: 10,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginVertical: 10
             }}
           >
             <Text size={15}>{label}</Text>
@@ -84,9 +84,9 @@ export const PriceSettingModal: FunctionComponent<{
               color={
                 Number(impact) > 5
                   ? Number(impact) > 10
-                    ? colors["error-text-body"]
-                    : colors["warning-text-body"]
-                  : colors["neutral-text-title"]
+                    ? colors['error-text-body']
+                    : colors['warning-text-body']
+                  : colors['neutral-text-title']
               }
             >
               {Number(impact) > 5 ? (
@@ -95,14 +95,14 @@ export const PriceSettingModal: FunctionComponent<{
                   color={
                     Number(impact) > 5
                       ? Number(impact) > 10
-                        ? colors["error-text-body"]
-                        : colors["warning-text-body"]
-                      : colors["neutral-text-title"]
+                        ? colors['error-text-body']
+                        : colors['warning-text-body']
+                      : colors['neutral-text-title']
                   }
                   size={16}
                 />
               ) : null}
-              {" " + info}
+              {' ' + info}
             </Text>
           </View>
           <View style={styles.borderline} />
@@ -116,47 +116,39 @@ export const PriceSettingModal: FunctionComponent<{
           <>
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginVertical: 16,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginVertical: 16
               }}
             >
-              <Text color={colors["neutral-text-title"]} weight="500" size={15}>
+              <Text color={colors['neutral-text-title']} weight="500" size={15}>
                 AI Route
               </Text>
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: 'row' }}>
                 <View
                   style={{
-                    flexDirection: "row",
-                    backgroundColor: colors["highlight-surface-subtle"],
+                    flexDirection: 'row',
+                    backgroundColor: colors['highlight-surface-subtle'],
                     paddingHorizontal: 8,
                     paddingVertical: 4,
                     borderRadius: 4,
-                    marginRight: 8,
+                    marginRight: 8
                   }}
                 >
-                  <Text
-                    color={colors["highlight-text-title"]}
-                    weight="600"
-                    size={12}
-                  >
+                  <Text color={colors['highlight-text-title']} weight="600" size={12}>
                     FASTEST
                   </Text>
                 </View>
                 <View
                   style={{
-                    backgroundColor: colors["primary-surface-subtle"],
+                    backgroundColor: colors['primary-surface-subtle'],
                     paddingHorizontal: 8,
                     paddingVertical: 4,
-                    borderRadius: 4,
+                    borderRadius: 4
                   }}
                 >
-                  <Text
-                    color={colors["primary-text-action"]}
-                    weight="600"
-                    size={12}
-                  >
+                  <Text color={colors['primary-text-action']} weight="600" size={12}>
                     BEST RETURN
                   </Text>
                 </View>
@@ -164,65 +156,59 @@ export const PriceSettingModal: FunctionComponent<{
             </View>
             <View>
               {routersSwapData?.routes?.map((route, ind) => {
-                const volumn = Number(
-                  (+route.returnAmount / +routersSwapData?.amount) * 100
-                ).toFixed(0);
+                const volumn = Number((+route.returnAmount / +routersSwapData?.amount) * 100).toFixed(0);
                 return (
                   <View
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingVertical: 20,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      paddingVertical: 20
                     }}
                   >
                     <View
                       style={{
-                        position: "absolute",
+                        position: 'absolute',
                         zIndex: -999,
-                        alignSelf: "center",
+                        alignSelf: 'center'
                       }}
                     >
                       <View
                         style={{
                           width: metrics.screenWidth - 32,
                           height: 2,
-                          backgroundColor: colors["neutral-text-disable"],
+                          backgroundColor: colors['neutral-text-disable']
                         }}
                       />
                     </View>
                     <View
                       style={{
-                        backgroundColor: colors["neutral-surface-card"],
-                        padding: 4,
+                        backgroundColor: colors['neutral-surface-card'],
+                        padding: 4
                       }}
                     >
-                      <Text weight="500" color={colors["neutral-text-body"]}>
+                      <Text weight="500" color={colors['neutral-text-body']}>
                         {volumn}%
                       </Text>
                     </View>
-                    {route?.paths?.map((path) => {
-                      const { NetworkFromIcon, NetworkToIcon } = getPathInfo(
-                        path,
-                        chainIcons,
-                        assets
-                      );
+                    {route?.paths?.map(path => {
+                      const { NetworkFromIcon, NetworkToIcon } = getPathInfo(path, chainIcons, assets);
 
                       return (
                         <View
                           style={{
-                            backgroundColor: colors["neutral-surface-card"],
+                            backgroundColor: colors['neutral-surface-card'],
                             borderRadius: 999,
-                            paddingHorizontal: 4,
+                            paddingHorizontal: 4
                           }}
                         >
                           <View
                             style={{
-                              flexDirection: "row",
-                              backgroundColor: colors["neutral-surface-action"],
+                              flexDirection: 'row',
+                              backgroundColor: colors['neutral-surface-action'],
                               borderRadius: 999,
                               paddingHorizontal: 6,
-                              paddingVertical: 4,
+                              paddingVertical: 4
                             }}
                           >
                             <View
@@ -230,19 +216,19 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor: colors["neutral-text-heading"],
-                                alignItems: "center",
-                                justifyContent: "center",
+                                backgroundColor: colors['neutral-surface-action'],
+                                alignItems: 'center',
+                                justifyContent: 'center'
                               }}
                             >
                               <FastImage
                                 style={{
                                   width: 24,
                                   height: 24,
-                                  borderRadius: 24,
+                                  borderRadius: 24
                                 }}
                                 source={{
-                                  uri: NetworkFromIcon,
+                                  uri: NetworkFromIcon
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />
@@ -252,19 +238,19 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor: colors["neutral-text-heading"],
-                                alignItems: "center",
-                                justifyContent: "center",
+                                backgroundColor: colors['neutral-surface-action'],
+                                alignItems: 'center',
+                                justifyContent: 'center'
                               }}
                             >
                               <FastImage
                                 style={{
                                   width: 24,
                                   height: 24,
-                                  borderRadius: 24,
+                                  borderRadius: 24
                                 }}
                                 source={{
-                                  uri: NetworkToIcon,
+                                  uri: NetworkToIcon
                                 }}
                                 resizeMode={FastImage.resizeMode.cover}
                               />
@@ -275,11 +261,11 @@ export const PriceSettingModal: FunctionComponent<{
                     })}
                     <View
                       style={{
-                        backgroundColor: colors["neutral-surface-card"],
-                        padding: 4,
+                        backgroundColor: colors['neutral-surface-card'],
+                        padding: 4
                       }}
                     >
-                      <Text weight="500" color={colors["neutral-text-body"]}>
+                      <Text weight="500" color={colors['neutral-text-body']}>
                         {volumn}%
                       </Text>
                     </View>
@@ -303,10 +289,10 @@ export const PriceSettingModal: FunctionComponent<{
             <Text
               style={{
                 ...typography.h6,
-                fontWeight: "900",
-                color: colors["neutral-text-title"],
-                width: "100%",
-                textAlign: "center",
+                fontWeight: '900',
+                color: colors['neutral-text-title'],
+                width: '100%',
+                textAlign: 'center'
               }}
             >
               {`Price settings`.toUpperCase()}
@@ -317,26 +303,22 @@ export const PriceSettingModal: FunctionComponent<{
           </Text>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center'
             }}
           >
             <View style={styles.containerSlippagePercent}>
-              {[1, 3, 5].map((item) => {
+              {[1, 3, 5].map(item => {
                 return (
                   <OWButton
                     key={item}
                     size="medium"
                     style={
-                      slippage === Number(item)
-                        ? styles.btnSlippgaePercentActive
-                        : styles.btnSlippgaePercentInActive
+                      slippage === Number(item) ? styles.btnSlippgaePercentActive : styles.btnSlippgaePercentInActive
                     }
                     textStyle={
-                      slippage === Number(item)
-                        ? styles.txtSlippgaePercentActive
-                        : styles.txtSlippgaePercentInActive
+                      slippage === Number(item) ? styles.txtSlippgaePercentActive : styles.txtSlippgaePercentInActive
                     }
                     label={`${item}%`}
                     fullWidth={false}
@@ -347,19 +329,15 @@ export const PriceSettingModal: FunctionComponent<{
             </View>
             <TextInput
               inputContainerStyle={{
-                borderColor: colors["neutral-border-strong"],
+                borderColor: colors['neutral-border-strong'],
                 borderRadius: 8,
                 height: 44,
-                width: metrics.screenWidth / 2.5,
+                width: metrics.screenWidth / 2.5
               }}
               value={slippage.toString()}
-              onChangeText={(txt) => handleChangeSlippage(Number(txt))}
+              onChangeText={txt => handleChangeSlippage(Number(txt))}
               inputRight={
-                <Text
-                  color={colors["neutral-text-body"]}
-                  weight="500"
-                  size={15}
-                >
+                <Text color={colors['neutral-text-body']} weight="500" size={15}>
                   %
                 </Text>
               }
@@ -371,21 +349,19 @@ export const PriceSettingModal: FunctionComponent<{
           </View>
           {renderSmartRoutes()}
           <View style={{ marginTop: 18, marginBottom: 36 }}>
-            {renderInfo("Rate", ratio)}
-            {renderInfo("Minimum Received", minimumReceive)}
+            {renderInfo('Rate', ratio)}
+            {renderInfo('Minimum Received', minimumReceive)}
             {impactWarning
               ? renderInfo(
-                  "Price Impact",
-                  `${
-                    isNegative(impactWarning) ? 0 : maskedNumber(impactWarning)
-                  }%`,
+                  'Price Impact',
+                  `${isNegative(impactWarning) ? 0 : maskedNumber(impactWarning)}%`,
                   impactWarning
                 )
               : null}
-            {tokenFee ? renderInfo("Token Fee", tokenFee) : null}
-            {relayerFee ? renderInfo("Relayer Fee", relayerFee) : null}
-            {swapFee ? renderInfo("Swap Fee", swapFee) : null}
-            {bridgeFee ? renderInfo("Bridge Fee", bridgeFee) : null}
+            {tokenFee ? renderInfo('Token Fee', tokenFee) : null}
+            {relayerFee ? renderInfo('Relayer Fee', relayerFee) : null}
+            {swapFee ? renderInfo('Swap Fee', swapFee) : null}
+            {bridgeFee ? renderInfo('Bridge Fee', bridgeFee) : null}
           </View>
           <OWButton
             style={styles.confirmBtn}
@@ -404,86 +380,86 @@ export const PriceSettingModal: FunctionComponent<{
   }
 );
 
-const styling = (colors: TypeTheme["colors"]) =>
+const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     txtBtn: {
-      fontWeight: "700",
+      fontWeight: '700',
       fontSize: 16,
-      color: colors["neutral-text-action-on-dark-bg"],
+      color: colors['neutral-text-action-on-dark-bg']
     },
     confirmBtn: {
       height: 48,
       borderRadius: 999,
-      color: colors["neutral-text-action-on-dark-bg"],
+      color: colors['neutral-text-action-on-dark-bg']
     },
     txtSlippgaePercentInActive: {
-      color: "#7C8397",
+      color: '#7C8397'
     },
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 5 - 24,
-      backgroundColor: colors["neutral-surface-bg"],
-      height: 44,
+      backgroundColor: colors['neutral-surface-bg'],
+      height: 44
     },
     txtSlippgaePercentActive: {
-      color: colors["neutral-text-action-on-dark-bg"],
+      color: colors['neutral-text-action-on-dark-bg']
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 5 - 24,
-      backgroundColor: colors["primary-surface-default"],
+      backgroundColor: colors['primary-surface-default'],
       height: 44,
       borderWidth: 1,
-      borderColor: colors["neutral-border-bold"],
+      borderColor: colors['neutral-border-bold']
     },
     containerSlippagePercent: {
-      flexDirection: "row",
-      justifyContent: "space-between",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       paddingVertical: 16,
       paddingTop: 8,
-      alignItems: "center",
-      alignContent: "center",
-      width: metrics.screenWidth / 2.2,
+      alignItems: 'center',
+      alignContent: 'center',
+      width: metrics.screenWidth / 2.2
     },
     addBtn: {
-      width: 60,
+      width: 60
     },
     input: {
       fontSize: 18,
       width: 30,
-      color: colors["text-value-input-modal"],
-      paddingVertical: 0,
+      color: colors['text-value-input-modal'],
+      paddingVertical: 0
     },
     inputWrap: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center'
     },
     minusBtn: {
-      width: 60,
+      width: 60
     },
     subContainerInputSlippage: {
       height: 40,
       borderRadius: 12,
       borderWidth: 0.5,
-      borderColor: colors["border-input-slippage"],
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginHorizontal: 10,
+      borderColor: colors['border-input-slippage'],
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginHorizontal: 10
     },
     containerInputSlippage: {
-      alignSelf: "center",
+      alignSelf: 'center'
     },
 
     title: {
-      paddingVertical: 10,
+      paddingVertical: 10
     },
     containerTitle: {
-      alignItems: "center",
+      alignItems: 'center'
     },
     container: {
-      paddingHorizontal: 16,
+      paddingHorizontal: 16
     },
     borderline: {
-      backgroundColor: colors["neutral-border-default"],
-      height: 1,
-    },
+      backgroundColor: colors['neutral-border-default'],
+      height: 1
+    }
   });

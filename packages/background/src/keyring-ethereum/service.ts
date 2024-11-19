@@ -672,7 +672,6 @@ export class KeyRingEthereumService {
         }
         case 'wallet_switchEthereumChain': {
           const param = (Array.isArray(params) && (params?.[0] as { chainId: string })) || undefined;
-          console.log('param?.chainId', param?.chainId);
 
           if (!param?.chainId) {
             throw new Error('Invalid parameters: must provide a chain id.');
