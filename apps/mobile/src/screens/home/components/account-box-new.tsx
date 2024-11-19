@@ -175,7 +175,12 @@ export const AccountBoxAll: FunctionComponent<{
       }
     }
     return result;
-  }, [chainId, account?.addressDisplay, appInitStore.getInitApp.isAllNetworks]);
+  }, [
+    chainId,
+    hugeQueriesStore.allKnownBalances,
+    account?.addressDisplay,
+    appInitStore.getInitApp.isAllNetworks,
+  ]);
   const stakedTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.delegations.filter(
@@ -205,6 +210,7 @@ export const AccountBoxAll: FunctionComponent<{
     hugeQueriesStore.delegations,
     chainId,
     hugeQueriesStore.unbondings,
+    hugeQueriesStore.allKnownBalances,
     account?.addressDisplay,
     appInitStore.getInitApp.isAllNetworks,
   ]);
