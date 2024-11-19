@@ -3,7 +3,7 @@ import { BIP44 } from "./bip44";
 import { AxiosRequestConfig } from "axios";
 import { Bech32Config } from "./bech32";
 
-export type NetworkType = "cosmos" | "evm" | "bitcoin" | "evmos";
+export type NetworkType = "cosmos" | "evm" | "bitcoin" | "evmos" | "svm";
 export interface ChainInfo {
   readonly rpc?: string;
   readonly grpc?: string;
