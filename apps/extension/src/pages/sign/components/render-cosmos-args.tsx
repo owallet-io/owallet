@@ -215,6 +215,8 @@ export const CosmosRenderArgs: FunctionComponent<{
 
   txInfo.decode = decodeMsg;
 
+  console.log('txInfo', txInfo);
+
   const extraInfo = decodeMsg?.send?.msg ? atob(decodeMsg.send.msg) : null;
   txInfo.extraInfo = extraInfo ? JSON.parse(extraInfo) : null;
 
@@ -227,17 +229,30 @@ export const CosmosRenderArgs: FunctionComponent<{
     toAddress = decodeData.swap_and_action.post_swap_action.transfer.to_address;
   }
 
-  if (decodeData.swap_and_action?.post_swap_action?.ibc_transfer?.ibc_info) {
-    toAddress = decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.receiver;
-  }
-
   if (decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]) {
     fromToken = getIconWithChainRegistry(
       decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]?.denom_in
     );
-    toToken = getIconWithChainRegistry(
-      decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]?.denom_out
-    );
+  }
+
+  const lastItem = decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.pop();
+
+  if (lastItem) {
+    toToken = getIconWithChainRegistry(lastItem.denom_out);
+  }
+
+  if (decodeData.swap_and_action?.post_swap_action?.ibc_transfer?.ibc_info) {
+    toAddress = decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.receiver;
+    const info = JSON.parse(decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo);
+    const next = JSON.parse(info.forward?.next);
+
+    if (next) {
+      const lastDes = next.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
+
+      if (lastDes) {
+        toToken = getIconWithChainRegistry(lastDes.denom_out);
+      }
+    }
   }
 
   if (decodeData.swap_and_action) {
@@ -251,8 +266,6 @@ export const CosmosRenderArgs: FunctionComponent<{
             );
           }
         });
-      } else if (decodeData.swap_and_action.min_asset.native) {
-        toToken = getIconWithChainRegistry(decodeData.swap_and_action.min_asset.native.denom);
       }
     }
   }
