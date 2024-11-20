@@ -100,7 +100,6 @@ const TokenItem: FC<{
   const price24h = priceStore.getPrice24hChange(
     item?.token?.currency?.coinGeckoId
   );
-  console.log(item.token?.currency, "item.token?.currency");
   return (
     <div
       style={{ cursor: "pointer" }}

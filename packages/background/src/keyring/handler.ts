@@ -413,6 +413,7 @@ const handleGetKeyMsg: (
         return bech32Convert;
       })(),
       legacyAddress: key.legacyAddress ?? "",
+      base58Address: key.base58Address ?? "",
       isNanoLedger: key.isNanoLedger,
     };
   };

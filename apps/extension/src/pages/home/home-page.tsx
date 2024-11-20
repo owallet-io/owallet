@@ -32,7 +32,9 @@ export const HomePage = observer(() => {
     keyRingStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  console.log(tokensStore.isInitialized, "isInitialized");
+  const accountSol = accountStore.getAccount(
+    "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+  );
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
     allBalances,

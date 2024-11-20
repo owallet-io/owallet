@@ -165,6 +165,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   @observable
   protected _bech32Address: string = "";
   @observable
+  protected _base58Address: string = "";
+  @observable
   protected _legacyAddress: string = "";
   @observable
   protected _addressType: AddressBtcType = AddressBtcType.Bech32;
@@ -349,6 +351,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._name = key.name;
         this.pubKey = key.pubKey;
         this._legacyAddress = key.legacyAddress;
+        this._base58Address = key.base58Address;
         // Set the wallet status as loaded after getting all necessary infos.
         this._walletStatus = WalletStatus.Loaded;
       } else {
@@ -357,6 +360,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         this._walletStatus = WalletStatus.Rejected;
         this._bech32Address = "";
+        this._base58Address = "";
         this._address = new Uint8Array(0);
         this._isNanoLedger = false;
         this._name = "";
@@ -437,6 +441,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
     } else if (networkType === "bitcoin") {
       return this.btcAddress;
+    } else if (networkType === "svm") {
+      return this._base58Address;
     }
     return this._bech32Address;
   }

@@ -31,7 +31,7 @@ import {
   Hash,
 } from "@owallet/crypto";
 import { Env, OWalletError } from "@owallet/router";
-import { AddressBtcType, AppCurrency, ChainInfo } from "@owallet/types";
+import { AddressBtcType, AppCurrency, ChainInfo, Key } from "@owallet/types";
 import AES from "aes-js";
 import { Buffer } from "buffer";
 import eccrypto from "eccrypto-js";
@@ -90,6 +90,7 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { ISimulateSignTron } from "@owallet/types";
 import { getOasisNic } from "../utils/helper";
 import { ec } from "elliptic";
+import { PublicKey } from "@solana/web3.js";
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
 
@@ -98,20 +99,6 @@ export enum KeyRingStatus {
   EMPTY,
   LOCKED,
   UNLOCKED,
-}
-
-interface ISensitive {
-  masterKey: string;
-  mnemonic: string;
-}
-
-export interface Key {
-  algo: string;
-  pubKey: Uint8Array;
-  address: Uint8Array;
-  isNanoLedger: boolean;
-  bech32Address?: string;
-  legacyAddress?: string;
 }
 
 export type MultiKeyStoreInfoElem = Pick<
@@ -968,6 +955,16 @@ export class KeyRing {
         isNanoLedger: this.keyStore.type === "ledger",
       };
     }
+    if (coinType === 501) {
+      const keyPair = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+      return {
+        algo: "ethsecp256k1",
+        pubKey: keyPair.publicKey.toBytes(),
+        address: keyPair.publicKey.toBytes(),
+        isNanoLedger: this.keyStore.type === "ledger",
+        base58Address: keyPair.publicKey.toBase58(),
+      };
+    }
 
     const pubKey = await this.getPubKey(coinType);
 
@@ -1019,7 +1016,7 @@ export class KeyRing {
     ) {
       throw new Error("Key ring is not unlocked");
     }
-    if (coinType === 474)
+    if (coinType === 474 || coinType === 501)
       throw new Error("This coin type not support private key");
     const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
     // and here
@@ -1050,11 +1047,11 @@ export class KeyRing {
       }
 
       const masterSeed = Buffer.from(this.masterKey, "hex");
-      // const privKey = Mnemonic.generateWalletFromMnemonic(this.mnemonic, path);
       const privKey = Mnemonic.generatePrivateKeyFromMasterSeed(
         masterSeed,
         path
       );
+
       this.cached.set(path, privKey);
 
       const secp256k1 = new ec("secp256k1");

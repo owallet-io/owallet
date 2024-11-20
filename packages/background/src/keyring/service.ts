@@ -2,7 +2,6 @@ import { delay, inject, singleton } from "tsyringe";
 import { TYPES } from "../types";
 
 import {
-  Key,
   KeyRing,
   KeyRingStatus,
   MultiKeyStoreInfoWithSelected,
@@ -16,14 +15,10 @@ import {
 } from "@owallet/cosmos";
 import {
   CommonCrypto,
-  ECDSASignature,
   ExportKeyRingData,
-  MessageTypes,
   SignEthereumTypedDataObject,
   SignTypedDataVersion,
-  TypedMessage,
 } from "./types";
-import TronWeb from "tronweb";
 
 import {
   KVStore,
@@ -31,11 +26,9 @@ import {
   MyBigInt,
   escapeHTML,
   sortObjectByKey,
-  ChainIdEnum,
   EXTRA_FEE_LIMIT_TRON,
   DEFAULT_FEE_LIMIT_TRON,
   TRIGGER_TYPE,
-  DenomHelper,
   TronWebProvider,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
@@ -47,6 +40,7 @@ import {
   StdSignDoc,
   BIP44HDPath,
   AddressesLedger,
+  Key,
 } from "@owallet/types";
 import { APP_PORT, Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
 import { InteractionService } from "../interaction";
@@ -63,12 +57,9 @@ import { DirectSignResponse, makeSignBytes } from "@cosmjs/proto-signing";
 import { RNG } from "@owallet/crypto";
 import { encodeSecp256k1Pubkey } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
-import { request } from "../tx";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
-import * as oasis from "@oasisprotocol/client";
-import { ISimulateSignTron } from "@owallet/types";
 
 @singleton()
 export class KeyRingService {

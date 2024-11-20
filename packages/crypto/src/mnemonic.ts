@@ -1,10 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+import { Keypair } from "@solana/web3.js";
+
 const bip39 = require("bip39");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip32 = require("bip32");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bs58check = require("bs58check");
 import { Buffer } from "buffer";
+import { HDKey } from "micro-ed25519-hdkey";
 
 export type RNG = <
   T extends
@@ -72,6 +75,7 @@ export class Mnemonic {
     }
     return privateKey;
   }
+
   static generateMasterSeedFromMnemonic(
     mnemonic: string,
     password: string = ""
@@ -81,6 +85,7 @@ export class Mnemonic {
 
     return Buffer.from(bs58check.decode(masterKey.toBase58()));
   }
+
   static generatePrivateKeyFromMasterSeed(
     seed: Uint8Array,
     path: string = `m/44'/118'/0'/0/0`
@@ -93,5 +98,11 @@ export class Mnemonic {
       throw new Error("null hd key");
     }
     return privateKey;
+  }
+
+  static generateWalletSolanaFromSeed(mnemonic: string): Keypair {
+    const seed = bip39.mnemonicToSeedSync(mnemonic, "");
+    const hd = HDKey.fromMasterSeed(seed.toString("hex"));
+    return Keypair.fromSeed(hd.derive(`m/44'/501'/0'/0'`).privateKey);
   }
 }

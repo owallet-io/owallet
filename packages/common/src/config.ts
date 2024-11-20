@@ -1184,6 +1184,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 501,
     },
+    bech32Config: Bech32Address.defaultBech32Config("sol"),
     stakeCurrency: {
       coinDenom: "SOL",
       coinMinimalDenom: "sol",
