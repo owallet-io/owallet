@@ -8,8 +8,6 @@ import { useStore } from '../../../stores';
 import { assets } from 'chain-registry';
 
 const getIconWithChainRegistry = baseDenom => {
-  console.log('baseDenom', baseDenom);
-
   if (!baseDenom) return undefined;
 
   const supportedChains = new Set([
@@ -31,11 +29,7 @@ const getIconWithChainRegistry = baseDenom => {
 
   const assetList = assets.flatMap(({ chain_name, assets }) => (supportedChains.has(chain_name) ? assets : []));
 
-  console.log('assetList', assetList);
-
   const isMatchingAsset = asset => {
-    console.log('baseDenomUpper', baseDenomUpper);
-
     const [chain, token] = asset.base.split(':');
     const tokenAddressMatch = asset?.address?.toUpperCase() === baseDenomUpper;
     const denomMatch = (token || chain).toUpperCase() === baseDenomUpper;
@@ -229,13 +223,13 @@ export const CosmosRenderArgs: FunctionComponent<{
     toAddress = decodeData.swap_and_action.post_swap_action.transfer.to_address;
   }
 
-  if (decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]) {
+  if (decodeData.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.[0]) {
     fromToken = getIconWithChainRegistry(
       decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]?.denom_in
     );
   }
 
-  const lastItem = decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.pop();
+  const lastItem = decodeData.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
 
   if (lastItem) {
     toToken = getIconWithChainRegistry(lastItem.denom_out);
@@ -243,14 +237,16 @@ export const CosmosRenderArgs: FunctionComponent<{
 
   if (decodeData.swap_and_action?.post_swap_action?.ibc_transfer?.ibc_info) {
     toAddress = decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.receiver;
-    const info = JSON.parse(decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo);
-    const next = JSON.parse(info.forward?.next);
+    if (decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo !== '') {
+      const info = JSON.parse(decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo);
+      const next = JSON.parse(info.forward?.next);
 
-    if (next) {
-      const lastDes = next.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
+      if (next) {
+        const lastDes = next.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
 
-      if (lastDes) {
-        toToken = getIconWithChainRegistry(lastDes.denom_out);
+        if (lastDes) {
+          toToken = getIconWithChainRegistry(lastDes.denom_out);
+        }
       }
     }
   }
@@ -266,6 +262,21 @@ export const CosmosRenderArgs: FunctionComponent<{
             );
           }
         });
+      }
+    }
+  }
+
+  if (decodeData.memo) {
+    const info = JSON.parse(decodeData.memo);
+
+    if (info) {
+      const firstDes = info.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.[0];
+      const lastDes = info.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
+      if (firstDes) {
+        fromToken = getIconWithChainRegistry(firstDes.denom_in);
+      }
+      if (lastDes) {
+        toToken = getIconWithChainRegistry(lastDes.denom_out);
       }
     }
   }
