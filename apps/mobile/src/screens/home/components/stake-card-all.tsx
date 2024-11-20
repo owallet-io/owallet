@@ -1185,10 +1185,10 @@ const ClaimTokenItem: FunctionComponent<{
       try {
         const simulated = await tx.simulate();
 
-        // Gas adjustment is 1.5
+        // Gas adjustment is 2
         // Since there is currently no convenient way to adjust the gas adjustment on the UI,
         // Use high gas adjustment to prevent failure.
-        gas = new Dec(simulated.gasUsed * 1.5).truncate();
+        gas = new Dec(simulated.gasUsed * 2).truncate();
       } catch (e) {
         console.log(e);
       }
