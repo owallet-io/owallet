@@ -7,6 +7,7 @@ export interface ChainGetter {
   getChain(chainId: string): ChainInfo & {
     raw: ChainInfo;
     addUnknownCurrencies(...coinMinimalDenoms: string[]): void;
+    addCurrencies(...currencies: AppCurrency[]): void;
     findCurrency(coinMinimalDenom: string): AppCurrency | undefined;
     forceFindCurrency(coinMinimalDenom: string): AppCurrency;
   };

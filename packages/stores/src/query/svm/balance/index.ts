@@ -5,9 +5,11 @@ import {
   DenomHelper,
   getOasisNic,
   MapChainIdToNetwork,
+  Network,
   parseRpcBalance,
+  TOKEN_PROGRAM_ID,
 } from "@owallet/common";
-import { ChainGetter, ObservableQuery } from "../../../common";
+import { ChainGetter, ObservableQuery, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
 import { CoinPretty, Int } from "@owallet/unit";
 
@@ -21,6 +23,7 @@ import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { ObservableChainQuery } from "../../chain-query";
+import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -43,7 +46,7 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   }
 
   protected canFetch(): boolean {
-    return false;
+    return true;
   }
 
   get isFetching(): boolean {
@@ -66,18 +69,15 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   @computed
   get balance(): CoinPretty {
     const currency = this.currency;
-
     if (!this.nativeBalances.response) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-    return new CoinPretty(
-      currency,
-      new Int(Web3.utils.hexToNumberString(this.response.data))
-    );
+    const denom = this.denomHelper.denom.replace("spl:", "");
+    return new CoinPretty(currency, new Int(this.response.data[denom]));
   }
 }
 
-export class ObservableQuerySvmBalances extends ObservableChainQuery<string> {
+export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<string> {
   protected walletAddress: string;
 
   protected duplicatedFetchCheck: boolean = false;
@@ -89,7 +89,7 @@ export class ObservableQuerySvmBalances extends ObservableChainQuery<string> {
     walletAddress: string
   ) {
     super(sharedContext, chainId, chainGetter, "");
-
+    console.log(walletAddress, "walletAddress");
     this.walletAddress = walletAddress;
 
     makeObservable(this);
@@ -114,29 +114,71 @@ export class ObservableQuerySvmBalances extends ObservableChainQuery<string> {
     }
   }
 
+  async fetchSplBalances() {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const connection = new Connection(chainInfo.rpc, "confirmed");
+    const publicKey = new PublicKey(this.walletAddress);
+
+    // 1. Fetch native SOL balance and token accounts in parallel
+    const [lamports, tokenAccounts] = await Promise.all([
+      connection.getBalance(publicKey), // Native SOL balance
+      connection.getParsedTokenAccountsByOwner(publicKey, {
+        programId: TOKEN_PROGRAM_ID, // Token program ID
+      }),
+    ]);
+
+    // 2. Extract token information
+    const tokenDetails = tokenAccounts.value.map(({ account }) => {
+      const info = account.data.parsed.info;
+      return {
+        mintAddress: info.mint,
+        balance: Number(info.tokenAmount.amount),
+      };
+    });
+
+    // 3. Construct tokenAddresses for API call
+    const tokenAddresses = tokenDetails
+      .map(({ mintAddress }) => `${Network.SOLANA}%2B${mintAddress}`)
+      .join(",");
+
+    // 4. Fetch token metadata in bulk
+    const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
+
+    // 5. Map token metadata to currencies
+    const currencyInfo = tokenInfos.map((item) => ({
+      coinImageUrl: item.imgUrl,
+      coinDenom: item.abbr,
+      coinGeckoId: item.coingeckoId,
+      coinDecimals: item.decimal,
+      coinMinimalDenom: `spl:${item.contractAddress}`,
+    }));
+
+    // 6. Update chain info with currencies
+    chainInfo.addCurrencies(...currencyInfo);
+
+    // 7. Combine SPL token balances and native SOL balance
+    const tokenBalances = tokenDetails.reduce(
+      (acc, { mintAddress, balance }) => {
+        acc[mintAddress] = balance;
+        return acc;
+      },
+      {}
+    );
+
+    return {
+      ...tokenBalances,
+      sol: lamports, // Add native SOL balance
+    };
+  }
+
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
-    const { data, headers } = await super.fetchResponse(abortController);
-    // if (this.chainId === ChainIdEnum.Oasis) {
-    //   const oasisBalance = await this.getOasisBalance();
-    //   return {
-    //     data: Number(oasisBalance.available)
-    //       ? Web3.utils.numberToHex(Number(oasisBalance.available))
-    //       : "0x1",
-    //     headers: null,
-    //   };
-    // }
-    // this.fetchAllErc20();
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const connection = new Connection(chainInfo.rpc, "confirmed");
-
-    const publicKey = new PublicKey(this.walletAddress);
-    const lamports = await connection.getBalance(publicKey);
-    console.log(lamports, "lamports");
+    const data = await this.fetchSplBalances();
+    console.log(data, "data fetch");
     return {
-      data: lamports,
-      headers,
+      data: data,
+      headers: null,
     };
   }
 
@@ -222,10 +264,6 @@ export class ObservableQuerySvmBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-
-    // if (denomHelper.type !== "native") return;
-    // const networkType = chainGetter.getChain(chainId).networkType;
-    // if (networkType !== "evm") return;
     if (!chainId.startsWith("solana:")) return;
     const key = `svm-${chainId}/${walletAddress}`;
 
@@ -240,6 +278,7 @@ export class ObservableQuerySvmBalanceRegistry implements BalanceRegistry {
         )
       );
     }
+    console.log(chainId, "zo day");
     return new ObservableQueryBalanceNative(
       this.sharedContext,
       chainId,

@@ -17,12 +17,16 @@ import Web3 from "web3";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
 import "dotenv/config";
+import { PublicKey } from "@solana/web3.js";
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
   if (!url) return serviceGG + "https://orai.io";
   return serviceGG + url;
 };
+export const TOKEN_PROGRAM_ID = new PublicKey(
+  "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+);
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",

@@ -15,14 +15,15 @@ import {
   ChainIdEnum,
   DenomHelper,
   MapChainIdToNetwork,
+  Network,
   unknownToken,
 } from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
-import { StakeAll } from "./stake-all";
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
 export const HomePage = observer(() => {
@@ -51,6 +52,17 @@ export const HomePage = observer(() => {
         "confirmed"
       );
       if (!accountSol.base58Address) return;
+      // const tokenAddresses = res.result
+      //     .map((item, index) => {
+      //       return `${Network.SOLANA}%2B${
+      //           item.tokenAddress
+      //       }`;
+      //     })
+      //     .join(",");
+      const test = await API.getMultipleTokenInfo({
+        tokenAddresses: `${Network.SOLANA}%2BEs9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`,
+      });
+      // console.log(test,"test");
       const publicKey = new PublicKey(accountSol.base58Address);
       const lamports = await connection.getBalance(publicKey);
       const solBalance = new CoinPretty(
@@ -64,16 +76,14 @@ export const HomePage = observer(() => {
         },
         new Dec(lamports)
       );
-      console.log(solBalance.toString(), "solBalance");
+      // console.log(solBalance.toString(), "solBalance");
       const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
         publicKey,
         {
-          programId: new PublicKey(
-            "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-          ),
+          programId: TOKEN_PROGRAM_ID,
         }
       );
-
+      console.log(tokenAccounts.value, "tokenAccounts.value");
       // Extract and display balances for each token
       const tokenBalances = tokenAccounts.value.map(({ pubkey, account }) => {
         const info = account.data.parsed.info;

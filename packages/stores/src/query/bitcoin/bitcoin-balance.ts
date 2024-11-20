@@ -50,6 +50,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.bech32Address?.length > 0;
   }
+
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: Result }> {
@@ -76,6 +77,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     };
   }
 }
+
 export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceInner {
   constructor(
     sharedContext: QuerySharedContext,
@@ -139,6 +141,7 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
     );
   }
 }
+
 export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryBtcBalances> = new Map();
   readonly type: BalanceRegistryType = "bitcoin";
@@ -152,7 +155,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-
+    if (!chainId.includes("bitcoin")) return;
     if (denomHelper.type !== "native") {
       return;
     }
