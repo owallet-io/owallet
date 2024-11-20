@@ -266,7 +266,7 @@ export const CosmosRenderArgs: FunctionComponent<{
     }
   }
 
-  if (decodeData.memo) {
+  if (decodeData.memo && !decodeData.memo.startsWith('orai')) {
     const info = JSON.parse(decodeData.memo);
 
     if (info) {
