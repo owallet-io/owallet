@@ -442,7 +442,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     } else if (networkType === "bitcoin") {
       return this.btcAddress;
     } else if (networkType === "svm") {
-      return this._base58Address;
+      return this.base58Address;
     }
     return this._bech32Address;
   }
@@ -1306,6 +1306,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   get bech32Address(): string {
     return this._bech32Address;
+  }
+  get base58Address(): string {
+    return this._base58Address;
   }
 
   get legacyAddress(): string {

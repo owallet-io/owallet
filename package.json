@@ -46,6 +46,7 @@
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/oraidex-universal-swap": "^1.1.12",
+    "@solana/spl-token": "0.4.9",
     "@solana/web3.js": "^1.95.4",
     "@types/jest": "29.5.3",
     "@types/node": "^16.6.2",

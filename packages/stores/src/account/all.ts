@@ -17,6 +17,7 @@ import {
   HasCosmosQueries,
   HasCosmwasmQueries,
   HasEvmQueries,
+  HasSvmQueries,
   HasSecretQueries,
   QueriesSetBase,
   QueriesStore,
@@ -43,6 +44,7 @@ export class AccountWithAll
       HasSecretQueries &
       HasCosmwasmQueries &
       HasEvmQueries &
+      HasSvmQueries &
       HasBtcQueries
   >
   implements HasCosmosAccount, HasSecretAccount, HasCosmwasmAccount
@@ -76,6 +78,7 @@ export class AccountWithAll
         HasSecretQueries &
         HasCosmwasmQueries &
         HasEvmQueries &
+        HasSvmQueries &
         HasBtcQueries
     >,
     protected readonly opts: AccountSetOpts<

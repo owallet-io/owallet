@@ -23,7 +23,7 @@ import {
   getEthereumFromWindow,
   getTronWebFromWindow,
   getBitcoinFromWindow,
-  QueriesWrappedTron,
+  QueriesWrappedSvm,
 } from "@owallet/stores";
 import {
   ExtensionRouter,
@@ -54,7 +54,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWrappedTron>;
+  public readonly queriesStore: QueriesStore<QueriesWrappedSvm>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
@@ -138,7 +138,7 @@ export class RootStore {
         responseDebounceMs: 75,
       },
       getOWalletFromWindow,
-      QueriesWrappedTron
+      QueriesWrappedSvm
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {

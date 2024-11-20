@@ -6,7 +6,7 @@ import { TokensCard } from "./components/tokens-card";
 import { useStore } from "../../stores";
 
 import { LinkStakeView, StakeView } from "./stake";
-import { Dec, IntPretty, PricePretty } from "@owallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@owallet/unit";
 // var Mixpanel = require('mixpanel');
 import Mixpanel from "mixpanel";
 import { sha256 } from "sha.js";
@@ -20,6 +20,9 @@ import {
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
+import { StakeAll } from "./stake-all";
+import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
 export const HomePage = observer(() => {
@@ -40,7 +43,51 @@ export const HomePage = observer(() => {
     allBalances,
     chainStore.current.chainId
   );
+  useEffect(() => {
+    (async () => {
+      // connection
+      const connection = new Connection(
+        "https://swr.xnftdata.com/rpc-proxy/",
+        "confirmed"
+      );
+      if (!accountSol.base58Address) return;
+      const publicKey = new PublicKey(accountSol.base58Address);
+      const lamports = await connection.getBalance(publicKey);
+      const solBalance = new CoinPretty(
+        {
+          coinDenom: "SOL",
+          coinMinimalDenom: "sol",
+          coinDecimals: 9,
+          coinGeckoId: "solana",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+        },
+        new Dec(lamports)
+      );
+      console.log(solBalance.toString(), "solBalance");
+      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+        publicKey,
+        {
+          programId: new PublicKey(
+            "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+          ),
+        }
+      );
 
+      // Extract and display balances for each token
+      const tokenBalances = tokenAccounts.value.map(({ pubkey, account }) => {
+        const info = account.data.parsed.info;
+        const mintAddress = info.mint;
+        const balance = info.tokenAmount.uiAmount;
+        return { mintAddress, balance };
+      });
+
+      console.log("Token Balances:");
+      tokenBalances.forEach(({ mintAddress, balance }) => {
+        console.log(`- Mint: ${mintAddress}, Balance: ${balance}`);
+      });
+    })();
+  }, [accountSol.base58Address]);
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
