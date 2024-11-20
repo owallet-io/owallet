@@ -211,86 +211,73 @@ export const CosmosRenderArgs: FunctionComponent<{
 
   console.log('txInfo', txInfo);
 
-  const parseJSON = data => {
-    try {
-      return JSON.parse(data);
-    } catch {
-      return null;
-    }
-  };
-
-  const extractLastOperation = operations => operations?.[operations.length - 1];
-
-  const getSwapTokens = swapData => {
-    const firstOperation = swapData?.operations?.[0];
-    const lastOperation = extractLastOperation(swapData?.operations);
-
-    return {
-      fromToken: firstOperation ? getIconWithChainRegistry(firstOperation.denom_in) : null,
-      toToken: lastOperation ? getIconWithChainRegistry(lastOperation.denom_out) : null
-    };
-  };
-
-  const getTokenFromCW20 = (chainStore, chainId, address) => {
-    const chainInfo = chainStore.chainInfos.find(c => c.chainId === chainId);
-    return chainInfo?.currencies.find(cur => cur.contractAddress === address) ?? null;
-  };
-
-  // Decode extra information
   const extraInfo = decodeMsg?.send?.msg ? atob(decodeMsg.send.msg) : null;
-  txInfo.extraInfo = extraInfo ? parseJSON(extraInfo) : null;
+  txInfo.extraInfo = extraInfo ? JSON.parse(extraInfo) : null;
 
   const decodeData = txInfo.extraInfo ?? txInfo.decode;
+  let fromToken;
+  let toToken;
+  let toAddress;
 
-  let fromToken = null;
-  let toToken = null;
-  let toAddress = null;
+  if (decodeData.swap_and_action?.post_swap_action?.transfer?.to_address) {
+    toAddress = decodeData.swap_and_action.post_swap_action.transfer.to_address;
+  }
 
-  // Handle swap and transfer data
-  if (decodeData.swap_and_action) {
-    const swapAction = decodeData.swap_and_action;
+  if (decodeData.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.[0]) {
+    fromToken = getIconWithChainRegistry(
+      decodeData.swap_and_action.user_swap?.swap_exact_asset_in?.operations?.[0]?.denom_in
+    );
+  }
 
-    // Extract toAddress from post-swap actions
-    toAddress =
-      swapAction.post_swap_action?.transfer?.to_address ||
-      swapAction.post_swap_action?.ibc_transfer?.ibc_info?.receiver;
+  const lastItem = decodeData.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
 
-    // Extract tokens from swap operations
-    if (swapAction.user_swap?.swap_exact_asset_in) {
-      const swapTokens = getSwapTokens(swapAction.user_swap.swap_exact_asset_in);
-      fromToken = swapTokens.fromToken;
-      toToken = swapTokens.toToken;
-    }
+  if (lastItem) {
+    toToken = getIconWithChainRegistry(lastItem.denom_out);
+  }
 
-    // Handle IBC transfer memo
-    const ibcMemo = swapAction.post_swap_action?.ibc_transfer?.ibc_info?.memo;
-    if (ibcMemo) {
-      const info = parseJSON(ibcMemo);
-      const next = parseJSON(info?.forward?.next);
+  if (decodeData.swap_and_action?.post_swap_action?.ibc_transfer?.ibc_info) {
+    toAddress = decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.receiver;
+    if (decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo !== '') {
+      const info = JSON.parse(decodeData.swap_and_action.post_swap_action.ibc_transfer.ibc_info.memo);
+      const next = JSON.parse(info.forward?.next);
+
       if (next) {
-        const lastDes = extractLastOperation(
-          next.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations
-        );
+        const lastDes = next.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
+
         if (lastDes) {
           toToken = getIconWithChainRegistry(lastDes.denom_out);
         }
       }
     }
+  }
 
-    // Extract token from CW20 asset
-    const minAsset = swapAction.min_asset?.cw20;
-    if (minAsset) {
-      toToken = getTokenFromCW20(chainStore, chain?.chainId, minAsset.address);
+  if (decodeData.swap_and_action) {
+    if (decodeData.swap_and_action.min_asset) {
+      if (decodeData.swap_and_action.min_asset.cw20) {
+        chainStore.chainInfos.forEach(c => {
+          if (c.chainId === chain?.chainId) {
+            toToken = c.currencies.find(
+              //@ts-ignore
+              cur => cur.contractAddress === decodeData.swap_and_action.min_asset.cw20.address
+            );
+          }
+        });
+      }
     }
   }
 
-  // Handle memo data
   if (decodeData.memo && !decodeData.memo.startsWith('orai')) {
-    const info = parseJSON(decodeData.memo);
+    const info = JSON.parse(decodeData.memo);
+
     if (info) {
-      const swapTokens = getSwapTokens(info.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in);
-      fromToken = swapTokens.fromToken || fromToken;
-      toToken = swapTokens.toToken || toToken;
+      const firstDes = info.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.[0];
+      const lastDes = info.wasm?.msg?.swap_and_action?.user_swap?.swap_exact_asset_in?.operations?.pop();
+      if (firstDes) {
+        fromToken = getIconWithChainRegistry(firstDes.denom_in);
+      }
+      if (lastDes) {
+        toToken = getIconWithChainRegistry(lastDes.denom_out);
+      }
     }
   }
 
