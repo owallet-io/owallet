@@ -324,6 +324,8 @@ export class KeyRingEthereumService {
 
           const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
 
+          console.log('newEvmChainId', newEvmChainId);
+
           const newCurrentChainInfo = this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
           if (!newCurrentChainInfo) {
             throw new EthereumProviderRpcError(
@@ -337,6 +339,10 @@ export class KeyRingEthereumService {
           return null;
         }
       }
+    }
+
+    if (currentChainId.startsWith('0x') && !isNaN(Number(currentChainId))) {
+      currentChainId = chainId = `eip155:${parseInt(currentChainId, 16)}`;
     }
 
     const currentChainInfo = this.chainsService.getChainInfoOrThrow(currentChainId);
