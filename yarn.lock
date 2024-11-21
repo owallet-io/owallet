@@ -2366,26 +2366,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/stargate@npm:0.31.3, @cosmjs/stargate@npm:^0.31.0, @cosmjs/stargate@npm:^0.31.3":
-  version: 0.31.3
-  resolution: "@cosmjs/stargate@npm:0.31.3"
-  dependencies:
-    "@confio/ics23": ^0.6.8
-    "@cosmjs/amino": ^0.31.3
-    "@cosmjs/encoding": ^0.31.3
-    "@cosmjs/math": ^0.31.3
-    "@cosmjs/proto-signing": ^0.31.3
-    "@cosmjs/stream": ^0.31.3
-    "@cosmjs/tendermint-rpc": ^0.31.3
-    "@cosmjs/utils": ^0.31.3
-    cosmjs-types: ^0.8.0
-    long: ^4.0.0
-    protobufjs: ~6.11.3
-    xstream: ^11.14.0
-  checksum: 9b680d50f0818e3cfaffccd022d6034c283c1e350a1b8d8f74ffa22352e342ce1cb00533007ba7b5a6a1c1bc30fe327bd09c23ac8b7486691ad127a34c47690c
-  languageName: node
-  linkType: hard
-
 "@cosmjs/stargate@npm:^0.30.1":
   version: 0.30.1
   resolution: "@cosmjs/stargate@npm:0.30.1"
@@ -2403,6 +2383,26 @@ __metadata:
     protobufjs: ~6.11.3
     xstream: ^11.14.0
   checksum: 2eb089c4a7f995b787702d52f22e1c808704cd02c29ec4feee57897d350d9dbde645785e89bf34181da7acd67547dc2b0f17f9f49cfbb0272d70cb7f553a8644
+  languageName: node
+  linkType: hard
+
+"@cosmjs/stargate@npm:^0.31.0, @cosmjs/stargate@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/stargate@npm:0.31.3"
+  dependencies:
+    "@confio/ics23": ^0.6.8
+    "@cosmjs/amino": ^0.31.3
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/proto-signing": ^0.31.3
+    "@cosmjs/stream": ^0.31.3
+    "@cosmjs/tendermint-rpc": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+    cosmjs-types: ^0.8.0
+    long: ^4.0.0
+    protobufjs: ~6.11.3
+    xstream: ^11.14.0
+  checksum: 9b680d50f0818e3cfaffccd022d6034c283c1e350a1b8d8f74ffa22352e342ce1cb00533007ba7b5a6a1c1bc30fe327bd09c23ac8b7486691ad127a34c47690c
   languageName: node
   linkType: hard
 
@@ -2451,24 +2451,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/tendermint-rpc@npm:0.31.3, @cosmjs/tendermint-rpc@npm:^0.31.3":
-  version: 0.31.3
-  resolution: "@cosmjs/tendermint-rpc@npm:0.31.3"
-  dependencies:
-    "@cosmjs/crypto": ^0.31.3
-    "@cosmjs/encoding": ^0.31.3
-    "@cosmjs/json-rpc": ^0.31.3
-    "@cosmjs/math": ^0.31.3
-    "@cosmjs/socket": ^0.31.3
-    "@cosmjs/stream": ^0.31.3
-    "@cosmjs/utils": ^0.31.3
-    axios: ^0.21.2
-    readonly-date: ^1.0.0
-    xstream: ^11.14.0
-  checksum: 403e220ee4aeb65977a4416d48930d7381e3d4c10bf300fa6f07698c72b85a55f2314ba1a3d45849ce8549de2ff2005988188fc5fe60ac09188edbb89692115d
-  languageName: node
-  linkType: hard
-
 "@cosmjs/tendermint-rpc@npm:^0.30.1":
   version: 0.30.1
   resolution: "@cosmjs/tendermint-rpc@npm:0.30.1"
@@ -2484,6 +2466,24 @@ __metadata:
     readonly-date: ^1.0.0
     xstream: ^11.14.0
   checksum: 6900711886d2d9b02dd9ec17d341a174d7d2a20c432618e96d7f33fa6732dcb77fe21f37c67d452c09095f099260a679a4ac5de0caeec376cd683d3d12790ed8
+  languageName: node
+  linkType: hard
+
+"@cosmjs/tendermint-rpc@npm:^0.31.3":
+  version: 0.31.3
+  resolution: "@cosmjs/tendermint-rpc@npm:0.31.3"
+  dependencies:
+    "@cosmjs/crypto": ^0.31.3
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/json-rpc": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/socket": ^0.31.3
+    "@cosmjs/stream": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+    axios: ^0.21.2
+    readonly-date: ^1.0.0
+    xstream: ^11.14.0
+  checksum: 403e220ee4aeb65977a4416d48930d7381e3d4c10bf300fa6f07698c72b85a55f2314ba1a3d45849ce8549de2ff2005988188fc5fe60ac09188edbb89692115d
   languageName: node
   linkType: hard
 
@@ -6007,55 +6007,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.21, @oraichain/oraidex-common@npm:^1.1.23":
-  version: 1.1.23
-  resolution: "@oraichain/oraidex-common@npm:1.1.23"
-  dependencies:
-    "@cosmjs/amino": 0.31.3
-    "@cosmjs/cosmwasm-stargate": 0.31.3
-    "@cosmjs/crypto": 0.31.3
-    "@cosmjs/proto-signing": 0.31.3
-    "@cosmjs/stargate": 0.31.3
-    "@cosmjs/tendermint-rpc": 0.31.3
-    "@ethersproject/providers": ^5.0.10
-    "@injectivelabs/sdk-ts": 1.12.1
-    "@oraichain/oraidex-contracts-sdk": latest
-    "@owallet/types": ^0.9.13
-    axios: 1.7.2
-    axios-extensions: 3.1.7
-    bignumber.js: ^9.1.2
-    cosmjs-types: 0.8.0
-    ethers: ^5.0.15
-    tronweb: 6.0.0-beta.4
-  checksum: ad33ba9f1feedd74ca1d6e68a31d943915620061a6352aaa98c4553c04e840c453233aade4cbb5ebc9461461f081ae12efc4a0c4dc4250e49768e9a131d2dddc
-  languageName: node
-  linkType: hard
-
-"@oraichain/oraidex-common@npm:^1.1.27":
-  version: 1.1.28
-  resolution: "@oraichain/oraidex-common@npm:1.1.28"
-  dependencies:
-    "@cosmjs/amino": 0.31.3
-    "@cosmjs/cosmwasm-stargate": 0.31.3
-    "@cosmjs/crypto": 0.31.3
-    "@cosmjs/proto-signing": 0.31.3
-    "@cosmjs/stargate": 0.31.3
-    "@cosmjs/tendermint-rpc": 0.31.3
-    "@ethersproject/providers": ^5.0.10
-    "@injectivelabs/sdk-ts": 1.12.1
-    "@keplr-wallet/types": ^0.11.38
-    "@oraichain/oraidex-contracts-sdk": latest
-    axios: 1.7.2
-    axios-extensions: 3.1.7
-    bignumber.js: ^9.1.2
-    cosmjs-types: 0.8.0
-    ethers: ^5.0.15
-    tronweb: 6.0.0-beta.4
-  checksum: 3aeb6824d49160f4d407063a8bba5316ee11ac59896f77e1a3df923aaed08fe6904a30bca5a4d657740ddb129fc00bd11ad908bc63cfaadc9da589505b9ab626
-  languageName: node
-  linkType: hard
-
-"@oraichain/oraidex-common@npm:^1.1.32":
+"@oraichain/oraidex-common@npm:^1.1.27, @oraichain/oraidex-common@npm:^1.1.32":
   version: 1.1.32
   resolution: "@oraichain/oraidex-common@npm:1.1.32"
   dependencies:
@@ -6090,21 +6042,6 @@ __metadata:
   version: 1.0.51
   resolution: "@oraichain/oraidex-contracts-sdk@npm:1.0.51"
   checksum: c6dc077548da648811738cb7768c60d2a3c95d04bb8c5ee80762e4bc894ee23b9329c54c16a50f63d0c60edef09d7466ec25dd3998f2209102a6ae74c7260e29
-  languageName: node
-  linkType: hard
-
-"@oraichain/oraidex-universal-swap@npm:^1.1.12":
-  version: 1.1.12
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.12"
-  dependencies:
-    "@oraichain/common": ^1.0.3
-    "@oraichain/oraidex-common": ^1.1.21
-    "@oraichain/oraidex-contracts-sdk": ^1.0.49
-    bech32: 1.1.4
-    ethers: ^5.0.15
-    tronweb: 5.3.2
-    ts-protoc-gen: ^0.15.0
-  checksum: e6a82324001c83f5da70f919c7969e94a2806b04271dac1726903f707ffe0860337173b1fa8f0d788719574894e34462b4895218bf12d9053cb9e4c77bc233f1
   languageName: node
   linkType: hard
 
@@ -6666,7 +6603,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/types@*, @owallet/types@^0.9.12, @owallet/types@^0.9.13, @owallet/types@workspace:packages/types":
+"@owallet/types@*, @owallet/types@^0.9.12, @owallet/types@workspace:packages/types":
   version: 0.0.0-use.local
   resolution: "@owallet/types@workspace:packages/types"
   dependencies:
@@ -14544,16 +14481,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cosmjs-types@npm:0.8.0, cosmjs-types@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "cosmjs-types@npm:0.8.0"
-  dependencies:
-    long: ^4.0.0
-    protobufjs: ~6.11.2
-  checksum: 99714ec956d2cb2e521d39896c9c9a24cf9df0d370265c203646ea015b51e86472efc0cb11f67a80f0649d178b0bcff77ac659e67fdfc8b2437cd7a42018577f
-  languageName: node
-  linkType: hard
-
 "cosmjs-types@npm:^0.5.2":
   version: 0.5.2
   resolution: "cosmjs-types@npm:0.5.2"
@@ -14571,6 +14498,16 @@ __metadata:
     long: ^4.0.0
     protobufjs: ~6.11.2
   checksum: 4a0b730a7f1ae8efa8bd044f9ebdd7921f26319ff2abf36ac7e2f93ef6f3e73d90c1775ce2325611d47c4ccc72a708a63e31e89d9d80ad75c1107c7228e09bc8
+  languageName: node
+  linkType: hard
+
+"cosmjs-types@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "cosmjs-types@npm:0.8.0"
+  dependencies:
+    long: ^4.0.0
+    protobufjs: ~6.11.2
+  checksum: 99714ec956d2cb2e521d39896c9c9a24cf9df0d370265c203646ea015b51e86472efc0cb11f67a80f0649d178b0bcff77ac659e67fdfc8b2437cd7a42018577f
   languageName: node
   linkType: hard
 
@@ -25945,10 +25882,10 @@ __metadata:
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
     "@oraichain/ethereum-multicall": ^1.0.2
-    "@oraichain/oraidex-common": ^1.1.23
+    "@oraichain/oraidex-common": ^1.1.32
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.12
+    "@oraichain/oraidex-universal-swap": ^1.1.22
     "@types/jest": 29.5.3
     "@types/node": ^16.6.2
     "@typescript-eslint/eslint-plugin": ^4.13.0

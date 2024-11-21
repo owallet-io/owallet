@@ -42,7 +42,6 @@ import {
 import { Mixpanel } from 'mixpanel-react-native';
 import { metrics } from '@src/themes';
 import { useTokenFee } from './hooks/use-token-fee';
-import { useFilterToken } from './hooks/use-filter-token';
 import useEstimateAmount, { SIMULATE_INIT_AMOUNT } from './hooks/use-estimate-amount';
 import { PageWithBottom } from '@src/components/page/page-with-bottom';
 import OWCard from '@src/components/card/ow-card';
@@ -54,6 +53,7 @@ import { flatten } from 'lodash';
 import { tracking } from '@src/utils/tracking';
 import { AFFILIATE_ADDRESS } from '@src/common/constants';
 import { SlippageConfirmModal } from './modals/SlippageConfirmModal';
+import { useFilterToken } from './hooks/use-filter-token';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
