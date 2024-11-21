@@ -1758,7 +1758,7 @@ export const PrivilegedOrigins: string[] = [
   "https://hub.orai.io",
   "https://scan.orai.io",
   "https://multisig.orai.io",
-  "https://develop-v3.oraiswap-frontend.pages.dev",
+  "https://develop-v3.beta-oraidex.pages.dev",
 ];
 
 export const CommunityChainInfoRepo = {
