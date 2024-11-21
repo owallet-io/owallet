@@ -24,10 +24,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const { chainStore, queriesStore, priceStore, appInitStore, browserStore, allAccountStore, bitcoinAccountStore } =
     useStore();
 
-  const accountBtc = bitcoinAccountStore.getAccount(ChainIdEnum.Bitcoin);
-
-  console.log('accountBtc', accountBtc.pubKey);
-
   const scrollViewRef = useRef<ScrollView | null>(null);
   useEffect(() => {
     for (const embedChainInfo of EmbedChainInfos) {

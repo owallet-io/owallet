@@ -6108,9 +6108,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.20":
-  version: 1.1.20
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.20"
+"@oraichain/oraidex-universal-swap@npm:^1.1.22":
+  version: 1.1.22
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.22"
   dependencies:
     "@oraichain/common": ^1.0.3
     "@oraichain/oraidex-common": ^1.1.27
@@ -6120,7 +6120,7 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
-  checksum: 41ecc492027549973af4dd9787ba6544be52200bac841d3f9b3cf368fa1427c4a7a9984414f2cb4ebce77fc631b9747dce0e715e994535b7cbed908aa1bfb08a
+  checksum: 0bff305e5494161b0418b1817ac4793e9bfddb4fb7a060a4c8feac59e883e2f450a0f913ec4383d4e5a0d147faa1d13ffe4d858aea18dbc9b51ea5b1268690b8
   languageName: node
   linkType: hard
 
@@ -24427,7 +24427,7 @@ __metadata:
     "@oraichain/oraidex-common": ^1.1.32
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.20
+    "@oraichain/oraidex-universal-swap": ^1.1.22
     "@owallet/stores-btc": "*"
     "@owallet/stores-oasis": "*"
     "@owallet/stores-trx": "*"

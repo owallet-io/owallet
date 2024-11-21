@@ -49,7 +49,7 @@
     "@oraichain/oraidex-common": "^1.1.32",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
-    "@oraichain/oraidex-universal-swap": "^1.1.20",
+    "@oraichain/oraidex-universal-swap": "^1.1.22",
     "@owallet/stores-btc": "*",
     "@owallet/stores-oasis": "*",
     "@owallet/stores-trx": "*",
