@@ -1,29 +1,29 @@
-import { ChainInfo } from "@owallet/types";
-import { simpleFetch } from "@owallet/simple-fetch";
+import { ChainInfo } from '@owallet/types';
+import { simpleFetch } from '@owallet/simple-fetch';
 
 /**
  * Indicate the features which keplr supports.
  */
 export const SupportedChainFeatures = [
-  "stargate",
-  "cosmwasm",
-  "wasmd_0.24+",
-  "secretwasm",
-  "ibc-transfer",
-  "no-legacy-stdTx",
-  "ibc-go",
-  "eth-address-gen",
-  "eth-key-sign",
-  "query:/cosmos/bank/v1beta1/spendable_balances",
-  "axelar-evm-bridge",
-  "osmosis-txfees",
-  "terra-classic-fee",
-  "ibc-go-v7-hot-fix",
-  "ibc-pfm",
-  "authz-msg-revoke-fixed",
-  "osmosis-base-fee-beta",
-  "feemarket",
-  "op-stack-l1-data-fee",
+  'stargate',
+  'cosmwasm',
+  'wasmd_0.24+',
+  'secretwasm',
+  'ibc-transfer',
+  'no-legacy-stdTx',
+  'ibc-go',
+  'eth-address-gen',
+  'eth-key-sign',
+  'query:/cosmos/bank/v1beta1/spendable_balances',
+  'axelar-evm-bridge',
+  'osmosis-txfees',
+  'terra-classic-fee',
+  'ibc-go-v7-hot-fix',
+  'ibc-pfm',
+  'authz-msg-revoke-fixed',
+  'osmosis-base-fee-beta',
+  'feemarket',
+  'op-stack-l1-data-fee'
 ];
 
 /**
@@ -36,35 +36,31 @@ export const SupportedChainFeatures = [
  */
 export const RecognizableChainFeaturesMethod: {
   feature: string;
-  fetch: (
-    features: ReadonlyArray<string>,
-    rpc: string,
-    rest: string
-  ) => Promise<boolean>;
+  fetch: (features: ReadonlyArray<string>, rpc: string, rest: string) => Promise<boolean>;
 }[] = [
   {
-    feature: "ibc-go",
+    feature: 'ibc-go',
     fetch: async (_features, _rpc, rest) => {
       const response = await simpleFetch<{
         params: {
           receive_enabled: boolean;
           send_enabled: boolean;
         };
-      }>(rest, "/ibc/apps/transfer/v1/params", {
-        validateStatus: (status) => {
+      }>(rest, '/ibc/apps/transfer/v1/params', {
+        validateStatus: status => {
           return status === 200 || status === 501;
-        },
+        }
       });
 
       return response.status === 200;
-    },
+    }
   },
   {
-    feature: "ibc-transfer",
+    feature: 'ibc-transfer',
     fetch: async (features, _rpc, rest) => {
-      const requestUrl = features.includes("ibc-go")
-        ? "/ibc/apps/transfer/v1/params"
-        : "/ibc/applications/transfer/v1beta1/params";
+      const requestUrl = features.includes('ibc-go')
+        ? '/ibc/apps/transfer/v1/params'
+        : '/ibc/applications/transfer/v1beta1/params';
 
       const result = await simpleFetch<{
         params: {
@@ -72,41 +68,33 @@ export const RecognizableChainFeaturesMethod: {
           send_enabled: boolean;
         };
       }>(rest, requestUrl, {
-        validateStatus: (status) => {
+        validateStatus: status => {
           return status === 200 || status === 501;
-        },
+        }
       });
 
-      return (
-        result.status === 200 &&
-        result.data.params.receive_enabled &&
-        result.data.params.send_enabled
-      );
-    },
+      return result.status === 200 && result.data.params.receive_enabled && result.data.params.send_enabled;
+    }
   },
   {
-    feature: "ibc-pfm",
+    feature: 'ibc-pfm',
     fetch: async (features, _rpc, rest) => {
-      if (features.includes("ibc-go")) {
-        const result = await simpleFetch(rest, "/ibc/apps/router/v1/params", {
-          validateStatus: (status) => {
+      if (features.includes('ibc-go')) {
+        const result = await simpleFetch(rest, '/ibc/apps/router/v1/params', {
+          validateStatus: status => {
             return status === 200 || status === 501;
-          },
+          }
         });
 
         if (result.status === 200) {
           return true;
         }
 
-        const result2 = await simpleFetch(
-          rest,
-          "/ibc/apps/packetforward/v1/params",
-          {
-            validateStatus: (status) => {
-              return status === 200 || status === 501;
-            },
+        const result2 = await simpleFetch(rest, '/ibc/apps/packetforward/v1/params', {
+          validateStatus: status => {
+            return status === 200 || status === 501;
           }
-        );
+        });
 
         if (result2.status === 200) {
           return true;
@@ -114,65 +102,55 @@ export const RecognizableChainFeaturesMethod: {
       }
 
       return false;
-    },
+    }
   },
   {
-    feature: "wasmd_0.24+",
+    feature: 'wasmd_0.24+',
     fetch: async (features, _rpc, rest) => {
-      if (features.includes("cosmwasm")) {
-        const result = await simpleFetch(
-          rest,
-          "/cosmwasm/wasm/v1/contract/test/smart/test",
-          {
-            validateStatus: (status) => {
-              return status === 400 || status === 501;
-            },
+      if (features.includes('cosmwasm')) {
+        const result = await simpleFetch(rest, '/cosmwasm/wasm/v1/contract/test/smart/test', {
+          validateStatus: status => {
+            return status === 400 || status === 501;
           }
-        );
+        });
 
         if (result.status === 400) {
           return true;
         }
       }
       return false;
-    },
+    }
   },
   {
-    feature: "query:/cosmos/bank/v1beta1/spendable_balances",
+    feature: 'query:/cosmos/bank/v1beta1/spendable_balances',
     fetch: async (_features, _rpc, rest) => {
-      const result = await simpleFetch(
-        rest,
-        "/cosmos/bank/v1beta1/spendable_balances/test",
-        {
-          validateStatus: (status) => {
-            return status === 400 || status === 501;
-          },
+      const result = await simpleFetch(rest, '/cosmos/bank/v1beta1/spendable_balances/test', {
+        validateStatus: status => {
+          return status === 400 || status === 501;
         }
-      );
+      });
 
       return result.status === 400;
-    },
+    }
   },
   {
-    feature: "feemarket",
+    feature: 'feemarket',
     fetch: async (_features, _rpc, rest) => {
       const result = await simpleFetch<{
         params: {
           enabled: boolean;
         };
-      }>(rest, "/feemarket/v1/params");
+      }>(rest, '/feemarket/v1/params');
 
       return result.data.params.enabled;
-    },
-  },
+    }
+  }
 ];
 
 /**
  * Indicate the features which keplr can know whether that feature is needed.
  */
-export const RecognizableChainFeatures = RecognizableChainFeaturesMethod.map(
-  (method) => method.feature
-);
+export const RecognizableChainFeatures = RecognizableChainFeaturesMethod.map(method => method.feature);
 
 export const NonRecognizableChainFeatures: string[] = (() => {
   const m: Record<string, boolean | undefined> = {};
@@ -193,15 +171,13 @@ export const NonRecognizableChainFeatures: string[] = (() => {
 })();
 
 // CheckInfo for checking
-export type ChainInfoForCheck = Pick<ChainInfo, "rpc" | "rest" | "features">;
+export type ChainInfoForCheck = Pick<ChainInfo, 'rpc' | 'rest' | 'features'>;
 
 /**
  * Returns features that chain will have to update
  * @param chainInfo
  */
-export async function checkChainFeatures(
-  chainInfo: ChainInfoForCheck
-): Promise<string[]> {
+export async function checkChainFeatures(chainInfo: ChainInfoForCheck): Promise<string[]> {
   const newFeatures: string[] = [];
   const features = chainInfo.features?.slice() ?? [];
 
@@ -216,33 +192,22 @@ export async function checkChainFeatures(
         features.push(method.feature);
       }
     } catch (e) {
-      console.log(
-        `Failed to try to fetch feature (${method.feature}): ${e.message || e}`
-      );
+      console.log(`Failed to try to fetch feature (${method.feature}): ${e.message || e} with rpc ${chainInfo.rpc}`);
     }
   }
 
   return newFeatures;
 }
 
-export async function hasFeature(
-  chainInfo: Readonly<ChainInfoForCheck>,
-  feature: string
-): Promise<boolean> {
+export async function hasFeature(chainInfo: Readonly<ChainInfoForCheck>, feature: string): Promise<boolean> {
   if (chainInfo.features?.includes(feature)) {
     return true;
   }
 
-  const method = RecognizableChainFeaturesMethod.find(
-    (m) => m.feature === feature
-  );
+  const method = RecognizableChainFeaturesMethod.find(m => m.feature === feature);
   if (!method) {
     throw new Error(`${feature} not exist on RecognizableChainFeaturesMethod`);
   }
 
-  return method.fetch(
-    chainInfo.features?.slice() ?? [],
-    chainInfo.rpc,
-    chainInfo.rest
-  );
+  return method.fetch(chainInfo.features?.slice() ?? [], chainInfo.rpc, chainInfo.rest);
 }
