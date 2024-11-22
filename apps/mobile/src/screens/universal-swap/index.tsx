@@ -123,6 +123,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
   const accountEth = accountStore.getAccount(ChainIdEVM.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEVM.TRON);
+  const accountInj = accountStore.getAccount(ChainIdEnum.Injective);
 
   const [sendToAddress, setSendToAddress] = useState(null);
   const [priceSettingModal, setPriceSettingModal] = useState(false);
@@ -279,11 +280,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       orai?: string;
       eth?: string;
       tron?: string;
+      inj?: string;
       tokenReload?: Array<any>;
     },
     customChainInfos?: Array<any>
   ) => {
-    const { orai, eth, tron, tokenReload } = params;
+    const { orai, eth, tron, inj, tokenReload } = params;
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -306,6 +308,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         oraiAddress: orai ?? accountOrai.bech32Address,
         metamaskAddress: eth ?? null,
         tronAddress: tron ?? null,
+        injAddress: inj ?? null,
         cwStargate,
         tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
         customChainInfos: flattenTokens
@@ -333,7 +336,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {
             orai: accountOrai.bech32Address,
             eth: accountEth.ethereumHexAddress,
-            tron: accountTron.base58Address
+            tron: accountTron.base58Address,
+            inj: accountInj.bech32Address
           },
           customChainInfos
         );

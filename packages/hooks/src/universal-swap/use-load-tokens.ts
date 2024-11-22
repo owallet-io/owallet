@@ -13,21 +13,21 @@ import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-comm
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from '@owallet/common';
 import { CWStargate } from '@owallet/common';
 import { uniqBy } from 'lodash';
-import axios from 'axios';
+// import axios from 'axios';
 
-export const getUtxos = async (address: string, baseUrl: string) => {
-  if (!address) throw Error('Address is not empty');
-  if (!baseUrl) throw Error('BaseUrl is not empty');
-  const { data } = await axios({
-    baseURL: baseUrl,
-    method: 'get',
-    url: `/address/${address}/utxo`
-  });
-  return data;
-};
+// export const getUtxos = async (address: string, baseUrl: string) => {
+//   if (!address) throw Error('Address is not empty');
+//   if (!baseUrl) throw Error('BaseUrl is not empty');
+//   const { data } = await axios({
+//     baseURL: baseUrl,
+//     method: 'get',
+//     url: `/address/${address}/utxo`
+//   });
+//   return data;
+// };
 
 const EVM_BALANCE_RETRY_COUNT = 2;
-const COSMOS_BALANCE_RETRY_COUNT = 4;
+// const COSMOS_BALANCE_RETRY_COUNT = 4;
 
 export type CWStargateType = {
   account: any;
@@ -40,6 +40,7 @@ export type LoadTokenParams = {
   metamaskAddress?: string;
   oraiAddress?: string;
   tronAddress?: string;
+  injAddress?: string;
   cwStargate?: CWStargateType;
   tokenReload?: Array<any>;
   customChainInfos?: Array<any>;
@@ -49,7 +50,7 @@ type AmountDetails = { [denom: string]: string };
 async function loadNativeBalance(
   universalSwapStore: any,
   address: string,
-  tokenInfo: { chainId?: string; rpc?: string },
+  tokenInfo: { chainId: string; rpc: string },
   retryCount?: number
 ) {
   if (!address) return;
@@ -70,7 +71,6 @@ async function loadNativeBalance(
       amountDetails, //@ts-ignore
       Object.fromEntries(amountAll.filter(coin => tokenMap[coin.denom]).map(coin => [coin.denom, coin.amount]))
     );
-
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log('error address,', address, err);
@@ -88,7 +88,7 @@ const timer = {};
 
 async function loadTokens(
   universalSwapStore: any,
-  { oraiAddress, metamaskAddress, tronAddress, cwStargate, tokenReload, customChainInfos }: LoadTokenParams
+  { oraiAddress, metamaskAddress, tronAddress, injAddress, cwStargate, tokenReload, customChainInfos }: LoadTokenParams
 ) {
   const customEvmTokens = uniqBy(
     customChainInfos.filter(
@@ -99,6 +99,8 @@ async function loadTokens(
     c => c.denom
   );
 
+  const och = customEvmTokens.filter(cem => cem.denom.includes('pendle'));
+
   if (tokenReload) {
     tokenReload.map(t => {
       if (t.networkType === 'cosmos') {
@@ -107,8 +109,10 @@ async function loadTokens(
           // case get address when keplr ledger not support kawaii
           timer[oraiAddress] = setTimeout(async () => {
             await Promise.all([
-              loadTokensCosmos(universalSwapStore, oraiAddress, tokenReload),
+              loadTokensCosmos(universalSwapStore, injAddress, oraiAddress, tokenReload),
               loadCw20Balance(universalSwapStore, oraiAddress, cwStargate)
+              // different cointype but also require keplr connected by checking oraiAddress
+              // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
             ]);
           }, 500);
         }
@@ -146,8 +150,10 @@ async function loadTokens(
     // case get address when keplr ledger not support kawaii
     timer[oraiAddress] = setTimeout(async () => {
       await Promise.all([
-        loadTokensCosmos(universalSwapStore, oraiAddress, tokenReload),
+        loadTokensCosmos(universalSwapStore, injAddress, oraiAddress, tokenReload),
         loadCw20Balance(universalSwapStore, oraiAddress, cwStargate)
+        // different cointype but also require keplr connected by checking oraiAddress
+        // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
       ]);
     }, 500);
   }
@@ -179,8 +185,9 @@ const getAddress = (addr, prefix: string) => {
   return toBech32(prefix, data);
 };
 
-export const genAddressCosmos = (info, address118) => {
+export const genAddressCosmos = (info, address60, address118) => {
   const mapAddress = {
+    60: address60,
     118: address118
   };
   const addr = mapAddress[info.bip44.coinType || 118];
@@ -188,8 +195,13 @@ export const genAddressCosmos = (info, address118) => {
   return { cosmosAddress };
 };
 
-async function loadTokensCosmos(updateAmounts: any, oraiAddress: string, tokenReload?: Array<any>) {
-  if (!oraiAddress) return;
+async function loadTokensCosmos(
+  updateAmounts: any,
+  injectiveAddress: string,
+  oraiAddress: string,
+  tokenReload?: Array<any>
+) {
+  if (!injectiveAddress || !oraiAddress) return;
   let cosmosInfos = chainInfos.filter(
     chainInfo => chainInfo.networkType === 'cosmos' || chainInfo.bip44.coinType === 118
   );
@@ -203,7 +215,7 @@ async function loadTokensCosmos(updateAmounts: any, oraiAddress: string, tokenRe
   }
 
   for (const chainInfo of cosmosInfos) {
-    const { cosmosAddress } = genAddressCosmos(chainInfo, oraiAddress);
+    const { cosmosAddress } = genAddressCosmos(chainInfo, injectiveAddress, oraiAddress);
 
     loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
   }
@@ -411,6 +423,23 @@ async function loadEvmAmounts(
 
   universalSwapStore.updateAmounts(amountDetails);
 }
+
+// export async function loadKawaiiSubnetAmount(universalSwapStore: any, injAddress: string, tokenReload?: any) {
+//   if (!injAddress) return;
+//   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
+//   try {
+//     loadNativeBalance(universalSwapStore, injAddress, kawaiiInfo);
+
+//     const kwtSubnetAddress = getEvmAddress(injAddress);
+//     const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
+//     //@ts-ignore
+//     let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload));
+
+//     universalSwapStore.updateAmounts(amountDetails);
+//   } catch (err) {
+//     console.log('loadKawaiiSubnetAmount err', err);
+//   }
+// }
 
 export function useLoadTokens(universalSwapStore: any): (params: LoadTokenParams) => Promise<void> {
   return loadTokens.bind(null, universalSwapStore);
