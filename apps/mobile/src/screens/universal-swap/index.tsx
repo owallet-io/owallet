@@ -73,6 +73,7 @@ const useFee = ({
   const [swapFee, setSwapFee] = useState(0);
   const [totalFee, setTotalFee] = useState(0);
   const [bridgeFee, setBidgeFee] = useState(0);
+  const [relayerFee, setRelayerFee] = useState();
 
   const usdPriceShowFrom = (prices?.[originalFromToken?.coinGeckoId] * fromAmountToken).toFixed(6);
   const usdPriceShowTo = (prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount).toFixed(6);
@@ -89,6 +90,8 @@ const useFee = ({
     setBidgeFee(bridgeTokenFee);
 
     const estSwapFee = new BigDecimal(simulateDisplayAmount || 0).mul(fee || 0).toNumber();
+    console.log('relayerFeeAmount', relayerFeeAmount);
+
     setSwapFee(estSwapFee);
     const totalFeeEst =
       new BigDecimal(bridgeTokenFee || 0)
