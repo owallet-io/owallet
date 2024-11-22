@@ -1598,7 +1598,6 @@ export const EmbedChainInfos: ChainInfo[] = [
   // },
 ];
 
-// TODO: 원격으로 변경할 수 있도록 나중에 네트워크에서 이 정보를 가져오는 방식으로 변경될 수 있음
 export const ChainIdentifierToTxExplorerMap: Record<
   string,
   { name: string; txUrl: string } | undefined
@@ -1762,12 +1761,10 @@ export const PrivilegedOrigins: string[] = [
 ];
 
 export const CommunityChainInfoRepo = {
-  organizationName: "chainapsis",
+  organizationName: "owallet-io",
   repoName: "keplr-chain-registry",
   branchName: "main",
-  alternativeURL: process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    ? process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    : undefined,
+  alternativeURL: undefined,
 };
 
 export const APR_API_URL =

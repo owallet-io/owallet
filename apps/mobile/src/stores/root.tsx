@@ -151,13 +151,13 @@ export class RootStore {
   public readonly ibcCurrencyRegistrar: IBCCurrencyRegistrar;
   public readonly lsmCurrencyRegistrar: LSMCurrencyRegistrar;
   public readonly gravityBridgeCurrencyRegistrar: GravityBridgeCurrencyRegistrar;
-  public readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar;
+  // public readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar;
   // public readonly scamProposalStore: ScamProposalStore;
   public readonly modalStore: ModalStore;
   public readonly keychainStore: KeychainStore;
   public readonly walletConnectStore: WalletConnectStore;
   public readonly deepLinkStore: DeepLinkStore;
-  public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
+  // public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
   public readonly browserStore: BrowserStore;
 
   constructor() {
@@ -243,8 +243,8 @@ export class RootStore {
       // CosmosGovernanceQueries.use(),
       // CosmosGovernanceQueriesV1.use(),
       EthereumQueries.use({
-        coingeckoAPIBaseURL: urlTxHistory,
-        coingeckoAPIURI: "v1/token-info/{coingeckoChainId}/{contractAddress}",
+        coingeckoAPIBaseURL: "",
+        coingeckoAPIURI: "",
       }),
       OasisQueries.use(),
       TrxQueries.use(),
@@ -261,12 +261,12 @@ export class RootStore {
     //     this.swapUsageQueries,
     //     SwapVenue,
     // );
-    this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
-      new AsyncKVStore("store_erc20_currency_registrar"),
-      24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
+    //   new AsyncKVStore("store_erc20_currency_registrar"),
+    //   24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     this.accountStore = new AccountStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -490,14 +490,14 @@ export class RootStore {
       this.priceStore
     );
 
-    this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
-      new AsyncKVStore("store_token_factory_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
-      process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
+    //   new AsyncKVStore("store_token_factory_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
+    //   process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     this.ibcCurrencyRegistrar = new IBCCurrencyRegistrar(
       new AsyncKVStore("store_ibc_curreny_registrar"),
       7 * 24 * 3600 * 1000,
@@ -505,18 +505,18 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
-    this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
-      new AsyncKVStore("store_lsm_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
-    this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegistrar(
-      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
+    //   new AsyncKVStore("store_lsm_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
+    // this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegistrar(
+    //   new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     // this.axelarEVMBridgeCurrencyRegistrar = new AxelarEVMBridgeCurrencyRegistrar(
     //   new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
     //   7 * 24 * 3600 * 1000,
