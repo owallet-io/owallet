@@ -87,6 +87,7 @@ const useEstimateAmount = (
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
 
+  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
   const [isAvgSimulate, setIsAvgSimulate] = useState({
     tokenFrom: originalFromToken.coinGeckoId,
     tokenTo: originalToToken.coinGeckoId,
@@ -106,7 +107,7 @@ const useEstimateAmount = (
 
   const fiat = priceStore.defaultVsCurrency;
 
-  const price = priceStore.getPrice(chainStore.current.stakeCurrency.coinGeckoId, fiat);
+  const price = priceStore.getPrice(chainInfo?.stakeCurrency?.coinGeckoId, fiat);
 
   const totalRelayerFee = Number(relayerFeeDisplay.toString()) * price;
 
