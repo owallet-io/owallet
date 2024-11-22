@@ -28,13 +28,14 @@ import { Card } from "components/common/card";
 import { Button } from "components/common/button";
 import { toast } from "react-toastify";
 import {
+  ComputeBudgetProgram,
   Connection,
   PublicKey,
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
 import { createMemoInstruction } from "@solana/spl-memo";
-import { CoinPretty, Dec } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { CoinPrimitive } from "@owallet/stores";
 import {
   createTransferInstruction,
@@ -161,14 +162,6 @@ export const SendSolanaPage: FunctionComponent<{
   useEffect(() => {
     (async () => {
       try {
-        console.log(
-          sendConfigs.recipientConfig.recipient,
-          "sendConfigs.recipientConfig.recipient"
-        );
-        console.log(
-          sendConfigs.amountConfig.amount,
-          "sendConfigs.amountConfig.amount"
-        );
         if (!txStateIsValid) return;
         const connection = new Connection(chainStore.current.rpc, "confirmed");
         const fromPublicKey = new PublicKey(address);
@@ -227,8 +220,33 @@ export const SendSolanaPage: FunctionComponent<{
         if (feeInLamports === null) {
           throw new Error("Unable to estimate the fee");
         }
+        const simulationResult = await connection.simulateTransaction(
+          transaction
+        );
+        if (!simulationResult.value.unitsConsumed)
+          throw new Error("Unable to estimate the fee");
+        const DefaultUnitLimit = new Dec(200_000);
+        const unitsConsumed = new Dec(simulationResult.value.unitsConsumed);
+        const units = unitsConsumed.lte(DefaultUnitLimit)
+          ? DefaultUnitLimit
+          : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
+        const microLamports = new Dec(50000);
+        transaction.add(
+          // Request a specific number of compute units
+          ComputeBudgetProgram.setComputeUnitLimit({
+            units: Number(units.roundUp().toString()),
+          }),
+          // Attach a priority fee (in lamports)
+          ComputeBudgetProgram.setComputeUnitPrice({
+            microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
+          })
+        );
+        const baseFee = new Dec(feeInLamports.value);
+        const PriorityFee = units
+          .mul(microLamports)
+          .quoTruncate(DecUtils.getTenExponentNInPrecisionRange(6));
         const fee = {
-          amount: `${feeInLamports.value}`,
+          amount: baseFee.add(PriorityFee).roundUp().toString(),
           denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom,
         } as CoinPrimitive;
         sendConfigs.feeConfig.setManualFee(fee);
