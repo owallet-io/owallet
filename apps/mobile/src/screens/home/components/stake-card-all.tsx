@@ -1018,23 +1018,25 @@ export const StakeCardAll = observer(({}) => {
                   <OWIcon name={'tdesignchevron-up'} size={16} color={colors['neutral-icon-on-light']} />
                 )}
               </TouchableOpacity>
-              <OWButton
-                style={[
-                  styles['btn-claim'],
-                  {
-                    backgroundColor: colors['primary-surface-default']
-                  }
-                ]}
-                textStyle={{
-                  fontSize: 15,
-                  fontWeight: '600',
-                  color: colors['neutral-text-action-on-dark-bg']
-                }}
-                label="Claim all"
-                disabled={claimAllDisabled}
-                loading={claimAllIsLoading}
-                onPress={claimAll}
-              />
+              {keyRingStore.selectedKeyInfo.type !== 'ledger' ? (
+                <OWButton
+                  style={[
+                    styles['btn-claim'],
+                    {
+                      backgroundColor: colors['primary-surface-default']
+                    }
+                  ]}
+                  textStyle={{
+                    fontSize: 15,
+                    fontWeight: '600',
+                    color: colors['neutral-text-action-on-dark-bg']
+                  }}
+                  label="Claim all"
+                  disabled={claimAllDisabled || keyRingStore.selectedKeyInfo.type === 'ledger'}
+                  loading={claimAllIsLoading}
+                  onPress={claimAll}
+                />
+              ) : null}
             </View>
             <View>
               {viewTokens.map((viewToken, index) => {
