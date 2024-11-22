@@ -46,8 +46,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo> implements IChainInf
   }
 
   protected addUnknownDenomsImpl(coinMinimalDenoms: string[], reaction: boolean) {
-    console.log('coinMinimalDenoms', coinMinimalDenoms);
-
     for (const coinMinimalDenom of coinMinimalDenoms) {
       let found = false;
       const prior = this.unknownDenomMap.get(coinMinimalDenom);
@@ -110,9 +108,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo> implements IChainInf
             if (!generator.done) {
               this.registrationInProgressCurrencyMap.set(coinMinimalDenom, true);
             }
-            if (this.chainId === 'eip155:56' || this.chainId === 'eip155:1') {
-              console.log('this.currency 3', generator, this.chainId, coinMinimalDenom, currency);
-            }
+
             if (currency) {
               const index = this.unknownDenoms.findIndex(denom => denom.denom === currency.coinMinimalDenom);
               let prev:
