@@ -20,7 +20,7 @@ import { SCREENS } from '@common/constants';
 import { RecipientInput } from '@components/input/reciepient-input';
 import { useFocusAfterRouting } from '@hooks/use-focus';
 
-export const SendEvmNewScreen: FunctionComponent<{
+export const SendEvmScreen: FunctionComponent<{
   chainId: string;
   coinMinimalDenom: string;
   recipientAddress: string;
@@ -270,8 +270,6 @@ export const SendEvmNewScreen: FunctionComponent<{
       }
     }
   };
-
-  console.log('balance evm', balance?.balance);
 
   return (
     <PageWithBottom

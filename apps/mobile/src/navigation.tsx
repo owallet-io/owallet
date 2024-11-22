@@ -36,9 +36,7 @@ import { NewPincodeScreen } from './screens/register/register-pincode';
 import { HeaderRightButton } from './components/header';
 import { HeaderAddIcon } from './components/header/icon';
 import { SettingSelectAccountScreen } from './screens/setting/screens/select-account';
-import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-data';
 import { OWalletVersionScreen } from './screens/setting/screens/version';
-
 import { AddAddressBookScreen, AddressBookScreen } from './screens/setting/screens/address-book';
 import useHeaderOptions from './hooks/use-header';
 import { ManageWalletConnectScreen } from '@screens/setting/screens/manage-walletconnect/ManageWalletConnectScreen';
@@ -47,15 +45,13 @@ import OWButtonIcon from '@components/button/ow-button-icon';
 import { AddChainScreen } from '@screens/setting/screens/manage-chains/add-network';
 import LottieView from 'lottie-react-native';
 import { metrics } from './themes';
-import { ChainIdEnum, EmbedChainInfos } from '@owallet/common';
+import { ChainIdEnum } from '@owallet/common';
 import { ConnectLedgerScreen } from '@screens/register/connect-ledger';
 import { ConnectHardwareWalletScreen } from '@screens/register/connect-hardware';
 import { FinalizeKeyScreen } from '@screens/register/finalize-key';
-import { EnableChainsScreen } from '@screens/register/enable-chains';
-import { WelcomeScreen } from '@screens/register/welcome';
+
 import { NewMnemonicScreen } from '@screens/register/new-mnemonic';
 import { VerifyMnemonicScreen } from '@screens/register/verify-mnemonic';
-import { SendEvmNewScreen } from './screens/send/send-evm';
 import { RecoverMnemonicScreen } from '@screens/register/recover-mnemonic';
 import { BackupMnemonicScreen } from '@screens/register/backup-mnemonic';
 

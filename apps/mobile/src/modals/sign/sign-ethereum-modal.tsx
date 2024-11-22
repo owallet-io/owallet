@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { SignEthereumInteractionStore } from "@owallet/stores-core";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { FormattedMessage, useIntl } from "react-intl";
-import { useStyle } from "../../styles";
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { SignEthereumInteractionStore } from '@owallet/stores-core';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useStyle } from '../../styles';
 import {
   useAmountConfig,
   useFeeConfig,
@@ -11,47 +11,44 @@ import {
   useGasSimulator,
   useSenderConfig,
   useTxConfigsValidate,
-  useZeroAllowedGasConfig,
-} from "@owallet/hooks";
-import { Column, Columns } from "../../components/column";
-import { Gutter } from "../../components/gutter";
-import { Box } from "../../components/box";
-import { XAxis } from "../../components/axis";
-import { CloseIcon } from "../../components/icon";
-import {
-  ScrollView,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
-import { UnsignedTransaction } from "@ethersproject/transactions";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
-import { Buffer } from "buffer/";
-import { registerModal } from "@src/modals/base";
-import { defaultRegistry } from "@src/modals/sign/cosmos/message-registry";
-import { OWButton } from "@components/button";
-import OWText from "@components/text/ow-text";
-import OWIcon from "@components/ow-icon/ow-icon";
-import { AsyncKVStore } from "@src/common";
+  useZeroAllowedGasConfig
+} from '@owallet/hooks';
+import { Column, Columns } from '../../components/column';
+import { Gutter } from '../../components/gutter';
+import { Box } from '../../components/box';
+import { XAxis } from '../../components/axis';
+import { CloseIcon } from '../../components/icon';
+import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { UnsignedTransaction } from '@ethersproject/transactions';
+import { CoinPretty, Dec, Int } from '@owallet/unit';
+import { Buffer } from 'buffer/';
+import { registerModal } from '@src/modals/base';
+import { defaultRegistry } from '@src/modals/sign/cosmos/message-registry';
+import { OWButton } from '@components/button';
+import OWText from '@components/text/ow-text';
+import OWIcon from '@components/ow-icon/ow-icon';
+import { AsyncKVStore } from '@src/common';
 // import { EthSignType } from '@owallet/types';
-import Web3 from "web3";
-import { useTheme } from "@src/themes/theme-provider";
-import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
-import OWButtonGroup from "@components/button/OWButtonGroup";
-import { FeeControl } from "@components/input/fee-control";
-import { OWalletError } from "@owallet/router";
-import { LedgerGuideBox } from "@components/guide-box/ledger-guide-box";
-import { ErrModuleLedgerSign } from "@src/modals/sign/util/ledger-types";
-import { handleEthereumPreSignByLedger } from "@src/modals/sign/util/handle-eth-sign";
-import { useLedgerBLE } from "@src/providers/ledger-ble";
+import Web3 from 'web3';
+import { useTheme } from '@src/themes/theme-provider';
+import WrapViewModal from '@src/modals/wrap/wrap-view-modal';
+import OWButtonGroup from '@components/button/OWButtonGroup';
+import { FeeControl } from '@components/input/fee-control';
+import { OWalletError } from '@owallet/router';
+import { LedgerGuideBox } from '@components/guide-box/ledger-guide-box';
+import { ErrModuleLedgerSign } from '@src/modals/sign/util/ledger-types';
+import { handleEthereumPreSignByLedger } from '@src/modals/sign/util/handle-eth-sign';
+import { useLedgerBLE } from '@src/providers/ledger-ble';
 
 const EthSignType = {
-  MESSAGE: "message",
-  TRANSACTION: "transaction",
-  EIP712: "eip-712",
+  MESSAGE: 'message',
+  TRANSACTION: 'transaction',
+  EIP712: 'eip-712'
 };
 
 export const SignEthereumModal = registerModal(
   observer<{
-    interactionData: NonNullable<SignEthereumInteractionStore["waitingData"]>;
+    interactionData: NonNullable<SignEthereumInteractionStore['waitingData']>;
   }>(({ interactionData }) => {
     const {
       chainStore,
@@ -59,7 +56,7 @@ export const SignEthereumModal = registerModal(
       queriesStore,
       uiConfigStore,
       accountStore,
-      ethereumAccountStore,
+      ethereumAccountStore
     } = useStore();
 
     const { colors } = useTheme();
@@ -69,121 +66,87 @@ export const SignEthereumModal = registerModal(
 
     const { message, signType, signer, chainId } = interactionData.data;
     const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
-    const [ledgerInteractingError, setLedgerInteractingError] = useState<
-      Error | undefined
-    >(undefined);
+    const [ledgerInteractingError, setLedgerInteractingError] = useState<Error | undefined>(undefined);
     const account = accountStore.getAccount(chainId);
     const ethereumAccount = ethereumAccountStore.getAccount(chainId);
     const chainInfo = chainStore.getChain(chainId);
 
     const senderConfig = useSenderConfig(chainStore, chainId, signer);
     const gasConfig = useZeroAllowedGasConfig(chainStore, chainId, 0);
-    const amountConfig = useAmountConfig(
-      chainStore,
-      queriesStore,
-      chainId,
-      senderConfig
-    );
-    const feeConfig = useFeeConfig(
-      chainStore,
-      queriesStore,
-      chainId,
-      senderConfig,
-      amountConfig,
-      gasConfig
-    );
+    const amountConfig = useAmountConfig(chainStore, queriesStore, chainId, senderConfig);
+    const feeConfig = useFeeConfig(chainStore, queriesStore, chainId, senderConfig, amountConfig, gasConfig);
 
-    const [signingDataBuff, setSigningDataBuff] = useState(
-      Buffer.from(message)
-    );
+    const [signingDataBuff, setSigningDataBuff] = useState(Buffer.from(message));
     const isTxSigning = signType === EthSignType.TRANSACTION;
 
     const gasSimulator = useGasSimulator(
-      new AsyncKVStore("gas-simulator.ethereum.sign"),
+      new AsyncKVStore('gas-simulator.ethereum.sign'),
       chainStore,
       chainInfo.chainId,
       gasConfig,
       feeConfig,
-      "evm/native",
+      'evm/native',
       () => {
         if (!isTxSigning) {
-          throw new Error(
-            "Gas simulator is only working for transaction signing"
-          );
+          throw new Error('Gas simulator is only working for transaction signing');
         }
 
         if (chainInfo.evm == null) {
-          throw new Error("Gas simulator is only working with EVM info");
+          throw new Error('Gas simulator is only working with EVM info');
         }
 
-        const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
+        const unsignedTx = JSON.parse(Buffer.from(message).toString('utf8'));
 
         return {
           simulate: () =>
             ethereumAccount.simulateGas(account.ethereumHexAddress, {
               to: unsignedTx.to,
               data: unsignedTx.data,
-              value: unsignedTx.value,
-            }),
+              value: unsignedTx.value
+            })
         };
       }
     );
 
     const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = (() => {
       if (isTxSigning) {
-        const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } =
-          feeConfig.getEIP1559TxFees(
-            feeConfig.type === "manual"
-              ? uiConfigStore.lastFeeOption || "average"
-              : feeConfig.type
-          );
+        const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = feeConfig.getEIP1559TxFees(
+          feeConfig.type === 'manual' ? uiConfigStore.lastFeeOption || 'average' : feeConfig.type
+        );
 
         return maxFeePerGas && maxPriorityFeePerGas
           ? {
-              maxFeePerGas: `0x${BigInt(
-                maxFeePerGas.truncate().toString()
-              ).toString(16)}`,
-              maxPriorityFeePerGas: `0x${BigInt(
-                maxPriorityFeePerGas.truncate().toString()
-              ).toString(16)}`,
-              gasPrice: undefined,
+              maxFeePerGas: `0x${BigInt(maxFeePerGas.truncate().toString()).toString(16)}`,
+              maxPriorityFeePerGas: `0x${BigInt(maxPriorityFeePerGas.truncate().toString()).toString(16)}`,
+              gasPrice: undefined
             }
           : {
               maxFeePerGas: undefined,
               maxPriorityFeePerGas: undefined,
-              gasPrice: `0x${BigInt(
-                gasPrice?.truncate().toString() ?? 0
-              ).toString(16)}`,
+              gasPrice: `0x${BigInt(gasPrice?.truncate().toString() ?? 0).toString(16)}`
             };
       }
 
       return {
         maxFeePerGas: undefined,
         maxPriorityFeePerGas: undefined,
-        gasPrice: undefined,
+        gasPrice: undefined
       };
     })();
 
     useEffect(() => {
       if (isTxSigning) {
-        const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
+        const unsignedTx = JSON.parse(Buffer.from(message).toString('utf8'));
 
-        const gasLimitFromTx = BigInt(
-          unsignedTx.gasLimit ?? unsignedTx.gas ?? 0
-        );
+        const gasLimitFromTx = BigInt(unsignedTx.gasLimit ?? unsignedTx.gas ?? 0);
         if (gasLimitFromTx > 0) {
           gasConfig.setValue(gasLimitFromTx.toString());
 
-          const gasPriceFromTx = BigInt(
-            unsignedTx.maxFeePerGas ?? unsignedTx.gasPrice ?? 0
-          );
+          const gasPriceFromTx = BigInt(unsignedTx.maxFeePerGas ?? unsignedTx.gasPrice ?? 0);
 
           if (gasPriceFromTx > 0) {
             feeConfig.setFee(
-              new CoinPretty(
-                chainInfo.currencies[0],
-                new Dec(gasConfig.gas).mul(new Dec(gasPriceFromTx))
-              )
+              new CoinPretty(chainInfo.currencies[0], new Dec(gasConfig.gas).mul(new Dec(gasPriceFromTx)))
             );
           }
         }
@@ -192,46 +155,39 @@ export const SignEthereumModal = registerModal(
     }, []);
 
     useEffect(() => {
-      if (isTxSigning && !interactionData.isInternal) {
-        const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
+      if (
+        isTxSigning
+        // && !interactionData.isInternal
+      ) {
+        const unsignedTx = JSON.parse(Buffer.from(message).toString('utf8'));
+        // to check if tx is from send internal
+        if (!unsignedTx.gasPrice) {
+          if (gasConfig.gas > 0) {
+            unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
 
-        if (gasConfig.gas > 0) {
-          unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
+            if (!unsignedTx.maxFeePerGas && !unsignedTx.gasPrice) {
+              unsignedTx.maxFeePerGas = `0x${new Int(feeConfig.getFeePrimitive()[0].amount)
+                .div(new Int(gasConfig.gas))
+                .toBigNumber()
+                .toString(16)}`;
+            }
+          }
 
-          if (!unsignedTx.maxFeePerGas && !unsignedTx.gasPrice) {
-            unsignedTx.maxFeePerGas = `0x${new Int(
-              feeConfig.getFeePrimitive()[0].amount
-            )
-              .div(new Int(gasConfig.gas))
-              .toBigNumber()
-              .toString(16)}`;
+          if (!unsignedTx.maxPriorityFeePerGas && !unsignedTx.gasPrice && maxPriorityFeePerGas) {
+            unsignedTx.maxPriorityFeePerGas = unsignedTx.maxPriorityFeePerGas ?? maxPriorityFeePerGas;
+          }
+
+          if (!unsignedTx.gasPrice && !unsignedTx.maxFeePerGas && !unsignedTx.maxPriorityFeePerGas && gasPrice) {
+            unsignedTx.gasPrice = gasPrice;
+          }
+
+          if (!unsignedTx.maxPriorityFeePerGas) {
+            // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
+            unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei('1', 'gwei');
           }
         }
 
-        if (
-          !unsignedTx.maxPriorityFeePerGas &&
-          !unsignedTx.gasPrice &&
-          maxPriorityFeePerGas
-        ) {
-          unsignedTx.maxPriorityFeePerGas =
-            unsignedTx.maxPriorityFeePerGas ?? maxPriorityFeePerGas;
-        }
-
-        if (
-          !unsignedTx.gasPrice &&
-          !unsignedTx.maxFeePerGas &&
-          !unsignedTx.maxPriorityFeePerGas &&
-          gasPrice
-        ) {
-          unsignedTx.gasPrice = gasPrice;
-        }
-
-        if (!unsignedTx.maxPriorityFeePerGas) {
-          // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
-          unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei("1", "gwei");
-        }
-
-        setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), "utf8"));
+        setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), 'utf8'));
       }
     }, [
       gasConfig.gas,
@@ -243,24 +199,22 @@ export const SignEthereumModal = registerModal(
       gasSimulator,
       gasConfig,
       feeConfig,
-      interactionData.isInternal,
+      interactionData.isInternal
     ]);
 
     useEffect(() => {
       (async () => {
-        if (
-          isTxSigning &&
-          chainInfo.features.includes("op-stack-l1-data-fee")
-        ) {
-          const { to, gasLimit, value, data, chainId }: UnsignedTransaction =
-            JSON.parse(Buffer.from(message).toString("utf8"));
+        if (isTxSigning && chainInfo.features.includes('op-stack-l1-data-fee')) {
+          const { to, gasLimit, value, data, chainId }: UnsignedTransaction = JSON.parse(
+            Buffer.from(message).toString('utf8')
+          );
 
           const l1DataFee = await ethereumAccount.simulateOpStackL1Fee({
             to,
             gasLimit,
             value,
             data,
-            chainId,
+            chainId
           });
           feeConfig.setL1DataFee(new Dec(BigInt(l1DataFee)));
         }
@@ -283,34 +237,26 @@ export const SignEthereumModal = registerModal(
         case EthSignType.MESSAGE:
           // If the message is 32 bytes, it's probably a hash.
           if (signingDataBuff.length === 32) {
-            return signingDataBuff.toString("hex");
+            return signingDataBuff.toString('hex');
           } else {
             const text = (() => {
-              const string = signingDataBuff.toString("utf8");
-              if (string.startsWith("0x")) {
-                return Buffer.from(string.slice(2), "hex").toString("utf8");
+              const string = signingDataBuff.toString('utf8');
+              if (string.startsWith('0x')) {
+                return Buffer.from(string.slice(2), 'hex').toString('utf8');
               }
 
               return string;
             })();
 
             // If the text contains RTL mark, escape it.
-            return text.replace(/\u202E/giu, "\\u202E");
+            return text.replace(/\u202E/giu, '\\u202E');
           }
         case EthSignType.TRANSACTION:
-          return JSON.stringify(
-            JSON.parse(signingDataBuff.toString("utf8")),
-            null,
-            2
-          );
+          return JSON.stringify(JSON.parse(signingDataBuff.toString('utf8')), null, 2);
         case EthSignType.EIP712:
-          return JSON.stringify(
-            JSON.parse(signingDataBuff.toString()),
-            null,
-            2
-          );
+          return JSON.stringify(JSON.parse(signingDataBuff.toString()), null, 2);
         default:
-          return signingDataBuff.toString("hex");
+          return signingDataBuff.toString('hex');
       }
     }, [signingDataBuff, signType]);
     const ledgerBLE = useLedgerBLE();
@@ -319,7 +265,7 @@ export const SignEthereumModal = registerModal(
     const approve = async () => {
       try {
         let signature;
-        if (interactionData.data.keyType === "ledger") {
+        if (interactionData.data.keyType === 'ledger') {
           setIsLedgerInteracting(true);
           setLedgerInteractingError(undefined);
           signature = await handleEthereumPreSignByLedger(
@@ -336,7 +282,7 @@ export const SignEthereumModal = registerModal(
             // noop
           },
           {
-            preDelay: 200,
+            preDelay: 200
           }
         );
       } catch (e) {
@@ -357,43 +303,28 @@ export const SignEthereumModal = registerModal(
     return (
       <WrapViewModal
         title={intl.formatMessage({
-          id: isTxSigning
-            ? "page.sign.ethereum.tx.title"
-            : "page.sign.ethereum.title",
+          id: isTxSigning ? 'page.sign.ethereum.tx.title' : 'page.sign.ethereum.title'
         })}
       >
-        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
+        <Box style={style.flatten(['padding-12', 'padding-top-0'])}>
           <Gutter size={24} />
 
           <Columns sum={1} alignY="center">
-            <OWText
-              color={colors["neutral-text-body"]}
-              style={style.flatten(["h5"])}
-            >
+            <OWText color={colors['neutral-text-body']} style={style.flatten(['h5'])}>
               <FormattedMessage id="page.sign.ethereum.tx.summary" />
             </OWText>
 
             <Column weight={1} />
 
-            <ViewDataButton
-              isViewData={isViewData}
-              setIsViewData={setIsViewData}
-            />
+            <ViewDataButton isViewData={isViewData} setIsViewData={setIsViewData} />
           </Columns>
 
           <Gutter size={8} />
 
           {isViewData ? (
-            <Box
-              maxHeight={128}
-              backgroundColor={colors["neutral-surface-bg"]}
-              padding={12}
-              borderRadius={6}
-            >
+            <Box maxHeight={128} backgroundColor={colors['neutral-surface-bg']} padding={12} borderRadius={6}>
               <ScrollView persistentScrollbar={true}>
-                <OWText style={style.flatten(["body3"])}>
-                  {signingDataText}
-                </OWText>
+                <OWText style={style.flatten(['body3'])}>{signingDataText}</OWText>
               </ScrollView>
             </Box>
           ) : (
@@ -401,16 +332,14 @@ export const SignEthereumModal = registerModal(
               padding={12}
               minHeight={128}
               maxHeight={240}
-              backgroundColor={colors["neutral-surface-bg"]}
+              backgroundColor={colors['neutral-surface-bg']}
               borderRadius={6}
             >
               {
                 //@ts-ignore
                 defaultRegistry.render(
                   interactionData.data.chainId,
-                  JSON.parse(
-                    Buffer.from(interactionData.data.message).toString()
-                  ) as UnsignedTransaction
+                  JSON.parse(Buffer.from(interactionData.data.message).toString()) as UnsignedTransaction
                 ).content
               }
             </Box>
@@ -427,7 +356,7 @@ export const SignEthereumModal = registerModal(
           <LedgerGuideBox
             data={{
               keyInsensitive: interactionData.data.keyInsensitive,
-              isEthereum: true,
+              isEthereum: true
             }}
             isLedgerInteracting={isLedgerInteracting}
             ledgerInteractingError={ledgerInteractingError}
@@ -436,29 +365,22 @@ export const SignEthereumModal = registerModal(
           <XAxis>
             <OWButton
               size="large"
-              label={intl.formatMessage({ id: "button.reject" })}
+              label={intl.formatMessage({ id: 'button.reject' })}
               type="secondary"
-              style={{ flex: 1, width: "100%" }}
+              style={{ flex: 1, width: '100%' }}
               onPress={async () => {
-                await signEthereumInteractionStore.rejectWithProceedNext(
-                  interactionData.id,
-                  () => {}
-                );
+                await signEthereumInteractionStore.rejectWithProceedNext(interactionData.id, () => {});
               }}
             />
 
             <Gutter size={16} />
 
             <OWButton
-              type={"primary"}
+              type={'primary'}
               size="large"
-              label={intl.formatMessage({ id: "button.approve" })}
-              style={{ flex: 1, width: "100%" }}
-              loading={
-                signEthereumInteractionStore.isObsoleteInteraction(
-                  interactionData.id
-                ) || isLedgerInteracting
-              }
+              label={intl.formatMessage({ id: 'button.approve' })}
+              style={{ flex: 1, width: '100%' }}
+              loading={signEthereumInteractionStore.isObsoleteInteraction(interactionData.id) || isLedgerInteracting}
               onPress={approve}
             />
           </XAxis>
@@ -482,21 +404,14 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <OWText
-          color={colors["neutral-text-body"]}
-          style={style.flatten(["text-button2"])}
-        >
+        <OWText color={colors['neutral-text-body']} style={style.flatten(['text-button2'])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
         </OWText>
 
         {isViewData ? (
-          <CloseIcon size={12} color={colors["neutral-text-body"]} />
+          <CloseIcon size={12} color={colors['neutral-text-body']} />
         ) : (
-          <OWIcon
-            size={12}
-            name={"tdesignbrackets"}
-            color={colors["neutral-text-body"]}
-          />
+          <OWIcon size={12} name={'tdesignbrackets'} color={colors['neutral-text-body']} />
         )}
       </XAxis>
     </TouchableWithoutFeedback>

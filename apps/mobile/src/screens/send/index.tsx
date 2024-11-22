@@ -10,7 +10,7 @@ import { goBack } from '@src/router/root';
 import { OWHeaderTitle } from '@components/header';
 import { DenomHelper } from '@owallet/common';
 import { capitalizedText } from '@utils/helper';
-import { SendEvmNewScreen } from '@src/screens/send/send-evm';
+import { SendEvmScreen } from '@src/screens/send/send-evm';
 
 export const SendScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -94,7 +94,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   }
   if (chainId?.includes('eip155')) {
     return (
-      <SendEvmNewScreen
+      <SendEvmScreen
         setSelectedKey={setSelectedKey}
         chainId={chainId}
         coinMinimalDenom={coinMinimalDenom}
