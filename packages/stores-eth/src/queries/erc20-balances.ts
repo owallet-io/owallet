@@ -186,14 +186,19 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
       // 4. Fetch token metadata in bulk
       API.getMultipleTokenInfo({ tokenAddresses })
         .then((tokenInfos) => {
+          console.log(tokenInfos, "tokenInfos");
           // 5. Map token metadata to currencies
-          const currencyInfo = tokenInfos.map((item) => ({
-            coinImageUrl: item.imgUrl,
-            coinDenom: item.abbr,
-            coinGeckoId: item.coingeckoId,
-            coinDecimals: item.decimal,
-            coinMinimalDenom: `erc20:${item.contractAddress}`,
-          }));
+          const currencyInfo = tokenInfos
+            .filter(
+              ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null
+            )
+            .map((item) => ({
+              coinImageUrl: item.imgUrl,
+              coinDenom: item.abbr,
+              coinGeckoId: item.coingeckoId,
+              coinDecimals: item.decimal,
+              coinMinimalDenom: `erc20:${item.contractAddress}`,
+            }));
           if (currencyInfo) {
             chainInfo.addCurrencies(...currencyInfo);
           }
