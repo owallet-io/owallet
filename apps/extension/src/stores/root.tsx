@@ -23,6 +23,7 @@ import {
   getEthereumFromWindow,
   getTronWebFromWindow,
   getBitcoinFromWindow,
+  getSolanaFromWindow,
   QueriesWrappedSvm,
 } from "@owallet/stores";
 import {
@@ -230,6 +231,7 @@ export class RootStore {
           getEthereum: getEthereumFromWindow,
           getTronWeb: getTronWebFromWindow,
           getBitcoin: getBitcoinFromWindow,
+          getSolana: getSolanaFromWindow,
         },
         chainOpts,
       }

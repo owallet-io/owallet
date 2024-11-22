@@ -135,6 +135,10 @@ export const InfoAccountCard: FC<{
               history.push("/send-btc");
               return;
             }
+            // if (chainStore.current.chainId.includes("solana")) {
+            //     history.push("/send-solana");
+            //     return;
+            // }
             if (chainStore.current.networkType === "evm") {
               history.push("/send-evm");
               return;

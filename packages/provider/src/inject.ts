@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   ChainInfo,
   OWallet,
@@ -18,6 +19,7 @@ import {
   // Oasis as IOasis,
   BitcoinMode,
   SettledResponses,
+  Solana as ISolana,
 } from "@owallet/types";
 import { Result, JSONUint8Array } from "@owallet/router";
 import {
@@ -39,6 +41,7 @@ import {
   NAMESPACE_BITCOIN,
   NAMESPACE_ETHEREUM,
   NAMESPACE_OASIS,
+  NAMESPACE_SOLANA,
   NAMESPACE_TRONWEB,
 } from "./constants";
 import { SignEthereumTypedDataObject } from "@owallet/types/build/typedMessage";
@@ -49,7 +52,7 @@ export interface ProxyRequest {
   type: "proxy-request" | "owallet-proxy-request";
   id: string;
   namespace: string;
-  method: keyof OWallet | Ethereum | string;
+  method: keyof OWallet | Ethereum | string | ISolana;
   args: any[];
 }
 
@@ -1059,6 +1062,165 @@ export class InjectedBitcoin implements Bitcoin {
   ): Promise<{ rawTxHex: string }> {
     return await this.requestMethod("signAndBroadcast", [chainId, data]);
   }
+}
+export class InjectedSolana implements ISolana {
+  static startProxy(
+    solana: ISolana,
+    eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) =>
+        window.addEventListener("message", fn),
+      postMessage: (message) =>
+        window.postMessage(message, window.location.origin),
+    },
+    parseMessage?: (message: any) => any
+  ) {
+    // listen method when inject send to
+    eventListener.addMessageListener(async (e: MessageEvent) => {
+      const message: ProxyRequest = parseMessage
+        ? parseMessage(e.data)
+        : e.data;
+
+      // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+
+      // filter proxy-request by namespace
+      if (
+        !message ||
+        message.type !== NAMESPACE_SOLANA + "proxy-request" ||
+        message.namespace !== NAMESPACE_SOLANA
+      ) {
+        return;
+      }
+
+      try {
+        if (!message.id) {
+          throw new Error("Empty id");
+        }
+
+        if (message.method === "version") {
+          throw new Error("Version is not function");
+        }
+
+        if (message.method === "mode") {
+          throw new Error("Mode is not function");
+        }
+
+        if (
+          !solana[message.method as keyof ISolana] ||
+          typeof solana[message.method as keyof ISolana] !== "function"
+        ) {
+          throw new Error(`Invalid method: ${message.method}`);
+        }
+
+        const result = await solana[message.method as any](
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          ...JSONUint8Array.unwrap(message.args)
+        );
+
+        const proxyResponse: ProxyRequestResponse = {
+          type: "proxy-request-response",
+          namespace: NAMESPACE_SOLANA,
+          id: message.id,
+          result: {
+            return: JSONUint8Array.wrap(result),
+          },
+        };
+
+        eventListener.postMessage(proxyResponse);
+      } catch (e) {
+        const proxyResponse: ProxyRequestResponse = {
+          type: "proxy-request-response",
+          namespace: NAMESPACE_SOLANA,
+          id: message.id,
+          result: {
+            error: e.message || e.toString(),
+          },
+        };
+
+        eventListener.postMessage(proxyResponse);
+      }
+    });
+  }
+
+  protected requestMethod(method: keyof ISolana, args: any[]): Promise<any> {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map((value) => {
+        return value.toString(16);
+      })
+      .join("");
+
+    const proxyMessage: ProxyRequest = {
+      type: (NAMESPACE_SOLANA + "proxy-request") as any,
+      namespace: NAMESPACE_SOLANA,
+      id,
+      method,
+      args: JSONUint8Array.wrap(args),
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: MessageEvent) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage
+          ? this.parseMessage(e.data)
+          : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error("Result is null"));
+          return;
+        }
+
+        if (result.error) {
+          reject(new Error(result.error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+      this.eventListener.postMessage(proxyMessage);
+    });
+  }
+
+  public isOWallet: boolean = true;
+
+  constructor(
+    public readonly version: string,
+    public readonly mode: BitcoinMode,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) =>
+        window.addEventListener("message", fn),
+      removeMessageListener: (fn: (e: any) => void) =>
+        window.removeEventListener("message", fn),
+      postMessage: (message) =>
+        window.postMessage(message, window.location.origin),
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {}
+
+  signAndSendTransaction: ISolana["signAndSendTransaction"] = async (
+    ...inputs
+  ) => {
+    return await this.requestMethod("signAndSendTransaction", inputs);
+  };
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {

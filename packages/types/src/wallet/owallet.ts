@@ -17,7 +17,27 @@ import Long from "long";
 import { SignEthereumTypedDataObject } from "../typedMessage";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 import { SettledResponses } from "src/settled";
-
+import { Wallet } from "@wallet-standard/base";
+import {
+  StandardConnect,
+  type StandardConnectFeature,
+  type StandardConnectMethod,
+  StandardDisconnect,
+  type StandardDisconnectFeature,
+  type StandardDisconnectMethod,
+  StandardEvents,
+  type StandardEventsFeature,
+  type StandardEventsListeners,
+  type StandardEventsNames,
+  type StandardEventsOnMethod,
+} from "@wallet-standard/features";
+import { Transaction, VersionedTransaction } from "@solana/web3.js";
+import {
+  SolanaSignAndSendTransactionMethod,
+  SolanaSignInMethod,
+  SolanaSignMessageMethod,
+  SolanaSignTransactionMethod,
+} from "@solana/wallet-standard-features";
 export type AddressesLedger = {
   cosmos?: string;
   eth?: string;
@@ -256,6 +276,30 @@ export interface Bitcoin {
     data: object
   ): Promise<{ rawTxHex: string }>;
   getKey(chainId: string): Promise<Key>;
+}
+
+export interface Solana extends Wallet {
+  destroy(): void;
+  connected(): void;
+  disconnected(): void;
+  connect: StandardConnectMethod;
+  disconnect: StandardDisconnectMethod;
+  on: StandardEventsOnMethod;
+  emit<E extends StandardEventsNames>(
+    event: E,
+    ...args: Parameters<StandardEventsListeners[E]>
+  ): void;
+  off<E extends StandardEventsNames>(
+    event: E,
+    listener: StandardEventsListeners[E]
+  ): void;
+  deserializeTransaction(
+    serializedTransaction: Uint8Array
+  ): Transaction | VersionedTransaction;
+  signAndSendTransaction: SolanaSignAndSendTransactionMethod;
+  signTransaction: SolanaSignTransactionMethod;
+  signMessage: SolanaSignMessageMethod;
+  signIn: SolanaSignInMethod;
 }
 
 export interface Oasis {

@@ -64,6 +64,7 @@ export const SelectAccountPage = observer(() => {
     });
     return;
   };
+  console.log(wallets, "wallets");
   return (
     <LayoutWithButtonBottom
       titleButton={"Add Wallet"}

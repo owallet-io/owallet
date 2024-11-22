@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { InfoAccountCard } from "./components/info-account-card";
 import { TokensCard } from "./components/tokens-card";
 import { useStore } from "../../stores";
-
+import { createMemoInstruction } from "@solana/spl-memo";
 import { LinkStakeView, StakeView } from "./stake";
 import { CoinPretty, Dec, IntPretty, PricePretty } from "@owallet/unit";
 // var Mixpanel = require('mixpanel');
@@ -21,8 +21,18 @@ import {
 import { debounce } from "lodash";
 import "dotenv/config";
 import { initPrice } from "hooks/use-multiple-assets";
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  clusterApiUrl,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+import {
+  createTransferInstruction,
+  getAssociatedTokenAddress,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
@@ -52,50 +62,72 @@ export const HomePage = observer(() => {
         "confirmed"
       );
       if (!accountSol.base58Address) return;
-      // const tokenAddresses = res.result
-      //     .map((item, index) => {
-      //       return `${Network.SOLANA}%2B${
-      //           item.tokenAddress
-      //       }`;
-      //     })
-      //     .join(",");
-      const test = await API.getMultipleTokenInfo({
-        tokenAddresses: `${Network.SOLANA}%2BEs9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`,
-      });
-      // console.log(test,"test");
-      const publicKey = new PublicKey(accountSol.base58Address);
-      const lamports = await connection.getBalance(publicKey);
-      const solBalance = new CoinPretty(
-        {
-          coinDenom: "SOL",
-          coinMinimalDenom: "sol",
-          coinDecimals: 9,
-          coinGeckoId: "solana",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
-        },
-        new Dec(lamports)
-      );
-      // console.log(solBalance.toString(), "solBalance");
-      const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-        publicKey,
-        {
-          programId: TOKEN_PROGRAM_ID,
-        }
-      );
-      console.log(tokenAccounts.value, "tokenAccounts.value");
-      // Extract and display balances for each token
-      const tokenBalances = tokenAccounts.value.map(({ pubkey, account }) => {
-        const info = account.data.parsed.info;
-        const mintAddress = info.mint;
-        const balance = info.tokenAmount.uiAmount;
-        return { mintAddress, balance };
-      });
+      const fromPublicKey = new PublicKey(accountSol.base58Address);
+      const toPublicKey = new PublicKey(accountSol.base58Address);
+      const lamportsToSend = 1000000; //0.001 sol
+      //      fee = $0.0035
 
-      console.log("Token Balances:");
-      tokenBalances.forEach(({ mintAddress, balance }) => {
-        console.log(`- Mint: ${mintAddress}, Balance: ${balance}`);
-      });
+      // const connection = new Connection(rpcUrl, 'confirmed');
+      // const payerPublicKey = new PublicKey(walletAddress);
+      // const receiverPublicKey = new PublicKey(destinationAddress);
+      const mintPublicKey = new PublicKey(
+        "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+      );
+
+      // Get the associated token accounts for the sender and receiver
+      const senderTokenAccount = await getAssociatedTokenAddress(
+        mintPublicKey,
+        fromPublicKey
+      );
+      const receiverTokenAccount = await getAssociatedTokenAddress(
+        mintPublicKey,
+        toPublicKey
+      );
+
+      // Create SPL token transfer instruction
+      const transferInstruction = createTransferInstruction(
+        senderTokenAccount, // Sender's token account
+        receiverTokenAccount, // Receiver's token account
+        fromPublicKey, // Payer's public key
+        lamportsToSend // Amount to transfer (raw amount, not adjusted for decimals)
+      );
+
+      // Create a transaction
+      const transaction = new Transaction().add(transferInstruction);
+      // Create a transaction
+      // const transaction = new Transaction().add(
+      //     SystemProgram.transfer({
+      //       fromPubkey: fromPublicKey,
+      //       toPubkey: toPublicKey,
+      //       lamports: lamportsToSend,
+      //     }),
+      //     createMemoInstruction('This is a memo!')
+      // );
+      //
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = fromPublicKey;
+      // Compile the transaction into a message
+      const message = transaction.compileMessage();
+
+      // Estimate fee in lamports
+      const feeInLamports = await connection.getFeeForMessage(message);
+      console.log(feeInLamports, "feeInLamports");
+      if (feeInLamports === null) {
+        throw new Error("Unable to estimate the fee");
+      }
+
+      // Convert lamports to SOL (1 SOL = 1_000_000_000 lamports)
+      const feeInSol = new CoinPretty(
+        chainStore.current.stakeCurrency,
+        new Dec(feeInLamports.value)
+      );
+      const price = new PricePretty(
+        priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
+        feeInSol
+      );
+      console.log(price.toString(), " fee price");
+      console.log(`Estimated Fee: ${feeInSol.trim(true).toString()} SOL`);
     })();
   }, [accountSol.base58Address]);
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {

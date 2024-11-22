@@ -14,6 +14,8 @@ import {
   TronWeb,
   InjectedBitcoin,
   Bitcoin,
+  InjectedSolana,
+  Solana,
 } from "@owallet/provider";
 import { initEvents } from "./events";
 
@@ -40,6 +42,14 @@ InjectedTronWebOWallet.startProxy(
     manifest.version,
     "core",
     "0x2b6653dc",
+    new InExtensionMessageRequester()
+  )
+);
+InjectedSolana.startProxy(
+  new Solana(
+    manifest.version,
+    "core",
+    "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
     new InExtensionMessageRequester()
   )
 );

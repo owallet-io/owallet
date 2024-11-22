@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   ChainInfo,
   OWallet as IOWallet,
@@ -16,6 +17,7 @@ import {
   ChainInfoWithoutEndpoints,
   DefaultMode,
   SettledResponses,
+  Solana as ISolana,
 } from "@owallet/types";
 import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
 import {
@@ -71,6 +73,8 @@ import {
 } from "./msgs";
 import { ChainIdEnum } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
+import { type SolanaSignAndSendTransactionOutput } from "@solana/wallet-standard-features";
+import { isSolanaChain } from "@solana/wallet-standard-chains";
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -535,6 +539,32 @@ export class Bitcoin implements IBitcoin {
   async getKey(chainId: string): Promise<Key> {
     const msg = new GetKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+}
+export class Solana implements ISolana {
+  constructor(
+    public readonly version: string,
+    public readonly mode: BitcoinMode,
+    protected readonly requester: MessageRequester
+  ) {}
+
+  async signAndSendTransaction(...inputs) {
+    // const {ac} = inputs[0]!;
+    // const msg = new RequestSignBitcoinMsg(chainId, data);
+    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    const input = inputs[0]!;
+    // if (input.account !== this.#account) throw new Error('invalid account');
+    const outputs: SolanaSignAndSendTransactionOutput[] = [];
+    if (inputs.length === 1) {
+      if (!isSolanaChain(input.chain)) throw new Error("invalid chain");
+      console.log("solana !");
+    } else if (inputs.length > 1) {
+      // Adapters have no `sendAllTransactions` method, so just sign and send each transaction in serial.
+      for (const input of inputs) {
+        outputs.push(...(await this.signAndSendTransaction(input)));
+      }
+    }
+    return outputs;
   }
 }
 

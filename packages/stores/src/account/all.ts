@@ -32,6 +32,7 @@ import {
   HasCosmwasmAccount,
 } from "./cosmwasm";
 import { BitcoinAccount, BitcoinMsgOpts } from "./bitcoin";
+import { SolanaAccount, SolanaMsgOpts } from "./solana";
 
 export class AccountWithAll
   extends AccountSetBase<
@@ -64,6 +65,7 @@ export class AccountWithAll
   public readonly secret: DeepReadonly<SecretAccount>;
   public readonly cosmwasm: DeepReadonly<CosmwasmAccount>;
   public readonly bitcoin: DeepReadonly<BitcoinAccount>;
+  public readonly solana: DeepReadonly<SolanaAccount>;
 
   constructor(
     protected readonly eventListener: {
@@ -113,6 +115,12 @@ export class AccountWithAll
     );
     this.bitcoin = new BitcoinAccount(
       this as AccountSetBase<BitcoinMsgOpts, HasBtcQueries>,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
+    this.solana = new SolanaAccount(
+      this as AccountSetBase<SolanaMsgOpts, HasSvmQueries>,
       chainGetter,
       chainId,
       queriesStore

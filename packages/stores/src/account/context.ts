@@ -6,6 +6,7 @@ import {
   Ethereum,
   TronWeb,
   Bitcoin,
+  Solana,
 } from "@owallet/types";
 import { DebounceActionTimer } from "@owallet/common";
 
@@ -101,12 +102,14 @@ export class AccountSharedContext {
   protected promiseGetEthereum?: Promise<Ethereum | undefined>;
   protected promiseGetTronWeb?: Promise<TronWeb | undefined>;
   protected promiseGetBitcoin?: Promise<Bitcoin | undefined>;
+  protected promiseGetSolana?: Promise<Solana | undefined>;
 
   constructor(
     protected readonly _getOWallet: () => Promise<OWallet | undefined>,
     protected readonly _getEthereum: () => Promise<Ethereum | undefined>,
     protected readonly _getTronWeb: () => Promise<TronWeb | undefined>,
-    protected readonly _getBitcoin: () => Promise<Bitcoin | undefined>
+    protected readonly _getBitcoin: () => Promise<Bitcoin | undefined>,
+    protected readonly _getSolana: () => Promise<Solana | undefined>
   ) {}
 
   async getOWallet(): Promise<OWallet | undefined> {
@@ -162,6 +165,24 @@ export class AccountSharedContext {
         });
     });
     return (this.promiseGetBitcoin = promise);
+  }
+  async getSolana(): Promise<Solana | undefined> {
+    if (this.promiseGetSolana) {
+      return this.promiseGetSolana;
+    }
+
+    const promise = new Promise<Solana | undefined>((resolve, reject) => {
+      this._getSolana()
+        .then((bitcoin) => {
+          this.promiseGetSolana = undefined;
+          resolve(bitcoin);
+        })
+        .catch((e) => {
+          this.promiseGetSolana = undefined;
+          reject(e);
+        });
+    });
+    return (this.promiseGetSolana = promise);
   }
   async getTronWeb(): Promise<TronWeb | undefined> {
     if (this.promiseGetTronWeb) {
