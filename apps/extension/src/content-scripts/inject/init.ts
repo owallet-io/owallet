@@ -9,7 +9,6 @@ export function init(
   ethereum: Ethereum,
   tronWeb: TronWeb,
   bitcoin: Bitcoin,
-  solana: Solana,
   // oasis: Oasis,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
@@ -28,9 +27,6 @@ export function init(
 
   if (!window.ethereum) {
     window.ethereum = ethereum;
-  }
-  if (!window.solana) {
-    window.solana = solana;
   }
   // if (!window.oasis) {
   //   window.oasis = oasis;

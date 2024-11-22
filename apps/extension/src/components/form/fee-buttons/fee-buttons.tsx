@@ -126,10 +126,10 @@ export const FeeButtonsInner: FunctionComponent<
   }) => {
     const { chainStore } = useStore();
     useEffect(() => {
+      if (feeConfig.isManual) return;
       if (feeConfig.feeCurrency && !feeConfig.fee) {
         feeConfig.setFeeType("average");
-      }
-      if (chainStore.selectedFee && chainStore.selectedFee !== "") {
+      } else if (chainStore.selectedFee && chainStore.selectedFee !== "") {
         feeConfig.setFeeType(chainStore.selectedFee as FeeType);
       }
     }, [feeConfig, feeConfig.feeCurrency, feeConfig.fee]);

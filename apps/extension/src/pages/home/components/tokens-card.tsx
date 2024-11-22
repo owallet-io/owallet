@@ -119,15 +119,15 @@ const TokenItem: FC<{
             });
             return;
           }
-          // if (item.chainInfo?.chainId.includes("solana")) {
-          //   history.push({
-          //     pathname: "/send-solana",
-          //     state: {
-          //       token: item,
-          //     },
-          //   });
-          //   return;
-          // }
+          if (item.chainInfo?.chainId.includes("solana")) {
+            history.push({
+              pathname: "/send-solana",
+              state: {
+                token: item,
+              },
+            });
+            return;
+          }
           if (item.chainInfo?.chainId === ChainIdEnum.Bitcoin) {
             history.push({
               pathname: "/send-btc",

@@ -9,5 +9,7 @@ export * from "./cosmos-secret";
 export * from "./store";
 export * from "./cosmwasm";
 export * from "./ethereum";
+export * from "./solana";
+export * from "./get-solana";
 export * from "./all";
 export * from "./bitcoin";

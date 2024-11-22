@@ -45,14 +45,6 @@ InjectedTronWebOWallet.startProxy(
     new InExtensionMessageRequester()
   )
 );
-InjectedSolana.startProxy(
-  new Solana(
-    manifest.version,
-    "core",
-    "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-    new InExtensionMessageRequester()
-  )
-);
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
 router.addGuard(ContentScriptGuards.checkMessageIsInternal);

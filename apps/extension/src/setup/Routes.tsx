@@ -30,6 +30,7 @@ import { SignBtcPage } from "../pages/sign/sign-btc";
 import { StateRenderer } from "../components/state-renderer/StateRenderer";
 import { ManageChainsPage } from "pages/chain/manage-chains/manage-chains-page";
 import { AddChainPage } from "pages/chain/add-chain/add-chain-page";
+import { SendSolanaPage } from "pages/send/send-solana";
 
 export const Routes: React.FC = () => (
   <>
@@ -69,6 +70,7 @@ export const Routes: React.FC = () => (
     <Route exact path="/send-evm" component={SendEvmPage} />
     <Route exact path="/send-tron" component={SendTronEvmPage} />
     <Route exact path="/send-btc" component={SendBtcPage} />
+    <Route exact path="/send-solana" component={SendSolanaPage} />
     <Route exact path="/ledger-grant" component={LedgerGrantPage} />
     <Route exact path="/setting/address-book" component={AddressBookPage} />
     <Route path="/sign" component={SignPage} />

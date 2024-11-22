@@ -674,6 +674,91 @@ export class AccountSetBase<MsgOpts, Queries> {
       });
     }
   }
+  async sendSolanaToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    try {
+      runInAction(() => {
+        this._isSendingMsg = "send";
+      });
+      const ethereum = (await this.getEthereum())!;
+      const tx = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20,
+      });
+      if (!tx?.txid) throw Error("Transaction Rejected");
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents?.onBroadcasted(tx.txid);
+      }
+
+      // After sending tx, the balances is probably changed due to the fee.
+      this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.evmosHexAddress)
+        .fetch();
+
+      this.queriesStore
+        .get(this.chainId)
+        //@ts-ignore
+        .tron.queryAccount.getQueryWalletAddress(
+          getBase58Address(this.evmosHexAddress)
+        )
+        .fetch();
+
+      if (this.opts.preTxEvents?.onFulfill) {
+        this.opts.preTxEvents.onFulfill({
+          ...tx,
+          code: 0,
+        });
+      }
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill({
+          ...tx,
+          code: 0,
+        });
+      }
+      OwalletEvent.txHashEmit(tx.txid, {
+        ...tx,
+        code: 0,
+      });
+      // }
+    } catch (error) {
+      // OwalletEvent.txHashEmit(txId, null);
+      if (this.opts.preTxEvents?.onBroadcastFailed) {
+        this.opts.preTxEvents.onBroadcastFailed(error);
+      }
+
+      if (
+        onTxEvents &&
+        "onBroadcastFailed" in onTxEvents &&
+        onTxEvents.onBroadcastFailed
+      ) {
+        //@ts-ignore
+        onTxEvents.onBroadcastFailed(error);
+      }
+      console.log(error, "error");
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+      throw error;
+    } finally {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+    }
+  }
 
   async sleep(milliseconds) {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));

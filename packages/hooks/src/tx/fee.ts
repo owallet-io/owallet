@@ -148,7 +148,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   }
 
   get isManual(): boolean {
-    return this.feeType === undefined;
+    return this._manualFee !== undefined && this.feeType === undefined;
   }
 
   get feeType(): FeeType | undefined {

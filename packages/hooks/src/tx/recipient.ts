@@ -22,7 +22,7 @@ import { Bech32Address } from "@owallet/cosmos";
 import { useState } from "react";
 import { ObservableEnsFetcher } from "@owallet/ens";
 import { validateAddress } from "@owallet/bitcoin";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import { ChainIdEnum, isBase58, TRON_ID } from "@owallet/common";
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
@@ -167,6 +167,11 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
 
         if (!isValid) {
           return new InvalidBech32Error(`Invalid bitcoin address`);
+        }
+      } else if (this.chainId.includes("solana")) {
+        const isValid = isBase58(this.recipient);
+        if (!isValid) {
+          return new InvalidBech32Error(`Invalid base58 address`);
         }
       } else Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
