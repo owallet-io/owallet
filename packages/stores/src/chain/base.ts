@@ -1,28 +1,11 @@
-import {
-  action,
-  autorun,
-  computed,
-  IReactionDisposer,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
-import {
-  AppCurrency,
-  Bech32Config,
-  BIP44,
-  ChainInfo,
-  Currency,
-  FeeCurrency,
-} from "@owallet/types";
-import { IChainInfoImpl, IChainStore, CurrencyRegistrar } from "./types";
-import { ChainIdHelper } from "@owallet/cosmos";
-import { keepAlive } from "mobx-utils";
-import { sortedJsonByKeyStringify } from "@owallet/common";
+import { action, autorun, computed, IReactionDisposer, makeObservable, observable, runInAction } from 'mobx';
+import { AppCurrency, Bech32Config, BIP44, ChainInfo, Currency, FeeCurrency } from '@owallet/types';
+import { IChainInfoImpl, IChainStore, CurrencyRegistrar } from './types';
+import { ChainIdHelper } from '@owallet/cosmos';
+import { keepAlive } from 'mobx-utils';
+import { sortedJsonByKeyStringify } from '@owallet/common';
 
-export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
-  implements IChainInfoImpl<C>
-{
+export class ChainInfoImpl<C extends ChainInfo = ChainInfo> implements IChainInfoImpl<C> {
   @observable.ref
   protected _embedded: C;
 
@@ -50,8 +33,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
 
     makeObservable(this);
 
-    keepAlive(this, "currencyMap");
-    keepAlive(this, "unknownDenomMap");
+    keepAlive(this, 'currencyMap');
+    keepAlive(this, 'unknownDenomMap');
   }
 
   addUnknownDenoms(...coinMinimalDenoms: string[]) {
@@ -62,10 +45,9 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     this.addUnknownDenomsImpl(coinMinimalDenoms, false);
   }
 
-  protected addUnknownDenomsImpl(
-    coinMinimalDenoms: string[],
-    reaction: boolean
-  ) {
+  protected addUnknownDenomsImpl(coinMinimalDenoms: string[], reaction: boolean) {
+    console.log('coinMinimalDenoms', coinMinimalDenoms);
+
     for (const coinMinimalDenom of coinMinimalDenoms) {
       let found = false;
       const prior = this.unknownDenomMap.get(coinMinimalDenom);
@@ -90,7 +72,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
         runInAction(() => {
           this.unknownDenoms.push({
             denom: coinMinimalDenom,
-            reaction,
+            reaction
           });
           this.registrationInProgressCurrencyMap.set(coinMinimalDenom, true);
         });
@@ -120,24 +102,19 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           return;
         }
 
-        const generator = this.currencyRegistry.getCurrencyRegistrar(
-          this.chainId,
-          coinMinimalDenom
-        );
+        const generator = this.currencyRegistry.getCurrencyRegistrar(this.chainId, coinMinimalDenom);
+
         if (generator) {
           const currency = generator.value;
           runInAction(() => {
             if (!generator.done) {
-              this.registrationInProgressCurrencyMap.set(
-                coinMinimalDenom,
-                true
-              );
+              this.registrationInProgressCurrencyMap.set(coinMinimalDenom, true);
             }
-
+            if (this.chainId === 'eip155:56' || this.chainId === 'eip155:1') {
+              console.log('this.currency 3', generator, this.chainId, coinMinimalDenom, currency);
+            }
             if (currency) {
-              const index = this.unknownDenoms.findIndex(
-                (denom) => denom.denom === currency.coinMinimalDenom
-              );
+              const index = this.unknownDenoms.findIndex(denom => denom.denom === currency.coinMinimalDenom);
               let prev:
                 | {
                     denom: string;
@@ -217,9 +194,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
 
   @action
   protected moveNoReactionCurrencyToReaction(coinMinimalDenom: string) {
-    const index = this.registeredCurrenciesNoReaction.findIndex(
-      (cur) => cur.coinMinimalDenom === coinMinimalDenom
-    );
+    const index = this.registeredCurrenciesNoReaction.findIndex(cur => cur.coinMinimalDenom === coinMinimalDenom);
     if (index >= 0) {
       const currency = this.registeredCurrenciesNoReaction[index];
       this.registeredCurrenciesNoReaction.splice(index, 1);
@@ -228,10 +203,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   @computed
-  protected get unknownDenomMap(): Map<
-    string,
-    { denom: string; reaction: boolean }
-  > {
+  protected get unknownDenomMap(): Map<string, { denom: string; reaction: boolean }> {
     const result: Map<
       string,
       {
@@ -270,9 +242,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
       map.set(coinMinimalDenom, true);
     }
 
-    this.registeredCurrencies = this.registeredCurrencies.filter(
-      (currency) => !map.get(currency.coinMinimalDenom)
-    );
+    this.registeredCurrencies = this.registeredCurrencies.filter(currency => !map.get(currency.coinMinimalDenom));
   }
 
   /**
@@ -301,9 +271,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     }
   }
 
-  findCurrencyWithoutReaction(
-    coinMinimalDenom: string
-  ): AppCurrency | undefined {
+  findCurrencyWithoutReaction(coinMinimalDenom: string): AppCurrency | undefined {
     if (this.currencyMap.has(coinMinimalDenom)) {
       return this.currencyMap.get(coinMinimalDenom);
     }
@@ -322,9 +290,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     }
   }
 
-  findCurrencyAsync(
-    coinMinimalDenom: string
-  ): Promise<AppCurrency | undefined> {
+  findCurrencyAsync(coinMinimalDenom: string): Promise<AppCurrency | undefined> {
     if (this.currencyMap.has(coinMinimalDenom)) {
       return Promise.resolve(this.currencyMap.get(coinMinimalDenom));
     }
@@ -332,10 +298,9 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
 
     let disposal: IReactionDisposer | undefined;
 
-    return new Promise<AppCurrency | undefined>((resolve) => {
+    return new Promise<AppCurrency | undefined>(resolve => {
       disposal = autorun(() => {
-        const registration =
-          this.registrationInProgressCurrencyMap.get(coinMinimalDenom);
+        const registration = this.registrationInProgressCurrencyMap.get(coinMinimalDenom);
         if (!registration) {
           resolve(this.currencyMap.get(coinMinimalDenom));
         }
@@ -357,7 +322,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
       return {
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
-        coinDecimals: 0,
+        coinDecimals: 0
       };
     }
     return currency;
@@ -369,7 +334,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
       return {
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
-        coinDecimals: 0,
+        coinDecimals: 0
       };
     }
     return currency;
@@ -378,9 +343,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   @action
   addOrReplaceCurrency(currency: AppCurrency) {
     if (this.currencyMap.has(currency.coinMinimalDenom)) {
-      const index = this.registeredCurrencies.findIndex(
-        (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
-      );
+      const index = this.registeredCurrencies.findIndex(cur => cur.coinMinimalDenom === currency.coinMinimalDenom);
       if (index >= 0) {
         const prev = this.registeredCurrencies[index];
         if (
@@ -399,7 +362,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   protected addOrReplaceCurrencyNoReaction(currency: AppCurrency) {
     if (this.currencyNoReactionMap.has(currency.coinMinimalDenom)) {
       const index = this.registeredCurrenciesNoReaction.findIndex(
-        (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
+        cur => cur.coinMinimalDenom === currency.coinMinimalDenom
       );
       if (index >= 0) {
         const prev = this.registeredCurrenciesNoReaction[index];
@@ -457,7 +420,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   get grpc(): string {
     return this._embedded.grpc;
   }
-  get txExplorer(): ChainInfo["txExplorer"] {
+  get txExplorer(): ChainInfo['txExplorer'] {
     return this._embedded.txExplorer;
   }
   get walletUrl(): string | undefined {
@@ -481,9 +444,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   hasFeature(feature: string): boolean {
-    return !!(
-      this._embedded.features && this._embedded.features.includes(feature)
-    );
+    return !!(this._embedded.features && this._embedded.features.includes(feature));
   }
 
   @action
@@ -492,15 +453,11 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   isCurrencyRegistrationInProgress(coinMinimalDenom: string): boolean {
-    return (
-      this.registrationInProgressCurrencyMap.get(coinMinimalDenom) || false
-    );
+    return this.registrationInProgressCurrencyMap.get(coinMinimalDenom) || false;
   }
 }
 
-export class ChainStore<C extends ChainInfo = ChainInfo>
-  implements IChainStore<C>
-{
+export class ChainStore<C extends ChainInfo = ChainInfo> implements IChainStore<C> {
   @observable.ref
   protected _chainInfos: ChainInfoImpl<C>[] = [];
 
@@ -512,7 +469,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
 
     this.setEmbeddedChainInfos(embedChainInfos);
 
-    keepAlive(this, "chainInfoMap");
+    keepAlive(this, 'chainInfoMap');
   }
 
   get chainInfos(): IChainInfoImpl<C>[] {
@@ -548,10 +505,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
 
   @action
   protected setEmbeddedChainInfos(chainInfos: C[]) {
-    this._chainInfos = chainInfos.map((chainInfo) => {
-      const prev = this.chainInfoMap.get(
-        ChainIdHelper.parse(chainInfo.chainId).identifier
-      );
+    this._chainInfos = chainInfos.map(chainInfo => {
+      const prev = this.chainInfoMap.get(ChainIdHelper.parse(chainInfo.chainId).identifier);
       if (prev) {
         prev.setEmbeddedChainInfo(chainInfo);
         return prev;
@@ -572,7 +527,9 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     | undefined {
     for (let i = 0; i < this.currencyRegistrars.length; i++) {
       const registrar = this.currencyRegistrars[i];
+
       const generator = registrar(chainId, coinMinimalDenom);
+
       if (generator) {
         return generator;
       }
@@ -591,11 +548,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   }
 
   isEvmOnlyChain(chainId: string): boolean {
-    const chainIdLikeCAIP2 = chainId.split(":");
-    return (
-      this.isEvmChain(chainId) &&
-      chainIdLikeCAIP2.length === 2 &&
-      chainIdLikeCAIP2[0] === "eip155"
-    );
+    const chainIdLikeCAIP2 = chainId.split(':');
+    return this.isEvmChain(chainId) && chainIdLikeCAIP2.length === 2 && chainIdLikeCAIP2[0] === 'eip155';
   }
 }

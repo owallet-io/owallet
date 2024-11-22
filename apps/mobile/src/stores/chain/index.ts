@@ -1,17 +1,9 @@
-import {
-  action,
-  autorun,
-  computed,
-  flow,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
+import { action, autorun, computed, flow, makeObservable, observable, runInAction } from 'mobx';
 
-import { ChainStore as BaseChainStore, IChainInfoImpl } from "@owallet/stores";
-import { KeyRingStore } from "@owallet/stores-core";
+import { ChainStore as BaseChainStore, IChainInfoImpl } from '@owallet/stores';
+import { KeyRingStore } from '@owallet/stores-core';
 
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo } from '@owallet/types';
 import {
   ChainInfoWithCoreTypes,
   ClearAllChainEndpointsMsg,
@@ -29,25 +21,25 @@ import {
   ToggleChainsMsg,
   TokenScan,
   TryUpdateAllChainInfosMsg,
-  TryUpdateEnabledChainInfosMsg,
-} from "@owallet/background";
-import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
-import { toGenerator } from "@owallet/common";
-import { ChainIdHelper } from "@owallet/cosmos";
+  TryUpdateEnabledChainInfosMsg
+} from '@owallet/background';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
+import { toGenerator } from '@owallet/common';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @observable
   protected _isInitializing: boolean = false;
 
   @observable
-  protected _lastSyncedEnabledChainsVaultId: string = "";
+  protected _lastSyncedEnabledChainsVaultId: string = '';
   @observable.ref
   protected _enabledChainIdentifiers: string[] = [];
   @observable
-  protected selectedChainId: string = "";
+  protected selectedChainId: string = '';
 
   @observable
-  protected deferChainIdSelect: string = "";
+  protected deferChainIdSelect: string = '';
   @observable.ref
   protected _tokenScans: TokenScan[] = [];
 
@@ -58,20 +50,18 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   ) {
     super(
       //@ts-ignore
-      embedChainInfos.map((chainInfo) => {
+      embedChainInfos.map(chainInfo => {
         return {
           ...chainInfo,
           ...{
-            embedded: true,
-          },
+            embedded: true
+          }
         };
       })
     );
 
     // Should be enabled at least one chain.
-    this._enabledChainIdentifiers = [
-      ChainIdHelper.parse(embedChainInfos[0].chainId).identifier,
-    ];
+    this._enabledChainIdentifiers = [ChainIdHelper.parse(embedChainInfos[0].chainId).identifier];
 
     makeObservable(this);
 
@@ -87,7 +77,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       return;
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const disposal = autorun(() => {
         if (!this.isInitializing) {
           resolve();
@@ -105,10 +95,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     if (this._enabledChainIdentifiers.length === 0) {
       // Should be enabled at least one chain.
       const map = new Map<string, true>();
-      map.set(
-        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier,
-        true
-      );
+      map.set(ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier, true);
       return map;
     }
 
@@ -121,7 +108,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
 
   @computed
   get tokenScans(): TokenScan[] {
-    return this._tokenScans.filter((scan) => {
+    return this._tokenScans.filter(scan => {
       if (!this.hasChain(scan.chainId)) {
         return false;
       }
@@ -139,16 +126,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       const aChainIdentifier = ChainIdHelper.parse(a.chainId).identifier;
       const bChainIdentifier = ChainIdHelper.parse(b.chainId).identifier;
 
-      if (
-        aChainIdentifier ===
-        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
-      ) {
+      if (aChainIdentifier === ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier) {
         return -1;
       }
-      if (
-        bChainIdentifier ===
-        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
-      ) {
+      if (bChainIdentifier === ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier) {
         return 1;
       }
 
@@ -162,7 +143,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
 
   @computed
   get chainInfosInUI() {
-    return this.chainInfos.filter((chainInfo) => {
+    return this.chainInfos.filter(chainInfo => {
       if (chainInfo.hideInUI) {
         return false;
       }
@@ -172,11 +153,9 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     });
   }
 
-  // chain info들을 list로 보여줄때 hideInUI인 얘들은 빼고 보여줘야한다
-  // property 이름이 얘매해서 일단 이렇게 지었다.
   @computed
   get chainInfosInListUI() {
-    return this.chainInfos.filter((chainInfo) => {
+    return this.chainInfos.filter(chainInfo => {
       return !chainInfo.hideInUI;
     });
   }
@@ -196,11 +175,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   }
 
   isInChainInfosInListUI(chainId: string): boolean {
-    return (
-      this.chainInfosInListUIMap.get(
-        ChainIdHelper.parse(chainId).identifier
-      ) === true
-    );
+    return this.chainInfosInListUIMap.get(ChainIdHelper.parse(chainId).identifier) === true;
   }
 
   @flow
@@ -209,13 +184,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       return;
     }
 
-    const msg = new ToggleChainsMsg(
-      this.keyRingStore.selectedKeyInfo.id,
-      chainIds
-    );
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new ToggleChainsMsg(this.keyRingStore.selectedKeyInfo.id, chainIds);
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
   }
 
   @flow
@@ -224,21 +194,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       return;
     }
 
-    const msg = new EnableChainsMsg(
-      this.keyRingStore.selectedKeyInfo.id,
-      chainIds
-    );
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new EnableChainsMsg(this.keyRingStore.selectedKeyInfo.id, chainIds);
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
   }
 
   @flow
   *enableChainInfoInUIWithVaultId(vaultId: string, ...chainIds: string[]) {
     const msg = new EnableChainsMsg(vaultId, chainIds);
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
   }
 
   @flow
@@ -247,30 +210,20 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       return;
     }
 
-    const msg = new DisableChainsMsg(
-      this.keyRingStore.selectedKeyInfo.id,
-      chainIds
-    );
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new DisableChainsMsg(this.keyRingStore.selectedKeyInfo.id, chainIds);
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
   }
 
   @flow
   *disableChainInfoInUIWithVaultId(vaultId: string, ...chainIds: string[]) {
     const msg = new DisableChainsMsg(vaultId, chainIds);
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     (async () => {
       const id = this.keyRingStore.selectedKeyInfo?.id;
       if (!id) {
         return;
       }
-      const res = await this.requester.sendMessage(
-        BACKGROUND_PORT,
-        new RevalidateTokenScansMsg(id)
-      );
+      const res = await this.requester.sendMessage(BACKGROUND_PORT, new RevalidateTokenScansMsg(id));
       if (res.vaultId === this.keyRingStore.selectedKeyInfo?.id) {
         runInAction(() => {
           this._tokenScans = res.tokenScans;
@@ -285,10 +238,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
 
     yield this.keyRingStore.waitUntilInitialized();
 
-    yield Promise.all([
-      this.updateChainInfosFromBackground(),
-      this.updateEnabledChainIdentifiersFromBackground(),
-    ]);
+    yield Promise.all([this.updateChainInfosFromBackground(), this.updateEnabledChainIdentifiersFromBackground()]);
 
     autorun(() => {
       // Change the enabled chain identifiers when the selected key info is changed.
@@ -301,8 +251,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
 
     // Must not wait!!
     this.tryUpdateAllChainInfos();
-    // mobile은 background가 persistent하게 존재할 수 없기 때문에
-    // 체인 정보에 대한 업데이트를 UI 단에서 관리한다.
+
     setInterval(() => {
       this.tryUpdateAllChainInfos();
     }, 10 * 60 * 1000);
@@ -341,22 +290,16 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @flow
   *updateChainInfosFromBackground() {
     const msg = new GetChainInfosWithCoreTypesMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.setEmbeddedChainInfos(result.chainInfos);
   }
 
   @flow
   *enableVaultsWithCosmosAddress(chainId: string, bech32Address: string) {
     const msg = new EnableVaultsWithCosmosAddressMsg(chainId, bech32Address);
-    const res = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const res = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
-    const changed = res.find(
-      (r) => r.vaultId === this.keyRingStore.selectedKeyInfo?.id
-    );
+    const changed = res.find(r => r.vaultId === this.keyRingStore.selectedKeyInfo?.id);
     if (changed) {
       this._enabledChainIdentifiers = changed.newEnabledChains as string[];
     }
@@ -365,31 +308,24 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @flow
   protected *updateEnabledChainIdentifiersFromBackground() {
     if (!this.keyRingStore.selectedKeyInfo) {
-      this._lastSyncedEnabledChainsVaultId = "";
+      this._lastSyncedEnabledChainsVaultId = '';
       return;
     }
 
-    if (
-      this._lastSyncedEnabledChainsVaultId ===
-      this.keyRingStore.selectedKeyInfo.id
-    ) {
+    if (this._lastSyncedEnabledChainsVaultId === this.keyRingStore.selectedKeyInfo.id) {
       return;
     }
     const id = this.keyRingStore.selectedKeyInfo.id;
     const msg = new GetEnabledChainIdentifiersMsg(id);
 
-    this._enabledChainIdentifiers = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    this._enabledChainIdentifiers = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
-    this._tokenScans = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, new GetTokenScansMsg(id))
-    );
+    this._tokenScans = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new GetTokenScansMsg(id)));
 
     (async () => {
-      await new Promise<void>((resolve) => {
+      await new Promise<void>(resolve => {
         const disposal = autorun(() => {
-          if (this.keyRingStore.status === "unlocked") {
+          if (this.keyRingStore.status === 'unlocked') {
             resolve();
 
             if (disposal) {
@@ -399,10 +335,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
         });
       });
 
-      const res = await this.requester.sendMessage(
-        BACKGROUND_PORT,
-        new RevalidateTokenScansMsg(id)
-      );
+      const res = await this.requester.sendMessage(BACKGROUND_PORT, new RevalidateTokenScansMsg(id));
       if (res.vaultId === this.keyRingStore.selectedKeyInfo?.id) {
         runInAction(() => {
           this._tokenScans = res.tokenScans;
@@ -419,9 +352,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @computed
   get isEnabledChainsSynced(): boolean {
     return !!(
-      this.keyRingStore.selectedKeyInfo &&
-      this.keyRingStore.selectedKeyInfo.id ===
-        this._lastSyncedEnabledChainsVaultId
+      this.keyRingStore.selectedKeyInfo && this.keyRingStore.selectedKeyInfo.id === this._lastSyncedEnabledChainsVaultId
     );
   }
 
@@ -435,18 +366,16 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   async waitSyncedEnabledChains(): Promise<void> {
     if (
       this.keyRingStore.selectedKeyInfo &&
-      this.keyRingStore.selectedKeyInfo.id ===
-        this._lastSyncedEnabledChainsVaultId
+      this.keyRingStore.selectedKeyInfo.id === this._lastSyncedEnabledChainsVaultId
     ) {
       return;
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const disposal = autorun(() => {
         if (
           this.keyRingStore.selectedKeyInfo &&
-          this.keyRingStore.selectedKeyInfo.id ===
-            this._lastSyncedEnabledChainsVaultId
+          this.keyRingStore.selectedKeyInfo.id === this._lastSyncedEnabledChainsVaultId
         ) {
           resolve();
 
@@ -461,23 +390,15 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     this.setEmbeddedChainInfos(chainInfos);
   }
 
   @flow
-  *setChainEndpoints(
-    chainId: string,
-    rpc: string | undefined,
-    rest: string | undefined
-  ) {
+  *setChainEndpoints(chainId: string, rpc: string | undefined, rest: string | undefined) {
     const msg = new SetChainEndpointsMsg(chainId, rpc, rest, undefined);
-    const newChainInfos = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const newChainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     this.setEmbeddedChainInfos(newChainInfos);
   }
@@ -485,9 +406,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @flow
   *resetChainEndpoints(chainId: string) {
     const msg = new ClearChainEndpointsMsg(chainId);
-    const newChainInfos = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const newChainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     this.setEmbeddedChainInfos(newChainInfos);
   }
