@@ -36,6 +36,10 @@ import {
 import { createMemoInstruction } from "@solana/spl-memo";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { CoinPrimitive } from "@owallet/stores";
+import {
+  createTransferInstruction,
+  getAssociatedTokenAddress,
+} from "@solana/spl-token";
 
 export const SendSolanaPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -172,13 +176,46 @@ export const SendSolanaPage: FunctionComponent<{
           sendConfigs.recipientConfig.recipient
         );
         const amount = sendConfigs.amountConfig.getAmountPrimitive().amount; //0.001 sol
-        const transaction = new Transaction().add(
+
+        let transaction = new Transaction().add(
           SystemProgram.transfer({
             fromPubkey: fromPublicKey,
             toPubkey: toPublicKey,
-            lamports: Number(amount),
+            lamports: BigInt(amount),
           })
         );
+        if (
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+            "spl"
+          )
+        ) {
+          const mintPublicKey = new PublicKey(
+            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.replace(
+              "spl:",
+              ""
+            )
+          );
+          // Get the associated token accounts for the sender and receiver
+          const senderTokenAccount = await getAssociatedTokenAddress(
+            mintPublicKey,
+            fromPublicKey
+          );
+          const receiverTokenAccount = await getAssociatedTokenAddress(
+            mintPublicKey,
+            toPublicKey
+          );
+
+          // Create SPL token transfer instruction
+          const transferInstruction = createTransferInstruction(
+            senderTokenAccount, // Sender's token account
+            receiverTokenAccount, // Receiver's token account
+            fromPublicKey, // Payer's public key
+            BigInt(amount) // Amount to transfer (raw amount, not adjusted for decimals)
+          );
+
+          // Create a transaction
+          transaction = new Transaction().add(transferInstruction);
+        }
         if (sendConfigs.memoConfig.memo) {
           transaction.add(createMemoInstruction(sendConfigs.memoConfig.memo));
         }
