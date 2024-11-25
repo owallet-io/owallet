@@ -73,7 +73,6 @@ const useFee = ({
   const [swapFee, setSwapFee] = useState(0);
   const [totalFee, setTotalFee] = useState(0);
   const [bridgeFee, setBidgeFee] = useState(0);
-  const [relayerFee, setRelayerFee] = useState();
 
   const usdPriceShowFrom = (prices?.[originalFromToken?.coinGeckoId] * fromAmountToken).toFixed(6);
   const usdPriceShowTo = (prices?.[originalToToken?.coinGeckoId] * simulateData?.displayAmount).toFixed(6);
@@ -591,9 +590,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleReverseDirection = () => {
     if (
-      //@ts-ignore
       UniversalSwapHelper.isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) &&
-      //@ts-ignore
       !UniversalSwapHelper.isEvmNetworkNativeSwapSupported(toToken.chainId)
     )
       return;

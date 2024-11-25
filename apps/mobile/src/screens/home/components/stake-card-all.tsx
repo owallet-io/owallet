@@ -1080,7 +1080,7 @@ const ClaimTokenItem: FunctionComponent<{
     const queries = queriesStore.get(chainId);
     const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
 
-    const validatorAddresses = queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+    const validatorAddresses = queryRewards.getDescendingPendingRewardValidatorAddresses(10);
 
     if (validatorAddresses.length === 0) {
       return;
@@ -1180,20 +1180,52 @@ const ClaimTokenItem: FunctionComponent<{
         const rewards = queryRewards.getStakableRewardOf(validatorAddress);
         return { validatorAddress, rewards };
       });
-      const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(validatorAddresses, validatorRewards);
 
-      let gas = new Int(validatorAddresses.length * 2 * defaultGasPerDelegation);
+      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
+      let gasUsed = 0;
+      const claimTx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+      validatorRewards.map(async v => {
+        const delegateTx = account.cosmos.makeDelegateTx(v.rewards.toDec().toString(), v.validatorAddress);
+        const simulated = await delegateTx.simulate();
 
-      try {
-        const simulated = await tx.simulate();
+        console.log('simulated.gasUsed', v.rewards.toDec().toString(), simulated.gasUsed);
 
-        // Gas adjustment is 2
+        // Gas adjustment is 1.5
         // Since there is currently no convenient way to adjust the gas adjustment on the UI,
         // Use high gas adjustment to prevent failure.
-        gas = new Dec(simulated.gasUsed * 2).truncate();
+        gasUsed += simulated.gasUsed;
+      });
+
+      try {
+        setIsSimulating(true);
+
+        const simulated = await claimTx.simulate();
+
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        // gas = new Dec(simulated.gasUsed * 1.5).truncate();
+        gasUsed += simulated.gasUsed;
       } catch (e) {
         console.log(e);
       }
+
+      gas = new Dec(gasUsed * 1.5).truncate();
+
+      const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(validatorAddresses, validatorRewards);
+
+      // try {
+      //   const simulated = await tx.simulate();
+
+      //   // Gas adjustment is 2
+      //   // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+      //   // Use high gas adjustment to prevent failure.
+      //   gas = new Dec(simulated.gasUsed * 2).truncate();
+      // } catch (e) {
+      //   console.log(e);
+      // }
+
+      console.log('final gas 2', gas.toString());
       await tx.send(
         {
           gas: gas.toString(),
