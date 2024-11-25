@@ -10,9 +10,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { ChainIdEnum, fetchTokenInfos, toDisplay } from '@owallet/common';
-import { useStore } from '@src/stores';
-import { isNegative } from '@src/utils/helper';
+import { fetchTokenInfos } from '@owallet/common';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { getRemoteDenom } from '../helpers';
@@ -77,7 +75,6 @@ const useEstimateAmount = (
     ignoreFee?: boolean;
   }
 ) => {
-  const { chainStore, priceStore } = useStore();
   const [amountLoading, setAmountLoading] = useState(false);
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
   const [impactWarning, setImpactWarning] = useState(0);
@@ -87,7 +84,6 @@ const useEstimateAmount = (
   const [simulateData, setSimulateData] = useState(null);
   const [ratio, setRatio] = useState(null);
 
-  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
   const [isAvgSimulate, setIsAvgSimulate] = useState({
     tokenFrom: originalFromToken.coinGeckoId,
     tokenTo: originalToToken.coinGeckoId,
@@ -104,12 +100,6 @@ const useEstimateAmount = (
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
   const fromTokenFee = useTokenFee(remoteTokenDenomFrom, client, fromToken.chainId, toToken.chainId);
   const toTokenFee = useTokenFee(remoteTokenDenomTo, client, fromToken.chainId, toToken.chainId);
-
-  const fiat = priceStore.defaultVsCurrency;
-
-  const price = priceStore.getPrice(chainInfo?.stakeCurrency?.coinGeckoId, fiat);
-
-  const totalRelayerFee = Number(relayerFeeDisplay.toString()) * price;
 
   useEffect(() => {
     const { tokenFrom: currentFrom, tokenTo: currentTo, status: currentStatus } = isAvgSimulate;
@@ -271,16 +261,13 @@ const useEstimateAmount = (
       const minimumReceiveDisplay = simulateDisplayAmount
         ? new BigDecimal(
             simulateDisplayAmount - (simulateDisplayAmount * userSlippage) / 100 - relayerFee - bridgeTokenFee
-            //  - totalRelayerFee
           ).toNumber()
         : 0;
 
       setMininumReceive(minimumReceiveDisplay);
       if (data) {
         setIsWarningSlippage(isWarningSlippage);
-        // setToAmountToken((Number(data.amount) - Number(totalRelayerFee)).toString());
         setToAmountToken(Number(data.amount).toString());
-        // setSwapAmount([fromAmountToken, Number(data.displayAmount) - Number(totalRelayerFee)]);
         setSwapAmount([fromAmountToken, Number(data.displayAmount)]);
 
         setRatio({
@@ -326,7 +313,7 @@ const useEstimateAmount = (
     amountLoading,
     estimateAverageRatio,
     toAmountTokenString,
-    relayerFeeAmount: totalRelayerFee.toFixed(6),
+    relayerFeeAmount: relayerFeeDisplay,
     relayerFeeToken,
     relayerFeeDisplay,
     impactWarning,
