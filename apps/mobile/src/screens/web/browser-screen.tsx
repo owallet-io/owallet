@@ -3,17 +3,15 @@ import React, { useEffect, useState } from 'react';
 import { TabBar, TabView } from 'react-native-tab-view';
 import OWText from '@src/components/text/ow-text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { TextInput } from '@src/components/input';
-import { RightArrowIcon, SearchIcon } from '@src/components/icon';
+import { RightArrowIcon } from '@src/components/icon';
 import { OWButton } from '@src/components/button';
-import OWFlatList from '@src/components/page/ow-flat-list';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { observer } from 'mobx-react-lite';
 import { renderScene } from '@src/screens/web/routes';
 import { useTheme } from '@src/themes/theme-provider';
-import { dataBookMarks, getFavicon, getNameBookmark } from '@src/screens/web/helper/browser-helper';
+import { getFavicon, getNameBookmark } from '@src/screens/web/helper/browser-helper';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { checkValidDomain, showToast } from '@src/utils/helper';
@@ -21,7 +19,7 @@ import { useStore } from '@src/stores';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { tracking } from '@src/utils/tracking';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { PageWithView, PageWithViewInBottomTabView } from '@src/components/page';
+import { PageWithViewInBottomTabView } from '@src/components/page';
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
@@ -43,7 +41,7 @@ export const BrowserScreen = observer(() => {
     // { key: "ai", title: "AI" },
     { key: 'explorer', title: 'Explorer' }
   ]);
-  console.log(window.owallet, 'window.owallet');
+
   const renderTabBar = props => (
     <TabBar
       {...props}
@@ -122,7 +120,6 @@ export const BrowserScreen = observer(() => {
   };
   return (
     <PageWithViewInBottomTabView
-      // disableSafeArea={true}
       style={{
         backgroundColor: colors['neutral-surface-action'],
         flexGrow: 1

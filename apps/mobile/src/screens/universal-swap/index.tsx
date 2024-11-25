@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
@@ -8,7 +8,7 @@ import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import { SelectNetworkModal, SelectTokenModal } from './modals/';
 import { getTokenInfos, maskedNumber, shortenAddress, showToast } from '@src/utils/helper';
-import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, toDisplay, getBase58Address, toAmount } from '@owallet/common';
+import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, toDisplay, toAmount } from '@owallet/common';
 import {
   oraichainNetwork,
   Networks,
@@ -54,7 +54,6 @@ import { tracking } from '@src/utils/tracking';
 import { AFFILIATE_ADDRESS } from '@src/common/constants';
 import { SlippageConfirmModal } from './modals/SlippageConfirmModal';
 import { useFilterToken } from './hooks/use-filter-token';
-import { ChainIdHelper } from '@owallet/cosmos';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 

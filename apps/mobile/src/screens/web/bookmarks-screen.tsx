@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { PageWithView, PageWithViewInBottomTabView } from '@src/components/page';
-
+import React, { useEffect } from 'react';
+import { PageWithViewInBottomTabView } from '@src/components/page';
 import { observer } from 'mobx-react-lite';
 import { useTheme } from '@src/themes/theme-provider';
-import { FlatList, Platform, TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { useStore } from '@src/stores';
 import OWIcon from '@src/components/ow-icon/ow-icon';
@@ -14,7 +13,6 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { metrics } from '@src/themes';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { tracking } from '@src/utils/tracking';
 
 export const BookmarksScreen = observer(() => {
