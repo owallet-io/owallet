@@ -191,10 +191,6 @@ export class HugeQueriesStore {
   getAllBalances = computedFn((allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
     const keys: Map<string, boolean> = new Map();
     for (const chainInfo of this.chainStore.chainInfosInUI) {
-      if (chainInfo.chainId === 'eip155:1') {
-        console.log('chainInfo', chainInfo);
-      }
-
       for (const currency of chainInfo.currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
         if (!allowIBCToken && denomHelper.type === 'native' && denomHelper.denom.startsWith('ibc/')) {

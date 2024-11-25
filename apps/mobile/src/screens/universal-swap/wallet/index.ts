@@ -5,8 +5,7 @@ import {
   NetworkChainId,
   EvmResponse,
   Networks,
-  ethToTronAddress,
-  chainInfos
+  ethToTronAddress
 } from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';

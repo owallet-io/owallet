@@ -242,8 +242,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo> implements IChainInf
   }
 
   /**
-   * Currency를 반환한다.
-   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
+  
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -309,7 +308,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo> implements IChainInf
   }
 
   /**
-   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
