@@ -56,6 +56,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
   });
+
   const [dataSign, setDataSign] = useState(null);
   const [dataSetting, setDataSetting] = useState(false);
   const settingRef = useRef();
@@ -70,8 +71,13 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     setTab(Tab.Details);
   };
   const data = signInteractionStore.waitingSvmData;
+  useEffect(() => {
+    return () => {
+      console.log("rejected");
+      signInteractionStore.reject();
+    };
+  }, []);
   console.log(data, "data");
-
   const chainId = data.data.chainId || chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
   const signer = accountInfo.getAddressDisplay(

@@ -184,6 +184,7 @@ export class PermissionStore extends HasMapStore<
     this.interactionStore.clearEvent("request-sign-tron-end");
     this.interactionStore.clearEvent("request-sign-ethereum-end");
     this.interactionStore.clearEvent("request-sign-bitcoin-end");
+    this.interactionStore.clearEvent("request-sign-svm-end");
   }
 
   protected waitEnd(): Promise<void> {

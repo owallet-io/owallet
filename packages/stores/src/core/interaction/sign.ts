@@ -313,6 +313,7 @@ export class SignInteractionStore {
     this.interactionStore.clearEvent("request-sign-tron-end");
     this.interactionStore.clearEvent("request-sign-ethereum-end");
     this.interactionStore.clearEvent("request-sign-bitcoin-end");
+    this.interactionStore.clearEvent("request-sign-svm-end");
   }
 
   protected waitEnd(): Promise<void> {
@@ -519,6 +520,9 @@ export class SignInteractionStore {
     if (this.waitingBitcoinDatas.length === 0) {
       return;
     }
+    if (this.waitingSvmDatas.length === 0) {
+      return;
+    }
 
     this._isLoading = true;
     try {
@@ -537,6 +541,10 @@ export class SignInteractionStore {
       yield this.interactionStore.reject(
         "request-sign-bitcoin",
         this.waitingBitcoinDatas?.[0].id
+      );
+      yield this.interactionStore.reject(
+        "request-sign-svm",
+        this.waitingSvmDatas?.[0].id
       );
     } finally {
       this._isLoading = false;
@@ -560,6 +568,9 @@ export class SignInteractionStore {
       yield this.waitingBitcoinDatas?.map((wed) => {
         this.interactionStore.reject("request-sign-bitcoin", wed.id);
       });
+      yield this.waitingSvmDatas?.map((wed) => {
+        this.interactionStore.reject("request-sign-svm", wed.id);
+      });
     } finally {
       this._isLoading = false;
     }
@@ -571,6 +582,7 @@ export class SignInteractionStore {
     yield this.interactionStore.reject("request-ethereum-sign", id);
     yield this.interactionStore.reject("request-sign-tron", id);
     yield this.interactionStore.reject("request-sign-bitcoin", id);
+    yield this.interactionStore.reject("request-sign-svm", id);
   }
 
   get isLoading(): boolean {

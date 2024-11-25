@@ -102,16 +102,7 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
 
   @override
   *fetch() {
-    if (!this.duplicatedFetchCheck) {
-      // it is inefficient to fetching duplicately in the same loop.
-      // So, if the fetching requests are in the same tick, this prevent to refetch the result and use the prior fetching.
-      this.duplicatedFetchCheck = true;
-      setTimeout(() => {
-        this.duplicatedFetchCheck = false;
-      }, 1);
-
-      yield super.fetch();
-    }
+    yield super.fetch();
   }
 
   async fetchSplBalances() {
@@ -175,7 +166,6 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
     const data = await this.fetchSplBalances();
-    console.log(data, "data fetch");
     return {
       data: data,
       headers: null,
@@ -278,7 +268,6 @@ export class ObservableQuerySvmBalanceRegistry implements BalanceRegistry {
         )
       );
     }
-    console.log(chainId, "zo day");
     return new ObservableQueryBalanceNative(
       this.sharedContext,
       chainId,

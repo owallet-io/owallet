@@ -79,6 +79,7 @@ import TronWebProvider from "tronweb";
 import { getEip712TypedDataBasedOnChainId } from "./utils";
 import { AccountSharedContext } from "./context";
 import { WalletAccount } from "@wallet-standard/base";
+import { Connection } from "@solana/web3.js";
 
 export interface Coin {
   readonly denom: string;
@@ -243,6 +244,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   getBitcoin(): Promise<Bitcoin | undefined> {
     return this.sharedContext.getBitcoin();
   }
+
   getSolana(): Promise<Solana | undefined> {
     return this.sharedContext.getSolana();
   }
@@ -674,6 +676,37 @@ export class AccountSetBase<MsgOpts, Queries> {
       });
     }
   }
+
+  async pollTransactionStatusSol(connection, txSignature, timeout = 30000) {
+    const startTime = Date.now();
+    const interval = 1000; // Poll every 2 seconds
+
+    return new Promise((resolve, reject) => {
+      const intervalId = setInterval(async () => {
+        try {
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime > timeout) {
+            clearInterval(intervalId);
+            reject(new Error("Transaction confirmation timed out."));
+            return;
+          }
+
+          // Check the transaction status
+          const status = await connection.getSignatureStatus(txSignature, {
+            searchTransactionHistory: true,
+          });
+          if (status.value && status.value.confirmationStatus === "confirmed") {
+            clearInterval(intervalId);
+            resolve("Transaction confirmed!");
+          }
+        } catch (error) {
+          clearInterval(intervalId);
+          reject(error);
+        }
+      }, interval);
+    });
+  }
+
   async sendSolanaToken(
     amount: string,
     currency: AppCurrency,
@@ -697,55 +730,38 @@ export class AccountSetBase<MsgOpts, Queries> {
       };
 
       const unsignedTx = JSON.stringify(data);
-      const tx = await owallet.sendAndConfirmTransactionSvm(
+      const signature = await owallet.sendAndConfirmTransactionSvm(
         this.chainId,
         this.base58Address,
         unsignedTx
       );
-      console.log(tx, "tx");
-      // const tx = await owallet.signAndBroadcastTron(this.chainId, {
-      //   amount,
-      //   currency,
-      //   recipient,
-      //   address,
-      //   tokenTrc20,
-      // });
-      // if (!tx?.txid) throw Error("Transaction Rejected");
-      // if (onTxEvents?.onBroadcasted) {
-      //   onTxEvents?.onBroadcasted(tx.txid);
-      // }
+      console.log(signature, "signatureTx");
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      const connection = new Connection(chainInfo.rpc, "confirmed");
+      if (!signature) throw Error("Transaction Rejected");
+      const txHash = Buffer.from(signature).toString();
+      console.log(txHash, "txHash");
+      await this.pollTransactionStatusSol(connection, txHash, 30000);
+      this.queries.queryBalances
+        .getQueryBech32Address(this.base58Address)
+        .fetch();
 
+      if (onTxEvents?.onBroadcasted) {
+        onTxEvents?.onBroadcasted(signature);
+      }
       // After sending tx, the balances is probably changed due to the fee.
-      // this.queriesStore
-      //   .get(this.chainId)
-      //   .queryBalances.getQueryBech32Address(this.evmosHexAddress)
-      //   .fetch();
-
-      // this.queriesStore
-      //   .get(this.chainId)
-      //   //@ts-ignore
-      //   .tron.queryAccount.getQueryWalletAddress(
-      //     getBase58Address(this.evmosHexAddress)
-      //   )
-      //   .fetch();
 
       if (this.opts.preTxEvents?.onFulfill) {
-        // this.opts.preTxEvents.onFulfill({
-        //   ...tx,
-        //   code: 0,
-        // });
+        this.opts.preTxEvents.onFulfill(txHash);
       }
 
       if (onTxEvents?.onFulfill) {
-        // onTxEvents?.onFulfill({
-        //   ...tx,
-        //   code: 0,
-        // });
+        onTxEvents?.onFulfill(txHash);
       }
-      // OwalletEvent.txHashEmit(tx.txid, {
-      //   ...tx,
-      //   code: 0,
-      // });
+      OwalletEvent.txHashEmit(txHash, {
+        txHash: txHash,
+        code: 0,
+      });
       // }
     } catch (error) {
       // OwalletEvent.txHashEmit(txId, null);
@@ -919,6 +935,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     this.handleTxEvents(txHash, onTxEvents);
   }
+
   async sendSvmMsgs(
     type: string | "unknown",
     msgs: any,
@@ -961,6 +978,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     this.onHandleEvents(onTxEvents, txHash);
   }
+
   async sendBtcMsgs(
     type: string | "unknown",
     msgs: any,
@@ -1312,6 +1330,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode),
     };
   }
+
   protected async broadcastSvmMsgs(
     msgs: any,
     fee: StdFee,
@@ -1491,6 +1510,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   get bech32Address(): string {
     return this._bech32Address;
   }
+
   get base58Address(): string {
     return this._base58Address;
   }

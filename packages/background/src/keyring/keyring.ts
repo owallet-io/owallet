@@ -1263,13 +1263,9 @@ export class KeyRing {
 
   public async sendAndConfirmSvm(
     chainId: string,
-    coinType: number,
-    signer: string,
     unsignedTx: string
-  ) {
-    console.log(unsignedTx, "unsignedTx");
+  ): Promise<Uint8Array> {
     const { amount, currency, recipient, memo } = JSON.parse(unsignedTx);
-    console.log(amount, recipient, "kaka");
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     const sender = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
     const connection = new Connection(chainInfo.rpc, "confirmed");
@@ -1284,7 +1280,6 @@ export class KeyRing {
     );
     if (currency.coinMinimalDenom.startsWith("spl")) {
       const denom = currency.coinMinimalDenom.replace("spl:", "");
-      console.log(denom, "denom");
       const mintPublicKey = new PublicKey(denom);
       // Get the associated token accounts for the sender and receiver
       const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
@@ -1317,7 +1312,6 @@ export class KeyRing {
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = sender.publicKey;
     const simulationResult = await connection.simulateTransaction(transaction);
-    console.log(simulationResult, "simulationResult");
     if (!simulationResult.value.unitsConsumed)
       throw new Error("Unable to estimate the fee");
     const DefaultUnitLimit = new Dec(200_000);
@@ -1346,8 +1340,7 @@ export class KeyRing {
         skipPreflight: true,
       }
     );
-    console.log(txSignature, "txSignature");
-    return txSignature;
+    return Buffer.from(txSignature);
   }
 
   public async signOasis(chainId: string, data): Promise<any> {

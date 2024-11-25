@@ -46,90 +46,12 @@ export const HomePage = observer(() => {
     keyRingStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const accountSol = accountStore.getAccount(
-    "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
-  );
+
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
     allBalances,
     chainStore.current.chainId
   );
-  useEffect(() => {
-    (async () => {
-      // connection
-      const connection = new Connection(
-        "https://swr.xnftdata.com/rpc-proxy/",
-        "confirmed"
-      );
-      if (!accountSol.base58Address) return;
-      const fromPublicKey = new PublicKey(accountSol.base58Address);
-      const toPublicKey = new PublicKey(accountSol.base58Address);
-      const lamportsToSend = 1000000; //0.001 sol
-      //      fee = $0.0035
-
-      // const connection = new Connection(rpcUrl, 'confirmed');
-      // const payerPublicKey = new PublicKey(walletAddress);
-      // const receiverPublicKey = new PublicKey(destinationAddress);
-      const mintPublicKey = new PublicKey(
-        "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
-      );
-
-      // Get the associated token accounts for the sender and receiver
-      const senderTokenAccount = await getAssociatedTokenAddress(
-        mintPublicKey,
-        fromPublicKey
-      );
-      const receiverTokenAccount = await getAssociatedTokenAddress(
-        mintPublicKey,
-        toPublicKey
-      );
-
-      // Create SPL token transfer instruction
-      const transferInstruction = createTransferInstruction(
-        senderTokenAccount, // Sender's token account
-        receiverTokenAccount, // Receiver's token account
-        fromPublicKey, // Payer's public key
-        lamportsToSend // Amount to transfer (raw amount, not adjusted for decimals)
-      );
-
-      // Create a transaction
-      const transaction = new Transaction().add(transferInstruction);
-      // Create a transaction
-      // const transaction = new Transaction().add(
-      //     SystemProgram.transfer({
-      //       fromPubkey: fromPublicKey,
-      //       toPubkey: toPublicKey,
-      //       lamports: lamportsToSend,
-      //     }),
-      //     createMemoInstruction('This is a memo!')
-      // );
-      //
-      const { blockhash } = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPublicKey;
-      // Compile the transaction into a message
-      const message = transaction.compileMessage();
-
-      // Estimate fee in lamports
-      const feeInLamports = await connection.getFeeForMessage(message);
-      console.log(feeInLamports, "feeInLamports");
-      if (feeInLamports === null) {
-        throw new Error("Unable to estimate the fee");
-      }
-
-      // Convert lamports to SOL (1 SOL = 1_000_000_000 lamports)
-      const feeInSol = new CoinPretty(
-        chainStore.current.stakeCurrency,
-        new Dec(feeInLamports.value)
-      );
-      const price = new PricePretty(
-        priceStore.getFiatCurrency(priceStore.defaultVsCurrency),
-        feeInSol
-      );
-      console.log(price.toString(), " fee price");
-      console.log(`Estimated Fee: ${feeInSol.trim(true).toString()} SOL`);
-    })();
-  }, [accountSol.base58Address]);
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {

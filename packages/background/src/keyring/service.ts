@@ -576,50 +576,40 @@ export class KeyRingService {
     signer: string,
     unsignedTx: Uint8Array
   ): Promise<Uint8Array> {
-    const coinType = await this.chainsService.getChainCoinType(chainId);
-
-    const key = await this.keyRing.getKey(chainId, coinType);
-
-    if (signer !== key.base58Address) {
-      throw new Error("Signer mismatched");
-    }
-
-    const newDataConfirm = await this.interactionService.waitApprove(
-      env,
-      "/sign-svm",
-      "request-sign-svm",
-      {
-        msgOrigin,
-        chainId,
-        signer,
-        unsignedTx,
-      }
-    );
-
     try {
+      const coinType = await this.chainsService.getChainCoinType(chainId);
+
+      const key = await this.keyRing.getKey(chainId, coinType);
+
+      if (signer !== key.base58Address) {
+        throw new Error("Signer mismatched");
+      }
+
+      const newDataConfirm = await this.interactionService.waitApprove(
+        env,
+        "/sign-svm",
+        "request-sign-svm",
+        {
+          msgOrigin,
+          chainId,
+          signer,
+          unsignedTx,
+        }
+      );
       console.log(newDataConfirm, "newDataConfirm");
-      // const signature = await this.keyRing.sign(
-      //     env,
-      //     chainId,
-      //     coinType,
-      //     serializeSignDoc(newSignDoc)
-      // );
-      const chainInfo = await this.chainsService.getChainInfo(chainId);
-      const connection = new Connection(chainInfo.rpc, "confirmed");
-      const { signer, unsignedTx } = newDataConfirm as any;
-      const transaction = (await this.keyRing.sendAndConfirmSvm(
+      // const { unsignedTx } = newDataConfirm as any;
+      return await this.keyRing.sendAndConfirmSvm(
         chainId,
-        coinType,
-        signer,
-        unsignedTx
-      )) as any;
-      return;
-      // return {
-      //   signed: newSignDoc,
-      //   signature: encodeSecp256k1Signature(key.pubKey, signature),
-      // };
+        (newDataConfirm as any).unsignedTx
+      );
+    } catch (e) {
+      console.log(e, "err on service");
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-svm-end",
+        {}
+      );
     }
   }
 
