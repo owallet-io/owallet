@@ -13,6 +13,7 @@ import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import { Address } from "../../../components/address";
 import { ChainIdEnum } from "@owallet/common";
+import { shortenAddress } from "pages/sign/helpers/helpers";
 
 export const SvmDetailsTab: FunctionComponent<{
   dataSign;
@@ -32,7 +33,9 @@ export const SvmDetailsTab: FunctionComponent<{
     priceStore,
     signer,
   }) => {
-    const msgs = dataSign?.data?.data?.msgs;
+    console.log(dataSign, "dataSign2");
+    const msgs = JSON.parse(dataSign?.data?.data?.unsignedTx);
+    console.log(msgs, "msgs");
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     );
@@ -69,6 +72,10 @@ export const SvmDetailsTab: FunctionComponent<{
     };
 
     const renderTransactionFee = () => {
+      const amount = new CoinPretty(
+        msgs?.currency || chainStore.current.stakeCurrency,
+        new Dec(msgs?.amount || 0)
+      );
       return (
         <div>
           {renderInfo(
@@ -89,12 +96,7 @@ export const SvmDetailsTab: FunctionComponent<{
                 }}
               >
                 <Text size={16} weight="600">
-                  {new CoinPretty(
-                    chainStore.current.stakeCurrency,
-                    new Dec(msgs?.amount)
-                  )
-                    ?.trim(true)
-                    ?.toString()}
+                  {amount?.trim(true)?.toString()}
                 </Text>
               </div>
               <Text
@@ -104,8 +106,7 @@ export const SvmDetailsTab: FunctionComponent<{
                 }}
                 color={colors["neutral-text-body"]}
               >
-                ≈{" "}
-                {new PricePretty(fiatCurrency, msgs?.amount || "0").toString()}
+                ≈ {priceStore.calculatePrice(amount)?.toString()}
               </Text>
             </div>
           )}
@@ -378,7 +379,7 @@ export const SvmDetailsTab: FunctionComponent<{
         >
           {renderDestination(
             signer,
-            msgs?.address && Bech32Address.shortenAddress(msgs?.address, 20)
+            msgs?.recipient && shortenAddress(msgs?.recipient)
           )}
         </Card>
         <Card

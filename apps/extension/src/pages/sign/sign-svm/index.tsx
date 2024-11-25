@@ -159,12 +159,12 @@ export const SignSvmPage: FunctionComponent = observer(() => {
         className={cx("setting", dataSetting ? "activeSetting" : "", "modal")}
         ref={dataRef}
       >
-        {/*<DataModal*/}
-        {/*  onClose={() => {*/}
-        {/*    handleCloseDataModal();*/}
-        {/*  }}*/}
-        {/*  renderData={() => <SvmDataTab data={lastestData} />}*/}
-        {/*/>*/}
+        <DataModal
+          onClose={() => {
+            handleCloseDataModal();
+          }}
+          renderData={() => <SvmDataTab data={data?.data.data} />}
+        />
       </div>
       {
         /*
@@ -212,18 +212,18 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {/*{tab === Tab.Data && <SvmDataTab data={lastestData} />}*/}
-                {/*{tab === Tab.Details && (*/}
-                {/*  <SvmDetailsTabWithErrorBoundary*/}
-                {/*    priceStore={priceStore}*/}
-                {/*    feeConfig={feeConfig}*/}
-                {/*    gasConfig={gasConfig}*/}
-                {/*    intl={intl}*/}
-                {/*    dataSign={lastestData}*/}
-                {/*    isNoSetFee={isNoSetFee}*/}
-                {/*    signer={signer}*/}
-                {/*  />*/}
-                {/*)}*/}
+                {/*{tab === Tab.Data && <SvmDataTab data={data} />}*/}
+                {tab === Tab.Details && (
+                  <SvmDetailsTabWithErrorBoundary
+                    priceStore={priceStore}
+                    feeConfig={feeConfig}
+                    gasConfig={null}
+                    intl={intl}
+                    dataSign={data}
+                    isNoSetFee={isNoSetFee}
+                    signer={signer}
+                  />
+                )}
               </div>
             </div>
             <div
