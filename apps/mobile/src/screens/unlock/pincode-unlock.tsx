@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -16,45 +10,37 @@ import {
   Platform,
   StyleSheet,
   TouchableOpacity,
-  View,
-} from "react-native";
-import { observer } from "mobx-react-lite";
-import { TextInput } from "../../components/input";
-import delay from "delay";
-import { useStore } from "../../stores";
-import { StackActions, useNavigation } from "@react-navigation/native";
-import {
-  AccountStore,
-  IAccountStore,
-  IChainStore,
-  WalletStatus,
-} from "@owallet/stores";
-import { autorun } from "mobx";
-import { metrics, spacing } from "../../themes";
-import { ProgressBar } from "../../components/progress-bar";
-import CodePush from "react-native-code-push";
+  View
+} from 'react-native';
+import { observer } from 'mobx-react-lite';
+import { TextInput } from '../../components/input';
+import delay from 'delay';
+import { useStore } from '../../stores';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { AccountStore, IAccountStore, IChainStore, WalletStatus } from '@owallet/stores';
+import { autorun } from 'mobx';
+import { metrics, spacing } from '../../themes';
+import { ProgressBar } from '../../components/progress-bar';
+import CodePush from 'react-native-code-push';
 
-import { useTheme } from "@src/themes/theme-provider";
-import OWButton from "@src/components/button/OWButton";
-import OWButtonIcon from "@src/components/button/ow-button-icon";
-import { Text } from "@src/components/text";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { showToast } from "@src/utils/helper";
+import { useTheme } from '@src/themes/theme-provider';
+import OWButton from '@src/components/button/OWButton';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import { Text } from '@src/components/text';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { showToast } from '@src/utils/helper';
 
-import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import NumericPad from "react-native-numeric-pad";
-import OWText from "@src/components/text/ow-text";
+import SmoothPinCodeInput from 'react-native-smooth-pincode-input';
+import NumericPad from 'react-native-numeric-pad';
+import OWText from '@src/components/text/ow-text';
 
-import { tracking } from "@src/utils/tracking";
-import { navigate, resetTo } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { KeychainStore } from "@src/stores/keychain";
-import { KeyRingStore } from "@owallet/stores-core";
-import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
-export const useAutoBiomtric = (
-  keychainStore: KeychainStore,
-  tryEnabled: boolean
-) => {
+import { tracking } from '@src/utils/tracking';
+import { navigate, resetTo } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
+import { KeychainStore } from '@src/stores/keychain';
+import { KeyRingStore } from '@owallet/stores-core';
+import { ChainIdEnum, EmbedChainInfos } from '@owallet/common';
+export const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
   const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
   // const tryBiometricAutoOnce = useRef(false);
 
@@ -72,7 +58,7 @@ export const waitAccountInit = async (
   accountStore: IAccountStore,
   keyRingStore: KeyRingStore
 ) => {
-  if (keyRingStore.status === "unlocked") {
+  if (keyRingStore.status === 'unlocked') {
     for (const chainInfo of chainStore.chainInfos) {
       const account = accountStore.getAccount(chainInfo.chainId);
       if (account.walletStatus === WalletStatus.NotInit) {
@@ -80,12 +66,9 @@ export const waitAccountInit = async (
       }
     }
 
-    await new Promise<void>((resolve) => {
+    await new Promise<void>(resolve => {
       const disposal = autorun(() => {
-        if (
-          accountStore.getAccount(chainStore.chainInfos[0].chainId)
-            .bech32Address
-        ) {
+        if (accountStore.getAccount(chainStore.chainInfos[0].chainId).bech32Address) {
           resolve();
           if (disposal) {
             disposal();
@@ -100,50 +83,44 @@ enum AutoBiomtricStatus {
   NO_NEED,
   NEED,
   FAILED,
-  SUCCESS,
+  SUCCESS
 }
 
-function DownloadCodepush({
-  isLoading,
-  installing,
-  progress,
-  setDownloading,
-  setInstalling,
-}) {
+function DownloadCodepush({ isLoading, installing, progress, setDownloading, setInstalling }) {
   const { colors } = useTheme();
   return (
     <View
       style={{
-        width: "100%",
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: colors["neutral-surface-card"],
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors['neutral-surface-card']
       }}
     >
       <View
         style={{
-          marginBottom: spacing["24"],
+          marginBottom: spacing['24']
         }}
       >
         <Image
           style={{
             height: metrics.screenWidth / 1.4,
-            width: metrics.screenWidth / 1.4,
+            width: metrics.screenWidth / 1.4
           }}
           fadeDuration={0}
           resizeMode="contain"
-          source={require("../../assets/image/img_planet.png")}
+          source={require('../../assets/image/img_planet.png')}
         />
       </View>
       <Text
         style={{
-          color: colors["primary-surface-default"],
-          textAlign: "center",
-          fontWeight: "600",
+          color: colors['primary-surface-default'],
+          textAlign: 'center',
+          fontWeight: '600',
           fontSize: 18,
           lineHeight: 22,
-          opacity: isLoading ? 0.5 : 1,
+          opacity: isLoading ? 0.5 : 1
         }}
       >
         {installing ? `Installing` : `Checking for`} update
@@ -151,10 +128,10 @@ function DownloadCodepush({
       <View style={{ marginVertical: 12 }}>
         <Text
           style={{
-            color: colors["primary-surface-default"],
-            textAlign: "center",
+            color: colors['primary-surface-default'],
+            textAlign: 'center',
             fontSize: 13,
-            lineHeight: 22,
+            lineHeight: 22
           }}
         >
           {progress}%
@@ -169,12 +146,12 @@ function DownloadCodepush({
       >
         <Text
           style={{
-            color: colors["primary-surface-default"],
-            textAlign: "center",
-            fontWeight: "600",
+            color: colors['primary-surface-default'],
+            textAlign: 'center',
+            fontWeight: '600',
             fontSize: 16,
             lineHeight: 22,
-            opacity: isLoading ? 0.5 : 1,
+            opacity: isLoading ? 0.5 : 1
           }}
         >
           Cancel
@@ -193,7 +170,7 @@ function PadComponent({
   password,
   isFailed,
   setPassword,
-  tryUnlock,
+  tryUnlock
 }) {
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -205,10 +182,10 @@ function PadComponent({
           value={code}
           codeLength={6}
           cellStyle={{
-            borderWidth: 0,
+            borderWidth: 0
           }}
           cellStyleFocused={{
-            borderColor: colors["neutral-surface-action"],
+            borderColor: colors['neutral-surface-action']
           }}
           placeholder={
             <View
@@ -216,7 +193,7 @@ function PadComponent({
                 width: 24,
                 height: 24,
                 borderRadius: 48,
-                backgroundColor: colors["neutral-surface-action"],
+                backgroundColor: colors['neutral-surface-action']
               }}
             />
           }
@@ -227,20 +204,20 @@ function PadComponent({
                 height: 24,
                 borderRadius: 48,
                 opacity: 0.7,
-                backgroundColor: colors["highlight-surface-active"],
+                backgroundColor: colors['highlight-surface-active']
               }}
             />
           }
           maskDelay={1000}
           password={true}
           //   onFulfill={}
-          onBackspace={(code) => console.log(code)}
+          onBackspace={code => console.log(code)}
         />
       ) : (
         <View
           style={{
             width: metrics.screenWidth,
-            paddingHorizontal: 16,
+            paddingHorizontal: 16
           }}
         >
           <TextInput
@@ -248,18 +225,18 @@ function PadComponent({
             returnKeyType="done"
             secureTextEntry={statusPass}
             value={password}
-            error={isFailed ? "Invalid password" : undefined}
-            onChangeText={(txt) => {
+            error={isFailed ? 'Invalid password' : undefined}
+            onChangeText={txt => {
               setPassword(txt);
             }}
             inputContainerStyle={{
               width: metrics.screenWidth - 32,
               borderWidth: 2,
-              borderColor: colors["primary-surface-default"],
+              borderColor: colors['primary-surface-default'],
               borderRadius: 8,
               minHeight: 56,
-              alignItems: "center",
-              justifyContent: "center",
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             onSubmitEditing={tryUnlock}
             placeholder="Enter your passcode"
@@ -267,8 +244,8 @@ function PadComponent({
               <OWButtonIcon
                 style={styles.padIcon}
                 onPress={showPass}
-                name={statusPass ? "eye" : "eye-slash"}
-                colorIcon={colors["neutral-text-title"]}
+                name={statusPass ? 'eye' : 'eye-slash'}
+                colorIcon={colors['neutral-text-title']}
                 sizeIcon={22}
               />
             }
@@ -280,14 +257,13 @@ function PadComponent({
 }
 
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
-  const {
-    keyRingStore,
-    keychainStore,
-    accountStore,
-    chainStore,
-    appInitStore,
-  } = useStore();
-  tracking(`Unlock Screen`);
+  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore } = useStore();
+  useEffect(() => {
+    tracking(`Unlock Screen`);
+
+    return () => {};
+  }, []);
+
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -306,11 +282,11 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   };
 
   const selectChain = async () => {
-    if (appInitStore.getInitApp.wallet === "osmosis") {
+    if (appInitStore.getInitApp.wallet === 'osmosis') {
       chainStore.selectChain(ChainIdEnum.Osmosis);
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
-    } else if (appInitStore.getInitApp.wallet === "injective") {
+    } else if (appInitStore.getInitApp.wallet === 'injective') {
       chainStore.selectChain(ChainIdEnum.Injective);
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
@@ -321,13 +297,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     selectChain();
   }, [appInitStore.getInitApp.wallet]);
 
-  const autoBiometryStatus = useAutoBiomtric(
-    keychainStore,
-    keyRingStore.status === "locked" && loaded
-  );
+  const autoBiometryStatus = useAutoBiomtric(keychainStore, keyRingStore.status === 'locked' && loaded);
 
   useEffect(() => {
-    tracking("Unlock Screen");
+    tracking('Unlock Screen');
     if (__DEV__) {
       return;
     }
@@ -337,9 +310,9 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
         //   appendReleaseDescription: true,
         //   title: 'Update available'
         // },
-        installMode: CodePush.InstallMode.IMMEDIATE,
+        installMode: CodePush.InstallMode.IMMEDIATE
       },
-      (status) => {
+      status => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             // Show "downloading" modal
@@ -372,14 +345,14 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     );
   }, []);
 
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
   const [isNumericPad, setNumericPad] = useState(false);
 
   useEffect(() => {
-    if (appInitStore.getInitApp.passcodeType === "numeric") {
+    if (appInitStore.getInitApp.passcodeType === 'numeric') {
       setNumericPad(true);
     }
   }, [appInitStore.getInitApp.passcodeType]);
@@ -387,7 +360,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const pinRef = useRef(null);
   const numpadRef = useRef(null);
 
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
 
   const tryBiometric = useCallback(async () => {
     try {
@@ -411,7 +384,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   const tryUnlock = async () => {
     try {
-      tracking("Unlock Wallet");
+      tracking('Unlock Wallet');
       const passcode = isNumericPad ? code : password;
       setIsLoading(true);
       await delay(10);
@@ -419,19 +392,19 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     } catch (e) {
       console.log(e);
       setIsLoading(false);
-      pinRef?.current?.shake().then(() => setCode(""));
+      pinRef?.current?.shake().then(() => setCode(''));
       numpadRef?.current?.clearAll();
       setIsFailed(true);
       showToast({
-        type: "danger",
-        message: "Invalid password",
+        type: 'danger',
+        message: 'Invalid password'
       });
     }
   };
 
   const routeToRegisterOnce = useRef(false);
   useEffect(() => {
-    if (!routeToRegisterOnce.current && keyRingStore.status === "empty") {
+    if (!routeToRegisterOnce.current && keyRingStore.status === 'empty') {
       (() => {
         routeToRegisterOnce.current = true;
         navigation.dispatch(StackActions.replace(SCREENS.RegisterIntro));
@@ -441,12 +414,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
-      if (state !== "active") {
+      if (state !== 'active') {
         setDownloading(false);
         setInstalling(false);
       }
     };
-    const subscription = AppState.addEventListener("change", appStateHandler);
+    const subscription = AppState.addEventListener('change', appStateHandler);
 
     return () => {
       subscription.remove();
@@ -454,7 +427,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    if (keyRingStore.status === "unlocked") {
+    if (keyRingStore.status === 'unlocked') {
       (async () => {
         if (!downloading) {
           navigateToHome();
@@ -463,9 +436,9 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
-  const onSwitchPad = (type) => {
-    setCode("");
-    if (type === "numeric") {
+  const onSwitchPad = type => {
+    setCode('');
+    if (type === 'numeric') {
       setNumericPad(true);
     } else {
       setNumericPad(false);
@@ -483,15 +456,14 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   }, [code]);
 
   useEffect(() => {
-    if (appInitStore.getInitApp.passcodeType === "alphabet") {
+    if (appInitStore.getInitApp.passcodeType === 'alphabet') {
       setNumericPad(false);
     }
   }, [appInitStore.getInitApp.passcodeType]);
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
-  if (!routeToRegisterOnce.current && keyRingStore.status === "empty")
-    return <View />;
+  if (!routeToRegisterOnce.current && keyRingStore.status === 'empty') return <View />;
   if (downloading || installing)
     return (
       <DownloadCodepush
@@ -508,33 +480,29 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       {isLoading || isBiometricLoading ? (
         <View
           style={{
-            backgroundColor: colors["neutral-surface-bg"],
+            backgroundColor: colors['neutral-surface-bg'],
             width: metrics.screenWidth,
             height: metrics.screenHeight,
             opacity: 0.8,
-            position: "absolute",
+            position: 'absolute',
             zIndex: 999,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center'
           }}
         >
-          <ActivityIndicator size={"large"} />
+          <ActivityIndicator size={'large'} />
         </View>
       ) : null}
       <View style={styles.container}>
         <View style={styles.aic}>
-          <OWText
-            variant="heading"
-            color={colors["nertral-text-title"]}
-            typo="bold"
-          >
+          <OWText variant="heading" color={colors['nertral-text-title']} typo="bold">
             Enter your passcode
           </OWText>
           <View
             style={{
               paddingLeft: 20,
               paddingRight: 20,
-              paddingTop: 32,
+              paddingTop: 32
             }}
           >
             {isNumericPad ? (
@@ -543,10 +511,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                 value={code}
                 codeLength={6}
                 cellStyle={{
-                  borderWidth: 0,
+                  borderWidth: 0
                 }}
                 cellStyleFocused={{
-                  borderColor: colors["neutral-surface-action"],
+                  borderColor: colors['neutral-surface-action']
                 }}
                 placeholder={
                   <View
@@ -554,7 +522,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                       width: 24,
                       height: 24,
                       borderRadius: 48,
-                      backgroundColor: colors["neutral-surface-action"],
+                      backgroundColor: colors['neutral-surface-action']
                     }}
                   />
                 }
@@ -565,20 +533,20 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                       height: 24,
                       borderRadius: 48,
                       opacity: 0.7,
-                      backgroundColor: colors["highlight-surface-active"],
+                      backgroundColor: colors['highlight-surface-active']
                     }}
                   />
                 }
                 maskDelay={1000}
                 password={true}
                 //   onFulfill={}
-                onBackspace={(code) => console.log(code)}
+                onBackspace={code => console.log(code)}
               />
             ) : (
               <View
                 style={{
                   width: metrics.screenWidth,
-                  paddingHorizontal: 16,
+                  paddingHorizontal: 16
                 }}
               >
                 <TextInput
@@ -586,18 +554,18 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                   returnKeyType="done"
                   secureTextEntry={statusPass}
                   value={password}
-                  error={isFailed ? "Invalid password" : undefined}
-                  onChangeText={(txt) => {
+                  error={isFailed ? 'Invalid password' : undefined}
+                  onChangeText={txt => {
                     setPassword(txt);
                   }}
                   inputContainerStyle={{
                     width: metrics.screenWidth - 32,
                     borderWidth: 2,
-                    borderColor: colors["primary-surface-default"],
+                    borderColor: colors['primary-surface-default'],
                     borderRadius: 8,
                     minHeight: 56,
-                    alignItems: "center",
-                    justifyContent: "center",
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}
                   onSubmitEditing={tryUnlock}
                   placeholder="Enter your passcode"
@@ -605,8 +573,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
                     <OWButtonIcon
                       style={styles.padIcon}
                       onPress={showPass}
-                      name={statusPass ? "eye" : "eye-slash"}
-                      colorIcon={colors["neutral-text-title"]}
+                      name={statusPass ? 'eye' : 'eye-slash'}
+                      colorIcon={colors['neutral-text-title']}
                       sizeIcon={22}
                     />
                   }
@@ -616,26 +584,16 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           </View>
           <View style={[styles.rc, styles.switch]}>
             <TouchableOpacity
-              style={[
-                styles.switchText,
-                isNumericPad ? styles.switchTextActive : { marginRight: 9 },
-              ]}
-              onPress={() => onSwitchPad("numeric")}
+              style={[styles.switchText, isNumericPad ? styles.switchTextActive : { marginRight: 9 }]}
+              onPress={() => onSwitchPad('numeric')}
             >
-              <OWText
-                color={colors["neutral-text-action-on-light-bg"]}
-                weight="500"
-                size={16}
-              >
+              <OWText color={colors['neutral-text-action-on-light-bg']} weight="500" size={16}>
                 123
               </OWText>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[
-                styles.switchText,
-                !isNumericPad ? styles.switchTextActive : { marginLeft: 9 },
-              ]}
-              onPress={() => onSwitchPad("alphabet")}
+              style={[styles.switchText, !isNumericPad ? styles.switchTextActive : { marginLeft: 9 }]}
+              onPress={() => onSwitchPad('alphabet')}
             >
               <OWText weight="500" size={16}>
                 Aa
@@ -648,14 +606,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           {keychainStore.isBiometryOn && (
             <TouchableOpacity onPress={() => tryBiometric()}>
               <View style={styles.rc}>
-                <OWIcon size={14} name="face" color={colors["purple-900"]} />
-                <OWText
-                  style={{ paddingLeft: 8 }}
-                  variant="h2"
-                  weight="600"
-                  size={14}
-                  color={colors["purple-900"]}
-                >
+                <OWIcon size={14} name="face" color={colors['purple-900']} />
+                <OWText style={{ paddingLeft: 8 }} variant="h2" weight="600" size={14} color={colors['purple-900']}>
                   Sign in with Biometrics
                 </OWText>
               </View>
@@ -667,20 +619,14 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
               numLength={6}
               buttonSize={60}
               activeOpacity={0.1}
-              onValueChange={(value) => {
+              onValueChange={value => {
                 setCode(value);
               }}
               allowDecimal={false}
               buttonItemStyle={styles.buttonItemStyle}
               buttonTextStyle={styles.buttonTextStyle}
               //@ts-ignore
-              rightBottomButton={
-                <OWIcon
-                  size={30}
-                  color={colors["neutral-text-title"]}
-                  name="backspace-outline"
-                />
-              }
+              rightBottomButton={<OWIcon size={30} color={colors['neutral-text-title']} name="backspace-outline" />}
               onRightBottomButtonPress={() => {
                 numpadRef?.current?.clear();
               }}
@@ -689,7 +635,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
             <View style={styles.signIn}>
               <OWButton
                 style={{
-                  borderRadius: 32,
+                  borderRadius: 32
                 }}
                 label="Continue"
                 disabled={isLoading || !password}
@@ -706,66 +652,66 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     useBiometric: {},
     container: {
       paddingTop: metrics.screenHeight / 19,
-      justifyContent: "space-between",
-      height: "100%",
-      backgroundColor: colors["neutral-surface-card"],
+      justifyContent: 'space-between',
+      height: '100%',
+      backgroundColor: colors['neutral-surface-card']
     },
     signIn: {
-      width: "100%",
-      alignItems: "center",
+      width: '100%',
+      alignItems: 'center',
       borderTopWidth: 1,
-      borderTopColor: colors["neutral-border-default"],
-      padding: 16,
+      borderTopColor: colors['neutral-border-default'],
+      padding: 16
     },
     padIcon: {
       paddingLeft: 10,
-      width: "auto",
+      width: 'auto'
     },
     aic: {
-      alignItems: "center",
-      paddingBottom: 10,
+      alignItems: 'center',
+      paddingBottom: 10
     },
     rc: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center'
     },
     buttonTextStyle: {
       fontSize: 22,
-      color: colors["neutral-text-title"],
-      fontFamily: "SpaceGrotesk-SemiBold",
+      color: colors['neutral-text-title'],
+      fontFamily: 'SpaceGrotesk-SemiBold'
     },
     buttonItemStyle: {
-      backgroundColor: colors["neutral-surface-action3"],
+      backgroundColor: colors['neutral-surface-action3'],
       width: metrics.screenWidth / 3.65,
       height: 80,
-      borderRadius: 8,
+      borderRadius: 8
     },
     switch: {
-      backgroundColor: colors["neutral-surface-action3"],
+      backgroundColor: colors['neutral-surface-action3'],
       padding: 4,
       borderRadius: 999,
-      marginTop: 12,
+      marginTop: 12
     },
     switchText: {
       paddingHorizontal: 24,
-      paddingVertical: 6,
+      paddingVertical: 6
     },
     switchTextActive: {
-      backgroundColor: colors["neutral-surface-toggle-active"],
-      borderRadius: 999,
+      backgroundColor: colors['neutral-surface-toggle-active'],
+      borderRadius: 999
     },
     goBack: {
-      backgroundColor: colors["neutral-surface-action3"],
+      backgroundColor: colors['neutral-surface-action3'],
       borderRadius: 999,
       width: 44,
       height: 44,
-      alignItems: "center",
-      justifyContent: "center",
-      marginLeft: 16,
-    },
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 16
+    }
   });

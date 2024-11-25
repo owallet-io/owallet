@@ -75,7 +75,11 @@ export const SendTronScreen: FunctionComponent<{
   const sendConfigs = useSendTronTxConfig(chainStore, queriesStore, chainId, addressToFetch, 1);
   sendConfigs.amountConfig.setCurrency(currency);
 
-  tracking(`Send Tron Screen`);
+  useEffect(() => {
+    tracking(`Send Tron Screen`);
+    return () => {};
+  }, []);
+
   const queryBalances = queriesStore.get(chainId).queryBalances;
 
   const balance = queries.queryBalances

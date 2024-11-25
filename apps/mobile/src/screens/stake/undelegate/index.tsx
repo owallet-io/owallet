@@ -1,44 +1,40 @@
-import { toAmount } from "@owallet/common";
-import {
-  useGasSimulator,
-  useTxConfigsValidate,
-  useUndelegateTxConfig,
-} from "@owallet/hooks";
-import { Staking } from "@owallet/stores";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import OWCard from "@src/components/card/ow-card";
+import { toAmount } from '@owallet/common';
+import { useGasSimulator, useTxConfigsValidate, useUndelegateTxConfig } from '@owallet/hooks';
+import { Staking } from '@owallet/stores';
+import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import OWCard from '@src/components/card/ow-card';
 
-import { AlertIcon, DownArrowIcon } from "@src/components/icon";
-import { NewAmountInput } from "@src/components/input/amount-input";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import OWText from "@src/components/text/ow-text";
-import { useTheme } from "@src/themes/theme-provider";
-import { capitalizedText, showToast } from "@src/utils/helper";
-import { Buffer } from "buffer";
-import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { OWButton } from "../../../components/button";
+import { AlertIcon, DownArrowIcon } from '@src/components/icon';
+import { NewAmountInput } from '@src/components/input/amount-input';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { PageWithBottom } from '@src/components/page/page-with-bottom';
+import OWText from '@src/components/text/ow-text';
+import { useTheme } from '@src/themes/theme-provider';
+import { capitalizedText, showToast } from '@src/utils/helper';
+import { Buffer } from 'buffer';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { OWButton } from '../../../components/button';
 
-import { ValidatorThumbnail } from "../../../components/thumbnail";
+import { ValidatorThumbnail } from '../../../components/thumbnail';
 
-import { useStore } from "../../../stores";
-import { metrics, spacing } from "../../../themes";
-import { FeeModal } from "@src/modals/fee";
-import { tracking } from "@src/utils/tracking";
-import { makeStdTx } from "@cosmjs/amino";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
-import { API } from "@src/common/api";
-import { goBack, navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-import { OWHeaderTitle } from "@components/header";
-import { AsyncKVStore } from "@src/common";
-import window from "@react-navigation/native/lib/typescript/src/__mocks__/window";
-import { LoadingSpinner } from "@components/spinner";
-import { initPrice } from "@screens/home/hooks/use-multiple-assets";
-import { FeeControl } from "@components/input/fee-control";
+import { useStore } from '../../../stores';
+import { metrics, spacing } from '../../../themes';
+import { FeeModal } from '@src/modals/fee';
+import { tracking } from '@src/utils/tracking';
+import { makeStdTx } from '@cosmjs/amino';
+import { Tendermint37Client } from '@cosmjs/tendermint-rpc';
+import { API } from '@src/common/api';
+import { goBack, navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
+import { OWHeaderTitle } from '@components/header';
+import { AsyncKVStore } from '@src/common';
+import window from '@react-navigation/native/lib/typescript/src/__mocks__/window';
+import { LoadingSpinner } from '@components/spinner';
+import { initPrice } from '@screens/home/hooks/use-multiple-assets';
+import { FeeControl } from '@components/input/fee-control';
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -53,8 +49,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  tracking(`Undelegate Screen`);
-  const validatorAddress = route.params["validatorAddress"];
+  useEffect(() => {
+    tracking(`Undelegate Screen`);
+    return () => {};
+  }, []);
+
+  const validatorAddress = route.params['validatorAddress'];
 
   const {
     chainStore,
@@ -63,14 +63,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     queriesStore,
     // analyticsStore,
     priceStore,
-    appInitStore,
+    appInitStore
   } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
 
   const [isLoading, setIsLoading] = useState(false);
-  const initialChainId =
-    route.params["chainId"] || chainStore.current["chainId"];
+  const initialChainId = route.params['chainId'] || chainStore.current['chainId'];
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -83,39 +82,28 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     }
   }, [initialChainId]);
   useEffect(() => {
-    if (sendConfigs.feeConfig.type !== "manual") {
+    if (sendConfigs.feeConfig.type !== 'manual') {
       sendConfigs.feeConfig.setFee({
         type: sendConfigs.feeConfig.type,
-        currency: chainInfo.stakeCurrency,
+        currency: chainInfo.stakeCurrency
       });
     } else {
       sendConfigs.feeConfig.setFee({
-        type: "average",
-        currency: chainInfo.stakeCurrency,
+        type: 'average',
+        currency: chainInfo.stakeCurrency
       });
     }
   }, [chainInfo.stakeCurrency]);
 
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => (
-        <OWHeaderTitle
-          title={"UnStake"}
-          subTitle={chainStore.current?.chainName}
-        />
-      ),
+      headerTitle: () => <OWHeaderTitle title={'UnStake'} subTitle={chainStore.current?.chainName} />
     });
   }, [chainStore.current?.chainName]);
   const validator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Bonded)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonding)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(Staking.BondStatus.Unbonded)
-      .getValidator(validatorAddress);
+    queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Bonded).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Unbonding).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Unbonded).getValidator(validatorAddress);
 
   const validatorThumbnail = validator
     ? queries.cosmos.queryValidators
@@ -124,23 +112,14 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       queries.cosmos.queryValidators
         .getQueryStatus(Staking.BondStatus.Unbonding)
         .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(Staking.BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+      queries.cosmos.queryValidators.getQueryStatus(Staking.BondStatus.Unbonded).getValidatorThumbnail(validatorAddress)
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
-  const sendConfigs = useUndelegateTxConfig(
-    chainStore,
-    queriesStore,
-    chainId,
-    sender,
-    validatorAddress,
-    300000
-  );
+  const sendConfigs = useUndelegateTxConfig(chainStore, queriesStore, chainId, sender, validatorAddress, 300000);
   const amount = new CoinPretty(
     chainInfo.stakeCurrency || chainInfo.currencies[0],
     new Int(toAmount(Number(sendConfigs.amountConfig.amount)))
@@ -148,26 +127,24 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (chainInfo.bech32Config) {
-      sendConfigs.recipientConfig.setBech32Prefix(
-        chainInfo.bech32Config.bech32PrefixValAddr
-      );
+      sendConfigs.recipientConfig.setBech32Prefix(chainInfo.bech32Config.bech32PrefixValAddr);
     }
     sendConfigs.recipientConfig.setValue(validatorAddress);
   }, [
     chainInfo.bech32Config,
     chainInfo.bech32Config?.bech32PrefixValAddr,
     sendConfigs.recipientConfig,
-    validatorAddress,
+    validatorAddress
   ]);
 
   sendConfigs.amountConfig.setCurrency(chainInfo.stakeCurrency);
   const gasSimulator = useGasSimulator(
-    new AsyncKVStore("gas-simulator.screen.stake.undelegate/undelegate"),
+    new AsyncKVStore('gas-simulator.screen.stake.undelegate/undelegate'),
     chainStore,
     chainId,
     sendConfigs.gasConfig,
     sendConfigs.feeConfig,
-    "native",
+    'native',
     () => {
       return account.cosmos.makeUndelegateTx(
         sendConfigs.amountConfig.amount[0].toDec().toString(),
@@ -178,12 +155,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const txConfigsValidate = useTxConfigsValidate({
     ...sendConfigs,
-    gasSimulator,
+    gasSimulator
   });
-  const txStateIsValid =
-    chainId === "oraibtc-mainnet-1"
-      ? null
-      : txConfigsValidate.interactionBlocked;
+  const txStateIsValid = chainId === 'oraibtc-mainnet-1' ? null : txConfigsValidate.interactionBlocked;
 
   // const unstakeOraiBtc = async () => {
   //   try {
@@ -258,12 +232,10 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
+        enableOverDrag: false
+      }
     });
-    modalStore.setChildren(
-      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
-    );
+    modalStore.setChildren(<FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />);
   };
   const unbondingPeriodDay = queries.cosmos.queryStakingParams.response
     ? queries.cosmos.queryStakingParams.unbondingTimeSec / (3600 * 24)
@@ -275,7 +247,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           type="danger"
           label="Unstake"
           disabled={isDisable}
-          loading={account.isSendingMsg === "send" || isLoading}
+          loading={account.isSendingMsg === 'send' || isLoading}
           onPress={async () => {
             if (!txConfigsValidate.interactionBlocked) {
               try {
@@ -293,7 +265,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   sendConfigs.memoConfig.memo,
                   {
                     preferNoSetFee: true,
-                    preferNoSetMemo: true,
+                    preferNoSetMemo: true
                   },
                   {
                     onFulfill: (tx: any) => {
@@ -303,34 +275,32 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                         return;
                       }
                     },
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       navigate(SCREENS.TxPendingResult, {
                         chainId: initialChainId,
-                        txHash: Buffer.from(txHash).toString("hex"),
+                        txHash: Buffer.from(txHash).toString('hex'),
                         data: {
-                          type: "unstake",
+                          type: 'unstake',
                           wallet: account.bech32Address,
                           validator: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.amount[0],
-                          fee: sendConfigs.feeConfig.fees[0],
-                        },
+                          fee: sendConfigs.feeConfig.fees[0]
+                        }
                       });
-                    },
+                    }
                   }
                 );
               } catch (e) {
-                if (e?.message.toLowerCase().includes("rejected")) {
+                if (e?.message.toLowerCase().includes('rejected')) {
                   return;
-                } else if (
-                  e?.message.includes("Cannot read properties of undefined")
-                ) {
+                } else if (e?.message.includes('Cannot read properties of undefined')) {
                   return;
                 } else {
                   console.log(e);
 
                   showToast({
                     message: JSON.stringify(e),
-                    type: "danger",
+                    type: 'danger'
                   });
                 }
               }
@@ -339,13 +309,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           style={[
             styles.bottomBtn,
             {
-              width: metrics.screenWidth - 32,
-            },
+              width: metrics.screenWidth - 32
+            }
           ]}
           textStyle={{
             fontSize: 14,
-            fontWeight: "600",
-            color: colors["neutral-text-action-on-dark-bg"],
+            fontWeight: '600',
+            color: colors['neutral-text-action-on-dark-bg']
           }}
         />
       }
@@ -361,34 +331,27 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           <View>
             <OWCard
               style={{
-                backgroundColor: colors["neutral-surface-card"],
+                backgroundColor: colors['neutral-surface-card']
               }}
             >
-              <OWText
-                style={{ paddingBottom: 8 }}
-                color={colors["neutral-text-title"]}
-              >
+              <OWText style={{ paddingBottom: 8 }} color={colors['neutral-text-title']}>
                 Validator
               </OWText>
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: 'row'
                 }}
               >
                 <View
                   style={{
-                    backgroundColor: colors["neutral-icon-on-dark"],
-                    borderRadius: 999,
+                    backgroundColor: colors['neutral-icon-on-dark'],
+                    borderRadius: 999
                   }}
                 >
                   <ValidatorThumbnail size={20} url={validatorThumbnail} />
                 </View>
 
-                <OWText
-                  style={{ paddingLeft: 8 }}
-                  color={colors["neutral-text-title"]}
-                  weight="500"
-                >
+                <OWText style={{ paddingLeft: 8 }} color={colors['neutral-text-title']} weight="500">
                   {validator?.description.moniker}
                 </OWText>
               </View>
@@ -396,46 +359,44 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             <OWCard
               style={{
                 paddingTop: 22,
-                backgroundColor: colors["neutral-surface-card"],
+                backgroundColor: colors['neutral-surface-card']
               }}
               type="normal"
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  flexDirection: 'row',
+                  justifyContent: 'space-between'
                 }}
               >
                 <View style={{}}>
                   <OWText style={{ paddingTop: 8 }}>
-                    Staked :{" "}
-                    {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+                    Staked : {staked.trim(true).shrink(true).maxDecimals(6).toString()}
                   </OWText>
                   <View
                     style={{
-                      flexDirection: "row",
-                      backgroundColor: colors["neutral-surface-action3"],
+                      flexDirection: 'row',
+                      backgroundColor: colors['neutral-surface-action3'],
                       borderRadius: 999,
                       paddingHorizontal: 14,
                       paddingVertical: 12,
                       maxWidth: metrics.screenWidth / 4.5,
-                      marginTop: 12,
+                      marginTop: 12
                     }}
                   >
                     <View
                       style={{
                         borderRadius: 999,
-                        justifyContent: "center",
+                        justifyContent: 'center'
                       }}
                     >
                       <OWIcon
                         style={{
-                          borderRadius: 999,
+                          borderRadius: 999
                         }}
                         type="images"
                         source={{
-                          uri: sendConfigs.amountConfig.sendCurrency
-                            ?.coinImageUrl,
+                          uri: sendConfigs.amountConfig.sendCurrency?.coinImageUrl
                         }}
                         size={16}
                       />
@@ -447,8 +408,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 </View>
                 <View
                   style={{
-                    alignItems: "flex-end",
-                    marginBottom: -12,
+                    alignItems: 'flex-end',
+                    marginBottom: -12
                   }}
                 >
                   <NewAmountInput
@@ -456,56 +417,39 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                     inputContainerStyle={{
                       borderWidth: 0,
                       width: metrics.screenWidth / 2.3,
-                      marginBottom: 8,
+                      marginBottom: 8
                     }}
                     amountConfig={sendConfigs.amountConfig}
-                    maxBalance={
-                      staked
-                        .trim(true)
-                        .shrink(true)
-                        .maxDecimals(6)
-                        .toString()
-                        .split(" ")[0]
-                    }
-                    placeholder={"0.0"}
+                    maxBalance={staked.trim(true).shrink(true).maxDecimals(6).toString().split(' ')[0]}
+                    placeholder={'0.0'}
                   />
                 </View>
               </View>
               <View
                 style={{
-                  alignSelf: "flex-end",
-                  flexDirection: "row",
-                  alignItems: "center",
+                  alignSelf: 'flex-end',
+                  flexDirection: 'row',
+                  alignItems: 'center'
                 }}
               >
-                <OWIcon
-                  name="tdesign_swap"
-                  size={16}
-                  color={colors["neutral-text-body"]}
-                />
-                <OWText
-                  style={{ paddingLeft: 4 }}
-                  color={colors["neutral-text-body"]}
-                  size={14}
-                >
+                <OWIcon name="tdesign_swap" size={16} color={colors['neutral-text-body']} />
+                <OWText style={{ paddingLeft: 4 }} color={colors['neutral-text-body']} size={14}>
                   {(sendConfigs.amountConfig.amount[0]
-                    ? priceStore.calculatePrice(
-                        sendConfigs.amountConfig.amount[0]
-                      )
+                    ? priceStore.calculatePrice(sendConfigs.amountConfig.amount[0])
                     : initPrice
                   )?.toString()}
                 </OWText>
               </View>
               <View
                 style={{
-                  flexDirection: "row",
+                  flexDirection: 'row',
                   borderRadius: 12,
-                  backgroundColor: colors["warning-surface-subtle"],
+                  backgroundColor: colors['warning-surface-subtle'],
                   padding: 12,
-                  marginTop: 8,
+                  marginTop: 8
                 }}
               >
-                <AlertIcon color={colors["warning-text-body"]} size={16} />
+                <AlertIcon color={colors['warning-text-body']} size={16} />
                 <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
                   {`When you unstake, a ${unbondingPeriodDay}-day cooldown period is required before your stake returns to your wallet.`}
                 </OWText>
@@ -513,7 +457,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             </OWCard>
             <OWCard
               style={{
-                backgroundColor: colors["neutral-surface-card"],
+                backgroundColor: colors['neutral-surface-card']
               }}
             >
               <FeeControl
@@ -530,49 +474,49 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStaking: {
-      borderRadius: spacing["24"],
-      backgroundColor: colors["primary"],
-      marginBottom: spacing["24"],
+      borderRadius: spacing['24'],
+      backgroundColor: colors['primary'],
+      marginBottom: spacing['24']
     },
     listLabel: {
       paddingVertical: 16,
-      borderBottomColor: colors["neutral-border-default"],
-      borderBottomWidth: 1,
+      borderBottomColor: colors['neutral-border-default'],
+      borderBottomWidth: 1
     },
     title: {
-      color: colors["neutral-text-body"],
+      color: colors['neutral-text-body']
     },
     topSubInfo: {
-      backgroundColor: colors["neutral-surface-bg2"],
+      backgroundColor: colors['neutral-surface-bg2'],
       borderRadius: 8,
       paddingHorizontal: 6,
       paddingVertical: 4,
       marginTop: 4,
       marginRight: 8,
-      flexDirection: "row",
+      flexDirection: 'row'
     },
     bottomBtn: {
       marginTop: 20,
       width: metrics.screenWidth / 2.3,
       borderRadius: 999,
-      marginLeft: 12,
+      marginLeft: 12
     },
     label: {
-      fontWeight: "600",
-      textAlign: "center",
-      marginTop: spacing["6"],
-      color: colors["neutral-text-title"],
+      fontWeight: '600',
+      textAlign: 'center',
+      marginTop: spacing['6'],
+      color: colors['neutral-text-title']
     },
     percentBtn: {
-      backgroundColor: colors["primary-surface-default"],
+      backgroundColor: colors['primary-surface-default'],
       borderRadius: 999,
       paddingHorizontal: 12,
       paddingVertical: 8,
-      alignItems: "center",
-      justifyContent: "center",
-      marginLeft: 4,
-    },
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginLeft: 4
+    }
   });
