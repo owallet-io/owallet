@@ -265,6 +265,9 @@ export const SendSolanaPage: FunctionComponent<{
     sendConfigs.feeConfig.setManualFee(undefined);
     sendConfigs.feeConfig.setFeeType(undefined);
   }, [sendConfigs.amountConfig.sendCurrency.coinMinimalDenom]);
+  const fee =
+    sendConfigs.feeConfig.fee ||
+    new CoinPretty(chainStore.current.stakeCurrency, new Dec(0));
   const renderTransactionFee = () => {
     return (
       <div>
@@ -273,47 +276,37 @@ export const SendSolanaPage: FunctionComponent<{
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "center",
             borderBottom: "1px solid" + colors["neutral-border-default"],
             paddingBottom: 14,
           }}
         >
-          <div
-            style={{
-              flexDirection: "column",
-              display: "flex",
-            }}
-          >
-            <div>
-              <Text weight="600">Transaction fee</Text>
-            </div>
+          <div>
+            <Text weight="600">Tx Fee</Text>
           </div>
-          <div
-            style={{
-              flexDirection: "column",
-              display: "flex",
-              alignItems: "flex-end",
-              width: "50%",
-            }}
-          >
+          <div>
             <div
               style={{
                 display: "flex",
                 flexDirection: "row",
                 cursor: "pointer",
+                alignItems: "center",
+                gap: 8,
               }}
             >
               <Text
-                size={16}
+                size={15}
                 weight="600"
                 color={colors["primary-text-action"]}
               >
-                ≈
+                {`≈ ${fee?.maxDecimals(6).trim(true).toString()}`}
+              </Text>
+              <Text size={13} color={colors["neutral-text-body"]}>
+                (
                 {priceStore
-                  .calculatePrice(
-                    sendConfigs.feeConfig.fee,
-                    language.fiatCurrency
-                  )
-                  ?.toString() || 0}
+                  .calculatePrice(fee, language.fiatCurrency)
+                  ?.toString()}
+                )
               </Text>
               {/*<img src={require("assets/icon/tdesign_chevron-down.svg")}/>*/}
             </div>
