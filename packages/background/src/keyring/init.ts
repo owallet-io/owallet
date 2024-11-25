@@ -38,6 +38,7 @@ import {
   RequestSendRawTransactionMsg,
   SimulateSignTronMsg,
   GetKeySettledMsg,
+  RequestSendAndConfirmTxSvm,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -59,6 +60,8 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(UnlockKeyRingMsg);
   router.registerMessage(GetKeyMsg);
   router.registerMessage(GetKeySettledMsg);
+  router.registerMessage(RequestSendAndConfirmTxSvm);
+
   router.registerMessage(RequestSignAminoMsg);
   router.registerMessage(RequestVerifyADR36AminoSignDoc);
   router.registerMessage(RequestSignDirectMsg);

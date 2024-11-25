@@ -8485,100 +8485,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/codecs-core@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/codecs-core@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/errors": 2.0.0-rc.1
-  peerDependencies:
-    typescript: ">=5"
-  checksum: e3a138cbdc2b87c6296c449384b684ca2f90cf212cee1cf0a1f30385c3acc72c9a3dc2e60e3152723b9fa5640635bcf69ce06581d83113986ede05d41139f0ba
-  languageName: node
-  linkType: hard
-
-"@solana/codecs-data-structures@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/codecs-data-structures@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/codecs-core": 2.0.0-rc.1
-    "@solana/codecs-numbers": 2.0.0-rc.1
-    "@solana/errors": 2.0.0-rc.1
-  peerDependencies:
-    typescript: ">=5"
-  checksum: 7c24700be7c935fc066dc70e1a02c32d9f17393d3898074e6dcff2c2083012dc8c5583fff5ee04f8ce4578c57bb708688f5e52aad301aa5543aab293640a0b21
-  languageName: node
-  linkType: hard
-
-"@solana/codecs-numbers@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/codecs-numbers@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/codecs-core": 2.0.0-rc.1
-    "@solana/errors": 2.0.0-rc.1
-  peerDependencies:
-    typescript: ">=5"
-  checksum: 370c1f94970e969b1f523d47714ddd751b68f622967455e2376590af0f230e027dce365bd54a9017fbc064ed21447f795c775c46285222c42a11b8ed46a41570
-  languageName: node
-  linkType: hard
-
-"@solana/codecs-strings@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/codecs-strings@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/codecs-core": 2.0.0-rc.1
-    "@solana/codecs-numbers": 2.0.0-rc.1
-    "@solana/errors": 2.0.0-rc.1
-  peerDependencies:
-    fastestsmallesttextencoderdecoder: ^1.0.22
-    typescript: ">=5"
-  checksum: 0706605311508b02f7dc4bfde6f93237337ecde051c83f172a121b52676e2a21af90f916624f57c0e80bbe420412ed98c1e7ae90a583761b028cc6a883fa4a0e
-  languageName: node
-  linkType: hard
-
-"@solana/codecs@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/codecs@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/codecs-core": 2.0.0-rc.1
-    "@solana/codecs-data-structures": 2.0.0-rc.1
-    "@solana/codecs-numbers": 2.0.0-rc.1
-    "@solana/codecs-strings": 2.0.0-rc.1
-    "@solana/options": 2.0.0-rc.1
-  peerDependencies:
-    typescript: ">=5"
-  checksum: 8586abfd1e2792008a447c29efc22e0bfefd7d97a8025090dd49ec07c8c860e51c44355ab74faf43e23336f3dd2e1353238fa4b009d3fe60ff3f02b46a96aa04
-  languageName: node
-  linkType: hard
-
-"@solana/errors@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/errors@npm:2.0.0-rc.1"
-  dependencies:
-    chalk: ^5.3.0
-    commander: ^12.1.0
-  peerDependencies:
-    typescript: ">=5"
-  bin:
-    errors: bin/cli.mjs
-  checksum: 906892a892d250c2236449b875b174e0e19ade788146d0e63da23c83d89b98a762770c276341fae8f73959efc57d01090e0e979d111b12ac0e451f2402a8d092
-  languageName: node
-  linkType: hard
-
-"@solana/options@npm:2.0.0-rc.1":
-  version: 2.0.0-rc.1
-  resolution: "@solana/options@npm:2.0.0-rc.1"
-  dependencies:
-    "@solana/codecs-core": 2.0.0-rc.1
-    "@solana/codecs-data-structures": 2.0.0-rc.1
-    "@solana/codecs-numbers": 2.0.0-rc.1
-    "@solana/codecs-strings": 2.0.0-rc.1
-    "@solana/errors": 2.0.0-rc.1
-  peerDependencies:
-    typescript: ">=5"
-  checksum: 63f3ed04e56ca232023fcf35ddab8f01a1ba7aae932990908657dec833ff4133ad0af279417d4bce291367903dbd3b962287796a22dd0aaa1d3e3290613a442e
-  languageName: node
-  linkType: hard
-
 "@solana/spl-memo@npm:0.2.5":
   version: 0.2.5
   resolution: "@solana/spl-memo@npm:0.2.5"
@@ -8590,40 +8496,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/spl-token-group@npm:^0.0.7":
-  version: 0.0.7
-  resolution: "@solana/spl-token-group@npm:0.0.7"
-  dependencies:
-    "@solana/codecs": 2.0.0-rc.1
-  peerDependencies:
-    "@solana/web3.js": ^1.95.3
-  checksum: 8a47c409ca185d89c6572848a2a496ad3f70ef7b1efac2960b06836996870c861d3c8d920032451c9dda90765c7a4b484d883449331fdf859911436bfe9e2ad6
-  languageName: node
-  linkType: hard
-
-"@solana/spl-token-metadata@npm:^0.1.6":
-  version: 0.1.6
-  resolution: "@solana/spl-token-metadata@npm:0.1.6"
-  dependencies:
-    "@solana/codecs": 2.0.0-rc.1
-  peerDependencies:
-    "@solana/web3.js": ^1.95.3
-  checksum: a19d7d659c3fca375312e86cf4b0a2077327b220462b46a8627f0cc1892c97ce34cfbe9c3645620496d7b1177d56628b16a7357cd61314e079c1d9c73c944d98
-  languageName: node
-  linkType: hard
-
-"@solana/spl-token@npm:0.4.9":
-  version: 0.4.9
-  resolution: "@solana/spl-token@npm:0.4.9"
+"@solana/spl-token@npm:0.3.5":
+  version: 0.3.5
+  resolution: "@solana/spl-token@npm:0.3.5"
   dependencies:
     "@solana/buffer-layout": ^4.0.0
     "@solana/buffer-layout-utils": ^0.2.0
-    "@solana/spl-token-group": ^0.0.7
-    "@solana/spl-token-metadata": ^0.1.6
     buffer: ^6.0.3
   peerDependencies:
-    "@solana/web3.js": ^1.95.3
-  checksum: a1b0433786cff28755cf0ba219dc6e9805f11acd717a0285116445cc60acc0153af5d422c5ffeac429e9d2ebab66045f8d736cc8999d68f60ed317ec2e9bcaea
+    "@solana/web3.js": ^1.47.4
+  checksum: 230c153b886c7dedb09fdd65c4fd71259d37f3c951ab6ea9c099aff875cc595fc9d44c74b4d7ffef59475f7edd7a8a00931bfec8ab2bd3141512ca3f6f828139
   languageName: node
   linkType: hard
 
@@ -13605,7 +13487,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^5.0.1, chalk@npm:^5.2.0, chalk@npm:^5.3.0":
+"chalk@npm:^5.0.1, chalk@npm:^5.2.0":
   version: 5.3.0
   resolution: "chalk@npm:5.3.0"
   checksum: 623922e077b7d1e9dedaea6f8b9e9352921f8ae3afe739132e0e00c275971bdd331268183b2628cf4ab1727c45ea1f28d7e24ac23ce1db1eb653c414ca8a5a80
@@ -14215,13 +14097,6 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
-  languageName: node
-  linkType: hard
-
-"commander@npm:^12.1.0":
-  version: 12.1.0
-  resolution: "commander@npm:12.1.0"
-  checksum: 68e9818b00fc1ed9cdab9eb16905551c2b768a317ae69a5e3c43924c2b20ac9bb65b27e1cab36aeda7b6496376d4da908996ba2c0b5d79463e0fb1e77935d514
   languageName: node
   linkType: hard
 
@@ -26789,7 +26664,7 @@ __metadata:
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.12
     "@solana/spl-memo": 0.2.5
-    "@solana/spl-token": 0.4.9
+    "@solana/spl-token": 0.3.5
     "@solana/wallet-standard-chains": 1.1.0
     "@solana/wallet-standard-features": 1.2.0
     "@solana/web3.js": ^1.95.4

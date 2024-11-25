@@ -314,6 +314,17 @@ export class InjectedOWallet implements IOWallet {
   ): Promise<Uint8Array> {
     return await this.requestMethod("sendTx", [chainId, tx, mode]);
   }
+  async sendAndConfirmTransactionSvm(
+    chainId: string,
+    signer: string,
+    unsignedTx: string | Uint8Array
+  ): Promise<Uint8Array> {
+    return await this.requestMethod("sendAndConfirmTransactionSvm", [
+      chainId,
+      signer,
+      unsignedTx,
+    ]);
+  }
 
   async signAmino(
     chainId: string,

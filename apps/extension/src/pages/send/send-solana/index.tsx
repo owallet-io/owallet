@@ -363,19 +363,11 @@ export const SendSolanaPage: FunctionComponent<{
             if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
               try {
                 // (window as any).accountInfo = accountInfo;
-                await accountInfo.sendToken(
-                  sendConfigs.amountConfig.amount,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                await accountInfo.sendSolanaToken(
+                  sendConfigs.amountConfig.getAmountPrimitive().amount,
                   sendConfigs.amountConfig.sendCurrency,
                   sendConfigs.recipientConfig.recipient,
                   sendConfigs.memoConfig.memo,
-                  sendConfigs.feeConfig.toStdFee(),
-                  {
-                    preferNoSetFee: true,
-                    preferNoSetMemo: true,
-                    networkType: chainStore.current.networkType,
-                    chainId: chainStore.current.chainId,
-                  },
                   {
                     onBroadcasted: () => {
                       analyticsStore.logEvent("Send token tx broadcasted", {

@@ -38,6 +38,13 @@ export class SignInteractionStore {
           this.rejectWithId(datasBitcoin[i].id);
         }
       }
+      const datasSvm = this.waitingSvmDatas?.slice();
+
+      if (datasSvm.length > 1) {
+        for (let i = 1; i < datasSvm.length; i++) {
+          this.rejectWithId(datasSvm[i].id);
+        }
+      }
       const datasTron = this.waitingTronDatas?.slice();
       if (datasTron.length > 1) {
         for (let i = 1; i < datasTron.length; i++) {
@@ -101,6 +108,20 @@ export class SignInteractionStore {
           data: object;
         }
     >("request-sign-bitcoin");
+  }
+  protected get waitingSvmDatas() {
+    return this.interactionStore.getDatas<
+      | {
+          msgOrigin: string;
+          chainId: string;
+          data;
+        }
+      | {
+          msgOrigin: string;
+          chainId: string;
+          data: object;
+        }
+    >("request-sign-svm");
   }
   protected get waitingTronDatas() {
     return this.interactionStore.getDatas<
@@ -214,6 +235,33 @@ export class SignInteractionStore {
       isInternal: data.isInternal,
     };
   }
+  @computed
+  get waitingSvmData():
+    | InteractionWaitingData<{
+        chainId: string;
+        msgOrigin: string;
+        data: object;
+      }>
+    | undefined {
+    const datas = this.waitingSvmDatas;
+
+    if (datas.length === 0) {
+      return undefined;
+    }
+
+    const data = datas[0];
+
+    return {
+      id: data.id,
+      type: data.type,
+      data: {
+        chainId: data.data.chainId,
+        msgOrigin: data.data.msgOrigin,
+        data: data.data,
+      },
+      isInternal: data.isInternal,
+    };
+  }
 
   get waitingTronData() {
     const datas = this.waitingTronDatas;
@@ -247,6 +295,11 @@ export class SignInteractionStore {
       this.interactionStore.getEvents<void>("request-sign-bitcoin-end").length >
       0;
     return isEnd;
+  }
+  protected isSvmEnded(): boolean {
+    return (
+      this.interactionStore.getEvents<void>("request-sign-svm-end").length > 0
+    );
   }
 
   protected isTronEnded(): boolean {
@@ -301,6 +354,21 @@ export class SignInteractionStore {
     return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isBitcoinEnded()) {
+          resolve();
+          this.clearEnded();
+          disposer();
+        }
+      });
+    });
+  }
+  protected waitSvmEnd(): Promise<void> {
+    if (this.isSvmEnded()) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      const disposer = autorun(() => {
+        if (this.isSvmEnded()) {
           resolve();
           this.clearEnded();
           disposer();
@@ -383,6 +451,24 @@ export class SignInteractionStore {
     } finally {
       yield this.waitBitcoinEnd();
       this.interactionStore.removeData("request-sign-bitcoin", idBitcoin);
+      this._isLoading = false;
+    }
+  }
+  @flow
+  *approveSvmAndWaitEnd(newData: object) {
+    if (this.waitingSvmDatas?.length === 0) {
+      return;
+    }
+
+    this._isLoading = true;
+    const idSvm = this.waitingSvmDatas?.[0]?.id;
+    try {
+      if (this.waitingSvmDatas?.length > 0) {
+        yield this.interactionStore.approveWithoutRemovingData(idSvm, newData);
+      }
+    } finally {
+      yield this.waitSvmEnd();
+      this.interactionStore.removeData("request-sign-svm", idSvm);
       this._isLoading = false;
     }
   }

@@ -678,61 +678,74 @@ export class AccountSetBase<MsgOpts, Queries> {
     amount: string,
     currency: AppCurrency,
     recipient: string,
-    address: string,
+    memo: string,
     onTxEvents?: {
       onBroadcasted?: (txHash: Uint8Array) => void;
       onFulfill?: (tx: any) => void;
-    },
-    tokenTrc20?: object
+    }
   ) {
     try {
       runInAction(() => {
         this._isSendingMsg = "send";
       });
-      const ethereum = (await this.getEthereum())!;
-      const tx = await ethereum.signAndBroadcastTron(this.chainId, {
+      const owallet = (await this.getOWallet())!;
+      const data = {
         amount,
         currency,
         recipient,
-        address,
-        tokenTrc20,
-      });
-      if (!tx?.txid) throw Error("Transaction Rejected");
-      if (onTxEvents?.onBroadcasted) {
-        onTxEvents?.onBroadcasted(tx.txid);
-      }
+        memo,
+      };
+
+      const unsignedTx = JSON.stringify(data);
+      const tx = await owallet.sendAndConfirmTransactionSvm(
+        this.chainId,
+        this.base58Address,
+        unsignedTx
+      );
+      console.log(tx, "tx");
+      // const tx = await owallet.signAndBroadcastTron(this.chainId, {
+      //   amount,
+      //   currency,
+      //   recipient,
+      //   address,
+      //   tokenTrc20,
+      // });
+      // if (!tx?.txid) throw Error("Transaction Rejected");
+      // if (onTxEvents?.onBroadcasted) {
+      //   onTxEvents?.onBroadcasted(tx.txid);
+      // }
 
       // After sending tx, the balances is probably changed due to the fee.
-      this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(this.evmosHexAddress)
-        .fetch();
+      // this.queriesStore
+      //   .get(this.chainId)
+      //   .queryBalances.getQueryBech32Address(this.evmosHexAddress)
+      //   .fetch();
 
-      this.queriesStore
-        .get(this.chainId)
-        //@ts-ignore
-        .tron.queryAccount.getQueryWalletAddress(
-          getBase58Address(this.evmosHexAddress)
-        )
-        .fetch();
+      // this.queriesStore
+      //   .get(this.chainId)
+      //   //@ts-ignore
+      //   .tron.queryAccount.getQueryWalletAddress(
+      //     getBase58Address(this.evmosHexAddress)
+      //   )
+      //   .fetch();
 
       if (this.opts.preTxEvents?.onFulfill) {
-        this.opts.preTxEvents.onFulfill({
-          ...tx,
-          code: 0,
-        });
+        // this.opts.preTxEvents.onFulfill({
+        //   ...tx,
+        //   code: 0,
+        // });
       }
 
       if (onTxEvents?.onFulfill) {
-        onTxEvents?.onFulfill({
-          ...tx,
-          code: 0,
-        });
+        // onTxEvents?.onFulfill({
+        //   ...tx,
+        //   code: 0,
+        // });
       }
-      OwalletEvent.txHashEmit(tx.txid, {
-        ...tx,
-        code: 0,
-      });
+      // OwalletEvent.txHashEmit(tx.txid, {
+      //   ...tx,
+      //   code: 0,
+      // });
       // }
     } catch (error) {
       // OwalletEvent.txHashEmit(txId, null);

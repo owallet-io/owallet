@@ -1,6 +1,9 @@
 import { StdSignature } from "@cosmjs/launchpad";
-import { Message } from "@owallet/router";
+import { Message, OWalletError } from "@owallet/router";
 import { OWalletSignOptions, ChainInfoWithoutEndpoints } from "@owallet/types";
+import { isBase58 } from "@owallet/common";
+import { ROUTE } from "@owallet/background/build/keyring/constants";
+import { RequestSignAminoMsg } from "@owallet/background";
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -186,6 +189,46 @@ export class RequestSignTronMsg extends Message<object> {
 
   type(): string {
     return RequestSignTronMsg.type();
+  }
+}
+export class RequestSendAndConfirmTxSvm extends Message<Uint8Array> {
+  public static type() {
+    return "request-sign-and-confirm-tx-svm";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly unsignedTx: Uint8Array
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new OWalletError("keyring", 230, "signer not set");
+    }
+
+    const isValid = isBase58(this.signer);
+    if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
+    if (!this.unsignedTx)
+      throw new OWalletError("keyring", 230, "unsignedTx not set");
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSendAndConfirmTxSvm.type();
   }
 }
 

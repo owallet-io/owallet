@@ -70,6 +70,7 @@ import {
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
+  RequestSendAndConfirmTxSvm,
 } from "./msgs";
 import { ChainIdEnum } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
@@ -206,7 +207,16 @@ export class OWallet implements IOWallet {
 
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
-
+  async sendAndConfirmTransactionSvm(
+    chainId: string,
+    signer: string,
+    unsignedTx: string | Uint8Array
+  ): Promise<Uint8Array> {
+    return await this.requester.sendMessage(
+      BACKGROUND_PORT,
+      new RequestSendAndConfirmTxSvm(chainId, signer, unsignedTx)
+    );
+  }
   async signArbitrary(
     chainId: string,
     signer: string,

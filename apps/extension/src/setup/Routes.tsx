@@ -31,6 +31,7 @@ import { StateRenderer } from "../components/state-renderer/StateRenderer";
 import { ManageChainsPage } from "pages/chain/manage-chains/manage-chains-page";
 import { AddChainPage } from "pages/chain/add-chain/add-chain-page";
 import { SendSolanaPage } from "pages/send/send-solana";
+import { SignSvmPage } from "pages/sign/sign-svm";
 
 export const Routes: React.FC = () => (
   <>
@@ -74,6 +75,7 @@ export const Routes: React.FC = () => (
     <Route exact path="/ledger-grant" component={LedgerGrantPage} />
     <Route exact path="/setting/address-book" component={AddressBookPage} />
     <Route path="/sign" component={SignPage} />
+    <Route path="/sign-svm" component={SignSvmPage} />
     <Route path="/sign-bitcoin" component={SignBtcPage} />
     <Route path="/sign-ethereum" component={SignEvmPage} />
     <Route path="/sign-tron" component={SignTronPage} />

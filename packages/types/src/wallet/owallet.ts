@@ -125,7 +125,11 @@ export interface OWallet {
     tx: StdTx | Uint8Array,
     mode: BroadcastMode
   ): Promise<Uint8Array>;
-
+  sendAndConfirmTransactionSvm?(
+    chainId: string,
+    signer: string,
+    unsignedTx: string | Uint8Array
+  ): Promise<Uint8Array>;
   signArbitrary(
     chainId: string,
     signer: string,

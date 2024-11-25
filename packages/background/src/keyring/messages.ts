@@ -31,6 +31,7 @@ const bip39 = require("bip39");
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { schemaRequestSignBitcoin } from "./validates";
 import { ISimulateSignTron } from "@owallet/types";
+import { isBase58 } from "@owallet/common";
 
 export class RestoreKeyRingMsg extends Message<{
   status: KeyRingStatus;
@@ -566,6 +567,46 @@ export class GetKeySettledMsg extends Message<SettledResponses<Key>> {
 
   type(): string {
     return GetKeySettledMsg.type();
+  }
+}
+export class RequestSendAndConfirmTxSvm extends Message<Uint8Array> {
+  public static type() {
+    return "request-sign-and-confirm-tx-svm";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly unsignedTx: Uint8Array
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new OWalletError("keyring", 230, "signer not set");
+    }
+
+    const isValid = isBase58(this.signer);
+    if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
+    if (!this.unsignedTx)
+      throw new OWalletError("keyring", 230, "unsignedTx not set");
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSendAndConfirmTxSvm.type();
   }
 }
 

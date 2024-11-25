@@ -271,28 +271,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png",
         },
         {
-          type: "cw20",
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands",
-          contractAddress: "orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5",
-          coinDecimals: 6,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
-          type: "cw20",
-          coinDenom: "MILKY",
-          coinMinimalDenom:
-            "cw20:orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw:Milky Token",
-          contractAddress: "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw",
-          coinDecimals: 6,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-        },
-        {
           coinDenom: "WETH",
           coinGeckoId: "weth",
           coinMinimalDenom:
@@ -405,22 +383,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: "airight",
           coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
-        },
-        {
-          coinDenom: "BEP20 KWT",
-          coinMinimalDenom: "oraib0x257a8d1E03D17B8535a182301f15290F11674b53",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
-          coinDenom: "BEP20 MILKY",
-          coinMinimalDenom: "oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717",
-          coinDecimals: 18,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
         },
         {
           coinDenom: "BEP20 USDT",
@@ -1286,15 +1248,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
         },
         {
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
           coinDenom: "BSC-USD",
           coinMinimalDenom:
             "erc20:0x55d398326f99059fF775485246999027B3197955:Binance Bridged USDT (BNB Smart Chain)",
@@ -1302,15 +1255,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: "binance-bridged-usdt-bnb-smart-chain",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
-        },
-        {
-          coinDenom: "MILKY",
-          coinMinimalDenom:
-            "erc20:0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717:Milky Token",
-          coinDecimals: 18,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
         },
       ];
     },
@@ -1569,120 +1513,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://tendermint1.kawaii.global",
-    evmRpc: "https://endpoint1.kawaii.global",
-    rest: "https://cosmos1.kawaii.global",
-    chainId: "kawaii_6886-1",
-    networkType: "cosmos",
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-    chainName: "Kawaiiverse Cosmos",
-    stakeCurrency: {
-      coinDenom: "ORAIE",
-      coinMinimalDenom: "oraie",
-      coinDecimals: 18,
-      coinGeckoId: "oraie",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-      gasPriceStep: {
-        low: 0,
-        average: 0.000025,
-        high: 0.00004,
-      },
-    },
-    bip44: {
-      coinType: 60,
-    },
-    coinType: 60,
-    bech32Config: Bech32Address.defaultBech32Config("oraie"),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        // {
-        //   coinDenom: "KWT",
-        //   coinMinimalDenom:
-        //     "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
-        //   coinDecimals: 18,
-        //   coinGeckoId: "kawaii-islands",
-        //   coinImageUrl:
-        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        // },
-        // {
-        //   coinDenom: "MILKY",
-        //   coinMinimalDenom:
-        //     "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
-        //   coinDecimals: 18,
-        //   coinGeckoId: "milky-token",
-        //   coinImageUrl:
-        //     "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-        // },
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ["isEvm"],
-    txExplorer: {
-      name: "Kawaii",
-      txUrl: "https://scan.kawaii.global/tx/{txHash}",
-    },
-  },
-  {
-    rpc: "https://tendermint1.kawaii.global",
-    rest: "https://endpoint1.kawaii.global",
-    chainId: "0x1ae6",
-    networkType: "evm",
-    chainName: "Kawaiiverse EVM",
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-    stakeCurrency: {
-      coinDenom: "ORAIE",
-      coinMinimalDenom: "oraie",
-      coinDecimals: 18,
-      coinGeckoId: "oraie",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-      gasPriceStep: {
-        low: 0,
-        average: 0.000025,
-        high: 0.00004,
-      },
-    },
-    bip44: {
-      coinType: 60,
-    },
-    coinType: 60,
-    bech32Config: Bech32Address.defaultBech32Config("evmos"),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-        },
-        {
-          coinDenom: "MILKY",
-          coinMinimalDenom:
-            "erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token",
-          coinDecimals: 18,
-          coinGeckoId: "milky-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
-        },
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    features: ["isEvm"],
-  },
-  {
     rpc: "https://testnet.sapphire.oasis.io",
     rest: "https://testnet.sapphire.oasis.io",
     grpc: "https://grpc.oasis.dev",
@@ -1937,15 +1767,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: "airight",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
-        },
-        {
-          coinDenom: "KWT",
-          coinMinimalDenom:
-            "erc20:0x9da6e8a2065d5f09b9994ebc330a962721069a68:Kawaii Islands",
-          coinDecimals: 18,
-          coinGeckoId: "kawaii-islands",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
         },
       ];
     },

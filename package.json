@@ -47,7 +47,7 @@
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/oraidex-universal-swap": "^1.1.12",
     "@solana/spl-memo": "0.2.5",
-    "@solana/spl-token": "0.4.9",
+    "@solana/spl-token": "0.3.5",
     "@solana/wallet-standard-chains": "1.1.0",
     "@solana/wallet-standard-features": "1.2.0",
     "@solana/web3.js": "^1.95.4",

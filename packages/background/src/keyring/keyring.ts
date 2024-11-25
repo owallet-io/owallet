@@ -90,7 +90,21 @@ import { CoinPretty, Int } from "@owallet/unit";
 import { ISimulateSignTron } from "@owallet/types";
 import { getOasisNic } from "../utils/helper";
 import { ec } from "elliptic";
-import { PublicKey } from "@solana/web3.js";
+import {
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+import {
+  createTransferInstruction,
+  getAssociatedTokenAddress,
+  getOrCreateAssociatedTokenAccount,
+} from "@solana/spl-token";
+import { createMemoInstruction } from "@solana/spl-memo";
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
 
@@ -1245,6 +1259,92 @@ export class KeyRing {
     );
     const response = await request(rpc, "eth_sendRawTransaction", [rawTxHex]);
     return response;
+  }
+
+  public async sendAndConfirmSvm(
+    chainId: string,
+    coinType: number,
+    signer: string,
+    unsignedTx: string
+  ) {
+    console.log(unsignedTx, "unsignedTx");
+    const { amount, currency, recipient, memo } = JSON.parse(unsignedTx);
+    console.log(amount, recipient, "kaka");
+    const chainInfo = await this.chainsService.getChainInfo(chainId);
+    const sender = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+    const connection = new Connection(chainInfo.rpc, "confirmed");
+    // Recipient's public key
+    const toPubkey = new PublicKey(recipient);
+    let transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: toPubkey,
+        lamports: BigInt(amount), // 0.1 SOL in lamports
+      })
+    );
+    if (currency.coinMinimalDenom.startsWith("spl")) {
+      const denom = currency.coinMinimalDenom.replace("spl:", "");
+      console.log(denom, "denom");
+      const mintPublicKey = new PublicKey(denom);
+      // Get the associated token accounts for the sender and receiver
+      const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        sender,
+        mintPublicKey,
+        sender.publicKey
+      );
+      const receiverTokenAccount = await getOrCreateAssociatedTokenAccount(
+        connection,
+        sender,
+        mintPublicKey,
+        toPubkey
+      );
+
+      // Create SPL token transfer instruction
+      transaction = new Transaction().add(
+        createTransferInstruction(
+          senderTokenAccount.address,
+          receiverTokenAccount.address,
+          sender.publicKey,
+          BigInt(amount)
+        )
+      );
+    }
+    if (memo) {
+      transaction.add(createMemoInstruction(memo));
+    }
+    const { blockhash } = await connection.getLatestBlockhash();
+    transaction.recentBlockhash = blockhash;
+    transaction.feePayer = sender.publicKey;
+
+    // transaction.add(
+    //     // Request a specific number of compute units
+    //     ComputeBudgetProgram.setComputeUnitLimit({
+    //         units: Number(units.roundUp().toString()),
+    //     }),
+    //     // Attach a priority fee (in lamports)
+    //     ComputeBudgetProgram.setComputeUnitPrice({
+    //         microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
+    //     })
+    // );
+    // Create the transaction to transfer 0.1 SOL
+
+    transaction.sign(sender);
+
+    // Serialize and Base64 encode the transaction
+    const serializedTransaction = transaction.serialize();
+    try {
+      let txSignature = await connection.sendRawTransaction(
+        serializedTransaction,
+        {
+          skipPreflight: true,
+        }
+      );
+      console.log(txSignature, "txSignature");
+      return txSignature;
+    } catch (e) {
+      console.log(e, "err send");
+    }
   }
 
   public async signOasis(chainId: string, data): Promise<any> {

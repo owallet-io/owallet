@@ -46,6 +46,7 @@ import {
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
   GetKeySettledMsg,
+  RequestSendAndConfirmTxSvm,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -59,6 +60,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
     switch (msg.constructor) {
       case RestoreKeyRingMsg:
         return handleRestoreKeyRingMsg(service)(env, msg as RestoreKeyRingMsg);
+      case RequestSendAndConfirmTxSvm:
+        return handleRequestSendAndConfirmTxSvm(service)(
+          env,
+          msg as RequestSendAndConfirmTxSvm
+        );
       case DeleteKeyRingMsg:
         return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
       case UpdateNameKeyRingMsg:
@@ -416,6 +422,26 @@ const handleGetKeyMsg: (
       base58Address: key.base58Address ?? "",
       isNanoLedger: key.isNanoLedger,
     };
+  };
+};
+
+const handleRequestSendAndConfirmTxSvm: (
+  service: KeyRingService
+) => InternalHandler<RequestSendAndConfirmTxSvm> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin
+    );
+
+    return await service.requestSendAndConfirmTxSvm(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.unsignedTx
+    );
   };
 };
 

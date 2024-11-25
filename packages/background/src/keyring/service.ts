@@ -60,6 +60,11 @@ import { Buffer } from "buffer/";
 import { Int } from "@owallet/unit";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
+import {
+  Connection,
+  sendAndConfirmTransaction,
+  Transaction,
+} from "@solana/web3.js";
 
 @singleton()
 export class KeyRingService {
@@ -559,6 +564,60 @@ export class KeyRingService {
         signed: newSignDoc,
         signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
+    } finally {
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+    }
+  }
+
+  async requestSendAndConfirmTxSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    unsignedTx: Uint8Array
+  ): Promise<Uint8Array> {
+    const coinType = await this.chainsService.getChainCoinType(chainId);
+
+    const key = await this.keyRing.getKey(chainId, coinType);
+
+    if (signer !== key.base58Address) {
+      throw new Error("Signer mismatched");
+    }
+
+    const newDataConfirm = await this.interactionService.waitApprove(
+      env,
+      "/sign-svm",
+      "request-sign-svm",
+      {
+        msgOrigin,
+        chainId,
+        signer,
+        unsignedTx,
+      }
+    );
+
+    try {
+      console.log(newDataConfirm, "newDataConfirm");
+      // const signature = await this.keyRing.sign(
+      //     env,
+      //     chainId,
+      //     coinType,
+      //     serializeSignDoc(newSignDoc)
+      // );
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      const connection = new Connection(chainInfo.rpc, "confirmed");
+      const { signer, unsignedTx } = newDataConfirm as any;
+      const transaction = (await this.keyRing.sendAndConfirmSvm(
+        chainId,
+        coinType,
+        signer,
+        unsignedTx
+      )) as any;
+      return;
+      // return {
+      //   signed: newSignDoc,
+      //   signature: encodeSecp256k1Signature(key.pubKey, signature),
+      // };
     } finally {
       this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
