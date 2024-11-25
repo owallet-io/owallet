@@ -1,35 +1,23 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  InvalidTronAddressError,
-  NotLoadedFeeError,
-  useSendTronTxConfig,
-  useGetFeeTron,
-  useTxConfigsValidate
-} from '@owallet/hooks';
+import { InvalidTronAddressError, useSendTronTxConfig, useGetFeeTron } from '@owallet/hooks';
 import { useStore } from '../../stores';
-import { EthereumEndpoint, isBase58, isBase58Address, toAmount, toDisplay } from '@owallet/common';
-import { InteractionManager, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { AddressInput, CurrencySelector, getFeeErrorText, MemoInput, TextInput } from '../../components/input';
+import { isBase58Address, toDisplay } from '@owallet/common';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dec } from '@owallet/unit';
+import { AddressInput, CurrencySelector } from '../../components/input';
 import { OWButton } from '../../components/button';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-
-import { Buffer } from 'buffer';
 import { metrics, spacing } from '../../themes';
 import { useTheme } from '@src/themes/theme-provider';
 import { PageWithBottom } from '@src/components/page/page-with-bottom';
-
 import OWCard from '@src/components/card/ow-card';
 import OWText from '@src/components/text/ow-text';
 import { NewAmountInput } from '@src/components/input/amount-input';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { ChainIdEnum } from '@oraichain/oraidex-common';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { tracking } from '@src/utils/tracking';
 import { OWHeaderTitle } from '@components/header';
-import { FeeControl } from '@src/components/input/fee-control';
 
 export const SendTronScreen: FunctionComponent<{
   chainId: string;
@@ -100,8 +88,6 @@ export const SendTronScreen: FunctionComponent<{
     keyRingStore,
     null
   );
-
-  console.log('feeTrx', feeTrx);
 
   useEffect(() => {
     if (feeTrx) {
