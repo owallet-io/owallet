@@ -194,7 +194,6 @@ const useEstimateAmount = (
       const calculateImpactPrice = new BigDecimal(data.displayAmount)
         .div(fromAmountToken)
         .div(data.displayAmount)
-        .div(totalRelayerFee)
         .mul(100)
         .toNumber();
 
@@ -236,6 +235,7 @@ const useEstimateAmount = (
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
+
       const defaultRouterSwap = { amount: '0', displayAmount: 0, routes: [] };
       const routersSwapData =
         fromAmountToken && data ? { ...data, routes: data?.routes?.routes ?? [] } : defaultRouterSwap;
@@ -270,19 +270,19 @@ const useEstimateAmount = (
 
       const minimumReceiveDisplay = simulateDisplayAmount
         ? new BigDecimal(
-            simulateDisplayAmount -
-              (simulateDisplayAmount * userSlippage) / 100 -
-              relayerFee -
-              bridgeTokenFee -
-              totalRelayerFee
+            simulateDisplayAmount - (simulateDisplayAmount * userSlippage) / 100 - relayerFee - bridgeTokenFee
+            //  - totalRelayerFee
           ).toNumber()
         : 0;
 
       setMininumReceive(minimumReceiveDisplay);
       if (data) {
         setIsWarningSlippage(isWarningSlippage);
-        setToAmountToken((Number(data.amount) - Number(totalRelayerFee)).toString());
-        setSwapAmount([fromAmountToken, Number(data.displayAmount) - Number(totalRelayerFee)]);
+        // setToAmountToken((Number(data.amount) - Number(totalRelayerFee)).toString());
+        setToAmountToken(Number(data.amount).toString());
+        // setSwapAmount([fromAmountToken, Number(data.displayAmount) - Number(totalRelayerFee)]);
+        setSwapAmount([fromAmountToken, Number(data.displayAmount)]);
+
         setRatio({
           ...data,
           amount: Math.floor(Number(data.amount) / fromAmountToken),

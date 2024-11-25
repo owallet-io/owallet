@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
@@ -54,6 +54,7 @@ import { tracking } from '@src/utils/tracking';
 import { AFFILIATE_ADDRESS } from '@src/common/constants';
 import { SlippageConfirmModal } from './modals/SlippageConfirmModal';
 import { useFilterToken } from './hooks/use-filter-token';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -90,7 +91,6 @@ const useFee = ({
     setBidgeFee(bridgeTokenFee);
 
     const estSwapFee = new BigDecimal(simulateDisplayAmount || 0).mul(fee || 0).toNumber();
-    console.log('relayerFeeAmount', relayerFeeAmount);
 
     setSwapFee(estSwapFee);
     const totalFeeEst =
@@ -116,7 +116,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const styles = styling(colors);
   const { data: prices } = useCoinGeckoPrices();
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-  tracking(`Universal Swap Screen`);
   useEffect(() => {
     appInitStore.updatePrices(prices);
   }, [prices]);
@@ -393,6 +392,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     } finally {
       if (mixpanel) {
         mixpanel.track('Universal Swap Owallet', logEvent);
+        tracking(`Universal Swap Screen`);
       }
       setSwapLoading(false);
       setSwapAmount([0, 0]);
@@ -824,6 +824,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const impact = useMemo(() => {
+    let tmpImpact;
+    const prices = appInitStore.getInitApp.prices;
+
+    const fromAmountPrice = prices[originalFromToken.coinGeckoId];
+    const toAmountPrice = prices[originalToToken.coinGeckoId];
+
+    if (fromAmountToken <= 0) {
+      tmpImpact = 0;
+    } else {
+      const toValue = toAmountToken * toAmountPrice;
+      const fromValue = fromAmountToken * fromAmountPrice;
+      if (fromValue > 0) {
+        tmpImpact = 100 - (toValue / fromValue) * 100;
+      }
+    }
+    return tmpImpact;
+  }, [fromAmountToken, toAmountToken, originalToToken, originalFromToken]);
+
   const renderSwapInfo = () => {
     return (
       <OWCard
@@ -996,7 +1015,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={toTokenFee}
               onOpenNetworkModal={setToNetworkOpen}
               type={'to'}
-              impactWarning={impactWarning}
+              impactWarning={impact}
             />
 
             <TouchableOpacity onPress={handleReverseDirection} style={styles.containerBtnCenter}>
