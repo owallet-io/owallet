@@ -151,7 +151,7 @@ export const SvmDetailsTab: FunctionComponent<{
                 >
                   {`≈ ${new CoinPretty(
                     chainStore.current.stakeCurrency,
-                    new Dec(msgs?.totalFee)
+                    new Dec(msgs?.fee?.amount)
                   )
                     ?.trim(true)
                     ?.toString()}`}
@@ -166,10 +166,14 @@ export const SvmDetailsTab: FunctionComponent<{
                 color={colors["neutral-text-body"]}
               >
                 ≈{" "}
-                {new PricePretty(
-                  fiatCurrency,
-                  msgs?.totalFee || "0"
-                ).toString()}
+                {priceStore
+                  .calculatePrice(
+                    new CoinPretty(
+                      chainStore.current.stakeCurrency,
+                      new Dec(msgs?.fee?.amount || 0)
+                    )
+                  )
+                  ?.toString()}
               </Text>
             </div>
           </div>

@@ -712,6 +712,10 @@ export class AccountSetBase<MsgOpts, Queries> {
     currency: AppCurrency,
     recipient: string,
     memo: string,
+    fee: {
+      denom: string;
+      amount: string;
+    },
     onTxEvents?: {
       onBroadcasted?: (txHash: Uint8Array) => void;
       onFulfill?: (tx: any) => void;
@@ -722,11 +726,13 @@ export class AccountSetBase<MsgOpts, Queries> {
         this._isSendingMsg = "send";
       });
       const owallet = (await this.getOWallet())!;
+      console.log(fee, "fee token");
       const data = {
         amount,
         currency,
         recipient,
         memo,
+        fee,
       };
 
       const unsignedTx = JSON.stringify(data);
@@ -735,12 +741,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         this.base58Address,
         unsignedTx
       );
-      console.log(signature, "signatureTx");
       const chainInfo = this.chainGetter.getChain(this.chainId);
       const connection = new Connection(chainInfo.rpc, "confirmed");
       if (!signature) throw Error("Transaction Rejected");
       const txHash = Buffer.from(signature).toString();
-      console.log(txHash, "txHash");
       await this.pollTransactionStatusSol(connection, txHash, 30000);
       this.queries.queryBalances
         .getQueryBech32Address(this.base58Address)

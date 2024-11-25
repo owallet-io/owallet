@@ -361,6 +361,7 @@ export const SendSolanaPage: FunctionComponent<{
                   sendConfigs.amountConfig.sendCurrency,
                   sendConfigs.recipientConfig.recipient,
                   sendConfigs.memoConfig.memo,
+                  sendConfigs.feeConfig.fee.toCoin(),
                   {
                     onBroadcasted: () => {
                       analyticsStore.logEvent("Send token tx broadcasted", {
