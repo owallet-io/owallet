@@ -155,7 +155,7 @@ export const connectAndSignBtcWithLedger = async (
 
     try {
       const keyPair = bitcoin.ECPair.fromPublicKey(expectedPubKey);
-      console.log(keyPair, "keyPair");
+
       const { psbt } = buidTx(keyPair, message, inputs, outputs);
       const inputsData: Array<
         [Transaction, number, string | null, number | null]
@@ -167,20 +167,16 @@ export const connectAndSignBtcWithLedger = async (
         const splittedTx = btcApp.splitTransaction(hex, utxoTx.hasWitnesses());
         return [splittedTx, vout, null, null];
       });
-      console.log(inputsData, "inputsData");
       const associatedKeysets = utxos.map(
         (tx) => `${keyDerivation}'/0'/0'/0/0`
       );
-      console.log(associatedKeysets, "associatedKeysets");
       const newTxHex = psbt.data.globalMap.unsignedTx
         .toBuffer()
         .toString("hex");
-      console.log(newTxHex, "newTxHex");
       const newTx: Transaction = btcApp.splitTransaction(
         newTxHex,
         keyDerivation === "84"
       );
-      console.log(newTx, "newTx");
       const outputScriptHex = btcApp
         .serializeTransactionOutputs(newTx)
         .toString("hex");

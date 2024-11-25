@@ -1,4 +1,4 @@
-import { DenomHelper } from '@owallet/common';
+import { DenomHelper, API } from '@owallet/common';
 import { computed, makeObservable } from 'mobx';
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { AppCurrency, ResBalanceEvm } from '@owallet/types';
@@ -59,18 +59,137 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
     return this.ethereumHexAddress.length > 0 && thirdparySupportedChainIdMap[this.chainId] != null;
   }
 
+  // async fetchSplBalances() {
+  //   const chainInfo = this.chainGetter.getChain(this.chainId);
+  //   // const connection = new Connection(chainInfo.rpc, "confirmed");
+  //   // const publicKey = new PublicKey(this.walletAddress);
+  //   //
+  //   // // 1. Fetch native SOL balance and token accounts in parallel
+  //   // const [lamports, tokenAccounts] = await Promise.all([
+  //   //   connection.getBalance(publicKey), // Native SOL balance
+  //   //   connection.getParsedTokenAccountsByOwner(publicKey, {
+  //   //     programId: TOKEN_PROGRAM_ID, // Token program ID
+  //   //   }),
+  //   // ]);
+  //
+  //   // 2. Extract token information
+  //   // const tokenDetails = tokenAccounts.value.map(({ account }) => {
+  //   //   const info = account.data.parsed.info;
+  //   //   return {
+  //   //     mintAddress: info.mint,
+  //   //     balance: Number(info.tokenAmount.amount),
+  //   //   };
+  //   // });
+  //
+  //   // 3. Construct tokenAddresses for API call
+  //   const tokenAddresses = tokenDetails
+  //       .map(({ mintAddress }) => `${Network.SOLANA}%2B${mintAddress}`)
+  //       .join(",");
+  //
+  //   // 4. Fetch token metadata in bulk
+  //   const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
+  //
+  //   // 5. Map token metadata to currencies
+  //   const currencyInfo = tokenInfos.map((item) => ({
+  //     coinImageUrl: item.imgUrl,
+  //     coinDenom: item.abbr,
+  //     coinGeckoId: item.coingeckoId,
+  //     coinDecimals: item.decimal,
+  //     coinMinimalDenom: `erc20:${item.contractAddress}`,
+  //   }));
+  //
+  //   // 6. Update chain info with currencies
+  //   chainInfo.addCurrencies(...currencyInfo);
+  //
+  //   // 7. Combine SPL token balances and native SOL balance
+  //   const tokenBalances = tokenDetails.reduce(
+  //       (acc, { mintAddress, balance }) => {
+  //         acc[mintAddress] = balance;
+  //         return acc;
+  //       },
+  //       {}
+  //   );
+  //
+  //   return {
+  //     ...tokenBalances,
+  //     sol: lamports, // Add native SOL balance
+  //   };
+  // }
+
+  // protected async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: ResBalanceEvm }> {
+  //     const {data, headers} = await super.fetchResponse(abortController);
+  //     const chainInfo = this.chainGetter.getChain(this.chainId);
+  //     const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+  //     const erc20Denoms = data.result
+  //         .filter(
+  //             (tokenBalance) =>
+  //                 tokenBalance.balance != null &&
+  //                 Number(tokenBalance.balance) > 0 &&
+  //                 tokenBalance.tokenAddress !== contractWeth
+  //         )
+  //         .map((tokenBalance) => `erc20:${tokenBalance.tokenAddress}`);
+  //     const tokenAddresses = erc20Denoms
+  //         .map(({tokenAddress}) => `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`)
+  //         .join(",");
+  //     // 4. Fetch token metadata in bulk
+  //     const tokenInfos = await API.getMultipleTokenInfo({tokenAddresses});
+  //
+  //     // 5. Map token metadata to currencies
+  //     const currencyInfo = tokenInfos.map((item) => ({
+  //         coinImageUrl: item.imgUrl,
+  //         coinDenom: item.abbr,
+  //         coinGeckoId: item.coingeckoId,
+  //         coinDecimals: item.decimal,
+  //         coinMinimalDenom: `erc20:${item.contractAddress}`,
+  //     }));
+  //     chainInfo.addCurrencies(...currencyInfo);
+  //     // const tokenBalances = data.result.reduce(
+  //     //     (acc, { tokenAddress, balance }) => {
+  //     //       acc[tokenAddress] = balance;
+  //     //       return acc;
+  //     //     },
+  //     //     {}
+  //     // );
+  //
+  //     console.log(currencyInfo, "currencyInfo");
+  //     console.log(tokenAddresses, "tokenAddresses")
+  //     return {
+  //         data,
+  //         headers
+  //     }
+  // }
+
   protected override onReceiveResponse(response: Readonly<QueryResponse<ResBalanceEvm>>) {
     super.onReceiveResponse(response);
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const contractWeth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-    const erc20Denoms = response.data.result
-      .filter(
-        tokenBalance =>
-          tokenBalance.balance != null && Number(tokenBalance.balance) > 0 && tokenBalance.tokenAddress !== contractWeth
-      )
-      .map(tokenBalance => `erc20:${tokenBalance.tokenAddress}`);
+    const erc20Denoms = response.data.result.filter(
+      tokenBalance =>
+        tokenBalance.balance != null && Number(tokenBalance.balance) > 0 && tokenBalance.tokenAddress !== contractWeth
+    );
     if (erc20Denoms) {
-      chainInfo.addUnknownDenoms(...erc20Denoms);
+      const tokenAddresses = erc20Denoms
+        .map(({ tokenAddress }) => `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`)
+        .join(',');
+      // 4. Fetch token metadata in bulk
+      API.getMultipleTokenInfo({ tokenAddresses })
+        .then(tokenInfos => {
+          console.log(tokenInfos, 'tokenInfos');
+          // 5. Map token metadata to currencies
+          const currencyInfo = tokenInfos
+            .filter(({ coingeckoId, denom }) => coingeckoId !== null && denom !== null)
+            .map(item => ({
+              coinImageUrl: item.imgUrl,
+              coinDenom: item.abbr,
+              coinGeckoId: item.coingeckoId,
+              coinDecimals: item.decimal,
+              coinMinimalDenom: `erc20:${item.contractAddress}`
+            }));
+          if (currencyInfo) {
+            chainInfo.addCurrencies(...currencyInfo);
+          }
+        })
+        .catch(e => console.error(e, 'err fetch erc20'));
     }
   }
 }
@@ -112,15 +231,19 @@ export class ObservableQueryThirdpartyERC20BalancesImpl implements IObservableQu
   get error(): Readonly<QueryError<unknown>> | undefined {
     return this.parent.error;
   }
+
   get isFetching(): boolean {
     return this.parent.isFetching;
   }
+
   get isObserved(): boolean {
     return this.parent.isObserved;
   }
+
   get isStarted(): boolean {
     return this.parent.isStarted;
   }
+
   get response(): Readonly<QueryResponse<ResBalanceEvm>> | undefined {
     return this.parent.response;
   }

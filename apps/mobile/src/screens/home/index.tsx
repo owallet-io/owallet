@@ -26,12 +26,12 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const scrollViewRef = useRef<ScrollView | null>(null);
   useEffect(() => {
-    for (const embedChainInfo of EmbedChainInfos) {
-      const hasChain = chainStore.hasChain(embedChainInfo.chainId);
-      if (!hasChain) continue;
-      const chainInfo = chainStore.getChain(embedChainInfo.chainId);
-      chainInfo.addCurrencies(...embedChainInfo.currencies);
-    }
+    // for (const embedChainInfo of EmbedChainInfos) {
+    //   const hasChain = chainStore.hasChain(embedChainInfo.chainId);
+    //   if (!hasChain) continue;
+    //   const chainInfo = chainStore.getChain(embedChainInfo.chainId);
+    //   chainInfo.addCurrencies(...embedChainInfo.currencies);
+    // }
     appInitStore.selectAllNetworks(true);
   }, []);
   useEffect(() => {
