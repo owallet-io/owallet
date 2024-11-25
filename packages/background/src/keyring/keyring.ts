@@ -86,7 +86,7 @@ import {
   StringifiedBigInt,
   uint2hex,
 } from "@owallet/common";
-import { CoinPretty, Int } from "@owallet/unit";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { ISimulateSignTron } from "@owallet/types";
 import { getOasisNic } from "../utils/helper";
 import { ec } from "elliptic";
@@ -1316,35 +1316,38 @@ export class KeyRing {
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = sender.publicKey;
-
-    // transaction.add(
-    //     // Request a specific number of compute units
-    //     ComputeBudgetProgram.setComputeUnitLimit({
-    //         units: Number(units.roundUp().toString()),
-    //     }),
-    //     // Attach a priority fee (in lamports)
-    //     ComputeBudgetProgram.setComputeUnitPrice({
-    //         microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
-    //     })
-    // );
-    // Create the transaction to transfer 0.1 SOL
-
+    const simulationResult = await connection.simulateTransaction(transaction);
+    console.log(simulationResult, "simulationResult");
+    if (!simulationResult.value.unitsConsumed)
+      throw new Error("Unable to estimate the fee");
+    const DefaultUnitLimit = new Dec(200_000);
+    const unitsConsumed = new Dec(simulationResult.value.unitsConsumed);
+    const units = unitsConsumed.lte(DefaultUnitLimit)
+      ? DefaultUnitLimit
+      : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
+    const microLamports = new Dec(50000);
+    transaction.add(
+      // Request a specific number of compute units
+      ComputeBudgetProgram.setComputeUnitLimit({
+        units: Number(units.roundUp().toString()),
+      }),
+      // Attach a priority fee (in lamports)
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
+      })
+    );
     transaction.sign(sender);
 
     // Serialize and Base64 encode the transaction
     const serializedTransaction = transaction.serialize();
-    try {
-      let txSignature = await connection.sendRawTransaction(
-        serializedTransaction,
-        {
-          skipPreflight: true,
-        }
-      );
-      console.log(txSignature, "txSignature");
-      return txSignature;
-    } catch (e) {
-      console.log(e, "err send");
-    }
+    let txSignature = await connection.sendRawTransaction(
+      serializedTransaction,
+      {
+        skipPreflight: true,
+      }
+    );
+    console.log(txSignature, "txSignature");
+    return txSignature;
   }
 
   public async signOasis(chainId: string, data): Promise<any> {
