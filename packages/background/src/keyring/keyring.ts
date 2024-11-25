@@ -970,7 +970,16 @@ export class KeyRing {
       };
     }
     if (coinType === 501) {
-      const keyPair = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+      let keyPair;
+      if (this.type === "privateKey") {
+        try {
+          keyPair = Keypair.fromSecretKey(this.privateKey);
+        } catch (e) {
+          console.log(e, "Errr");
+        }
+      } else if (this.type === "mnemonic") {
+        keyPair = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+      }
       return {
         algo: "ethsecp256k1",
         pubKey: keyPair.publicKey.toBytes(),
