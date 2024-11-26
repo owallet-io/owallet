@@ -32,8 +32,22 @@ export const explorerData = [
     subTitle: "The Oraichain blockchain explorer",
     url: "https://scan.orai.io/" + ref,
   },
+  {
+    images: images.img_scanium,
+    logo: images.dapps_scanium_logo,
+    title: "Scanium",
+    subTitle: "Cosmos blockchain explorer, web wallet",
+    url: "https://scanium.io/" + ref,
+  },
 ];
 export const aiData = [
+  {
+    images: images.img_mesh,
+    logo: images.dapps_mesh_logo,
+    title: "Distilled AI",
+    subTitle: "Private Intelligence",
+    url: "https://mesh.distilled.ai/" + ref,
+  },
   {
     images: images.img_airight,
     logo: images.dapps_airight_logo,
