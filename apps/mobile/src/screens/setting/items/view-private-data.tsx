@@ -11,7 +11,7 @@ import { PrivKeyConfirmModal } from '../components/privkey-confirm-modal';
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
-}> = observer(({ topBorder }) => {
+}> = observer(({}) => {
   const { keyRingStore, modalStore, chainStore, appInitStore } = useStore();
 
   const [isKeyringLoading, setKeyringLoading] = useState(false);
