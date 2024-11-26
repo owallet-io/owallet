@@ -1176,28 +1176,26 @@ const ClaimTokenItem: FunctionComponent<{
       if (validatorAddresses.length === 0) {
         return;
       }
+      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
+      let gasUsed = 0;
+
       const validatorRewards = validatorAddresses.map(validatorAddress => {
         const rewards = queryRewards.getStakableRewardOf(validatorAddress);
         return { validatorAddress, rewards };
       });
 
-      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
-      let gasUsed = 0;
       const claimTx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
-      validatorRewards.map(async v => {
-        const delegateTx = account.cosmos.makeDelegateTx(v.rewards.toDec().toString(), v.validatorAddress);
-        const simulated = await delegateTx.simulate();
-
-        console.log('simulated.gasUsed', v.rewards.toDec().toString(), simulated.gasUsed);
-
-        // Gas adjustment is 1.5
-        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
-        // Use high gas adjustment to prevent failure.
-        gasUsed += simulated.gasUsed;
-      });
 
       try {
         setIsSimulating(true);
+        validatorRewards.map(async v => {
+          const delegateTx = account.cosmos.makeDelegateTx(v.rewards.toDec().toString(), v.validatorAddress);
+          const simulated = await delegateTx.simulate();
+          // Gas adjustment is 1.5
+          // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+          // Use high gas adjustment to prevent failure.
+          gasUsed += simulated.gasUsed;
+        });
 
         const simulated = await claimTx.simulate();
 
@@ -1225,7 +1223,6 @@ const ClaimTokenItem: FunctionComponent<{
       //   console.log(e);
       // }
 
-      console.log('final gas 2', gas.toString());
       await tx.send(
         {
           gas: gas.toString(),
