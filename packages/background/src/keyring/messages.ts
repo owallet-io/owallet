@@ -1,20 +1,15 @@
-import { Message } from "@owallet/router";
+import { Message } from '@owallet/router';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const bip39 = require("bip39");
-import { ROUTE } from "./constants";
-import {
-  KeyRingStatus,
-  BIP44HDPath,
-  KeyInfo,
-  ExportedKeyRingVault,
-} from "./types";
-import { PlainObject } from "../vault";
-import * as Legacy from "./legacy";
-import { MultiAccounts } from "../keyring-keystone";
+const bip39 = require('bip39');
+import { ROUTE } from './constants';
+import { KeyRingStatus, BIP44HDPath, KeyInfo, ExportedKeyRingVault } from './types';
+import { PlainObject } from '../vault';
+import * as Legacy from './legacy';
+import { MultiAccounts } from '../keyring-keystone';
 
 export class GetIsLockedMsg extends Message<boolean> {
   public static type() {
-    return "GetIsLockedMsg";
+    return 'GetIsLockedMsg';
   }
 
   constructor() {
@@ -45,7 +40,7 @@ export class GetKeyRingStatusMsg extends Message<{
   isMigrating: boolean;
 }> {
   public static type() {
-    return "get-keyring-status";
+    return 'get-keyring-status';
   }
 
   constructor() {
@@ -69,14 +64,10 @@ export class SimulateSignTronMsg extends Message<{
   signedTxn: string;
 }> {
   public static type() {
-    return "simulate-sign-tron";
+    return 'simulate-sign-tron';
   }
 
-  constructor(
-    public readonly transaction: any,
-    public readonly vaultId: string,
-    public readonly coinType: number
-  ) {
+  constructor(public readonly transaction: any, public readonly vaultId: string, public readonly coinType: number) {
     super();
   }
 
@@ -99,7 +90,7 @@ export class GetKeyRingStatusOnlyMsg extends Message<{
   status: KeyRingStatus;
 }> {
   public static type() {
-    return "get-keyring-status-only";
+    return 'get-keyring-status-only';
   }
 
   constructor() {
@@ -124,7 +115,7 @@ export class SelectKeyRingMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "select-keyring";
+    return 'select-keyring';
   }
 
   constructor(public readonly vaultId: string) {
@@ -133,7 +124,7 @@ export class SelectKeyRingMsg extends Message<{
 
   validateBasic(): void {
     if (!this.vaultId) {
-      throw new Error("Vault id not set");
+      throw new Error('Vault id not set');
     }
   }
 
@@ -151,24 +142,20 @@ export class FinalizeKeyCoinTypeMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "finalize-key-coin-type";
+    return 'finalize-key-coin-type';
   }
 
-  constructor(
-    public readonly id: string,
-    public readonly chainId: string,
-    public readonly coinType: number
-  ) {
+  constructor(public readonly id: string, public readonly chainId: string, public readonly coinType: number) {
     super();
   }
 
   validateBasic() {
     if (!this.id) {
-      throw new Error("id not set");
+      throw new Error('id not set');
     }
 
     if (!this.chainId) {
-      throw new Error("chainId not set");
+      throw new Error('chainId not set');
     }
   }
 
@@ -187,7 +174,7 @@ export class NewMnemonicKeyMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "new-mnemonic-key";
+    return 'new-mnemonic-key';
   }
 
   constructor(
@@ -202,11 +189,11 @@ export class NewMnemonicKeyMsg extends Message<{
 
   validateBasic(): void {
     if (!this.mnemonic) {
-      throw new Error("mnemonic not set");
+      throw new Error('mnemonic not set');
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error('name not set');
     }
 
     // Validate mnemonic.
@@ -215,7 +202,7 @@ export class NewMnemonicKeyMsg extends Message<{
     try {
       bip39.mnemonicToEntropy(this.mnemonic);
     } catch (e) {
-      if (e.message !== "Invalid mnemonic checksum") {
+      if (e.message !== 'Invalid mnemonic checksum') {
         throw e;
       }
     }
@@ -236,7 +223,7 @@ export class NewLedgerKeyMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "new-ledger-key";
+    return 'new-ledger-key';
   }
 
   constructor(
@@ -251,15 +238,15 @@ export class NewLedgerKeyMsg extends Message<{
 
   validateBasic(): void {
     if (!this.pubKey || this.pubKey.length === 0) {
-      throw new Error("pub key not set");
+      throw new Error('pub key not set');
     }
 
     if (!this.app) {
-      throw new Error("app not set");
+      throw new Error('app not set');
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error('name not set');
     }
   }
 
@@ -278,7 +265,7 @@ export class NewKeystoneKeyMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "new-keystone-key";
+    return 'new-keystone-key';
   }
 
   constructor(
@@ -291,15 +278,15 @@ export class NewKeystoneKeyMsg extends Message<{
 
   validateBasic(): void {
     if (!this.multiAccounts || this.multiAccounts.keys.length === 0) {
-      throw new Error("pub key not set");
+      throw new Error('pub key not set');
     }
 
     if (!this.multiAccounts.masterFingerprint) {
-      throw new Error("masterFingerprint not set");
+      throw new Error('masterFingerprint not set');
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error('name not set');
     }
   }
 
@@ -318,7 +305,7 @@ export class NewPrivateKeyKeyMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "new-private-key-key";
+    return 'new-private-key-key';
   }
 
   constructor(
@@ -332,15 +319,15 @@ export class NewPrivateKeyKeyMsg extends Message<{
 
   validateBasic(): void {
     if (!this.privateKey || this.privateKey.length === 0) {
-      throw new Error("priv key not set");
+      throw new Error('priv key not set');
     }
 
     if (!this.meta) {
-      throw new Error("meta not set");
+      throw new Error('meta not set');
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error('name not set');
     }
   }
 
@@ -358,28 +345,24 @@ export class AppendLedgerKeyAppMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "append-ledger-key-app";
+    return 'append-ledger-key-app';
   }
 
-  constructor(
-    public readonly vaultId: string,
-    public readonly pubKey: Uint8Array,
-    public readonly app: string
-  ) {
+  constructor(public readonly vaultId: string, public readonly pubKey: Uint8Array, public readonly app: string) {
     super();
   }
 
   validateBasic(): void {
     if (!this.pubKey || this.pubKey.length === 0) {
-      throw new Error("pub key not set");
+      throw new Error('pub key not set');
     }
 
     if (!this.app) {
-      throw new Error("app not set");
+      throw new Error('app not set');
     }
 
     if (!this.vaultId) {
-      throw new Error("vault id not set");
+      throw new Error('vault id not set');
     }
   }
 
@@ -396,7 +379,7 @@ export class LockKeyRingMsg extends Message<{
   status: KeyRingStatus;
 }> {
   public static type() {
-    return "lock-keyring";
+    return 'lock-keyring';
   }
 
   constructor() {
@@ -421,7 +404,7 @@ export class UnlockKeyRingMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "unlock-keyring";
+    return 'unlock-keyring';
   }
 
   constructor(public readonly password: string) {
@@ -430,7 +413,7 @@ export class UnlockKeyRingMsg extends Message<{
 
   validateBasic(): void {
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -448,7 +431,7 @@ export class ChangeKeyRingNameMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "change-keyring-name";
+    return 'change-keyring-name';
   }
 
   constructor(public readonly vaultId: string, public readonly name: string) {
@@ -457,11 +440,11 @@ export class ChangeKeyRingNameMsg extends Message<{
 
   validateBasic(): void {
     if (!this.vaultId) {
-      throw new Error("vaultId not set");
+      throw new Error('vaultId not set');
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error('name not set');
     }
   }
 
@@ -476,13 +459,10 @@ export class ChangeKeyRingNameMsg extends Message<{
 
 export class ChangeKeyRingNameInteractiveMsg extends Message<string> {
   public static type() {
-    return "change-keyring-name-interactive";
+    return 'change-keyring-name-interactive';
   }
 
-  constructor(
-    public readonly defaultName: string,
-    public readonly editable: boolean
-  ) {
+  constructor(public readonly defaultName: string, public readonly editable: boolean) {
     super();
   }
 
@@ -509,23 +489,20 @@ export class DeleteKeyRingMsg extends Message<{
   keyInfos: KeyInfo[];
 }> {
   public static type() {
-    return "v2/delete-keyring";
+    return 'v2/delete-keyring';
   }
 
-  constructor(
-    public readonly vaultId: string,
-    public readonly password: string
-  ) {
+  constructor(public readonly vaultId: string, public readonly password: string) {
     super();
   }
 
   validateBasic(): void {
     if (!this.vaultId) {
-      throw new Error("vaultId not set");
+      throw new Error('vaultId not set');
     }
 
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -540,23 +517,20 @@ export class DeleteKeyRingMsg extends Message<{
 
 export class ShowSensitiveKeyRingDataMsg extends Message<string> {
   public static type() {
-    return "show-sensitive-keyring-data";
+    return 'show-sensitive-keyring-data';
   }
 
-  constructor(
-    public readonly vaultId: string,
-    public readonly password: string
-  ) {
+  constructor(public readonly vaultId: string, public readonly password: string) {
     super();
   }
 
   validateBasic(): void {
     if (!this.vaultId) {
-      throw new Error("vaultId not set");
+      throw new Error('vaultId not set');
     }
 
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -571,23 +545,20 @@ export class ShowSensitiveKeyRingDataMsg extends Message<string> {
 
 export class ChangeUserPasswordMsg extends Message<void> {
   public static type() {
-    return "ChangeUserPasswordMsg";
+    return 'ChangeUserPasswordMsg';
   }
 
-  constructor(
-    public readonly prevUserPassword: string,
-    public readonly newUserPassword: string
-  ) {
+  constructor(public readonly prevUserPassword: string, public readonly newUserPassword: string) {
     super();
   }
 
   validateBasic(): void {
     if (!this.prevUserPassword) {
-      throw new Error("prevUserPassword not set");
+      throw new Error('prevUserPassword not set');
     }
 
     if (!this.newUserPassword) {
-      throw new Error("newUserPassword not set");
+      throw new Error('newUserPassword not set');
     }
   }
 
@@ -602,7 +573,7 @@ export class ChangeUserPasswordMsg extends Message<void> {
 
 export class ExportKeyRingVaultsMsg extends Message<ExportedKeyRingVault[]> {
   public static type() {
-    return "export-keyring-vaults";
+    return 'export-keyring-vaults';
   }
 
   constructor(public readonly password: string) {
@@ -611,7 +582,7 @@ export class ExportKeyRingVaultsMsg extends Message<ExportedKeyRingVault[]> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -624,9 +595,41 @@ export class ExportKeyRingVaultsMsg extends Message<ExportedKeyRingVault[]> {
   }
 }
 
+export class ExportKeyRingMsg extends Message<ExportedKeyRingVault> {
+  public static type() {
+    return 'export-keyring';
+  }
+
+  constructor(public readonly vaultId: string, public readonly password: string, public readonly chainId: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.vaultId) {
+      throw new Error('vaultId not set');
+    }
+
+    if (!this.password) {
+      throw new Error('password not set');
+    }
+
+    if (!this.chainId) {
+      throw new Error('chainId not set');
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ExportKeyRingMsg.type();
+  }
+}
+
 export class ExportKeyRingDataMsg extends Message<Legacy.ExportKeyRingData[]> {
   public static type() {
-    return "export-keyring-data";
+    return 'export-keyring-data';
   }
 
   constructor(public readonly password: string) {
@@ -635,7 +638,7 @@ export class ExportKeyRingDataMsg extends Message<Legacy.ExportKeyRingData[]> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -650,7 +653,7 @@ export class ExportKeyRingDataMsg extends Message<Legacy.ExportKeyRingData[]> {
 
 export class CheckLegacyKeyRingPasswordMsg extends Message<void> {
   public static type() {
-    return "CheckLegacyKeyRingPassword";
+    return 'CheckLegacyKeyRingPassword';
   }
 
   constructor(public readonly password: string) {
@@ -659,7 +662,7 @@ export class CheckLegacyKeyRingPasswordMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -672,11 +675,9 @@ export class CheckLegacyKeyRingPasswordMsg extends Message<void> {
   }
 }
 
-export class GetLegacyKeyRingInfosMsg extends Message<
-  Legacy.KeyStore[] | undefined
-> {
+export class GetLegacyKeyRingInfosMsg extends Message<Legacy.KeyStore[] | undefined> {
   public static type() {
-    return "GetLegacyKeyRingInfos";
+    return 'GetLegacyKeyRingInfos';
   }
 
   constructor() {
@@ -698,7 +699,7 @@ export class GetLegacyKeyRingInfosMsg extends Message<
 
 export class ShowSensitiveLegacyKeyRingDataMsg extends Message<string> {
   public static type() {
-    return "ShowSensitiveLegacyKeyRingData";
+    return 'ShowSensitiveLegacyKeyRingData';
   }
 
   constructor(public readonly index: string, public readonly password: string) {
@@ -707,11 +708,11 @@ export class ShowSensitiveLegacyKeyRingDataMsg extends Message<string> {
 
   validateBasic(): void {
     if (!this.index) {
-      throw new Error("index not set");
+      throw new Error('index not set');
     }
 
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -726,7 +727,7 @@ export class ShowSensitiveLegacyKeyRingDataMsg extends Message<string> {
 
 export class CheckPasswordMsg extends Message<boolean> {
   public static type() {
-    return "check-keyring-password";
+    return 'check-keyring-password';
   }
 
   constructor(public readonly password: string) {
@@ -735,7 +736,7 @@ export class CheckPasswordMsg extends Message<boolean> {
 
   validateBasic(): void {
     if (!this.password) {
-      throw new Error("password not set");
+      throw new Error('password not set');
     }
   }
 
@@ -750,7 +751,7 @@ export class CheckPasswordMsg extends Message<boolean> {
 
 export class SearchKeyRingsMsg extends Message<KeyInfo[]> {
   public static type() {
-    return "search-keyrings";
+    return 'search-keyrings';
   }
 
   constructor(public readonly searchText: string) {
@@ -759,7 +760,7 @@ export class SearchKeyRingsMsg extends Message<KeyInfo[]> {
 
   validateBasic(): void {
     if (this.searchText == null) {
-      throw new Error("searchText not set");
+      throw new Error('searchText not set');
     }
   }
 

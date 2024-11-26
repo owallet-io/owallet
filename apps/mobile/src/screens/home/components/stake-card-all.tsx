@@ -1209,7 +1209,6 @@ const ClaimTokenItem: FunctionComponent<{
       }
 
       gas = new Dec(gasUsed * 1.5).truncate();
-
       const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(validatorAddresses, validatorRewards);
 
       // try {
