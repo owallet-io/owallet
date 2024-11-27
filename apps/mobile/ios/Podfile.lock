@@ -10,13 +10,13 @@ PODS:
     - AppCenter/Crashes (~> 5.0)
     - AppCenterReactNativeShared (~> 5.0)
     - React-Core
-  - AppCenter/Analytics (5.0.4):
+  - AppCenter/Analytics (5.0.5):
     - AppCenter/Core
-  - AppCenter/Core (5.0.4)
-  - AppCenter/Crashes (5.0.4):
+  - AppCenter/Core (5.0.5)
+  - AppCenter/Crashes (5.0.5):
     - AppCenter/Core
-  - AppCenterReactNativeShared (5.0.1):
-    - AppCenter/Core (= 5.0.4)
+  - AppCenterReactNativeShared (5.0.2):
+    - AppCenter/Core (= 5.0.5)
   - Base64 (1.1.2)
   - boost (1.76.0)
   - BranchSDK (3.6.3)
@@ -44,9 +44,6 @@ PODS:
     - FirebaseAnalytics (~> 10.27.0)
   - Firebase/CoreOnly (10.27.0):
     - FirebaseCore (= 10.27.0)
-  - Firebase/Crashlytics (10.27.0):
-    - Firebase/CoreOnly
-    - FirebaseCrashlytics (~> 10.27.0)
   - Firebase/Messaging (10.27.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.27.0)
@@ -76,15 +73,6 @@ PODS:
     - FirebaseCore (~> 10.0)
   - FirebaseCoreInternal (10.29.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseCrashlytics (10.27.0):
-    - FirebaseCore (~> 10.5)
-    - FirebaseInstallations (~> 10.0)
-    - FirebaseRemoteConfigInterop (~> 10.23)
-    - FirebaseSessions (~> 10.5)
-    - GoogleDataTransport (~> 9.2)
-    - GoogleUtilities/Environment (~> 7.8)
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-    - PromisesObjC (~> 2.1)
   - FirebaseInstallations (10.29.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
@@ -99,16 +87,6 @@ PODS:
     - GoogleUtilities/Reachability (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - nanopb (< 2.30911.0, >= 2.30908.0)
-  - FirebaseRemoteConfigInterop (10.29.0)
-  - FirebaseSessions (10.29.0):
-    - FirebaseCore (~> 10.5)
-    - FirebaseCoreExtension (~> 10.0)
-    - FirebaseInstallations (~> 10.0)
-    - GoogleDataTransport (~> 9.2)
-    - GoogleUtilities/Environment (~> 7.13)
-    - GoogleUtilities/UserDefaults (~> 7.13)
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-    - PromisesSwift (~> 2.1)
   - Flipper (0.182.0):
     - Flipper-Folly (~> 2.6)
   - Flipper-Boost-iOSX (1.76.0.1.11)
@@ -273,8 +251,6 @@ PODS:
   - nanopb/encode (2.30910.0)
   - OpenSSL-Universal (1.1.1100)
   - PromisesObjC (2.4.0)
-  - PromisesSwift (2.4.0):
-    - PromisesObjC (= 2.4.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -741,11 +717,6 @@ PODS:
   - RNFBApp (20.1.0):
     - Firebase/CoreOnly (= 10.27.0)
     - React-Core
-  - RNFBCrashlytics (20.1.0):
-    - Firebase/Crashlytics (= 10.27.0)
-    - FirebaseCoreExtension
-    - React-Core
-    - RNFBApp
   - RNFBMessaging (20.1.0):
     - Firebase/Messaging (= 10.27.0)
     - FirebaseCoreExtension
@@ -892,7 +863,6 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
-  - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
@@ -920,11 +890,8 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreExtension
     - FirebaseCoreInternal
-    - FirebaseCrashlytics
     - FirebaseInstallations
     - FirebaseMessaging
-    - FirebaseRemoteConfigInterop
-    - FirebaseSessions
     - Flipper
     - Flipper-Boost-iOSX
     - Flipper-DoubleConversion
@@ -946,7 +913,6 @@ SPEC REPOS:
     - nanopb
     - OpenSSL-Universal
     - PromisesObjC
-    - PromisesSwift
     - SDWebImage
     - SDWebImageWebPCoder
     - Sentry
@@ -1083,8 +1049,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
-  RNFBCrashlytics:
-    :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
   RNGestureHandler:
@@ -1115,11 +1079,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AppCenter: 85c92db0759d2792a65eb61d6842d2e86611a49a
+  AppCenter: 994875ea7941b9e168babb98299f900a94bcef13
   appcenter-analytics: b90b12a9357d8e3f6174ac761f00c70d95a137ee
   appcenter-core: 711583753e9b44d3a9c75f8f78baa23804be3e40
   appcenter-crashes: be716cca49539023ab5778502230098dd4b41d54
-  AppCenterReactNativeShared: 22aea9046e80c449137f4e574ae1f229616e2358
+  AppCenterReactNativeShared: e6f6bd4d0e055bf1a3d7337edb4993bfce79185b
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 7dcd2de282d72e344012f7d6564d024930a6a440
   BranchSDK: a5418b5fde1b837567cf00a4a7f2ed45abf2e26c
@@ -1134,11 +1098,8 @@ SPEC CHECKSUMS:
   FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
   FirebaseCoreExtension: 705ca5b14bf71d2564a0ddc677df1fc86ffa600f
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
-  FirebaseCrashlytics: 81ea6ec96519388687f6061beb838a8eec482293
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseMessaging: 585984d0a1df120617eb10b44cad8968b859815e
-  FirebaseRemoteConfigInterop: 6efda51fb5e2f15b16585197e26eaa09574e8a4d
-  FirebaseSessions: dbd14adac65ce996228652c1fc3a3f576bdf3ecc
   Flipper: 6edb735e6c3e332975d1b17956bcc584eccf5818
   Flipper-Boost-iOSX: fd1e2b8cbef7e662a122412d7ac5f5bea715403c
   Flipper-DoubleConversion: 2dc99b02f658daf147069aad9dbd29d8feb06d30
@@ -1164,7 +1125,6 @@ SPEC CHECKSUMS:
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: fb207f74935626041e7308c9e88dcdda680f1073
   RCTTypeSafety: 146fd11361680250b7580dd1f7f601995cfad1b1
@@ -1214,10 +1174,9 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 25d818c85db769cc0e7083d39efaa01a6f450df3
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNFBAnalytics: 3f336502732e51de9f5a5be8b5e3df879bf2eca7
-  RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
-  RNFBCrashlytics: a4a66785997e629313ec8005a0811765738239fd
-  RNFBMessaging: b82ef70d252500d3ad104284c0c7f8e1cd22b51e
+  RNFBAnalytics: d5570f8c8259452915cca097d93239a1f631eff8
+  RNFBApp: 1ae7462cddf74a49df206d3418bc0170f8fa53e5
+  RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
   RNGestureHandler: fc9b83c69a222770e07bef8a6f6c47d9ebfcd336
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
@@ -1238,6 +1197,6 @@ SPEC CHECKSUMS:
   Yoga: 6f5ab94cd8b1ecd04b6e973d0bc583ede2a598cc
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 496010450141007f436eb0f74ab1e2c6e2049726
+PODFILE CHECKSUM: 993f68e646c2391923b0ecc6e86360c6ed4eea44
 
 COCOAPODS: 1.15.2
