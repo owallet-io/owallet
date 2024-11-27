@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "570000248707",
     "project_id": "owallet-829a1",
-    "storage_bucket": "owallet-829a1.appspot.com"
+    "storage_bucket": "owallet-829a1.firebasestorage.app"
   },
   "client": [
     {
@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "570000248707-c5jn1p78v65qs32k0r6v4jd95u71lmvv.apps.googleusercontent.com",
+          "client_id": "570000248707-s57pvjgtppfb66vdhcqee5uln59fmd2n.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
