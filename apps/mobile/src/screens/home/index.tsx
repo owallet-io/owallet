@@ -41,6 +41,7 @@ import { ViewToken } from '@src/stores/huge-queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressBtcType } from '@owallet/types';
 import { NewThemeModal } from '@src/modals/theme-modal/theme';
+import { WarningBox } from '@src/components/warning';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer(props => {
@@ -756,14 +757,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      {/* <NewThemeModal
+      <NewThemeModal
         isOpen={isThemOpen}
         close={() => {
           setThemeOpen(false);
           appInitStore.updateSelectTheme();
         }}
         colors={colors}
-      /> */}
+      />
       <AccountBoxAll
         isLoading={isLoading}
         totalBalanceByChain={availableTotalPriceByChain || initPrice}
@@ -771,6 +772,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         dataBalances={dataBalances}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
+      <WarningBox />
       <MainTabHome
         dataTokens={
           appInitStore.getInitApp.isAllNetworks
