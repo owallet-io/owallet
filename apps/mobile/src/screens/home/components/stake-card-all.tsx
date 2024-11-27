@@ -1018,7 +1018,7 @@ export const StakeCardAll = observer(({}) => {
                   <OWIcon name={'tdesignchevron-up'} size={16} color={colors['neutral-icon-on-light']} />
                 )}
               </TouchableOpacity>
-              {keyRingStore.selectedKeyInfo.type !== 'ledger' ? (
+              {keyRingStore?.selectedKeyInfo?.type !== 'ledger' ? (
                 <OWButton
                   style={[
                     styles['btn-claim'],
@@ -1176,15 +1176,25 @@ const ClaimTokenItem: FunctionComponent<{
       if (validatorAddresses.length === 0) {
         return;
       }
-      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
-      let gasUsed = 0;
-
       const validatorRewards = validatorAddresses.map(validatorAddress => {
         const rewards = queryRewards.getStakableRewardOf(validatorAddress);
         return { validatorAddress, rewards };
       });
 
+      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
+      let gasUsed = 0;
       const claimTx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+      validatorRewards.map(async v => {
+        const delegateTx = account.cosmos.makeDelegateTx(v.rewards.toDec().toString(), v.validatorAddress);
+        const simulated = await delegateTx.simulate();
+
+        console.log('simulated.gasUsed', v.rewards.toDec().toString(), simulated.gasUsed);
+
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gasUsed += simulated.gasUsed;
+      });
 
       try {
         setIsSimulating(true);
@@ -1209,6 +1219,7 @@ const ClaimTokenItem: FunctionComponent<{
       }
 
       gas = new Dec(gasUsed * 1.5).truncate();
+
       const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(validatorAddresses, validatorRewards);
 
       // try {
@@ -1222,6 +1233,7 @@ const ClaimTokenItem: FunctionComponent<{
       //   console.log(e);
       // }
 
+      console.log('final gas 2', gas.toString());
       await tx.send(
         {
           gas: gas.toString(),
