@@ -12,7 +12,7 @@ export class AppInit {
     passcodeType: 'numeric' | 'alphabet';
     isAllNetworks: boolean;
     isSelectTheme: boolean;
-    lastWarning: undefined | null | number;
+    lastWarning: undefined | null | number | boolean;
     date_updated: null | number;
     theme: 'dark' | 'light';
     wallet: 'owallet' | 'injective' | 'osmosis';
@@ -42,7 +42,7 @@ export class AppInit {
       theme: 'light',
       hideTestnet: true,
       wallet: 'owallet',
-      lastWarning: null,
+      lastWarning: false,
       isSelectTheme: false,
       hideTokensWithoutBalance: true,
       feeOption: 'average',
@@ -78,7 +78,7 @@ export class AppInit {
     this.initApp = { ...this.initApp, isSelectTheme: true };
   }
   @action
-  updateLastTimeWarning(timestamp: number) {
+  updateLastTimeWarning(timestamp: number | boolean) {
     this.initApp = { ...this.initApp, lastWarning: timestamp };
   }
   @action

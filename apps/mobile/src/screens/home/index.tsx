@@ -106,12 +106,18 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [checkAndUpdateChainInfo]);
 
   const [isThemOpen, setThemeOpen] = useState(false);
-  const [isWarningOpen, setWarningOpen] = useState(true);
+  const [isWarningOpen, setWarningOpen] = useState(false);
   useEffect(() => {
     if (!appInitStore.getInitApp.isSelectTheme) {
       setThemeOpen(true);
     }
   }, [appInitStore.getInitApp.isSelectTheme]);
+
+  useEffect(() => {
+    if (!appInitStore.getInitApp.lastWarning) {
+      setWarningOpen(true);
+    }
+  }, [appInitStore.getInitApp.lastWarning]);
 
   useFocusEffect(
     useCallback(() => {
@@ -769,7 +775,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         isOpen={isWarningOpen}
         close={() => {
           setWarningOpen(false);
-          appInitStore.updateLastTimeWarning(Date.now());
+          appInitStore.updateLastTimeWarning(true);
         }}
         colors={colors}
       />
