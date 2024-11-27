@@ -7877,18 +7877,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/analytics@npm:20.1.0":
-  version: 20.1.0
-  resolution: "@react-native-firebase/analytics@npm:20.1.0"
+"@react-native-firebase/analytics@npm:=18.6.1":
+  version: 18.6.1
+  resolution: "@react-native-firebase/analytics@npm:18.6.1"
   peerDependencies:
-    "@react-native-firebase/app": 20.1.0
-  checksum: 432c9e30962dc88ad5407a6b7d08a9e8e18e7a013c85434a383bd751e9a88b07f90924cf279c6db315a97dcab8aa7df3cad9091939c58b114c56568aad88351d
+    "@react-native-firebase/app": 18.6.1
+  checksum: 8538788a4b78782e3660fed97d2a0966b50c7c61f255a61a003ce610c4007cf5a10fa56a55eb67a7cb116e491ee783c6e1dc7d31709922d36516914eae1c0837
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:20.1.0":
-  version: 20.1.0
-  resolution: "@react-native-firebase/app@npm:20.1.0"
+"@react-native-firebase/app@npm:=18.6.1":
+  version: 18.6.1
+  resolution: "@react-native-firebase/app@npm:18.6.1"
   dependencies:
     opencollective-postinstall: ^2.0.3
     superstruct: ^0.6.2
@@ -7899,20 +7899,16 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 85e509be9dedfca72552b1e393c020ef1de1e5604078ad9da262719f9ce17a9c4be89a66d4db70615865846afdaa1bf34c2a614275b50fb8e6ab86368a21e1be
+  checksum: 3655f29917b72deca20b4b6f835ea0895af4ea662748b9011b9b223c28e44675139d8068290d3ea200237907663ff9cf3577f1fc3d48cff04231d937d018060b
   languageName: node
   linkType: hard
 
-"@react-native-firebase/messaging@npm:20.1.0":
-  version: 20.1.0
-  resolution: "@react-native-firebase/messaging@npm:20.1.0"
+"@react-native-firebase/messaging@npm:=18.6.1":
+  version: 18.6.1
+  resolution: "@react-native-firebase/messaging@npm:18.6.1"
   peerDependencies:
-    "@react-native-firebase/app": 20.1.0
-    expo: ">=47.0.0"
-  peerDependenciesMeta:
-    expo:
-      optional: true
-  checksum: 69b114453f093142c39461d05f2637d9dd31e28854f511689192a3a6e069c8aa3739f3eb550ab7600e4d277956fc01361621bde931bd83b7fa86141d20bcb823
+    "@react-native-firebase/app": 18.6.1
+  checksum: 872a9190e4cc022735115c16337d24205f35148b5fffec30df5aac930c4d94190a913fab3073a7c57442bf2d3d60d9aca6455bf7e3de85b0fff1923e30685c61
   languageName: node
   linkType: hard
 
@@ -24496,13 +24492,13 @@ __metadata:
     "@oraichain/oraidex-common": ^1.1.32
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.21
+    "@oraichain/oraidex-universal-swap": ^1.1.23
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-community/blur": 4.3.2
     "@react-native-community/netinfo": 9.4.1
-    "@react-native-firebase/analytics": 20.1.0
-    "@react-native-firebase/app": 20.1.0
-    "@react-native-firebase/messaging": 20.1.0
+    "@react-native-firebase/analytics": =18.6.1
+    "@react-native-firebase/app": =18.6.1
+    "@react-native-firebase/messaging": =18.6.1
     "@react-native-masked-view/masked-view": 0.2.9
     "@react-native/eslint-config": ^0.72.2
     "@react-native/metro-config": ^0.72.12

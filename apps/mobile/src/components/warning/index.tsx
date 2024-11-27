@@ -59,7 +59,9 @@ export const WarningBox: FunctionComponent<{}> = ({}) => {
           </Text>
         </View>
         <Text color={colors['warning-border-default']} weight="500" size={14}>
-          {/* Please backup your mnemonic / private key! */}
+          Please backup your mnemonic / private key!
+        </Text>
+        <Text color={colors['warning-border-default']} weight="500" size={14}>
           FCM Token for testing purpose:
         </Text>
         <Text color={colors['warning-border-default']} weight="500" size={14}>
