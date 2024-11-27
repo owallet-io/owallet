@@ -24,6 +24,7 @@ import { QuerySharedContext } from "src/common/query/context";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { ObservableChainQuery } from "../../chain-query";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
+import { erc20ContractInterface } from "../../evm-contract/constant";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -88,7 +89,10 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
     chainGetter: ChainGetter,
     walletAddress: string
   ) {
-    super(sharedContext, chainId, chainGetter, "");
+    super(sharedContext, chainId, chainGetter, "svm_getBalance", [
+      walletAddress,
+      "latest",
+    ]);
     console.log(walletAddress, "walletAddress");
     this.walletAddress = walletAddress;
 
