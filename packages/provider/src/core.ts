@@ -76,6 +76,7 @@ import { ChainIdEnum } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 import { type SolanaSignAndSendTransactionOutput } from "@solana/wallet-standard-features";
 import { isSolanaChain } from "@solana/wallet-standard-chains";
+import { PublicKey } from "@solana/web3.js";
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -113,10 +114,12 @@ export class OWallet implements IOWallet {
     const msg = new GetKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     const msg = new GetKeySettledMsg(chainIds);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,
@@ -207,6 +210,7 @@ export class OWallet implements IOWallet {
 
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async sendAndConfirmTransactionSvm(
     chainId: string,
     signer: string,
@@ -217,6 +221,7 @@ export class OWallet implements IOWallet {
       new RequestSendAndConfirmTxSvm(chainId, signer, unsignedTx)
     );
   }
+
   async signArbitrary(
     chainId: string,
     signer: string,
@@ -533,12 +538,14 @@ export class TronWeb implements ITronWeb {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }
+
 export class Bitcoin implements IBitcoin {
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
     protected readonly requester: MessageRequester
   ) {}
+
   async signAndBroadcast(
     chainId: string,
     data: object
@@ -546,17 +553,36 @@ export class Bitcoin implements IBitcoin {
     const msg = new RequestSignBitcoinMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async getKey(chainId: string): Promise<Key> {
     const msg = new GetKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }
+
 export class Solana implements ISolana {
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
     protected readonly requester: MessageRequester
   ) {}
+
+  async connect(options?: {
+    onlyIfTrusted?: boolean;
+  }): Promise<{ publicKey: PublicKey }> {
+    const chainIds = ["solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"];
+    await this.requester.sendMessage(
+      BACKGROUND_PORT,
+      new EnableAccessMsg(chainIds)
+    );
+    const msg = new GetKeyMsg(chainIds[0]);
+    const key = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return { publicKey: new PublicKey(key.base58Address) };
+  }
+  async disconnect(): Promise<void> {
+    //TODO: need handle
+    return;
+  }
 
   async signAndSendTransaction(...inputs) {
     // const {ac} = inputs[0]!;

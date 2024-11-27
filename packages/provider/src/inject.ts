@@ -45,6 +45,8 @@ import {
   NAMESPACE_TRONWEB,
 } from "./constants";
 import { SignEthereumTypedDataObject } from "@owallet/types/build/typedMessage";
+import EventEmitter from "events";
+import { PublicKey } from "@solana/web3.js";
 
 export const localStore = new Map<string, any>();
 
@@ -70,6 +72,7 @@ export interface ProxyRequestResponse {
  * This will use `window.postMessage` to interact with the content script.
  */
 const isOsmosis = window?.location?.origin?.includes("app.osmosis.zone");
+
 export class InjectedOWallet implements IOWallet {
   static startProxy(
     owallet: IOWallet,
@@ -304,9 +307,11 @@ export class InjectedOWallet implements IOWallet {
   async getKey(chainId: string): Promise<Key> {
     return await this.requestMethod("getKey", [chainId]);
   }
+
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this.requestMethod("getKeysSettled", [chainIds]);
   }
+
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,
@@ -314,6 +319,7 @@ export class InjectedOWallet implements IOWallet {
   ): Promise<Uint8Array> {
     return await this.requestMethod("sendTx", [chainId, tx, mode]);
   }
+
   async sendAndConfirmTransactionSvm(
     chainId: string,
     signer: string,
@@ -386,6 +392,7 @@ export class InjectedOWallet implements IOWallet {
       signature: result.signature,
     };
   }
+
   async experimentalSignEIP712CosmosTx_v0(
     chainId: string,
     signer: string,
@@ -405,6 +412,7 @@ export class InjectedOWallet implements IOWallet {
       deepmerge(this.defaultOptions.sign ?? {}, signOptions),
     ]);
   }
+
   async signArbitrary(
     chainId: string,
     signer: string,
@@ -899,6 +907,7 @@ export class InjectedEthereum implements Ethereum {
   //   return await this.requestMethod('getKey', [chainId]);
   // }
 }
+
 export class InjectedBitcoin implements Bitcoin {
   static startProxy(
     bitcoin: IBitcoin,
@@ -1055,6 +1064,7 @@ export class InjectedBitcoin implements Bitcoin {
   async getKey(chainId: string): Promise<Key> {
     return await this.requestMethod("getKey", [chainId]);
   }
+
   async enable() {
     // return await this.requestMethod('eth_requestAccounts', [[]]);
     return;
@@ -1074,7 +1084,8 @@ export class InjectedBitcoin implements Bitcoin {
     return await this.requestMethod("signAndBroadcast", [chainId, data]);
   }
 }
-export class InjectedSolana implements ISolana {
+
+export class InjectedSolana extends EventEmitter implements ISolana {
   static startProxy(
     solana: ISolana,
     eventListener: {
@@ -1156,6 +1167,9 @@ export class InjectedSolana implements ISolana {
     });
   }
 
+  public isOWallet: boolean = true;
+
+  // public publicKey: PublicKey | null;
   protected requestMethod(method: keyof ISolana, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -1207,8 +1221,6 @@ export class InjectedSolana implements ISolana {
     });
   }
 
-  public isOWallet: boolean = true;
-
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
@@ -1225,7 +1237,25 @@ export class InjectedSolana implements ISolana {
         window.postMessage(message, window.location.origin),
     },
     protected readonly parseMessage?: (message: any) => any
-  ) {}
+  ) {
+    super();
+  }
+
+  publicKey: PublicKey | null;
+
+  async connect(options?: {
+    onlyIfTrusted?: boolean;
+    reconnect?: boolean;
+  }): Promise<{ publicKey: PublicKey }> {
+    const { publicKey } = await this.requestMethod("connect", [options]);
+    const pubKeyRes = new PublicKey(publicKey);
+    this.publicKey = pubKeyRes;
+    return { publicKey: pubKeyRes };
+  }
+
+  async disconnect(): Promise<void> {
+    this.publicKey = null;
+  }
 
   signAndSendTransaction: ISolana["signAndSendTransaction"] = async (
     ...inputs
@@ -1253,6 +1283,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       issuerAddress: string
     ) => any;
   };
+
   get defaultAddress() {
     return JSON.parse(localStorage.getItem("tronWeb.defaultAddress"));
   }
@@ -1479,6 +1510,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       },
     };
   }
+
   sendRawTransaction(transaction: {
     raw_data: any;
     raw_data_hex: string;

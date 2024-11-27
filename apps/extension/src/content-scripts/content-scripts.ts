@@ -36,6 +36,9 @@ InjectedEthereum.startProxy(
 InjectedBitcoin.startProxy(
   new Bitcoin(manifest.version, "core", new InExtensionMessageRequester())
 );
+InjectedSolana.startProxy(
+  new Solana(manifest.version, "core", new InExtensionMessageRequester())
+);
 
 InjectedTronWebOWallet.startProxy(
   new TronWeb(

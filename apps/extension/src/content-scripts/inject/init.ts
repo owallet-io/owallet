@@ -3,12 +3,14 @@ import { OWallet, Ethereum, TronWeb, Bitcoin, Solana } from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { SecretUtils } from "@owallet/types";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
+import { initialize } from "@toan.dq2009/wallet-standard";
 
 export function init(
   owallet: OWallet,
   ethereum: Ethereum,
   tronWeb: TronWeb,
   bitcoin: Bitcoin,
+  solana: Solana,
   // oasis: Oasis,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
@@ -23,6 +25,10 @@ export function init(
   }
   if (!window.bitcoin) {
     window.bitcoin = bitcoin;
+  }
+  if (!window.solana) {
+    window.owalletSolana = solana;
+    initialize(solana);
   }
 
   if (!window.ethereum) {

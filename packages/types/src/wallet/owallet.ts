@@ -282,28 +282,28 @@ export interface Bitcoin {
   getKey(chainId: string): Promise<Key>;
 }
 
-export interface Solana extends Wallet {
-  destroy(): void;
-  connected(): void;
-  disconnected(): void;
-  connect: StandardConnectMethod;
-  disconnect: StandardDisconnectMethod;
-  on: StandardEventsOnMethod;
-  emit<E extends StandardEventsNames>(
-    event: E,
-    ...args: Parameters<StandardEventsListeners[E]>
-  ): void;
-  off<E extends StandardEventsNames>(
-    event: E,
-    listener: StandardEventsListeners[E]
-  ): void;
-  deserializeTransaction(
-    serializedTransaction: Uint8Array
-  ): Transaction | VersionedTransaction;
-  signAndSendTransaction: SolanaSignAndSendTransactionMethod;
-  signTransaction: SolanaSignTransactionMethod;
-  signMessage: SolanaSignMessageMethod;
-  signIn: SolanaSignInMethod;
+export interface Solana {
+  // destroy(): void;
+  // connected(): void;
+  // disconnected(): void;
+  // connect: StandardConnectMethod;
+  // disconnect: StandardDisconnectMethod;
+  // on: StandardEventsOnMethod;
+  // emit<E extends StandardEventsNames>(
+  //   event: E,
+  //   ...args: Parameters<StandardEventsListeners[E]>
+  // ): void;
+  // off<E extends StandardEventsNames>(
+  //   event: E,
+  //   listener: StandardEventsListeners[E]
+  // ): void;
+  // deserializeTransaction(
+  //   serializedTransaction: Uint8Array
+  // ): Transaction | VersionedTransaction;
+  // signAndSendTransaction: SolanaSignAndSendTransactionMethod;
+  // signTransaction: SolanaSignTransactionMethod;
+  // signMessage: SolanaSignMessageMethod;
+  // signIn: SolanaSignInMethod;
 }
 
 export interface Oasis {
