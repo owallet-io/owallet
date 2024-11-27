@@ -32,10 +32,9 @@ export class ObservableQueryGasPriceInner extends ObservableEvmChainJsonRpcQuery
    */
   @computed
   get gasPrice(): Int {
-    if (!this.response) {
+    if (!this.response || isNaN(Number(this.response.data))) {
       return new Int("0");
     }
-
     return new Int(Web3.utils.hexToNumberString(this.response.data));
   }
 }
@@ -56,6 +55,7 @@ export class ObservableQueryGasPrice extends ObservableEvmChainJsonRpcQueryMap<s
   }
 
   getGasPrice(): ObservableQueryGasPriceInner {
+    console.log(this.chainId, "this.chainId2");
     return this.get(this.chainId) as ObservableQueryGasPriceInner;
   }
 }

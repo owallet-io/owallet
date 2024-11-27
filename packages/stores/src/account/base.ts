@@ -940,48 +940,48 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.handleTxEvents(txHash, onTxEvents);
   }
 
-  async sendSvmMsgs(
-    type: string | "unknown",
-    msgs: any,
-    memo: string = "",
-    fee: StdFee,
-    signOptions?: OWalletSignOptions,
-    onTxEvents?:
-      | ((tx: any) => void)
-      | {
-          onBroadcastFailed?: (e?: Error) => void;
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
-  ) {
-    runInAction(() => {
-      this._isSendingMsg = type;
-    });
-
-    let txHash: string;
-
-    try {
-      const result = await this.broadcastSvmMsgs(msgs, fee, memo, signOptions);
-      console.log(result, "result");
-      // txHash = result?.txHash;
-      if (!txHash) throw Error("Transaction Rejected");
-    } catch (e: any) {
-      console.log("🚀 ~ file: base.ts:644 ~ AccountSetBase<MsgOpts, ~ e:", e);
-      runInAction(() => {
-        this._isSendingMsg = false;
-      });
-
-      this.opts?.preTxEvents?.onBroadcastFailed(e);
-
-      onTxEvents &&
-        "onBroadcastFailed" in onTxEvents &&
-        onTxEvents.onBroadcastFailed(e);
-
-      throw e;
-    }
-
-    this.onHandleEvents(onTxEvents, txHash);
-  }
+  // async sendSvmMsgs(
+  //   type: string | "unknown",
+  //   msgs: any,
+  //   memo: string = "",
+  //   fee: StdFee,
+  //   signOptions?: OWalletSignOptions,
+  //   onTxEvents?:
+  //     | ((tx: any) => void)
+  //     | {
+  //         onBroadcastFailed?: (e?: Error) => void;
+  //         onBroadcasted?: (txHash: Uint8Array) => void;
+  //         onFulfill?: (tx: any) => void;
+  //       }
+  // ) {
+  //   runInAction(() => {
+  //     this._isSendingMsg = type;
+  //   });
+  //
+  //   let txHash: string;
+  //
+  //   try {
+  //     const result = await this.broadcastSvmMsgs(msgs, fee, memo, signOptions);
+  //     console.log(result, "result");
+  //     // txHash = result?.txHash;
+  //     if (!txHash) throw Error("Transaction Rejected");
+  //   } catch (e: any) {
+  //     console.log("🚀 ~ file: base.ts:644 ~ AccountSetBase<MsgOpts, ~ e:", e);
+  //     runInAction(() => {
+  //       this._isSendingMsg = false;
+  //     });
+  //
+  //     this.opts?.preTxEvents?.onBroadcastFailed(e);
+  //
+  //     onTxEvents &&
+  //       "onBroadcastFailed" in onTxEvents &&
+  //       onTxEvents.onBroadcastFailed(e);
+  //
+  //     throw e;
+  //   }
+  //
+  //   this.onHandleEvents(onTxEvents, txHash);
+  // }
 
   async sendBtcMsgs(
     type: string | "unknown",
@@ -1333,45 +1333,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     return {
       txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode),
     };
-  }
-
-  protected async broadcastSvmMsgs(
-    msgs: any,
-    fee: StdFee,
-    memo: string = "",
-    signOptions?: OWalletSignOptions,
-    mode: "block" | "async" | "sync" = "async"
-  ): Promise<{
-    txHash: Uint8Array;
-  }> {
-    if (this.walletStatus !== WalletStatus.Loaded) {
-      throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
-    }
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    // const owallet = (await this.getOWallet())!;
-    const solana = (await this.getSolana())!;
-    await solana.signAndSendTransaction({
-      chain: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-      account: {
-        address: "w78e6r",
-        publicKey: new Uint8Array([]),
-        chains: ["solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"],
-        features: ["solana:signAndSendTransaction"],
-      },
-      transaction: new Uint8Array([]),
-    });
-    // let sendTx = owallet.sendTx.bind(owallet);
-    // const signedTx = await this.processSignedTxCosmos(
-    //     msgs,
-    //     fee,
-    //     memo,
-    //     owallet,
-    //     signOptions
-    // );
-    // return {
-    //   txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode),
-    // };
-    return;
   }
 
   protected async broadcastBtcMsgs(

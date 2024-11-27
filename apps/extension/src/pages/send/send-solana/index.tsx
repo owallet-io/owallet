@@ -457,8 +457,8 @@ export const SendSolanaPage: FunctionComponent<{
                     padding: 0,
                   }}
                   memoConfig={sendConfigs.memoConfig}
-                  label={"Message"}
-                  placeholder="Enter your message"
+                  label={"Memo"}
+                  placeholder="Enter your memo"
                 />
               </Card>
 

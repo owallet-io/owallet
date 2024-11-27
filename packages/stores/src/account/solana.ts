@@ -84,36 +84,36 @@ export class SolanaAccount {
 
       switch (denomHelper.type) {
         case "native":
-          const msg: any = {
-            address: recipient,
-            changeAddress: this.base.btcAddress,
-            amount: Number(extraOptions.amount),
-            message: memo,
-            totalFee: Number(stdFee.amount[0].amount),
-            selectedCrypto: signOptions.chainId,
-            confirmedBalance: extraOptions.confirmedBalance,
-            feeRate: extraOptions.feeRate,
-          };
+          // const msg: any = {
+          //   address: recipient,
+          //   changeAddress: this.base.btcAddress,
+          //   amount: Number(extraOptions.amount),
+          //   message: memo,
+          //   totalFee: Number(stdFee.amount[0].amount),
+          //   selectedCrypto: signOptions.chainId,
+          //   confirmedBalance: extraOptions.confirmedBalance,
+          //   feeRate: extraOptions.feeRate,
+          // };
 
-          await this.base.sendSvmMsgs(
-            "send",
-            msg,
-            memo,
-            stdFee,
-            signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              // if (tx) {
-              //   // After succeeding to send token, refresh the balance.
-              //   const querySvmBalance =
-              //     this.queries.svm.querySolanaBalance.getQueryBalance(
-              //       this.base.btcAddress
-              //     );
-              //   if (querySvmBalance) {
-              //     querySvmBalance.fetch();
-              //   }
-              // }
-            })
-          );
+          // await this.base.sendSvmMsgs(
+          //   "send",
+          //   msg,
+          //   memo,
+          //   stdFee,
+          //   signOptions,
+          //   this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+          //     // if (tx) {
+          //     //   // After succeeding to send token, refresh the balance.
+          //     //   const querySvmBalance =
+          //     //     this.queries.svm.querySolanaBalance.getQueryBalance(
+          //     //       this.base.btcAddress
+          //     //     );
+          //     //   if (querySvmBalance) {
+          //     //     querySvmBalance.fetch();
+          //     //   }
+          //     // }
+          //   })
+          // );
           return true;
       }
     }
