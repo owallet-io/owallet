@@ -1,47 +1,29 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
-import { OWButton } from "@src/components/button";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import { Text } from "@src/components/text";
-import { useTheme } from "@src/themes/theme-provider";
-import { showToast } from "@src/utils/helper";
-import { observer } from "mobx-react-lite";
-import React, {
-  useRef,
-  useCallback,
-  useState,
-  useEffect,
-  FunctionComponent,
-} from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { OWBox } from "../../../components/card";
-import { useStore } from "../../../stores";
-import { metrics, spacing } from "../../../themes";
-import { tracking } from "@src/utils/tracking";
-import { ViewToken } from "@owallet/types";
-import { action, makeObservable, observable } from "mobx";
-import { ChainIdHelper } from "@owallet/cosmos";
-import {
-  DenomDydx,
-  removeDataInParentheses,
-  unknownToken,
-} from "@owallet/common";
-import { ObservableQueryRewardsInner } from "@owallet/stores";
-import {
-  AminoSignResponse,
-  BroadcastMode,
-  FeeCurrency,
-  StdSignDoc,
-} from "@owallet/types";
-import { useSendTxConfig } from "@owallet/hooks";
-import { DefaultGasPriceStep } from "@owallet/hooks";
-import {
-  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
-  SendTxMsg,
-} from "@owallet/background";
-import { isSimpleFetchError } from "@owallet/simple-fetch";
-import { RNMessageRequesterInternal } from "@src/router";
-import { BACKGROUND_PORT } from "@owallet/router";
-import { AlertIcon } from "@src/components/icon";
+import { CoinPretty, Dec, Int, PricePretty } from '@owallet/unit';
+import { OWButton } from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { showToast } from '@src/utils/helper';
+import { observer } from 'mobx-react-lite';
+import React, { useRef, useCallback, useState, useEffect, FunctionComponent } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { OWBox } from '../../../components/card';
+import { useStore } from '../../../stores';
+import { metrics, spacing } from '../../../themes';
+import { tracking } from '@src/utils/tracking';
+import { ViewToken } from '@owallet/types';
+import { action, makeObservable, observable } from 'mobx';
+import { ChainIdHelper } from '@owallet/cosmos';
+import { DenomDydx, removeDataInParentheses, unknownToken } from '@owallet/common';
+import { ObservableQueryRewardsInner } from '@owallet/stores';
+import { AminoSignResponse, BroadcastMode, FeeCurrency, StdSignDoc } from '@owallet/types';
+import { useSendTxConfig } from '@owallet/hooks';
+import { DefaultGasPriceStep } from '@owallet/hooks';
+import { PrivilegeCosmosSignAminoWithdrawRewardsMsg, SendTxMsg } from '@owallet/background';
+import { isSimpleFetchError } from '@owallet/simple-fetch';
+import { RNMessageRequesterInternal } from '@src/router';
+import { BACKGROUND_PORT } from '@owallet/router';
+import { AlertIcon } from '@src/components/icon';
 
 interface StakeViewToken extends ViewToken {
   queryRewards: ObservableQueryRewardsInner;
@@ -109,17 +91,14 @@ export const StakeCardAll = observer(({}) => {
 
   const viewTokens: StakeViewToken[] = (() => {
     const res: StakeViewToken[] = [];
-    for (const chainInfo of chainStore.chainInfosInUI.filter(
-      (item) => !item.chainId?.includes("test")
-    )) {
+    for (const chainInfo of chainStore.chainInfosInUI.filter(item => !item.chainId?.includes('test'))) {
       const chainId = chainInfo.chainId;
       const accountAddress = accountStore.getAccount(chainId).bech32Address;
       const queries = queriesStore.get(chainId);
-      const queryRewards =
-        queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(accountAddress);
 
       const targetDenom = (() => {
-        if (chainInfo.chainId?.includes("dydx-mainnet")) {
+        if (chainInfo.chainId?.includes('dydx-mainnet')) {
           return DenomDydx;
         }
         return chainInfo.stakeCurrency?.coinMinimalDenom;
@@ -127,9 +106,7 @@ export const StakeCardAll = observer(({}) => {
       if (targetDenom) {
         const currency = chainInfo.findCurrency(targetDenom);
         if (currency) {
-          const reward = queryRewards.rewards.find(
-            (r) => r.currency.coinMinimalDenom === targetDenom
-          );
+          const reward = queryRewards.rewards.find(r => r.currency.coinMinimalDenom === targetDenom);
           if (reward) {
             res.push({
               queryRewards,
@@ -137,7 +114,7 @@ export const StakeCardAll = observer(({}) => {
               chainInfo,
               isFetching: queryRewards.isFetching,
               error: queryRewards.error,
-              price: priceStore.calculatePrice(reward),
+              price: priceStore.calculatePrice(reward)
             });
           }
         }
@@ -145,7 +122,7 @@ export const StakeCardAll = observer(({}) => {
     }
 
     return res
-      .filter((viewToken) => viewToken.token.toDec().gt(zeroDec))
+      .filter(viewToken => viewToken.token.toDec().gt(zeroDec))
       .sort((a, b) => {
         const aPrice = a.price?.toDec() ?? zeroDec;
         const bPrice = b.price?.toDec() ?? zeroDec;
@@ -156,10 +133,8 @@ export const StakeCardAll = observer(({}) => {
         return aPrice.gt(bPrice) ? -1 : 1;
       })
       .sort((a, b) => {
-        const aHasError =
-          getClaimAllEachState(a.chainInfo.chainId).failedReason != null;
-        const bHasError =
-          getClaimAllEachState(b.chainInfo.chainId).failedReason != null;
+        const aHasError = getClaimAllEachState(a.chainInfo.chainId).failedReason != null;
+        const bHasError = getClaimAllEachState(b.chainInfo.chainId).failedReason != null;
 
         if (aHasError || bHasError) {
           if (aHasError && bHasError) {
@@ -188,12 +163,9 @@ export const StakeCardAll = observer(({}) => {
 
       const chainInfo = chainStore.getChain(chainId);
       const queries = queriesStore.get(chainId);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
-        account.bech32Address
-      );
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
 
-      const validatorAddresses =
-        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+      const validatorAddresses = queryRewards.getDescendingPendingRewardValidatorAddresses(8);
 
       if (validatorAddresses.length === 0) {
         continue;
@@ -203,29 +175,21 @@ export const StakeCardAll = observer(({}) => {
 
       state.setIsLoading(true);
 
-      const tx =
-        account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+      const tx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
 
       (async () => {
         // feemarket feature가 있는 경우 이후의 로직에서 사용할 수 있는 fee currency를 찾아야하기 때문에 undefined로 시작시킨다.
-        let feeCurrency = chainInfo.hasFeature("feemarket")
+        let feeCurrency = chainInfo.hasFeature('feemarket')
           ? undefined
-          : chainInfo.feeCurrencies.find(
-              (cur) =>
-                cur.coinMinimalDenom ===
-                chainInfo.stakeCurrency?.coinMinimalDenom
-            );
+          : chainInfo.feeCurrencies.find(cur => cur.coinMinimalDenom === chainInfo.stakeCurrency?.coinMinimalDenom);
 
-        if (chainInfo.hasFeature("osmosis-base-fee-beta") && feeCurrency) {
-          const queryBaseFee = queriesStore.get(chainInfo.chainId).cosmos
-            .queryBaseFee;
+        if (chainInfo.hasFeature('osmosis-base-fee-beta') && feeCurrency) {
+          const queryBaseFee = queriesStore.get(chainInfo.chainId).cosmos.queryBaseFee;
           const queryRemoteBaseFeeStep = queriesStore.simpleQuery.queryGet<{
             low?: number;
             average?: number;
             high?: number;
-          }>(
-            "https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws/osmosis/osmosis-base-fee-beta.json"
-          );
+          }>('https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws/osmosis/osmosis-base-fee-beta.json');
 
           await queryBaseFee.waitFreshResponse();
           await queryRemoteBaseFeeStep.waitFreshResponse();
@@ -234,29 +198,18 @@ export const StakeCardAll = observer(({}) => {
           const remoteBaseFeeStep = queryRemoteBaseFeeStep.response;
           if (baseFee) {
             const low = remoteBaseFeeStep?.data.low
-              ? parseFloat(
-                  baseFee.mul(new Dec(remoteBaseFeeStep.data.low)).toString(8)
-                )
+              ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.low)).toString(8))
               : feeCurrency.gasPriceStep?.low ?? DefaultGasPriceStep.low;
             const average = Math.max(
               low,
               remoteBaseFeeStep?.data.average
-                ? parseFloat(
-                    baseFee
-                      .mul(new Dec(remoteBaseFeeStep.data.average))
-                      .toString(8)
-                  )
-                : feeCurrency.gasPriceStep?.average ??
-                    DefaultGasPriceStep.average
+                ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.average)).toString(8))
+                : feeCurrency.gasPriceStep?.average ?? DefaultGasPriceStep.average
             );
             const high = Math.max(
               average,
               remoteBaseFeeStep?.data.high
-                ? parseFloat(
-                    baseFee
-                      .mul(new Dec(remoteBaseFeeStep.data.high))
-                      .toString(8)
-                  )
+                ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.high)).toString(8))
                 : feeCurrency.gasPriceStep?.high ?? DefaultGasPriceStep.high
             );
 
@@ -265,8 +218,8 @@ export const StakeCardAll = observer(({}) => {
               gasPriceStep: {
                 low,
                 average,
-                high,
-              },
+                high
+              }
             };
           }
         }
@@ -280,9 +233,8 @@ export const StakeCardAll = observer(({}) => {
             | undefined;
 
           const feeCurrencies = await (async () => {
-            if (chainInfo.hasFeature("feemarket")) {
-              const queryFeeMarketGasPrices =
-                queriesStore.get(chainId).cosmos.queryFeeMarketGasPrices;
+            if (chainInfo.hasFeature('feemarket')) {
+              const queryFeeMarketGasPrices = queriesStore.get(chainId).cosmos.queryFeeMarketGasPrices;
               await queryFeeMarketGasPrices.waitFreshResponse();
 
               const result: FeeCurrency[] = [];
@@ -293,58 +245,50 @@ export const StakeCardAll = observer(({}) => {
                   let multiplication = {
                     low: 1.1,
                     average: 1.2,
-                    high: 1.3,
+                    high: 1.3
                   };
 
-                  const multificationConfig =
-                    queriesStore.simpleQuery.queryGet<{
-                      [str: string]:
-                        | {
-                            low: number;
-                            average: number;
-                            high: number;
-                          }
-                        | undefined;
-                    }>(
-                      "https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws",
-                      "/feemarket/info.json"
-                    );
+                  const multificationConfig = queriesStore.simpleQuery.queryGet<{
+                    [str: string]:
+                      | {
+                          low: number;
+                          average: number;
+                          high: number;
+                        }
+                      | undefined;
+                  }>('https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws', '/feemarket/info.json');
 
                   if (multificationConfig.response) {
-                    const _default =
-                      multificationConfig.response.data["__default__"];
+                    const _default = multificationConfig.response.data['__default__'];
                     if (
                       _default &&
                       _default.low != null &&
-                      typeof _default.low === "number" &&
+                      typeof _default.low === 'number' &&
                       _default.average != null &&
-                      typeof _default.average === "number" &&
+                      typeof _default.average === 'number' &&
                       _default.high != null &&
-                      typeof _default.high === "number"
+                      typeof _default.high === 'number'
                     ) {
                       multiplication = {
                         low: _default.low,
                         average: _default.average,
-                        high: _default.high,
+                        high: _default.high
                       };
                     }
-                    const specific =
-                      multificationConfig.response.data[
-                        chainInfo.chainIdentifier
-                      ];
+                    const specific = multificationConfig.response.data[chainInfo.chainIdentifier];
                     if (
                       specific &&
                       specific.low != null &&
-                      typeof specific.low === "number" &&
+                      typeof specific.low === 'number' &&
                       specific.average != null &&
-                      typeof specific.average === "number" &&
+                      typeof specific.average === 'number' &&
                       specific.high != null &&
-                      typeof specific.high === "number"
+                      typeof specific.high === 'number'
                     ) {
                       multiplication = {
                         low: specific.low,
                         average: specific.average,
-                        high: specific.high,
+                        high: specific.high
                       };
                     }
                   }
@@ -352,22 +296,10 @@ export const StakeCardAll = observer(({}) => {
                   result.push({
                     ...currency,
                     gasPriceStep: {
-                      low: parseFloat(
-                        new Dec(multiplication.low)
-                          .mul(gasPrice.amount)
-                          .toString()
-                      ),
-                      average: parseFloat(
-                        new Dec(multiplication.average)
-                          .mul(gasPrice.amount)
-                          .toString()
-                      ),
-                      high: parseFloat(
-                        new Dec(multiplication.high)
-                          .mul(gasPrice.amount)
-                          .toString()
-                      ),
-                    },
+                      low: parseFloat(new Dec(multiplication.low).mul(gasPrice.amount).toString()),
+                      average: parseFloat(new Dec(multiplication.average).mul(gasPrice.amount).toString()),
+                      high: parseFloat(new Dec(multiplication.high).mul(gasPrice.amount).toString())
+                    }
                   });
                 }
               }
@@ -379,49 +311,42 @@ export const StakeCardAll = observer(({}) => {
           })();
 
           for (const chainFeeCurrency of feeCurrencies) {
-            const currency = await chainInfo.findCurrency(
-              chainFeeCurrency.coinMinimalDenom
-            );
+            const currency = await chainInfo.findCurrency(chainFeeCurrency.coinMinimalDenom);
             if (currency) {
-              const balance = queries.queryBalances
-                .getQueryBech32Address(account.bech32Address)
-                .getBalance(currency);
+              const balance = queries.queryBalances.getQueryBech32Address(account.bech32Address).getBalance(currency);
               if (balance && balance.balance.toDec().gt(new Dec(0))) {
-                const price = await priceStore.waitCalculatePrice(
-                  balance.balance,
-                  "usd"
-                );
+                const price = await priceStore.waitCalculatePrice(balance.balance, 'usd');
 
                 if (!prev) {
                   feeCurrency = {
                     ...chainFeeCurrency,
-                    ...currency,
+                    ...currency
                   };
                   prev = {
                     balance: balance.balance,
-                    price,
+                    price
                   };
                 } else {
                   if (!prev.price) {
                     if (prev.balance.toDec().lt(balance.balance.toDec())) {
                       feeCurrency = {
                         ...chainFeeCurrency,
-                        ...currency,
+                        ...currency
                       };
                       prev = {
                         balance: balance.balance,
-                        price,
+                        price
                       };
                     }
                   } else if (price) {
                     if (prev.price.toDec().lt(price.toDec())) {
                       feeCurrency = {
                         ...chainFeeCurrency,
-                        ...currency,
+                        ...currency
                       };
                       prev = {
                         balance: balance.balance,
-                        price,
+                        price
                       };
                     }
                   }
@@ -444,23 +369,15 @@ export const StakeCardAll = observer(({}) => {
               amount: new Dec(feeCurrency.gasPriceStep?.average ?? 0.025)
                 .mul(new Dec(gasEstimated))
                 .roundUp()
-                .toString(),
+                .toString()
             };
 
-            // coingecko로부터 캐시가 있거나 response를 최소한 한번은 받았다는 걸 보장한다.
             await priceStore.waitResponse();
-            // USD 기준으로 average fee가 0.2달러를 넘으면 low로 설정해서 보낸다.
-            const averageFeePrice = priceStore.calculatePrice(
-              new CoinPretty(feeCurrency, fee.amount),
-              "usd"
-            );
+            const averageFeePrice = priceStore.calculatePrice(new CoinPretty(feeCurrency, fee.amount), 'usd');
             if (averageFeePrice && averageFeePrice.toDec().gte(new Dec(0.2))) {
               fee = {
                 denom: feeCurrency.coinMinimalDenom,
-                amount: new Dec(feeCurrency.gasPriceStep?.low ?? 0.025)
-                  .mul(new Dec(gasEstimated))
-                  .roundUp()
-                  .toString(),
+                amount: new Dec(feeCurrency.gasPriceStep?.low ?? 0.025).mul(new Dec(gasEstimated)).roundUp().toString()
               };
               console.log(
                 `(${chainId}) Choose low gas price because average fee price is greater or equal than 0.2 USD`
@@ -468,13 +385,9 @@ export const StakeCardAll = observer(({}) => {
             }
 
             // Ensure fee currency fetched before querying balance
-            const feeCurrencyFetched = await chainInfo.findCurrency(
-              feeCurrency.coinMinimalDenom
-            );
+            const feeCurrencyFetched = await chainInfo.findCurrency(feeCurrency.coinMinimalDenom);
             if (!feeCurrencyFetched) {
-              state.setFailedReason(
-                new Error("error.can-not-find-balance-for-fee-currency")
-              );
+              state.setFailedReason(new Error('error.can-not-find-balance-for-fee-currency'));
               return;
             }
             const balance = queries.queryBalances
@@ -482,41 +395,27 @@ export const StakeCardAll = observer(({}) => {
               .getBalance(feeCurrencyFetched);
 
             if (!balance) {
-              state.setFailedReason(
-                new Error("error.can-not-find-balance-for-fee-currency")
-              );
+              state.setFailedReason(new Error('error.can-not-find-balance-for-fee-currency'));
               return;
             }
 
             await balance.waitResponse();
 
-            if (
-              new Dec(balance.balance.toCoin().amount).lt(new Dec(fee.amount))
-            ) {
-              state.setFailedReason(
-                new Error("error.not-enough-balance-to-pay-fee")
-              );
+            if (new Dec(balance.balance.toCoin().amount).lt(new Dec(fee.amount))) {
+              state.setFailedReason(new Error('error.not-enough-balance-to-pay-fee'));
               return;
             }
 
             if (
               (viewToken.token.toCoin().denom === fee.denom &&
-                new Dec(viewToken.token.toCoin().amount).lte(
-                  new Dec(fee.amount)
-                )) ||
+                new Dec(viewToken.token.toCoin().amount).lte(new Dec(fee.amount))) ||
               (await (async () => {
                 if (viewToken.token.toCoin().denom !== fee.denom) {
-                  if (
-                    viewToken.token.currency.coinGeckoId &&
-                    feeCurrencyFetched.coinGeckoId
-                  ) {
-                    const rewardPrice = await priceStore.waitCalculatePrice(
-                      viewToken.token,
-                      "usd"
-                    );
+                  if (viewToken.token.currency.coinGeckoId && feeCurrencyFetched.coinGeckoId) {
+                    const rewardPrice = await priceStore.waitCalculatePrice(viewToken.token, 'usd');
                     const feePrice = await priceStore.waitCalculatePrice(
                       new CoinPretty(feeCurrencyFetched, fee.amount),
-                      "usd"
+                      'usd'
                     );
                     if (
                       rewardPrice &&
@@ -524,12 +423,7 @@ export const StakeCardAll = observer(({}) => {
                       feePrice &&
                       feePrice.toDec().gt(new Dec(0))
                     ) {
-                      if (
-                        rewardPrice
-                          .toDec()
-                          .mul(new Dec(1.2))
-                          .lte(feePrice.toDec())
-                      ) {
+                      if (rewardPrice.toDec().mul(new Dec(1.2)).lte(feePrice.toDec())) {
                         return true;
                       }
                     }
@@ -540,56 +434,34 @@ export const StakeCardAll = observer(({}) => {
               })())
             ) {
               console.log(
-                `(${chainId}) Skip claim rewards. Fee: ${fee.amount}${
-                  fee.denom
-                } is greater than stakable reward: ${
+                `(${chainId}) Skip claim rewards. Fee: ${fee.amount}${fee.denom} is greater than stakable reward: ${
                   viewToken.token.toCoin().amount
                 }${viewToken.token.toCoin().denom}`
               );
-              state.setFailedReason(
-                new Error(
-                  "error.claimable-reward-is-smaller-than-the-required-fee"
-                )
-              );
+              state.setFailedReason(new Error('error.claimable-reward-is-smaller-than-the-required-fee'));
               return;
             }
 
             await tx.send(
               {
                 gas: gasEstimated.toString(),
-                amount: [fee],
+                amount: [fee]
               },
-              "",
+              '',
               {
-                signAmino: async (
-                  chainId: string,
-                  signer: string,
-                  signDoc: StdSignDoc
-                ): Promise<AminoSignResponse> => {
+                signAmino: async (chainId: string, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse> => {
                   const requester = new RNMessageRequesterInternal();
 
                   return await requester.sendMessage(
                     BACKGROUND_PORT,
-                    new PrivilegeCosmosSignAminoWithdrawRewardsMsg(
-                      chainId,
-                      signer,
-                      signDoc,
-                      {}
-                    )
+                    new PrivilegeCosmosSignAminoWithdrawRewardsMsg(chainId, signer, signDoc, {})
                   );
                 },
-                sendTx: async (
-                  chainId: string,
-                  tx: Uint8Array,
-                  mode: BroadcastMode
-                ): Promise<Uint8Array> => {
+                sendTx: async (chainId: string, tx: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> => {
                   const requester = new RNMessageRequesterInternal();
 
-                  return await requester.sendMessage(
-                    BACKGROUND_PORT,
-                    new SendTxMsg(chainId, tx, mode, true)
-                  );
-                },
+                  return await requester.sendMessage(BACKGROUND_PORT, new SendTxMsg(chainId, tx, mode, true));
+                }
               },
               {
                 onBroadcasted: () => {
@@ -601,20 +473,19 @@ export const StakeCardAll = observer(({}) => {
                   setTimeout(() => {
                     state.setIsLoading(false);
                   }, 1000);
-                  console.log("onBroadcasted");
+                  console.log('onBroadcasted');
                 },
                 onFulfill: (tx: any) => {
-                  console.log("onFulfill");
-                  // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
-                  // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
+                  console.log('onFulfill');
+
                   setTimeout(() => {
                     state.setIsLoading(false);
                   }, 1000);
 
                   if (tx.code) {
-                    state.setFailedReason(new Error(tx["raw_log"]));
+                    state.setFailedReason(new Error(tx['raw_log']));
                   }
-                },
+                }
               }
             );
             state.setIsLoading(false);
@@ -625,10 +496,10 @@ export const StakeCardAll = observer(({}) => {
               if (
                 response.status === 400 &&
                 response.data?.message &&
-                typeof response.data.message === "string" &&
-                response.data.message.includes("invalid empty tx")
+                typeof response.data.message === 'string' &&
+                response.data.message.includes('invalid empty tx')
               ) {
-                state.setFailedReason(new Error("error.outdated-cosmos-sdk"));
+                state.setFailedReason(new Error('error.outdated-cosmos-sdk'));
                 return;
               }
             }
@@ -638,9 +509,7 @@ export const StakeCardAll = observer(({}) => {
             return;
           }
         } else {
-          state.setFailedReason(
-            new Error("error.can-not-pay-for-fee-by-stake-currency")
-          );
+          state.setFailedReason(new Error('error.can-not-pay-for-fee-by-stake-currency'));
           return;
         }
       })();
@@ -711,9 +580,7 @@ export const StakeCardAll = observer(({}) => {
   })();
 
   const claimAllIsLoading = (() => {
-    for (const chainInfo of chainStore.chainInfosInUI.filter(
-      (item) => !item.chainId?.includes("test")
-    )) {
+    for (const chainInfo of chainStore.chainInfosInUI.filter(item => !item.chainId?.includes('test'))) {
       const state = getClaimAllEachState(chainInfo.chainId);
       if (state.isLoading) {
         return true;
@@ -727,57 +594,51 @@ export const StakeCardAll = observer(({}) => {
       const account = accountStore.getAccount(chainId);
 
       const validatorRewars = [];
-      const isDydx = chainId?.includes("dydx-mainnet");
+      const isDydx = chainId?.includes('dydx-mainnet');
       const denom = DenomDydx;
-      queryReward
-        .getDescendingPendingRewardValidatorAddresses(10)
-        .map((validatorAddress) => {
-          let rewards: CoinPretty | undefined;
+      queryReward.getDescendingPendingRewardValidatorAddresses(10).map(validatorAddress => {
+        let rewards: CoinPretty | undefined;
 
-          if (isDydx) {
-            rewards = queryReward
-              .getRewardsOf(validatorAddress)
-              .find((r) => r.currency.coinMinimalDenom === denom);
-          } else {
-            rewards = queryReward.getStakableRewardOf(validatorAddress);
-          }
-          validatorRewars.push({ validatorAddress, rewards });
-        });
+        if (isDydx) {
+          rewards = queryReward.getRewardsOf(validatorAddress).find(r => r.currency.coinMinimalDenom === denom);
+        } else {
+          rewards = queryReward.getStakableRewardOf(validatorAddress);
+        }
+        validatorRewars.push({ validatorAddress, rewards });
+      });
 
       if (queryReward) {
         tracking(`${chainStore.current.chainName} Compound`);
         await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
           queryReward.getDescendingPendingRewardValidatorAddresses(10),
           validatorRewars,
-          "",
+          '',
           sendConfigs.feeConfig.toStdFee(),
           {},
           {
-            onBroadcasted: (txHash) => {},
+            onBroadcasted: txHash => {}
           },
           isDydx ? denom : queryReward.stakableReward.currency.coinMinimalDenom
         );
       } else {
         showToast({
-          message: "There is no reward!",
-          type: "danger",
+          message: 'There is no reward!',
+          type: 'danger'
         });
       }
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
-        if (chainId?.includes("dydx-mainnet")) {
+      if (!e?.message?.startsWith('Transaction Rejected')) {
+        if (chainId?.includes('dydx-mainnet')) {
           showToast({
             message: `Compound not supported for DYDX network`,
-            type: "danger",
+            type: 'danger'
           });
           return;
         }
         showToast({
-          message:
-            `Failed to Compound: ${e?.message}` ??
-            "Something went wrong! Please try again later.",
-          type: "danger",
+          message: `Failed to Compound: ${e?.message}` ?? 'Something went wrong! Please try again later.',
+          type: 'danger'
         });
         return;
       }
@@ -790,21 +651,20 @@ export const StakeCardAll = observer(({}) => {
       tracking(`${chainStore.current.chainName} Claim`);
       await account.cosmos.sendWithdrawDelegationRewardMsgs(
         queryReward.getDescendingPendingRewardValidatorAddresses(10),
-        "",
+        '',
         {},
         {},
         {
-          onBroadcasted: (txHash) => {},
+          onBroadcasted: txHash => {}
         },
         queryReward.stakableReward.currency.coinMinimalDenom
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
+      if (!e?.message?.startsWith('Transaction Rejected')) {
         showToast({
-          message:
-            e?.message ?? "Something went wrong! Please try again later.",
-          type: "danger",
+          message: e?.message ?? 'Something went wrong! Please try again later.',
+          type: 'danger'
         });
         return;
       }
@@ -814,7 +674,7 @@ export const StakeCardAll = observer(({}) => {
   useEffect(() => {
     if (viewTokens.length > 0) {
       let tmpRewards = 0;
-      viewTokens.map((token) => {
+      viewTokens.map(token => {
         tmpRewards += Number(token.price.toDec().toString());
       });
       setTotalStakingReward(tmpRewards.toFixed(4));
@@ -831,10 +691,10 @@ export const StakeCardAll = observer(({}) => {
         marginHorizontal: 16,
         width: metrics.screenWidth - 32,
         marginTop: 2,
-        backgroundColor: colors["neutral-surface-card"],
-        padding: spacing["16"],
+        backgroundColor: colors['neutral-surface-card'],
+        padding: spacing['16'],
         borderTopLeftRadius: 8,
-        borderTopRightRadius: 8,
+        borderTopRightRadius: 8
       }}
     >
       <View>
@@ -842,54 +702,39 @@ export const StakeCardAll = observer(({}) => {
           <View>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: 'row',
                 paddingBottom: 6,
-                justifyContent: "space-between",
-                alignItems: "center",
+                justifyContent: 'space-between',
+                alignItems: 'center'
               }}
             >
               <TouchableOpacity
                 onPress={() => setViewMore(!viewMore)}
-                style={{ flexDirection: "row", alignItems: "center" }}
+                style={{ flexDirection: 'row', alignItems: 'center' }}
               >
-                <View style={styles["claim-title"]}>
-                  <OWIcon
-                    name={"trending-outline"}
-                    size={14}
-                    color={colors["neutral-text-title"]}
-                  />
+                <View style={styles['claim-title']}>
+                  <OWIcon name={'trending-outline'} size={14} color={colors['neutral-text-title']} />
                 </View>
-                <Text size={16} style={[{ ...styles["text-earn"] }]}>
-                  +
-                  {totalStakingReward
-                    ? `${fiatCurrency.symbol}` + totalStakingReward
-                    : `${fiatCurrency.symbol}0`}
+                <Text size={16} style={[{ ...styles['text-earn'] }]}>
+                  +{totalStakingReward ? `${fiatCurrency.symbol}` + totalStakingReward : `${fiatCurrency.symbol}0`}
                 </Text>
                 {!viewMore ? (
-                  <OWIcon
-                    name={"tdesignchevron-down"}
-                    size={16}
-                    color={colors["neutral-icon-on-light"]}
-                  />
+                  <OWIcon name={'tdesignchevron-down'} size={16} color={colors['neutral-icon-on-light']} />
                 ) : (
-                  <OWIcon
-                    name={"tdesignchevron-up"}
-                    size={16}
-                    color={colors["neutral-icon-on-light"]}
-                  />
+                  <OWIcon name={'tdesignchevron-up'} size={16} color={colors['neutral-icon-on-light']} />
                 )}
               </TouchableOpacity>
               <OWButton
                 style={[
-                  styles["btn-claim"],
+                  styles['btn-claim'],
                   {
-                    backgroundColor: colors["primary-surface-default"],
-                  },
+                    backgroundColor: colors['primary-surface-default']
+                  }
                 ]}
                 textStyle={{
                   fontSize: 15,
-                  fontWeight: "600",
-                  color: colors["neutral-text-action-on-dark-bg"],
+                  fontWeight: '600',
+                  color: colors['neutral-text-action-on-dark-bg']
                 }}
                 label="Claim all"
                 onPress={() => {
@@ -935,41 +780,38 @@ const ClaimTokenItem: FunctionComponent<{
   const styles = styling(colors);
 
   const isLoading =
-    accountStore.getAccount(viewToken.chainInfo.chainId).isSendingMsg ===
-      "withdrawRewards" || state.isLoading;
+    accountStore.getAccount(viewToken.chainInfo.chainId).isSendingMsg === 'withdrawRewards' || state.isLoading;
 
   if (!viewToken) return;
-  const isDisabledCompound = viewToken.chainInfo?.chainId?.includes("dydx");
+  const isDisabledCompound = viewToken.chainInfo?.chainId?.includes('dydx');
   return (
     <View
       style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 8
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
           style={{
             width: 32,
             height: 32,
             borderRadius: 32,
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: colors["neutral-icon-on-dark"],
-            marginRight: 8,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors['neutral-icon-on-dark'],
+            marginRight: 8
           }}
         >
           <OWIcon
             type="images"
             source={{
-              uri:
-                viewToken?.chainInfo?.stakeCurrency?.coinImageUrl ||
-                unknownToken.coinImageUrl,
+              uri: viewToken?.chainInfo?.stakeCurrency?.coinImageUrl || unknownToken.coinImageUrl
             }}
             style={{
-              borderRadius: 999,
+              borderRadius: 999
             }}
             size={22}
           />
@@ -978,25 +820,20 @@ const ClaimTokenItem: FunctionComponent<{
           <Text
             style={[
               {
-                ...styles["text-amount"],
-              },
+                ...styles['text-amount']
+              }
             ]}
           >
-            +{viewToken.price ? viewToken.price?.toString() : "$0"}
+            +{viewToken.price ? viewToken.price?.toString() : '$0'}
           </Text>
-          <Text style={[styles["amount"]]}>
+          <Text style={[styles['amount']]}>
             {removeDataInParentheses(
-              viewToken.token
-                ?.shrink(true)
-                .maxDecimals(6)
-                .trim(true)
-                .upperCase(true)
-                .toString()
+              viewToken.token?.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
             )}
           </Text>
         </View>
       </View>
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: 'row' }}>
         <OWButton
           type="link"
           label="Claim"
@@ -1004,49 +841,39 @@ const ClaimTokenItem: FunctionComponent<{
           onPress={() => {
             _onPressClaim(viewToken.queryRewards, viewToken.chainInfo.chainId);
           }}
-          icon={
-            state.failedReason ? (
-              <AlertIcon color={colors["error-text-action"]} size={20} />
-            ) : undefined
-          }
+          icon={state.failedReason ? <AlertIcon color={colors['error-text-action']} size={20} /> : undefined}
           textStyle={{
-            color: colors["neutral-text-title"],
+            color: colors['neutral-text-title']
           }}
-          colorLoading={colors["neutral-text-title"]}
+          colorLoading={colors['neutral-text-title']}
           disabled={
             isLoading ||
-            accountStore.getAccount(viewToken?.chainInfo.chainId)
-              .isSendingMsg === "withdrawRewardsAndDelegation"
+            accountStore.getAccount(viewToken?.chainInfo.chainId).isSendingMsg === 'withdrawRewardsAndDelegation'
           }
           fullWidth={false}
-          size={"small"}
+          size={'small'}
         />
         <OWButton
           onPress={() => {
-            _onPressCompound(
-              viewToken.queryRewards,
-              viewToken.chainInfo.chainId
-            );
+            _onPressCompound(viewToken.queryRewards, viewToken.chainInfo.chainId);
           }}
           disabled={
-            accountStore.getAccount(viewToken?.chainInfo.chainId)
-              .isSendingMsg === "withdrawRewardsAndDelegation" ||
+            accountStore.getAccount(viewToken?.chainInfo.chainId).isSendingMsg === 'withdrawRewardsAndDelegation' ||
             isDisabledCompound
           }
           type="link"
           label="Compound"
-          colorLoading={colors["neutral-text-title"]}
+          colorLoading={colors['neutral-text-title']}
           textStyle={{
-            color: colors["neutral-text-title"],
+            color: colors['neutral-text-title']
           }}
           style={{
-            opacity: isDisabledCompound ? 0.5 : 1,
+            opacity: isDisabledCompound ? 0.5 : 1
           }}
           loading={
-            accountStore.getAccount(viewToken?.chainInfo.chainId)
-              .isSendingMsg === "withdrawRewardsAndDelegation"
+            accountStore.getAccount(viewToken?.chainInfo.chainId).isSendingMsg === 'withdrawRewardsAndDelegation'
           }
-          size={"small"}
+          size={'small'}
           fullWidth={false}
         />
       </View>
@@ -1054,64 +881,64 @@ const ClaimTokenItem: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     cardBody: {},
-    "flex-center": {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
+    'flex-center': {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
 
-    "text-earn": {
-      fontWeight: "600",
+    'text-earn': {
+      fontWeight: '600',
       lineHeight: 24,
-      color: colors["success-text-body"],
-      paddingRight: 2,
+      color: colors['success-text-body'],
+      paddingRight: 2
     },
-    "text-amount": {
-      fontWeight: "500",
+    'text-amount': {
+      fontWeight: '500',
       fontSize: 14,
-      color: colors["success-text-body"],
+      color: colors['success-text-body']
     },
 
     amount: {
-      fontWeight: "400",
+      fontWeight: '400',
       fontSize: 13,
       lineHeight: 20,
-      color: colors["neutral-text-body"],
+      color: colors['neutral-text-body']
     },
-    "btn-claim": {
-      backgroundColor: colors["primary-surface-default"],
+    'btn-claim': {
+      backgroundColor: colors['primary-surface-default'],
       borderRadius: 999,
       width: metrics.screenWidth / 4,
-      height: 32,
+      height: 32
     },
-    "claim-title": {
+    'claim-title': {
       width: 24,
       height: 24,
       borderRadius: 24,
-      backgroundColor: colors["neutral-surface-action"],
+      backgroundColor: colors['neutral-surface-action'],
       marginRight: 5,
-      alignItems: "center",
-      justifyContent: "center",
+      alignItems: 'center',
+      justifyContent: 'center'
     },
     getStarted: {
       borderRadius: 999,
       width: metrics.screenWidth / 2.45,
-      height: 32,
+      height: 32
     },
 
     btnGroup: {
-      flexDirection: "row",
-      justifyContent: "space-between",
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       marginTop: 16,
-      borderTopColor: colors["neutral-border-default"],
+      borderTopColor: colors['neutral-border-default'],
       borderTopWidth: 1,
-      paddingTop: 8,
+      paddingTop: 8
     },
     outlineButton: {
       padding: 8,
-      fontWeight: "600",
-    },
+      fontWeight: '600'
+    }
   });

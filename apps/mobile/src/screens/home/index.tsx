@@ -1,16 +1,6 @@
 import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import {
-  AppState,
-  AppStateStatus,
-  Clipboard,
-  InteractionManager,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Text
-} from 'react-native';
+import { AppState, AppStateStatus, InteractionManager, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { usePrevious } from '../../hooks';
@@ -31,7 +21,6 @@ import {
   parseRpcBalance
 } from '@owallet/common';
 import { AccountBoxAll } from './components/account-box-new';
-import { EarningCardNew } from './components/earning-card-new';
 import { InjectedProviderUrl } from '../web/config';
 import { initPrice } from '@src/screens/home/hooks/use-multiple-assets';
 import { CoinPretty, Dec, DecUtils, IntPretty, PricePretty } from '@owallet/unit';
@@ -50,7 +39,7 @@ import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { ViewToken } from '@src/stores/huge-queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressBtcType } from '@owallet/types';
-import { NewThemeModal } from '@src/modals/theme-modal/theme';
+// import { NewThemeModal } from '@src/modals/theme-modal/theme';
 import { WarningBox } from '@src/components/warning';
 import { WarningModal } from '@src/modals/warning-modal/warning';
 
@@ -786,7 +775,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
         isOpen={isWarningOpen}
         close={() => {
           setWarningOpen(false);
-          appInitStore.updateLastTimeWarning(true);
         }}
         colors={colors}
       />
