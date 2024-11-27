@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { InteractionManager, RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { Clipboard, InteractionManager, RefreshControl, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { useTheme } from '@src/themes/theme-provider';
@@ -9,7 +9,8 @@ import { InjectedProviderUrl } from '../web/config';
 import { MainTabHome } from './components';
 import { StakeCardAll } from './components/stake-card-all';
 import { NewThemeModal } from '@src/modals/theme-modal/theme';
-import { ChainIdEnum, EmbedChainInfos } from '@owallet/common';
+import messaging from '@react-native-firebase/messaging';
+import { Text } from '@src/components/text';
 // import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
@@ -19,7 +20,7 @@ export const useIsNotReady = () => {
 };
 export const HomeScreen: FunctionComponent = observer(props => {
   const { colors } = useTheme();
-
+  const [token, setToken] = useState('');
   const styles = styling(colors);
   const { chainStore, queriesStore, priceStore, appInitStore, browserStore, allAccountStore, bitcoinAccountStore } =
     useStore();
@@ -45,6 +46,30 @@ export const HomeScreen: FunctionComponent = observer(props => {
         })
         .catch(err => console.log(err));
     });
+  }, []);
+
+  // Request permission for notifications
+  const requestUserPermission = async () => {
+    const settings = await messaging().requestPermission();
+
+    if (settings) {
+      console.log('Permission granted!');
+      getToken();
+    }
+  };
+
+  // Get the device token
+  const getToken = async () => {
+    const token = await messaging().getToken();
+    if (token) {
+      console.log('Device Token:', token);
+      setToken(token);
+    }
+  };
+
+  useEffect(() => {
+    // Call the function to request permission and get the device token
+    requestUserPermission();
   }, []);
 
   const [isThemOpen, setThemeOpen] = useState(false);
@@ -93,6 +118,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
         colors={colors}
       />
       <AccountBoxAll isLoading={false} />
+      <Text>{token}</Text>
+      <TouchableOpacity
+        onPress={() => {
+          Clipboard.setString(token);
+        }}
+      >
+        <Text>{'Copy'}</Text>
+      </TouchableOpacity>
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>

@@ -29,31 +29,22 @@ export class KeyRingBtcService {
   }
 
   async getKeySelected(chainId: string): Promise<Key> {
-    console.log('chainId getKeySelected btc', chainId);
-
     return await this.getKey(this.keyRingService.selectedVaultId, chainId);
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    console.log('getKey btc', chainId, chainInfo);
 
     const pubKey = await this.keyRingBtcBaseService.getPubKey(chainId, vaultId);
-    console.log('pubKey btc', pubKey, pubKey.toKeyPair().getPublic().encodeCompressed('hex'));
 
     const legacyAddress = bitcoin.payments.p2pkh({
       pubkey: Buffer.from(pubKey.toKeyPair().getPublic().encodeCompressed('hex'), 'hex')
     }).address;
 
-    console.log('legacyAddress1', legacyAddress);
-
     const pubKeyBip84 = await this.keyRingBtcBaseService.getPubKeyBip84(chainId, vaultId);
-
-    console.log('pubKeyBip84', pubKeyBip84);
 
     const address = pubKeyBip84.getCosmosAddress();
     const bech32Address = new Bech32Address(address);
-    console.log('address', address, bech32Address);
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
 

@@ -1050,8 +1050,7 @@ export class KeyRingService {
 
     const masterSeed = Mnemonic.generateMasterSeedFromMnemonic(decrypted['mnemonic'] as string);
     const masterSeedText = Buffer.from(masterSeed).toString('hex');
-    const masterKey = masterSeedText;
-    const masterSeedHex = Buffer.from(masterKey, 'hex');
+    const masterSeedHex = Buffer.from(masterSeedText, 'hex');
     const privKey = Mnemonic.generatePrivateKeyFromMasterSeed(masterSeedHex, path);
 
     const privKeySecp256k1 = new PrivKeySecp256k1(privKey);
