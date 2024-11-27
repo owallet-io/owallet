@@ -1,6 +1,4 @@
-use_frameworks! :linkage => :static
-
-$RNFirebaseAsStaticFramework = true
+RNFirebaseAsStaticFramework = true
 # Resolve react_native_pods.rb with node to allow for hoisting
 require Pod::Executable.execute_command('node', ['-p',
   'require.resolve(
@@ -29,6 +27,7 @@ if linkage != nil
 end
 
 target 'mobile' do
+  # use_modular_headers!
   config = use_native_modules!
   pod 'FirebaseCore', :modular_headers => true
   pod 'FirebaseCoreExtension', :modular_headers => true
@@ -36,6 +35,8 @@ target 'mobile' do
   pod 'GoogleDataTransport', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
   pod 'nanopb', :modular_headers => true
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Analytics'
   # Flags change depending on the env values.
   flags = get_default_flags()
 
