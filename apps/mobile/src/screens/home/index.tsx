@@ -8,7 +8,8 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  Text
 } from 'react-native';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
@@ -52,38 +53,13 @@ import { AddressBtcType } from '@owallet/types';
 import { NewThemeModal } from '@src/modals/theme-modal/theme';
 import { WarningBox } from '@src/components/warning';
 import { WarningModal } from '@src/modals/warning-modal/warning';
-import messaging from '@react-native-firebase/messaging';
-import { Text } from 'react-native-svg';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const [isLoading, setIsLoading] = React.useState(false);
-  const [token, setToken] = useState('');
-  // Request permission for notifications
-  const requestUserPermission = async () => {
-    const settings = await messaging().requestPermission();
 
-    if (settings) {
-      console.log('Permission granted!');
-      getToken();
-    }
-  };
-
-  // Get the device token
-  const getToken = async () => {
-    const token = await messaging().getToken();
-    if (token) {
-      console.log('Device Token:', token);
-      setToken(token);
-    }
-  };
-
-  useEffect(() => {
-    // Call the function to request permission and get the device token
-    requestUserPermission();
-  }, []);
   const { colors } = useTheme();
 
   const styles = styling(colors);
@@ -821,15 +797,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
         dataBalances={dataBalances}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
-      <Text>{token}</Text>
-      <TouchableOpacity
-        onPress={() => {
-          Clipboard.setString(token);
-        }}
-      >
-        <Text>{'Copy'}</Text>
-      </TouchableOpacity>
+
       <WarningBox />
+
       <MainTabHome
         dataTokens={
           appInitStore.getInitApp.isAllNetworks
