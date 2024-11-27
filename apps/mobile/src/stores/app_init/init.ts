@@ -1,30 +1,31 @@
-import { observable, action, makeObservable, computed } from "mobx";
-import { create, persist } from "mobx-persist";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CoinGeckoPrices } from "@oraichain/oraidex-common";
-import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
+import { observable, action, makeObservable, computed } from 'mobx';
+import { create, persist } from 'mobx-persist';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CoinGeckoPrices } from '@oraichain/oraidex-common';
+import { IMultipleAsset } from '@src/screens/home/hooks/use-multiple-assets';
 
 export class AppInit {
-  @persist("object")
+  @persist('object')
   @observable
   protected initApp: {
     status: boolean;
-    passcodeType: "numeric" | "alphabet";
+    passcodeType: 'numeric' | 'alphabet';
     isAllNetworks: boolean;
     isSelectTheme: boolean;
+    lastWarning: undefined | null | number;
     date_updated: null | number;
-    theme: "dark" | "light";
-    wallet: "owallet" | "injective" | "osmosis";
+    theme: 'dark' | 'light';
+    wallet: 'owallet' | 'injective' | 'osmosis';
     hideTestnet: boolean;
     hideTokensWithoutBalance: boolean;
     visibleTabBar?: string;
-    feeOption?: "low" | "average" | "high";
+    feeOption?: 'low' | 'average' | 'high';
     prices: CoinGeckoPrices<string>;
     yesterdayPriceFeed: Array<any>;
     balances: object;
     chainInfos: Array<any>;
   };
-  @persist("object")
+  @persist('object')
   @observable
   protected multipleAssets: IMultipleAsset;
 
@@ -36,24 +37,25 @@ export class AppInit {
     this.initApp = {
       visibleTabBar: null,
       status: true,
-      passcodeType: "alphabet",
+      passcodeType: 'alphabet',
       date_updated: null,
-      theme: "light",
+      theme: 'light',
       hideTestnet: true,
-      wallet: "owallet",
+      wallet: 'owallet',
+      lastWarning: null,
       isSelectTheme: false,
       hideTokensWithoutBalance: true,
-      feeOption: "average",
+      feeOption: 'average',
       isAllNetworks: false,
       prices: {},
       balances: {},
       chainInfos: [],
-      yesterdayPriceFeed: [],
+      yesterdayPriceFeed: []
     };
     this.multipleAssets = {
-      totalPriceBalance: "0",
+      totalPriceBalance: '0',
       dataTokens: [],
-      dataTokensByChain: null,
+      dataTokensByChain: null
     };
   }
 
@@ -76,6 +78,10 @@ export class AppInit {
     this.initApp = { ...this.initApp, isSelectTheme: true };
   }
   @action
+  updateLastTimeWarning(timestamp: number) {
+    this.initApp = { ...this.initApp, lastWarning: timestamp };
+  }
+  @action
   updateMultipleAssets(data: IMultipleAsset) {
     this.multipleAssets = { ...data };
   }
@@ -93,7 +99,7 @@ export class AppInit {
   updateBalanceByAddress(address, balance) {
     this.initApp = {
       ...this.initApp,
-      balances: { ...this.getInitApp.balances, [address]: balance },
+      balances: { ...this.getInitApp.balances, [address]: balance }
     };
   }
 
@@ -101,7 +107,7 @@ export class AppInit {
   updateChainInfos(chains) {
     this.initApp = {
       ...this.initApp,
-      chainInfos: chains,
+      chainInfos: chains
     };
   }
 
@@ -163,9 +169,9 @@ export class AppInit {
 
 const hydrate = create({
   storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true, // if you use AsyncStorage, here shoud be true
+  jsonify: true // if you use AsyncStorage, here shoud be true
 });
 
 export const appInit = new AppInit();
 
-hydrate("appInit", appInit).then(() => console.log("appInit hydrated"));
+hydrate('appInit', appInit).then(() => console.log('appInit hydrated'));

@@ -1,15 +1,10 @@
-import { metrics } from '@src/themes';
 import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import OWIcon from '../ow-icon/ow-icon';
 import { Text } from '../text';
 
-export const WarningBox: FunctionComponent<{
-  style?: ViewStyle;
-  url?: string;
-  size: number;
-}> = ({ style: propStyle }) => {
+export const WarningBox: FunctionComponent<{}> = ({}) => {
   const { colors } = useTheme();
   return (
     <View

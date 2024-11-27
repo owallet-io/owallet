@@ -42,6 +42,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AddressBtcType } from '@owallet/types';
 import { NewThemeModal } from '@src/modals/theme-modal/theme';
 import { WarningBox } from '@src/components/warning';
+import { WarningModal } from '@src/modals/warning-modal/warning';
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 export const HomeScreen: FunctionComponent = observer(props => {
@@ -105,6 +106,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [checkAndUpdateChainInfo]);
 
   const [isThemOpen, setThemeOpen] = useState(false);
+  const [isWarningOpen, setWarningOpen] = useState(true);
   useEffect(() => {
     if (!appInitStore.getInitApp.isSelectTheme) {
       setThemeOpen(true);
@@ -171,8 +173,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
   // Debounced function to apply pending updates
   const applyPendingUpdates = debounce(() => {
     if (pendingUpdates.length > 0) {
-      console.log('pendingUpdates', pendingUpdates);
-
       setDataBalances(prev => {
         // Create a Map to hold unique balances by coinMinimalDenom
         const balanceMap = new Map<string, ViewToken>();
@@ -757,11 +757,19 @@ export const HomeScreen: FunctionComponent = observer(props => {
       contentContainerStyle={styles.containerStyle}
       ref={scrollViewRef}
     >
-      <NewThemeModal
+      {/* <NewThemeModal
         isOpen={isThemOpen}
         close={() => {
           setThemeOpen(false);
           appInitStore.updateSelectTheme();
+        }}
+        colors={colors}
+      /> */}
+      <WarningModal
+        isOpen={isWarningOpen}
+        close={() => {
+          setWarningOpen(false);
+          appInitStore.updateLastTimeWarning(Date.now());
         }}
         colors={colors}
       />

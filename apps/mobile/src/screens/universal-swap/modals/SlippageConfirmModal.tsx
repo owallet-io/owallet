@@ -1,13 +1,13 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import React from "react";
-import { registerModal } from "@src/modals/base";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Text } from "@src/components/text";
-import { OWButton } from "@src/components/button";
-import { TypeTheme, useTheme } from "@src/themes/theme-provider";
-import { metrics } from "@src/themes";
-import OWIcon from "@src/components/ow-icon/ow-icon";
-import OWText from "@src/components/text/ow-text";
+import { ScrollView, StyleSheet, View } from 'react-native';
+import React from 'react';
+import { registerModal } from '@src/modals/base';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Text } from '@src/components/text';
+import { OWButton } from '@src/components/button';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import { metrics } from '@src/themes';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import OWText from '@src/components/text/ow-text';
 
 export const SlippageConfirmModal = registerModal(
   //@ts-ignore
@@ -29,35 +29,26 @@ export const SlippageConfirmModal = registerModal(
         <View
           style={{
             borderRadius: 12,
-            backgroundColor: colors["warning-surface-subtle"],
+            backgroundColor: colors['warning-surface-subtle'],
             padding: 12,
             marginTop: 8,
             borderWidth: 1,
-            borderColor: colors["warning-border-default"],
-            marginBottom: metrics.screenHeight / 6,
+            borderColor: colors['warning-border-default'],
+            marginBottom: metrics.screenHeight / 8
           }}
         >
-          <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-            <OWIcon
-              name="tdesignerror-triangle"
-              color={colors["warning-text-body"]}
-              size={16}
-            />
+          <View style={{ flexDirection: 'row', paddingBottom: 6 }}>
+            <OWIcon name="tdesignerror-triangle" color={colors['warning-text-body']} size={16} />
           </View>
-          <OWText
-            color={colors["warning-border-default"]}
-            weight="500"
-            size={14}
-          >
-            This swap has price impact over {impactWarning}%. Are you sure you
-            have reviewed the swap details ?
+          <OWText color={colors['warning-border-default']} weight="500" size={14}>
+            This swap has price impact over {impactWarning}%. Are you sure you have reviewed the swap details ?
           </OWText>
         </View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <OWButton
             style={styles.confirmBtn}
             textStyle={styles.txtBtn}
-            type={"secondary"}
+            type={'secondary'}
             label="Cancel"
             size="medium"
             onPress={() => {
@@ -67,7 +58,7 @@ export const SlippageConfirmModal = registerModal(
           <OWButton
             style={styles.confirmBtn}
             textStyle={styles.txtBtn}
-            type={"primary"}
+            type={'primary'}
             label="Confirm"
             size="medium"
             onPress={() => {
@@ -81,23 +72,23 @@ export const SlippageConfirmModal = registerModal(
   }
 );
 
-const styling = (colors: TypeTheme["colors"]) =>
+const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     txtBtn: {
-      fontWeight: "700",
-      fontSize: 16,
+      fontWeight: '700',
+      fontSize: 16
     },
     confirmBtn: {
       width: metrics.screenWidth / 2.35,
       marginTop: 16,
       height: 48,
-      borderRadius: 999,
+      borderRadius: 999
     },
     title: {
       paddingVertical: 10,
-      alignSelf: "center",
+      alignSelf: 'center'
     },
     container: {
-      paddingHorizontal: 24,
-    },
+      paddingHorizontal: 24
+    }
   });

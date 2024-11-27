@@ -36,10 +36,10 @@ export const WarningModal: FunctionComponent<{
           source={require('@src/assets/images/img_warning.png')}
         />
         <View style={{ paddingVertical: 24, alignItems: 'center' }}>
-          <OWText size={16} weight="700">
+          <OWText color={colors['warning-text-body']} size={16} weight="700">
             {`Warning`.toUpperCase()}
           </OWText>
-          <OWText style={{ textAlign: 'center', marginTop: 4 }} weight="500" color={colors['neutral-text-body']}>
+          <OWText style={{ textAlign: 'center', marginTop: 4 }} weight="500" color={colors['warning-text-body']}>
             Please backup your mnemonic / private key
           </OWText>
         </View>
@@ -67,10 +67,10 @@ export const WarningModal: FunctionComponent<{
             }}
           />
           <OWButton
-            label="Check it out"
+            label="Yes, Confirm"
             onPress={async () => {
               resetTo(SCREENS.TABS.Settings, {
-                isOpenTheme: true
+                isOpenBackup: true
               });
               close();
             }}
