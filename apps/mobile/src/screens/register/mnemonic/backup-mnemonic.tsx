@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Clipboard, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Clipboard, TouchableOpacity, Alert } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -106,8 +106,24 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
             label="Ok, I saved it!"
             disabled={false}
             onPress={() => {
-              appInitStore.updateLastTimeWarning(true);
-              onGoBack();
+              Alert.alert(
+                'Writen the Secret Recovery Phrase down?',
+                'Please confirm that you have securely written down your Secret Recovery Phrase and understand that it is your sole responsibility to keep it safe, as it cannot be recovered if lost!',
+                [
+                  {
+                    text: 'Cancel',
+                    style: 'cancel'
+                  },
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      appInitStore.updateLastTimeWarning(true);
+                      onGoBack();
+                    }
+                  }
+                ],
+                { cancelable: false }
+              );
             }}
             loading={false}
           />
