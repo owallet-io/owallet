@@ -7,7 +7,7 @@
     }
   ],
   "react-native": {
-    "crashlytics_debug_enabled": true,
+    "crashlytics_debug_enabled": false,
     "analytics_auto_collection_enabled": true
   }
 }

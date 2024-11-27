@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services' // <- Add this line
-apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.facebook.react'
 apply from: '../../node_modules/react-native-code-push/android/codepush.gradle'
 /**
@@ -105,10 +104,6 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            firebaseCrashlytics {
-                nativeSymbolUploadEnabled true
-                unstrippedNativeLibsDir 'build/intermediates/merged_native_libs/release/out/lib'
-            }
         }
     }
 }
