@@ -1,9 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { useFeeConfig, useGasConfig, useMemoConfig, useSignDocAmountConfig, useSignDocHelper } from '@owallet/hooks';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
@@ -61,7 +58,6 @@ export const SignModal: FunctionComponent<{
       if (signInteractionStore.waitingData) {
         const data = signInteractionStore.waitingData;
         setIsInternal(data.isInternal);
-        console.log('data.data.signDocWrapper', data.data.signDocWrapper);
 
         signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
         setChainId(data.data.signDocWrapper.chainId);
@@ -96,8 +92,6 @@ export const SignModal: FunctionComponent<{
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
-
-    console.log('msgs', msgs);
 
     const isDisable =
       signDocWapper == null ||
