@@ -1269,7 +1269,54 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://bscscan.com/address/{address}",
     },
   },
+  {
+    rpc: "https://rpc.ankr.com/fantom",
+    rest: "https://rpc.ankr.com/fantom",
+    chainId: "0xfa",
+    chainName: "Fantom Opera",
+    bip44: {
+      coinType: 60,
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: "FTM",
+      coinMinimalDenom: "ftm",
+      coinDecimals: 18,
+      coinGeckoId: "fantom",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/4001/standard/Fantom_round.png?1696504642",
+      gasPriceStep: {
+        low: 1,
+        average: 1.25,
+        high: 1.5,
+      },
+    },
+    bech32Config: Bech32Address.defaultBech32Config("evmos"),
+    chainSymbolImageUrl: "https://icons.llamao.fi/icons/chains/rsz_fantom.jpg",
+    networkType: "evm",
+    get currencies() {
+      return [
+        {
+          coinDenom: "FTM",
+          coinMinimalDenom: "ftm",
+          coinDecimals: 18,
+          coinGeckoId: "fantom",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/4001/standard/Fantom_round.png?1696504642",
+        },
+      ];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
 
+    features: ["isEvm"],
+    txExplorer: {
+      name: "FanTom Scan",
+      txUrl: "https://ftmscan.com/tx/{txHash}",
+      accountUrl: "https://ftmscan.com/address/{address}",
+    },
+  },
   {
     rpc: "https://api.trongrid.io",
     rest: "https://apilist.tronscanapi.com",
