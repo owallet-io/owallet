@@ -20,9 +20,49 @@ const config = {
 };
 if (!__DEV__) {
   firebase.initializeApp(config);
-  messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('remoteMessage background', remoteMessage);
-  });
+  // messaging().setBackgroundMessageHandler(async remoteMessage => {
+  //   console.log('remoteMessage background', remoteMessage);
+  // });
+
+  const onMessageReceivedInBackground = async () => {
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      console.log('Message handled in the background!', remoteMessage);
+      // Handle the incoming message here
+    });
+  };
+
+  // Call the function to start listening for incoming messages in the background
+  onMessageReceivedInBackground();
+
+  // Listen for incoming messages when the app is in the foreground
+  const onMessageReceived = async () => {
+    messaging().onMessage(async remoteMessage => {
+      console.log('Received a new message:', remoteMessage);
+      // Handle the incoming message here
+    });
+  };
+
+  // Listen for messages when the app is in the background or terminated
+  const onNotificationOpened = async () => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Notification opened by tapping on the notification itself:', remoteMessage);
+      // Handle the notification opening here
+    });
+
+    // Check if the app was opened by a notification
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log('Initial notification opened:', remoteMessage);
+          // Handle the initial notification opening here
+        }
+      });
+  };
+
+  // Call these functions to start listening for incoming messages
+  onMessageReceived();
+  onNotificationOpened();
 
   const { BYTE_BREW_ID_ANDROID, BYTE_BREW_SDK_KEY_ANDROID, BYTE_BREW_ID_IOS, BYTE_BREW_SDK_KEY_IOS } = process.env;
   // Initialize the ByteBrew SDK

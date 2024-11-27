@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* mobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* mobileTests.m */; };
+		12B76EBAE2AB9CDFCB8BDF4B /* Pods_mobile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDA89A3322A4D31473D62859 /* Pods_mobile.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -19,17 +20,16 @@
 		177E36882A56CC0F003072B1 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36822A56CC0F003072B1 /* DMSans-Regular.ttf */; };
 		177E36892A56CC0F003072B1 /* DMSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */; };
 		177E368B2A56CE2D003072B1 /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = 177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */; };
-		17FC937C7DD19E8C218F61ED /* libPods-mobile-mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */; };
 		6132EF182BDFF13200BBE14D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		84D7A2A82C4A4DBF00CFD3A7 /* branch.json in Resources */ = {isa = PBXBuildFile; fileRef = 84D7A2A72C4A4DBF00CFD3A7 /* branch.json */; };
+		86A0A70F04030C0B256A80CD /* Pods_mobile_mobileTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C0BD329161379B1FFB80EA8 /* Pods_mobile_mobileTests.framework */; };
 		CE3280C32B2ABE5300172006 /* SpaceGrotesk-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C02B2ABD9100172006 /* SpaceGrotesk-Bold.ttf */; };
 		CE3280C42B2ABE5300172006 /* SpaceGrotesk-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */; };
 		CE3280C52B2ABE5300172006 /* SpaceGrotesk-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */; };
 		CE3280C62B2ABE5300172006 /* SpaceGrotesk-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BE2B2ABD9100172006 /* SpaceGrotesk-Regular.ttf */; };
 		CE3280C72B2ABE5300172006 /* SpaceGrotesk-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE3280BF2B2ABD9100172006 /* SpaceGrotesk-SemiBold.ttf */; };
 		CE365EB92BE39F20006C7E8C /* assets in Resources */ = {isa = PBXBuildFile; fileRef = CE365EB82BE39F20006C7E8C /* assets */; };
-		FB566D94A088B2DC59492949 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C8BC07455E264378C5A715 /* libPods-mobile.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,7 +46,6 @@
 		00E356EE1AD99517003FC87E /* mobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* mobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mobileTests.m; sourceTree = "<group>"; };
-		09C8BC07455E264378C5A715 /* libPods-mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = mobile/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = mobile/AppDelegate.mm; sourceTree = "<group>"; };
@@ -62,8 +61,8 @@
 		177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
 		17EE1FA32A5E5C6000C81E0F /* mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobile.entitlements; path = mobile/mobile.entitlements; sourceTree = "<group>"; };
-		4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6132EF172BDFF13200BBE14D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = mobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		7C0BD329161379B1FFB80EA8 /* Pods_mobile_mobileTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobile_mobileTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84D7A2A72C4A4DBF00CFD3A7 /* branch.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = branch.json; path = mobile/branch.json; sourceTree = "<group>"; };
 		8EAB3454B0E84D19176D5A02 /* Pods-mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.release.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.release.xcconfig"; sourceTree = "<group>"; };
@@ -76,6 +75,7 @@
 		CE3280C12B2ABD9100172006 /* SpaceGrotesk-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Light.ttf"; sourceTree = "<group>"; };
 		CE3280C22B2ABD9100172006 /* SpaceGrotesk-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceGrotesk-Medium.ttf"; sourceTree = "<group>"; };
 		CE365EB82BE39F20006C7E8C /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
+		DDA89A3322A4D31473D62859 /* Pods_mobile.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_mobile.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -84,7 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17FC937C7DD19E8C218F61ED /* libPods-mobile-mobileTests.a in Frameworks */,
+				86A0A70F04030C0B256A80CD /* Pods_mobile_mobileTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FB566D94A088B2DC59492949 /* libPods-mobile.a in Frameworks */,
+				12B76EBAE2AB9CDFCB8BDF4B /* Pods_mobile.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,8 +152,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				09C8BC07455E264378C5A715 /* libPods-mobile.a */,
-				4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */,
+				DDA89A3322A4D31473D62859 /* Pods_mobile.framework */,
+				7C0BD329161379B1FFB80EA8 /* Pods_mobile_mobileTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -242,7 +242,6 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				BCF7B3D5342B4137EB8842B0 /* [CP] Copy Pods Resources */,
 				1604421FCF9E5FB5C19531E1 /* [CP-User] [RNFB] Core Configuration */,
-				1F364F7ED5CE1817898CE56C /* [CP-User] [RNFB] Crashlytics Configuration */,
 				7C0BD5F4962346BB80D5C76D /* Upload Debug Symbols to Sentry */,
 				CF33D4C713D840D1F0772542 /* [CP] Embed Pods Frameworks */,
 			);
@@ -394,20 +393,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mobile-mobileTests/Pods-mobile-mobileTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		1F364F7ED5CE1817898CE56C /* [CP-User] [RNFB] Crashlytics Configuration */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
-				"$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "[CP-User] [RNFB] Crashlytics Configuration";
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#!/usr/bin/env bash\n#\n# Copyright (c) 2016-present Invertase Limited & Contributors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this library except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#   http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n#\nset -e\n\nif [[ ${PODS_ROOT} ]]; then\n  echo \"info: Exec FirebaseCrashlytics Run from Pods\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nelse\n  echo \"info: Exec FirebaseCrashlytics Run from framework\"\n  \"${PROJECT_DIR}/FirebaseCrashlytics.framework/run\"\nfi\n";
 		};
 		7C0BD5F4962346BB80D5C76D /* Upload Debug Symbols to Sentry */ = {
 			isa = PBXShellScriptBuildPhase;
