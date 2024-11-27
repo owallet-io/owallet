@@ -1599,8 +1599,6 @@ export class CosmosAccount {
         ? ((simulateClaimTx.gasUsed + simulateDelegateTx.gasUsed) * 1.3).toString()
         : Number(stdFee.gas) * 1.3 * 2;
 
-    console.log('gas 2 used', gas);
-
     await this.base.sendMsgs(
       'withdrawRewardsAndDelegation',
       {

@@ -1,62 +1,45 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { registerModal } from "../base";
-import { View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
-import { Text } from "@src/components/text";
-import { useStyle } from "../../styles";
-import { useStore } from "../../stores";
-import {
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useSignDocAmountConfig,
-  useSignDocHelper,
-} from "@owallet/hooks";
-import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import { observer } from "mobx-react-lite";
-import { useUnmount } from "../../hooks";
-import { FeeInSign } from "./fee";
-import { renderAminoMessage } from "./amino";
-import { renderDirectMessage } from "./direct";
-import crashlytics from "@react-native-firebase/crashlytics";
-import { BottomSheetProps } from "@gorhom/bottom-sheet";
-import OWText from "@src/components/text/ow-text";
-import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { useTheme } from "@src/themes/theme-provider";
-import OWButtonGroup from "@src/components/button/OWButtonGroup";
-import { metrics } from "@src/themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { registerModal } from '../base';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Text } from '@src/components/text';
+import { useStyle } from '../../styles';
+import { useStore } from '../../stores';
+import { useFeeConfig, useGasConfig, useMemoConfig, useSignDocAmountConfig, useSignDocHelper } from '@owallet/hooks';
+import { Msg as AminoMsg } from '@cosmjs/launchpad';
+import { observer } from 'mobx-react-lite';
+import { useUnmount } from '../../hooks';
+import { FeeInSign } from './fee';
+import { renderAminoMessage } from './amino';
+import { renderDirectMessage } from './direct';
+import crashlytics from '@react-native-firebase/crashlytics';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import OWText from '@src/components/text/ow-text';
+import WrapViewModal from '@src/modals/wrap/wrap-view-modal';
+import ItemReceivedToken from '@src/screens/transactions/components/item-received-token';
+import { useTheme } from '@src/themes/theme-provider';
+import OWButtonGroup from '@src/components/button/OWButtonGroup';
+import { metrics } from '@src/themes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(({}) => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      signInteractionStore,
-      appInitStore,
-    } = useStore();
+    const { chainStore, accountStore, queriesStore, signInteractionStore, appInitStore } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
 
-    const [signer, setSigner] = useState("");
+    const [signer, setSigner] = useState('');
 
     const [chainId, setChainId] = useState(chainStore.current.chainId);
 
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const gasConfig = useGasConfig(chainStore, chainId, 1);
-    const amountConfig = useSignDocAmountConfig(
-      chainStore,
-      chainId,
-      accountStore.getAccount(chainId).msgOpts,
-      signer
-    );
+    const amountConfig = useSignDocAmountConfig(chainStore, chainId, accountStore.getAccount(chainId).msgOpts, signer);
     const feeConfig = useFeeConfig(
       chainStore,
       chainId,
@@ -79,17 +62,16 @@ export const SignModal: FunctionComponent<{
       if (signInteractionStore.waitingData) {
         const data = signInteractionStore.waitingData;
         setIsInternal(data.isInternal);
+        console.log('data.data.signDocWrapper', data.data.signDocWrapper);
+
         signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
         setChainId(data.data.signDocWrapper.chainId);
         gasConfig.setGas(data.data.signDocWrapper.gas);
         memoConfig.setMemo(data.data.signDocWrapper.memo);
-        if (
-          data.data.signOptions.preferNoSetFee &&
-          data.data.signDocWrapper.fees[0]
-        ) {
+        if (data.data.signOptions.preferNoSetFee && data.data.signDocWrapper.fees[0]) {
           feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
         } else {
-          feeConfig.setFeeType("average");
+          feeConfig.setFeeType('average');
         }
         setSigner(data.data.signer);
       }
@@ -97,17 +79,11 @@ export const SignModal: FunctionComponent<{
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
       }
-    }, [
-      feeConfig,
-      gasConfig,
-      memoConfig,
-      signDocHelper,
-      signInteractionStore.waitingData,
-    ]);
+    }, [feeConfig, gasConfig, memoConfig, signDocHelper, signInteractionStore.waitingData]);
 
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
-        feeConfig.setFeeType("average");
+        feeConfig.setFeeType('average');
       }
       if (appInitStore.getInitApp.feeOption) {
         feeConfig.setFeeType(appInitStore.getInitApp.feeOption);
@@ -115,16 +91,14 @@ export const SignModal: FunctionComponent<{
       return;
     }, [feeConfig, appInitStore.getInitApp.feeOption]);
 
-    const mode = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode
-      : "none";
+    const mode = signDocHelper.signDocWrapper ? signDocHelper.signDocWrapper.mode : 'none';
     const msgs = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode === "amino"
+      ? signDocHelper.signDocWrapper.mode === 'amino'
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
 
-    console.log("msgs", msgs);
+    console.log('msgs', msgs);
 
     const isDisable =
       signDocWapper == null ||
@@ -137,9 +111,7 @@ export const SignModal: FunctionComponent<{
       try {
         if (signDocHelper.signDocWrapper) {
           //
-          await signInteractionStore.approveAndWaitEnd(
-            signDocHelper.signDocWrapper
-          );
+          await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
         }
       } catch (error) {
         crashlytics().recordError(error);
@@ -162,7 +134,7 @@ export const SignModal: FunctionComponent<{
     const renderedMsgs = (() => {
       const account = accountStore.getAccount(chainId);
       const chainInfo = chainStore.getChain(chainId);
-      if (mode === "amino") {
+      if (mode === 'amino') {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const { content, scrollViewHorizontal, title } = renderAminoMessage(
             account.msgOpts,
@@ -175,10 +147,10 @@ export const SignModal: FunctionComponent<{
               {msg.type !== account.msgOpts.withdrawRewards.type && (
                 <OWText
                   size={16}
-                  weight={"700"}
+                  weight={'700'}
                   style={{
-                    textAlign: "center",
-                    paddingVertical: 20,
+                    textAlign: 'center',
+                    paddingVertical: 20
                   }}
                 >
                   {`${title} confirmation`.toUpperCase()}
@@ -188,22 +160,19 @@ export const SignModal: FunctionComponent<{
             </View>
           );
         });
-      } else if (mode === "direct") {
+      } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
-          const { title, content } = renderDirectMessage(
-            msg,
-            chainInfo.currencies
-          );
+          const { title, content } = renderDirectMessage(msg, chainInfo.currencies);
 
           return (
             <View key={i.toString()}>
               {msg.type !== account.msgOpts.withdrawRewards.type && (
                 <OWText
                   size={16}
-                  weight={"700"}
+                  weight={'700'}
                   style={{
-                    textAlign: "center",
-                    paddingVertical: 20,
+                    textAlign: 'center',
+                    paddingVertical: 20
                   }}
                 >
                   {`${title} confirmation`.toUpperCase()}
@@ -225,16 +194,16 @@ export const SignModal: FunctionComponent<{
         buttonBottom={
           <View
             style={{
-              paddingBottom: 5 + (bottom || 0),
+              paddingBottom: 5 + (bottom || 0)
             }}
           >
             <View
               style={{
-                backgroundColor: colors["neutral-surface-card"],
+                backgroundColor: colors['neutral-surface-card'],
                 paddingHorizontal: 16,
                 borderBottomLeftRadius: 24,
                 borderBottomRightRadius: 24,
-                marginBottom: 24,
+                marginBottom: 24
               }}
             >
               <FeeInSign
@@ -246,7 +215,7 @@ export const SignModal: FunctionComponent<{
               {/*<MemoInput label="Memo" memoConfig={memoConfig} />*/}
               {memoConfig.memo && (
                 <ItemReceivedToken
-                  label={"Memo"}
+                  label={'Memo'}
                   valueDisplay={memoConfig.memo}
                   value={memoConfig.memo}
                   btnCopy={false}
@@ -254,35 +223,33 @@ export const SignModal: FunctionComponent<{
               )}
             </View>
             <OWButtonGroup
-              labelApprove={"Confirm"}
-              labelClose={"Cancel"}
+              labelApprove={'Confirm'}
+              labelClose={'Cancel'}
               disabledApprove={isDisable}
               disabledClose={signInteractionStore.isLoading}
               loadingApprove={signInteractionStore.isLoading}
               styleApprove={{
                 borderRadius: 99,
-                backgroundColor: isDisable
-                  ? colors["primary-surface-disable"]
-                  : colors["primary-surface-default"],
+                backgroundColor: isDisable ? colors['primary-surface-disable'] : colors['primary-surface-default']
               }}
               textStyleApprove={{
-                color: colors["neutral-text-action-on-dark-bg"],
+                color: colors['neutral-text-action-on-dark-bg']
               }}
               onPressClose={_onPressReject}
               onPressApprove={_onPressApprove}
               styleClose={{
                 borderRadius: 99,
-                backgroundColor: colors["neutral-surface-bg"],
+                backgroundColor: colors['neutral-surface-bg']
               }}
             />
           </View>
         }
         style={{
-          backgroundColor: colors["neutral-surface-card"],
-          maxHeight: metrics.screenHeight - 250,
+          backgroundColor: colors['neutral-surface-card'],
+          maxHeight: metrics.screenHeight - 250
         }}
         containerStyle={{
-          paddingBottom: 16,
+          paddingBottom: 16
         }}
       >
         <View
@@ -296,6 +263,6 @@ export const SignModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: false,
+    disableSafeArea: false
   }
 );
