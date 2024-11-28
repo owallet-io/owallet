@@ -40,11 +40,11 @@ export const WarningModal: FunctionComponent<{
         />
         <View style={{ paddingVertical: 24, alignItems: 'center' }}>
           <OWText color={colors['warning-text-body']} size={16} weight="700">
-            {`Important Announcement: Backup Your Seed Phrase Now!`}
+            {`🚨 Important Notice!`}
           </OWText>
 
           <OWText style={{ marginTop: 12 }} weight="400" color={colors['warning-text-body']}>
-            {`Dear Users,\nWe’re excited to announce that a big update is coming soon to enhance your user experience! \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase / private key before the update.\nWe are not responsible for any loss or issues resulting from failure to back up your seed phrase prior to the update.`}
+            {`We’re thrilled to announce a major update designed to enhance your user experience!\n⚠️ To ensure your wallet and funds remain secure during this transition, we strongly advise you to back up your seed phrase or private key before the update. Remember, you are responsible for your seed phrase, so it's always better to be prepared. \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase / private key before the update.\nThank you for your attention and understanding!`}
           </OWText>
         </View>
 
