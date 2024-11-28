@@ -1,19 +1,16 @@
-import { ObservableChainQuery } from "../chain-query";
-import { toGenerator } from "@owallet/common";
-import { ChainGetter } from "../../chain";
-import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
-import { computed, flow, makeObservable, observable } from "mobx";
-import { OWallet } from "@owallet/types";
-import { QuerySharedContext } from "../../common";
+import { ObservableChainQuery } from '../chain-query';
+import { toGenerator } from '@owallet/common';
+import { ChainGetter } from '../../chain';
+import { ObservableQuerySecretContractCodeHash } from './contract-hash';
+import { computed, flow, makeObservable, observable } from 'mobx';
+import { OWallet } from '@owallet/types';
+import { QuerySharedContext } from '../../common';
+import { Buffer } from 'buffer/';
+import { makeURL } from '@owallet/simple-fetch';
 
-import { Buffer } from "buffer/";
-import { makeURL } from "@owallet/simple-fetch";
-
-export class ObservableSecretContractChainQuery<
-  T
-> extends ObservableChainQuery<T> {
+export class ObservableSecretContractChainQuery<T> extends ObservableChainQuery<T> {
   @observable.ref
-  protected keplr?: OWallet = undefined;
+  protected owallet?: OWallet = undefined;
 
   protected nonce?: Uint8Array;
 
@@ -38,36 +35,30 @@ export class ObservableSecretContractChainQuery<
   protected override async onStart() {
     super.onStart();
 
-    if (!this.keplr) {
+    if (!this.owallet) {
       await this.initOWallet();
     }
 
-    if (!this.keplr) {
-      throw new Error("Failed to get keplr");
+    if (!this.owallet) {
+      throw new Error('Failed to get owallet');
     }
 
-    await this.querySecretContractCodeHash
-      .getQueryContract(this.contractAddress)
-      .waitResponse();
+    await this.querySecretContractCodeHash.getQueryContract(this.contractAddress).waitResponse();
 
     await this.init();
   }
 
   override get isFetching(): boolean {
     return (
-      this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
-        .isFetching ||
-      this.keplr == null ||
+      this.querySecretContractCodeHash.getQueryContract(this.contractAddress).isFetching ||
+      this.owallet == null ||
       this._isIniting ||
       super.isFetching
     );
   }
 
   protected override canFetch(): boolean {
-    if (
-      !this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
-        .response
-    ) {
+    if (!this.querySecretContractCodeHash.getQueryContract(this.contractAddress).response) {
       return false;
     }
 
@@ -76,30 +67,26 @@ export class ObservableSecretContractChainQuery<
 
   @flow
   protected *initOWallet() {
-    this.keplr = yield* toGenerator(this.apiGetter());
+    this.owallet = yield* toGenerator(this.apiGetter());
   }
 
   @flow
   protected *init() {
     this._isIniting = true;
 
-    if (this.keplr && this.contractCodeHash) {
-      const enigmaUtils = this.keplr.getEnigmaUtils(this.chainId);
-      const encrypted = yield* toGenerator(
-        enigmaUtils.encrypt(this.contractCodeHash, this.obj)
-      );
+    if (this.owallet && this.contractCodeHash) {
+      const enigmaUtils = this.owallet.getEnigmaUtils(this.chainId);
+      const encrypted = yield* toGenerator(enigmaUtils.encrypt(this.contractCodeHash, this.obj));
       this.nonce = encrypted.slice(0, 32);
 
-      const encoded = Buffer.from(encrypted).toString("base64");
+      const encoded = Buffer.from(encrypted).toString('base64');
       this.setUrl(this.getSecretWasmUrl(this.contractAddress, encoded));
     }
 
     this._isIniting = false;
   }
 
-  protected override async fetchResponse(
-    abortController: AbortController
-  ): Promise<{ headers: any; data: T }> {
+  protected override async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: T }> {
     let data: T;
     let headers: any;
     try {
@@ -110,18 +97,15 @@ export class ObservableSecretContractChainQuery<
       if (e.response?.data?.error) {
         const encryptedError = e.response.data.error;
 
-        const errorMessageRgx =
-          /rpc error: code = (.+) = encrypted: (.+): (.+)/g;
+        const errorMessageRgx = /rpc error: code = (.+) = encrypted: (.+): (.+)/g;
 
         const rgxMatches = errorMessageRgx.exec(encryptedError);
         if (rgxMatches != null && rgxMatches.length === 4) {
           const errorCipherB64 = rgxMatches[2];
-          const errorCipherBz = Buffer.from(errorCipherB64, "base64");
+          const errorCipherBz = Buffer.from(errorCipherB64, 'base64');
 
-          if (this.keplr && this.nonce) {
-            const decrypted = await this.keplr
-              .getEnigmaUtils(this.chainId)
-              .decrypt(errorCipherBz, this.nonce);
+          if (this.owallet && this.nonce) {
+            const decrypted = await this.owallet.getEnigmaUtils(this.chainId).decrypt(errorCipherBz, this.nonce);
 
             const errorStr = Buffer.from(decrypted).toString();
 
@@ -139,31 +123,28 @@ export class ObservableSecretContractChainQuery<
         }
       | undefined;
 
-    if (!this.keplr) {
-      throw new Error("OWallet API not initialized");
+    if (!this.owallet) {
+      throw new Error('OWallet API not initialized');
     }
 
     if (!this.nonce) {
-      throw new Error("Nonce is unknown");
+      throw new Error('Nonce is unknown');
     }
 
     if (!encResult) {
-      throw new Error("Failed to get the response from the contract");
+      throw new Error('Failed to get the response from the contract');
     }
 
-    const decrypted = await this.keplr
+    const decrypted = await this.owallet
       .getEnigmaUtils(this.chainId)
-      .decrypt(Buffer.from(encResult.data, "base64"), this.nonce);
+      .decrypt(Buffer.from(encResult.data, 'base64'), this.nonce);
 
-    const message = Buffer.from(
-      Buffer.from(decrypted).toString(),
-      "base64"
-    ).toString();
+    const message = Buffer.from(Buffer.from(decrypted).toString(), 'base64').toString();
 
     const obj = JSON.parse(message);
     return {
       headers,
-      data: obj as T,
+      data: obj as T
     };
   }
 
@@ -175,17 +156,12 @@ export class ObservableSecretContractChainQuery<
   // Actually, the url of fetching the secret20 balance will be changed every time.
   // So, we should save it with deterministic key.
   protected override getCacheKey(): string {
-    return makeURL(
-      this.baseURL,
-      this.getSecretWasmUrl(this.contractAddress, JSON.stringify(this.obj))
-    );
+    return makeURL(this.baseURL, this.getSecretWasmUrl(this.contractAddress, JSON.stringify(this.obj)));
   }
 
   @computed
   get contractCodeHash(): string | undefined {
-    const queryCodeHash = this.querySecretContractCodeHash.getQueryContract(
-      this.contractAddress
-    );
+    const queryCodeHash = this.querySecretContractCodeHash.getQueryContract(this.contractAddress);
 
     if (!queryCodeHash.response) {
       return undefined;

@@ -309,15 +309,11 @@ export class KeyRingEthereumService {
         } else {
           const param = (Array.isArray(params) && (params?.[0] as { chainId: string })) || undefined;
 
-          console.log('param wallet_switchEthereumChain', param);
-
           if (!param?.chainId) {
             throw new Error('Invalid parameters: must provide a chain id.');
           }
 
           const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
-
-          console.log('newEvmChainId', newEvmChainId);
 
           const newCurrentChainInfo = this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
           if (!newCurrentChainInfo) {
