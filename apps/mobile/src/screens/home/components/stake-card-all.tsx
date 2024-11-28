@@ -1233,7 +1233,6 @@ const ClaimTokenItem: FunctionComponent<{
       //   console.log(e);
       // }
 
-      console.log('final gas 2', gas.toString());
       await tx.send(
         {
           gas: gas.toString(),
@@ -1243,27 +1242,30 @@ const ClaimTokenItem: FunctionComponent<{
         {},
         {
           onBroadcasted: txHash => {
+            setIsSimulating(false);
             showToast({
               type: 'success',
-              message: 'Transaction success'
+              message: 'Transaction submitted'
             });
           },
           onFulfill: (tx: any) => {
+            setIsSimulating(false);
             if (tx.code != null && tx.code !== 0) {
               console.log(tx.log ?? tx.raw_log);
 
               showToast({
                 type: 'danger',
-                message: intl.formatMessage({ id: 'error.transaction-failed' })
+                message: tx.log ?? tx.raw_log
               });
               return;
+            } else {
+              showToast({
+                type: 'success',
+                message: intl.formatMessage({
+                  id: 'notification.transaction-success'
+                })
+              });
             }
-            showToast({
-              type: 'success',
-              message: intl.formatMessage({
-                id: 'notification.transaction-success'
-              })
-            });
           }
         }
       );
