@@ -30,6 +30,7 @@ import cn from "classnames/bind";
 import { WalletStatus } from "@owallet/stores";
 import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
+import { deserializeTransaction } from "@owallet/common";
 
 const cx = cn.bind(style);
 
@@ -73,12 +74,12 @@ export const SignSvmPage: FunctionComponent = observer(() => {
   const data = signInteractionStore.waitingSvmData;
   useEffect(() => {
     return () => {
-      console.log("rejected");
       signInteractionStore.reject();
     };
   }, []);
+
   console.log(data, "data");
-  const chainId = data.data.chainId || chainStore.current.chainId;
+  const chainId = data?.data?.chainId || chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
   const signer = accountInfo.getAddressDisplay(
     keyRingStore.keyRingLedgerAddresses,
@@ -107,32 +108,40 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     queries.bitcoin.queryBitcoinBalance,
     memoConfig
   );
-  // useEffect(() => {
-  //   if (dataSign) return;
-  //   if (signInteractionStore.waitingBitcoinData) {
-  //     const data = signInteractionStore.waitingBitcoinData;
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-ignore
-  //     const msgs = data.data.data?.msgs;
-  //
-  //     chainStore.selectChain(data.data.chainId);
-  //     setDataSign(data);
-  //     if (msgs?.amount) {
-  //       amountConfig.setAmount(`${satsToBtc(msgs?.amount)}`);
-  //     }
-  //     memoConfig.setMemo(msgs?.message);
-  //   }
-  // }, [signInteractionStore.waitingBitcoinData]);
+  useEffect(() => {
+    if (dataSign) return;
+    if (signInteractionStore.waitingSvmData) {
+      const data = signInteractionStore.waitingSvmData;
+      console.log(data, "data");
+      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // // @ts-ignore
+      // const msgs = data.data.data?.msgs;
+      //
+
+      chainStore.selectChain(data.data.chainId);
+      const tx = deserializeTransaction(data.data.data.tx);
+      console.log(tx, "tx decode");
+      // setDataSign(data);
+      // if (msgs?.amount) {
+      //   amountConfig.setAmount(`${satsToBtc(msgs?.amount)}`);
+      // }
+      // memoConfig.setMemo(msgs?.message);
+    }
+  }, [signInteractionStore.waitingSvmData]);
   const isLoaded = useMemo(() => {
-    // if (!dataSign) {
-    //     return false;
-    // }
+    console.log(data, chainId, "data chainId");
+    if (data?.data?.chainId) {
+      return true;
+    } else if (!data?.data?.chainId) {
+      return false;
+    }
 
     return (
       ChainIdHelper.parse(chainId).identifier ===
       ChainIdHelper.parse(chainStore.selectedChainId).identifier
     );
-  }, [dataSign, chainId, chainStore.selectedChainId]);
+  }, [data, chainId, chainStore.selectedChainId]);
+  console.log(isLoaded, "isLoaded");
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
@@ -146,7 +155,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     }
     return false;
   })();
-
   return (
     <div
       style={{
@@ -168,9 +176,9 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-                 Show the informations of tx when the sign data is delivered.
-                 If sign data not delivered yet, show the spinner alternatively.
-                 */
+                         Show the informations of tx when the sign data is delivered.
+                         If sign data not delivered yet, show the spinner alternatively.
+                         */
         isLoaded ? (
           <div className={style.container}>
             <div

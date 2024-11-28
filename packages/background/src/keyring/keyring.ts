@@ -105,6 +105,8 @@ import {
   getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
+import { encode, decode } from "bs58";
+import nacl from "tweetnacl";
 // inject TronWeb class
 (globalThis as any).TronWeb = require("tronweb");
 
@@ -1031,6 +1033,15 @@ export class KeyRing {
     };
   }
 
+  public async signTransactionSvm(txMsg: string): Promise<string> {
+    if (!txMsg) throw Error("tx Not Empty");
+    if (this.type !== "mnemonic") throw Error("Only support sign for mnemonic");
+    const keypair = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+
+    const tx = Buffer.from(decode(txMsg));
+    return encode(nacl.sign.detached(new Uint8Array(tx), keypair.secretKey));
+  }
+
   private async loadPrivKey(coinType: number): Promise<PrivKeySecp256k1> {
     if (
       this.status !== KeyRingStatus.UNLOCKED ||
@@ -1274,6 +1285,7 @@ export class KeyRing {
     chainId: string,
     unsignedTx: string
   ): Promise<Uint8Array> {
+    if (this.type !== "mnemonic") throw Error("Only support sign for mnemonic");
     const { amount, currency, recipient, memo } = JSON.parse(unsignedTx);
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     const sender = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);

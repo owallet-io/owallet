@@ -14,7 +14,11 @@ import { useHistory, useLocation } from "react-router";
 import queryString from "querystring";
 import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
-import { EthereumEndpoint, useLanguage } from "@owallet/common";
+import {
+  _getPriorityFeeSolana,
+  EthereumEndpoint,
+  useLanguage,
+} from "@owallet/common";
 import { BtcToSats } from "@owallet/bitcoin";
 import { Address } from "@owallet/crypto";
 import { HeaderNew } from "layouts/footer-layout/components/header";
@@ -27,6 +31,7 @@ import { Text } from "components/common/text";
 import { Card } from "components/common/card";
 import { Button } from "components/common/button";
 import { toast } from "react-toastify";
+import { encode } from "bs58";
 import {
   ComputeBudgetProgram,
   Connection,
@@ -215,6 +220,11 @@ export const SendSolanaPage: FunctionComponent<{
         const { blockhash } = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockhash;
         transaction.feePayer = fromPublicKey;
+        const txStr = encode(
+          transaction.serialize({ requireAllSignatures: false })
+        );
+        const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
+        console.log(dynamicMicroLamports, "dynamicMicroLamports");
         const message = transaction.compileMessage();
         const feeInLamports = await connection.getFeeForMessage(message);
         if (feeInLamports === null) {
@@ -231,6 +241,7 @@ export const SendSolanaPage: FunctionComponent<{
           ? DefaultUnitLimit
           : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
         const microLamports = new Dec(50000);
+
         transaction.add(
           // Request a specific number of compute units
           ComputeBudgetProgram.setComputeUnitLimit({

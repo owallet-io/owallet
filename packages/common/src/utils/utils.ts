@@ -17,7 +17,9 @@ import Web3 from "web3";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
 import "dotenv/config";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
+import { decode, encode } from "bs58";
+
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
@@ -27,6 +29,54 @@ export const getFavicon = (url) => {
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 );
+export const deserializeTransaction = (serializedTx: string) => {
+  return VersionedTransaction.deserialize(decode(serializedTx));
+};
+
+export const deserializeLegacyTransaction = (serializedTx: string) => {
+  return Transaction.from(decode(serializedTx));
+};
+export const DEFAULT_PRIORITY_FEE = 50000;
+export const DEFAULT_COMPUTE_UNIT_LIMIT = 200_000;
+
+export async function _getPriorityFeeSolana(
+  transaction: string
+): Promise<number> {
+  try {
+    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "apollographql-client-name": "backpack-secure-ui",
+      },
+      body: JSON.stringify({
+        query: `query GetPriorityFeeEstimate($caip2: Caip2!, $transaction: String!) {
+  priorityFeeEstimate(caip2: $caip2, transaction: $transaction)
+}`,
+        variables: {
+          caip2: {
+            namespace: "solana",
+            reference: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          },
+          transaction,
+        },
+        operationName: "GetPriorityFeeEstimate",
+      }),
+    });
+
+    const json = await resp.json();
+    return json.data?.priorityFeeEstimate ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+export const isVersionedTransaction = (
+  tx: Transaction | VersionedTransaction
+): tx is VersionedTransaction => {
+  return "version" in tx;
+};
 export type LedgerAppType = "cosmos" | "eth" | "trx" | "btc";
 export const COINTYPE_NETWORK = {
   118: "Cosmos",
@@ -443,6 +493,7 @@ export const typeBtcLedgerByAddress = (
     }
   }
 };
+
 export function limitString(str, limit) {
   if (str && str.length > limit) {
     return str.slice(0, limit) + "...";
@@ -450,6 +501,7 @@ export function limitString(str, limit) {
     return str;
   }
 }
+
 export function findLedgerAddress(
   AddressesLedger,
   chainInfo: ChainInfoWithoutEndpoints,

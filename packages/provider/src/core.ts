@@ -28,7 +28,7 @@ import {
   OfflineSigner,
   StdSignature,
 } from "@cosmjs/launchpad";
-
+import { decode } from "bs58";
 import {
   EnableAccessMsg,
   GetKeyMsg,
@@ -71,12 +71,25 @@ import {
   TriggerSmartContractMsg,
   RequestSignOasisMsg,
   RequestSendAndConfirmTxSvm,
+  RequestSignTransactionSvm,
 } from "./msgs";
-import { ChainIdEnum } from "@owallet/common";
+import {
+  ChainIdEnum,
+  deserializeLegacyTransaction,
+  deserializeTransaction,
+} from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 import { type SolanaSignAndSendTransactionOutput } from "@solana/wallet-standard-features";
 import { isSolanaChain } from "@solana/wallet-standard-chains";
-import { PublicKey } from "@solana/web3.js";
+import {
+  Commitment,
+  Connection,
+  PublicKey,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { isVersionedTransaction } from "@owallet/common";
+import { encode } from "bs58";
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -561,11 +574,18 @@ export class Bitcoin implements IBitcoin {
 }
 
 export class Solana implements ISolana {
+  private connection: Connection;
+
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
     protected readonly requester: MessageRequester
-  ) {}
+  ) {
+    this.connection = new Connection(
+      "https://swr.xnftdata.com/rpc-proxy/",
+      "confirmed"
+    );
+  }
 
   async connect(options?: {
     onlyIfTrusted?: boolean;
@@ -579,28 +599,73 @@ export class Solana implements ISolana {
     const key = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     return { publicKey: new PublicKey(key.base58Address) };
   }
+
   async disconnect(): Promise<void> {
     //TODO: need handle
     return;
   }
 
-  async signAndSendTransaction(...inputs) {
-    // const {ac} = inputs[0]!;
-    // const msg = new RequestSignBitcoinMsg(chainId, data);
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    const input = inputs[0]!;
-    // if (input.account !== this.#account) throw new Error('invalid account');
-    const outputs: SolanaSignAndSendTransactionOutput[] = [];
-    if (inputs.length === 1) {
-      if (!isSolanaChain(input.chain)) throw new Error("invalid chain");
-      console.log("solana !");
-    } else if (inputs.length > 1) {
-      // Adapters have no `sendAllTransactions` method, so just sign and send each transaction in serial.
-      for (const input of inputs) {
-        outputs.push(...(await this.signAndSendTransaction(input)));
+  public async signTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    const tx = deserializeTransaction(request.tx);
+    const preparedTx = await this.prepareTransaction({
+      ...request,
+      tx,
+    });
+    const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
+    const msg = new RequestSignTransactionSvm(
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+      publicKey,
+      txStr
+    );
+    const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (!result?.signature || !result?.signedTx) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
+
+  private async prepareTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    commitment?: Commitment;
+    customConnection?: Connection;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    const signers = request.signers;
+    const connection = request.customConnection ?? this.connection;
+    const commitment = request.commitment;
+    const tx = request.tx;
+    if (!isVersionedTransaction(tx)) {
+      if (signers) {
+        signers.forEach((s: Signer) => {
+          tx.partialSign(s);
+        });
+      }
+      if (!tx.feePayer) {
+        tx.feePayer = publicKey;
+      }
+      if (!tx.recentBlockhash) {
+        const { blockhash } = await connection.getLatestBlockhash(commitment);
+        tx.recentBlockhash = blockhash;
+      }
+    } else {
+      if (signers) {
+        tx.sign(signers);
       }
     }
-    return outputs;
+    return tx;
   }
 }
 

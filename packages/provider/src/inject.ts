@@ -46,7 +46,14 @@ import {
 } from "./constants";
 import { SignEthereumTypedDataObject } from "@owallet/types/build/typedMessage";
 import EventEmitter from "events";
-import { PublicKey } from "@solana/web3.js";
+import {
+  Connection,
+  PublicKey,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { encode, decode } from "bs58";
+import { isVersionedTransaction } from "@owallet/common";
 
 export const localStore = new Map<string, any>();
 
@@ -1242,26 +1249,82 @@ export class InjectedSolana extends EventEmitter implements ISolana {
   }
 
   publicKey: PublicKey | null;
+  isConnected: boolean;
+
+  #connect(publicKey: string) {
+    this.isConnected = true;
+    this.publicKey = new PublicKey(publicKey);
+    this.emit("connect", { publicKey });
+    // this.emit("accountChanged", { publicKey });
+  }
 
   async connect(options?: {
     onlyIfTrusted?: boolean;
     reconnect?: boolean;
   }): Promise<{ publicKey: PublicKey }> {
+    if (this.publicKey && !options?.reconnect) {
+      return { publicKey: this.publicKey };
+    }
     const { publicKey } = await this.requestMethod("connect", [options]);
-    const pubKeyRes = new PublicKey(publicKey);
-    this.publicKey = pubKeyRes;
-    return { publicKey: pubKeyRes };
+    this.#connect(publicKey);
+    return { publicKey: new PublicKey(publicKey) };
   }
 
   async disconnect(): Promise<void> {
     this.publicKey = null;
   }
 
-  signAndSendTransaction: ISolana["signAndSendTransaction"] = async (
-    ...inputs
-  ) => {
-    return await this.requestMethod("signAndSendTransaction", inputs);
-  };
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<T> {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const txStr = encode(tx.serialize({ requireAllSignatures: false }));
+
+    const result = await this.requestMethod("signTransaction", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        tx: txStr,
+        customConnection: connection,
+      },
+    ]);
+    const solanaRes = (
+      isVersionedTransaction(tx)
+        ? VersionedTransaction.deserialize(decode(result.signedTx))
+        : Transaction.from(decode(result.signedTx))
+    ) as T;
+    console.warn(solanaRes);
+    return solanaRes;
+  }
+
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
+    publicKey?: PublicKey,
+    connection?: Connection,
+    uuid?: string
+  ): Promise<Array<T>> {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const solanaResponse = await this.requestMethod("signAllTransactions", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        txs,
+        customConnection: connection,
+        uuid,
+      },
+    ]);
+    return solanaResponse;
+  }
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {

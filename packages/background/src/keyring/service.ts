@@ -13,6 +13,7 @@ import {
   makeADR36AminoSignDoc,
   verifyADR36AminoSignDoc,
 } from "@owallet/cosmos";
+import { decode, encode } from "bs58";
 import {
   CommonCrypto,
   ExportKeyRingData,
@@ -30,6 +31,7 @@ import {
   DEFAULT_FEE_LIMIT_TRON,
   TRIGGER_TYPE,
   TronWebProvider,
+  deserializeTransaction,
 } from "@owallet/common";
 import { ChainsService } from "../chains";
 import { LedgerService } from "../ledger";
@@ -62,8 +64,10 @@ import { trimAminoSignDoc } from "./amino-sign-doc";
 import { KeyringHelper } from "./utils";
 import {
   Connection,
+  PublicKey,
   sendAndConfirmTransaction,
   Transaction,
+  VersionedTransaction,
 } from "@solana/web3.js";
 
 @singleton()
@@ -602,6 +606,60 @@ export class KeyRingService {
         chainId,
         (newDataConfirm as any).unsignedTx
       );
+    } catch (e) {
+      console.log(e, "err on service");
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-svm-end",
+        {}
+      );
+    }
+  }
+  async requestSignTransactionSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    tx: string
+  ): Promise<{
+    signature: string;
+    signedTx: string;
+  }> {
+    try {
+      const coinType = await this.chainsService.getChainCoinType(chainId);
+
+      const key = await this.keyRing.getKey(chainId, coinType);
+
+      if (signer !== key.base58Address) {
+        throw new Error("Signer mismatched");
+      }
+
+      const newDataConfirm = await this.interactionService.waitApprove(
+        env,
+        "/sign-svm",
+        "request-sign-svm",
+        {
+          msgOrigin,
+          chainId,
+          signer,
+          tx,
+        }
+      );
+      const transaction = deserializeTransaction((newDataConfirm as any).tx);
+      const message = transaction.message.serialize();
+      const txMessage = encode(message);
+      // const { unsignedTx } = newDataConfirm as any;
+      const signature = await this.keyRing.signTransactionSvm(txMessage);
+
+      const signedTx = VersionedTransaction.deserialize(
+        decode((newDataConfirm as any).tx)
+      );
+      signedTx.addSignature(new PublicKey(signer), decode(signature));
+      return {
+        signature,
+        signedTx: encode(signedTx.serialize()),
+      };
     } catch (e) {
       console.log(e, "err on service");
     } finally {
