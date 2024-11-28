@@ -40,10 +40,11 @@ export const WarningModal: FunctionComponent<{
         />
         <View style={{ paddingVertical: 24, alignItems: 'center' }}>
           <OWText color={colors['warning-text-body']} size={16} weight="700">
-            {`Warning`.toUpperCase()}
+            {`Important Announcement: Backup Your Seed Phrase Now!`}
           </OWText>
-          <OWText style={{ textAlign: 'center', marginTop: 4 }} weight="500" color={colors['warning-text-body']}>
-            Please backup your mnemonic / private key
+
+          <OWText style={{ marginTop: 12 }} weight="400" color={colors['warning-text-body']}>
+            {`Dear Users,\nWe’re excited to announce that a big update is coming soon to enhance your user experience! \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase before the update.`}
           </OWText>
         </View>
 
