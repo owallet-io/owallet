@@ -1188,8 +1188,6 @@ const ClaimTokenItem: FunctionComponent<{
         const delegateTx = account.cosmos.makeDelegateTx(v.rewards.toDec().toString(), v.validatorAddress);
         const simulated = await delegateTx.simulate();
 
-        console.log('simulated.gasUsed', v.rewards.toDec().toString(), simulated.gasUsed);
-
         // Gas adjustment is 1.5
         // Since there is currently no convenient way to adjust the gas adjustment on the UI,
         // Use high gas adjustment to prevent failure.
@@ -1251,11 +1249,9 @@ const ClaimTokenItem: FunctionComponent<{
           onFulfill: (tx: any) => {
             setIsSimulating(false);
             if (tx.code != null && tx.code !== 0) {
-              console.log(tx.log ?? tx.raw_log);
-
               showToast({
                 type: 'danger',
-                message: tx.log ?? tx.raw_log
+                message: JSON.stringify(tx.log ?? tx.raw_log)
               });
               return;
             } else {
