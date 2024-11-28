@@ -778,6 +778,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         }}
         colors={colors}
         address={accountOrai.bech32Address}
+        appInitStore={appInitStore}
       />
       <AccountBoxAll
         isLoading={isLoading}
@@ -786,8 +787,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
         dataBalances={dataBalances}
       />
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
-
-      <WarningBox />
 
       <MainTabHome
         dataTokens={

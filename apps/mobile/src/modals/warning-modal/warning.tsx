@@ -3,14 +3,13 @@ import { registerModal } from '../base';
 import { View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { resetTo } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
 import OWCard from '@src/components/card/ow-card';
 import OWText from '@src/components/text/ow-text';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { OWButton } from '@src/components/button';
 import { metrics } from '@src/themes';
 import { Mixpanel } from 'mixpanel-react-native';
+import { AppInit } from '@src/stores/app_init';
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
 export const WarningModal: FunctionComponent<{
@@ -18,9 +17,10 @@ export const WarningModal: FunctionComponent<{
   close: () => void;
   colors: any;
   address: string;
+  appInitStore: AppInit;
   bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
-  observer(({ close, colors, address }) => {
+  observer(({ close, colors, address, appInitStore }) => {
     return (
       <OWCard
         type="normal"
@@ -44,7 +44,7 @@ export const WarningModal: FunctionComponent<{
           </OWText>
 
           <OWText style={{ marginTop: 12 }} weight="400" color={colors['warning-text-body']}>
-            {`Dear Users,\nWe’re excited to announce that a big update is coming soon to enhance your user experience! \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase before the update.`}
+            {`Dear Users,\nWe’re excited to announce that a big update is coming soon to enhance your user experience! \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase / private key before the update.\nWe are not responsible for any loss or issues resulting from failure to back up your seed phrase prior to the update.`}
           </OWText>
         </View>
 
@@ -73,9 +73,7 @@ export const WarningModal: FunctionComponent<{
           <OWButton
             label="Yes, Confirm"
             onPress={async () => {
-              resetTo(SCREENS.TABS.Settings, {
-                isOpenBackup: true
-              });
+              appInitStore.updateLastTimeWarning(true);
               if (mixpanel) {
                 const logEvent = {
                   address
