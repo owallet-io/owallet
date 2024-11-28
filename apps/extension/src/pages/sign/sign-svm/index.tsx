@@ -220,18 +220,18 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {/*{tab === Tab.Data && <SvmDataTab data={data} />}*/}
-                {tab === Tab.Details && (
-                  <SvmDetailsTabWithErrorBoundary
-                    priceStore={priceStore}
-                    feeConfig={feeConfig}
-                    gasConfig={null}
-                    intl={intl}
-                    dataSign={data}
-                    isNoSetFee={isNoSetFee}
-                    signer={signer}
-                  />
-                )}
+                {<SvmDataTab data={data} />}
+                {/*{tab === Tab.Details && (*/}
+                {/*  <SvmDetailsTabWithErrorBoundary*/}
+                {/*    priceStore={priceStore}*/}
+                {/*    feeConfig={feeConfig}*/}
+                {/*    gasConfig={null}*/}
+                {/*    intl={intl}*/}
+                {/*    dataSign={data}*/}
+                {/*    isNoSetFee={isNoSetFee}*/}
+                {/*    signer={signer}*/}
+                {/*  />*/}
+                {/*)}*/}
               </div>
             </div>
             <div
