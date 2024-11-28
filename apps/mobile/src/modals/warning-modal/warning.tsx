@@ -32,19 +32,22 @@ export const WarningModal: FunctionComponent<{
         <OWIcon
           style={{
             borderRadius: 24,
-            width: metrics.screenWidth - 64,
-            height: metrics.screenWidth / 2
+            width: metrics.screenWidth - 82,
+            height: metrics.screenWidth / 3
           }}
           type={'images'}
           source={require('@src/assets/images/img_warning.png')}
         />
         <View style={{ paddingVertical: 24, alignItems: 'center' }}>
           <OWText color={colors['warning-text-body']} size={16} weight="700">
-            {`🚨 Important Notice!`}
+            {`🚨 Backup Reminder!`}
           </OWText>
 
-          <OWText style={{ marginTop: 12 }} weight="400" color={colors['warning-text-body']}>
-            {`We’re thrilled to announce a major update designed to enhance your user experience!\n⚠️ To ensure your wallet and funds remain secure during this transition, we strongly advise you to back up your seed phrase or private key before the update. Remember, you are responsible for your seed phrase, so it's always better to be prepared. \nHowever, to ensure your wallet and funds remain secure during this transition, it’s crucial that you back up your seed phrase / private key before the update.\nThank you for your attention and understanding!`}
+          <OWText style={{ marginTop: 12, textAlign: 'center' }} weight="400" color={colors['warning-text-body']}>
+            {`🛡️ Secure your wallet by backing up your seed phrase or private key.`}
+          </OWText>
+          <OWText style={{ marginTop: 8, textAlign: 'center' }} weight="400" color={colors['warning-text-body']}>
+            {`💪 Stay in control—your security, your responsibility! 🔒`}
           </OWText>
         </View>
 
@@ -63,7 +66,7 @@ export const WarningModal: FunctionComponent<{
             }}
             style={{
               borderRadius: 999,
-              width: '48%'
+              width: '44%'
             }}
             textStyle={{
               fontSize: 14,
@@ -71,7 +74,7 @@ export const WarningModal: FunctionComponent<{
             }}
           />
           <OWButton
-            label="Yes, Confirm"
+            label="I confirm the backup"
             onPress={async () => {
               appInitStore.updateLastTimeWarning(true);
               if (mixpanel) {
@@ -84,7 +87,7 @@ export const WarningModal: FunctionComponent<{
             }}
             style={{
               borderRadius: 999,
-              width: '48%'
+              width: '52%'
             }}
             textStyle={{
               fontSize: 14,
