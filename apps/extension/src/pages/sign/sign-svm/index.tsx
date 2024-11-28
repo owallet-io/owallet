@@ -119,8 +119,8 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       //
 
       chainStore.selectChain(data.data.chainId);
-      const tx = deserializeTransaction(data.data.data.tx);
-      console.log(tx, "tx decode");
+      // const tx = deserializeTransaction(data.data.data.tx);
+      // console.log(tx, "tx decode");
       // setDataSign(data);
       // if (msgs?.amount) {
       //   amountConfig.setAmount(`${satsToBtc(msgs?.amount)}`);

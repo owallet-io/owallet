@@ -569,6 +569,47 @@ export class GetKeySettledMsg extends Message<SettledResponses<Key>> {
     return GetKeySettledMsg.type();
   }
 }
+export class RequestSignMessageSvm extends Message<{
+  signedMessage: string;
+}> {
+  public static type() {
+    return "request-sign-message-svm";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly message: string
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new OWalletError("keyring", 230, "signer not set");
+    }
+
+    const isValid = isBase58(this.signer);
+    if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
+    if (!this.message) throw new OWalletError("keyring", 230, "tx not set");
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignMessageSvm.type();
+  }
+}
 export class RequestSignTransactionSvm extends Message<{
   signature: string;
   signedTx: string;

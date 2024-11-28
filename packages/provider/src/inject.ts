@@ -1294,15 +1294,30 @@ export class InjectedSolana extends EventEmitter implements ISolana {
         customConnection: connection,
       },
     ]);
-    const solanaRes = (
-      isVersionedTransaction(tx)
-        ? VersionedTransaction.deserialize(decode(result.signedTx))
-        : Transaction.from(decode(result.signedTx))
+    const solanaRes = VersionedTransaction.deserialize(
+      decode(result.signedTx)
     ) as T;
     console.warn(solanaRes);
     return solanaRes;
   }
-
+  async signMessage(
+    msg: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{ signature: Uint8Array }> {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const solanaResponse = await this.requestMethod("signMessage", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        message: msg,
+      },
+    ]);
+    return { signature: solanaResponse };
+  }
   async signAllTransactions<T extends Transaction | VersionedTransaction>(
     txs: Array<T>,
     publicKey?: PublicKey,
@@ -1315,10 +1330,13 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     if (!this.publicKey) {
       throw new Error("wallet not connected");
     }
+    const txsStrs = txs.map((tx) =>
+      encode(tx.serialize({ requireAllSignatures: false }))
+    );
     const solanaResponse = await this.requestMethod("signAllTransactions", [
       {
         publicKey: publicKey ?? this.publicKey,
-        txs,
+        txs: txsStrs,
         customConnection: connection,
         uuid,
       },

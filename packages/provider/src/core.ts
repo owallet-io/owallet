@@ -72,6 +72,7 @@ import {
   RequestSignOasisMsg,
   RequestSendAndConfirmTxSvm,
   RequestSignTransactionSvm,
+  RequestSignMessageSvm,
 } from "./msgs";
 import {
   ChainIdEnum,
@@ -600,6 +601,55 @@ export class Solana implements ISolana {
     return { publicKey: new PublicKey(key.base58Address) };
   }
 
+  public async signAllTransactions<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    txs: T[];
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+    uuid?: string;
+    disableTxMutation?: boolean;
+  }): Promise<T[]> {
+    const publicKey = request.publicKey;
+
+    const txStrs = await Promise.all(
+      request.txs.map(async (tx) => {
+        const txDecoded = deserializeTransaction(tx);
+        const preparedTx = await this.prepareTransaction({
+          publicKey: request.publicKey,
+          tx: txDecoded,
+          signers: request.signers,
+          customConnection: request.customConnection,
+          commitment: request.commitment,
+        });
+        return encode(preparedTx.serialize({ requireAllSignatures: false }));
+      })
+    );
+
+    // const signatures = await this.secureSvmClient.signAllTransactions({
+    //   publicKey: publicKey.toBase58(),
+    //   txs: txStrs,
+    //   uuid: request.uuid,
+    //   disableTxMutation: request.disableTxMutation,
+    // });
+
+    // if (!signatures.response?.signatures) {
+    //   throw signatures.error;
+    // }
+    //
+    // const txs = signatures.response.signatures.map(({ signedTx }, i) =>
+    //     isVersionedTransaction(request.txs[i])
+    //         ? VersionedTransaction.deserialize(decode(signedTx))
+    //         : Transaction.from(decode(signedTx))
+    // );
+    //
+    // return txs as T[];
+    //TODO: handle for sign multiple msg
+    return;
+  }
+
   async disconnect(): Promise<void> {
     //TODO: need handle
     return;
@@ -632,7 +682,18 @@ export class Solana implements ISolana {
     }
     return result;
   }
-
+  public async signMessage(request: {
+    publicKey: PublicKey;
+    message: Uint8Array;
+  }): Promise<Uint8Array> {
+    const msg = new RequestSignMessageSvm(
+      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+      request.publicKey,
+      encode(request.message)
+    );
+    const svmResponse = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return decode(svmResponse.signedMessage);
+  }
   private async prepareTransaction<
     T extends Transaction | VersionedTransaction
   >(request: {

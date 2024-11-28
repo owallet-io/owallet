@@ -40,6 +40,7 @@ import {
   GetKeySettledMsg,
   RequestSendAndConfirmTxSvm,
   RequestSignTransactionSvm,
+  RequestSignMessageSvm,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
@@ -84,6 +85,8 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(SetKeyStoreCoinTypeMsg);
   router.registerMessage(CheckPasswordMsg);
   router.registerMessage(RequestSignTransactionSvm);
+  router.registerMessage(RequestSignMessageSvm);
+
   router.registerMessage(ExportKeyRingDatasMsg);
   router.registerMessage(RequestSignEIP712CosmosTxMsg_v0);
   router.registerMessage(ChangeChainMsg);

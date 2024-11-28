@@ -34,7 +34,14 @@ export const SvmDetailsTab: FunctionComponent<{
     signer,
   }) => {
     console.log(dataSign, "dataSign2");
-    const msgs = JSON.parse(dataSign?.data?.data?.unsignedTx);
+    const msgs = (() => {
+      try {
+        const parsed = JSON.parse(dataSign?.data?.data?.unsignedTx);
+        return parsed;
+      } catch (e) {
+        return dataSign;
+      }
+    })();
     console.log(msgs, "msgs");
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency

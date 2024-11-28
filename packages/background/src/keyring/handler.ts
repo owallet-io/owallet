@@ -48,6 +48,7 @@ import {
   GetKeySettledMsg,
   RequestSendAndConfirmTxSvm,
   RequestSignTransactionSvm,
+  RequestSignMessageSvm,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -70,6 +71,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRequestSignTransactionSvm(service)(
           env,
           msg as RequestSignTransactionSvm
+        );
+      case RequestSignMessageSvm:
+        return handleRequestSignMessageSvm(service)(
+          env,
+          msg as RequestSignMessageSvm
         );
       case DeleteKeyRingMsg:
         return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
@@ -446,6 +452,25 @@ const handleRequestSignTransactionSvm: (
       msg.chainId,
       msg.signer,
       msg.tx
+    );
+  };
+};
+const handleRequestSignMessageSvm: (
+  service: KeyRingService
+) => InternalHandler<RequestSignMessageSvm> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin
+    );
+
+    return await service.requestSignMessageSvm(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.message
     );
   };
 };
