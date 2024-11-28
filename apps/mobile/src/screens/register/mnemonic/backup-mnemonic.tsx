@@ -4,7 +4,6 @@ import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { BackupWordChip } from '../../../components/mnemonic';
-
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { metrics } from '../../../themes';
@@ -13,6 +12,9 @@ import { useSimpleTimer } from '@src/hooks';
 import { CheckIcon, CopyFillIcon } from '@src/components/icon';
 import { goBack } from '@src/router/root';
 import { useStore } from '@src/stores';
+import { Mixpanel } from 'mixpanel-react-native';
+import { ChainIdEnum } from '@owallet/common';
+const mixpanel = globalThis.mixpanel as Mixpanel;
 
 export const BackupMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
@@ -28,7 +30,8 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
     >
   >();
   const { colors } = useTheme();
-  const { appInitStore } = useStore();
+  const { appInitStore, accountStore } = useStore();
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const { isTimedOut, setTimer } = useSimpleTimer();
   const privateData = route.params.privateData;
@@ -118,6 +121,12 @@ export const BackupMnemonicScreen: FunctionComponent = observer(props => {
                     text: 'OK',
                     onPress: () => {
                       appInitStore.updateLastTimeWarning(true);
+                      if (mixpanel) {
+                        const logEvent = {
+                          address: accountOrai.bech32Address
+                        };
+                        mixpanel.track('Actual backup event', logEvent);
+                      }
                       onGoBack();
                     }
                   }

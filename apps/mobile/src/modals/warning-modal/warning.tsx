@@ -10,14 +10,17 @@ import OWText from '@src/components/text/ow-text';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { OWButton } from '@src/components/button';
 import { metrics } from '@src/themes';
+import { Mixpanel } from 'mixpanel-react-native';
+const mixpanel = globalThis.mixpanel as Mixpanel;
 
 export const WarningModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   colors: any;
+  address: string;
   bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
-  observer(({ close, colors }) => {
+  observer(({ close, colors, address }) => {
     return (
       <OWCard
         type="normal"
@@ -72,6 +75,12 @@ export const WarningModal: FunctionComponent<{
               resetTo(SCREENS.TABS.Settings, {
                 isOpenBackup: true
               });
+              if (mixpanel) {
+                const logEvent = {
+                  address
+                };
+                mixpanel.track('Confirm backup event', logEvent);
+              }
               close();
             }}
             style={{

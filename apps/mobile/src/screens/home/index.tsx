@@ -777,6 +777,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
           setWarningOpen(false);
         }}
         colors={colors}
+        address={accountOrai.bech32Address}
       />
       <AccountBoxAll
         isLoading={isLoading}
