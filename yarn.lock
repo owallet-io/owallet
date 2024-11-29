@@ -5051,6 +5051,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-app-trx@npm:^6.29.4":
+  version: 6.29.4
+  resolution: "@ledgerhq/hw-app-trx@npm:6.29.4"
+  dependencies:
+    "@ledgerhq/hw-transport": ^6.31.4
+  checksum: 74567d73c5d682d214f62108ac901861020483c2b96001102917304a50d7000e2cf78b7c43661e476f71a01de8ccc102ee6918cb51052cf783332cd7d237fe9b
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-transport-mocker@npm:^6.27.2":
   version: 6.29.4
   resolution: "@ledgerhq/hw-transport-mocker@npm:6.29.4"
@@ -24335,6 +24344,7 @@ __metadata:
     "@gorhom/bottom-sheet": 4.4.7
     "@ledgerhq/hw-app-btc": 6.27.1
     "@ledgerhq/hw-app-eth": ^6.29.3
+    "@ledgerhq/hw-app-trx": ^6.29.4
     "@ledgerhq/react-native-hw-transport-ble": =6.20.0
     "@noble/secp256k1": ^2.1.0
     "@oasisprotocol/client": ^1.0.0
