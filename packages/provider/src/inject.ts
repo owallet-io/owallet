@@ -1256,9 +1256,11 @@ export class InjectedSolana extends EventEmitter implements ISolana {
   ) {
     super();
     window.addEventListener("keplr_keystorechange", async () => {
-      const key = await window.owallet.getKey(CHAIN_ID_SOL);
-      if (!key?.base58Address) return;
-      this.emit("accountChanged", { publicKey: key?.base58Address || "" });
+      if ((window as any).owallet) {
+        const key = await (window as any).owallet.getKey(CHAIN_ID_SOL);
+        if (!key?.base58Address) return;
+        this.emit("accountChanged", { publicKey: key?.base58Address || "" });
+      }
     });
   }
 

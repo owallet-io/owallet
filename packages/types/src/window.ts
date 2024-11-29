@@ -6,7 +6,7 @@ export interface Window {
   owallet?: OWallet;
   bitcoin?: Bitcoin;
   ethereum?: Ethereum;
-  solana?: Solana;
+  owalletSolana?: Solana;
   eth_owallet?: Ethereum;
   tronWeb?: TronWeb;
   tronLink?: TronWeb;
