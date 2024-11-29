@@ -26,7 +26,7 @@ export function init(
   if (!window.bitcoin) {
     window.bitcoin = bitcoin;
   }
-  if (!window.solana) {
+  if (!window.owalletSolana) {
     window.owalletSolana = solana;
     initialize(solana);
   }
