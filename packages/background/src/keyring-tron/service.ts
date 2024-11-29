@@ -197,6 +197,7 @@ export class KeyRingTronService {
         chainId,
         pubKey: key.pubKey,
         data,
+        keyType: keyInfo.type,
         keyInsensitive: keyInfo.insensitive
       },
       async (res: { signingData: Uint8Array; signature?: any }) => {
