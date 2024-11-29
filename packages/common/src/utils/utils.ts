@@ -19,6 +19,11 @@ import isValidDomain from "is-valid-domain";
 import "dotenv/config";
 import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
 import { decode, encode } from "bs58";
+import type {
+  Connection,
+  Finality,
+  GetVersionedTransactionConfig,
+} from "@solana/web3.js";
 
 export const getFavicon = (url) => {
   const serviceGG =
@@ -78,6 +83,39 @@ export const RPC_SOL_DEV =
   "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0";
 export const RPC_SOL_MAIN = "https://swr.xnftdata.com/rpc-proxy/";
 export const RPC_SOL = RPC_SOL_DEV;
+
+export async function confirmTransaction(
+  c: Connection,
+  txSig: string,
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
+): Promise<ReturnType<(typeof c)["getParsedTransaction"]>> {
+  return new Promise(async (resolve, reject) => {
+    setTimeout(
+      () =>
+        reject(new Error(`30 second timeout: unable to confirm transaction`)),
+      30000
+    );
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
+    const config = {
+      // Support confirming Versioned Transactions
+      maxSupportedTransactionVersion: 0,
+      ...(typeof commitmentOrConfig === "string"
+        ? {
+            commitment: commitmentOrConfig,
+          }
+        : commitmentOrConfig),
+    };
+
+    let tx = await c.getParsedTransaction(txSig, config);
+    while (tx === null) {
+      tx = await c.getParsedTransaction(txSig, config);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    resolve(tx);
+  });
+}
+
 export const isVersionedTransaction = (
   tx: Transaction | VersionedTransaction
 ): tx is VersionedTransaction => {

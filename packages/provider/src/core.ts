@@ -78,6 +78,7 @@ import {
 import {
   CHAIN_ID_SOL,
   ChainIdEnum,
+  confirmTransaction,
   deserializeLegacyTransaction,
   deserializeTransaction,
   RPC_SOL,
@@ -90,8 +91,10 @@ import {
 import { isSolanaChain } from "@solana/wallet-standard-chains";
 import {
   Commitment,
+  ConfirmOptions,
   Connection,
   PublicKey,
+  SendOptions,
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
@@ -652,6 +655,66 @@ export class Solana implements ISolana {
     //TODO: handle for sign multiple msg
     return;
   }
+
+  public async sendAndConfirm<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    const options = request.options;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+    const finality = commitment === "finalized" ? "finalized" : "confirmed";
+
+    const signature = await this.send({
+      ...request,
+      options: {
+        commitment: "confirmed",
+        preflightCommitment: "confirmed",
+        ...request.options,
+      },
+    });
+    await confirmTransaction(this.connection, signature, finality);
+    return signature;
+  }
+
+  public async send<T extends Transaction | VersionedTransaction>(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    // const tx = request.tx;
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
+    const signers = request.signers;
+    const publicKey = request.publicKey;
+    const options = request.options;
+    const connection = request.customConnection ?? this.connection;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+
+    const result = await this.signTransaction({
+      tx,
+      signers,
+      publicKey,
+      customConnection: request.customConnection,
+      commitment,
+    });
+    const signedTx = VersionedTransaction.deserialize(
+      decode(result.signedTx)
+    ) as T;
+    const serializedTransaction = signedTx.serialize();
+    return connection.sendRawTransaction(serializedTransaction, options);
+  }
+
   public async signIn(input?: SolanaSignInInput): Promise<{
     signedMessage: string;
     signature: string;
@@ -666,6 +729,7 @@ export class Solana implements ISolana {
     }
     return result;
   }
+
   async disconnect(): Promise<void> {
     //TODO: need handle
     return;
@@ -681,7 +745,10 @@ export class Solana implements ISolana {
     commitment?: Commitment;
   }): Promise<T> {
     const publicKey = request.publicKey;
-    const tx = deserializeTransaction(request.tx);
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
     const preparedTx = await this.prepareTransaction({
       ...request,
       tx,
@@ -694,6 +761,7 @@ export class Solana implements ISolana {
     }
     return result;
   }
+
   public async signMessage(request: {
     publicKey: PublicKey;
     message: Uint8Array;
@@ -706,6 +774,7 @@ export class Solana implements ISolana {
     const svmResponse = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     return decode(svmResponse.signedMessage);
   }
+
   private async prepareTransaction<
     T extends Transaction | VersionedTransaction
   >(request: {

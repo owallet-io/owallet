@@ -47,9 +47,12 @@ import {
 import { SignEthereumTypedDataObject } from "@owallet/types/build/typedMessage";
 import EventEmitter from "events";
 import {
+  ConfirmOptions,
   Connection,
   PublicKey,
+  SendOptions,
   Transaction,
+  TransactionSignature,
   VersionedTransaction,
 } from "@solana/web3.js";
 import { encode, decode } from "bs58";
@@ -59,6 +62,7 @@ import {
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
 import { OWalletSolanaWalletAccount } from "@toan.dq2009/wallet-standard";
+import { Signer } from "@oasisprotocol/client/dist/signature";
 
 export const localStore = new Map<string, any>();
 
@@ -1285,7 +1289,6 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     publicKey?: PublicKey,
     connection?: Connection
   ): Promise<T> {
-    console.log(connection, "connection");
     if (!this.publicKey) {
       await this.connect();
     }
@@ -1307,6 +1310,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     console.warn(solanaRes);
     return solanaRes;
   }
+
   async signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput> {
     const response = await this.requestMethod("signIn", [input ?? {}]);
     this.#connect(response.publicKey, response.connectionUrl);
@@ -1320,6 +1324,41 @@ export class InjectedSolana extends EventEmitter implements ISolana {
       signature: decode(response.signature),
     };
   }
+
+  async signAndSendTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T,
+    options?: SendOptions
+  ): Promise<{ signature: TransactionSignature }> {
+    return this.sendAndConfirm(transaction, [], options);
+  }
+
+  async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    options?: ConfirmOptions,
+    connection?: Connection,
+    publicKey?: PublicKey
+  ): Promise<{ signature: TransactionSignature }> {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const txStr = encode(tx.serialize({ requireAllSignatures: false }));
+    const solanaResponse = await this.requestMethod("sendAndConfirm", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        tx: txStr,
+        signers,
+        options,
+        customConnection: connection,
+      },
+    ]);
+
+    return { signature: solanaResponse };
+  }
+
   async signMessage(
     msg: Uint8Array,
     publicKey?: PublicKey
@@ -1338,6 +1377,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     ]);
     return { signature: solanaResponse };
   }
+
   async signAllTransactions<T extends Transaction | VersionedTransaction>(
     txs: Array<T>,
     publicKey?: PublicKey,
