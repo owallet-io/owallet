@@ -220,11 +220,11 @@ export const SendSolanaPage: FunctionComponent<{
         const { blockhash } = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockhash;
         transaction.feePayer = fromPublicKey;
-        const txStr = encode(
-          transaction.serialize({ requireAllSignatures: false })
-        );
-        const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
-        console.log(dynamicMicroLamports, "dynamicMicroLamports");
+        // const txStr = encode(
+        //   transaction.serialize({ requireAllSignatures: false })
+        // );
+        // const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
+        // console.log(dynamicMicroLamports, "dynamicMicroLamports");
         const message = transaction.compileMessage();
         const feeInLamports = await connection.getFeeForMessage(message);
         if (feeInLamports === null) {
@@ -364,7 +364,11 @@ export const SendSolanaPage: FunctionComponent<{
           className={style.formContainer}
           onSubmit={async (e: any) => {
             e.preventDefault();
-            if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
+            if (
+              accountInfo.isReadyToSendMsgs &&
+              txStateIsValid &&
+              sendConfigs.feeConfig.fee?.toCoin()
+            ) {
               try {
                 // (window as any).accountInfo = accountInfo;
                 await accountInfo.sendSolanaToken(

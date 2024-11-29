@@ -71,7 +71,13 @@ export async function _getPriorityFeeSolana(
     return 0;
   }
 }
-
+export const SOL_DEV = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1";
+export const SOL_MAIN = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp";
+export const CHAIN_ID_SOL = SOL_DEV;
+export const RPC_SOL_DEV =
+  "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0";
+export const RPC_SOL_MAIN = "https://swr.xnftdata.com/rpc-proxy/";
+export const RPC_SOL = RPC_SOL_DEV;
 export const isVersionedTransaction = (
   tx: Transaction | VersionedTransaction
 ): tx is VersionedTransaction => {

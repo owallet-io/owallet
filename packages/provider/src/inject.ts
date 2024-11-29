@@ -1279,6 +1279,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     publicKey?: PublicKey,
     connection?: Connection
   ): Promise<T> {
+    console.log(connection, "connection");
     if (!this.publicKey) {
       await this.connect();
     }

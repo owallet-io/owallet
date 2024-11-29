@@ -220,7 +220,21 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {<SvmDataTab data={data} />}
+                {
+                  <div
+                    style={{
+                      height: "40%",
+                      overflow: "scroll",
+                      backgroundColor: colors["neutral-surface-bg"],
+                      borderRadius: 12,
+                      padding: 8,
+                      width: "90vw",
+                    }}
+                  >
+                    {" "}
+                    <SvmDataTab data={data} />
+                  </div>
+                }
                 {/*{tab === Tab.Details && (*/}
                 {/*  <SvmDetailsTabWithErrorBoundary*/}
                 {/*    priceStore={priceStore}*/}

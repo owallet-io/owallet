@@ -75,9 +75,11 @@ import {
   RequestSignMessageSvm,
 } from "./msgs";
 import {
+  CHAIN_ID_SOL,
   ChainIdEnum,
   deserializeLegacyTransaction,
   deserializeTransaction,
+  RPC_SOL,
 } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 import { type SolanaSignAndSendTransactionOutput } from "@solana/wallet-standard-features";
@@ -582,16 +584,13 @@ export class Solana implements ISolana {
     public readonly mode: BitcoinMode,
     protected readonly requester: MessageRequester
   ) {
-    this.connection = new Connection(
-      "https://swr.xnftdata.com/rpc-proxy/",
-      "confirmed"
-    );
+    this.connection = new Connection(RPC_SOL, "confirmed");
   }
 
   async connect(options?: {
     onlyIfTrusted?: boolean;
   }): Promise<{ publicKey: PublicKey }> {
-    const chainIds = ["solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"];
+    const chainIds = [CHAIN_ID_SOL];
     await this.requester.sendMessage(
       BACKGROUND_PORT,
       new EnableAccessMsg(chainIds)
@@ -671,11 +670,7 @@ export class Solana implements ISolana {
       tx,
     });
     const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
-    const msg = new RequestSignTransactionSvm(
-      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
-      publicKey,
-      txStr
-    );
+    const msg = new RequestSignTransactionSvm(CHAIN_ID_SOL, publicKey, txStr);
     const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     if (!result?.signature || !result?.signedTx) {
       throw Error("Transaction Rejected");
@@ -687,7 +682,7 @@ export class Solana implements ISolana {
     message: Uint8Array;
   }): Promise<Uint8Array> {
     const msg = new RequestSignMessageSvm(
-      "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+      CHAIN_ID_SOL,
       request.publicKey,
       encode(request.message)
     );
