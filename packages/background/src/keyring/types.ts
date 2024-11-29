@@ -106,6 +106,7 @@ export interface ExportedKeyRingVault {
   id: string;
   insensitive: PlainObject;
   sensitive: string;
+  privKey?: string;
   bip44HDPath?: {
     account: number;
     change: number;

@@ -9,7 +9,7 @@ import { InjectedProviderUrl } from '../web/config';
 import { MainTabHome } from './components';
 import { StakeCardAll } from './components/stake-card-all';
 import { NewThemeModal } from '@src/modals/theme-modal/theme';
-import { ChainIdEnum, EmbedChainInfos } from '@owallet/common';
+import messaging from '@react-native-firebase/messaging';
 // import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
@@ -19,7 +19,6 @@ export const useIsNotReady = () => {
 };
 export const HomeScreen: FunctionComponent = observer(props => {
   const { colors } = useTheme();
-
   const styles = styling(colors);
   const { chainStore, queriesStore, priceStore, appInitStore, browserStore, allAccountStore, bitcoinAccountStore } =
     useStore();
@@ -93,6 +92,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         colors={colors}
       />
       <AccountBoxAll isLoading={false} />
+
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>

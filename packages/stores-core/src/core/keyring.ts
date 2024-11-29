@@ -1,13 +1,6 @@
-import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
-import {
-  autorun,
-  computed,
-  flow,
-  makeObservable,
-  observable,
-  runInAction,
-} from "mobx";
-import { toGenerator } from "@owallet/common";
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
+import { autorun, computed, flow, makeObservable, observable, runInAction } from 'mobx';
+import { toGenerator } from '@owallet/common';
 import {
   AppendLedgerKeyAppMsg,
   BIP44HDPath,
@@ -17,6 +10,7 @@ import {
   CheckPasswordMsg,
   // ComputeNotFinalizedKeyAddressesMsg,
   DeleteKeyRingMsg,
+  ExportKeyRingMsg,
   FinalizeKeyCoinTypeMsg,
   GetKeyRingStatusMsg,
   GetKeyRingStatusOnlyMsg,
@@ -32,18 +26,18 @@ import {
   SelectKeyRingMsg,
   ShowSensitiveKeyRingDataMsg,
   SimulateSignTronMsg,
-  UnlockKeyRingMsg,
-} from "@owallet/background";
+  UnlockKeyRingMsg
+} from '@owallet/background';
 // import type { MultiAccounts } from "@owallet/background";
-import { ChainInfo } from "@owallet/types";
-import { ChainIdHelper } from "@owallet/cosmos";
+import { ChainInfo } from '@owallet/types';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class KeyRingStore {
   @observable
   protected _isInitialized: boolean = false;
 
   @observable
-  protected _status: KeyRingStatus | "not-loaded" = "not-loaded";
+  protected _status: KeyRingStatus | 'not-loaded' = 'not-loaded';
 
   @observable
   protected _needMigration: boolean = false;
@@ -90,7 +84,7 @@ export class KeyRingStore {
       return;
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const disposal = autorun(() => {
         if (this.isInitialized) {
           resolve();
@@ -103,7 +97,7 @@ export class KeyRingStore {
     });
   }
 
-  get status(): KeyRingStatus | "not-loaded" {
+  get status(): KeyRingStatus | 'not-loaded' {
     return this._status;
   }
 
@@ -119,19 +113,17 @@ export class KeyRingStore {
 
   @computed
   get selectedKeyInfo(): KeyInfo | undefined {
-    return this._keyInfos.find((keyInfo) => keyInfo.isSelected);
+    return this._keyInfos.find(keyInfo => keyInfo.isSelected);
   }
 
   get isEmpty(): boolean {
-    return this._status === "empty";
+    return this._status === 'empty';
   }
 
   @flow
   *refreshKeyRingStatus() {
     const msg = new GetKeyRingStatusMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
     this._needMigration = result.needMigration;
@@ -141,28 +133,24 @@ export class KeyRingStore {
   @flow
   *selectKeyRing(vaultId: string) {
     const msg = new SelectKeyRingMsg(vaultId);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
   }
 
   needKeyCoinTypeFinalize(vaultId: string, chainInfo: ChainInfo): boolean {
-    const keyInfo = this.keyInfos.find((keyInfo) => keyInfo.id === vaultId);
+    const keyInfo = this.keyInfos.find(keyInfo => keyInfo.id === vaultId);
     if (!keyInfo) {
       return false;
     }
 
-    if (keyInfo.type !== "mnemonic" && keyInfo.type !== "keystone") {
+    if (keyInfo.type !== 'mnemonic' && keyInfo.type !== 'keystone') {
       return false;
     }
 
-    const coinTypeTag = `keyRing-${
-      ChainIdHelper.parse(chainInfo.chainId).identifier
-    }-coinType`;
+    const coinTypeTag = `keyRing-${ChainIdHelper.parse(chainInfo.chainId).identifier}-coinType`;
 
     return keyInfo.insensitive[coinTypeTag] == null;
   }
@@ -186,16 +174,19 @@ export class KeyRingStore {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
+  async exportKeyRing(vaultId: string, password: string, chainId: string) {
+    const msg = new ExportKeyRingMsg(vaultId, password, chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
   @flow
   *finalizeKeyCoinType(vaultId: string, chainId: string, coinType: number) {
     const msg = new FinalizeKeyCoinTypeMsg(vaultId, chainId, coinType);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
   }
 
   @flow
@@ -206,40 +197,24 @@ export class KeyRingStore {
     password: string | undefined,
     meta?: PlainObject
   ) {
-    const msg = new NewMnemonicKeyMsg(
-      mnemonic,
-      bip44HDPath,
-      name,
-      password,
-      meta
-    );
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new NewMnemonicKeyMsg(mnemonic, bip44HDPath, name, password, meta);
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
 
     return result.vaultId;
   }
 
   @flow
-  *newLedgerKey(
-    pubKey: Uint8Array,
-    app: string,
-    bip44HDPath: BIP44HDPath,
-    name: string,
-    password: string | undefined
-  ) {
+  *newLedgerKey(pubKey: Uint8Array, app: string, bip44HDPath: BIP44HDPath, name: string, password: string | undefined) {
     const msg = new NewLedgerKeyMsg(pubKey, app, bip44HDPath, name, password);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
 
     return result.vaultId;
   }
@@ -247,13 +222,11 @@ export class KeyRingStore {
   @flow
   *appendLedgerKeyApp(vaultId: string, pubKey: Uint8Array, app: string) {
     const msg = new AppendLedgerKeyAppMsg(vaultId, pubKey, app);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
   }
 
   // @flow
@@ -275,20 +248,13 @@ export class KeyRingStore {
   // }
 
   @flow
-  *newPrivateKeyKey(
-    privateKey: Uint8Array,
-    meta: PlainObject,
-    name: string,
-    password: string | undefined
-  ) {
+  *newPrivateKeyKey(privateKey: Uint8Array, meta: PlainObject, name: string, password: string | undefined) {
     const msg = new NewPrivateKeyKeyMsg(privateKey, meta, name, password);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
 
     return result.vaultId;
   }
@@ -296,9 +262,7 @@ export class KeyRingStore {
   @flow
   *lock() {
     const msg = new LockKeyRingMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
   }
 
@@ -310,9 +274,7 @@ export class KeyRingStore {
 
     try {
       const msg = new UnlockKeyRingMsg(password);
-      const result = yield* toGenerator(
-        this.requester.sendMessage(BACKGROUND_PORT, msg)
-      );
+      const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
       this._status = result.status;
       this._keyInfos = result.keyInfos;
 
@@ -331,9 +293,7 @@ export class KeyRingStore {
 
     try {
       const msg = new UnlockKeyRingMsg(password);
-      const result = yield* toGenerator(
-        this.requester.sendMessage(BACKGROUND_PORT, msg)
-      );
+      const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
       this._keyInfos = result.keyInfos;
 
       this._needMigration = false;
@@ -346,33 +306,26 @@ export class KeyRingStore {
   @flow
   *changeKeyRingName(vaultId: string, name: string) {
     const msg = new ChangeKeyRingNameMsg(vaultId, name);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    this.eventDispatcher.dispatchEvent('keplr_keystorechange');
   }
 
   @flow
   *deleteKeyRing(vaultId: string, password: string) {
     const msg = new DeleteKeyRingMsg(vaultId, password);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 
-    if (result.wasSelected && result.status === "unlocked") {
-      this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+    if (result.wasSelected && result.status === 'unlocked') {
+      this.eventDispatcher.dispatchEvent('keplr_keystorechange');
     }
   }
 
-  async changeUserPassword(
-    prevUserPassword: string,
-    newUserPassword: string
-  ): Promise<void> {
+  async changeUserPassword(prevUserPassword: string, newUserPassword: string): Promise<void> {
     const msg = new ChangeUserPasswordMsg(prevUserPassword, newUserPassword);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -392,11 +345,7 @@ export class KeyRingStore {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async simulateSignTron(
-    transaction: any,
-    vaultId: string,
-    coinType: number
-  ): Promise<any> {
+  async simulateSignTron(transaction: any, vaultId: string, coinType: number): Promise<any> {
     const msg = new SimulateSignTronMsg(transaction, vaultId, coinType);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }

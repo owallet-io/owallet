@@ -437,11 +437,11 @@ export class CosmosAccountImpl {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const keplr = (await this.base.getOWallet())!;
+    const owallet = (await this.base.getOWallet())!;
 
     const signedTx = await (async () => {
       if (isDirectSign) {
-        return await this.createSignedTxWithDirectSign(keplr, account, msgs.protoMsgs, fee, memo, signOptions);
+        return await this.createSignedTxWithDirectSign(owallet, account, msgs.protoMsgs, fee, memo, signOptions);
       } else {
         const signDocRaw: StdSignDoc = {
           chain_id: this.chainId,
@@ -458,7 +458,7 @@ export class CosmosAccountImpl {
         if (eip712Signing) {
           if (chainIsInjective) {
             // Due to injective's problem, it should exist if injective with ledger.
-            // There is currently no effective way to handle this in keplr. Just set a very large number.
+            // There is currently no effective way to handle this in owallet. Just set a very large number.
             (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
           } else {
             // If not injective (evmos), they require fee payer.
@@ -474,13 +474,13 @@ export class CosmosAccountImpl {
         const signDoc = sortObjectByKey(signDocRaw);
 
         // Should use bind to avoid "this" problem
-        let signAmino = keplr.signAmino.bind(keplr);
+        let signAmino = owallet.signAmino.bind(owallet);
         if (signOptions?.signAmino) {
           signAmino = signOptions.signAmino;
         }
 
         // Should use bind to avoid "this" problem
-        let experimentalSignEIP712CosmosTx_v0 = keplr.experimentalSignEIP712CosmosTx_v0.bind(keplr);
+        let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
         if (signOptions?.experimentalSignEIP712CosmosTx_v0) {
           experimentalSignEIP712CosmosTx_v0 = signOptions.experimentalSignEIP712CosmosTx_v0;
         }
@@ -584,7 +584,7 @@ export class CosmosAccountImpl {
     })();
 
     // Should use bind to avoid "this" problem
-    let sendTx = keplr.sendTx.bind(keplr);
+    let sendTx = owallet.sendTx.bind(owallet);
     if (signOptions?.sendTx) {
       sendTx = signOptions.sendTx;
     }
@@ -596,7 +596,7 @@ export class CosmosAccountImpl {
   }
 
   protected async createSignedTxWithDirectSign(
-    keplr: OWallet,
+    owallet: OWallet,
     account: BaseAccount,
     protoMsgs: Any[],
     fee: StdFee,
@@ -612,7 +612,7 @@ export class CosmosAccountImpl {
     const chainIsStratos = this.chainId.startsWith('stratos');
 
     // Should use bind to avoid "this" problem
-    let signDirect = keplr.signDirect.bind(keplr);
+    let signDirect = owallet.signDirect.bind(owallet);
     if (signOptions?.signDirect) {
       signDirect = signOptions.signDirect;
     }

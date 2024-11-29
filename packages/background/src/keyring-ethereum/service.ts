@@ -170,8 +170,6 @@ export class KeyRingEthereumService {
                   'keccak256'
                 );
 
-                console.log('signature', signature);
-
                 return {
                   signingData: res.signingData,
                   signature: Buffer.concat([
@@ -240,9 +238,6 @@ export class KeyRingEthereumService {
               chainId
             );
 
-            console.log('tx.data', tx.data);
-            console.log('tx.signingData', signingData);
-
             if ((tx.data == null || tx.data === '0x') && BigInt(tx.value) > 0 && contractBytecode === '0x') {
               return 'send-native';
             }
@@ -253,8 +248,6 @@ export class KeyRingEthereumService {
 
             return 'execute-contract';
           })();
-
-          console.log('ethTxType', ethTxType);
 
           this.analyticsService.logEventIgnoreError('evm_tx_signed', {
             chainId,
@@ -316,15 +309,11 @@ export class KeyRingEthereumService {
         } else {
           const param = (Array.isArray(params) && (params?.[0] as { chainId: string })) || undefined;
 
-          console.log('param wallet_switchEthereumChain', param);
-
           if (!param?.chainId) {
             throw new Error('Invalid parameters: must provide a chain id.');
           }
 
           const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
-
-          console.log('newEvmChainId', newEvmChainId);
 
           const newCurrentChainInfo = this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
           if (!newCurrentChainInfo) {
