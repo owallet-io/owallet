@@ -56,7 +56,7 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { encode, decode } from "bs58";
-import { isVersionedTransaction } from "@owallet/common";
+import { CHAIN_ID_SOL, isVersionedTransaction } from "@owallet/common";
 import {
   SolanaSignInInput,
   SolanaSignInOutput,
@@ -1255,6 +1255,11 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     protected readonly parseMessage?: (message: any) => any
   ) {
     super();
+    window.addEventListener("keplr_keystorechange", async () => {
+      const key = await window.owallet.getKey(CHAIN_ID_SOL);
+      if (!key?.base58Address) return;
+      this.emit("accountChanged", { publicKey: key?.base58Address || "" });
+    });
   }
 
   publicKey: PublicKey | null;
