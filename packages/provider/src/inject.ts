@@ -1381,8 +1381,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
   async signAllTransactions<T extends Transaction | VersionedTransaction>(
     txs: Array<T>,
     publicKey?: PublicKey,
-    connection?: Connection,
-    uuid?: string
+    connection?: Connection
   ): Promise<Array<T>> {
     if (!this.publicKey) {
       await this.connect();
@@ -1393,15 +1392,17 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     const txsStrs = txs.map((tx) =>
       encode(tx.serialize({ requireAllSignatures: false }))
     );
-    const solanaResponse = await this.requestMethod("signAllTransactions", [
+    const signatures = await this.requestMethod("signAllTransactions", [
       {
         publicKey: publicKey ?? this.publicKey,
         txs: txsStrs,
         customConnection: connection,
-        uuid,
       },
     ]);
-    return solanaResponse;
+    const txsRs = signatures.map(({ signedTx }, i) =>
+      VersionedTransaction.deserialize(decode(signedTx))
+    );
+    return txsRs as T[];
   }
 }
 

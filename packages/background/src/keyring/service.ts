@@ -605,14 +605,10 @@ export class KeyRingService {
           unsignedTx,
         }
       );
-      console.log(newDataConfirm, "newDataConfirm");
-      // const { unsignedTx } = newDataConfirm as any;
       return await this.keyRing.sendAndConfirmSvm(
         chainId,
         (newDataConfirm as any).unsignedTx
       );
-    } catch (e) {
-      console.log(e, "err on service");
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,
@@ -655,7 +651,6 @@ export class KeyRingService {
       const transaction = deserializeTransaction((newDataConfirm as any).tx);
       const message = transaction.message.serialize();
       const txMessage = encode(message);
-      // const { unsignedTx } = newDataConfirm as any;
       const signature = await this.keyRing.signTransactionSvm(txMessage);
 
       const signedTx = VersionedTransaction.deserialize(
@@ -666,8 +661,68 @@ export class KeyRingService {
         signature,
         signedTx: encode(signedTx.serialize()),
       };
-    } catch (e) {
-      console.log(e, "err on service");
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-svm-end",
+        {}
+      );
+    }
+  }
+  async requestSignAllTransactionSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    txs: Array<string>
+  ): Promise<
+    Array<{
+      signature: string;
+      signedTx: string;
+    }>
+  > {
+    try {
+      const coinType = await this.chainsService.getChainCoinType(chainId);
+
+      const key = await this.keyRing.getKey(chainId, coinType);
+
+      if (signer !== key.base58Address) {
+        throw new Error("Signer mismatched");
+      }
+
+      const newDataConfirm = await this.interactionService.waitApprove(
+        env,
+        "/sign-svm",
+        "request-sign-svm",
+        {
+          msgOrigin,
+          chainId,
+          signer,
+          txs,
+        }
+      );
+      const signatures: { signedTx: string; signature: string }[] = [];
+
+      for (let i = 0; i < (newDataConfirm as any).txs.length; i++) {
+        const tx = (newDataConfirm as any).txs[i];
+        try {
+          const transaction = deserializeTransaction(tx);
+          const message = transaction.message.serialize();
+          const txMessage = encode(message);
+          const signature = await this.keyRing.signTransactionSvm(txMessage);
+          // const { signature } = await this.keyRing.signTransactionSvm(tx)
+          const signedTx = VersionedTransaction.deserialize(decode(tx));
+          signedTx.addSignature(new PublicKey(signer), decode(signature));
+          signatures.push({
+            signedTx: encode(signedTx.serialize()),
+            signature,
+          });
+        } catch (e) {
+          console.error(e);
+          throw Error(JSON.stringify(e));
+        }
+      }
+      return signatures;
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

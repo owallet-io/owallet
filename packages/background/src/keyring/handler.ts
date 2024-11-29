@@ -50,6 +50,7 @@ import {
   RequestSignTransactionSvm,
   RequestSignMessageSvm,
   RequestSignInSvm,
+  RequestSignAllTransactionSvm,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
@@ -73,6 +74,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRequestSignTransactionSvm(service)(
           env,
           msg as RequestSignTransactionSvm
+        );
+      case RequestSignAllTransactionSvm:
+        return handleRequestSignAllTransactionSvm(service)(
+          env,
+          msg as RequestSignAllTransactionSvm
         );
       case RequestSignMessageSvm:
         return handleRequestSignMessageSvm(service)(
@@ -438,6 +444,26 @@ const handleGetKeyMsg: (
       base58Address: key.base58Address ?? "",
       isNanoLedger: key.isNanoLedger,
     };
+  };
+};
+
+const handleRequestSignAllTransactionSvm: (
+  service: KeyRingService
+) => InternalHandler<RequestSignAllTransactionSvm> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin
+    );
+
+    return await service.requestSignAllTransactionSvm(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.txs
+    );
   };
 };
 const handleRequestSignTransactionSvm: (

@@ -3,12 +3,12 @@ import { Solana } from "@owallet/types";
 export const getSolanaFromWindow: () => Promise<
   Solana | undefined
 > = async () => {
-  if (window.solana) {
-    return window.solana;
+  if (window.owalletSolana) {
+    return window.owalletSolana;
   }
 
   if (document.readyState === "complete") {
-    return window.solana;
+    return window.owalletSolana;
   }
 
   return new Promise((resolve) => {
@@ -17,7 +17,7 @@ export const getSolanaFromWindow: () => Promise<
         event.target &&
         (event.target as Document).readyState === "complete"
       ) {
-        resolve(window.solana);
+        resolve(window.owalletSolana);
         document.removeEventListener("readystatechange", documentStateChange);
       }
     };

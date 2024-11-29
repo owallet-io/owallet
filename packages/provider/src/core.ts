@@ -74,6 +74,7 @@ import {
   RequestSignTransactionSvm,
   RequestSignMessageSvm,
   RequestSignInSvm,
+  RequestSignAllTransactionSvm,
 } from "./msgs";
 import {
   CHAIN_ID_SOL,
@@ -633,27 +634,18 @@ export class Solana implements ISolana {
         return encode(preparedTx.serialize({ requireAllSignatures: false }));
       })
     );
+    const msg = new RequestSignAllTransactionSvm(
+      CHAIN_ID_SOL,
+      publicKey,
+      txStrs
+    );
+    const signatures = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
-    // const signatures = await this.secureSvmClient.signAllTransactions({
-    //   publicKey: publicKey.toBase58(),
-    //   txs: txStrs,
-    //   uuid: request.uuid,
-    //   disableTxMutation: request.disableTxMutation,
-    // });
+    if (!signatures) {
+      throw Error("Transaction Rejected");
+    }
 
-    // if (!signatures.response?.signatures) {
-    //   throw signatures.error;
-    // }
-    //
-    // const txs = signatures.response.signatures.map(({ signedTx }, i) =>
-    //     isVersionedTransaction(request.txs[i])
-    //         ? VersionedTransaction.deserialize(decode(signedTx))
-    //         : Transaction.from(decode(signedTx))
-    // );
-    //
-    // return txs as T[];
-    //TODO: handle for sign multiple msg
-    return;
+    return signatures;
   }
 
   public async sendAndConfirm<
