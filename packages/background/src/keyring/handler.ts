@@ -49,12 +49,14 @@ import {
   RequestSendAndConfirmTxSvm,
   RequestSignTransactionSvm,
   RequestSignMessageSvm,
+  RequestSignInSvm,
 } from "./messages";
 import { KeyRingService } from "./service";
 import { Bech32Address } from "@owallet/cosmos";
 
 import Long from "long";
 import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+
 export const getHandler: (service: KeyRingService) => Handler = (
   service: KeyRingService
 ) => {
@@ -77,6 +79,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as RequestSignMessageSvm
         );
+      case RequestSignInSvm:
+        return handleRequestSignInSvm(service)(env, msg as RequestSignInSvm);
       case DeleteKeyRingMsg:
         return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
       case UpdateNameKeyRingMsg:
@@ -474,7 +478,25 @@ const handleRequestSignMessageSvm: (
     );
   };
 };
+const handleRequestSignInSvm: (
+  service: KeyRingService
+) => InternalHandler<RequestSignInSvm> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin
+    );
 
+    return await service.requestSignInSvm(
+      env,
+      msg.origin,
+      msg.chainId,
+      msg.signer,
+      msg.inputs
+    );
+  };
+};
 const handleRequestSendAndConfirmTxSvm: (
   service: KeyRingService
 ) => InternalHandler<RequestSendAndConfirmTxSvm> = (service) => {

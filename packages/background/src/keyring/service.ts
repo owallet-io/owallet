@@ -69,6 +69,11 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
+import {
+  createSignInMessage,
+  createSignInMessageText,
+} from "@solana/wallet-standard-util";
 
 @singleton()
 export class KeyRingService {
@@ -616,6 +621,7 @@ export class KeyRingService {
       );
     }
   }
+
   async requestSignTransactionSvm(
     env: Env,
     msgOrigin: string,
@@ -670,6 +676,7 @@ export class KeyRingService {
       );
     }
   }
+
   async requestSignMessageSvm(
     env: Env,
     msgOrigin: string,
@@ -699,18 +706,9 @@ export class KeyRingService {
           tx,
         }
       );
-      // const transaction = deserializeTransaction((newDataConfirm as any).tx);
-      // const message = transaction.message.serialize();
-      // const txMessage = encode(message);
-      // const { unsignedTx } = newDataConfirm as any;
       const signature = await this.keyRing.signTransactionSvm(
         (newDataConfirm as any).tx
       );
-
-      // const signedTx = VersionedTransaction.deserialize(
-      //     decode((newDataConfirm as any).tx)
-      // );
-      // signedTx.addSignature(new PublicKey(signer), decode(signature));
       return {
         signedMessage: signature,
       };
@@ -724,6 +722,62 @@ export class KeyRingService {
       );
     }
   }
+
+  async requestSignInSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    inputs: SolanaSignInInput
+  ): Promise<{
+    publicKey: string;
+    signedMessage: string;
+    signature: string;
+    connectionUrl: string;
+  }> {
+    try {
+      const coinType = await this.chainsService.getChainCoinType(chainId);
+
+      const key = await this.keyRing.getKey(chainId, coinType);
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+      if (signer !== key.base58Address) {
+        throw new Error("Signer mismatched");
+      }
+
+      const newDataConfirm = await this.interactionService.waitApprove(
+        env,
+        "/sign-svm",
+        "request-sign-svm",
+        {
+          msgOrigin,
+          chainId,
+          signer,
+          tx: inputs,
+        }
+      );
+      const message = createSignInMessage({
+        domain: msgOrigin,
+        address: signer,
+        ...(inputs ?? {}),
+      });
+
+      const encodedMessage = encode(message);
+      const signature = await this.keyRing.signTransactionSvm(encodedMessage);
+      return {
+        signedMessage: encodedMessage,
+        signature,
+        publicKey: key.base58Address,
+        connectionUrl: chainInfo.rpc,
+      };
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        "request-sign-svm-end",
+        {}
+      );
+    }
+  }
+
   async requestSignDirect(
     env: Env,
     msgOrigin: string,

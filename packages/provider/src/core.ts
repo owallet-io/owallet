@@ -73,6 +73,7 @@ import {
   RequestSendAndConfirmTxSvm,
   RequestSignTransactionSvm,
   RequestSignMessageSvm,
+  RequestSignInSvm,
 } from "./msgs";
 import {
   CHAIN_ID_SOL,
@@ -82,7 +83,10 @@ import {
   RPC_SOL,
 } from "@owallet/common";
 import { Signer } from "@oasisprotocol/client/dist/signature";
-import { type SolanaSignAndSendTransactionOutput } from "@solana/wallet-standard-features";
+import {
+  type SolanaSignAndSendTransactionOutput,
+  SolanaSignInInput,
+} from "@solana/wallet-standard-features";
 import { isSolanaChain } from "@solana/wallet-standard-chains";
 import {
   Commitment,
@@ -648,7 +652,20 @@ export class Solana implements ISolana {
     //TODO: handle for sign multiple msg
     return;
   }
-
+  public async signIn(input?: SolanaSignInInput): Promise<{
+    signedMessage: string;
+    signature: string;
+    publicKey: string;
+    connectionUrl: string;
+  }> {
+    if (!input) throw Error("Transaction Rejected");
+    const msg = new RequestSignInSvm(CHAIN_ID_SOL, input.address, input);
+    const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (!result) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
   async disconnect(): Promise<void> {
     //TODO: need handle
     return;

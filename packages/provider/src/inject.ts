@@ -54,6 +54,11 @@ import {
 } from "@solana/web3.js";
 import { encode, decode } from "bs58";
 import { isVersionedTransaction } from "@owallet/common";
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from "@solana/wallet-standard-features";
+import { OWalletSolanaWalletAccount } from "@toan.dq2009/wallet-standard";
 
 export const localStore = new Map<string, any>();
 
@@ -1272,6 +1277,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
 
   async disconnect(): Promise<void> {
     this.publicKey = null;
+    this.emit("disconnect");
   }
 
   async signTransaction<T extends Transaction | VersionedTransaction>(
@@ -1300,6 +1306,19 @@ export class InjectedSolana extends EventEmitter implements ISolana {
     ) as T;
     console.warn(solanaRes);
     return solanaRes;
+  }
+  async signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput> {
+    const response = await this.requestMethod("signIn", [input ?? {}]);
+    this.#connect(response.publicKey, response.connectionUrl);
+
+    return {
+      account: new OWalletSolanaWalletAccount({
+        address: response.publicKey,
+        publicKey: new PublicKey(response.publicKey).toBuffer(),
+      }),
+      signedMessage: decode(response.signedMessage),
+      signature: decode(response.signature),
+    };
   }
   async signMessage(
     msg: Uint8Array,

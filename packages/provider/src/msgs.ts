@@ -4,6 +4,7 @@ import { OWalletSignOptions, ChainInfoWithoutEndpoints } from "@owallet/types";
 import { isBase58 } from "@owallet/common";
 import { ROUTE } from "@owallet/background/build/keyring/constants";
 import { RequestSignAminoMsg } from "@owallet/background";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
 export class RequestSignTransactionSvm extends Message<{
   signature: string;
   signedTx: string;
@@ -85,6 +86,50 @@ export class RequestSignMessageSvm extends Message<{
 
   type(): string {
     return RequestSignMessageSvm.type();
+  }
+}
+export class RequestSignInSvm extends Message<{
+  publicKey: string;
+  signedMessage: string;
+  signature: string;
+  connectionUrl: string;
+}> {
+  public static type() {
+    return "request-sign-in-svm";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly inputs: SolanaSignInInput
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError("keyring", 270, "chain id not set");
+    }
+
+    if (!this.signer) {
+      throw new OWalletError("keyring", 230, "signer not set");
+    }
+
+    const isValid = isBase58(this.signer);
+    if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
+    if (!this.inputs) throw new OWalletError("keyring", 230, "inputs not set");
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignInSvm.type();
   }
 }
 export class RequestSignDirectMsg extends Message<{
