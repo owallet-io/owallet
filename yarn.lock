@@ -2012,6 +2012,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@coral-xyz/borsh@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "@coral-xyz/borsh@npm:0.26.0"
+  dependencies:
+    bn.js: ^5.1.2
+    buffer-layout: ^1.2.0
+  peerDependencies:
+    "@solana/web3.js": ^1.68.0
+  checksum: 8418264ec64f926264adfaa9cff2323a7675b0df3b06b30043d256f1f3ed8fa68d6268f93600656a1ddcb953032ab41674f04e2387504f32d041b75fa3152a30
+  languageName: node
+  linkType: hard
+
 "@cosmjs/amino@npm:0.27.1":
   version: 0.27.1
   resolution: "@cosmjs/amino@npm:0.27.1"
@@ -5221,6 +5233,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metaplex-foundation/mpl-token-metadata@npm:3.3.0":
+  version: 3.3.0
+  resolution: "@metaplex-foundation/mpl-token-metadata@npm:3.3.0"
+  dependencies:
+    "@metaplex-foundation/mpl-toolbox": ^0.9.4
+  peerDependencies:
+    "@metaplex-foundation/umi": ">= 0.8.2 < 1"
+  checksum: 7c396b56fdc390ad10a6b87f4114af7fe3b724f84844f60dcb6e6e79e15230a1f1e9249d37f45cba027e519fe660a98a357740623dd6f3ea90115f689d6e2c87
+  languageName: node
+  linkType: hard
+
+"@metaplex-foundation/mpl-toolbox@npm:^0.9.4":
+  version: 0.9.4
+  resolution: "@metaplex-foundation/mpl-toolbox@npm:0.9.4"
+  peerDependencies:
+    "@metaplex-foundation/umi": ">= 0.8.2 < 1"
+  checksum: 712d1c2e243582cfe5a0589500d861ae65092ea740fa1f392dee88fca41153421a76c73943afa63a45b055d78065db95114c16fcb04668c6ef514f8784d18bb4
+  languageName: node
+  linkType: hard
+
 "@mischnic/json-sourcemap@npm:^0.1.0":
   version: 0.1.1
   resolution: "@mischnic/json-sourcemap@npm:0.1.1"
@@ -5301,21 +5333,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/curves@npm:^1.1.0":
+"@noble/curves@npm:^1.1.0, @noble/curves@npm:^1.4.2":
   version: 1.7.0
   resolution: "@noble/curves@npm:1.7.0"
   dependencies:
     "@noble/hashes": 1.6.0
   checksum: e220b704f1e516f326fff985e794e840a267f5542e1388737142b08177672ebc41b460b5a5bf636d7622c68e8ae719bc042ccd8aed16dc14311450a94b5f2a05
-  languageName: node
-  linkType: hard
-
-"@noble/curves@npm:^1.4.2":
-  version: 1.6.0
-  resolution: "@noble/curves@npm:1.6.0"
-  dependencies:
-    "@noble/hashes": 1.5.0
-  checksum: 258f3feb2a6098cf35521562ecb7d452fd728e8a008ff9f1ef435184f9d0c782ceb8f7b7fa8df3317c3be7a19f53995ee124cd05c8080b130bd42e3cb072f24d
   languageName: node
   linkType: hard
 
@@ -5347,17 +5370,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:1.5.0, @noble/hashes@npm:^1.0.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.4.0":
-  version: 1.5.0
-  resolution: "@noble/hashes@npm:1.5.0"
-  checksum: 9cc031d5c888c455bfeef76af649b87f75380a4511405baea633c1e4912fd84aff7b61e99716f0231d244c9cfeda1fafd7d718963e6a0c674ed705e9b1b4f76b
-  languageName: node
-  linkType: hard
-
 "@noble/hashes@npm:1.6.0":
   version: 1.6.0
   resolution: "@noble/hashes@npm:1.6.0"
   checksum: 07729b80108d2a9b862eb4e070d4f78ca7ee86b9a9c13a4f7c338ba47a15d4386dd283235da71f21ad515fa9f0b9429fc3da39d2f2b4a50e2442212d14cfd4a9
+  languageName: node
+  linkType: hard
+
+"@noble/hashes@npm:^1.0.0, @noble/hashes@npm:^1.2.0, @noble/hashes@npm:^1.4.0":
+  version: 1.5.0
+  resolution: "@noble/hashes@npm:1.5.0"
+  checksum: 9cc031d5c888c455bfeef76af649b87f75380a4511405baea633c1e4912fd84aff7b61e99716f0231d244c9cfeda1fafd7d718963e6a0c674ed705e9b1b4f76b
   languageName: node
   linkType: hard
 
@@ -7460,6 +7483,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@project-serum/anchor@npm:^0.26.0":
+  version: 0.26.0
+  resolution: "@project-serum/anchor@npm:0.26.0"
+  dependencies:
+    "@coral-xyz/borsh": ^0.26.0
+    "@solana/web3.js": ^1.68.0
+    base64-js: ^1.5.1
+    bn.js: ^5.1.2
+    bs58: ^4.0.1
+    buffer-layout: ^1.2.2
+    camelcase: ^6.3.0
+    cross-fetch: ^3.1.5
+    crypto-hash: ^1.3.0
+    eventemitter3: ^4.0.7
+    js-sha256: ^0.9.0
+    pako: ^2.0.3
+    snake-case: ^3.0.4
+    superstruct: ^0.15.4
+    toml: ^3.0.0
+  checksum: aa2ebd9c9643d9b7d2c0930c22ca3758cf28a9f99585731ab6e61cd265d5a67de196dc51f9a91970387d21c4737de65c914657ad4d10535539baca7aa3309f15
+  languageName: node
+  linkType: hard
+
 "@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
   version: 1.1.2
   resolution: "@protobufjs/aspromise@npm:1.1.2"
@@ -8603,9 +8649,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.95.4":
-  version: 1.95.4
-  resolution: "@solana/web3.js@npm:1.95.4"
+"@solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.68.0, @solana/web3.js@npm:^1.95.4":
+  version: 1.95.5
+  resolution: "@solana/web3.js@npm:1.95.5"
   dependencies:
     "@babel/runtime": ^7.25.0
     "@noble/curves": ^1.4.2
@@ -8622,7 +8668,7 @@ __metadata:
     node-fetch: ^2.7.0
     rpc-websockets: ^9.0.2
     superstruct: ^2.0.2
-  checksum: 75a2bc3b0ab0743d0f7b1c36116d2a9c8968d6f1cefa837f654b2d423190fb9ebe9cbb0052fdf39f1d820c8c1aee67c4e8605a2e407a1c7a9d6825959b94b426
+  checksum: 77e4b9c2555ac4aaf96fb299e498c6e8f3f24ad818dfc5248666183dd3774fed752aa3df4d268861aba76d573a6245a22bf55bfa4fc3f00f32e259c59869cbb2
   languageName: node
   linkType: hard
 
@@ -13043,6 +13089,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"buffer-layout@npm:^1.2.0, buffer-layout@npm:^1.2.2":
+  version: 1.2.2
+  resolution: "buffer-layout@npm:1.2.2"
+  checksum: e5809ba275530bf4e52fd09558b7c2111fbda5b405124f581acf364261d9c154e271800271898cd40473f9bcbb42c31584efb04219bde549d3460ca4bafeaa07
+  languageName: node
+  linkType: hard
+
 "buffer-to-arraybuffer@npm:^0.0.5":
   version: 0.0.5
   resolution: "buffer-to-arraybuffer@npm:0.0.5"
@@ -13439,7 +13492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camelcase@npm:^6.0.0, camelcase@npm:^6.2.0":
+"camelcase@npm:^6.0.0, camelcase@npm:^6.2.0, camelcase@npm:^6.3.0":
   version: 6.3.0
   resolution: "camelcase@npm:6.3.0"
   checksum: 8c96818a9076434998511251dcb2761a94817ea17dbdc37f47ac080bd088fc62c7369429a19e2178b993497132c8cbcf5cc1f44ba963e76782ba469c0474938d
@@ -14893,6 +14946,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cross-fetch@npm:^3.1.5":
+  version: 3.1.8
+  resolution: "cross-fetch@npm:3.1.8"
+  dependencies:
+    node-fetch: ^2.6.12
+  checksum: 78f993fa099eaaa041122ab037fe9503ecbbcb9daef234d1d2e0b9230a983f64d645d088c464e21a247b825a08dc444a6e7064adfa93536d3a9454b4745b3632
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^4.0.2":
   version: 4.0.2
   resolution: "cross-spawn@npm:4.0.2"
@@ -14970,6 +15032,13 @@ __metadata:
     randombytes: ^2.0.0
     randomfill: ^1.0.3
   checksum: c1609af82605474262f3eaa07daa0b2140026bd264ab316d4bf1170272570dbe02f0c49e29407fe0d3634f96c507c27a19a6765fb856fed854a625f9d15618e2
+  languageName: node
+  linkType: hard
+
+"crypto-hash@npm:^1.3.0":
+  version: 1.3.0
+  resolution: "crypto-hash@npm:1.3.0"
+  checksum: a3a507e0d2b18fbd2da8088a1c62d0c53c009a99bbfa6d851cac069734ffa546922fa51bdd776d006459701cdda873463e5059ece3431aca048fd99e7573d138
   languageName: node
   linkType: hard
 
@@ -21823,8 +21892,8 @@ __metadata:
   linkType: hard
 
 "jayson@npm:^4.1.1":
-  version: 4.1.2
-  resolution: "jayson@npm:4.1.2"
+  version: 4.1.3
+  resolution: "jayson@npm:4.1.3"
   dependencies:
     "@types/connect": ^3.4.33
     "@types/node": ^12.12.54
@@ -21840,7 +21909,7 @@ __metadata:
     ws: ^7.5.10
   bin:
     jayson: bin/jayson.js
-  checksum: 10d6a0ce55045a1098b9b0d1d9b4b898f034e70696e57240ba76d67eddaabd703e1f59477c667b57e39f6f1fc54dbb87b1327a8a4edef39a37a17b70c79bb6e4
+  checksum: 3e9e0e3d5c14d7a4a85ddfc372236c9938ed713affe58e9ef61e31f075d89947c4d206a2489c5355ff5a639b8cef42906844b9ca8cad48d8147c8132480a242b
   languageName: node
   linkType: hard
 
@@ -22352,6 +22421,13 @@ __metadata:
     url-join: 0.0.1
     valid-url: ^1
   checksum: 3d16e9fcddb9875713dd9b5a143c0afc6c367169bf81175112c3acfc76d7f83e637eb67f14e7332429b10715c483e3ad6d438e8a70ce1d79047d0fb1ae8745f1
+  languageName: node
+  linkType: hard
+
+"js-sha256@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "js-sha256@npm:0.9.0"
+  checksum: ffad54b3373f81581e245866abfda50a62c483803a28176dd5c28fd2d313e0bdf830e77dac7ff8afd193c53031618920f3d98daf21cbbe80082753ab639c0365
   languageName: node
   linkType: hard
 
@@ -25830,7 +25906,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:2, node-fetch@npm:^2, node-fetch@npm:^2.2.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
+"node-fetch@npm:2, node-fetch@npm:^2, node-fetch@npm:^2.2.0, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -26774,6 +26850,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "owallet@workspace:."
   dependencies:
+    "@metaplex-foundation/mpl-token-metadata": 3.3.0
     "@oasisprotocol/client": ^1.0.0
     "@oasisprotocol/client-rt": ^1.0.0
     "@octokit/core": ^3.5.1
@@ -26784,6 +26861,7 @@ __metadata:
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.12
+    "@project-serum/anchor": ^0.26.0
     "@solana/spl-memo": 0.2.5
     "@solana/spl-token": 0.3.5
     "@solana/wallet-standard-chains": 1.1.0
@@ -27131,7 +27209,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pako@npm:^2.0.2":
+"pako@npm:^2.0.2, pako@npm:^2.0.3":
   version: 2.1.0
   resolution: "pako@npm:2.1.0"
   checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
@@ -32380,6 +32458,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"superstruct@npm:^0.15.4":
+  version: 0.15.5
+  resolution: "superstruct@npm:0.15.5"
+  checksum: 6d1f5249fee789424b7178fa0a1ffb2ace629c5480c39505885bd8c0046a4ff8b267569a3442fa53b8c560a7ba6599cf3f8af94225aebeb2cf6023f7dd911050
+  languageName: node
+  linkType: hard
+
 "superstruct@npm:^0.6.2":
   version: 0.6.2
   resolution: "superstruct@npm:0.6.2"
@@ -32930,6 +33015,13 @@ __metadata:
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
   checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
+"toml@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "toml@npm:3.0.0"
+  checksum: 5d7f1d8413ad7780e9bdecce8ea4c3f5130dd53b0a4f2e90b93340979a137739879d7b9ce2ce05c938b8cc828897fe9e95085197342a1377dd8850bf5125f15f
   languageName: node
   linkType: hard
 

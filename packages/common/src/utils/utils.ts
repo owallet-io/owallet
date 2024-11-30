@@ -76,6 +76,136 @@ export async function _getPriorityFeeSolana(
     return 0;
   }
 }
+
+export async function _getBalancesSolana(
+  address: string,
+  chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+): Promise<number> {
+  try {
+    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "apollographql-client-name": "backpack-secure-ui",
+      },
+      body: JSON.stringify({
+        query: `query GetTokenBalances($address: String!, $caip2: Caip2!, $providerId: ProviderID!) {
+  wallet(address: $address, caip2: $caip2, providerId: $providerId) {
+    id
+    balances {
+      id
+      aggregate {
+        ...BalanceAggregateItem
+        __typename
+      }
+      tokens {
+        edges {
+          node {
+            ...TokenBalanceItem
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment TokenMarketDataItem on MarketData {
+  id
+  marketUrl
+  percentChange
+  price
+  value
+  valueChange
+  __typename
+}
+
+fragment TokenSolanaInfoItem on SolanaTokenInfo {
+  id
+  compressed
+  extensions {
+    id
+    currentInterestRate
+    group
+    permanentDelegate
+    transferFeePercentage
+    transferHook
+    __typename
+  }
+  spl20 {
+    id
+    amount
+    ticker
+    __typename
+  }
+  tokenProgram
+  __typename
+}
+
+fragment TokenMetadataItem on TokenListEntry {
+  id
+  address
+  decimals
+  logo
+  name
+  symbol
+  coingeckoId
+  __typename
+}
+
+fragment BalanceAggregateItem on BalanceAggregate {
+  id
+  percentChange
+  value
+  valueChange
+  __typename
+}
+
+fragment TokenBalanceItem on TokenBalance {
+  id
+  address
+  amount
+  decimals
+  displayAmount
+  marketData {
+    ...TokenMarketDataItem
+    __typename
+  }
+  solana {
+    ...TokenSolanaInfoItem
+    __typename
+  }
+  token
+  tokenListEntry {
+    ...TokenMetadataItem
+    __typename
+  }
+  __typename
+}`,
+        variables: {
+          caip2: {
+            namespace: "solana",
+            reference: chainId,
+          },
+          address,
+          providerId: "SOLANA",
+        },
+        operationName: "GetTokenBalances",
+      }),
+    });
+
+    const json = await resp.json();
+    return json.data;
+  } catch {
+    return 0;
+  }
+}
+
 export const SOL_DEV = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1";
 export const SOL_MAIN = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp";
 export const CHAIN_ID_SOL = SOL_MAIN;

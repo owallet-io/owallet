@@ -1,4 +1,5 @@
 import {
+  _getBalancesSolana,
   addressToPublicKey,
   API,
   ChainIdEnum,
@@ -18,13 +19,8 @@ import {
   BalanceRegistryType,
   ObservableQueryBalanceInner,
 } from "../../balances";
-
-import Web3 from "web3";
 import { QuerySharedContext } from "src/common/query/context";
-import { Connection, PublicKey } from "@solana/web3.js";
-import { ObservableChainQuery } from "../../chain-query";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
-import { erc20ContractInterface } from "../../evm-contract/constant";
 
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -70,11 +66,24 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   @computed
   get balance(): CoinPretty {
     const currency = this.currency;
-    if (!this.nativeBalances.response) {
+    const denom = this.denomHelper.denom.replace("spl:", "");
+    if (!this.nativeBalances.response || !this.response.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-    const denom = this.denomHelper.denom.replace("spl:", "");
-    return new CoinPretty(currency, new Int(this.response.data[denom]));
+    const tokenInfos = (this.response.data as any)?.wallet.balances.tokens
+      .edges;
+    if (!tokenInfos?.length) return;
+    const tokenNative = "11111111111111111111111111111111";
+    const token = tokenInfos.find((item, index) => {
+      if (denom === "sol") {
+        return item.node.token === tokenNative;
+      }
+      return item.node.token === denom;
+    });
+    if (!token) {
+      return new CoinPretty(currency, new Int(0)).ready(false);
+    }
+    return new CoinPretty(currency, new Int(token.node.amount));
   }
 }
 
@@ -93,7 +102,6 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
       walletAddress,
       "latest",
     ]);
-    console.log(walletAddress, "walletAddress");
     this.walletAddress = walletAddress;
 
     makeObservable(this);
@@ -109,61 +117,32 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
     yield super.fetch();
   }
 
+  protected onReceiveResponse(_: Readonly<QueryResponse<string>>) {
+    super.onReceiveResponse(_);
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    console.log(_, "_ dataa");
+    const tokenInfos = (_.data as any)?.wallet.balances.tokens.edges;
+    if (!tokenInfos?.length) return;
+
+    // // 5. Map token metadata to currencies
+
+    const currencyInfo = tokenInfos.map((item) => ({
+      coinImageUrl: item.node.tokenListEntry.logo,
+      coinDenom: item.node.tokenListEntry.symbol,
+      coinGeckoId: item.node.tokenListEntry.coingeckoId,
+      coinDecimals: item.node.tokenListEntry.decimals,
+      coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+    }));
+    // // 6. Update chain info with currencies
+    chainInfo.addCurrencies(...currencyInfo);
+  }
+
   async fetchSplBalances() {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const connection = new Connection(chainInfo.rpc, "confirmed");
-    const publicKey = new PublicKey(this.walletAddress);
-
-    // 1. Fetch native SOL balance and token accounts in parallel
-    const [lamports, tokenAccounts] = await Promise.all([
-      connection.getBalance(publicKey), // Native SOL balance
-      connection.getParsedTokenAccountsByOwner(publicKey, {
-        programId: TOKEN_PROGRAM_ID, // Token program ID
-      }),
-    ]);
-
-    // 2. Extract token information
-    const tokenDetails = tokenAccounts.value.map(({ account }) => {
-      const info = account.data.parsed.info;
-      return {
-        mintAddress: info.mint,
-        balance: Number(info.tokenAmount.amount),
-      };
-    });
-
-    // 3. Construct tokenAddresses for API call
-    const tokenAddresses = tokenDetails
-      .map(({ mintAddress }) => `${Network.SOLANA}%2B${mintAddress}`)
-      .join(",");
-
-    // 4. Fetch token metadata in bulk
-    const tokenInfos = await API.getMultipleTokenInfo({ tokenAddresses });
-
-    // 5. Map token metadata to currencies
-    const currencyInfo = tokenInfos.map((item) => ({
-      coinImageUrl: item.imgUrl,
-      coinDenom: item.abbr,
-      coinGeckoId: item.coingeckoId,
-      coinDecimals: item.decimal,
-      coinMinimalDenom: `spl:${item.contractAddress}`,
-    }));
-
-    // 6. Update chain info with currencies
-    chainInfo.addCurrencies(...currencyInfo);
-
-    // 7. Combine SPL token balances and native SOL balance
-    const tokenBalances = tokenDetails.reduce(
-      (acc, { mintAddress, balance }) => {
-        acc[mintAddress] = balance;
-        return acc;
-      },
-      {}
-    );
-
-    return {
-      ...tokenBalances,
-      sol: lamports, // Add native SOL balance
-    };
+    return (await _getBalancesSolana(
+      this.walletAddress,
+      chainInfo.chainId.replace("solana:", "")
+    )) as any;
   }
 
   protected override async fetchResponse(
@@ -175,73 +154,6 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
       headers: null,
     };
   }
-
-  // protected async fetchAllErc20() {
-  //   const chainInfo = this.chainGetter.getChain(this.chainId);
-  //   // Attempt to register the denom in the returned response.
-  //   // If it's already registered anyway, it's okay because the method below doesn't do anything.
-  //   // Better to set it as an array all at once to reduce computed.
-  //   if (!MapChainIdToNetwork[chainInfo.chainId]) return;
-  //   const response = await API.getAllBalancesSvm({
-  //     address: this.walletAddress,
-  //     network: MapChainIdToNetwork[chainInfo.chainId],
-  //   });
-  //
-  //   if (!response.result) return;
-  //
-  //   const allTokensAddress = response.result
-  //     .filter(
-  //       (token) =>
-  //         !!chainInfo.currencies.find(
-  //           (coin) =>
-  //             new DenomHelper(
-  //               coin.coinMinimalDenom
-  //             ).contractAddress?.toLowerCase() !==
-  //             token.tokenAddress?.toLowerCase()
-  //         ) && MapChainIdToNetwork[chainInfo.chainId]
-  //     )
-  //     .map((coin) => {
-  //       const str = `${
-  //         MapChainIdToNetwork[chainInfo.chainId]
-  //       }%2B${new URLSearchParams(coin.tokenAddress)
-  //         .toString()
-  //         .replace("=", "")}`;
-  //       return str;
-  //     });
-  //
-  //   if (allTokensAddress?.length === 0) return;
-  //
-  //   const tokenInfos = await API.getMultipleTokenInfo({
-  //     tokenAddresses: allTokensAddress.join(","),
-  //   });
-  //   const infoTokens = tokenInfos
-  //     .filter(
-  //       (item, index, self) =>
-  //         index ===
-  //           self.findIndex((t) => t.contractAddress === item.contractAddress) &&
-  //         chainInfo.currencies.findIndex(
-  //           (item2) =>
-  //             new DenomHelper(
-  //               item2.coinMinimalDenom
-  //             ).contractAddress.toLowerCase() ===
-  //             item.contractAddress.toLowerCase()
-  //         ) < 0
-  //     )
-  //     .map((tokeninfo) => {
-  //       const infoToken = {
-  //         coinImageUrl: tokeninfo.imgUrl,
-  //         coinDenom: tokeninfo.abbr,
-  //         coinGeckoId: tokeninfo.coingeckoId,
-  //         coinDecimals: tokeninfo.decimal,
-  //         coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
-  //         contractAddress: tokeninfo.contractAddress,
-  //       };
-  //       return infoToken;
-  //     });
-  //
-  //   //@ts-ignore
-  //   chainInfo.addCurrencies(...infoTokens);
-  // }
 }
 
 export class ObservableQuerySvmBalanceRegistry implements BalanceRegistry {
