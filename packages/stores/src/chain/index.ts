@@ -370,7 +370,6 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
         }
       }
     }
-    console.log(chainInfoInners, "chainInfoInners");
     this._chainInfos = chainInfoInners;
   }
 }

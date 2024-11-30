@@ -120,7 +120,6 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
   protected onReceiveResponse(_: Readonly<QueryResponse<string>>) {
     super.onReceiveResponse(_);
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    console.log(_, "_ dataa");
     const tokenInfos = (_.data as any)?.wallet.balances.tokens.edges;
     if (!tokenInfos?.length) return;
 
