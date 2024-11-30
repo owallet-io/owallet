@@ -21,7 +21,7 @@ import {
 } from "../../balances";
 import { QuerySharedContext } from "src/common/query/context";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
-
+const tokenNative = "11111111111111111111111111111111";
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
     sharedContext: QuerySharedContext,
@@ -73,7 +73,7 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     const tokenInfos = (this.response.data as any)?.wallet.balances.tokens
       .edges;
     if (!tokenInfos?.length) return;
-    const tokenNative = "11111111111111111111111111111111";
+
     const token = tokenInfos.find((item, index) => {
       if (denom === "sol") {
         return item.node.token === tokenNative;
@@ -126,13 +126,15 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
 
     // // 5. Map token metadata to currencies
 
-    const currencyInfo = tokenInfos.map((item) => ({
-      coinImageUrl: item.node.tokenListEntry.logo,
-      coinDenom: item.node.tokenListEntry.symbol,
-      coinGeckoId: item.node.tokenListEntry.coingeckoId,
-      coinDecimals: item.node.tokenListEntry.decimals,
-      coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
-    }));
+    const currencyInfo = tokenInfos
+      .filter((item, index) => item.node.tokenListEntry.address !== tokenNative)
+      .map((item) => ({
+        coinImageUrl: item.node.tokenListEntry.logo,
+        coinDenom: item.node.tokenListEntry.symbol,
+        coinGeckoId: item.node.tokenListEntry.coingeckoId,
+        coinDecimals: item.node.tokenListEntry.decimals,
+        coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+      }));
     // // 6. Update chain info with currencies
     chainInfo.addCurrencies(...currencyInfo);
   }
