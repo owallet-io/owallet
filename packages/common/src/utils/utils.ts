@@ -34,7 +34,9 @@ export const getFavicon = (url) => {
 export const TOKEN_PROGRAM_ID = new PublicKey(
   "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
 );
-export const deserializeTransaction = (serializedTx: string) => {
+export const deserializeTransaction = (
+  serializedTx: string
+): VersionedTransaction => {
   return VersionedTransaction.deserialize(decode(serializedTx));
 };
 

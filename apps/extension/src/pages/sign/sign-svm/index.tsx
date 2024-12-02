@@ -27,10 +27,12 @@ import colors from "../../../theme/colors";
 import { Text } from "../../../components/common/text";
 import { Address } from "../../../components/address";
 import cn from "classnames/bind";
-import { WalletStatus } from "@owallet/stores";
+import { CoinPrimitive, WalletStatus } from "@owallet/stores";
 import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
 import { deserializeTransaction } from "@owallet/common";
+import { CoinPretty, Dec } from "@owallet/unit";
+import { Connection, Transaction } from "@solana/web3.js";
 
 const cx = cn.bind(style);
 
@@ -78,7 +80,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     };
   }, []);
 
-  console.log(data, "data");
   const chainId = data?.data?.chainId || chainStore.current.chainId;
   const accountInfo = accountStore.getAccount(chainId);
   const signer = accountInfo.getAddressDisplay(
@@ -112,20 +113,34 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     if (dataSign) return;
     if (signInteractionStore.waitingSvmData) {
       const data = signInteractionStore.waitingSvmData;
-      console.log(data, "data");
-      // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // // @ts-ignore
-      // const msgs = data.data.data?.msgs;
-      //
+
+      if ((data.data.data as any)?.tx) {
+        try {
+          const connection = new Connection(
+            chainStore.current.rpc,
+            "confirmed"
+          );
+          const transferInstruction = deserializeTransaction(
+            (data.data.data as any)?.tx
+          ).message as any;
+          (async () => {
+            const feeInLamports = await connection.getFeeForMessage(
+              transferInstruction
+            );
+            if (!feeInLamports?.value) return;
+            const baseFee = new Dec(feeInLamports.value || 0);
+            const fee = {
+              amount: baseFee.roundUp().toString(),
+              denom: feeConfig.feeCurrency.coinMinimalDenom,
+            } as CoinPrimitive;
+            feeConfig.setManualFee(fee);
+          })();
+        } catch (e) {
+          console.log(e, "errr deserializeTransaction");
+        }
+      }
 
       chainStore.selectChain(data.data.chainId);
-      // const tx = deserializeTransaction(data.data.data.tx);
-      // console.log(tx, "tx decode");
-      // setDataSign(data);
-      // if (msgs?.amount) {
-      //   amountConfig.setAmount(`${satsToBtc(msgs?.amount)}`);
-      // }
-      // memoConfig.setMemo(msgs?.message);
     }
   }, [signInteractionStore.waitingSvmData]);
   const isLoaded = useMemo(() => {
@@ -141,7 +156,69 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       ChainIdHelper.parse(chainStore.selectedChainId).identifier
     );
   }, [data, chainId, chainStore.selectedChainId]);
-  console.log(isLoaded, "isLoaded");
+  const fee =
+    feeConfig.fee ||
+    new CoinPretty(chainStore.current.stakeCurrency, new Dec(0));
+  const renderTransactionFee = () => {
+    return (
+      <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: 14,
+          }}
+        >
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+            }}
+          >
+            <div>
+              <Text weight="600">Fee</Text>
+            </div>
+            <div></div>
+          </div>
+          <div
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              alignItems: "flex-end",
+              width: "65%",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                cursor: "pointer",
+              }}
+            >
+              <Text
+                size={16}
+                weight="600"
+                color={colors["primary-text-action"]}
+              >
+                {`≈ ${fee?.maxDecimals(6)?.trim(true)?.toString()}`}
+              </Text>
+              {/* <img src={require("assets/icon/tdesign_chevron-down.svg")} /> */}
+            </div>
+            <Text
+              containerStyle={{
+                alignSelf: "flex-end",
+                display: "flex",
+              }}
+              color={colors["neutral-text-body"]}
+            >
+              ≈ {priceStore.calculatePrice(fee)?.toString()}
+            </Text>
+          </div>
+        </div>
+      </div>
+    );
+  };
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
@@ -176,9 +253,9 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-                         Show the informations of tx when the sign data is delivered.
-                         If sign data not delivered yet, show the spinner alternatively.
-                         */
+                                 Show the informations of tx when the sign data is delivered.
+                                 If sign data not delivered yet, show the spinner alternatively.
+                                 */
         isLoaded ? (
           <div className={style.container}>
             <div
@@ -223,7 +300,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                 {
                   <div
                     style={{
-                      height: "40%",
                       overflow: "scroll",
                       backgroundColor: colors["neutral-surface-bg"],
                       borderRadius: 12,
@@ -235,6 +311,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                     <SvmDataTab data={data} />
                   </div>
                 }
+                {renderTransactionFee()}
                 {/*{tab === Tab.Details && (*/}
                 {/*  <SvmDetailsTabWithErrorBoundary*/}
                 {/*    priceStore={priceStore}*/}
