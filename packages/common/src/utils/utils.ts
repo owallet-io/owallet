@@ -79,6 +79,52 @@ export async function _getPriorityFeeSolana(
   }
 }
 
+export async function getSimulationTxSolana(
+  transactions: Array<string>,
+  chainId: string,
+  account_address: string,
+  url: string
+) {
+  try {
+    console.log(
+      {
+        transactions: transactions,
+        chain: chainId,
+        account_address,
+        metadata: {
+          url,
+        },
+      },
+      "all data"
+    );
+    const resp = await fetch(
+      `https://blockaid.xnftdata.com/v0/solana/message/scan`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transactions: transactions,
+          chain: chainId,
+          account_address,
+          metadata: {
+            url,
+          },
+        }),
+      }
+    );
+
+    const json = await resp.json();
+    console.log(json, "json");
+    if (json?.status !== "SUCCESS") return;
+    return json.result;
+  } catch (e) {
+    console.log(e, "errr fetch data");
+  }
+}
+
 export async function _getBalancesSolana(
   address: string,
   chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"

@@ -30,7 +30,7 @@ import cn from "classnames/bind";
 import { CoinPrimitive, WalletStatus } from "@owallet/stores";
 import { Button } from "../../../components/common/button";
 import withErrorBoundary from "../hoc/withErrorBoundary";
-import { deserializeTransaction } from "@owallet/common";
+import { deserializeTransaction, getSimulationTxSolana } from "@owallet/common";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Connection, Transaction } from "@solana/web3.js";
 
@@ -59,10 +59,9 @@ export const SignSvmPage: FunctionComponent = observer(() => {
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
   });
+  const [simulationData, setSimulationData] = useState<any>();
 
-  const [dataSign, setDataSign] = useState(null);
   const [dataSetting, setDataSetting] = useState(false);
-  const settingRef = useRef();
   const dataRef = useRef();
 
   useOnClickOutside(dataRef, () => {
@@ -86,6 +85,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     keyRingStore.keyRingLedgerAddresses,
     false
   );
+  const chainInfo = chainStore.getChain(chainId);
   const isNoSetFee = !!accountInfo.isSendingMsg;
   const queries = queriesStore.get(chainId);
   const queryBalances = queries.queryBalances;
@@ -110,16 +110,12 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     memoConfig
   );
   useEffect(() => {
-    if (dataSign) return;
     if (signInteractionStore.waitingSvmData) {
       const data = signInteractionStore.waitingSvmData;
 
       if ((data.data.data as any)?.tx) {
         try {
-          const connection = new Connection(
-            chainStore.current.rpc,
-            "confirmed"
-          );
+          const connection = new Connection(chainInfo.rpc, "confirmed");
           const transferInstruction = deserializeTransaction(
             (data.data.data as any)?.tx
           ).message as any;
@@ -134,6 +130,14 @@ export const SignSvmPage: FunctionComponent = observer(() => {
               denom: feeConfig.feeCurrency.coinMinimalDenom,
             } as CoinPrimitive;
             feeConfig.setManualFee(fee);
+            const result = await getSimulationTxSolana(
+              [(data.data.data as any)?.tx],
+              chainInfo.chainId.replace("solana:", ""),
+              accountInfo.base58Address,
+              data.data.msgOrigin
+            );
+            if (!result.simulation) return;
+            setSimulationData(result.simulation);
           })();
         } catch (e) {
           console.log(e, "errr deserializeTransaction");
@@ -233,6 +237,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     }
     return false;
   })();
+  console.log(simulationData, "simulationData");
   return (
     <div
       style={{
@@ -254,9 +259,9 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-                                 Show the informations of tx when the sign data is delivered.
-                                 If sign data not delivered yet, show the spinner alternatively.
-                                 */
+                                         Show the informations of tx when the sign data is delivered.
+                                         If sign data not delivered yet, show the spinner alternatively.
+                                         */
         isLoaded ? (
           <div className={style.container}>
             <div
@@ -298,32 +303,35 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                   [style.dataTab]: tab === Tab.Data,
                 })}
               >
-                {
-                  <div
-                    style={{
-                      overflow: "scroll",
-                      backgroundColor: colors["neutral-surface-bg"],
-                      borderRadius: 12,
-                      padding: 8,
-                      width: "90vw",
-                    }}
-                  >
-                    {" "}
-                    <SvmDataTab data={data} />
-                  </div>
-                }
-                {renderTransactionFee()}
-                {/*{tab === Tab.Details && (*/}
-                {/*  <SvmDetailsTabWithErrorBoundary*/}
-                {/*    priceStore={priceStore}*/}
-                {/*    feeConfig={feeConfig}*/}
-                {/*    gasConfig={null}*/}
-                {/*    intl={intl}*/}
-                {/*    dataSign={data}*/}
-                {/*    isNoSetFee={isNoSetFee}*/}
-                {/*    signer={signer}*/}
-                {/*  />*/}
-                {/*)}*/}
+                {simulationData ? (
+                  <SvmDetailsTabWithErrorBoundary
+                    priceStore={priceStore}
+                    feeConfig={feeConfig}
+                    gasConfig={null}
+                    intl={intl}
+                    dataSign={data}
+                    isNoSetFee={isNoSetFee}
+                    signer={signer}
+                    simulation={simulationData}
+                  />
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        overflow: "scroll",
+                        backgroundColor: colors["neutral-surface-bg"],
+                        borderRadius: 12,
+                        padding: 8,
+                        width: "90vw",
+                      }}
+                    >
+                      {" "}
+                      <SvmDataTab data={data} />
+                    </div>
+
+                    {renderTransactionFee()}
+                  </>
+                )}
               </div>
             </div>
             <div

@@ -23,6 +23,7 @@ export const SvmDetailsTab: FunctionComponent<{
   intl;
   signer: string;
   isNoSetFee: boolean;
+  simulation: any;
 }> = observer(
   ({
     dataSign,
@@ -32,25 +33,12 @@ export const SvmDetailsTab: FunctionComponent<{
     gasConfig,
     priceStore,
     signer,
+    simulation,
   }) => {
-    console.log(dataSign, "dataSign2");
-    const msgs = (() => {
-      try {
-        const parsed = JSON.parse(dataSign?.data?.data?.unsignedTx);
-        return parsed;
-      } catch (e) {
-        return dataSign;
-      }
-    })();
-    console.log(msgs, "msgs");
-    const fiatCurrency = priceStore.getFiatCurrency(
-      priceStore.defaultVsCurrency
-    );
-
     const { chainStore } = useStore();
 
     const chain = chainStore.getChain(
-      dataSign?.data?.chainId ?? ChainIdEnum.Bitcoin
+      dataSign?.data?.chainId ?? chainStore.current.chainId
     );
     const renderMsg = (content) => {
       return (
@@ -77,46 +65,61 @@ export const SvmDetailsTab: FunctionComponent<{
         </div>
       );
     };
-
+    const fee =
+      feeConfig.fee ||
+      new CoinPretty(chainStore.current.stakeCurrency, new Dec(0));
     const renderTransactionFee = () => {
-      const amount = new CoinPretty(
-        msgs?.currency || chainStore.current.stakeCurrency,
-        new Dec(msgs?.amount || 0)
-      );
       return (
         <div>
-          {renderInfo(
-            msgs?.amount,
-            "Amount",
-            <div
-              style={{
-                flexDirection: "column",
-                display: "flex",
-                alignItems: "flex-end",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  cursor: "pointer",
-                }}
-              >
-                <Text size={16} weight="600">
-                  {amount?.trim(true)?.toString()}
-                </Text>
-              </div>
-              <Text
-                containerStyle={{
-                  alignSelf: "flex-end",
-                  display: "flex",
-                }}
-                color={colors["neutral-text-body"]}
-              >
-                ≈ {priceStore.calculatePrice(amount)?.toString()}
-              </Text>
-            </div>
+          {simulation?.account_summary?.account_assets_diff.map(
+            (item, index) => {
+              return renderInfo(
+                item.out ? "out" : item.in ? "in" : "",
+                item.out ? "Send" : "Receive",
+                <div
+                  style={{
+                    flexDirection: "column",
+                    display: "flex",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Text
+                      size={16}
+                      color={
+                        item.out
+                          ? colors["error-text-action"]
+                          : item.in
+                          ? colors["success-text-action"]
+                          : null
+                      }
+                      weight="600"
+                    >
+                      {`${(item.out || item.in).value} ${
+                        item.asset.symbol || "SOL"
+                      }`}
+                    </Text>
+                  </div>
+                  <Text
+                    containerStyle={{
+                      alignSelf: "flex-end",
+                      display: "flex",
+                    }}
+                    color={colors["neutral-text-body"]}
+                  >
+                    ≈ ${((item.out || item.in).usd_price || 0).toFixed(2)}
+                  </Text>
+                </div>
+              );
+            }
           )}
+
           <div
             style={{
               display: "flex",
@@ -156,14 +159,8 @@ export const SvmDetailsTab: FunctionComponent<{
                   weight="600"
                   color={colors["primary-text-action"]}
                 >
-                  {`≈ ${new CoinPretty(
-                    chainStore.current.stakeCurrency,
-                    new Dec(msgs?.fee?.amount)
-                  )
-                    ?.trim(true)
-                    ?.toString()}`}
+                  {`≈ ${fee?.maxDecimals(6)?.trim(true)?.toString()}`}
                 </Text>
-                {/* <img src={require("assets/icon/tdesign_chevron-down.svg")} /> */}
               </div>
               <Text
                 containerStyle={{
@@ -172,15 +169,7 @@ export const SvmDetailsTab: FunctionComponent<{
                 }}
                 color={colors["neutral-text-body"]}
               >
-                ≈{" "}
-                {priceStore
-                  .calculatePrice(
-                    new CoinPretty(
-                      chainStore.current.stakeCurrency,
-                      new Dec(msgs?.fee?.amount || 0)
-                    )
-                  )
-                  ?.toString()}
+                ≈ {priceStore.calculatePrice(fee)?.toString()}
               </Text>
             </div>
           </div>
@@ -207,7 +196,17 @@ export const SvmDetailsTab: FunctionComponent<{
               }}
             >
               <div>
-                <Text weight="600">{label}</Text>
+                <Text
+                  color={
+                    condition === "out"
+                      ? colors["error-text-action"]
+                      : colors["success-text-action"]
+                  }
+                  size={16}
+                  weight="600"
+                >
+                  {label}
+                </Text>
               </div>
               <div
                 style={{
@@ -229,87 +228,6 @@ export const SvmDetailsTab: FunctionComponent<{
           </div>
         );
       }
-    };
-
-    const renderDestination = (from?, to?) => {
-      return (
-        <div
-          style={{
-            marginTop: 14,
-            height: "auto",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginBottom: 14,
-            }}
-          >
-            <div
-              style={{
-                maxWidth: "50%",
-              }}
-            >
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>From</Text>
-                {from ? (
-                  <>
-                    <Address
-                      maxCharacters={6}
-                      lineBreakBeforePrefix={false}
-                      textDecor={"underline"}
-                      textColor={colors["neutral-text-body"]}
-                    >
-                      {from}
-                    </Address>
-                  </>
-                ) : (
-                  <Text color={colors["neutral-text-body"]}>
-                    {signer ?? "-"}
-                  </Text>
-                )}
-              </div>
-            </div>
-            <img
-              style={{ paddingRight: 4 }}
-              src={require("assets/icon/tdesign_arrow-right.svg")}
-            />
-            <div
-              style={{
-                maxWidth: "50%",
-              }}
-            >
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Text color={colors["neutral-text-body"]}>To</Text>
-                {to ? (
-                  <>
-                    <Address
-                      maxCharacters={6}
-                      lineBreakBeforePrefix={false}
-                      textDecor={"underline"}
-                      textColor={colors["neutral-text-body"]}
-                    >
-                      {to}
-                    </Address>
-                  </>
-                ) : (
-                  <Text color={colors["neutral-text-body"]}>-</Text>
-                )}
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              width: "100%",
-              height: 1,
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
-        </div>
-      );
     };
 
     return (
@@ -341,7 +259,7 @@ export const SvmDetailsTab: FunctionComponent<{
               weight="600"
               color={colors["neutral-text-action-on-dark-bg"]}
             >
-              {(msgs && msgs.length) ?? 1}
+              {dataSign?.data?.data?.tx.length ?? 1}
             </Text>
           </div>
         </div>
@@ -386,66 +304,11 @@ export const SvmDetailsTab: FunctionComponent<{
             borderRadius: 12,
             border: "1px solid" + colors["neutral-border-default"],
             padding: 8,
-          }}
-        >
-          {renderDestination(
-            signer,
-            msgs?.recipient && shortenAddress(msgs?.recipient)
-          )}
-        </Card>
-        <Card
-          containerStyle={{
-            borderRadius: 12,
-            border: "1px solid" + colors["neutral-border-default"],
-            padding: 8,
             marginTop: 12,
           }}
         >
           {renderTransactionFee()}
         </Card>
-        {/* <React.Fragment>
-        <Label for="fee-price" className="form-control-label">
-          <FormattedMessage id="sign.info.fee" />
-        </Label>
-        <div id="fee-price">
-          <div className={styleDetailsTab.feePrice}>
-            {`≈ ${new CoinPretty(chainStore.current.stakeCurrency, new Dec(msgs?.totalFee))?.trim(true)?.toString()}`}
-          </div>
-        </div>
-      </React.Fragment> */}
-
-        <React.Fragment>
-          {/* <Label for="memo" className="form-control-label">
-          Message
-        </Label>
-        <div
-          id="memo"
-          style={{
-            marginBottom: "8px",
-            color: msgs?.message ? "#353945" : "#AAAAAA",
-            fontSize: 12
-          }}
-        >
-          <div>{msgs?.message ? msgs?.message : intl.formatMessage({ id: "sign.info.warning.empty-memo" })}</div>
-        </div> */}
-          {!isNoSetFee && (
-            <FeeButtons
-              feeConfig={feeConfig}
-              gasConfig={gasConfig}
-              priceStore={priceStore}
-              label={intl.formatMessage({ id: "send.input.fee" })}
-              feeSelectLabels={{
-                low: intl.formatMessage({ id: "fee-buttons.select.slow" }),
-                average: intl.formatMessage({
-                  id: "fee-buttons.select.average",
-                }),
-                high: intl.formatMessage({ id: "fee-buttons.select.fast" }),
-              }}
-              isGasInput={false}
-              gasLabel={intl.formatMessage({ id: "send.input.gas" })}
-            />
-          )}
-        </React.Fragment>
       </div>
     );
   }
