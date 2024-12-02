@@ -33,7 +33,6 @@ export const SvmDetailsSend: FunctionComponent<{
     priceStore,
     signer,
   }) => {
-    console.log(dataSign, "dataSign2");
     const msgs = (() => {
       try {
         const parsed = JSON.parse(dataSign?.data?.data?.unsignedTx);
@@ -42,10 +41,6 @@ export const SvmDetailsSend: FunctionComponent<{
         return dataSign;
       }
     })();
-    console.log(msgs, "msgs");
-    const fiatCurrency = priceStore.getFiatCurrency(
-      priceStore.defaultVsCurrency
-    );
 
     const { chainStore } = useStore();
 
