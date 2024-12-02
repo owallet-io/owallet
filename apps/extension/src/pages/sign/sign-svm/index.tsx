@@ -33,6 +33,7 @@ import withErrorBoundary from "../hoc/withErrorBoundary";
 import { deserializeTransaction, getSimulationTxSolana } from "@owallet/common";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Connection, Transaction } from "@solana/web3.js";
+import { SvmDetailsSend } from "pages/sign/sign-svm/svm-detail-send";
 
 const cx = cn.bind(style);
 
@@ -42,6 +43,7 @@ enum Tab {
 }
 
 const SvmDetailsTabWithErrorBoundary = withErrorBoundary(SvmDetailsTab);
+const SvmDetailsSendWithErrorBoundary = withErrorBoundary(SvmDetailsSend);
 
 export const SignSvmPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -236,7 +238,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     }
     return false;
   })();
-  console.log(simulationData, "simulationData");
   return (
     <div
       style={{
@@ -312,6 +313,16 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                     isNoSetFee={isNoSetFee}
                     signer={signer}
                     simulation={simulationData}
+                  />
+                ) : (data.data?.data as any)?.unsignedTx ? (
+                  <SvmDetailsSendWithErrorBoundary
+                    priceStore={priceStore}
+                    feeConfig={feeConfig}
+                    gasConfig={null}
+                    intl={intl}
+                    dataSign={data}
+                    isNoSetFee={isNoSetFee}
+                    signer={signer}
                   />
                 ) : (
                   <>
