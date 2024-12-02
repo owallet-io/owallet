@@ -17,13 +17,30 @@ import Web3 from "web3";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
 import "dotenv/config";
-import { PublicKey, Transaction, VersionedTransaction } from "@solana/web3.js";
+import {
+  PublicKey,
+  sendAndConfirmTransaction,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import type { Commitment, ConfirmOptions, Signer } from "@solana/web3.js";
 import { decode, encode } from "bs58";
 import type {
   Connection,
   Finality,
   GetVersionedTransactionConfig,
 } from "@solana/web3.js";
+import {
+  Account,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
+  createAssociatedTokenAccountInstruction,
+  getAccount,
+  getAssociatedTokenAddress,
+  TokenAccountNotFoundError,
+  TokenInvalidAccountOwnerError,
+  TokenInvalidMintError,
+  TokenInvalidOwnerError,
+} from "@solana/spl-token";
 
 export const getFavicon = (url) => {
   const serviceGG =
@@ -260,6 +277,91 @@ export const CHAIN_ID_SOL = SOL_MAIN;
 export const RPC_SOL_DEV = "https://api.devnet.solana.com";
 export const RPC_SOL_MAIN = "https://swr.xnftdata.com/rpc-proxy/";
 export const RPC_SOL = RPC_SOL_MAIN;
+export async function getOrCreateAssociatedTokenAccount(
+  connection: Connection,
+  payer: Signer,
+  mint: PublicKey,
+  owner: PublicKey,
+  allowOwnerOffCurve = false,
+  commitment?: Commitment,
+  confirmOptions?: ConfirmOptions,
+  programId = TOKEN_PROGRAM_ID,
+  associatedTokenProgramId = ASSOCIATED_TOKEN_PROGRAM_ID
+): Promise<Account> {
+  const associatedToken = await getAssociatedTokenAddress(
+    mint,
+    owner,
+    allowOwnerOffCurve,
+    programId,
+    associatedTokenProgramId
+  );
+
+  // This is the optimal logic, considering TX fee, client-side computation, RPC roundtrips and guaranteed idempotent.
+  // Sadly we can't do this atomically.
+  let account: Account;
+  try {
+    account = await getAccount(
+      connection,
+      associatedToken,
+      commitment,
+      programId
+    );
+  } catch (error: unknown) {
+    // TokenAccountNotFoundError can be possible if the associated address has already received some lamports,
+    // becoming a system account. Assuming program derived addressing is safe, this is the only case for the
+    // TokenInvalidAccountOwnerError in this code path.
+    if (
+      error instanceof TokenAccountNotFoundError ||
+      error instanceof TokenInvalidAccountOwnerError
+    ) {
+      // As this isn't atomic, it's possible others can create associated accounts meanwhile.
+      try {
+        const transaction = new Transaction().add(
+          createAssociatedTokenAccountInstruction(
+            payer.publicKey,
+            associatedToken,
+            owner,
+            mint,
+            programId,
+            associatedTokenProgramId
+          )
+        );
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = payer.publicKey;
+        transaction.sign(payer);
+
+        // Serialize and Base64 encode the transaction
+        const serializedTransaction = transaction.serialize();
+        let txSignature = await connection.sendRawTransaction(
+          serializedTransaction,
+          {
+            skipPreflight: true,
+          }
+        );
+        await confirmTransaction(connection, txSignature, "confirmed");
+      } catch (error: unknown) {
+        // Ignore all errors; for now there is no API-compatible way to selectively ignore the expected
+        // instruction error if the associated account exists already.
+      }
+
+      // Now this should always succeed
+      account = await getAccount(
+        connection,
+        associatedToken,
+        commitment,
+        programId
+      );
+    } else {
+      throw error;
+    }
+  }
+
+  if (!account.mint.equals(mint)) throw new TokenInvalidMintError();
+  if (!account.owner.equals(owner)) throw new TokenInvalidOwnerError();
+
+  return account;
+}
 
 export async function confirmTransaction(
   c: Connection,

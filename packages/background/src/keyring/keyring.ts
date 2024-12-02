@@ -7,6 +7,7 @@ import {
   signerFromPrivateKey,
   splitPathStringToHDPath,
   typeBtcLedgerByAddress,
+  getOrCreateAssociatedTokenAccount,
 } from "@owallet/common";
 import * as BytesUtils from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
@@ -102,7 +103,6 @@ import {
 import {
   createTransferInstruction,
   getAssociatedTokenAddress,
-  getOrCreateAssociatedTokenAccount,
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
 import { encode, decode } from "bs58";
