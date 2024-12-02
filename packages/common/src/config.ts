@@ -1193,61 +1193,61 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://solscan.io/address/{address}",
     },
   },
-  {
-    rpc: "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0",
-    rest: "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0",
-    chainId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
-    chainName: "Solana Devnet",
-    bip44: {
-      coinType: 501,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("sol"),
-    stakeCurrency: {
-      coinDenom: "SOL",
-      coinMinimalDenom: "sol",
-      coinDecimals: 9,
-      coinGeckoId: "solana",
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
-    },
-    chainSymbolImageUrl:
-      "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png",
-    networkType: "svm",
-    currencies: [
-      {
-        coinDenom: "SOL",
-        coinMinimalDenom: "sol",
-        coinDecimals: 9,
-        coinGeckoId: "solana",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
-      },
-    ],
-    get feeCurrencies() {
-      return [
-        {
-          coinDenom: "SOL",
-          coinMinimalDenom: "sol",
-          coinDecimals: 9,
-          coinGeckoId: "solana",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
-          gasPriceStep: {
-            low: 1,
-            average: 1.25,
-            high: 1.5,
-          },
-        },
-      ];
-    },
-
-    features: [],
-    txExplorer: {
-      name: "Sol Scan",
-      txUrl: "https://solscan.io/tx/{txHash}",
-      accountUrl: "https://solscan.io/address/{address}",
-    },
-  },
+  // {
+  //   rpc: "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0",
+  //   rest: "https://devnet.helius-rpc.com/?api-key=791e2c4e-4495-45c4-b873-c8f35344e0c0",
+  //   chainId: "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1",
+  //   chainName: "Solana Devnet",
+  //   bip44: {
+  //     coinType: 501,
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("sol"),
+  //   stakeCurrency: {
+  //     coinDenom: "SOL",
+  //     coinMinimalDenom: "sol",
+  //     coinDecimals: 9,
+  //     coinGeckoId: "solana",
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+  //   },
+  //   chainSymbolImageUrl:
+  //     "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png",
+  //   networkType: "svm",
+  //   currencies: [
+  //     {
+  //       coinDenom: "SOL",
+  //       coinMinimalDenom: "sol",
+  //       coinDecimals: 9,
+  //       coinGeckoId: "solana",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return [
+  //       {
+  //         coinDenom: "SOL",
+  //         coinMinimalDenom: "sol",
+  //         coinDecimals: 9,
+  //         coinGeckoId: "solana",
+  //         coinImageUrl:
+  //           "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+  //         gasPriceStep: {
+  //           low: 1,
+  //           average: 1.25,
+  //           high: 1.5,
+  //         },
+  //       },
+  //     ];
+  //   },
+  //
+  //   features: [],
+  //   txExplorer: {
+  //     name: "Sol Scan",
+  //     txUrl: "https://solscan.io/tx/{txHash}",
+  //     accountUrl: "https://solscan.io/address/{address}",
+  //   },
+  // },
   {
     rpc: "https://evm-56.keplr.app",
     rest: "https://evm-56.keplr.app",

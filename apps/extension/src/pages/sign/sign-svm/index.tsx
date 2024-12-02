@@ -148,7 +148,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     }
   }, [signInteractionStore.waitingSvmData]);
   const isLoaded = useMemo(() => {
-    console.log(data, chainId, "data chainId");
     if (data?.data?.chainId) {
       return true;
     } else if (!data?.data?.chainId) {
