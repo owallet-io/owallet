@@ -160,6 +160,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     feeConfig.fee ||
     new CoinPretty(chainStore.current.stakeCurrency, new Dec(0));
   const renderTransactionFee = () => {
+    if (fee?.toDec().lte(new Dec(0))) return null;
     return (
       <div>
         <div
