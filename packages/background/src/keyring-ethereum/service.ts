@@ -117,8 +117,6 @@ export class KeyRingEthereumService {
       },
 
       async (res: { signingData: Uint8Array; signature?: Uint8Array }) => {
-        console.log('signType', signType);
-
         const { signature, signingData } = await (async () => {
           if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
             if (!res.signature || res.signature.length === 0) {

@@ -1,15 +1,15 @@
-import * as React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { StackActions } from "@react-navigation/routers";
-import { SCREENS } from "@src/common/constants";
-import { HeaderOptions } from "@react-navigation/elements";
-import { StackNavigationOptions } from "@react-navigation/stack";
-import { PlainObject } from "@owallet/background";
+import { StackActions } from '@react-navigation/routers';
+import { SCREENS } from '@src/common/constants';
+import { HeaderOptions } from '@react-navigation/elements';
+import { StackNavigationOptions } from '@react-navigation/stack';
+import { PlainObject } from '@owallet/background';
 
 interface Params {
   params?: any;
-  screen?: string | "Other";
+  screen?: string | 'Other';
 }
 export const navigationRef: any = React.createRef();
 
@@ -22,16 +22,13 @@ export const setOptions = (options: StackNavigationOptions) => {
   }
 };
 export function navigate(name, params?: any) {
-  if (
-    !Object.values(SCREENS).includes(name) &&
-    Object.values(SCREENS.TABS).includes(name)
-  ) {
+  if (!Object.values(SCREENS).includes(name) && Object.values(SCREENS.TABS).includes(name)) {
     return navigate(SCREENS.STACK.MainTab, { screen: name });
   }
   const pushAction = StackActions.push(name, params);
   const { routes = [] } = navigationRef.current?.getRootState?.() || {};
   const isExist =
-    routes.findIndex((item) => {
+    routes.findIndex(item => {
       if (
         item.name === name
         //   &&
@@ -54,9 +51,9 @@ export function resetTo(name: string, params?: any) {
     routes: [
       {
         name: name,
-        params,
-      },
-    ],
+        params
+      }
+    ]
   });
 }
 
@@ -72,10 +69,10 @@ export function goBack(fallback?: any) {
   }
 }
 
-export const popTo = (screenName) => {
+export const popTo = screenName => {
   const { routes = [] } = navigationRef.current?.getRootState?.() || {};
 
-  const index = routes.reverse().findIndex((item) => item.name === screenName);
+  const index = routes.reverse().findIndex(item => item.name === screenName);
   if (navigationRef.current?.canGoBack?.() && index > 0) {
     navigationRef.current?.dispatch(StackActions.pop(index));
   }
@@ -111,22 +108,22 @@ type DefaultRegisterParams = {
 
 export type RootStackParamList = {
   Home?: { showAddressChainId?: string };
-  "Home.Main": undefined;
-  "Home.Stake.Dashboard": { chainId: string };
+  'Home.Main': undefined;
+  'Home.Stake.Dashboard': { chainId: string };
   Camera?: {
     importFromExtensionOnly?: boolean;
   };
 
   Register: undefined;
-  "Register.Intro": undefined;
+  'Register.Intro': undefined;
 
-  "Register.VerifyMnemonic": {
+  'Register.VerifyMnemonic': {
     mnemonic: string;
     stepPrevious: number;
     stepTotal: number;
   } & DefaultRegisterParams;
-  "Register.Intro.ExistingUser"?: DefaultRegisterParams;
-  "Register.BackupPrivateKey": {
+  'Register.Intro.ExistingUser'?: DefaultRegisterParams;
+  'Register.BackupPrivateKey': {
     name: string;
     password: string;
     privateKey: {
@@ -136,8 +133,8 @@ export type RootStackParamList = {
     stepPrevious: number;
     stepTotal: number;
   };
-  "Register.RecoverMnemonic"?: DefaultRegisterParams;
-  "Register.ConnectLedger": {
+  'Register.RecoverMnemonic'?: DefaultRegisterParams;
+  'Register.ConnectLedger': {
     name: string;
     password: string;
     stepPrevious: number;
@@ -147,18 +144,17 @@ export type RootStackParamList = {
       change: number;
       addressIndex: number;
     };
-    app: "Ethereum";
-    // append mode일 경우 위의 name, password는 안쓰인다. 대충 빈 문자열 넣으면 된다.
+    app: 'Ethereum';
     appendModeInfo?: {
       vaultId: string;
       afterEnableChains: string[];
     };
   } & DefaultRegisterParams;
-  "Register.GoogleSignIn": {};
-  "Register.AppleSignIn": {};
-  "Register.ImportFromExtension": undefined;
+  'Register.GoogleSignIn': {};
+  'Register.AppleSignIn': {};
+  'Register.ImportFromExtension': undefined;
 
-  "Register.FinalizeKey": {
+  'Register.FinalizeKey': {
     name: string;
     password: string;
     stepPrevious: number;
@@ -184,7 +180,7 @@ export type RootStackParamList = {
       };
     };
   };
-  "Register.EnableChain": {
+  'Register.EnableChain': {
     vaultId: string;
     candidateAddresses?: {
       chainId: string;
@@ -201,14 +197,14 @@ export type RootStackParamList = {
     stepTotal?: number;
     password?: string;
   };
-  "Register.SelectDerivationPath": {
+  'Register.SelectDerivationPath': {
     chainIds: string[];
     vaultId: string;
     totalCount: number;
     password?: string;
     skipWelcome?: boolean;
   };
-  "Register.Welcome": {
+  'Register.Welcome': {
     password?: string;
   };
   Send: {
@@ -216,57 +212,55 @@ export type RootStackParamList = {
     coinMinimalDenom: string;
     recipientAddress?: string;
   };
-  "Send.SelectAsset": {
+  'Send.SelectAsset': {
     isIBCSwap?: boolean;
     chainId?: string;
     coinMinimalDenom?: string;
     outChainId?: string;
     outCoinMinimalDenom?: string;
   };
-  "Setting.Intro": undefined;
+  'Setting.Intro': undefined;
 
-  "Setting.General": undefined;
-  "Setting.General.Intro": undefined;
-  "Setting.General.Lang": undefined;
-  "Setting.General.Currency": undefined;
-  "Setting.General.ContactList": { chainId?: string } | undefined;
-  "Setting.General.ContactAdd": { chainId: string; editIndex?: number };
-  "Setting.General.WC": undefined;
-  "Setting.General.ManageNonActiveChains": undefined;
-  "Setting.General.ManageChainVisibility": undefined;
-  "Setting.General.Version": undefined;
+  'Setting.General': undefined;
+  'Setting.General.Intro': undefined;
+  'Setting.General.Lang': undefined;
+  'Setting.General.Currency': undefined;
+  'Setting.General.ContactList': { chainId?: string } | undefined;
+  'Setting.General.ContactAdd': { chainId: string; editIndex?: number };
+  'Setting.General.WC': undefined;
+  'Setting.General.ManageNonActiveChains': undefined;
+  'Setting.General.ManageChainVisibility': undefined;
+  'Setting.General.Version': undefined;
 
-  "Setting.SecurityAndPrivacy": undefined;
-  "Setting.SecurityAndPrivacy.Intro": undefined;
-  "Setting.SecurityAndPrivacy.Permission": undefined;
-  "Setting.SecurityAndPrivacy.ManageWalletConnect": undefined;
-  "Setting.SecurityAndPrivacy.ChangePassword": undefined;
-  "Setting.SecurityAndPrivacy.BioAuthentication": undefined;
+  'Setting.SecurityAndPrivacy': undefined;
+  'Setting.SecurityAndPrivacy.Intro': undefined;
+  'Setting.SecurityAndPrivacy.Permission': undefined;
+  'Setting.SecurityAndPrivacy.ManageWalletConnect': undefined;
+  'Setting.SecurityAndPrivacy.ChangePassword': undefined;
+  'Setting.SecurityAndPrivacy.BioAuthentication': undefined;
 
-  "Setting.ManageTokenList": undefined;
-  "Setting.ManageTokenList.Add":
-    | { chainId?: string; contractAddress?: string }
-    | undefined;
+  'Setting.ManageTokenList': undefined;
+  'Setting.ManageTokenList.Add': { chainId?: string; contractAddress?: string } | undefined;
 
   Unlock?: {
     disableAutoBioAuth?: boolean;
   };
   Migration: { password: string };
-  "Migration.Welcome": undefined;
-  "Migration.Backup.AccountList": {
+  'Migration.Welcome': undefined;
+  'Migration.Backup.AccountList': {
     password: string;
   };
-  "Migration.Backup.ShowSensitive": {
+  'Migration.Backup.ShowSensitive': {
     index: string;
     password: string;
-    type?: "mnemonic" | "privateKey" | "ledger" | "keystone";
+    type?: 'mnemonic' | 'privateKey' | 'ledger' | 'keystone';
   };
 
   SelectWallet: undefined;
-  "SelectWallet.Intro": undefined;
-  "SelectWallet.Delete": { id: string };
-  "SelectWallet.ChangeName": { id: string };
-  "SelectWallet.ViewRecoveryPhrase": { id: string };
+  'SelectWallet.Intro': undefined;
+  'SelectWallet.Delete': { id: string };
+  'SelectWallet.ChangeName': { id: string };
+  'SelectWallet.ViewRecoveryPhrase': { id: string };
   Web: { url: string; isExternal: true };
 
   TxPending: {
@@ -299,7 +293,7 @@ export type RootStackParamList = {
     initialGasAdjustment?: string;
     tempSwitchAmount?: string;
   };
-  "Swap.SelectAsset": {
+  'Swap.SelectAsset': {
     excludeKey: string;
     chainId?: string;
     coinMinimalDenom?: string;

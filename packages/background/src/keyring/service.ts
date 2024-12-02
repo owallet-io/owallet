@@ -723,9 +723,11 @@ export class KeyRingService {
       throw new Error('Key is not from ledger');
     }
 
-    if (vault.insensitive[app]) {
-      throw new Error('App is already appended');
-    }
+    // if (vault.insensitive[app]) {
+    //   throw new Error('App is already appended');
+    // }
+
+    console.log('app', app, Buffer.from(pubKey).toString('hex'));
 
     this.vaultService.setAndMergeInsensitiveToVault('keyRing', id, {
       [app]: {

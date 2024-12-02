@@ -1,31 +1,18 @@
-import { ChainsService } from "../chains";
-import {
-  Bech32Address,
-  ChainIdHelper,
-  TendermintTxTracer,
-  WsReadyState,
-} from "@owallet/cosmos";
-import { BackgroundTxService, Notification } from "../tx";
-import {
-  action,
-  autorun,
-  makeObservable,
-  observable,
-  runInAction,
-  toJS,
-} from "mobx";
-import { KVStore, retry } from "@owallet/common";
-import { IBCHistory, RecentSendHistory } from "./types";
-import { Buffer } from "buffer/";
-import { AppCurrency, ChainInfo } from "@owallet/types";
-import { CoinPretty } from "@owallet/unit";
-import { simpleFetch } from "@owallet/simple-fetch";
+import { ChainsService } from '../chains';
+import { Bech32Address, ChainIdHelper, TendermintTxTracer, WsReadyState } from '@owallet/cosmos';
+import { BackgroundTxService, Notification } from '../tx';
+import { action, autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
+import { KVStore, retry } from '@owallet/common';
+import { IBCHistory, RecentSendHistory } from './types';
+import { Buffer } from 'buffer/';
+import { AppCurrency, ChainInfo } from '@owallet/types';
+import { CoinPretty } from '@owallet/unit';
+import { simpleFetch } from '@owallet/simple-fetch';
 
 export class RecentSendHistoryService {
   // Key: {chain_identifier}/{type}
   @observable
-  protected readonly recentSendHistoryMap: Map<string, RecentSendHistory[]> =
-    new Map();
+  protected readonly recentSendHistoryMap: Map<string, RecentSendHistory[]> = new Map();
 
   @observable
   protected recentIBCHistorySeq: number = 0;
@@ -43,9 +30,9 @@ export class RecentSendHistoryService {
   }
 
   async init(): Promise<void> {
-    const recentSendHistoryMapSaved = await this.kvStore.get<
-      Record<string, RecentSendHistory[]>
-    >("recentSendHistoryMap");
+    const recentSendHistoryMapSaved = await this.kvStore.get<Record<string, RecentSendHistory[]>>(
+      'recentSendHistoryMap'
+    );
     if (recentSendHistoryMapSaved) {
       runInAction(() => {
         for (const [key, value] of Object.entries(recentSendHistoryMapSaved)) {
@@ -56,19 +43,14 @@ export class RecentSendHistoryService {
     autorun(() => {
       const js = toJS(this.recentSendHistoryMap);
       const obj = Object.fromEntries(js);
-      this.kvStore.set<Record<string, RecentSendHistory[]>>(
-        "recentSendHistoryMap",
-        obj
-      );
+      this.kvStore.set<Record<string, RecentSendHistory[]>>('recentSendHistoryMap', obj);
     });
 
     // 밑의 storage의 key들이 ibc transfer를 포함하는데
     // 이 이유는 이전에 transfer history만 지원되었을때
     // key를 그렇게 정했었기 때문이다
     // 이전 버전과의 호환성을 위해서 key는 그대로 냅뒀다.
-    const recentIBCHistorySeqSaved = await this.kvStore.get<number>(
-      "recentIBCTransferHistorySeq"
-    );
+    const recentIBCHistorySeqSaved = await this.kvStore.get<number>('recentIBCTransferHistorySeq');
     if (recentIBCHistorySeqSaved) {
       runInAction(() => {
         this.recentIBCHistorySeq = recentIBCHistorySeqSaved;
@@ -76,12 +58,10 @@ export class RecentSendHistoryService {
     }
     autorun(() => {
       const js = toJS(this.recentIBCHistorySeq);
-      this.kvStore.set<number>("recentIBCTransferHistorySeq", js);
+      this.kvStore.set<number>('recentIBCTransferHistorySeq', js);
     });
 
-    const recentIBCHistoryMapSaved = await this.kvStore.get<
-      Record<string, IBCHistory>
-    >("recentIBCTransferHistoryMap");
+    const recentIBCHistoryMapSaved = await this.kvStore.get<Record<string, IBCHistory>>('recentIBCTransferHistoryMap');
     if (recentIBCHistoryMapSaved) {
       runInAction(() => {
         let entries = Object.entries(recentIBCHistoryMapSaved);
@@ -100,10 +80,7 @@ export class RecentSendHistoryService {
     autorun(() => {
       const js = toJS(this.recentIBCHistoryMap);
       const obj = Object.fromEntries(js);
-      this.kvStore.set<Record<string, IBCHistory>>(
-        "recentIBCTransferHistoryMap",
-        obj
-      );
+      this.kvStore.set<Record<string, IBCHistory>>('recentIBCTransferHistoryMap', obj);
     });
 
     for (const history of this.getRecentIBCHistories()) {
@@ -118,7 +95,7 @@ export class RecentSendHistoryService {
     sourceChainId: string,
     destinationChainId: string,
     tx: unknown,
-    mode: "async" | "sync" | "block",
+    mode: 'async' | 'sync' | 'block',
     silent: boolean,
     sender: string,
     recipient: string,
@@ -139,67 +116,57 @@ export class RecentSendHistoryService {
     },
     isSkipTrack: boolean = false
   ): Promise<Uint8Array> {
-    const sourceChainInfo =
-      this.chainsService.getChainInfoOrThrow(sourceChainId);
-    Bech32Address.validate(
-      sender,
-      sourceChainInfo.bech32Config?.bech32PrefixAccAddr
-    );
+    const sourceChainInfo = this.chainsService.getChainInfoOrThrow(sourceChainId);
+    Bech32Address.validate(sender, sourceChainInfo.bech32Config?.bech32PrefixAccAddr);
 
-    const destinationChainInfo =
-      this.chainsService.getChainInfoOrThrow(destinationChainId);
-    Bech32Address.validate(
-      recipient,
-      destinationChainInfo.bech32Config?.bech32PrefixAccAddr
-    );
+    const destinationChainInfo = this.chainsService.getChainInfoOrThrow(destinationChainId);
+    Bech32Address.validate(recipient, destinationChainInfo.bech32Config?.bech32PrefixAccAddr);
 
     const txHash = await this.txService.sendTx(sourceChainId, tx, mode, {
       silent,
-      onFulfill: (tx) => {
+      onFulfill: tx => {
         if (tx.code == null || tx.code === 0) {
           this.addRecentSendHistory(destinationChainId, type, {
             sender,
             recipient,
             amount,
             memo,
-            ibcChannels,
+            ibcChannels
           });
 
           if (tx.hash) {
             if (isSkipTrack) {
               // no wait
               setTimeout(() => {
-                simpleFetch<any>("https://api.skip.build/", "/v2/tx/track", {
-                  method: "POST",
+                simpleFetch<any>('https://api.skip.build/', '/v2/tx/track', {
+                  method: 'POST',
                   headers: {
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                     ...(() => {
                       const res: { authorization?: string } = {};
-                      if (process.env["SKIP_API_KEY"]) {
-                        res.authorization = process.env["SKIP_API_KEY"];
+                      if (process.env['SKIP_API_KEY']) {
+                        res.authorization = process.env['SKIP_API_KEY'];
                       }
 
                       return res;
-                    })(),
+                    })()
                   },
                   body: JSON.stringify({
-                    tx_hash: Buffer.from(tx.hash).toString("hex"),
-                    chain_id: sourceChainId,
-                  }),
-                })
-                  .then((result) => {
-                    console.log(
-                      `Skip tx track result: ${JSON.stringify(result)}`
-                    );
+                    tx_hash: Buffer.from(tx.hash).toString('hex'),
+                    chain_id: sourceChainId
                   })
-                  .catch((e) => {
+                })
+                  .then(result => {
+                    console.log(`Skip tx track result: ${JSON.stringify(result)}`);
+                  })
+                  .catch(e => {
                     console.log(e);
                   });
               }, 2000);
             }
           }
         }
-      },
+      }
     });
 
     if (ibcChannels && ibcChannels.length > 0) {
@@ -222,11 +189,11 @@ export class RecentSendHistoryService {
   }
 
   async sendTxAndRecordIBCSwap(
-    swapType: "amount-in" | "amount-out",
+    swapType: 'amount-in' | 'amount-out',
     sourceChainId: string,
     destinationChainId: string,
     tx: unknown,
-    mode: "async" | "sync" | "block",
+    mode: 'async' | 'sync' | 'block',
     silent: boolean,
     sender: string,
     amount: {
@@ -251,54 +218,48 @@ export class RecentSendHistoryService {
     },
     isSkipTrack: boolean = false
   ): Promise<Uint8Array> {
-    const sourceChainInfo =
-      this.chainsService.getChainInfoOrThrow(sourceChainId);
-    Bech32Address.validate(
-      sender,
-      sourceChainInfo.bech32Config?.bech32PrefixAccAddr
-    );
+    const sourceChainInfo = this.chainsService.getChainInfoOrThrow(sourceChainId);
+    Bech32Address.validate(sender, sourceChainInfo.bech32Config?.bech32PrefixAccAddr);
 
     this.chainsService.getChainInfoOrThrow(destinationChainId);
 
     const txHash = await this.txService.sendTx(sourceChainId, tx, mode, {
       silent,
-      onFulfill: (tx) => {
+      onFulfill: tx => {
         if (tx.code == null || tx.code === 0) {
           if (tx.hash) {
             if (isSkipTrack) {
               setTimeout(() => {
                 // no wait
-                simpleFetch<any>("https://api.skip.build/", "/v2/tx/track", {
-                  method: "POST",
+                simpleFetch<any>('https://api.skip.build/', '/v2/tx/track', {
+                  method: 'POST',
                   headers: {
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                     ...(() => {
                       const res: { authorization?: string } = {};
-                      if (process.env["SKIP_API_KEY"]) {
-                        res.authorization = process.env["SKIP_API_KEY"];
+                      if (process.env['SKIP_API_KEY']) {
+                        res.authorization = process.env['SKIP_API_KEY'];
                       }
 
                       return res;
-                    })(),
+                    })()
                   },
                   body: JSON.stringify({
-                    tx_hash: Buffer.from(tx.hash).toString("hex"),
-                    chain_id: sourceChainId,
-                  }),
-                })
-                  .then((result) => {
-                    console.log(
-                      `Skip tx track result: ${JSON.stringify(result)}`
-                    );
+                    tx_hash: Buffer.from(tx.hash).toString('hex'),
+                    chain_id: sourceChainId
                   })
-                  .catch((e) => {
+                })
+                  .then(result => {
+                    console.log(`Skip tx track result: ${JSON.stringify(result)}`);
+                  })
+                  .catch(e => {
                     console.log(e);
                   });
               }, 2000);
             }
           }
         }
-      },
+      }
     });
 
     const id = this.addRecentIBCSwapHistory(
@@ -332,10 +293,7 @@ export class RecentSendHistoryService {
             },
             () => {
               // reject if ws closed before fulfilled
-              // 하지만 로직상 fulfill 되기 전에 ws가 닫히는게 되기 때문에
-              // delay를 좀 준다.
-              // 현재 trackIBCPacketForwardingRecursiveInternal에 ws close 이후에는 동기적인 로직밖에 없으므로
-              // 문제될게 없다.
+
               setTimeout(() => {
                 reject();
               }, 500);
@@ -350,7 +308,7 @@ export class RecentSendHistoryService {
       {
         maxRetries: 10,
         waitMsAfterError: 10 * 1000, // 10sec
-        maxWaitMsAfterError: 5 * 60 * 1000, // 5min
+        maxWaitMsAfterError: 5 * 60 * 1000 // 5min
       }
     );
   }
@@ -381,16 +339,16 @@ export class RecentSendHistoryService {
         return false;
       }
 
-      return history.ibcHistory.find((h) => h.error != null) != null;
+      return history.ibcHistory.find(h => h.error != null) != null;
     })();
 
     if (needRewind) {
-      if (history.ibcHistory.find((h) => h.rewoundButNextRewindingBlocked)) {
+      if (history.ibcHistory.find(h => h.rewoundButNextRewindingBlocked)) {
         onFulfill();
         return;
       }
       const isTimeoutPacket = history.packetTimeout || false;
-      const lastRewoundChannelIndex = history.ibcHistory.findIndex((h) => {
+      const lastRewoundChannelIndex = history.ibcHistory.findIndex(h => {
         if (h.rewound) {
           return true;
         }
@@ -403,51 +361,40 @@ export class RecentSendHistoryService {
 
           return history.ibcHistory[lastRewoundChannelIndex - 1];
         }
-        return history.ibcHistory.find((h) => h.error != null);
+        return history.ibcHistory.find(h => h.error != null);
       })();
       const isSwapTargetChannel =
         targetChannel &&
-        "swapChannelIndex" in history &&
-        history.ibcHistory.indexOf(targetChannel) ===
-          history.swapChannelIndex + 1;
+        'swapChannelIndex' in history &&
+        history.ibcHistory.indexOf(targetChannel) === history.swapChannelIndex + 1;
 
       if (targetChannel && targetChannel.sequence) {
         const prevChainInfo = (() => {
-          const targetChannelIndex = history.ibcHistory.findIndex(
-            (h) => h === targetChannel
-          );
+          const targetChannelIndex = history.ibcHistory.findIndex(h => h === targetChannel);
           if (targetChannelIndex < 0) {
             return undefined;
           }
           if (targetChannelIndex === 0) {
             return this.chainsService.getChainInfo(history.chainId);
           }
-          return this.chainsService.getChainInfo(
-            history.ibcHistory[targetChannelIndex - 1].counterpartyChainId
-          );
+          return this.chainsService.getChainInfo(history.ibcHistory[targetChannelIndex - 1].counterpartyChainId);
         })();
         if (prevChainInfo) {
-          const txTracer = new TendermintTxTracer(
-            prevChainInfo.rpc,
-            "/websocket"
-          );
-          txTracer.addEventListener("close", onClose);
-          txTracer.addEventListener("error", onError);
+          const txTracer = new TendermintTxTracer(prevChainInfo.rpc, '/websocket');
+          txTracer.addEventListener('close', onClose);
+          txTracer.addEventListener('error', onError);
           txTracer
             .traceTx(
               isTimeoutPacket
                 ? {
                     // "timeout_packet.packet_src_port": targetChannel.portId,
-                    "timeout_packet.packet_src_channel":
-                      targetChannel.channelId,
-                    "timeout_packet.packet_sequence": targetChannel.sequence,
+                    'timeout_packet.packet_src_channel': targetChannel.channelId,
+                    'timeout_packet.packet_sequence': targetChannel.sequence
                   }
                 : {
                     // "acknowledge_packet.packet_src_port": targetChannel.portId,
-                    "acknowledge_packet.packet_src_channel":
-                      targetChannel.channelId,
-                    "acknowledge_packet.packet_sequence":
-                      targetChannel.sequence,
+                    'acknowledge_packet.packet_src_channel': targetChannel.channelId,
+                    'acknowledge_packet.packet_sequence': targetChannel.sequence
                   }
             )
             .then((res: any) => {
@@ -459,12 +406,10 @@ export class RecentSendHistoryService {
 
               runInAction(() => {
                 if (isSwapTargetChannel) {
-                  const txs = res.txs
-                    ? res.txs.map((res: any) => res.tx_result || res)
-                    : [res.tx_result || res];
+                  const txs = res.txs ? res.txs.map((res: any) => res.tx_result || res) : [res.tx_result || res];
                   if (txs && Array.isArray(txs)) {
                     for (const tx of txs) {
-                      if (targetChannel.sequence && "swapReceiver" in history) {
+                      if (targetChannel.sequence && 'swapReceiver' in history) {
                         const index = isTimeoutPacket
                           ? this.getIBCTimeoutPacketIndexFromTx(
                               tx,
@@ -483,15 +428,9 @@ export class RecentSendHistoryService {
                           const refunded = isTimeoutPacket
                             ? this.getIBCSwapResAmountFromTx(
                                 tx,
-                                history.swapReceiver[
-                                  history.swapChannelIndex + 1
-                                ],
+                                history.swapReceiver[history.swapChannelIndex + 1],
                                 (() => {
-                                  const i =
-                                    this.getLastIBCTimeoutPacketBeforeIndexFromTx(
-                                      tx,
-                                      index
-                                    );
+                                  const i = this.getLastIBCTimeoutPacketBeforeIndexFromTx(tx, index);
 
                                   if (i < 0) {
                                     return 0;
@@ -502,14 +441,12 @@ export class RecentSendHistoryService {
                               )
                             : this.getIBCSwapResAmountFromTx(
                                 tx,
-                                history.swapReceiver[
-                                  history.swapChannelIndex + 1
-                                ],
+                                history.swapReceiver[history.swapChannelIndex + 1],
                                 index
                               );
                           history.swapRefundInfo = {
                             chainId: prevChainInfo.chainId,
-                            amount: refunded,
+                            amount: refunded
                           };
 
                           targetChannel.rewoundButNextRewindingBlocked = true;
@@ -529,29 +466,26 @@ export class RecentSendHistoryService {
     } else if (!history.txFulfilled) {
       const chainId = history.chainId;
       const chainInfo = this.chainsService.getChainInfo(chainId);
-      const txHash = Buffer.from(history.txHash, "hex");
+      const txHash = Buffer.from(history.txHash, 'hex');
 
       if (chainInfo) {
-        const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-        txTracer.addEventListener("close", onClose);
-        txTracer.addEventListener("error", onError);
-        txTracer.traceTx(txHash).then((tx) => {
+        const txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
+        txTracer.addEventListener('close', onClose);
+        txTracer.addEventListener('error', onError);
+        txTracer.traceTx(txHash).then(tx => {
           txTracer.close();
 
           runInAction(() => {
             history.txFulfilled = true;
             if (tx.code != null && tx.code !== 0) {
-              history.txError = tx.log || tx.raw_log || "Unknown error";
+              history.txError = tx.log || tx.raw_log || 'Unknown error';
 
               // TODO: In this case, it is not currently displayed in the UI. So, delete it for now.
               //       어차피 tx 자체의 실패는 notification으로 알 수 있기 때문에 여기서 지우더라도 유저는 실패를 인지할 수 있다.
               this.removeRecentIBCHistory(id);
             } else {
-              if ("swapReceiver" in history) {
-                const resAmount = this.getIBCSwapResAmountFromTx(
-                  tx,
-                  history.swapReceiver[0]
-                );
+              if ('swapReceiver' in history) {
+                const resAmount = this.getIBCSwapResAmountFromTx(tx, history.swapReceiver[0]);
 
                 history.resAmount.push(resAmount);
               }
@@ -564,11 +498,7 @@ export class RecentSendHistoryService {
                   firstChannel.portId,
                   firstChannel.channelId
                 );
-                firstChannel.dstChannelId = this.getDstChannelIdFromTx(
-                  tx,
-                  firstChannel.portId,
-                  firstChannel.channelId
-                );
+                firstChannel.dstChannelId = this.getDstChannelIdFromTx(tx, firstChannel.portId, firstChannel.channelId);
 
                 onFulfill();
                 this.trackIBCPacketForwardingRecursive(id);
@@ -578,16 +508,12 @@ export class RecentSendHistoryService {
         });
       }
     } else if (history.ibcHistory.length > 0) {
-      const targetChannelIndex = history.ibcHistory.findIndex((history) => {
+      const targetChannelIndex = history.ibcHistory.findIndex(history => {
         return !history.completed;
       });
-      const targetChannel =
-        targetChannelIndex >= 0
-          ? history.ibcHistory[targetChannelIndex]
-          : undefined;
+      const targetChannel = targetChannelIndex >= 0 ? history.ibcHistory[targetChannelIndex] : undefined;
       const nextChannel =
-        targetChannelIndex >= 0 &&
-        targetChannelIndex + 1 < history.ibcHistory.length
+        targetChannelIndex >= 0 && targetChannelIndex + 1 < history.ibcHistory.length
           ? history.ibcHistory[targetChannelIndex + 1]
           : undefined;
 
@@ -600,11 +526,8 @@ export class RecentSendHistoryService {
         const onFulfillOnce = () => {
           if (!_onFulfillOnce) {
             _onFulfillOnce = true;
-            closables.forEach((closable) => {
-              if (
-                closable.readyState === WsReadyState.OPEN ||
-                closable.readyState === WsReadyState.CONNECTING
-              ) {
+            closables.forEach(closable => {
+              if (closable.readyState === WsReadyState.OPEN || closable.readyState === WsReadyState.CONNECTING) {
                 closable.close();
               }
             });
@@ -615,11 +538,8 @@ export class RecentSendHistoryService {
         const onCloseOnce = () => {
           if (!_onCloseOnce) {
             _onCloseOnce = true;
-            closables.forEach((closable) => {
-              if (
-                closable.readyState === WsReadyState.OPEN ||
-                closable.readyState === WsReadyState.CONNECTING
-              ) {
+            closables.forEach(closable => {
+              if (closable.readyState === WsReadyState.OPEN || closable.readyState === WsReadyState.CONNECTING) {
                 closable.close();
               }
             });
@@ -630,11 +550,8 @@ export class RecentSendHistoryService {
         const onErrorOnce = () => {
           if (!_onErrorOnce) {
             _onErrorOnce = true;
-            closables.forEach((closable) => {
-              if (
-                closable.readyState === WsReadyState.OPEN ||
-                closable.readyState === WsReadyState.CONNECTING
-              ) {
+            closables.forEach(closable => {
+              if (closable.readyState === WsReadyState.OPEN || closable.readyState === WsReadyState.CONNECTING) {
                 closable.close();
               }
             });
@@ -642,30 +559,26 @@ export class RecentSendHistoryService {
           }
         };
 
-        const chainInfo = this.chainsService.getChainInfo(
-          targetChannel.counterpartyChainId
-        );
+        const chainInfo = this.chainsService.getChainInfo(targetChannel.counterpartyChainId);
         if (chainInfo) {
           const queryEvents: any = {
             // "recv_packet.packet_src_port": targetChannel.portId,
-            "recv_packet.packet_dst_channel": targetChannel.dstChannelId,
-            "recv_packet.packet_sequence": targetChannel.sequence,
+            'recv_packet.packet_dst_channel': targetChannel.dstChannelId,
+            'recv_packet.packet_sequence': targetChannel.sequence
           };
 
-          const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+          const txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
           closables.push(txTracer);
-          txTracer.addEventListener("close", onCloseOnce);
-          txTracer.addEventListener("error", onErrorOnce);
-          txTracer.traceTx(queryEvents).then((res) => {
+          txTracer.addEventListener('close', onCloseOnce);
+          txTracer.addEventListener('error', onErrorOnce);
+          txTracer.traceTx(queryEvents).then(res => {
             txTracer.close();
 
             if (!res) {
               return;
             }
 
-            const txs = res.txs
-              ? res.txs.map((res: any) => res.tx_result || res)
-              : [res.tx_result || res];
+            const txs = res.txs ? res.txs.map((res: any) => res.tx_result || res) : [res.tx_result || res];
             if (txs && Array.isArray(txs)) {
               runInAction(() => {
                 targetChannel.completed = true;
@@ -686,7 +599,7 @@ export class RecentSendHistoryService {
                         if (decoded.error) {
                           // XXX: {key: 'packet_ack', value: '{"error":"ABCI code: 6: error handling packet: see events for details"}'}
                           //      오류가 있을 경우 이딴식으로 오류가 나오기 때문에 뭐 유저에게 보여줄 방법이 없다...
-                          targetChannel.error = "Packet processing failed";
+                          targetChannel.error = 'Packet processing failed';
                           onFulfillOnce();
                           this.trackIBCPacketForwardingRecursive(id);
                           break;
@@ -708,15 +621,11 @@ export class RecentSendHistoryService {
                     );
 
                     if (index >= 0) {
-                      if ("swapReceiver" in history) {
+                      if ('swapReceiver' in history) {
                         const res: {
                           amount: string;
                           denom: string;
-                        }[] = this.getIBCSwapResAmountFromTx(
-                          tx,
-                          history.swapReceiver[targetChannelIndex + 1],
-                          index
-                        );
+                        }[] = this.getIBCSwapResAmountFromTx(tx, history.swapReceiver[targetChannelIndex + 1], index);
 
                         history.resAmount.push(res);
                       }
@@ -744,29 +653,19 @@ export class RecentSendHistoryService {
                             history.notified = true;
                           });
 
-                          const chainInfo = this.chainsService.getChainInfo(
-                            history.destinationChainId
-                          );
+                          const chainInfo = this.chainsService.getChainInfo(history.destinationChainId);
                           if (chainInfo) {
-                            if ("swapType" in history) {
+                            if ('swapType' in history) {
                               if (history.resAmount.length > 0) {
-                                const amount =
-                                  history.resAmount[
-                                    history.resAmount.length - 1
-                                  ];
+                                const amount = history.resAmount[history.resAmount.length - 1];
                                 const assetsText = amount
-                                  .filter((amt) =>
-                                    history.notificationInfo!.currencies.find(
-                                      (cur) =>
-                                        cur.coinMinimalDenom === amt.denom
-                                    )
+                                  .filter(amt =>
+                                    history.notificationInfo!.currencies.find(cur => cur.coinMinimalDenom === amt.denom)
                                   )
-                                  .map((amt) => {
-                                    const currency =
-                                      history.notificationInfo!.currencies.find(
-                                        (cur) =>
-                                          cur.coinMinimalDenom === amt.denom
-                                      );
+                                  .map(amt => {
+                                    const currency = history.notificationInfo!.currencies.find(
+                                      cur => cur.coinMinimalDenom === amt.denom
+                                    );
                                     return new CoinPretty(currency!, amt.amount)
                                       .hideIBCMetadata(true)
                                       .shrink(true)
@@ -778,27 +677,21 @@ export class RecentSendHistoryService {
                                 if (assetsText.length > 0) {
                                   // Notify user
                                   this.notification.create({
-                                    iconRelativeUrl: "assets/logo-256.png",
-                                    title: "IBC Swap Succeeded",
-                                    message: `${assetsText.join(
-                                      ", "
-                                    )} received on ${chainInfo.chainName}`,
+                                    iconRelativeUrl: 'assets/logo-256.png',
+                                    title: 'IBC Swap Succeeded',
+                                    message: `${assetsText.join(', ')} received on ${chainInfo.chainName}`
                                   });
                                 }
                               }
                             } else {
                               const assetsText = history.amount
-                                .filter((amt) =>
-                                  history.notificationInfo!.currencies.find(
-                                    (cur) => cur.coinMinimalDenom === amt.denom
-                                  )
+                                .filter(amt =>
+                                  history.notificationInfo!.currencies.find(cur => cur.coinMinimalDenom === amt.denom)
                                 )
-                                .map((amt) => {
-                                  const currency =
-                                    history.notificationInfo!.currencies.find(
-                                      (cur) =>
-                                        cur.coinMinimalDenom === amt.denom
-                                    );
+                                .map(amt => {
+                                  const currency = history.notificationInfo!.currencies.find(
+                                    cur => cur.coinMinimalDenom === amt.denom
+                                  );
                                   return new CoinPretty(currency!, amt.amount)
                                     .hideIBCMetadata(true)
                                     .shrink(true)
@@ -810,11 +703,9 @@ export class RecentSendHistoryService {
                               if (assetsText.length > 0) {
                                 // Notify user
                                 this.notification.create({
-                                  iconRelativeUrl: "assets/logo-256.png",
-                                  title: "IBC Transfer Succeeded",
-                                  message: `${assetsText.join(", ")} sent to ${
-                                    chainInfo.chainName
-                                  }`,
+                                  iconRelativeUrl: 'assets/logo-256.png',
+                                  title: 'IBC Transfer Succeeded',
+                                  message: `${assetsText.join(', ')} sent to ${chainInfo.chainName}`
                                 });
                               }
                             }
@@ -833,10 +724,9 @@ export class RecentSendHistoryService {
           });
         }
 
-        let prevChainId: string = "";
+        let prevChainId: string = '';
         if (targetChannelIndex > 0) {
-          prevChainId =
-            history.ibcHistory[targetChannelIndex - 1].counterpartyChainId;
+          prevChainId = history.ibcHistory[targetChannelIndex - 1].counterpartyChainId;
         } else {
           prevChainId = history.chainId;
         }
@@ -849,18 +739,15 @@ export class RecentSendHistoryService {
               // 하지만 이 경우 ibc error tracking 로직에서 이것과 똑같은 subscription을 한번 더 하게 된다.
               // 이미 로직이 많이 복잡하기 때문에 로직을 덜 복잡하게 하기 위해서 이러한 비효율성(?)을 감수한다.
               // "timeout_packet.packet_src_port": targetChannel.portId,
-              "timeout_packet.packet_src_channel": targetChannel.channelId,
-              "timeout_packet.packet_sequence": targetChannel.sequence,
+              'timeout_packet.packet_src_channel': targetChannel.channelId,
+              'timeout_packet.packet_sequence': targetChannel.sequence
             };
 
-            const txTracer = new TendermintTxTracer(
-              prevChainInfo.rpc,
-              "/websocket"
-            );
+            const txTracer = new TendermintTxTracer(prevChainInfo.rpc, '/websocket');
             closables.push(txTracer);
-            txTracer.addEventListener("close", onCloseOnce);
-            txTracer.addEventListener("error", onErrorOnce);
-            txTracer.traceTx(queryEvents).then((res) => {
+            txTracer.addEventListener('close', onCloseOnce);
+            txTracer.addEventListener('error', onErrorOnce);
+            txTracer.traceTx(queryEvents).then(res => {
               txTracer.close();
 
               if (!res) {
@@ -871,7 +758,7 @@ export class RecentSendHistoryService {
               // 이 경우 따로 정보를 얻을 필요는 없으므로 이후에 res를 쓰지는 않는다.
               // 위에 res null check는 사실 필요 없지만 혹시나 해서 넣어둔다.
               runInAction(() => {
-                targetChannel.error = "Packet timeout";
+                targetChannel.error = 'Packet timeout';
                 history.packetTimeout = true;
                 onFulfillOnce();
                 this.trackIBCPacketForwardingRecursive(id);
@@ -889,17 +776,13 @@ export class RecentSendHistoryService {
   }
 
   @action
-  addRecentSendHistory(
-    chainId: string,
-    type: string,
-    history: Omit<RecentSendHistory, "timestamp">
-  ) {
+  addRecentSendHistory(chainId: string, type: string, history: Omit<RecentSendHistory, 'timestamp'>) {
     const key = `${ChainIdHelper.parse(chainId).identifier}/${type}`;
 
     let histories = this.recentSendHistoryMap.get(key) ?? [];
     histories.unshift({
       timestamp: Date.now(),
-      ...history,
+      ...history
     });
     histories = histories.slice(0, 20);
 
@@ -940,17 +823,17 @@ export class RecentSendHistoryService {
       amount,
       memo,
 
-      ibcHistory: ibcChannels.map((channel) => {
+      ibcHistory: ibcChannels.map(channel => {
         return {
           portId: channel.portId,
           channelId: channel.channelId,
           counterpartyChainId: channel.counterpartyChainId,
 
-          completed: false,
+          completed: false
         };
       }),
       notificationInfo,
-      txHash: Buffer.from(txHash).toString("hex"),
+      txHash: Buffer.from(txHash).toString('hex')
     };
 
     this.recentIBCHistoryMap.set(id, history);
@@ -960,7 +843,7 @@ export class RecentSendHistoryService {
 
   @action
   addRecentIBCSwapHistory(
-    swapType: "amount-in" | "amount-out",
+    swapType: 'amount-in' | 'amount-out',
     chainId: string,
     destinationChainId: string,
     sender: string,
@@ -998,13 +881,13 @@ export class RecentSendHistoryService {
       amount,
       memo,
 
-      ibcHistory: ibcChannels.map((channel) => {
+      ibcHistory: ibcChannels.map(channel => {
         return {
           portId: channel.portId,
           channelId: channel.channelId,
           counterpartyChainId: channel.counterpartyChainId,
 
-          completed: false,
+          completed: false
         };
       }),
       destinationAsset,
@@ -1012,7 +895,7 @@ export class RecentSendHistoryService {
       swapReceiver,
       resAmount: [],
       notificationInfo,
-      txHash: Buffer.from(txHash).toString("hex"),
+      txHash: Buffer.from(txHash).toString('hex')
     };
 
     this.recentIBCHistoryMap.set(id, history);
@@ -1025,7 +908,7 @@ export class RecentSendHistoryService {
   }
 
   getRecentIBCHistories(): IBCHistory[] {
-    return Array.from(this.recentIBCHistoryMap.values()).filter((history) => {
+    return Array.from(this.recentIBCHistoryMap.values()).filter(history => {
       if (!this.chainsService.hasChainInfo(history.chainId)) {
         return false;
       }
@@ -1035,7 +918,7 @@ export class RecentSendHistoryService {
       }
 
       if (
-        history.ibcHistory.some((history) => {
+        history.ibcHistory.some(history => {
           return !this.chainsService.hasChainInfo(history.counterpartyChainId);
         })
       ) {
@@ -1064,23 +947,20 @@ export class RecentSendHistoryService {
   ): Uint8Array | undefined {
     const events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1088,29 +968,24 @@ export class RecentSendHistoryService {
     };
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "write_acknowledgement") {
+      if (event.type !== 'write_acknowledgement') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          return compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          )[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_channel')[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       let isBase64 = false;
       const sequenceAttr = event.attributes.find((attr: { key: string }) => {
-        const c = compareStringWithBase64OrPlain(attr.key, "packet_sequence");
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_sequence');
         isBase64 = c[1];
         return c[0];
       });
@@ -1120,11 +995,9 @@ export class RecentSendHistoryService {
 
       if (isBase64) {
         return (
-          Buffer.from(sourcePortAttr.value, "base64").toString() ===
-            sourcePortId &&
-          Buffer.from(sourceChannelAttr.value, "base64").toString() ===
-            sourceChannelId &&
-          Buffer.from(sequenceAttr.value, "base64").toString() === sequence
+          Buffer.from(sourcePortAttr.value, 'base64').toString() === sourcePortId &&
+          Buffer.from(sourceChannelAttr.value, 'base64').toString() === sourceChannelId &&
+          Buffer.from(sequenceAttr.value, 'base64').toString() === sequence
         );
       } else {
         return (
@@ -1140,14 +1013,14 @@ export class RecentSendHistoryService {
 
     let isBase64 = false;
     const ackAttr = packetEvent.attributes.find((attr: { key: string }) => {
-      const r = compareStringWithBase64OrPlain(attr.key, "packet_ack");
+      const r = compareStringWithBase64OrPlain(attr.key, 'packet_ack');
       isBase64 = r[1];
       return r[0];
     });
 
     if (ackAttr) {
       if (isBase64) {
-        return Buffer.from(ackAttr.value, "base64");
+        return Buffer.from(ackAttr.value, 'base64');
       } else {
         return Buffer.from(ackAttr.value);
       }
@@ -1168,10 +1041,7 @@ export class RecentSendHistoryService {
     // Skip의 contract에서 편리하게 쓸 events를 발생시켜주지 않는 것 같다.
     // 그래서 엄밀하게 여기서 멀 하기가 힘들다.
     // 적당한 추론으로 99%의 케이스에서는 문제가 없는 방법을 시도한다...
-    const events = tx.events.slice(
-      startEventsIndex,
-      endEventsIndex >= 0 ? endEventsIndex : undefined
-    ) as {
+    const events = tx.events.slice(startEventsIndex, endEventsIndex >= 0 ? endEventsIndex : undefined) as {
       type: string;
       attributes: {
         key: string;
@@ -1181,15 +1051,12 @@ export class RecentSendHistoryService {
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1198,11 +1065,11 @@ export class RecentSendHistoryService {
 
     // 일단 마지막으로 받은 events가 tx의 결과에 가장 가까이 있을 것이다...
     // 단순하게 그냥 마지막 coin_received를 찾는다.
-    const receiveEvent = events.reverse().find((event) => {
-      if (event.type === "coin_received") {
-        const attr = event.attributes.find((attr) => {
+    const receiveEvent = events.reverse().find(event => {
+      if (event.type === 'coin_received') {
+        const attr = event.attributes.find(attr => {
           return (
-            compareStringWithBase64OrPlain(attr.key, "receiver")[0] &&
+            compareStringWithBase64OrPlain(attr.key, 'receiver')[0] &&
             compareStringWithBase64OrPlain(attr.value, receiver)[0]
           );
         });
@@ -1217,15 +1084,13 @@ export class RecentSendHistoryService {
 
     if (receiveEvent) {
       let isBase64 = false;
-      const amountAttr = receiveEvent.attributes.find((attr) => {
-        const c = compareStringWithBase64OrPlain(attr.key, "amount");
+      const amountAttr = receiveEvent.attributes.find(attr => {
+        const c = compareStringWithBase64OrPlain(attr.key, 'amount');
         isBase64 = c[1];
         return c[0];
       });
       if (amountAttr) {
-        const amount = isBase64
-          ? Buffer.from(amountAttr.value, "base64").toString()
-          : amountAttr.value;
+        const amount = isBase64 ? Buffer.from(amountAttr.value, 'base64').toString() : amountAttr.value;
         const split = amount.split(/^([0-9]+)(\s)*([a-zA-Z][a-zA-Z0-9/-]*)$/);
 
         // 이 if 문을 만족 못하면 이미 망한건데... 머 따로 오류 처리할 마땅한 방법이 없으니 일단 패스...
@@ -1235,8 +1100,8 @@ export class RecentSendHistoryService {
           return [
             {
               denom,
-              amount,
-            },
+              amount
+            }
           ];
         }
       }
@@ -1253,23 +1118,20 @@ export class RecentSendHistoryService {
   ): number {
     const events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1277,29 +1139,24 @@ export class RecentSendHistoryService {
     };
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "acknowledge_packet") {
+      if (event.type !== 'acknowledge_packet') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          return compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          )[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_channel')[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       let isBase64 = false;
       const sequenceAttr = event.attributes.find((attr: { key: string }) => {
-        const c = compareStringWithBase64OrPlain(attr.key, "packet_sequence");
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_sequence');
         isBase64 = c[1];
         return c[0];
       });
@@ -1309,11 +1166,9 @@ export class RecentSendHistoryService {
 
       if (isBase64) {
         return (
-          Buffer.from(sourcePortAttr.value, "base64").toString() ===
-            sourcePortId &&
-          Buffer.from(sourceChannelAttr.value, "base64").toString() ===
-            sourceChannelId &&
-          Buffer.from(sequenceAttr.value, "base64").toString() === sequence
+          Buffer.from(sourcePortAttr.value, 'base64').toString() === sourcePortId &&
+          Buffer.from(sourceChannelAttr.value, 'base64').toString() === sourceChannelId &&
+          Buffer.from(sequenceAttr.value, 'base64').toString() === sequence
         );
       } else {
         return (
@@ -1338,23 +1193,20 @@ export class RecentSendHistoryService {
   ): number {
     const events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1362,29 +1214,24 @@ export class RecentSendHistoryService {
     };
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "timeout_packet") {
+      if (event.type !== 'timeout_packet') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          return compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          )[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_channel')[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       let isBase64 = false;
       const sequenceAttr = event.attributes.find((attr: { key: string }) => {
-        const c = compareStringWithBase64OrPlain(attr.key, "packet_sequence");
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_sequence');
         isBase64 = c[1];
         return c[0];
       });
@@ -1394,11 +1241,9 @@ export class RecentSendHistoryService {
 
       if (isBase64) {
         return (
-          Buffer.from(sourcePortAttr.value, "base64").toString() ===
-            sourcePortId &&
-          Buffer.from(sourceChannelAttr.value, "base64").toString() ===
-            sourceChannelId &&
-          Buffer.from(sequenceAttr.value, "base64").toString() === sequence
+          Buffer.from(sourcePortAttr.value, 'base64').toString() === sourcePortId &&
+          Buffer.from(sourceChannelAttr.value, 'base64').toString() === sourceChannelId &&
+          Buffer.from(sequenceAttr.value, 'base64').toString() === sequence
         );
       } else {
         return (
@@ -1415,22 +1260,19 @@ export class RecentSendHistoryService {
     return events.indexOf(packetEvent);
   }
 
-  protected getLastIBCTimeoutPacketBeforeIndexFromTx(
-    tx: any,
-    index: number
-  ): number {
+  protected getLastIBCTimeoutPacketBeforeIndexFromTx(tx: any, index: number): number {
     const events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     const reversedIndex = events
       .slice(0, index)
       .reverse()
-      .findIndex((event) => {
-        if (event.type === "timeout_packet") {
+      .findIndex(event => {
+        if (event.type === 'timeout_packet') {
           return true;
         }
       });
@@ -1449,23 +1291,20 @@ export class RecentSendHistoryService {
   ): number {
     const events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1473,29 +1312,24 @@ export class RecentSendHistoryService {
     };
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "recv_packet") {
+      if (event.type !== 'recv_packet') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          return compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          )[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_channel')[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       let isBase64 = false;
       const sequenceAttr = event.attributes.find((attr: { key: string }) => {
-        const c = compareStringWithBase64OrPlain(attr.key, "packet_sequence");
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_sequence');
         isBase64 = c[1];
         return c[0];
       });
@@ -1505,11 +1339,9 @@ export class RecentSendHistoryService {
 
       if (isBase64) {
         return (
-          Buffer.from(sourcePortAttr.value, "base64").toString() ===
-            sourcePortId &&
-          Buffer.from(sourceChannelAttr.value, "base64").toString() ===
-            sourceChannelId &&
-          Buffer.from(sequenceAttr.value, "base64").toString() === sequence
+          Buffer.from(sourcePortAttr.value, 'base64').toString() === sourcePortId &&
+          Buffer.from(sourceChannelAttr.value, 'base64').toString() === sourceChannelId &&
+          Buffer.from(sequenceAttr.value, 'base64').toString() === sequence
         );
       } else {
         return (
@@ -1534,23 +1366,20 @@ export class RecentSendHistoryService {
   ): string {
     let events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1560,65 +1389,53 @@ export class RecentSendHistoryService {
     events = events.slice(startingEventIndex);
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "send_packet") {
+      if (event.type !== 'send_packet') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
       let isBase64 = false;
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          const c = compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          );
-          isBase64 = c[1];
-          return c[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_src_channel');
+        isBase64 = c[1];
+        return c[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       if (isBase64) {
         return (
-          sourcePortAttr.value ===
-            Buffer.from(sourcePortId).toString("base64") &&
-          sourceChannelAttr.value ===
-            Buffer.from(sourceChannelId).toString("base64")
+          sourcePortAttr.value === Buffer.from(sourcePortId).toString('base64') &&
+          sourceChannelAttr.value === Buffer.from(sourceChannelId).toString('base64')
         );
       } else {
-        return (
-          sourcePortAttr.value === sourcePortId &&
-          sourceChannelAttr.value === sourceChannelId
-        );
+        return sourcePortAttr.value === sourcePortId && sourceChannelAttr.value === sourceChannelId;
       }
     });
 
     let isBase64 = false;
     if (packetEvent) {
-      const sequenceAttr = packetEvent.attributes.find(
-        (attr: { key: string }) => {
-          const c = compareStringWithBase64OrPlain(attr.key, "packet_sequence");
-          isBase64 = c[1];
-          return c[0];
-        }
-      );
+      const sequenceAttr = packetEvent.attributes.find((attr: { key: string }) => {
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_sequence');
+        isBase64 = c[1];
+        return c[0];
+      });
       if (!sequenceAttr) {
-        throw new Error("Invalid tx");
+        throw new Error('Invalid tx');
       }
 
       if (isBase64) {
-        return Buffer.from(sequenceAttr.value, "base64").toString();
+        return Buffer.from(sequenceAttr.value, 'base64').toString();
       } else {
         return sequenceAttr.value;
       }
     }
 
-    throw new Error("Invalid tx");
+    throw new Error('Invalid tx');
   }
 
   protected getDstChannelIdFromTx(
@@ -1629,23 +1446,20 @@ export class RecentSendHistoryService {
   ): string {
     let events = tx.events;
     if (!events) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
     if (!Array.isArray(events)) {
-      throw new Error("Invalid tx");
+      throw new Error('Invalid tx');
     }
 
     // In injective, events from tendermint rpc is not encoded as base64.
     // I don't know that this is the difference from tendermint version, or just custom from injective.
-    const compareStringWithBase64OrPlain = (
-      target: string,
-      value: string
-    ): [boolean, boolean] => {
+    const compareStringWithBase64OrPlain = (target: string, value: string): [boolean, boolean] => {
       if (target === value) {
         return [true, false];
       }
 
-      if (target === Buffer.from(value).toString("base64")) {
+      if (target === Buffer.from(value).toString('base64')) {
         return [true, true];
       }
 
@@ -1655,68 +1469,53 @@ export class RecentSendHistoryService {
     events = events.slice(startingEventIndex);
 
     const packetEvent = events.find((event: any) => {
-      if (event.type !== "send_packet") {
+      if (event.type !== 'send_packet') {
         return false;
       }
       const sourcePortAttr = event.attributes.find((attr: { key: string }) => {
-        return compareStringWithBase64OrPlain(attr.key, "packet_src_port")[0];
+        return compareStringWithBase64OrPlain(attr.key, 'packet_src_port')[0];
       });
       if (!sourcePortAttr) {
         return false;
       }
       let isBase64 = false;
-      const sourceChannelAttr = event.attributes.find(
-        (attr: { key: string }) => {
-          const c = compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_src_channel"
-          );
-          isBase64 = c[1];
-          return c[0];
-        }
-      );
+      const sourceChannelAttr = event.attributes.find((attr: { key: string }) => {
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_src_channel');
+        isBase64 = c[1];
+        return c[0];
+      });
       if (!sourceChannelAttr) {
         return false;
       }
       if (isBase64) {
         return (
-          sourcePortAttr.value ===
-            Buffer.from(sourcePortId).toString("base64") &&
-          sourceChannelAttr.value ===
-            Buffer.from(sourceChannelId).toString("base64")
+          sourcePortAttr.value === Buffer.from(sourcePortId).toString('base64') &&
+          sourceChannelAttr.value === Buffer.from(sourceChannelId).toString('base64')
         );
       } else {
-        return (
-          sourcePortAttr.value === sourcePortId &&
-          sourceChannelAttr.value === sourceChannelId
-        );
+        return sourcePortAttr.value === sourcePortId && sourceChannelAttr.value === sourceChannelId;
       }
     });
 
     let isBase64 = false;
     if (packetEvent) {
-      const dstChannelIdAttr = packetEvent.attributes.find(
-        (attr: { key: string }) => {
-          const c = compareStringWithBase64OrPlain(
-            attr.key,
-            "packet_dst_channel"
-          );
-          isBase64 = c[1];
-          return c[0];
-        }
-      );
+      const dstChannelIdAttr = packetEvent.attributes.find((attr: { key: string }) => {
+        const c = compareStringWithBase64OrPlain(attr.key, 'packet_dst_channel');
+        isBase64 = c[1];
+        return c[0];
+      });
       if (!dstChannelIdAttr) {
-        throw new Error("Invalid tx");
+        throw new Error('Invalid tx');
       }
 
       if (isBase64) {
-        return Buffer.from(dstChannelIdAttr.value, "base64").toString();
+        return Buffer.from(dstChannelIdAttr.value, 'base64').toString();
       } else {
         return dstChannelIdAttr.value;
       }
     }
 
-    throw new Error("Invalid tx");
+    throw new Error('Invalid tx');
   }
 
   protected readonly onChainRemoved = (chainInfo: ChainInfo) => {
@@ -1725,27 +1524,19 @@ export class RecentSendHistoryService {
     runInAction(() => {
       const removingIds: string[] = [];
       for (const history of this.recentIBCHistoryMap.values()) {
-        if (
-          ChainIdHelper.parse(history.chainId).identifier === chainIdentifier
-        ) {
+        if (ChainIdHelper.parse(history.chainId).identifier === chainIdentifier) {
+          removingIds.push(history.id);
+          continue;
+        }
+
+        if (ChainIdHelper.parse(history.destinationChainId).identifier === chainIdentifier) {
           removingIds.push(history.id);
           continue;
         }
 
         if (
-          ChainIdHelper.parse(history.destinationChainId).identifier ===
-          chainIdentifier
-        ) {
-          removingIds.push(history.id);
-          continue;
-        }
-
-        if (
-          history.ibcHistory.some((history) => {
-            return (
-              ChainIdHelper.parse(history.counterpartyChainId).identifier ===
-              chainIdentifier
-            );
+          history.ibcHistory.some(history => {
+            return ChainIdHelper.parse(history.counterpartyChainId).identifier === chainIdentifier;
           })
         ) {
           removingIds.push(history.id);

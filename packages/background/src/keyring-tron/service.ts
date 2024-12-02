@@ -41,6 +41,8 @@ export class KeyRingTronService {
 
     const address = pubKey.getEthAddress();
 
+    console.log('address tron', chainInfo, address);
+
     const bech32Address = new Bech32Address(address);
 
     return {

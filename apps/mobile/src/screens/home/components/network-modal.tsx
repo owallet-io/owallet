@@ -44,7 +44,11 @@ export const NetworkModal: FC<{
   }, [appInitStore.getInitApp.hideTestnet]);
   const getApp = (chainId: string) => {
     if (!chainId) return;
+
     const chainInfo = chainStore.getChain(chainId);
+    if (chainInfo.features.includes('tron')) {
+      return 'Tron';
+    }
     if (chainId.includes('eip155') || chainId.includes('inj')) {
       return 'Ethereum';
     } else if (chainInfo.features.includes('btc')) {
