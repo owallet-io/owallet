@@ -85,6 +85,8 @@ export const connectAndSignTrxWithLedger = async (
   transport = await LedgerUtils.tryAppOpen(transport, 'Tron');
   trxApp = new Trx(transport);
 
+  console.log('trxApp', trxApp);
+
   try {
     let pubKey: PubKeySecp256k1;
     try {
@@ -105,16 +107,24 @@ export const connectAndSignTrxWithLedger = async (
     }
 
     try {
-      const trxSignature = await trxApp.signTransactionHash(
-        `m/44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
-        message
+      const trxSignature = await trxApp.signTransaction(
+        `44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+        message,
+        []
       );
+      // const trxSignature = await trxApp.signTransactionHash(
+      //   `44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+      //   message
+      // );
+
+      console.log('trxSignature', trxSignature);
 
       return Buffer.from(trxSignature, 'hex');
     } catch (e) {
       if (e?.message.includes('(0x6985)')) {
         throw new OWalletError(ErrModuleLedgerSign, ErrSignRejected, 'User rejected signing');
       }
+      console.log(' e.message', e.message, e.toString());
 
       throw new OWalletError(ErrModuleLedgerSign, ErrFailedSign, e.message || e.toString());
     }

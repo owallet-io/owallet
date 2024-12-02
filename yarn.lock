@@ -5034,6 +5034,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-app-cosmos@npm:^6.29.4":
+  version: 6.30.4
+  resolution: "@ledgerhq/hw-app-cosmos@npm:6.30.4"
+  dependencies:
+    "@ledgerhq/errors": ^6.19.1
+    "@ledgerhq/hw-transport": ^6.31.4
+    bip32-path: ^0.4.2
+  checksum: dc86da826b8a8757a6f59f3ff4d00a5846780f640fc7e3d6c47d1ab9ca035e433d7693c8e2fba985e72b98478c918864389dec8098a335647edb6e8c4127d9dd
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-app-eth@npm:6.29.3":
   version: 6.29.3
   resolution: "@ledgerhq/hw-app-eth@npm:6.29.3"
@@ -6110,7 +6121,6 @@ __metadata:
     "@ethersproject/hash": ^5.7.0
     "@ethersproject/transactions": ^5.7.0
     "@ethersproject/wallet": ^5.7.0
-    "@ledgerhq/hw-app-eth": ^6.29.3
     "@ledgerhq/hw-transport": ^6.20.0
     "@ledgerhq/hw-transport-webhid": ^6.20.0
     "@ledgerhq/hw-transport-webusb": ^6.20.0
@@ -24343,6 +24353,7 @@ __metadata:
     "@freakycoder/react-native-progressive-fast-image": ^1.0.0
     "@gorhom/bottom-sheet": 4.4.7
     "@ledgerhq/hw-app-btc": 6.27.1
+    "@ledgerhq/hw-app-cosmos": ^6.29.4
     "@ledgerhq/hw-app-eth": ^6.29.3
     "@ledgerhq/hw-app-trx": ^6.29.4
     "@ledgerhq/react-native-hw-transport-ble": =6.20.0

@@ -1,7 +1,6 @@
 import { KeyRingTron } from '../../keyring';
 import { PlainObject, Vault, VaultService } from '../../vault';
 import { KeyRingLedgerService } from '../../keyring-ledger';
-import { ChainInfo } from '@owallet/types';
 import { PubKeySecp256k1 } from '@owallet/crypto';
 import { OWalletError } from '@owallet/router';
 import { Buffer } from 'buffer';
@@ -31,7 +30,7 @@ export class KeyRingTronLedgerService implements KeyRingTron {
     return this.baseKeyringLedgerService.createKeyRingVault(pubKey, app, bip44Path);
   }
 
-  getPubKey(vault: Vault, _coinType: number, chainInfo: ChainInfo): PubKeySecp256k1 {
+  getPubKey(vault: Vault, _coinType: number): PubKeySecp256k1 {
     let app = 'Tron';
     if (!vault.insensitive[app]) {
       throw new OWalletError(

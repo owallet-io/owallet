@@ -38,6 +38,7 @@
     "@freakycoder/react-native-progressive-fast-image": "^1.0.0",
     "@gorhom/bottom-sheet": "4.4.7",
     "@ledgerhq/hw-app-btc": "6.27.1",
+    "@ledgerhq/hw-app-cosmos": "^6.29.4",
     "@ledgerhq/hw-app-eth": "^6.29.3",
     "@ledgerhq/hw-app-trx": "^6.29.4",
     "@ledgerhq/react-native-hw-transport-ble": "=6.20.0",

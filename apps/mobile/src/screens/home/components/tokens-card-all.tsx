@@ -28,6 +28,9 @@ export const TokensCardAll: FunctionComponent<{
   const allBalances = appInitStore.getInitApp.isAllNetworks
     ? hugeQueriesStore.getAllBalances(true)
     : hugeQueriesStore.getAllBalancesByChainId(chainId);
+
+  console.log('allBalances', allBalances);
+
   const allBalancesNonZero = useMemo(() => {
     return allBalances.filter(token => {
       return token.token.toDec().gt(zeroDec);

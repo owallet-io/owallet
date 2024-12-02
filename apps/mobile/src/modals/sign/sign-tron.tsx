@@ -19,9 +19,10 @@ import OWIcon from '@components/ow-icon/ow-icon';
 import { SignTronInteractionStore } from '@owallet/stores-core';
 import WrapViewModal from '@src/modals/wrap/wrap-view-modal';
 import { useTheme } from '@src/themes/theme-provider';
-import { toDisplay } from '@owallet/common';
+import { DEFAULT_FEE_LIMIT_TRON, toDisplay, TronWebProvider } from '@owallet/common';
 import { useLedgerBLE } from '@src/providers/ledger-ble';
 import { handleTronPreSignByLedger } from './util/handle-trx-sign';
+import { LedgerGuideBox } from '@src/components/guide-box/ledger-guide-box';
 
 export const SignTronModal = registerModal(
   observer<{
@@ -76,18 +77,55 @@ export const SignTronModal = registerModal(
       try {
         let signature;
         if (interactionData.data.keyType === 'ledger') {
+          console.log('ledger tron ', parsedData);
+          let transaction;
+          const tronWeb = TronWebProvider(chainInfo.rpc);
+
+          if (parsedData?.contractAddress) {
+            transaction = (
+              await tronWeb.transactionBuilder.triggerSmartContract(
+                parsedData?.contractAddress,
+                'transfer(address,uint256)',
+                {
+                  callValue: 0,
+                  feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
+                  userFeePercentage: 100,
+                  shouldPollResponse: false
+                },
+                [
+                  { type: 'address', value: parsedData.recipient },
+                  { type: 'uint256', value: parsedData.amount }
+                ],
+                parsedData.address
+              )
+            ).transaction;
+          } else {
+            transaction = await tronWeb.transactionBuilder.sendTrx(
+              parsedData.recipient,
+              parsedData.amount,
+              parsedData.address
+            );
+          }
+
+          console.log('transaction', transaction.txID);
+
           setIsLedgerInteracting(true);
           setLedgerInteractingError(undefined);
+          console.log('start handleTronPreSignByLedger');
+
           signature = await handleTronPreSignByLedger(
             interactionData,
-            Buffer.from(JSON.stringify(interactionData.data.data)).toString('hex'),
+            transaction.raw_data_hex,
             ledgerBLE.getTransport
           );
+
+          console.log('signature', signature);
         }
+
         await signTronInteractionStore.approveWithProceedNext(
           interactionData.id,
           Buffer.from(Buffer.from(JSON.stringify(interactionData.data.data)).toString('hex')),
-          undefined,
+          signature,
           async () => {
             // noop
           },
@@ -158,6 +196,16 @@ export const SignTronModal = registerModal(
               </OWText>
             </View>
           ) : null}
+
+          <LedgerGuideBox
+            data={{
+              keyInsensitive: interactionData.data.keyInsensitive,
+              isEthereum: true
+            }}
+            isLedgerInteracting={isLedgerInteracting}
+            ledgerInteractingError={ledgerInteractingError}
+            // isInternal={interactionData.isInternal}
+          />
 
           <Gutter size={12} />
 
