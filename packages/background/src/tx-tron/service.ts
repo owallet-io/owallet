@@ -1,7 +1,7 @@
 import { ChainsService } from '../chains';
 import { Notification } from '../tx/types';
 import { Transaction } from '@owallet/types';
-import { retry, TronWebProvider } from '@owallet/common';
+import { retry } from '@owallet/common';
 
 export class BackgroundTxTronService {
   constructor(protected readonly chainsService: ChainsService, protected readonly notification: Notification) {}
@@ -35,6 +35,8 @@ export class BackgroundTxTronService {
       let txHash = '';
       if (signedTx?.transaction?.txID) {
         txHash = signedTx.transaction.txID;
+      } else if (typeof signedTx === 'string') {
+        txHash = signedTx;
       }
 
       if (!txHash) {

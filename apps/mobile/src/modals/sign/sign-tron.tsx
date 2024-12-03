@@ -119,14 +119,14 @@ export const SignTronModal = registerModal(
 
           transaction.signature = [signature];
 
-          const receipt = await tronWeb.trx.sendRawTransaction(transaction);
+          await tronWeb.trx.sendRawTransaction(transaction);
           setLoading(false);
         }
 
         await signTronInteractionStore.approveWithProceedNext(
           interactionData.id,
           interactionData.data.keyType === 'ledger'
-            ? Buffer.from(Buffer.from(JSON.stringify(transaction)).toString('hex'))
+            ? JSON.stringify(transaction)
             : Buffer.from(Buffer.from(JSON.stringify(interactionData.data.data)).toString('hex')),
           signature,
           async () => {
@@ -184,7 +184,7 @@ export const SignTronModal = registerModal(
 
           <Gutter size={24} />
 
-          {feeResult ? (
+          {feeResult && interactionData.data.keyType !== 'ledger' ? (
             <View
               style={{
                 flexDirection: 'row',
