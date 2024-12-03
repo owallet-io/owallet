@@ -3,7 +3,7 @@ import { OWallet, Ethereum, TronWeb, Bitcoin, Solana } from "@owallet/types";
 import { OfflineSigner } from "@cosmjs/launchpad";
 import { SecretUtils } from "@owallet/types";
 import { OfflineDirectSigner } from "@cosmjs/proto-signing";
-import { initialize } from "@toan.dq2009/wallet-standard";
+import { initialize } from "@oraichain/owallet-wallet-standard";
 
 export function init(
   owallet: OWallet,

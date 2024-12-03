@@ -61,7 +61,7 @@ import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-import { OWalletSolanaWalletAccount } from "@toan.dq2009/wallet-standard";
+import { OWalletSolanaWalletAccount } from "@oraichain/owallet-wallet-standard";
 import { Signer } from "@oasisprotocol/client/dist/signature";
 
 export const localStore = new Map<string, any>();

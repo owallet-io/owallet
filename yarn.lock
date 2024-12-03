@@ -6057,6 +6057,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oraichain/owallet-wallet-standard@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@oraichain/owallet-wallet-standard@npm:0.1.1"
+  dependencies:
+    "@solana/wallet-standard-features": =1.1.0
+    "@solana/web3.js": =1.58.0
+    "@wallet-standard/base": ^1.0.1
+    "@wallet-standard/features": ^1.0.3
+    bs58: ^4.0.1
+  checksum: db8c9b612c0b2578f6dab816fd435ec5f661bdc51155313df930791c3733dabb64cc61698b85a64212a4bc82a09bb98c7862633e555b4a9cc7c3a153d0367c19
+  languageName: node
+  linkType: hard
+
 "@oraichain/wasm-json-toolkit@npm:^1.0.24":
   version: 1.0.24
   resolution: "@oraichain/wasm-json-toolkit@npm:1.0.24"
@@ -9153,19 +9166,6 @@ __metadata:
     react-test-renderer:
       optional: true
   checksum: 7fe44352e920deb5cb1876f80d64e48615232072c9d5382f1e0284b3aab46bb1c659a040b774c45cdf084a5257b8fe463f7e08695ad8480d8a15635d4d3d1f6d
-  languageName: node
-  linkType: hard
-
-"@toan.dq2009/wallet-standard@npm:0.1.10":
-  version: 0.1.10
-  resolution: "@toan.dq2009/wallet-standard@npm:0.1.10"
-  dependencies:
-    "@solana/wallet-standard-features": =1.1.0
-    "@solana/web3.js": =1.58.0
-    "@wallet-standard/base": ^1.0.1
-    "@wallet-standard/features": ^1.0.3
-    bs58: ^4.0.1
-  checksum: 97d8e50b1650637c026a4558eb33dc1eee6998a60c6cbdc1b8e265722310b99f0778ae534c72b76b2d6943ebe91a24cbe8c52df7428703d66b6076b203e47534
   languageName: node
   linkType: hard
 
@@ -26775,13 +26775,13 @@ __metadata:
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.12
+    "@oraichain/owallet-wallet-standard": 0.1.1
     "@solana/spl-memo": 0.2.5
     "@solana/spl-token": 0.3.5
     "@solana/wallet-standard-chains": 1.1.0
     "@solana/wallet-standard-features": 1.2.0
     "@solana/wallet-standard-util": 1.1.1
     "@solana/web3.js": ^1.95.4
-    "@toan.dq2009/wallet-standard": 0.1.10
     "@types/jest": 29.5.3
     "@types/node": ^16.6.2
     "@typescript-eslint/eslint-plugin": ^4.13.0
