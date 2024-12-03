@@ -68,41 +68,43 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
     super.onReceiveResponse(response);
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    if (!response?.data?.result) return;
     const erc20Denoms = response.data.result.filter(
       (tokenBalance) =>
         tokenBalance.balance != null &&
         Number(tokenBalance.balance) > 0 &&
         tokenBalance.tokenAddress !== contractWeth
     );
-    if (erc20Denoms) {
-      const tokenAddresses = erc20Denoms
-        .map(
-          ({ tokenAddress }) =>
-            `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`
-        )
-        .join(",");
-      // 4. Fetch token metadata in bulk
-      API.getMultipleTokenInfo({ tokenAddresses })
-        .then((tokenInfos) => {
-          console.log(tokenInfos, "tokenInfos");
-          // 5. Map token metadata to currencies
-          const currencyInfo = tokenInfos
-            .filter(
-              ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null
-            )
-            .map((item) => ({
-              coinImageUrl: item.imgUrl,
-              coinDenom: item.abbr,
-              coinGeckoId: item.coingeckoId,
-              coinDecimals: item.decimal,
-              coinMinimalDenom: `erc20:${item.contractAddress}`,
-            }));
-          if (currencyInfo) {
-            chainInfo.addCurrencies(...currencyInfo);
-          }
-        })
-        .catch((e) => console.error(e, "err fetch erc20"));
-    }
+    if (!erc20Denoms) return;
+
+    const tokenAddresses = erc20Denoms
+      .map(
+        ({ tokenAddress }) =>
+          `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`
+      )
+      .join(",");
+    if (!tokenAddresses) return;
+    // 4. Fetch token metadata in bulk
+    API.getMultipleTokenInfo({ tokenAddresses })
+      .then((tokenInfos) => {
+        if (!tokenInfos) return;
+        // 5. Map token metadata to currencies
+        const currencyInfo = tokenInfos
+          .filter(
+            ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null
+          )
+          .map((item) => ({
+            coinImageUrl: item.imgUrl,
+            coinDenom: item.abbr,
+            coinGeckoId: item.coingeckoId,
+            coinDecimals: item.decimal,
+            coinMinimalDenom: `erc20:${item.contractAddress}`,
+          }));
+        if (currencyInfo) {
+          chainInfo.addCurrencies(...currencyInfo);
+        }
+      })
+      .catch((e) => console.error(e, "err fetch erc20"));
   }
 }
 

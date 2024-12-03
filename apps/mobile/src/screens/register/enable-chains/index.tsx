@@ -784,8 +784,6 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
               ledgerBtcAppNeeds.push(enable);
             }
             // if (isEthermintLike) {
-            //     // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
-            //     // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
             //     // Remove enable from enables
             //     enables.splice(i, 1);
             //     i--;

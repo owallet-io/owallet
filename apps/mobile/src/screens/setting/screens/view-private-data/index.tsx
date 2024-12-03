@@ -28,7 +28,7 @@ export const getPrivateDataTitle = (
 
 export const canShowPrivateData = (keyRingType: string): boolean => {
   if (!keyRingType) return false;
-  return keyRingType === "mnemonic" || keyRingType === "privateKey";
+  return keyRingType === "mnemonic" || keyRingType === "private-key";
 };
 
 export const ViewPrivateDataScreen: FunctionComponent = () => {

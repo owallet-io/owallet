@@ -7,6 +7,7 @@ export type SignTronInteractionData = {
   chainId: string;
   pubKey: Uint8Array;
   data: string;
+  keyType: string;
   keyInsensitive: PlainObject;
 };
 
@@ -34,7 +35,7 @@ export class SignTronInteractionStore {
 
   async approveWithProceedNext(
     id: string,
-    signingData: Uint8Array,
+    signingData: Uint8Array | string,
     signature: any,
     afterFn: (proceedNext: boolean) => void | Promise<void>,
     options: {

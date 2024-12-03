@@ -31,6 +31,7 @@ import {
   ExportKeyRingVaultsMsg,
   SearchKeyRingsMsg,
   SimulateSignTronMsg,
+  ExportKeyRingMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
 
@@ -129,6 +130,8 @@ export const getHandler: (service: KeyRingService) => Handler = (
           env,
           msg as ExportKeyRingVaultsMsg
         );
+      case ExportKeyRingMsg:
+        return handleExportKeyRingMsg(service)(env, msg as ExportKeyRingMsg);
       case SearchKeyRingsMsg:
         return handleSearchKeyRingsMsg(service)(env, msg as SearchKeyRingsMsg);
       default:
@@ -419,6 +422,18 @@ const handleExportKeyRingVaultsMsg: (
 ) => InternalHandler<ExportKeyRingVaultsMsg> = (service) => {
   return async (_, msg) => {
     return await service.exportKeyRingVaults(msg.password);
+  };
+};
+
+const handleExportKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<ExportKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportSensitiveKeyRingData(
+      msg.vaultId,
+      msg.password,
+      msg.chainId
+    );
   };
 };
 

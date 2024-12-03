@@ -332,10 +332,7 @@ export class RecentSendHistoryService {
             },
             () => {
               // reject if ws closed before fulfilled
-              // 하지만 로직상 fulfill 되기 전에 ws가 닫히는게 되기 때문에
-              // delay를 좀 준다.
-              // 현재 trackIBCPacketForwardingRecursiveInternal에 ws close 이후에는 동기적인 로직밖에 없으므로
-              // 문제될게 없다.
+
               setTimeout(() => {
                 reject();
               }, 500);

@@ -22,7 +22,14 @@ import OWIcon from "@components/ow-icon/ow-icon";
 import { SignTronInteractionStore } from "@owallet/stores-core";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
-import { toDisplay } from "@owallet/common";
+import {
+  DEFAULT_FEE_LIMIT_TRON,
+  toDisplay,
+  TronWebProvider,
+} from "@owallet/common";
+import { useLedgerBLE } from "@src/providers/ledger-ble";
+import { handleTronPreSignByLedger } from "./util/handle-trx-sign";
+import { LedgerGuideBox } from "@src/components/guide-box/ledger-guide-box";
 
 export const SignTronModal = registerModal(
   observer<{
@@ -40,6 +47,11 @@ export const SignTronModal = registerModal(
     const style = useStyle();
 
     const [isViewData, setIsViewData] = useState(false);
+    const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
+    const [ledgerInteractingError, setLedgerInteractingError] = useState<
+      Error | undefined
+    >(undefined);
+    const [loading, setLoading] = useState(false);
 
     const chainId = interactionData.data.chainId;
     const account = tronAccountStore.getAccount(chainId);
@@ -80,22 +92,74 @@ export const SignTronModal = registerModal(
       parsedData.raw_data_hex ? parsedData : null
     );
 
+    const ledgerBLE = useLedgerBLE();
+
     const signingDataText = useMemo(() => {
       return JSON.stringify(parsedData);
     }, [parsedData]);
 
     const approve = async () => {
       try {
+        let signature = undefined;
+        let transaction;
+        if (interactionData.data.keyType === "ledger") {
+          setLoading(true);
+          const tronWeb = TronWebProvider(chainInfo.rpc);
+
+          if (parsedData?.contractAddress) {
+            transaction = (
+              await tronWeb.transactionBuilder.triggerSmartContract(
+                parsedData?.contractAddress,
+                "transfer(address,uint256)",
+                {
+                  callValue: 0,
+                  feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
+                  userFeePercentage: 100,
+                  shouldPollResponse: false,
+                },
+                [
+                  { type: "address", value: parsedData.recipient },
+                  { type: "uint256", value: parsedData.amount },
+                ],
+                parsedData.address
+              )
+            ).transaction;
+          } else {
+            transaction = await tronWeb.transactionBuilder.sendTrx(
+              parsedData.recipient,
+              parsedData.amount,
+              parsedData.address
+            );
+          }
+
+          setIsLedgerInteracting(true);
+          setLedgerInteractingError(undefined);
+
+          signature = await handleTronPreSignByLedger(
+            interactionData,
+            transaction.raw_data_hex,
+            ledgerBLE.getTransport
+          );
+
+          transaction.signature = [signature];
+
+          await tronWeb.trx.sendRawTransaction(transaction);
+          setLoading(false);
+        }
+
         await signTronInteractionStore.approveWithProceedNext(
           interactionData.id,
-          Buffer.from(
-            Buffer.from(JSON.stringify(interactionData.data.data)).toString(
-              "hex"
-            )
-          ),
-          undefined,
+          interactionData.data.keyType === "ledger"
+            ? JSON.stringify(transaction)
+            : Buffer.from(
+                Buffer.from(JSON.stringify(interactionData.data.data)).toString(
+                  "hex"
+                )
+              ),
+          signature,
           async () => {
             // noop
+            setLoading(false);
           },
           {
             preDelay: 200,
@@ -103,6 +167,7 @@ export const SignTronModal = registerModal(
         );
       } catch (e) {
         console.log("error on sign Tron", e);
+        setLoading(false);
       }
     };
     const { colors } = useTheme();
@@ -159,7 +224,7 @@ export const SignTronModal = registerModal(
 
           <Gutter size={24} />
 
-          {feeResult ? (
+          {feeResult && interactionData.data.keyType !== "ledger" ? (
             <View
               style={{
                 flexDirection: "row",
@@ -185,6 +250,16 @@ export const SignTronModal = registerModal(
             </View>
           ) : null}
 
+          <LedgerGuideBox
+            data={{
+              keyInsensitive: interactionData.data.keyInsensitive,
+              isEthereum: true,
+            }}
+            isLedgerInteracting={isLedgerInteracting}
+            ledgerInteractingError={ledgerInteractingError}
+            // isInternal={interactionData.isInternal}
+          />
+
           <Gutter size={12} />
 
           <XAxis>
@@ -209,6 +284,7 @@ export const SignTronModal = registerModal(
               label={intl.formatMessage({ id: "button.approve" })}
               style={{ flex: 1, width: "100%" }}
               onPress={approve}
+              loading={loading}
             />
           </XAxis>
         </Box>

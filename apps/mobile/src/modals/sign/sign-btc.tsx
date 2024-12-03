@@ -280,7 +280,6 @@ export const SignBtcModal = registerModal(
             inputs,
             outputs
           );
-          console.log(signature, "signature");
         }
 
         await signBtcInteractionStore.approveWithProceedNext(

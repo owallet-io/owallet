@@ -5,7 +5,6 @@ import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
 import { computed, flow, makeObservable, observable } from "mobx";
 import { OWallet } from "@owallet/types";
 import { QuerySharedContext } from "../../common";
-
 import { Buffer } from "buffer/";
 import { makeURL } from "@owallet/simple-fetch";
 
@@ -13,7 +12,7 @@ export class ObservableSecretContractChainQuery<
   T
 > extends ObservableChainQuery<T> {
   @observable.ref
-  protected keplr?: OWallet = undefined;
+  protected owallet?: OWallet = undefined;
 
   protected nonce?: Uint8Array;
 
@@ -38,12 +37,12 @@ export class ObservableSecretContractChainQuery<
   protected override async onStart() {
     super.onStart();
 
-    if (!this.keplr) {
+    if (!this.owallet) {
       await this.initOWallet();
     }
 
-    if (!this.keplr) {
-      throw new Error("Failed to get keplr");
+    if (!this.owallet) {
+      throw new Error("Failed to get owallet");
     }
 
     await this.querySecretContractCodeHash
@@ -57,7 +56,7 @@ export class ObservableSecretContractChainQuery<
     return (
       this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
         .isFetching ||
-      this.keplr == null ||
+      this.owallet == null ||
       this._isIniting ||
       super.isFetching
     );
@@ -76,15 +75,15 @@ export class ObservableSecretContractChainQuery<
 
   @flow
   protected *initOWallet() {
-    this.keplr = yield* toGenerator(this.apiGetter());
+    this.owallet = yield* toGenerator(this.apiGetter());
   }
 
   @flow
   protected *init() {
     this._isIniting = true;
 
-    if (this.keplr && this.contractCodeHash) {
-      const enigmaUtils = this.keplr.getEnigmaUtils(this.chainId);
+    if (this.owallet && this.contractCodeHash) {
+      const enigmaUtils = this.owallet.getEnigmaUtils(this.chainId);
       const encrypted = yield* toGenerator(
         enigmaUtils.encrypt(this.contractCodeHash, this.obj)
       );
@@ -118,8 +117,8 @@ export class ObservableSecretContractChainQuery<
           const errorCipherB64 = rgxMatches[2];
           const errorCipherBz = Buffer.from(errorCipherB64, "base64");
 
-          if (this.keplr && this.nonce) {
-            const decrypted = await this.keplr
+          if (this.owallet && this.nonce) {
+            const decrypted = await this.owallet
               .getEnigmaUtils(this.chainId)
               .decrypt(errorCipherBz, this.nonce);
 
@@ -139,7 +138,7 @@ export class ObservableSecretContractChainQuery<
         }
       | undefined;
 
-    if (!this.keplr) {
+    if (!this.owallet) {
       throw new Error("OWallet API not initialized");
     }
 
@@ -151,7 +150,7 @@ export class ObservableSecretContractChainQuery<
       throw new Error("Failed to get the response from the contract");
     }
 
-    const decrypted = await this.keplr
+    const decrypted = await this.owallet
       .getEnigmaUtils(this.chainId)
       .decrypt(Buffer.from(encResult.data, "base64"), this.nonce);
 

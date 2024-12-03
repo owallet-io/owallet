@@ -40,6 +40,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
+  console.log(
+    "keyRingStore?.selectedKeyInfo?.type",
+    keyRingStore?.selectedKeyInfo?.type
+  );
+
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {

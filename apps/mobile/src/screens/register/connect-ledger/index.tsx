@@ -8,9 +8,8 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-// import {RootStackParamList, StackNavProp} from '../../../navigation';
 import { Box } from "../../../components/box";
-import { InteractionManager, StyleSheet, Text, View } from "react-native";
+import { InteractionManager, StyleSheet, View } from "react-native";
 import { XAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
 import {
@@ -21,13 +20,11 @@ import {
   TerraIcon,
 } from "../../../components/icon";
 import { useStore } from "../../../stores";
-// import {LedgerUtils} from '../../../utils';
-// import {useLedgerBLE} from '../../../provider/ledger-ble';
-import { ScrollViewRegisterContainer } from "../components/scroll-view-register-container";
 import { AppHRP, CosmosApp } from "@owallet/ledger-cosmos";
 import Transport from "@ledgerhq/hw-transport";
 import Eth from "@ledgerhq/hw-app-eth";
 import Btc from "@ledgerhq/hw-app-btc";
+import Trx from "@ledgerhq/hw-app-trx";
 import { PubKeySecp256k1 } from "@owallet/crypto";
 import { LedgerUtils } from "@utils/ledger";
 import { useLedgerBLE } from "@src/providers/ledger-ble";
@@ -37,15 +34,11 @@ import {
   resetTo,
   RootStackParamList,
 } from "@src/router/root";
-import { PageWithBottom } from "@components/page/page-with-bottom";
 import { OWButton } from "@components/button";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { metrics } from "@src/themes";
 import OWIcon from "@components/ow-icon/ow-icon";
 import OWText from "@components/text/ow-text";
-import { Controller } from "react-hook-form";
-import { RectButton } from "@components/rect-button";
-import { SelectItemModal } from "@src/modals/select-item-modal";
 import { useTheme } from "@src/themes/theme-provider";
 import { SCREENS } from "@common/constants";
 
@@ -53,7 +46,6 @@ export type Step = "unknown" | "connected" | "app";
 
 export const ConnectLedgerScreen: FunctionComponent = observer(() => {
   const intl = useIntl();
-  const style = useStyle();
   const route =
     useRoute<RouteProp<RootStackParamList, "Register.ConnectLedger">>();
   const navigation = useNavigation();
@@ -69,10 +61,13 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
     password,
   } = route.params;
 
+  console.log("propApp", propApp);
+
   if (
     !Object.keys(AppHRP).includes(propApp) &&
     propApp !== "Ethereum" &&
-    propApp !== "Bitcoin"
+    propApp !== "Bitcoin" &&
+    propApp !== "Tron"
   ) {
     throw new Error(`Unsupported app: ${propApp}`);
   }
@@ -294,8 +289,97 @@ export const ConnectLedgerScreen: FunctionComponent = observer(() => {
       setIsLoading(false);
 
       return;
-    }
+    } else if (propApp === "Tron") {
+      let trxApp = new Trx(transport);
 
+      try {
+        await trxApp.getAddress(`m/44'/195'/'0/0/0`);
+      } catch (e) {
+        // Device is locked or user is in home sceen or other app.
+        if (
+          e?.message.includes("(0x6b0c)") ||
+          e?.message.includes("(0x6511)") ||
+          e?.message.includes("(0x6e00)")
+        ) {
+          setStep("connected");
+        } else {
+          console.log(e);
+          setStep("unknown");
+          await transport.close();
+
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      transport = await LedgerUtils.tryAppOpen(transport, propApp);
+      trxApp = new Trx(transport);
+
+      try {
+        const res = await trxApp.getAddress(
+          `m/44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
+        );
+
+        const pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, "hex"));
+
+        console.log("pubKey", propApp, pubKey, appendModeInfo);
+
+        setStep("app");
+
+        if (appendModeInfo) {
+          await keyRingStore.appendLedgerKeyApp(
+            appendModeInfo.vaultId,
+            pubKey.toBytes(true),
+            propApp
+          );
+          await chainStore.enableChainInfoInUI(
+            ...appendModeInfo.afterEnableChains
+          );
+          resetTo(SCREENS.STACK.MainTab);
+        } else {
+          if (needPassword) {
+            navigate(SCREENS.RegisterNewPincode, {
+              walletName: name,
+              ledger: {
+                pubKey: pubKey.toBytes(),
+                bip44Path,
+                app: propApp,
+              },
+              stepTotal: 3,
+              stepPrevious: 1,
+            });
+          } else {
+            navigation.reset({
+              routes: [
+                {
+                  name: "Register.FinalizeKey",
+                  params: {
+                    name,
+                    password,
+                    stepPrevious: stepPrevious + 1,
+                    stepTotal,
+                    ledger: {
+                      pubKey: pubKey.toBytes(),
+                      bip44Path,
+                      app: propApp,
+                    },
+                  },
+                },
+              ],
+            });
+          }
+        }
+      } catch (e) {
+        console.log(e);
+        setStep("connected");
+      }
+
+      await transport.close();
+
+      setIsLoading(false);
+
+      return;
+    }
     let app = new CosmosApp(propApp, transport);
 
     try {

@@ -17,6 +17,7 @@ import {
   CheckPasswordMsg,
   // ComputeNotFinalizedKeyAddressesMsg,
   DeleteKeyRingMsg,
+  ExportKeyRingMsg,
   FinalizeKeyCoinTypeMsg,
   GetKeyRingStatusMsg,
   GetKeyRingStatusOnlyMsg,
@@ -183,6 +184,11 @@ export class KeyRingStore {
 
   async showKeyRing(vaultId: string, password: string) {
     const msg = new ShowSensitiveKeyRingDataMsg(vaultId, password);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async exportKeyRing(vaultId: string, password: string, chainId: string) {
+    const msg = new ExportKeyRingMsg(vaultId, password, chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

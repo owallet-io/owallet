@@ -98,8 +98,6 @@ const handleGetBtcKeysSettledMsg: (
       msg.origin
     );
 
-    console.log("msg.chainIds", msg.chainIds);
-
     return await Promise.allSettled(
       msg.chainIds.map((chainId) => service.getKeySelected(chainId))
     );

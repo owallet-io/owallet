@@ -66,7 +66,6 @@ export class ChainsService {
       kvStore: KVStore;
       updaterKVStore: KVStore;
     },
-    // embedChainInfos는 실행 이후에 변경되어서는 안된다.
     protected readonly embedChainInfos: ReadonlyArray<ChainInfoWithCoreTypes>,
     protected readonly suggestChainPrivilegedOrigins: string[],
     protected readonly communityChainInfoRepo: {

@@ -61,6 +61,8 @@ const handleEnableChainsMsg: (
 ) => InternalHandler<EnableChainsMsg> = (service) => {
   return (_, msg) => {
     service.enableChain(msg.vaultId, ...msg.chainIds);
+    console.log("enableChain", msg.vaultId, msg.chainIds);
+
     return service.enabledChainIdentifiersForVault(msg.vaultId) as string[];
   };
 };
