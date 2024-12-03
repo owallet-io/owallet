@@ -33,7 +33,7 @@ export class SignTronInteractionStore {
 
   async approveWithProceedNext(
     id: string,
-    signingData: Uint8Array,
+    signingData: Uint8Array | string,
     signature: any,
     afterFn: (proceedNext: boolean) => void | Promise<void>,
     options: {

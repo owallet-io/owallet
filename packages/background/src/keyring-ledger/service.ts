@@ -73,9 +73,9 @@ export class KeyRingLedgerService {
     return new PubKeySecp256k1(bytes);
   }
 
-  simulateSignTron(transaction: any, vault: Vault, coinType: number) {
-    throw new Error(`simulateSignTron not supported with Ledger`);
-  }
+  // simulateSignTron(transaction: any, vault: Vault, coinType: number) {
+  //   // throw new Error(`simulateSignTron not support with Ledger`);
+  // }
 
   sign(): {
     readonly r: Uint8Array;

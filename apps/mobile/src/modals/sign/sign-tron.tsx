@@ -36,6 +36,7 @@ export const SignTronModal = registerModal(
     const [isViewData, setIsViewData] = useState(false);
     const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
     const [ledgerInteractingError, setLedgerInteractingError] = useState<Error | undefined>(undefined);
+    const [loading, setLoading] = useState(false);
 
     const chainId = interactionData.data.chainId;
     const account = tronAccountStore.getAccount(chainId);
@@ -75,10 +76,10 @@ export const SignTronModal = registerModal(
 
     const approve = async () => {
       try {
-        let signature;
+        let signature = undefined;
+        let transaction;
         if (interactionData.data.keyType === 'ledger') {
-          console.log('ledger tron ', parsedData);
-          let transaction;
+          setLoading(true);
           const tronWeb = TronWebProvider(chainInfo.rpc);
 
           if (parsedData?.contractAddress) {
@@ -107,11 +108,8 @@ export const SignTronModal = registerModal(
             );
           }
 
-          console.log('transaction', transaction.txID);
-
           setIsLedgerInteracting(true);
           setLedgerInteractingError(undefined);
-          console.log('start handleTronPreSignByLedger');
 
           signature = await handleTronPreSignByLedger(
             interactionData,
@@ -119,15 +117,21 @@ export const SignTronModal = registerModal(
             ledgerBLE.getTransport
           );
 
-          console.log('signature', signature);
+          transaction.signature = [signature];
+
+          const receipt = await tronWeb.trx.sendRawTransaction(transaction);
+          setLoading(false);
         }
 
         await signTronInteractionStore.approveWithProceedNext(
           interactionData.id,
-          Buffer.from(Buffer.from(JSON.stringify(interactionData.data.data)).toString('hex')),
+          interactionData.data.keyType === 'ledger'
+            ? Buffer.from(Buffer.from(JSON.stringify(transaction)).toString('hex'))
+            : Buffer.from(Buffer.from(JSON.stringify(interactionData.data.data)).toString('hex')),
           signature,
           async () => {
             // noop
+            setLoading(false);
           },
           {
             preDelay: 200
@@ -135,6 +139,7 @@ export const SignTronModal = registerModal(
         );
       } catch (e) {
         console.log('error on sign Tron', e);
+        setLoading(false);
       }
     };
     const { colors } = useTheme();
@@ -228,6 +233,7 @@ export const SignTronModal = registerModal(
               label={intl.formatMessage({ id: 'button.approve' })}
               style={{ flex: 1, width: '100%' }}
               onPress={approve}
+              loading={loading}
             />
           </XAxis>
         </Box>

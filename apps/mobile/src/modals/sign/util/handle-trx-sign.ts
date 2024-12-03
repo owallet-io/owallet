@@ -18,7 +18,7 @@ export const handleTronPreSignByLedger = async (
   interactionData: NonNullable<SignTronInteractionStore['waitingData']>,
   signingMessage: string,
   getTransport: () => Promise<Transport>
-): Promise<Uint8Array | undefined> => {
+): Promise<string | undefined> => {
   const appData = interactionData.data.keyInsensitive;
   if (!appData) {
     throw new Error('Invalid ledger app data');
@@ -53,7 +53,7 @@ export const connectAndSignTrxWithLedger = async (
     addressIndex: number;
   },
   message: string // raw tx hex
-): Promise<Uint8Array> => {
+): Promise<string> => {
   let transport: Transport;
   try {
     transport = await getTransport();
@@ -112,14 +112,8 @@ export const connectAndSignTrxWithLedger = async (
         message,
         []
       );
-      // const trxSignature = await trxApp.signTransactionHash(
-      //   `44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
-      //   message
-      // );
 
-      console.log('trxSignature', trxSignature);
-
-      return Buffer.from(trxSignature, 'hex');
+      return trxSignature;
     } catch (e) {
       if (e?.message.includes('(0x6985)')) {
         throw new OWalletError(ErrModuleLedgerSign, ErrSignRejected, 'User rejected signing');
