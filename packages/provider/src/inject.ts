@@ -1044,7 +1044,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     this._initProviderState();
 
-    window.addEventListener("owallet_keystorechange", async () => {
+    window.addEventListener("keplr_keystorechange", async () => {
       if (this._currentChainId) {
         const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(
           this._currentChainId
