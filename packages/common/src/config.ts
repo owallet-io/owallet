@@ -135,6 +135,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
         },
         {
+          coinDenom: "MAX",
+          coinGeckoId: "max.clan",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2",
+        },
+        {
           coinDenom: "TON",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/ton",
