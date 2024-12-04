@@ -599,11 +599,7 @@ export class Solana implements ISolana {
     onlyIfTrusted?: boolean;
   }): Promise<{ publicKey: PublicKey }> {
     const chainIds = [CHAIN_ID_SOL];
-    await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new EnableAccessMsg(chainIds)
-    );
-    const msg = new GetKeyMsg(chainIds[0]);
+    const msg = new GetKeyMsg(chainIds[0], options?.onlyIfTrusted);
     const key = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     return { publicKey: new PublicKey(key.base58Address) };
   }

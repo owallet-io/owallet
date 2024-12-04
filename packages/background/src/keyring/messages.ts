@@ -511,7 +511,10 @@ export class GetKeyMsg extends Message<Key> {
     return "get-key";
   }
 
-  constructor(public readonly chainId: string) {
+  constructor(
+    public readonly chainId: string,
+    public readonly silent?: boolean
+  ) {
     super();
   }
 

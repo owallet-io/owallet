@@ -397,12 +397,13 @@ const handleGetKeyMsg: (
   service: KeyRingService
 ) => InternalHandler<GetKeyMsg> = (service) => {
   return async (env, msg) => {
-    await service.permissionService.checkOrGrantBasicAccessPermission(
-      env,
-      msg.chainId,
-      msg.origin
-    );
-
+    if (!msg.silent) {
+      await service.permissionService.checkOrGrantBasicAccessPermission(
+        env,
+        msg.chainId,
+        msg.origin
+      );
+    }
     const key = await service.getKey(msg.chainId);
 
     const networkType = getNetworkTypeByChainId(msg.chainId);
