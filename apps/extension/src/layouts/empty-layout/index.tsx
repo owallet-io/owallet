@@ -7,6 +7,7 @@ import classnames from "classnames";
 interface Props {
   className?: string;
   style?: CSSProperties;
+  children: React.ReactNode; 
 }
 
 export const EmptyLayout: FunctionComponent<Props> = (props) => {
