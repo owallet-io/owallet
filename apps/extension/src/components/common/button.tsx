@@ -21,6 +21,7 @@ export const Button: FunctionComponent<{
   underlayColor?: string;
   className?: string;
   type?: "button" | "reset" | "submit";
+  children?: React.ReactNode;
 }> = ({
   color = "primary",
   size = "default",
@@ -105,7 +106,7 @@ export const Button: FunctionComponent<{
         </div>
       ) : null}
       {leftIcon ? <div>{leftIcon}</div> : null}
-      {text ?? props.children}
+      {text ?? props?.children}
       {rightIcon ? <div>{rightIcon}</div> : null}
     </button>
   );
