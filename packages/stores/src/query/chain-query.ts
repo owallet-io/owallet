@@ -1,19 +1,27 @@
-import { ObservableQuery, QuerySharedContext } from '../common';
-import { ChainGetter } from '../chain';
-import { HasMapStore } from '../common';
+import { ObservableQuery, QuerySharedContext } from "../common";
+import { ChainGetter } from "../chain";
+import { HasMapStore } from "../common";
 
-export class ObservableChainQuery<T = unknown, E = unknown> extends ObservableQuery<T, E> {
+export class ObservableChainQuery<
+  T = unknown,
+  E = unknown
+> extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
   protected readonly chainGetter: ChainGetter;
 
-  constructor(sharedContext: QuerySharedContext, chainId: string, chainGetter: ChainGetter, url: string) {
+  constructor(
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter,
+    url: string
+  ) {
     const chainInfo = chainGetter.getChain(chainId);
 
     super(
       sharedContext,
-      chainInfo.rest.replace(/http:\/\/[^/\s]+/g, match => {
-        return match.replace('http://', 'https://');
+      chainInfo.rest.replace(/http:\/\/[^/\s]+/g, (match) => {
+        return match.replace("http://", "https://");
       }),
       url
     );
@@ -27,7 +35,10 @@ export class ObservableChainQuery<T = unknown, E = unknown> extends ObservableQu
   }
 }
 
-export class ObservableChainQueryMap<T = unknown, E = unknown> extends HasMapStore<ObservableChainQuery<T, E>> {
+export class ObservableChainQueryMap<
+  T = unknown,
+  E = unknown
+> extends HasMapStore<ObservableChainQuery<T, E>> {
   constructor(
     protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,

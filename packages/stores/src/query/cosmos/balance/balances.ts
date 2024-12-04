@@ -1,13 +1,18 @@
-import { DenomHelper } from '@owallet/common';
-import { QueryError, QueryResponse, QuerySharedContext, StoreUtils } from '../../../common';
-import { ChainGetter } from '../../../chain';
-import { computed, makeObservable } from 'mobx';
-import { CoinPretty, Int } from '@owallet/unit';
-import { BalanceRegistry, IObservableQueryBalanceImpl } from '../../balances';
-import { ObservableChainQuery } from '../../chain-query';
-import { Balances } from './types';
-import { AppCurrency } from '@owallet/types';
-import { Bech32Address } from '@owallet/cosmos';
+import { DenomHelper } from "@owallet/common";
+import {
+  QueryError,
+  QueryResponse,
+  QuerySharedContext,
+  StoreUtils,
+} from "../../../common";
+import { ChainGetter } from "../../../chain";
+import { computed, makeObservable } from "mobx";
+import { CoinPretty, Int } from "@owallet/unit";
+import { BalanceRegistry, IObservableQueryBalanceImpl } from "../../balances";
+import { ObservableChainQuery } from "../../chain-query";
+import { Balances } from "./types";
+import { AppCurrency } from "@owallet/types";
+import { Bech32Address } from "@owallet/cosmos";
 
 export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuery<Balances> {
   // XXX: See comments below.
@@ -22,7 +27,12 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
     chainGetter: ChainGetter,
     protected readonly bech32Address: string
   ) {
-    super(sharedContext, chainId, chainGetter, `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`);
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      `/cosmos/bank/v1beta1/balances/${bech32Address}?pagination.limit=1000`
+    );
 
     makeObservable(this);
   }
@@ -32,16 +42,20 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
     return this.bech32Address.length > 0;
   }
 
-  protected override onReceiveResponse(response: Readonly<QueryResponse<Balances>>) {
+  protected override onReceiveResponse(
+    response: Readonly<QueryResponse<Balances>>
+  ) {
     super.onReceiveResponse(response);
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const denoms = response.data.balances.map(coin => coin.denom);
+    const denoms = response.data.balances.map((coin) => coin.denom);
     chainInfo.addUnknownDenoms(...denoms);
   }
 }
 
-export class ObservableQueryCosmosBalancesImpl implements IObservableQueryBalanceImpl {
+export class ObservableQueryCosmosBalancesImpl
+  implements IObservableQueryBalanceImpl
+{
   constructor(
     protected readonly parent: ObservableQueryCosmosBalancesImplParent,
     protected readonly chainId: string,
@@ -59,7 +73,10 @@ export class ObservableQueryCosmosBalancesImpl implements IObservableQueryBalanc
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return StoreUtils.getBalanceFromCurrency(currency, this.response.data.balances);
+    return StoreUtils.getBalanceFromCurrency(
+      currency,
+      this.response.data.balances
+    );
   }
 
   @computed
@@ -96,25 +113,29 @@ export class ObservableQueryCosmosBalancesImpl implements IObservableQueryBalanc
     //      the actual logic should be processed only once.
     //      So some sort of debouncing is needed.
     if (!this.parent.duplicatedFetchResolver) {
-      this.parent.duplicatedFetchResolver = new Promise<void>((resolve, reject) => {
-        (async () => {
-          try {
-            await this.parent.fetch();
-            this.parent.duplicatedFetchResolver = undefined;
-            resolve();
-          } catch (e) {
-            this.parent.duplicatedFetchResolver = undefined;
-            reject(e);
-          }
-        })();
-      });
+      this.parent.duplicatedFetchResolver = new Promise<void>(
+        (resolve, reject) => {
+          (async () => {
+            try {
+              await this.parent.fetch();
+              this.parent.duplicatedFetchResolver = undefined;
+              resolve();
+            } catch (e) {
+              this.parent.duplicatedFetchResolver = undefined;
+              reject(e);
+            }
+          })();
+        }
+      );
       return this.parent.duplicatedFetchResolver;
     }
 
     return this.parent.duplicatedFetchResolver;
   }
 
-  async waitFreshResponse(): Promise<Readonly<QueryResponse<unknown>> | undefined> {
+  async waitFreshResponse(): Promise<
+    Readonly<QueryResponse<unknown>> | undefined
+  > {
     return await this.parent.waitFreshResponse();
   }
 
@@ -124,7 +145,8 @@ export class ObservableQueryCosmosBalancesImpl implements IObservableQueryBalanc
 }
 
 export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
-  protected parentMap: Map<string, ObservableQueryCosmosBalancesImplParent> = new Map();
+  protected parentMap: Map<string, ObservableQueryCosmosBalancesImplParent> =
+    new Map();
 
   constructor(protected readonly sharedContext: QuerySharedContext) {}
 
@@ -135,7 +157,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryCosmosBalancesImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    if (denomHelper.type !== 'native') {
+    if (denomHelper.type !== "native") {
       return;
     }
 
@@ -150,10 +172,20 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     if (!this.parentMap.has(key)) {
       this.parentMap.set(
         key,
-        new ObservableQueryCosmosBalancesImplParent(this.sharedContext, chainId, chainGetter, bech32Address)
+        new ObservableQueryCosmosBalancesImplParent(
+          this.sharedContext,
+          chainId,
+          chainGetter,
+          bech32Address
+        )
       );
     }
 
-    return new ObservableQueryCosmosBalancesImpl(this.parentMap.get(key)!, chainId, chainGetter, denomHelper);
+    return new ObservableQueryCosmosBalancesImpl(
+      this.parentMap.get(key)!,
+      chainId,
+      chainGetter,
+      denomHelper
+    );
   }
 }

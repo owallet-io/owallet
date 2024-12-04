@@ -6,12 +6,12 @@ import {
   observable,
   onBecomeObserved,
   onBecomeUnobserved,
-  reaction
-} from 'mobx';
-import { toGenerator } from '@owallet/common';
-import { HasMapStore } from '../map';
-import { makeURL, simpleFetch } from '@owallet/simple-fetch';
-import { QuerySharedContext } from './context';
+  reaction,
+} from "mobx";
+import { toGenerator } from "@owallet/common";
+import { HasMapStore } from "../map";
+import { makeURL, simpleFetch } from "@owallet/simple-fetch";
+import { QuerySharedContext } from "./context";
 
 export type QueryOptions = {
   // millisec
@@ -22,7 +22,7 @@ export type QueryOptions = {
 
 export const defaultOptions: QueryOptions = {
   cacheMaxAge: 0,
-  fetchingInterval: 0
+  fetchingInterval: 0,
 };
 
 export type QueryError<E> = {
@@ -69,24 +69,27 @@ class FlowCanceler {
     }
   }
 
-  callOrCanceledWithPromise<R>(promise: PromiseLike<R>, onCancel?: () => void): Promise<R> {
+  callOrCanceledWithPromise<R>(
+    promise: PromiseLike<R>,
+    onCancel?: () => void
+  ): Promise<R> {
     return new Promise<R>((resolve, reject) => {
       this.rejectors.push({
         reject,
-        onCancel
+        onCancel,
       });
 
       promise.then(
-        r => {
-          const i = this.rejectors.findIndex(r => r.reject === reject);
+        (r) => {
+          const i = this.rejectors.findIndex((r) => r.reject === reject);
           if (i >= 0) {
             this.rejectors.splice(i, 1);
           }
 
           resolve(r);
         },
-        e => {
-          const i = this.rejectors.findIndex(r => r.reject === reject);
+        (e) => {
+          const i = this.rejectors.findIndex((r) => r.reject === reject);
           if (i >= 0) {
             this.rejectors.splice(i, 1);
           }
@@ -97,29 +100,32 @@ class FlowCanceler {
     });
   }
 
-  callOrCanceled<R>(fn: () => PromiseLike<R>, onCancel?: () => void): Promise<R> {
+  callOrCanceled<R>(
+    fn: () => PromiseLike<R>,
+    onCancel?: () => void
+  ): Promise<R> {
     return new Promise<R>((resolve, reject) => {
       this.rejectors.push({
         reject,
-        onCancel
+        onCancel,
       });
 
       Promise.resolve().then(() => {
-        if (!this.rejectors.find(r => r.reject === reject)) {
+        if (!this.rejectors.find((r) => r.reject === reject)) {
           return;
         }
 
         fn().then(
-          r => {
-            const i = this.rejectors.findIndex(r => r.reject === reject);
+          (r) => {
+            const i = this.rejectors.findIndex((r) => r.reject === reject);
             if (i >= 0) {
               this.rejectors.splice(i, 1);
             }
 
             resolve(r);
           },
-          e => {
-            const i = this.rejectors.findIndex(r => r.reject === reject);
+          (e) => {
+            const i = this.rejectors.findIndex((r) => r.reject === reject);
             if (i >= 0) {
               this.rejectors.splice(i, 1);
             }
@@ -147,7 +153,7 @@ class FunctionQueue {
       const fn = this.queue.shift();
       if (fn) {
         const r = fn();
-        if (typeof r === 'object' && 'then' in r) {
+        if (typeof r === "object" && "then" in r) {
           this.isPendingPromise = true;
           r.then(() => {
             this.isPendingPromise = false;
@@ -178,19 +184,21 @@ export interface IObservableQuery<T = unknown, E = unknown> {
  * Base of the observable query classes.
  * This recommends to use the fetch to query the response.
  */
-export abstract class ObservableQuery<T = unknown, E = unknown> implements IObservableQuery<T, E> {
+export abstract class ObservableQuery<T = unknown, E = unknown>
+  implements IObservableQuery<T, E>
+{
   protected static suspectedResponseDatasWithInvalidValue: string[] = [
-    'The network connection was lost.',
-    'The request timed out.'
+    "The network connection was lost.",
+    "The request timed out.",
   ];
 
   protected static guessResponseTruncated(headers: any, data: string): boolean {
     return (
       headers &&
-      'get' in headers &&
-      typeof headers.get === 'function' &&
-      (headers.get('content-type') || '').startsWith('application/json') &&
-      data.startsWith('{')
+      "get" in headers &&
+      typeof headers.get === "function" &&
+      (headers.get("content-type") || "").startsWith("application/json") &&
+      data.startsWith("{")
     );
   }
 
@@ -224,7 +232,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
   protected baseURL: string;
 
   @observable
-  protected _url: string = '';
+  protected _url: string = "";
 
   protected constructor(
     protected readonly sharedContext: QuerySharedContext,
@@ -234,7 +242,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
   ) {
     this.options = {
       ...defaultOptions,
-      ...options
+      ...options,
     };
 
     this.baseURL = baseURL;
@@ -245,13 +253,13 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
 
     this.setUrl(url);
 
-    onBecomeObserved(this, '_response', this.becomeObserved);
-    onBecomeObserved(this, '_isFetching', this.becomeObserved);
-    onBecomeObserved(this, '_error', this.becomeObserved);
+    onBecomeObserved(this, "_response", this.becomeObserved);
+    onBecomeObserved(this, "_isFetching", this.becomeObserved);
+    onBecomeObserved(this, "_error", this.becomeObserved);
 
-    onBecomeUnobserved(this, '_response', this.becomeUnobserved);
-    onBecomeUnobserved(this, '_isFetching', this.becomeUnobserved);
-    onBecomeUnobserved(this, '_error', this.becomeUnobserved);
+    onBecomeUnobserved(this, "_response", this.becomeUnobserved);
+    onBecomeUnobserved(this, "_isFetching", this.becomeUnobserved);
+    onBecomeUnobserved(this, "_error", this.becomeUnobserved);
   }
 
   private becomeObserved = (): void => {
@@ -326,7 +334,10 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
     this.fetch();
 
     if (this.options.fetchingInterval > 0) {
-      this.intervalId = setInterval(this.intervalFetch, this.options.fetchingInterval);
+      this.intervalId = setInterval(
+        this.intervalFetch,
+        this.options.fetchingInterval
+      );
     }
   }
 
@@ -365,7 +376,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
     // If response is fetching, cancel the previous query.
     if (this.isFetching && this.queryCanceler.hasCancelable) {
       // When cancel for the next fetching, it behaves differently from other explicit cancels because fetching continues. Use an error message to identify this.
-      this.cancel('__fetching__proceed__next__');
+      this.cancel("__fetching__proceed__next__");
     }
 
     // If there is no existing response, try to load saved reponse.
@@ -376,7 +387,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
 
       // When first load, try to load the last response from disk.
       // Use the last saved response if the last saved response exists and the current response hasn't been set yet.
-      const promise = this.loadStabledResponse().then(value => {
+      const promise = this.loadStabledResponse().then((value) => {
         satisfyCache = value;
       });
       if (this.options.cacheMaxAge <= 0) {
@@ -401,7 +412,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
       // Make the existing response as staled.
       this.setResponse({
         ...this._response,
-        staled: true
+        staled: true,
       });
     }
 
@@ -424,9 +435,11 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
       );
       if (
         data &&
-        typeof data === 'string' &&
-        (data.startsWith('stream was reset:') ||
-          ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(data) ||
+        typeof data === "string" &&
+        (data.startsWith("stream was reset:") ||
+          ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+            data
+          ) ||
           ObservableQuery.guessResponseTruncated(headers, data))
       ) {
         // In some devices, it is a http ok code, but a strange response is sometimes returned.
@@ -441,7 +454,9 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
           return;
         }
 
-        console.log('There is an unknown problem to the response. Request one more time.');
+        console.log(
+          "There is an unknown problem to the response. Request one more time."
+        );
 
         // Try to query again.
         let hasStarted = false;
@@ -461,16 +476,18 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
         data = refetched.data;
         headers = refetched.headers;
 
-        if (data && typeof data === 'string') {
+        if (data && typeof data === "string") {
           if (
-            data.startsWith('stream was reset:') ||
-            ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(data)
+            data.startsWith("stream was reset:") ||
+            ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+              data
+            )
           ) {
             throw new Error(data);
           }
 
           if (ObservableQuery.guessResponseTruncated(headers, data)) {
-            throw new Error('The response data seems to be truncated');
+            throw new Error("The response data seems to be truncated");
           }
         }
       }
@@ -479,9 +496,9 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
         data,
         staled: false,
         local: false,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      console.log('response data', this.baseURL, data);
+      console.log("response data", this.baseURL, data);
 
       // Should not wait.
       this.saveResponse(response);
@@ -500,7 +517,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
       let fetchingProceedNext = false;
       if (e instanceof FlowCancelerError) {
         // When cancel for the next fetching, it behaves differently from other explicit cancels because fetching continues.
-        if (e.message === '__fetching__proceed__next__') {
+        if (e.message === "__fetching__proceed__next__") {
           fetchingProceedNext = true;
         }
         return;
@@ -510,17 +527,22 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
       if (e.response) {
         // Default is status text
         let message: string = e.response.statusText;
-        const contentType: string = e.response.headers ? e.response.headers.get('content-type') || '' : '';
+        const contentType: string = e.response.headers
+          ? e.response.headers.get("content-type") || ""
+          : "";
         // Try to figure out the message from the response.
         // If the contentType in the header is specified, try to use the message from the response.
-        if (contentType.startsWith('text/plain') && typeof e.response.data === 'string') {
+        if (
+          contentType.startsWith("text/plain") &&
+          typeof e.response.data === "string"
+        ) {
           message = e.response.data;
         }
         // If the response is an object and "message" field exists, it is used as a message.
         if (
-          contentType.startsWith('application/json') &&
+          contentType.startsWith("application/json") &&
           e.response.data?.message &&
-          typeof e.response.data?.message === 'string'
+          typeof e.response.data?.message === "string"
         ) {
           message = e.response.data.message;
         }
@@ -529,7 +551,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
           status: e.response.status,
           statusText: e.response.statusText,
           message,
-          data: e.response.data
+          data: e.response.data,
         };
 
         yield this.sharedContext.handleResponse(() => {
@@ -545,11 +567,11 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
         // if can't get the response.
         const error: QueryError<E> = {
           status: 0,
-          statusText: 'Failed to get response',
-          message: 'Failed to get response'
+          statusText: "Failed to get response",
+          message: "Failed to get response",
         };
 
-        console.log('error on fetch', this.baseURL, e.request, error);
+        console.log("error on fetch", this.baseURL, e.request, error);
 
         yield this.sharedContext.handleResponse(() => {
           this.setError(error);
@@ -565,10 +587,16 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
           status: 0,
           statusText: e.message,
           message: e.message,
-          data: e
+          data: e,
         };
 
-        console.log('error on fetch 2', this.baseURL, this._url, e.request, error);
+        console.log(
+          "error on fetch 2",
+          this.baseURL,
+          this._url,
+          e.request,
+          error
+        );
         yield this.sharedContext.handleResponse(() => {
           this.setError(error);
 
@@ -593,29 +621,35 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
   protected loadStabledResponse(): Promise<boolean> {
     // When first load, try to load the last response from disk.
     // Use the last saved response if the last saved response exists and the current response hasn't been set yet.
-    return new Promise<boolean>(resolve => {
-      this.sharedContext.loadStore<QueryResponse<T>>(this.getCacheKey(), res => {
-        if (res.status === 'rejected') {
-          console.warn('Failed to get the last response from disk.');
-          resolve(false);
-        } else {
-          const staledResponse = res.value;
-          if (staledResponse && !this._response) {
-            if (this.options.cacheMaxAge <= 0 || staledResponse.timestamp > Date.now() - this.options.cacheMaxAge) {
-              const response = {
-                ...staledResponse,
-                staled: true,
-                local: true
-              };
-              this.onReceiveResponse(response);
-              this.setResponse(response);
-              resolve(true);
-              return;
+    return new Promise<boolean>((resolve) => {
+      this.sharedContext.loadStore<QueryResponse<T>>(
+        this.getCacheKey(),
+        (res) => {
+          if (res.status === "rejected") {
+            console.warn("Failed to get the last response from disk.");
+            resolve(false);
+          } else {
+            const staledResponse = res.value;
+            if (staledResponse && !this._response) {
+              if (
+                this.options.cacheMaxAge <= 0 ||
+                staledResponse.timestamp > Date.now() - this.options.cacheMaxAge
+              ) {
+                const response = {
+                  ...staledResponse,
+                  staled: true,
+                  local: true,
+                };
+                this.onReceiveResponse(response);
+                this.setResponse(response);
+                resolve(true);
+                return;
+              }
             }
+            resolve(false);
           }
-          resolve(false);
         }
-      });
+      );
     });
   }
 
@@ -677,12 +711,12 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
           }
         },
         {
-          fireImmediately: true
+          fireImmediately: true,
         }
       )
     );
 
-    return new Promise<Readonly<QueryResponse<T>> | undefined>(resolve => {
+    return new Promise<Readonly<QueryResponse<T>> | undefined>((resolve) => {
       const disposer = autorun(() => {
         if (!this.isFetching) {
           resolve(this.response);
@@ -715,12 +749,12 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
           }
         },
         {
-          fireImmediately: true
+          fireImmediately: true,
         }
       )
     );
 
-    return new Promise<Readonly<QueryResponse<T>> | undefined>(resolve => {
+    return new Promise<Readonly<QueryResponse<T>> | undefined>((resolve) => {
       const disposer = autorun(() => {
         if (!this.isFetching) {
           resolve(this.response);
@@ -738,13 +772,15 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
     return makeURL(this.baseURL, this.url);
   }
 
-  protected async fetchResponse(abortController: AbortController): Promise<{ headers: any; data: T }> {
+  protected async fetchResponse(
+    abortController: AbortController
+  ): Promise<{ headers: any; data: T }> {
     const result = await simpleFetch<T>(this.baseURL, this.url, {
-      signal: abortController.signal
+      signal: abortController.signal,
     });
     return {
       headers: result.headers,
-      data: result.data
+      data: result.data,
     };
   }
 
@@ -754,13 +790,17 @@ export abstract class ObservableQuery<T = unknown, E = unknown> implements IObse
    * @param response
    * @protected
    */
-  protected async saveResponse(response: Readonly<QueryResponse<T>>): Promise<void> {
+  protected async saveResponse(
+    response: Readonly<QueryResponse<T>>
+  ): Promise<void> {
     const key = this.getCacheKey();
     await this.sharedContext.saveResponse(key, response);
   }
 }
 
-export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<ObservableQuery<T, E>> {
+export class ObservableQueryMap<T = unknown, E = unknown> extends HasMapStore<
+  ObservableQuery<T, E>
+> {
   constructor(creater: (key: string) => ObservableQuery<T, E>) {
     super(creater);
   }
