@@ -5,6 +5,7 @@ import style from "./style.module.scss";
 export const Card: FunctionComponent<{
   type?: string;
   containerStyle?: CSSProperties;
+  children?: React.ReactNode; 
 }> = ({ type = "normal", containerStyle, ...props }) => {
   return (
     <div
@@ -12,7 +13,7 @@ export const Card: FunctionComponent<{
       className={(style.card, type === "ink" ? style.bg : null)}
       style={containerStyle}
     >
-      {props.children}
+      {props?.children}
     </div>
   );
 };
