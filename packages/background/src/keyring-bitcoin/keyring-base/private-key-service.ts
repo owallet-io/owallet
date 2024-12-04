@@ -23,16 +23,32 @@ export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
     _coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
-    if (!chainInfo?.features.includes("gen-address")) {
-      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
-    }
-    console.log(vault.insensitive["publicKey"], "pubKey from privKey");
-    const publicKeyBytes = Buffer.from(
-      vault.insensitive["publicKey"] as string,
-      "hex"
-    );
-
-    return new PubKeySecp256k1(publicKeyBytes);
+    throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    // if (!chainInfo?.features.includes("gen-address")) {
+    //   throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    // }
+    // const publicKeyBytes = Buffer.from(
+    //   vault.insensitive["publicKey"] as string,
+    //   "hex"
+    // );
+    //
+    // return new PubKeySecp256k1(publicKeyBytes);
+  }
+  getPubKeyBip84(
+    vault: Vault,
+    _coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 {
+    throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    // if (!chainInfo?.features.includes("gen-address")) {
+    //   throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    // }
+    // const publicKeyBytes = Buffer.from(
+    //     vault.insensitive["publicKey"] as string,
+    //     "hex"
+    // );
+    //
+    // return new PubKeySecp256k1(publicKeyBytes);
   }
   sign(
     vault: Vault,

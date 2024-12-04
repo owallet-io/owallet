@@ -92,8 +92,6 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     );
 
     await OasisTransaction.sign(chainContext, signer, tw);
-    console.log(tw, "tw");
-    //
     return tw.signedTransaction;
   }
 
