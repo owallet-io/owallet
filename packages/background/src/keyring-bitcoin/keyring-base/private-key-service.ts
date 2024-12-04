@@ -26,6 +26,7 @@ export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
     if (!chainInfo?.features.includes("gen-address")) {
       throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
     }
+    console.log(vault.insensitive["publicKey"], "pubKey from privKey");
     const publicKeyBytes = Buffer.from(
       vault.insensitive["publicKey"] as string,
       "hex"
