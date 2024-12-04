@@ -1,0 +1,30 @@
+{
+  "name": "@owallet/stores-internal",
+  "version": "0.9.16",
+  "main": "build/index.js",
+  "author": "chainapsis",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
+  },
+  "dependencies": {
+    "@owallet/common": "*",
+    "@owallet/cosmos": "*",
+    "@owallet/simple-fetch": "*",
+    "@owallet/stores": "*",
+    "@owallet/types": "*",
+    "@owallet/unit": "*",
+    "joi": "^17.5.0",
+    "utility-types": "^3.10.0"
+  },
+  "peerDependencies": {
+    "mobx": "^6",
+    "mobx-utils": "^6"
+  }
+}

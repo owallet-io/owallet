@@ -107,6 +107,7 @@ const handleGetInfosWithCoreTypesMsg: (
   return () => {
     return {
       chainInfos: service.getChainInfosWithCoreTypes(),
+      modulrChainInfos: service.getModularChainInfos(),
     };
   };
 };
@@ -201,9 +202,13 @@ const handleRemoveSuggestedChainInfoMsg: (
 ) => InternalHandler<RemoveSuggestedChainInfoMsg> = (service) => {
   return (_, msg) => {
     service.removeSuggestedChainInfo(msg.chainId);
-    return service.getChainInfosWithCoreTypes();
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
+    };
   };
 };
+
 
 const handleSetChainEndpointsMsg: (
   service: ChainsService
@@ -214,19 +219,25 @@ const handleSetChainEndpointsMsg: (
       rest: msg.rest,
       evmRpc: msg.evmRpc,
     });
-    return service.getChainInfosWithCoreTypes();
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
+    };
   };
 };
+
 
 const handleClearChainEndpointsMsg: (
   service: ChainsService
 ) => InternalHandler<ClearChainEndpointsMsg> = (service) => {
   return (_, msg) => {
     service.clearEndpoint(msg.chainId);
-    return service.getChainInfosWithCoreTypes();
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
+    };
   };
 };
-
 const handleGetChainOriginalEndpointsMsg: (
   service: ChainsService
 ) => InternalHandler<GetChainOriginalEndpointsMsg> = (service) => {

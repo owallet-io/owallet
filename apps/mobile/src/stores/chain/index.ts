@@ -392,7 +392,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
     const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
-    this.setEmbeddedChainInfos(chainInfos);
+    this.setEmbeddedChainInfos(chainInfos.chainInfos);
   }
 
   @flow
@@ -400,7 +400,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     const msg = new SetChainEndpointsMsg(chainId, rpc, rest, undefined);
     const newChainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
-    this.setEmbeddedChainInfos(newChainInfos);
+    this.setEmbeddedChainInfos(newChainInfos.chainInfos);
   }
 
   @flow
@@ -408,7 +408,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     const msg = new ClearChainEndpointsMsg(chainId);
     const newChainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
-    this.setEmbeddedChainInfos(newChainInfos);
+    this.setEmbeddedChainInfos(newChainInfos.chainInfos);
   }
 
   // I use Async, Await because it doesn't change the state value.

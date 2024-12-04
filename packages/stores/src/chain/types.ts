@@ -3,9 +3,11 @@ import {
   Bech32Config,
   BIP44,
   ChainInfo,
+  ChainInfoModule,
   Currency,
   FeeCurrency,
-} from "@owallet/types";
+  ModularChainInfo
+} from '@owallet/types';
 
 export type CurrencyRegistrar = (
   chainId: string,
@@ -22,8 +24,7 @@ export interface ChainGetter<C extends ChainInfo = ChainInfo> {
   hasChain(chainId: string): boolean;
 }
 
-export interface IChainStore<C extends ChainInfo = ChainInfo>
-  extends ChainGetter<C> {
+export interface IChainStore<C extends ChainInfo = ChainInfo> extends ChainGetter<C> {
   readonly chainInfos: IChainInfoImpl<C>[];
 }
 
@@ -31,13 +32,9 @@ export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {
   addUnknownDenoms(...coinMinimalDenoms: string[]): void;
   addUnknownDenomsWithoutReaction(...coinMinimalDenoms: string[]): void;
   findCurrency(
-    coinMinimalDenom:
-      | string
-      | ((coinMinimalDenom: string) => boolean | null | undefined)
+    coinMinimalDenom: string | ((coinMinimalDenom: string) => boolean | null | undefined)
   ): AppCurrency | undefined;
-  findCurrencyWithoutReaction(
-    coinMinimalDenom: string
-  ): AppCurrency | undefined;
+  findCurrencyWithoutReaction(coinMinimalDenom: string): AppCurrency | undefined;
   findCurrencyAsync(coinMinimalDenom: string): Promise<AppCurrency | undefined>;
   forceFindCurrency(coinMinimalDenom: string): AppCurrency;
   forceFindCurrencyWithoutReaction(coinMinimalDenom: string): AppCurrency;
@@ -60,7 +57,7 @@ export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {
   readonly rest: string;
   readonly rpc: string;
   readonly grpc: string | undefined;
-  readonly txExplorer: ChainInfo["txExplorer"];
+  readonly txExplorer: ChainInfo['txExplorer'];
   readonly walletUrl: string | undefined;
   readonly walletUrlForStaking: string | undefined;
   readonly chainSymbolImageUrl: string | undefined;
@@ -71,4 +68,13 @@ export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {
       }
     | undefined;
   readonly hideInUI: boolean | undefined;
+}
+
+export interface IModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo> {
+  readonly embedded: M;
+  readonly chainId: string;
+
+  getCurrencies(module: ChainInfoModule): AppCurrency[];
+  addCurrencies(module: ChainInfoModule, ...currencies: AppCurrency[]): void;
+  removeCurrencies(module: ChainInfoModule, ...coinMinimalDenoms: string[]): void;
 }

@@ -1,5 +1,5 @@
 import { KVStore, PrefixKVStore, sortedJsonByKeyStringify } from '@owallet/common';
-import { ChainInfo, ChainInfoWithoutEndpoints, EVMInfo } from '@owallet/types';
+import { ChainInfo, ChainInfoWithoutEndpoints, EVMInfo, ModularChainInfo } from '@owallet/types';
 import { action, autorun, computed, makeObservable, observable, runInAction, toJS } from 'mobx';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { computedFn } from 'mobx-utils';
@@ -24,6 +24,9 @@ export class ChainsService {
   @observable.ref
   protected updatedChainInfos: UpdatedChainInfo[] = [];
   protected updatedChainInfoKVStore: KVStore;
+
+  @observable.ref
+  protected modularChainInfos: ReadonlyArray<ModularChainInfo>;
 
   @observable.ref
   protected suggestedChainInfos: ChainInfoWithSuggestedOptions[] = [];
@@ -960,5 +963,67 @@ export class ChainsService {
     }
 
     return chainInfo.evm;
+  }
+
+  getModularChainInfos = computedFn(
+    (): ModularChainInfo[] => {
+      return this.modularChainInfos
+        .slice()
+        .map((modularChainInfo) => {
+          if (this.hasChainInfo(modularChainInfo.chainId)) {
+            const cosmos = this.getChainInfoOrThrow(modularChainInfo.chainId);
+            return {
+              chainId: cosmos.chainId,
+              chainName: cosmos.chainName,
+              chainSymbolImageUrl: cosmos.chainSymbolImageUrl,
+              cosmos,
+            };
+          }
+
+          return modularChainInfo;
+        })
+        .concat(
+          this.mergeChainInfosWithDynamics(this.suggestedChainInfos).map(
+            (chainInfo) => {
+              return {
+                chainId: chainInfo.chainId,
+                chainName: chainInfo.chainName,
+                chainSymbolImageUrl: chainInfo.chainSymbolImageUrl,
+                cosmos: chainInfo,
+              };
+            }
+          )
+        );
+    },
+    {
+      keepAlive: true,
+    }
+  );
+
+  hasModularChainInfo = computedFn((chainId: string): boolean => {
+    return this.getModularChainInfos().some(
+      (modularChainInfo) =>
+        ChainIdHelper.parse(modularChainInfo.chainId).identifier ===
+        ChainIdHelper.parse(chainId).identifier
+    );
+  });
+
+  getModularChainInfo = computedFn(
+    (chainId: string): ModularChainInfo | undefined => {
+      return this.getModularChainInfos().find(
+        (modularChainInfo) =>
+          ChainIdHelper.parse(modularChainInfo.chainId).identifier ===
+          ChainIdHelper.parse(chainId).identifier
+      );
+    }
+  );
+
+  getModularChainInfoOrThrow(chainId: string): ModularChainInfo {
+    const modularChainInfo = this.getModularChainInfo(chainId);
+    if (!modularChainInfo) {
+      throw new Error(`There is no modular chain info for ${chainId}`);
+    }
+
+    return modularChainInfo;
   }
 }

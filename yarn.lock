@@ -6341,7 +6341,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/hooks@^0.9.16, @owallet/hooks@workspace:packages/hooks":
+"@owallet/hooks-internal@workspace:apps/hooks-internal":
+  version: 0.0.0-use.local
+  resolution: "@owallet/hooks-internal@workspace:apps/hooks-internal"
+  dependencies:
+    "@owallet/hooks": "*"
+    "@owallet/stores": "*"
+    "@owallet/stores-internal": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+    react: ^16.8.0 || ^17 || ^18
+  languageName: unknown
+  linkType: soft
+
+"@owallet/hooks@*, @owallet/hooks@^0.9.16, @owallet/hooks@workspace:packages/hooks":
   version: 0.0.0-use.local
   resolution: "@owallet/hooks@workspace:packages/hooks"
   dependencies:
@@ -6555,6 +6571,24 @@ __metadata:
     "@owallet/stores": "*"
     "@owallet/stores-eth": "*"
     "@owallet/types": "*"
+  peerDependencies:
+    mobx: ^6
+    mobx-utils: ^6
+  languageName: unknown
+  linkType: soft
+
+"@owallet/stores-internal@*, @owallet/stores-internal@workspace:apps/stores-internal":
+  version: 0.0.0-use.local
+  resolution: "@owallet/stores-internal@workspace:apps/stores-internal"
+  dependencies:
+    "@owallet/common": "*"
+    "@owallet/cosmos": "*"
+    "@owallet/simple-fetch": "*"
+    "@owallet/stores": "*"
+    "@owallet/types": "*"
+    "@owallet/unit": "*"
+    joi: ^17.5.0
+    utility-types: ^3.10.0
   peerDependencies:
     mobx: ^6
     mobx-utils: ^6
