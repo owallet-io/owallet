@@ -1260,7 +1260,7 @@ export class InjectedSolana extends EventEmitter implements ISolana {
         const key = await (window as any).owallet.getKey(CHAIN_ID_SOL);
         if (!key?.base58Address) return;
         await this.connect({ onlyIfTrusted: true, reconnect: true });
-        this.emit("accountChanged", { publicKey: key?.base58Address || "" });
+        this.emit("accountChanged", new PublicKey(key.base58Address));
       }
     });
   }
