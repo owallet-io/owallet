@@ -145,49 +145,57 @@ export class TokensService {
     const tokens = this.tokenMap.get(chainIdentifier)!;
 
     currency = await TokensService.validateCurrency(chainInfo, currency);
-
-    if (
-      !("type" in currency) ||
-      (currency.type !== "cw20" &&
-        currency.type !== "erc20" &&
-        currency.type !== "secret20")
-    ) {
-      throw new Error("Unknown type of currency");
-    }
-
-    if (currency.type === "secret20" && !currency.viewingKey) {
-      throw new Error("Viewing key must be set");
-    }
-
-    const contractAddress = currency.contractAddress;
-    const needAssociateAccount = currency.type === "secret20";
-
-    const find = tokens.find((token) => {
-      if (
-        token.associatedAccountAddress &&
-        token.associatedAccountAddress !== associatedAccountAddress
-      ) {
-        return false;
-      }
-
-      if ("contractAddress" in token.currency) {
-        return token.currency.contractAddress === contractAddress;
-      }
-      return false;
-    });
-
-    runInAction(() => {
-      if (find) {
-        find.currency = currency;
-      } else {
+    if (!("type" in currency)) {
+      runInAction(() => {
         tokens.push({
-          associatedAccountAddress: needAssociateAccount
-            ? associatedAccountAddress
-            : undefined,
+          associatedAccountAddress: undefined,
           currency,
         });
+      });
+    } else {
+      if (
+        !("type" in currency) ||
+        (currency.type !== "cw20" &&
+          currency.type !== "erc20" &&
+          currency.type !== "secret20")
+      ) {
+        throw new Error("Unknown type of currency");
       }
-    });
+
+      if (currency.type === "secret20" && !currency.viewingKey) {
+        throw new Error("Viewing key must be set");
+      }
+
+      const contractAddress = currency.contractAddress;
+      const needAssociateAccount = currency.type === "secret20";
+
+      const find = tokens.find((token) => {
+        if (
+          token.associatedAccountAddress &&
+          token.associatedAccountAddress !== associatedAccountAddress
+        ) {
+          return false;
+        }
+
+        if ("contractAddress" in token.currency) {
+          return token.currency.contractAddress === contractAddress;
+        }
+        return false;
+      });
+
+      runInAction(() => {
+        if (find) {
+          find.currency = currency;
+        } else {
+          tokens.push({
+            associatedAccountAddress: needAssociateAccount
+              ? associatedAccountAddress
+              : undefined,
+            currency,
+          });
+        }
+      });
+    }
   }
 
   async addToken(chainId: string, currency: AppCurrency) {
@@ -544,6 +552,7 @@ export class TokensService {
             currency
           );
           break;
+
         case "secret20":
           currency = await TokensService.validateSecret20Currency(
             chainInfo,
@@ -578,6 +587,21 @@ export class TokensService {
       currency.contractAddress,
       chainInfo.bech32Config.bech32PrefixAccAddr
     );
+
+    return currency;
+  }
+  static async validateFactoryCurrency(
+    chainInfo: ChainInfo,
+    currency: AppCurrency
+  ): Promise<AppCurrency> {
+    // Validate the schema.
+    currency = await CurrencySchema.validateAsync(currency);
+
+    // // Validate the contract address.
+    // Bech32Address.validate(
+    //     currency.contractAddress,
+    //     chainInfo.bech32Config.bech32PrefixAccAddr
+    // );
 
     return currency;
   }

@@ -3,7 +3,7 @@ import { LayoutWithButtonBottom } from "layouts/button-bottom-layout/layout-with
 import styles from "./add-token.module.scss";
 import { Input } from "components/form";
 import { Bech32Address } from "@owallet/cosmos";
-import { CW20Currency, ERC20Currency } from "@owallet/types";
+import { AppCurrency, CW20Currency, ERC20Currency } from "@owallet/types";
 import useForm from "react-hook-form";
 import { useIntl } from "react-intl";
 import { useHistory } from "react-router";
@@ -26,6 +26,11 @@ import { toast } from "react-toastify";
 
 interface FormData {
   contractAddress: string;
+  symbol: string;
+  decimals: string;
+  image: string;
+  name: string;
+  coinGeckoId: string;
 }
 
 export const AddTokenPage = observer(() => {
@@ -36,10 +41,7 @@ export const AddTokenPage = observer(() => {
     setIsShowNetwork(false);
   };
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
-  // const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const [coingeckoId, setCoingeckoId] = useState<string>("");
-  const [coingeckoImg, setCoingeckoImg] = useState<string>("");
   const interactionInfo = useInteractionInfo(() => {
     // When creating the secret20 viewing key, this page will be moved to "/sign" page to generate the signature.
     // So, if it is creating phase, don't reject the waiting datas.
@@ -47,14 +49,8 @@ export const AddTokenPage = observer(() => {
       tokensStore.rejectAllSuggestedTokens();
     }
   });
-  console.log(chainStore.current.currencies, "chainStore.current.currencies");
-  const { handleSubmit, watch, setValue, register, errors } = useForm<FormData>(
-    {
-      defaultValues: {
-        contractAddress: "",
-      },
-    }
-  );
+  const { handleSubmit, watch, setValue, register, errors } =
+    useForm<FormData>();
   const contractAddress = watch("contractAddress");
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
@@ -81,72 +77,83 @@ export const AddTokenPage = observer(() => {
   const queryContractInfo = query?.getQueryContract(contractAddress);
   const tokenInfo = queryContractInfo?.tokenInfo;
 
-  const getTokenCoingeckoId = async () => {
+  const getTokenCoingeckoId = async (contractAddressData) => {
     try {
-      if (tokenInfo && tokenInfo.symbol) {
-        if (contractAddress && contractAddress !== "") {
-          const res = await API.getTokenInfo({
-            network: MapChainIdToNetwork[chainStore.current.chainId],
-            tokenAddress: contractAddress,
-          });
-          const data = res.data;
-          if (data && data.imgUrl) {
-            setCoingeckoImg(data.imgUrl);
-            setCoingeckoId(data.coingeckoId);
-          } else {
-            throw new Error("Image URL not found for the Coingecko ID.");
-          }
-        }
+      if (!contractAddressData || !tokenInfo?.symbol || !tokenInfo?.decimals)
+        return;
+      const res = await API.getTokenInfo({
+        network: MapChainIdToNetwork[chainStore.current.chainId],
+        tokenAddress: contractAddressData,
+      });
+      const data = res.data;
+      if (data && data.imgUrl) {
+        setValue("image", data.imgUrl);
+        setValue("coinGeckoId", data.coingeckoId);
       } else {
-        setCoingeckoImg("");
-        setCoingeckoId("");
+        throw new Error("Image URL not found for the Coingecko ID.");
       }
     } catch (err) {
       console.log("getTokenCoingeckoId err", err);
     }
   };
   useEffect(() => {
-    if (!tokenInfo?.decimals || !tokenInfo.name || !tokenInfo.symbol) {
-      setCoingeckoImg("");
-      setCoingeckoId("");
-      return;
-    }
-    getTokenCoingeckoId();
-  }, [tokenInfo, contractAddress]);
+    if (!contractAddress || !tokenInfo?.symbol || !tokenInfo?.decimals) return;
+    setValue("symbol", tokenInfo?.symbol);
+    setValue("decimals", tokenInfo?.decimals);
+    setValue("name", tokenInfo?.name);
+    getTokenCoingeckoId(contractAddress);
+  }, [contractAddress, tokenInfo]);
   const onSubmit = handleSubmit(async (data) => {
-    if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
-      const currency: CW20Currency | ERC20Currency = {
-        type: chainStore.current.networkType === "evm" ? "erc20" : "cw20",
-        contractAddress: data.contractAddress,
-        coinMinimalDenom: `${
-          chainStore.current.networkType === "evm" ? "erc20" : "cw20"
-        }:${data.contractAddress}:${tokenInfo.name}`,
-        coinDenom: tokenInfo.symbol,
-        coinDecimals: tokenInfo.decimals,
-        coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
-        coinGeckoId: coingeckoId || "",
+    let currency: CW20Currency | ERC20Currency | AppCurrency = {
+      type: chainStore.current.networkType === "evm" ? "erc20" : "cw20",
+      contractAddress: data.contractAddress,
+      coinMinimalDenom: `${
+        chainStore.current.networkType === "evm" ? "erc20" : "cw20"
+      }:${data.contractAddress}:${data.name}`,
+      coinDenom: data.symbol,
+      coinDecimals: Number(data.decimals),
+      coinImageUrl: data.image || unknownToken.coinImageUrl,
+      coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
+    };
+    if (
+      (data.contractAddress.startsWith("factory") ||
+        data.contractAddress.startsWith("ibc")) &&
+      chainStore.current.networkType == "cosmos"
+    ) {
+      currency = {
+        coinMinimalDenom: data.contractAddress,
+        coinDenom: data.symbol,
+        coinDecimals: Number(data.decimals),
+        coinImageUrl: data.image || unknownToken.coinImageUrl,
+        coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
       };
-
+    }
+    console.log(currency, "currency");
+    try {
       if (interactionInfo.interaction && tokensStore.waitingSuggestedToken) {
         await tokensStore.approveSuggestedToken(currency);
       } else {
         await tokensStore.addToken(chainStore.current.chainId, currency);
-        // await tokensOf.addToken(currency);
       }
 
       toast("Add Token Success", {
         type: "success",
       });
+    } catch (e) {
+      toast(e.message || JSON.stringify(e), {
+        type: "error",
+      });
+    }
 
-      if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
-        window.close();
-      } else {
-        history.push({
-          pathname: "/",
-        });
-      }
+    if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
+      window.close();
+    } else {
+      history.push({
+        pathname: "/",
+      });
     }
   });
+
   return (
     <LayoutWithButtonBottom
       titleButton={"Import token"}
@@ -200,10 +207,16 @@ export const AddTokenPage = observer(() => {
                 validate: (value: string): string | undefined => {
                   try {
                     if (chainStore.current.networkType === "cosmos") {
-                      Bech32Address.validate(
-                        value,
-                        chainStore.current.bech32Config.bech32PrefixAccAddr
-                      );
+                      if (
+                        value.startsWith(
+                          chainStore.current.bech32Config.bech32PrefixAccAddr
+                        )
+                      ) {
+                        Bech32Address.validate(
+                          value,
+                          chainStore.current.bech32Config.bech32PrefixAccAddr
+                        );
+                      }
                     } else if (chainStore.current.networkType === "evm") {
                       if (
                         !Web3.utils.isAddress(
@@ -218,61 +231,71 @@ export const AddTokenPage = observer(() => {
                   }
                 },
               })}
-              error={
-                errors.contractAddress
-                  ? errors.contractAddress.message
-                  : tokenInfo == null && contractAddress !== ""
-                  ? (queryContractInfo?.error?.data as any)?.error ||
-                    queryContractInfo?.error?.message
-                  : undefined
-              }
-              text={
-                queryContractInfo?.isFetching ? (
-                  <i className="fas fa-spinner fa-spin" />
-                ) : undefined
-              }
+              error={errors.contractAddress?.message}
+              // text={
+              //     queryContractInfo?.isFetching ? (
+              //         <i className="fas fa-spinner fa-spin"/>
+              //     ) : undefined
+              // }
             />
             <Input
               type="text"
               label={intl.formatMessage({
                 id: "setting.token.add.name",
               })}
-              value={tokenInfo?.name ?? "-"}
-              readOnly={true}
-              style={{
-                color: Colors["neutral-text-body"],
-              }}
+              readOnly={false}
+              name="name"
+              placeHolder={"Ex: Orai Token"}
             />
             <Input
               type="text"
-              style={{
-                color: Colors["neutral-text-body"],
-              }}
               label={intl.formatMessage({
                 id: "setting.token.add.symbol",
               })}
-              value={tokenInfo?.symbol ?? "-"}
-              readOnly={true}
+              name={"symbol"}
+              placeHolder={"Ex: ORAI"}
+              readOnly={false}
+              ref={register({
+                required: "Symbol is required",
+              })}
+              error={errors.symbol?.message}
             />
             <Input
               type="text"
-              style={{
-                color: Colors["neutral-text-body"],
-              }}
               label={intl.formatMessage({
                 id: "setting.token.add.decimals",
               })}
-              value={tokenInfo?.decimals ?? "-"}
-              readOnly={true}
+              name={"decimals"}
+              placeHolder={"Ex: 6"}
+              ref={register({
+                required: "Decimals is required",
+              })}
+              error={errors.decimals?.message}
+              readOnly={false}
             />
             <Input
-              style={{
-                color: Colors["neutral-text-body"],
-              }}
               type="text"
               label={"Image"}
-              value={coingeckoImg ?? "-"}
-              readOnly={true}
+              readOnly={false}
+              placeHolder={
+                "Ex: https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498"
+              }
+              name={"image"}
+              ref={register({
+                required: "Image is required",
+              })}
+              error={errors.image?.message}
+            />
+            <Input
+              type="text"
+              label={"Coingecko ID (Optional)"}
+              readOnly={false}
+              placeHolder={"Ex: max-2"}
+              name={"coinGeckoId"}
+              ref={register({
+                required: false,
+              })}
+              error={errors.coinGeckoId?.message}
             />
           </Form>
         ) : (

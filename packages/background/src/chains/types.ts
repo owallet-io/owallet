@@ -21,7 +21,6 @@ export const CurrencySchema = Joi.object<Currency>({
   coinGeckoId: Joi.string(),
   coinImageUrl: Joi.string().uri(),
 });
-
 export const CW20CurrencySchema = (CurrencySchema as ObjectSchema<CW20Currency>)
   .keys({
     type: Joi.string().equal("cw20").required(),

@@ -136,7 +136,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           coinDenom: "MAX",
-          coinGeckoId: "max.clan",
+          coinGeckoId: "max-2",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
           coinDecimals: 6,
