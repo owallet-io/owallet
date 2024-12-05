@@ -244,6 +244,9 @@ export const AddTokenPage = observer(() => {
               })}
               readOnly={false}
               name="name"
+              ref={register({
+                required: "Name is required",
+              })}
               placeHolder={"Ex: Orai Token"}
             />
             <Input
