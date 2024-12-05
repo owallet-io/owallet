@@ -118,6 +118,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
  * This will use `window.postMessage` to interact with the content script.
  */
 export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
+  public isOwallet: boolean = true;
   static startProxy(
     owallet: IOWallet & OWalletCoreTypes,
     eventListener: {
@@ -1017,6 +1018,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
   selectedAddress: string | null = null;
 
+  isOwallet = true;
   isOWallet = true;
   isMetaMask = true;
 
