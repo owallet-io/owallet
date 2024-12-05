@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { HashRouter, Route, Routes, useLocation } from "react-router-dom";
 // import { AccessPage, Secret20ViewingKeyAccessPage } from "../pages/access";
 // import { LockPage } from "../pages/lock";
 // import { ReceivePage } from "../pages/receive/receive-page";
@@ -31,8 +31,8 @@ import { StateRenderer } from "../components/state-renderer/StateRenderer";
 // import { ManageChainsPage } from "pages/chain/manage-chains/manage-chains-page";
 // import { AddChainPage } from "pages/chain/add-chain/add-chain-page";
 
-export const Routes: React.FC = () => (
-  <>
+export const AppRoutes: React.FC = () => (
+  <Routes>
     <Route path="/" element={<StateRenderer />} />
     {/* <Route path="/unlock" element={<LockPage />} /> */}
     {/* <Route exact path="/permission" component={AccessPage} /> */}
@@ -79,5 +79,5 @@ export const Routes: React.FC = () => (
     {/* <Route path="/suggest-chain" component={ChainSuggestedPage} />
     <Route path="/manage-chains" component={ManageChainsPage} />
     <Route path="/add-chain" component={AddChainPage} /> */}
-  </>
+  </Routes>
 );

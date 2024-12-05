@@ -13,7 +13,7 @@ import { StoreProvider } from "./stores";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
 import { ConfirmProvider } from "./components/confirm";
 // import { LogPageViewWrapper } from "./components/analytics";
-import { Routes } from "./setup/Routes";
+import { AppRoutes } from "./setup/Routes";
 import { ErrorFallback } from "./components/ErrorFallback/ErrorFallback";
 import { initializeWalletProviders } from "./setup/walletProviders";
 import { setupModalStyles } from "./setup/modalStyles";
@@ -63,7 +63,7 @@ const App: FunctionComponent = () => {
             {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : null}
             <HashRouter>
               {/* <LogPageViewWrapper> */}
-              <Routes />
+              <AppRoutes />
               {/* </LogPageViewWrapper> */}
             </HashRouter>
           </ConfirmProvider>

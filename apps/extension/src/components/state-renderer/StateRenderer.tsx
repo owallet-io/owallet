@@ -12,6 +12,8 @@ export const StateRenderer: React.FC = observer(() => {
   const { keyRingStore, permissionStore, signInteractionStore } = useStore();
   const [isLoading, setIsLoading] = useState(!hasLoadedOnce);
 
+  console.log("get here");
+
   useEffect(() => {
     if (!hasLoadedOnce) {
       const timer = setTimeout(() => {
@@ -25,6 +27,11 @@ export const StateRenderer: React.FC = observer(() => {
   if (isLoading) {
     return null;
   }
+  browser.tabs.create({
+    url: "/popup.html#/register",
+  });
+  window.close();
+  return <BannerComponent />;
 
   // if (
   //   keyRingStore.persistent ||

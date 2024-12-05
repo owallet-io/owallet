@@ -16,14 +16,15 @@
   },
   "permissions": [
     "storage",
-    "alarms",
     "notifications",
-    "https://tx-history-backend.oraidex.io/*",
+    "identity",
+    "idle",
+    "alarms",
     "unlimitedStorage",
     "sidePanel",
     "activeTab",
     "scripting",
-    "tabs"
+    "https://tx-history-backend.oraidex.io/*"
   ],
   "host_permissions": ["http://*/*", "https://*/*"],
   "content_scripts": [

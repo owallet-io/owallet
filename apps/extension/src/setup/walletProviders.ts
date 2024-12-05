@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { OWallet, Ethereum, TronWeb, Bitcoin } from "@owallet/provider";
+import { OWallet } from "@owallet/provider";
 import { InExtensionMessageRequester } from "@owallet/router-extension";
 import manifest from "../manifest.json";
 
@@ -10,25 +10,11 @@ export const initializeWalletProviders = () => {
     new InExtensionMessageRequester()
   );
 
-  const ethereum = new Ethereum(
-    manifest.version,
-    "core",
-    "",
-    new InExtensionMessageRequester()
-  );
+  const ethereum = owallet.ethereum;
 
-  const tronWeb = new TronWeb(
-    manifest.version,
-    "core",
-    "0x2b6653dc",
-    new InExtensionMessageRequester()
-  );
+  const tronWeb = owallet.tron;
 
-  const bitcoin = new Bitcoin(
-    manifest.version,
-    "core",
-    new InExtensionMessageRequester()
-  );
+  const bitcoin = owallet.bitcoin;
 
   // Assign to window object
   window.owallet = owallet;
