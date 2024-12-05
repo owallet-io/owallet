@@ -12,7 +12,7 @@ import { HashRouter, Route, Routes, useLocation } from "react-router-dom";
 // import { PreferencesPage } from "../pages/preferences/preferences-page";
 // import { ActivitiesPage } from "../pages/activities/activities-page";
 // import { ExplorePage } from "../pages/explore/explore-page";
-// import { RegisterPage } from "../pages/register";
+import { RegisterPage } from "../pages/register";
 // import { ConfirmLedgerPage } from "../pages/register/ledger/confirm";
 // import {
 //   SendEvmPage,
@@ -40,7 +40,7 @@ export const AppRoutes: React.FC = () => (
     {/* <Route exact path="/activities" component={ActivitiesPage} /> */}
     {/* <Route exact path="/explore" component={ExplorePage} /> */}
     {/* <Route exact path="/preferences" component={PreferencesPage} /> */}
-    {/* <Route path="/register" element={<RegisterPage />} /> */}
+    <Route path="/register" element={<RegisterPage />} />
 
     {/* <Route
       exact
