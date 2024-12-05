@@ -1,17 +1,15 @@
-import { autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { ChainStore } from '../chain';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { Key, SettledResponses } from '@owallet/types';
+import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import { ChainStore } from "../chain";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { Key, SettledResponses } from "@owallet/types";
 import {
   GetCosmosKeysForEachVaultSettledMsg,
   RecentSendHistory,
   GetRecentSendHistoriesMsg,
-  GetCosmosKeysForEachVaultWithSearchSettledMsg,
-  GetStarknetKeysForEachVaultSettledMsg
-} from '@owallet/background';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
-import { KeyRingStore } from '@owallet/stores-core';
+} from "@owallet/background";
+import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
+import { KeyRingStore } from "@owallet/stores-core";
 
 export interface AddressBookData {
   name: string;
@@ -35,19 +33,21 @@ export class AddressBookConfig {
     makeObservable(this);
 
     this.legacyKVStore = kvStore;
-    this.kvStore = new PrefixKVStore(kvStore, 'v2');
+    this.kvStore = new PrefixKVStore(kvStore, "v2");
   }
 
   async init(): Promise<void> {
     await this.chainStore.waitUntilInitialized();
 
-    const migrated = await this.kvStore.get<boolean>('migrated/v2');
+    const migrated = await this.kvStore.get<boolean>("migrated/v2");
     if (!migrated) {
       await this.migrateLegacy();
-      await this.kvStore.set<boolean>('migrated/v2', true);
+      await this.kvStore.set<boolean>("migrated/v2", true);
     }
 
-    const saved = await this.kvStore.get<Record<string, AddressBookData[]>>('addressBook');
+    const saved = await this.kvStore.get<Record<string, AddressBookData[]>>(
+      "addressBook"
+    );
     if (saved) {
       runInAction(() => {
         for (const [key, value] of Object.entries(saved)) {
@@ -58,7 +58,7 @@ export class AddressBookConfig {
     autorun(() => {
       const js = toJS(this.addressBookMap);
       const obj = Object.fromEntries(js);
-      this.kvStore.set<Record<string, AddressBookData[]>>('addressBook', obj);
+      this.kvStore.set<Record<string, AddressBookData[]>>("addressBook", obj);
     });
 
     // Sync and clear the config if the chain is removed.
@@ -66,11 +66,6 @@ export class AddressBookConfig {
       const chainIdentifierMap = new Map<string, boolean>();
       for (const chainInfo of this.chainStore.chainInfos) {
         chainIdentifierMap.set(chainInfo.chainIdentifier, true);
-      }
-      for (const starknetChainInfo of this.chainStore.modularChainInfos.filter(
-        modularChainInfo => 'starknet' in modularChainInfo
-      )) {
-        chainIdentifierMap.set(ChainIdHelper.parse(starknetChainInfo.chainId).identifier, true);
       }
       runInAction(() => {
         const chainIdentifiers = Array.from(this.addressBookMap.keys());
@@ -120,7 +115,10 @@ export class AddressBookConfig {
     addressBook.splice(index, 1);
   }
 
-  async getRecentSendHistory(chainId: string, type: string): Promise<RecentSendHistory[]> {
+  async getRecentSendHistory(
+    chainId: string,
+    type: string
+  ): Promise<RecentSendHistory[]> {
     const msg = new GetRecentSendHistoriesMsg(chainId, type);
     return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -135,59 +133,15 @@ export class AddressBookConfig {
       }
     >
   > {
-    const vaultIds = this.keyRingStore.keyInfos.map(keyInfo => keyInfo.id).filter(vault => vault !== exceptVaultId);
+    const vaultIds = this.keyRingStore.keyInfos
+      .map((keyInfo) => keyInfo.id)
+      .filter((vault) => vault !== exceptVaultId);
 
     if (vaultIds.length === 0) {
       return [];
     }
 
     const msg = new GetCosmosKeysForEachVaultSettledMsg(chainId, vaultIds);
-    return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async getVaultStarknetKeysSettled(
-    chainId: string,
-    exceptVaultId?: string
-  ): Promise<
-    SettledResponses<
-      {
-        name: string;
-        hexAddress: string;
-        pubKey: Uint8Array;
-        address: Uint8Array;
-      } & {
-        vaultId: string;
-      }
-    >
-  > {
-    const vaultIds = this.keyRingStore.keyInfos.map(keyInfo => keyInfo.id).filter(vault => vault !== exceptVaultId);
-
-    if (vaultIds.length === 0) {
-      return [];
-    }
-
-    const msg = new GetStarknetKeysForEachVaultSettledMsg(chainId, vaultIds);
-    return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async getVaultCosmosKeysWithSearchSettled(
-    searchText: string,
-    chainId: string,
-    exceptVaultId?: string
-  ): Promise<
-    SettledResponses<
-      Key & {
-        vaultId: string;
-      }
-    >
-  > {
-    const vaultIds = this.keyRingStore.keyInfos.map(keyInfo => keyInfo.id).filter(vault => vault !== exceptVaultId);
-
-    if (vaultIds.length === 0) {
-      return [];
-    }
-
-    const msg = new GetCosmosKeysForEachVaultWithSearchSettledMsg(chainId, vaultIds, searchText);
     return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
   }
 

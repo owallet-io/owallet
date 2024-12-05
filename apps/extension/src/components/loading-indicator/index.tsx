@@ -16,7 +16,7 @@ const LoadingIndicatorContext = createContext<LoadingState | undefined>(
   undefined
 );
 
-export const LoadingIndicatorProvider: FunctionComponent = ({ children }) => {
+export const LoadingIndicatorProvider: FunctionComponent<{children: React.ReactNode}> = ({ children }) => {
   const [loadingList, setLoadingList] = useState<
     {
       type: string;

@@ -2,23 +2,13 @@ import React, { FunctionComponent, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
-// import {Button} from '../../../components/button';
 import { useStyle } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
-// import {StackNavProp} from '../../../navigation';
-import { Bip44PathView, useBIP44PathState } from "../components/bip-path-44";
+import {  useBIP44PathState } from "../components/bip-path-44";
 import { InteractionManager, StyleSheet, Text, View } from "react-native";
-import { Gutter } from "../../../components/gutter";
-import { Box } from "../../../components/box";
 import { App } from "@owallet/ledger-cosmos";
 import { RectButton } from "../../../components/rect-button";
 import { XAxis } from "../../../components/axis";
-// import {ArrowDownFillIcon} from '../../../components/icon/arrow-donw-fill';
-// import {SelectItemModal} from '../../../components/modal/select-item-modal';
-import { ScrollViewRegisterContainer } from "../components/scroll-view-register-container";
-import { VerticalCollapseTransition } from "../../../components/transition";
-import { NamePasswordInput } from "../components/name-password-input";
-// import {useEffectOnce} from '../../../hooks';
 import OWIcon from "@components/ow-icon/ow-icon";
 import { SelectItemModal } from "@src/modals/select-item-modal";
 import { SCREENS } from "@common/constants";
@@ -26,7 +16,6 @@ import { useEffectOnce } from "@hooks/use-effect-once";
 import { OWButton } from "@components/button";
 import { metrics } from "@src/themes";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { PageWithBottom } from "@components/page/page-with-bottom";
 import { goBack } from "@src/router/root";
 import OWText from "@components/text/ow-text";
 import { TextInput } from "@components/input";
@@ -38,7 +27,6 @@ export const ConnectHardwareWalletScreen: FunctionComponent = observer(() => {
   const navigation = useNavigation();
 
   const bip44PathState = useBIP44PathState(true);
-  const [isOpenBip44PathView, setIsOpenBip44PathView] = React.useState(false);
   const [isOpenSelectItemModal, setIsOpenSelectItemModal] = useState(false);
 
   const supportedApps: {

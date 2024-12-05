@@ -1,11 +1,22 @@
-export type Properties = Record<string, string | number | boolean | Array<string | number> | undefined | null>;
+export type Properties = Record<
+  string,
+  string | number | boolean | Array<string | number> | undefined | null
+>;
 export interface AnalyticsClient {
   setUserId(userId: string | null): void;
   logEvent(
     eventName: string,
-    eventProperties?: Record<string, Readonly<string | number | boolean | undefined | null>>
+    eventProperties?: Record<
+      string,
+      Readonly<string | number | boolean | undefined | null>
+    >
   ): void;
-  setUserProperties(properties: Record<string, Readonly<string | number | boolean | undefined | null>>): void;
+  setUserProperties(
+    properties: Record<
+      string,
+      Readonly<string | number | boolean | undefined | null>
+    >
+  ): void;
 }
 
 export interface AnalyticsClient {
@@ -28,7 +39,10 @@ export class NoopAnalyticsClient implements AnalyticsClient {
   }
 }
 
-export class AnalyticsStore<E extends Properties = Properties, U extends Properties = Properties> {
+export class AnalyticsStore<
+  E extends Properties = Properties,
+  U extends Properties = Properties
+> {
   constructor(
     protected readonly analyticsClient: AnalyticsClient,
     protected readonly middleware: {

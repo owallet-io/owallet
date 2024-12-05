@@ -3,8 +3,6 @@ import styles from "./styles.module.scss";
 import { HeaderModal } from "../../home/components/header-modal";
 import { SearchInput } from "../../home/components/search-input";
 import classnames from "classnames";
-import { unknownToken, useLanguage } from "@owallet/common";
-import { initPrice } from "../../../hooks/use-multiple-assets";
 import SlidingPane from "react-sliding-pane";
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router";
@@ -18,7 +16,6 @@ export const ModalCurrency: FC<{
   const history = useHistory();
   const intl = useIntl();
 
-  const language = useLanguage();
   const [keyword, setKeyword] = useState<string>("");
   const { priceStore } = useStore();
   const onChangeInput = (e) => {
@@ -26,7 +23,6 @@ export const ModalCurrency: FC<{
     setKeyword(e.target.value);
   };
   const switchFiat = async (currency) => {
-    language.setFiatCurrency(currency);
     priceStore.setDefaultVsCurrency(currency);
     // await priceStore.saveDefaultVsCurrency();
     onRequestClose();

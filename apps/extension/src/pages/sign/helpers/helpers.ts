@@ -30,7 +30,7 @@ export const tryAllABI = (
   }
 };
 
-export const calculateJaccardIndex = (str1, str2) => {
+export const calculateJaccardIndex = (str1: string, str2: string) => {
   // const set1 = new Set(str1.split(""));
   // const set2 = new Set(str2.split(""));
 
@@ -73,7 +73,10 @@ export const findKeyBySimilarValue = (obj, value) => {
   return null; // Return null if the value is not found in the object
 };
 
-export const getTokenInfo = async (tokenContract, chainId) => {
+export const getTokenInfo = async (
+  tokenContract: string,
+  chainId: string | number
+) => {
   try {
     const response = await fetch(
       `${urlTxHistory}v1/token-info/${MapChainIdToNetwork[chainId]}/${tokenContract}`
@@ -96,7 +99,10 @@ export const getTokenInfo = async (tokenContract, chainId) => {
   }
 };
 
-export const getTokenDetail = async (tokenContract, chainId) => {
+export const getTokenDetail = async (
+  tokenContract: string,
+  chainId: string | number
+) => {
   try {
     const response = await fetch(
       `${urlTxHistory}v1/token-info/by-addresses/${MapChainIdToNetwork[chainId]}-${tokenContract}`
@@ -119,7 +125,7 @@ export const getTokenDetail = async (tokenContract, chainId) => {
   }
 };
 
-export function shortenAddress(address, digits = 6): string {
+export function shortenAddress(address: string, digits = 6): string {
   if (address) {
     const firstDigits = address.substring(0, digits);
     const lastDigits = address.substring(address.length - digits);

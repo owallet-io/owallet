@@ -178,8 +178,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     });
   }
 
-  // chain info들을 list로 보여줄때 hideInUI인 얘들은 빼고 보여줘야한다
-  // property 이름이 얘매해서 일단 이렇게 지었다.
+ 
   @computed
   get chainInfosInListUI() {
     return this.chainInfos.filter(chainInfo => {

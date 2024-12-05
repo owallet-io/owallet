@@ -1,5 +1,5 @@
-import { ChainStore } from './chain';
-import { CommunityChainInfoRepo, EmbedChainInfos } from '../config';
+import { ChainStore } from "./chain";
+import { CommunityChainInfoRepo, EmbedChainInfos } from "../config";
 import {
   CoinGeckoAPIEndPoint,
   CoinGeckoGetPrice,
@@ -10,8 +10,8 @@ import {
   GoogleMeasurementId,
   GoogleAPIKeyForMeasurement,
   SwapVenue,
-  CoinGeckoCoinDataByTokenAddress
-} from '../config.ui';
+  CoinGeckoCoinDataByTokenAddress,
+} from "../config.ui";
 import {
   AccountStore,
   CoinGeckoPriceStore,
@@ -27,9 +27,9 @@ import {
   ICNSQueries,
   AgoricQueries,
   LSMCurrencyRegistrar,
-  TokenFactoryCurrencyRegistrar
-} from '@owallet/stores';
-import { IBCChannelStore, IBCCurrencyRegistrar } from '@owallet/stores-ibc';
+  TokenFactoryCurrencyRegistrar,
+} from "@owallet/stores";
+import { IBCChannelStore, IBCCurrencyRegistrar } from "@owallet/stores-ibc";
 import {
   ChainSuggestStore,
   InteractionStore,
@@ -39,28 +39,36 @@ import {
   TokensStore,
   ICNSInteractionStore,
   PermissionManagerStore,
-  SignEthereumInteractionStore
-} from '@owallet/stores-core';
-import { EthereumQueries, EthereumAccountStore, ERC20CurrencyRegistrar } from '@owallet/stores-eth';
-import { ExtensionKVStore } from '@owallet/common';
+  SignEthereumInteractionStore,
+} from "@owallet/stores-core";
+import {
+  EthereumQueries,
+  EthereumAccountStore,
+  ERC20CurrencyRegistrar,
+} from "@owallet/stores-eth";
+import { ExtensionKVStore } from "@owallet/common";
 import {
   ContentScriptEnv,
   ContentScriptGuards,
   ExtensionRouter,
   InExtensionMessageRequester,
-  InteractionAddon
-} from '@owallet/router-extension';
-import { APP_PORT } from '@owallet/router';
-import { FiatCurrency } from '@owallet/types';
-import { UIConfigStore } from './ui-config';
-import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { HugeQueriesStore } from './huge-queries';
-import { TokenContractsQueries } from './token-contracts';
-import { SkipQueries, Price24HChangesStore, SwapUsageQueries } from '../../../stores-internal';
-import { setInteractionDataHref } from '../utils';
-import { InteractionPingMsg } from '@owallet/background';
-import { ExtensionAnalyticsClient } from 'src/analytics';
+  InteractionAddon,
+} from "@owallet/router-extension";
+import { APP_PORT } from "@owallet/router";
+import { FiatCurrency } from "@owallet/types";
+import { UIConfigStore } from "./ui-config";
+import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { HugeQueriesStore } from "./huge-queries";
+import { TokenContractsQueries } from "./token-contracts";
+import {
+  SkipQueries,
+  Price24HChangesStore,
+  SwapUsageQueries,
+} from "../../../stores-internal";
+import { setInteractionDataHref } from "../utils";
+import { InteractionPingMsg } from "@owallet/background";
+import { ExtensionAnalyticsClient } from "src/analytics";
 
 let _sidePanelWindowId: number | undefined;
 async function getSidePanelWindowId(): Promise<number | undefined> {
@@ -105,7 +113,9 @@ export class RootStore {
   >;
   public readonly swapUsageQueries: SwapUsageQueries;
   public readonly skipQueriesStore: SkipQueries;
-  public readonly accountStore: AccountStore<[CosmosAccount, CosmwasmAccount, SecretAccount]>;
+  public readonly accountStore: AccountStore<
+    [CosmosAccount, CosmwasmAccount, SecretAccount]
+  >;
   public readonly ethereumAccountStore: EthereumAccountStore;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly price24HChangesStore: Price24HChangesStore;
@@ -121,10 +131,13 @@ export class RootStore {
   public readonly analyticsStore: AnalyticsStore;
 
   constructor() {
-    const router = new ExtensionRouter(ContentScriptEnv.produceEnv, msg => {
-      if (msg instanceof InteractionPingMsg && !msg.ignoreWindowIdAndForcePing) {
+    const router = new ExtensionRouter(ContentScriptEnv.produceEnv, (msg) => {
+      if (
+        msg instanceof InteractionPingMsg &&
+        !msg.ignoreWindowIdAndForcePing
+      ) {
         const url = new URL(window.location.href);
-        if (url.pathname === '/sidePanel.html') {
+        if (url.pathname === "/sidePanel.html") {
           if (_sidePanelWindowId == null) {
             return true;
           }
@@ -137,32 +150,35 @@ export class RootStore {
     router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 
     // Initialize the interaction addon service.
-    const interactionAddonService = new InteractionAddon.InteractionAddonService();
+    const interactionAddonService =
+      new InteractionAddon.InteractionAddonService();
     InteractionAddon.init(router, interactionAddonService);
 
-    this.permissionManagerStore = new PermissionManagerStore(new InExtensionMessageRequester());
+    this.permissionManagerStore = new PermissionManagerStore(
+      new InExtensionMessageRequester()
+    );
 
     // Order is important.
     this.interactionStore = new InteractionStore(
       router,
       new InExtensionMessageRequester(),
-      next => {
+      (next) => {
         if (next) {
-          console.log('next', next);
+          console.log("next", next);
 
           setInteractionDataHref(next);
         }
       },
-      async data => {
+      async (data) => {
         const url = new URL(window.location.href);
-        console.log('url receive', url);
+        console.log("url receive", url);
 
-        if (url.pathname === '/popup.html') {
+        if (url.pathname === "/popup.html") {
           return data;
         }
-        if (url.pathname === '/sidePanel.html') {
+        if (url.pathname === "/sidePanel.html") {
           const windowId = await getSidePanelWindowId();
-          return data.filter(d => d.windowId === windowId);
+          return data.filter((d) => d.windowId === windowId);
         }
         return [];
       },
@@ -174,10 +190,10 @@ export class RootStore {
       async (windowId: number | undefined, ignoreWindowIdAndForcePing) => {
         const url = new URL(window.location.href);
 
-        if (url.pathname === '/popup.html') {
+        if (url.pathname === "/popup.html") {
           return true;
         }
-        if (url.pathname === '/sidePanel.html') {
+        if (url.pathname === "/sidePanel.html") {
           if (ignoreWindowIdAndForcePing) {
             return true;
           }
@@ -193,14 +209,21 @@ export class RootStore {
       {
         dispatchEvent: (type: string) => {
           window.dispatchEvent(new Event(type));
-        }
+        },
       },
       new InExtensionMessageRequester()
     );
 
-    this.chainStore = new ChainStore(EmbedChainInfos, this.keyRingStore, new InExtensionMessageRequester());
+    this.chainStore = new ChainStore(
+      EmbedChainInfos,
+      this.keyRingStore,
+      new InExtensionMessageRequester()
+    );
 
-    this.ibcChannelStore = new IBCChannelStore(new ExtensionKVStore('store_ibc_channel'), this.chainStore);
+    this.ibcChannelStore = new IBCChannelStore(
+      new ExtensionKVStore("store_ibc_channel"),
+      this.chainStore
+    );
 
     this.permissionStore = new PermissionStore(
       this.interactionStore,
@@ -208,36 +231,41 @@ export class RootStore {
       new InExtensionMessageRequester()
     );
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
-    this.signEthereumInteractionStore = new SignEthereumInteractionStore(this.interactionStore);
-    this.chainSuggestStore = new ChainSuggestStore(this.interactionStore, CommunityChainInfoRepo);
+    this.signEthereumInteractionStore = new SignEthereumInteractionStore(
+      this.interactionStore
+    );
+    this.chainSuggestStore = new ChainSuggestStore(
+      this.interactionStore,
+      CommunityChainInfoRepo
+    );
     this.icnsInteractionStore = new ICNSInteractionStore(this.interactionStore);
 
     this.queriesStore = new QueriesStore(
-      new ExtensionKVStore('store_queries'),
+      new ExtensionKVStore("store_queries"),
       this.chainStore,
       {
-        responseDebounceMs: 75
+        responseDebounceMs: 75,
       },
       AgoricQueries.use(),
       CosmosQueries.use(),
       CosmwasmQueries.use(),
       SecretQueries.use({
-        apiGetter: getOWalletFromWindow
+        apiGetter: getOWalletFromWindow,
       }),
       OsmosisQueries.use(),
 
       ICNSQueries.use(),
       TokenContractsQueries.use({
-        tokenContractListURL: TokenContractListURL
+        tokenContractListURL: TokenContractListURL,
       }),
       EthereumQueries.use({
         coingeckoAPIBaseURL: CoinGeckoAPIEndPoint,
-        coingeckoAPIURI: CoinGeckoCoinDataByTokenAddress
+        coingeckoAPIURI: CoinGeckoCoinDataByTokenAddress,
       })
     );
     this.swapUsageQueries = new SwapUsageQueries(
       this.queriesStore.sharedContext,
-      process.env['KEPLR_EXT_TX_HISTORY_BASE_URL']
+      process.env["KEPLR_EXT_TX_HISTORY_BASE_URL"]
     );
     this.skipQueriesStore = new SkipQueries(
       this.queriesStore.sharedContext,
@@ -253,143 +281,155 @@ export class RootStore {
       () => {
         return {
           suggestChain: false,
-          autoInit: true
+          autoInit: true,
         };
       },
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: chainId => {
+        msgOptsCreator: (chainId) => {
           // In certik, change the msg type of the MsgSend to "bank/MsgSend"
-          if (chainId.startsWith('shentu-')) {
+          if (chainId.startsWith("shentu-")) {
             return {
               send: {
                 native: {
-                  type: 'bank/MsgSend'
-                }
-              }
+                  type: "bank/MsgSend",
+                },
+              },
             };
           }
 
           // In akash or sifchain, increase the default gas for sending
-          if (chainId.startsWith('akashnet-') || chainId.startsWith('sifchain')) {
+          if (
+            chainId.startsWith("akashnet-") ||
+            chainId.startsWith("sifchain")
+          ) {
             return {
               send: {
                 native: {
-                  gas: 120000
-                }
-              }
+                  gas: 120000,
+                },
+              },
             };
           }
 
-          if (chainId.startsWith('secret-')) {
+          if (chainId.startsWith("secret-")) {
             return {
               send: {
                 native: {
-                  gas: 20000
-                }
+                  gas: 20000,
+                },
               },
               withdrawRewards: {
-                gas: 25000
-              }
+                gas: 25000,
+              },
             };
           }
 
           // For terra related chains
-          if (chainId.startsWith('bombay-') || chainId.startsWith('columbus-')) {
+          if (
+            chainId.startsWith("bombay-") ||
+            chainId.startsWith("columbus-")
+          ) {
             return {
               send: {
                 native: {
-                  type: 'bank/MsgSend'
-                }
+                  type: "bank/MsgSend",
+                },
               },
               withdrawRewards: {
-                type: 'distribution/MsgWithdrawDelegationReward'
-              }
+                type: "distribution/MsgWithdrawDelegationReward",
+              },
             };
           }
 
-          if (chainId.startsWith('evmos_') || chainId.startsWith('planq_')) {
+          if (chainId.startsWith("evmos_") || chainId.startsWith("planq_")) {
             return {
               send: {
                 native: {
-                  gas: 140000
-                }
+                  gas: 140000,
+                },
               },
               withdrawRewards: {
-                gas: 200000
-              }
+                gas: 200000,
+              },
             };
           }
 
-          if (chainId.startsWith('osmosis')) {
+          if (chainId.startsWith("osmosis")) {
             return {
               send: {
                 native: {
-                  gas: 100000
-                }
+                  gas: 100000,
+                },
               },
               withdrawRewards: {
-                gas: 300000
-              }
+                gas: 300000,
+              },
             };
           }
 
-          if (chainId.startsWith('stargaze-')) {
+          if (chainId.startsWith("stargaze-")) {
             return {
               send: {
                 native: {
-                  gas: 100000
-                }
+                  gas: 100000,
+                },
               },
               withdrawRewards: {
-                gas: 200000
-              }
+                gas: 200000,
+              },
             };
           }
-        }
+        },
       }),
       CosmwasmAccount.use({
-        queriesStore: this.queriesStore
+        queriesStore: this.queriesStore,
       }),
       SecretAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: chainId => {
-          if (chainId.startsWith('secret-')) {
+        msgOptsCreator: (chainId) => {
+          if (chainId.startsWith("secret-")) {
             return {
               send: {
                 secret20: {
-                  gas: 175000
-                }
+                  gas: 175000,
+                },
               },
               createSecret20ViewingKey: {
-                gas: 175000
-              }
+                gas: 175000,
+              },
             };
           }
-        }
+        },
       })
     );
 
-    this.ethereumAccountStore = new EthereumAccountStore(this.chainStore, getOWalletFromWindow);
+    this.ethereumAccountStore = new EthereumAccountStore(
+      this.chainStore,
+      getOWalletFromWindow
+    );
 
     this.priceStore = new CoinGeckoPriceStore(
-      new ExtensionKVStore('store_prices'),
+      new ExtensionKVStore("store_prices"),
       FiatCurrencies.reduce<{
         [vsCurrency: string]: FiatCurrency;
       }>((obj, fiat) => {
         obj[fiat.currency] = fiat;
         return obj;
       }, {}),
-      'usd',
+      "usd",
       {
         baseURL: CoinGeckoAPIEndPoint,
-        uri: CoinGeckoGetPrice
+        uri: CoinGeckoGetPrice,
       }
     );
-    this.price24HChangesStore = new Price24HChangesStore(new ExtensionKVStore('store_prices_changes_24h'), {
-      baseURL: process.env['KEPLR_EXT_TX_HISTORY_BASE_URL'],
-      uri: '/price/changes/24h'
-    });
+    this.price24HChangesStore = new Price24HChangesStore(
+      new ExtensionKVStore("store_prices_changes_24h"),
+      {
+        baseURL: process.env["KEPLR_EXT_TX_HISTORY_BASE_URL"],
+        uri: "/price/changes/24h",
+      }
+    );
 
     this.hugeQueriesStore = new HugeQueriesStore(
       this.chainStore,
@@ -400,8 +440,8 @@ export class RootStore {
 
     this.uiConfigStore = new UIConfigStore(
       {
-        kvStore: new ExtensionKVStore('store_ui_config'),
-        addressBookKVStore: new ExtensionKVStore('address-book')
+        kvStore: new ExtensionKVStore("store_ui_config"),
+        addressBookKVStore: new ExtensionKVStore("address-book"),
       },
       new InExtensionMessageRequester(),
       this.chainStore,
@@ -420,29 +460,29 @@ export class RootStore {
     );
 
     this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
-      new ExtensionKVStore('store_token_factory_currency_registrar'),
+      new ExtensionKVStore("store_token_factory_currency_registrar"),
       24 * 3600 * 1000,
-      process.env['KEPLR_EXT_TOKEN_FACTORY_BASE_URL'] || '',
-      process.env['KEPLR_EXT_TOKEN_FACTORY_URI'] || '',
+      process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
+      process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
       this.chainStore,
       this.queriesStore
     );
     this.ibcCurrencyRegistrar = new IBCCurrencyRegistrar(
-      new ExtensionKVStore('store_ibc_curreny_registrar'),
+      new ExtensionKVStore("store_ibc_curreny_registrar"),
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
       this.queriesStore
     );
     this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
-      new ExtensionKVStore('store_lsm_currency_registrar'),
+      new ExtensionKVStore("store_lsm_currency_registrar"),
       24 * 3600 * 1000,
       this.chainStore,
       this.queriesStore
     );
 
     this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
-      new ExtensionKVStore('store_erc20_currency_registrar'),
+      new ExtensionKVStore("store_erc20_currency_registrar"),
       24 * 3600 * 1000,
       this.chainStore,
       this.queriesStore
@@ -454,12 +494,12 @@ export class RootStore {
         if (
           !GoogleAPIKeyForMeasurement ||
           !GoogleMeasurementId ||
-          localStorage.getItem('disable-analytics') === 'true'
+          localStorage.getItem("disable-analytics") === "true"
         ) {
           return new NoopAnalyticsClient();
         } else {
           return new ExtensionAnalyticsClient(
-            new ExtensionKVStore('store_google_analytics_client'),
+            new ExtensionKVStore("store_google_analytics_client"),
             GoogleAPIKeyForMeasurement,
             GoogleMeasurementId
           );
@@ -467,21 +507,23 @@ export class RootStore {
       })(),
       {
         logEvent: (eventName, eventProperties) => {
-          if (eventProperties?.['chainId'] || eventProperties?.['chainIds']) {
+          if (eventProperties?.["chainId"] || eventProperties?.["chainIds"]) {
             eventProperties = {
-              ...eventProperties
+              ...eventProperties,
             };
 
-            if (eventProperties['chainId']) {
-              eventProperties['chainIdentifier'] = ChainIdHelper.parse(eventProperties['chainId'] as string).identifier;
+            if (eventProperties["chainId"]) {
+              eventProperties["chainIdentifier"] = ChainIdHelper.parse(
+                eventProperties["chainId"] as string
+              ).identifier;
             }
           }
 
           return {
             eventName,
-            eventProperties
+            eventProperties,
           };
-        }
+        },
       }
     );
 

@@ -7,6 +7,7 @@ export interface HeaderProps {
   fixed?: boolean;
   left?: React.ReactNode;
   right?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export class Header extends React.Component<HeaderProps> {

@@ -62,7 +62,7 @@ export * from "./side-panel";
 export * from "./settings";
 
 import { KVStore } from "@owallet/common";
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo, ModularChainInfo } from "@owallet/types";
 import { Notification } from "./tx";
 import { ChainInfoWithCoreTypes } from "./chains";
 import {

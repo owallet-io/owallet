@@ -8,12 +8,11 @@ import { configure } from "mobx";
 import { ErrorBoundary } from "react-error-boundary";
 import { ToastContainer, Zoom } from "react-toastify";
 import { useMatchPopupSize } from "../popup-size";
-import "./ledger";
+// import "./ledger";
 import { StoreProvider } from "./stores";
-import { AppIntlProviderWithStorage } from "./setup/AppIntlProviderWithStorage";
 import { LoadingIndicatorProvider } from "./components/loading-indicator";
 import { ConfirmProvider } from "./components/confirm";
-import { LogPageViewWrapper } from "./components/analytics";
+// import { LogPageViewWrapper } from "./components/analytics";
 import { Routes } from "./setup/Routes";
 import { ErrorFallback } from "./components/ErrorFallback/ErrorFallback";
 import { initializeWalletProviders } from "./setup/walletProviders";
@@ -58,38 +57,36 @@ const App: FunctionComponent = () => {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
       <StoreProvider>
-        <AppIntlProviderWithStorage>
-          <LoadingIndicatorProvider>
-            <ConfirmProvider>
-              {/* <GlobalStyle /> */}
-              {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : null}
-              <HashRouter>
-                <LogPageViewWrapper>
-                  <Routes />
-                </LogPageViewWrapper>
-              </HashRouter>
-            </ConfirmProvider>
-            <ToastContainer
-              position="top-center"
-              autoClose={3000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="light"
-              toastStyle={{ borderRadius: 8 }}
-              style={{
-                maxWidth: "calc(100vw - 32px)",
-                margin: 16,
-              }}
-              bodyStyle={{ fontSize: 14 }}
-              transition={Zoom}
-            />
-          </LoadingIndicatorProvider>
-        </AppIntlProviderWithStorage>
+        <LoadingIndicatorProvider>
+          <ConfirmProvider>
+            {/* <GlobalStyle /> */}
+            {isRunningInSidePanel() ? <GlobalSidePanelStyle /> : null}
+            <HashRouter>
+              {/* <LogPageViewWrapper> */}
+              <Routes />
+              {/* </LogPageViewWrapper> */}
+            </HashRouter>
+          </ConfirmProvider>
+          <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            toastStyle={{ borderRadius: 8 }}
+            style={{
+              maxWidth: "calc(100vw - 32px)",
+              margin: 16,
+            }}
+            bodyStyle={{ fontSize: 14 }}
+            transition={Zoom}
+          />
+        </LoadingIndicatorProvider>
       </StoreProvider>
     </ErrorBoundary>
   );

@@ -8,7 +8,7 @@ import {
   IGasSimulator,
   IMemoConfig,
   IRecipientConfig,
-} from "@keplr-wallet/hooks";
+} from "@owallet/hooks";
 import { useStore } from "../stores";
 
 export const useTxConfigsQueryString = (
