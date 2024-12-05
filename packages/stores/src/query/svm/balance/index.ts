@@ -21,7 +21,9 @@ import {
 } from "../../balances";
 import { QuerySharedContext } from "src/common/query/context";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
+
 const tokenNative = "11111111111111111111111111111111";
+
 export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   constructor(
     sharedContext: QuerySharedContext,
@@ -124,18 +126,48 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
     if (!tokenInfos?.length) return;
 
     // // 5. Map token metadata to currencies
-
-    const currencyInfo = tokenInfos
-      .filter((item, index) => item.node.tokenListEntry.address !== tokenNative)
-      .map((item) => ({
-        coinImageUrl: item.node.tokenListEntry.logo,
-        coinDenom: item.node.tokenListEntry.symbol,
-        coinGeckoId: item.node.tokenListEntry.coingeckoId,
-        coinDecimals: item.node.tokenListEntry.decimals,
-        coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
-      }));
-    // // 6. Update chain info with currencies
-    chainInfo.addCurrencies(...currencyInfo);
+    const allTokenAddress = tokenInfos.filter(
+      (item, index) => item.node.tokenListEntry.address !== tokenNative
+    );
+    if (!allTokenAddress?.length) return;
+    const tokenAddresses = allTokenAddress
+      .map((item, index) => {
+        return `${Network.SOLANA}%2B${item.node.tokenListEntry.address}`;
+      })
+      .join(",");
+    API.getMultipleTokenInfo({
+      tokenAddresses: tokenAddresses,
+    })
+      .then((tokenInfosAll) => {
+        const currencyInfo = allTokenAddress.map((item) => {
+          const coinGeckoId = tokenInfosAll.find(
+            (token) => token.contractAddress == item.node.tokenListEntry.address
+          );
+          return {
+            coinImageUrl: item.node.tokenListEntry.logo,
+            coinDenom: item.node.tokenListEntry.symbol,
+            coinGeckoId:
+              coinGeckoId?.coingeckoId || item.node.tokenListEntry.coingeckoId,
+            coinDecimals: item.node.tokenListEntry.decimals,
+            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+          };
+        });
+        // // 6. Update chain info with currencies
+        chainInfo.addCurrencies(...currencyInfo);
+      })
+      .catch((e) => {
+        const currencyInfo = allTokenAddress.map((item) => {
+          return {
+            coinImageUrl: item.node.tokenListEntry.logo,
+            coinDenom: item.node.tokenListEntry.symbol,
+            coinGeckoId: item.node.tokenListEntry.coingeckoId,
+            coinDecimals: item.node.tokenListEntry.decimals,
+            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+          };
+        });
+        // // 6. Update chain info with currencies
+        chainInfo.addCurrencies(...currencyInfo);
+      });
   }
 
   async fetchSplBalances() {
