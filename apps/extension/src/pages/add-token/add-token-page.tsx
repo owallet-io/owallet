@@ -128,7 +128,6 @@ export const AddTokenPage = observer(() => {
         coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
       };
     }
-    console.log(currency, "currency");
     try {
       if (interactionInfo.interaction && tokensStore.waitingSuggestedToken) {
         await tokensStore.approveSuggestedToken(currency);
