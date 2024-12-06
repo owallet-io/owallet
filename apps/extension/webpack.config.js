@@ -40,22 +40,11 @@ const commonResolve = (dir) => ({
   },
   fallback,
 });
+
 const altResolve = () => {
-  const p = path.resolve(__dirname, "./src/keplr-wallet-private/index.ts");
-
-  if (fs.existsSync(p)) {
-    return {
-      alias: {
-        "keplr-wallet-private": path.resolve(
-          __dirname,
-          "./src/keplr-wallet-private/index.ts"
-        ),
-      },
-    };
-  }
-
   return {};
 };
+
 const tsRule = { test: /\.tsx?$/, loader: "ts-loader" };
 const fileRule = {
   test: /\.(svg|png|webm|mp4|jpe?g|gif|woff|woff2|eot|ttf)$/i,
@@ -64,11 +53,6 @@ const fileRule = {
     filename: "assets/[name][ext]",
   },
 };
-
-const keplrLogoBase64 = `data:image/png;base64,${fs.readFileSync(
-  "src/public/assets/icon/icon-128.png",
-  "base64"
-)}`;
 
 module.exports = {
   name: "extension",
