@@ -1,9 +1,12 @@
 import { createGlobalStyle } from "styled-components";
 
+export const SidePanelMaxWidth = "540px";
 export const GlobalSidePanelStyle = createGlobalStyle`
   html {
     margin-left: auto;
     margin-right: auto;
+    
+    // 스크롤은 simplebar가 모두 처리한다고 가정하고 설정된것임. 주의할 것.
     overflow: hidden;
   }
   
@@ -15,6 +18,6 @@ export const GlobalSidePanelStyle = createGlobalStyle`
   
   #app {
     width: 100%;
-    max-width: 540px;
+    max-width: ${SidePanelMaxWidth};
   }
 `;

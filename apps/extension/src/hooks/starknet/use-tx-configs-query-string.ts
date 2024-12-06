@@ -4,7 +4,7 @@
 //   IGasConfig,
 //   IGasSimulator,
 //   IRecipientConfig,
-// } from "@keplr-wallet/hooks-starknet";
+// } from "@owallet/hooks-starknet";
 // import { useEffect } from "react";
 // import { useSearchParams } from "react-router-dom";
 

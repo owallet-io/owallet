@@ -1,6 +1,8 @@
 import { Bech32Address } from "@owallet/cosmos";
 import { ChainInfo, ModularChainInfo } from "@owallet/types";
 
+const NODE_ENV = "production";
+
 export const EmbedChainInfos: ChainInfo[] = [
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
@@ -14,11 +16,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "cosmos",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     bip44: {
@@ -55,11 +57,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "osmosis",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://app.osmosis.zone"
         : "https://app.osmosis.zone",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/osmosis"
         : "http://localhost:8080/chains/osmosis",
     bip44: { coinType: 118 },
@@ -111,11 +113,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "secret",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/secret-network"
         : "http://localhost:8080/chains/secret-network",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/secret-network"
         : "http://localhost:8080/chains/secret-network",
     bip44: {
@@ -162,11 +164,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "akash-network",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/akash"
         : "http://localhost:8080/chains/akash",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/akash"
         : "http://localhost:8080/chains/akash",
     bip44: {
@@ -202,11 +204,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/mars"
         : "http://localhost:8080/chains/mars",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/mars"
         : "http://localhost:8080/chains/mars",
     bip44: {
@@ -251,11 +253,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "crypto-com-chain",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/crypto-org"
         : "http://localhost:8080/chains/crypto-org",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/crypto-org"
         : "http://localhost:8080/chains/crypto-org",
     bip44: {
@@ -304,11 +306,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "iris-network",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/irisnet"
         : "http://localhost:8080/chains/irisnet",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/irisnet"
         : "http://localhost:8080/chains/irisnet",
     bip44: {
@@ -362,11 +364,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "regen",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/regen"
         : "http://localhost:8080/chains/regen",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/regen"
         : "http://localhost:8080/chains/regen",
     bip44: {
@@ -408,11 +410,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "persistence",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/persistence"
         : "http://localhost:8080/chains/persistence",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/persistence"
         : "http://localhost:8080/chains/persistence",
     bip44: {
@@ -464,11 +466,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "sentinel",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/sentinel"
         : "http://localhost:8080/chains/sentinel",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/sentinel"
         : "http://localhost:8080/chains/sentinel",
     bip44: {
@@ -510,11 +512,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "agoric",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/agoric"
         : "http://localhost:8080/chains/agoric",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/agoric"
         : "http://localhost:8080/chains/agoric",
     bip44: {
@@ -570,11 +572,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 0,
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/bostrom"
         : "http://localhost:8080/chains/bostrom",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/bostrom"
         : "http://localhost:8080/chains/bostrom",
     bip44: {
@@ -634,11 +636,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "juno-network",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/juno"
         : "http://localhost:8080/chains/juno",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/juno"
         : "http://localhost:8080/chains/juno",
     bip44: {
@@ -691,11 +693,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "stargaze",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/stargaze"
         : "http://localhost:8080/chains/stargaze",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/stargaze"
         : "http://localhost:8080/chains/stargaze",
     bip44: {
@@ -732,11 +734,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "axelar",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/axelar"
         : "http://localhost:8080/chains/axelar",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/axelar"
         : "http://localhost:8080/chains/axelar",
     bip44: {
@@ -886,11 +888,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "sommelier",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/sommelier"
         : "http://localhost:8080/chains/sommelier",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/sommelier"
         : "http://localhost:8080/chains/sommelier",
     bip44: {
@@ -926,11 +928,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/umee"
         : "http://localhost:8080/chains/umee",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/umee"
         : "http://localhost:8080/chains/umee",
     bip44: {
@@ -969,14 +971,8 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: "stride",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/stride"
-        : "http://localhost:8080/chains/stride",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/stride"
-        : "http://localhost:8080/chains/stride",
+    walletUrl: "https://wallet.keplr.app/chains/stride",
+    walletUrlForStaking: "https://wallet.keplr.app/chains/stride",
     bip44: {
       coinType: 118,
     },
@@ -1040,11 +1036,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "evmos",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/evmos"
         : "http://localhost:8080/chains/evmos",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/evmos"
         : "http://localhost:8080/chains/evmos",
     bip44: {
@@ -1085,14 +1081,8 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: "injective-protocol",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/injective"
-        : "http://localhost:8080/chains/injective",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/injective"
-        : "http://localhost:8080/chains/injective",
+    walletUrl: "https://wallet.keplr.app/chains/injective",
+    walletUrlForStaking: "https://wallet.keplr.app/chains/injective",
     bip44: {
       coinType: 60,
     },
@@ -1132,11 +1122,11 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "kava",
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/kava"
         : "http://localhost:8080/chains/kava",
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/kava"
         : "http://localhost:8080/chains/kava",
     bip44: { coinType: 459 },
@@ -1212,7 +1202,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
     },
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/quicksilver"
         : "http://localhost:8080/chains/quicksilver",
     bip44: {
@@ -1259,7 +1249,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "terra-luna-2",
     },
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
+      NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/terra"
         : "http://localhost:8080/chains/terra",
     bip44: {

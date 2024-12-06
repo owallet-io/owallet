@@ -7,6 +7,7 @@ import {
   GetCosmosKeysForEachVaultSettledMsg,
   RecentSendHistory,
   GetRecentSendHistoriesMsg,
+  GetCosmosKeysForEachVaultWithSearchSettledMsg,
 } from "@owallet/background";
 import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
 import { KeyRingStore } from "@owallet/stores-core";
@@ -142,6 +143,33 @@ export class AddressBookConfig {
     }
 
     const msg = new GetCosmosKeysForEachVaultSettledMsg(chainId, vaultIds);
+    return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async getVaultCosmosKeysWithSearchSettled(
+    searchText: string,
+    chainId: string,
+    exceptVaultId?: string
+  ): Promise<
+    SettledResponses<
+      Key & {
+        vaultId: string;
+      }
+    >
+  > {
+    const vaultIds = this.keyRingStore.keyInfos
+      .map((keyInfo) => keyInfo.id)
+      .filter((vault) => vault !== exceptVaultId);
+
+    if (vaultIds.length === 0) {
+      return [];
+    }
+
+    const msg = new GetCosmosKeysForEachVaultWithSearchSettledMsg(
+      chainId,
+      vaultIds,
+      searchText
+    );
     return await this.messageRequester.sendMessage(BACKGROUND_PORT, msg);
   }
 

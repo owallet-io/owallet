@@ -2,8 +2,8 @@
 // import { useStore } from "../stores";
 // import { FiatOnRampServiceInfo } from "../config.ui";
 
-// import { ChainInfo, AppCurrency } from "@keplr-wallet/types";
-// import { simpleFetch } from "@keplr-wallet/simple-fetch";
+// import { ChainInfo, AppCurrency } from "@owallet/types";
+// import { simpleFetch } from "@owallet/simple-fetch";
 
 // export const useBuy = (selectedTokenInfo?: {
 //   chainId: string;

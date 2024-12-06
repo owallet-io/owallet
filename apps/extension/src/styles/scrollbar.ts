@@ -1,4 +1,5 @@
 import { createGlobalStyle } from "styled-components";
+import { ColorPalette } from "./colors";
 
 export const ScrollBarStyle = createGlobalStyle`
   * {
@@ -11,6 +12,7 @@ export const ScrollBarStyle = createGlobalStyle`
   }
 
   .simplebar-scrollbar::before {
+    background-color: ${ColorPalette["gray-400"]};
     border-radius: 0;
   }
 

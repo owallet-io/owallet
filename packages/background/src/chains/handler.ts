@@ -105,6 +105,11 @@ const handleGetInfosWithCoreTypesMsg: (
   service: ChainsService
 ) => InternalHandler<GetChainInfosWithCoreTypesMsg> = (service) => {
   return () => {
+    console.log(
+      " service.getChainInfosWithCoreTypes()",
+      service.getChainInfosWithCoreTypes()
+    );
+
     return {
       chainInfos: service.getChainInfosWithCoreTypes(),
       modulrChainInfos: service.getModularChainInfos(),
@@ -209,7 +214,6 @@ const handleRemoveSuggestedChainInfoMsg: (
   };
 };
 
-
 const handleSetChainEndpointsMsg: (
   service: ChainsService
 ) => InternalHandler<SetChainEndpointsMsg> = (service) => {
@@ -225,7 +229,6 @@ const handleSetChainEndpointsMsg: (
     };
   };
 };
-
 
 const handleClearChainEndpointsMsg: (
   service: ChainsService

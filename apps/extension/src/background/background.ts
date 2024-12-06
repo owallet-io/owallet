@@ -24,7 +24,7 @@ import {
   EmbedChainInfos,
   PrivilegedOrigins,
 } from "../config";
-
+const NODE_ENV = "production";
 const router = new ExtensionRouter(ExtensionEnv.produceEnv);
 router.addGuard(ExtensionGuards.checkOriginIsValid);
 router.addGuard(ExtensionGuards.checkMessageIsInternal);
@@ -111,14 +111,6 @@ const { initFn, keyRingService, analyticsService } = init(
             coinMinimalDenom: "uixo",
             coinDecimals: 6,
           },
-          walletUrl:
-            process.env.NODE_ENV === "production"
-              ? "https://wallet.keplr.app/chains/ixo"
-              : "http://localhost:8080/chains/ixo",
-          walletUrlForStaking:
-            process.env.NODE_ENV === "production"
-              ? "https://wallet.keplr.app/chains/ixo"
-              : "http://localhost:8080/chains/ixo",
           bip44: {
             coinType: 118,
           },
@@ -151,11 +143,11 @@ const { initFn, keyRingService, analyticsService } = init(
             coinGeckoId: "starname",
           },
           walletUrl:
-            process.env.NODE_ENV === "production"
+            NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/starname"
               : "http://localhost:8080/chains/starname",
           walletUrlForStaking:
-            process.env.NODE_ENV === "production"
+            NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/starname"
               : "http://localhost:8080/chains/starname",
           bip44: {
@@ -197,11 +189,11 @@ const { initFn, keyRingService, analyticsService } = init(
             coinGeckoId: "e-money",
           },
           walletUrl:
-            process.env.NODE_ENV === "production"
+            NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/e-money"
               : "http://localhost:8080/chains/e-money",
           walletUrlForStaking:
-            process.env.NODE_ENV === "production"
+            NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/e-money"
               : "http://localhost:8080/chains/e-money",
           bip44: {

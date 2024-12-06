@@ -3,6 +3,7 @@ import {
   Message,
   OWalletError,
   JSONUint8Array,
+  EthereumProviderRpcError,
 } from "@owallet/router";
 import { getOWalletExtensionRouterId } from "../utils";
 
@@ -30,6 +31,8 @@ export class InExtensionMessageRequester implements MessageRequester {
       })
     );
 
+    console.log("result", result, msg);
+
     if (!result) {
       throw new Error("Null result");
     }
@@ -45,7 +48,7 @@ export class InExtensionMessageRequester implements MessageRequester {
             result.error.message
           );
         } else {
-          throw new OWalletError(
+          throw new EthereumProviderRpcError(
             result.error.code,
             result.error.message,
             result.error.data
@@ -96,7 +99,7 @@ export class InExtensionMessageRequester implements MessageRequester {
             result.error.message
           );
         } else {
-          throw new OWalletError(
+          throw new EthereumProviderRpcError(
             result.error.code,
             result.error.message,
             result.error.data

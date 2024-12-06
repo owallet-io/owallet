@@ -1,5 +1,5 @@
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
-import { FiatCurrency } from "@keplr-wallet/types";
+import { FiatCurrency } from "@owallet/types";
 
 export const HelpDeskUrl = "https://help.keplr.app";
 export const TermsOfUseUrl = "https://terms-of-use.keplr.app";

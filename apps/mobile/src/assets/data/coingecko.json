@@ -57885,11 +57885,6 @@
     "name": "StarkMeta"
   },
   {
-    "id": "starknet",
-    "symbol": "strk",
-    "name": "Starknet"
-  },
-  {
     "id": "stark-owl",
     "symbol": "owl",
     "name": "Stark Owl"

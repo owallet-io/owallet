@@ -1,23 +1,71 @@
-import { PushEventDataMsg } from "@owallet/background";
-import { Router } from "@owallet/router";
+import { Message, Router } from "@owallet/router";
+
+class PushEventDataMsg<D = unknown> extends Message<void> {
+  public static type() {
+    return "push-event-data";
+  }
+
+  constructor(
+    public readonly data: {
+      type: string;
+      data: D;
+    }
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.data.type) {
+      throw new Error("Type should not be empty");
+    }
+  }
+
+  route(): string {
+    return "interaction-foreground";
+  }
+
+  type(): string {
+    return PushEventDataMsg.type();
+  }
+}
 
 export function initEvents(router: Router) {
   router.registerMessage(PushEventDataMsg);
 
   router.addHandler("interaction-foreground", (_, msg) => {
-    console.log("interaction-foreground event");
     switch (msg.constructor) {
       case PushEventDataMsg:
-        if ((msg as PushEventDataMsg).data.type === "keystore-changed") {
-          window.dispatchEvent(
-            new CustomEvent("keplr_keystorechange", {
-              detail: {
-                ...(msg as PushEventDataMsg).data,
-              },
-            })
-          );
+        switch ((msg as PushEventDataMsg).data.type) {
+          case "keystore-changed":
+            return window.dispatchEvent(new Event("keplr_keystorechange"));
+          case "keplr_chainChanged":
+            return window.dispatchEvent(
+              new CustomEvent("keplr_chainChanged", {
+                detail: {
+                  ...(
+                    msg as PushEventDataMsg<{
+                      origin: string;
+                      evmChainId: number;
+                    }>
+                  ).data.data,
+                },
+              })
+            );
+          case "keplr_ethSubscription":
+            return window.dispatchEvent(
+              new CustomEvent("keplr_ethSubscription", {
+                detail: {
+                  ...(
+                    msg as PushEventDataMsg<{
+                      origin: string;
+                      data: { subscription: string; result: any };
+                    }>
+                  ).data.data,
+                },
+              })
+            );
         }
-        return {};
+        return;
       default:
         throw new Error("Unknown msg type");
     }

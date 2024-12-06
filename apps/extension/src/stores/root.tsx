@@ -68,7 +68,7 @@ import {
 } from "../../../stores-internal";
 import { setInteractionDataHref } from "../utils";
 import { InteractionPingMsg } from "@owallet/background";
-import { ExtensionAnalyticsClient } from "src/analytics";
+import { ExtensionAnalyticsClient } from "../analytics";
 
 let _sidePanelWindowId: number | undefined;
 async function getSidePanelWindowId(): Promise<number | undefined> {

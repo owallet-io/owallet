@@ -1,2 +1,2 @@
-// export { useNotification, NotificationProvider } from "./internal";
-// export * from "./types";
+export { useNotification, NotificationProvider } from "./internal";
+export * from "./types";

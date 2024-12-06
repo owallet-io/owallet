@@ -1,6 +1,6 @@
-// import { createContext } from "react";
-// import { GlobalSimpleBar } from "./types";
+import { createContext } from "react";
+import { GlobalSimpleBar } from "./types";
 
-// export const GlobalSimpleBarContext = createContext<GlobalSimpleBar | null>(
-//   null
-// );
+export const GlobalSimpleBarContext = createContext<GlobalSimpleBar | null>(
+  null
+);
