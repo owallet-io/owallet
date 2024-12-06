@@ -24,7 +24,6 @@ import {
   ChainIdEnum,
   DenomDydx,
   removeDataInParentheses,
-  zeroDec,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -44,6 +43,7 @@ import PieChart from "react-native-pie-chart";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import MoreModal from "./more-modal";
+const zeroDec = new Dec("0");
 export const initPrice = new PricePretty(
   {
     currency: "usd",

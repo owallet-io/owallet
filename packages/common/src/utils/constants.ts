@@ -1,5 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
-
 export const EVMOS_NETWORKS = ["kawaii_6886-1"];
 export const EXTRA_FEE_LIMIT_TRON = 50_000_000;
 export const DEFAULT_FEE_LIMIT_TRON = 150_000_000;
@@ -9,7 +7,6 @@ export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
 import { Network as NetworkTatum } from "@tatumio/tatum";
-export const zeroDec = new Dec(0);
 export enum NetworkEnum {
   Cosmos = "cosmos",
   Evm = "evm",

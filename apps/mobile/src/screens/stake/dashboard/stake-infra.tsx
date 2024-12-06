@@ -18,7 +18,7 @@ import {
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "@src/themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
-import { ChainIdEnum, formatAprString, zeroDec } from "@owallet/common";
+import { ChainIdEnum, formatAprString } from "@owallet/common";
 import { OWBox } from "@src/components/card";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { Dec, IntPretty } from "@owallet/unit";
@@ -27,7 +27,7 @@ import { AprItem } from "@stores/aprs";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { PageWithScrollViewInBottomTabView } from "@components/page";
-
+const zeroDec = new Dec(0);
 const dataOWalletStake = [
   {
     chainId: ChainIdEnum.Oraichain,

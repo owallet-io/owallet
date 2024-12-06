@@ -26,7 +26,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { Text } from "@src/components/text";
 import { SCREENS } from "@src/common/constants";
 import { navigate } from "@src/router/root";
-import { unknownToken, zeroDec } from "@owallet/common";
+import { unknownToken } from "@owallet/common";
 import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
@@ -34,6 +34,8 @@ import { ViewToken } from "@src/stores/huge-queries";
 import { OWSearchInput } from "@src/components/ow-search-input";
 import images from "@src/assets/images";
 import { initPrice } from "./account-box-new";
+import { Dec } from "@owallet/unit";
+const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
   // dataTokens: ViewToken[];
