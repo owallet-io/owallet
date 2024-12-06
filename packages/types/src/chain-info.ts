@@ -1,8 +1,8 @@
-import { Currency, AppCurrency, FeeCurrency } from './currency';
-import { BIP44, BIP84 } from './bip44';
-import { Bech32Config } from './bech32';
-import { EVMInfo } from './ethereum';
-export type NetworkType = 'cosmos' | 'evm' | 'bitcoin' | 'oasis';
+import { Currency, AppCurrency, FeeCurrency } from "./currency";
+import { BIP44, BIP84 } from "./bip44";
+import { Bech32Config } from "./bech32";
+import { EVMInfo } from "./ethereum";
+export type NetworkType = "cosmos" | "evm" | "bitcoin" | "oasis";
 export interface ChainInfo {
   readonly rpc: string;
   readonly rest: string;
@@ -59,16 +59,19 @@ export interface ChainInfo {
   };
 }
 
-export type ChainInfoWithoutEndpoints = Omit<ChainInfo, 'rest' | 'rpc' | 'nodeProvider' | 'evm'> & {
+export type ChainInfoWithoutEndpoints = Omit<
+  ChainInfo,
+  "rest" | "rpc" | "nodeProvider" | "evm"
+> & {
   readonly rest: undefined;
   readonly rpc: undefined;
   readonly nodeProvider: undefined;
-  readonly evm?: Omit<EVMInfo, 'rpc'> & {
+  readonly evm?: Omit<EVMInfo, "rpc"> & {
     readonly rpc: undefined;
   };
 };
 
-export type ChainInfoModule = 'cosmos' | 'starknet';
+export type ChainInfoModule = "cosmos" | "starknet";
 
 export type ModularChainInfo =
   | {

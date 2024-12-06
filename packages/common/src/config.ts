@@ -1,8 +1,25 @@
 import { ChainInfo, Currency } from "@owallet/types";
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
-import { defaultBech32Config } from "./utils";
 
+export function defaultBech32Config(
+  mainPrefix: string,
+  validatorPrefix: string = "val",
+  consensusPrefix: string = "cons",
+  publicPrefix: string = "pub",
+  operatorPrefix: string = "oper"
+) {
+  return {
+    bech32PrefixAccAddr: mainPrefix,
+    bech32PrefixAccPub: mainPrefix + publicPrefix,
+    bech32PrefixValAddr: mainPrefix + validatorPrefix + operatorPrefix,
+    bech32PrefixValPub:
+      mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
+    bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
+    bech32PrefixConsPub:
+      mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
+  };
+}
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
   process.env["KEPLR_EXT_COINGECKO_ENDPOINT"] ||

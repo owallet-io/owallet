@@ -25,24 +25,7 @@ export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
   return validate(address);
 };
-export const defaultBech32Config = (
-  mainPrefix: string,
-  validatorPrefix: string = "val",
-  consensusPrefix: string = "cons",
-  publicPrefix: string = "pub",
-  operatorPrefix: string = "oper"
-): Bech32Config => {
-  return {
-    bech32PrefixAccAddr: mainPrefix,
-    bech32PrefixAccPub: mainPrefix + publicPrefix,
-    bech32PrefixValAddr: mainPrefix + validatorPrefix + operatorPrefix,
-    bech32PrefixValPub:
-      mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
-    bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
-    bech32PrefixConsPub:
-      mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
-  };
-};
+
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
