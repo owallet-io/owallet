@@ -9,7 +9,7 @@ import {
 
 import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
-import { IntPretty } from "@owallet/unit";
+import { IntPretty } from "@keplr-wallet/unit";
 
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
@@ -17,7 +17,32 @@ import { ethers } from "ethers";
 // import Web3 from "web3";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
+import { Bech32Config } from "@owallet/types";
 import "dotenv/config";
+import { validate } from "bitcoin-address-validation";
+
+export const isBtcAddress = (address: string): boolean => {
+  if (!address) return false;
+  return validate(address);
+};
+export const defaultBech32Config = (
+  mainPrefix: string,
+  validatorPrefix: string = "val",
+  consensusPrefix: string = "cons",
+  publicPrefix: string = "pub",
+  operatorPrefix: string = "oper"
+): Bech32Config => {
+  return {
+    bech32PrefixAccAddr: mainPrefix,
+    bech32PrefixAccPub: mainPrefix + publicPrefix,
+    bech32PrefixValAddr: mainPrefix + validatorPrefix + operatorPrefix,
+    bech32PrefixValPub:
+      mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
+    bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
+    bech32PrefixConsPub:
+      mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
+  };
+};
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
@@ -444,6 +469,7 @@ export const typeBtcLedgerByAddress = (
     }
   }
 };
+
 export function limitString(str, limit) {
   if (str && str.length > limit) {
     return str.slice(0, limit) + "...";
@@ -451,6 +477,7 @@ export function limitString(str, limit) {
     return str;
   }
 }
+
 export function findLedgerAddress(
   AddressesLedger,
   chainInfo: ChainInfoWithoutEndpoints,

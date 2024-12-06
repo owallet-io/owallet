@@ -1,4 +1,4 @@
-import { Dec } from "@owallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 
 export const EVMOS_NETWORKS = ["kawaii_6886-1"];
 export const EXTRA_FEE_LIMIT_TRON = 50_000_000;

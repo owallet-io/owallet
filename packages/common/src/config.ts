@@ -1,7 +1,7 @@
-import { Bech32Address } from "@owallet/cosmos";
 import { ChainInfo, Currency } from "@owallet/types";
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
+import { defaultBech32Config } from "./utils";
 
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
@@ -192,7 +192,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("orai"),
+    bech32Config: defaultBech32Config("orai"),
     currencies: [
       {
         coinDenom: "ORAI",
@@ -402,7 +402,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 474,
     },
-    bech32Config: Bech32Address.defaultBech32Config("oasis"),
+    bech32Config: defaultBech32Config("oasis"),
     feeCurrencies: [
       {
         coinDenom: "ROSE",
@@ -442,7 +442,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
+    bech32Config: defaultBech32Config("oraibtc"),
     // List of all coin/tokens used in this chain.
     get currencies() {
       return [this.stakeCurrency];
@@ -486,7 +486,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
     },
-    bech32Config: Bech32Address.defaultBech32Config("bc"),
+    bech32Config: defaultBech32Config("bc"),
     currencies: [
       {
         type: "legacy",
@@ -563,7 +563,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("oraib"),
+    bech32Config: defaultBech32Config("oraib"),
     // List of all coin/tokens used in this chain.
     get currencies() {
       return [
@@ -915,7 +915,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: defaultBech32Config("cosmos"),
     currencies: [
       {
         coinDenom: "ATOM",
@@ -954,7 +954,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         ? "https://wallet.keplr.app/chains/osmosis"
         : "http://localhost:8080/chains/osmosis",
     bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("osmo"),
+    bech32Config: defaultBech32Config("osmo"),
     currencies: [
       {
         coinDenom: "OSMO",
@@ -1012,7 +1012,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("stars"),
+    bech32Config: defaultBech32Config("stars"),
     currencies: [
       {
         coinDenom: "STARS",
@@ -1053,7 +1053,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 60,
     },
-    bech32Config: Bech32Address.defaultBech32Config("inj"),
+    bech32Config: defaultBech32Config("inj"),
     currencies: [
       {
         coinDenom: "INJ",
@@ -1138,7 +1138,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
+    bech32Config: defaultBech32Config("neutaro"),
     currencies: [
       {
         coinDenom: "NTMPI",
@@ -1204,7 +1204,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //       coinType: 118,
   //     },
   //   ],
-  //   bech32Config: Bech32Address.defaultBech32Config("secret"),
+  //   bech32Config: defaultBech32Config("secret"),
   //   currencies: [
   //     {
   //       coinDenom: "SCRT",
@@ -1250,7 +1250,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   bip44: {
   //     coinType: 118,
   //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("akash"),
+  //   bech32Config: defaultBech32Config("akash"),
   //   currencies: [
   //     {
   //       coinDenom: "AKT",
@@ -1296,7 +1296,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //       coinType: 750,
   //     },
   //   ],
-  //   bech32Config: Bech32Address.defaultBech32Config("persistence"),
+  //   bech32Config: defaultBech32Config("persistence"),
   //   currencies: [
   //     {
   //       coinDenom: "XPRT",
@@ -1347,7 +1347,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   bip44: {
   //     coinType: 564,
   //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("agoric"),
+  //   bech32Config: defaultBech32Config("agoric"),
   //   currencies: [
   //     {
   //       coinDenom: "BLD",
@@ -1408,7 +1408,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   bip44: {
   //     coinType: 118,
   //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("juno"),
+  //   bech32Config: defaultBech32Config("juno"),
   //   currencies: [
   //     {
   //       coinDenom: "JUNO",
@@ -1535,7 +1535,7 @@ export const EmbedChainInfos: ChainInfo[] = [
   //   bip44: {
   //     coinType: 118,
   //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("celestia"),
+  //   bech32Config: defaultBech32Config("celestia"),
   //   currencies: [
   //     {
   //       coinDenom: "TIA",

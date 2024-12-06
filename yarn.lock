@@ -4968,6 +4968,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@keplr-wallet/types@npm:0.12.159":
+  version: 0.12.159
+  resolution: "@keplr-wallet/types@npm:0.12.159"
+  dependencies:
+    long: ^4.0.0
+  peerDependencies:
+    starknet: ^6
+  checksum: a584ee629366457ef2f098859e04ad06cc7bf4b5012802607390312c53cfddd86375713dd08c4ab4388f2e085bca10b88a3867a0e76ed321cdb87d2c17ae6ae9
+  languageName: node
+  linkType: hard
+
 "@keplr-wallet/types@npm:^0.11.38":
   version: 0.11.64
   resolution: "@keplr-wallet/types@npm:0.11.64"
@@ -4975,6 +4986,17 @@ __metadata:
     axios: ^0.27.2
     long: ^4.0.0
   checksum: d1d281cdb4c2f61ad46cad158559746927a65a4274170208c3ed712dd550bd623c058fea5cd08d0c1f7806c9856f3c901807f8946cd6cbc99f871b4ce03f94a9
+  languageName: node
+  linkType: hard
+
+"@keplr-wallet/unit@npm:0.12.159":
+  version: 0.12.159
+  resolution: "@keplr-wallet/unit@npm:0.12.159"
+  dependencies:
+    "@keplr-wallet/types": 0.12.159
+    big-integer: ^1.6.48
+    utility-types: ^3.10.0
+  checksum: 4c3d6864c7a85aaefe909f78c5efe97916145633b5fd0b49ab91b19344a0e266329491abbc09aa1a44aa1b5f28bcfe6b5203ba2db537aedf96071f53e7ac8673
   languageName: node
   linkType: hard
 
@@ -6175,6 +6197,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@owallet/common@workspace:packages/common"
   dependencies:
+    "@keplr-wallet/unit": 0.12.159
     "@owallet/crypto": "*"
     "@owallet/types": "*"
     bitcoin-address-validation: 2.2.3
