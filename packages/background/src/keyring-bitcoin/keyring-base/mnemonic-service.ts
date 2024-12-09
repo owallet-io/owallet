@@ -1,13 +1,8 @@
 import { Buffer } from "buffer/";
 import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
-import {
-  compileMemo,
-  HDKey,
-  signSignatureBtc,
-  uint2hex,
-} from "@owallet/common";
-import { KeyRing, KeyRingBtc } from "../../keyring";
+import { signSignatureBtc } from "@owallet/common";
+import { KeyRingBtc } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 

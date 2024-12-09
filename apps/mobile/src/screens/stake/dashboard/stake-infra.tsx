@@ -27,6 +27,7 @@ import { AprItem } from "@stores/aprs";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { PageWithScrollViewInBottomTabView } from "@components/page";
+
 const zeroDec = new Dec(0);
 const dataOWalletStake = [
   {
@@ -139,6 +140,8 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
             }}
           >
             {dataOWalletStake.map((item, index) => {
+              const hasChain = chainStore.hasChain(item.chainId);
+              if (!hasChain) return;
               const chainInfo = chainStore.getChain(item.chainId);
               const chainAPR = aprList.filter(
                 ({ chainId }) => chainId === item.chainId
