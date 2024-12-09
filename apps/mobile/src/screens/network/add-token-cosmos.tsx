@@ -26,22 +26,12 @@ import { SCREENS } from "@src/common/constants";
 
 interface FormData {
   viewingKey?: string;
-  icon?: string;
   contractAddress: string;
-  name: string;
   symbol: string;
   decimals: string;
-}
-
-interface TokenType {
-  coinDenom: string;
-  coinMinimalDenom: string;
-  contractAddress: string;
-  coinDecimals: number;
+  image: string;
+  name: string;
   coinGeckoId: string;
-  prefixToken: string;
-  bridgeTo?: Array<string>;
-  coinImageUrl?: string;
 }
 
 export const AddTokenCosmosScreen: FunctionComponent<{
@@ -58,21 +48,11 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
   const { colors } = useTheme();
 
-  const {
-    chainStore,
-    queriesStore,
-    accountStore,
-    tokensStore,
-    appInitStore,
-    modalStore,
-  } = useStore();
+  const { chainStore, queriesStore, tokensStore, modalStore } = useStore();
   const selectedChain = chainStore.current;
-  // const tokensOf = tokensStore.getTokensOf(selectedChain.chainId);
 
   const [loading, setLoading] = useState(false);
-  const [coingeckoId, setCoingeckoID] = useState("");
-  const [selectedType, setSelectedType] = useState<"cw20">("cw20");
-  const [coingeckoImg, setCoingeckoImg] = useState(null);
+  const [selectedType, setSelectedType] = useState<"cw20" | "native">("cw20");
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -109,28 +89,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
-  const getTokenCoingeckoId = async () => {
-    try {
-      if (tokenInfo && tokenInfo.symbol) {
-        if (selectedChain && contractAddress && contractAddress !== "") {
-          const res = await API.getTokenInfo({
-            network: MapChainIdToNetwork[selectedChain.chainId],
-            tokenAddress: contractAddress,
-          });
-          const data = res.data;
-
-          if (data && data.imgUrl) {
-            setCoingeckoImg(data.imgUrl);
-            setCoingeckoID(data.coingeckoId);
-          } else {
-            throw new Error("Image URL not found for the Coingecko ID.");
-          }
-        }
-      }
-    } catch (err) {
-      console.log("getTokenCoingeckoId err", err);
-    }
-  };
 
   const _onPressSelectType = () => {
     modalStore.setOptions({
@@ -143,7 +101,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     modalStore.setChildren(
       <SelectTokenTypeModal
         selected={selectedType}
-        list={["cw20"]}
+        list={["cw20", "native"]}
         onPress={(type) => {
           setSelectedType(type);
           modalStore.close();
@@ -152,53 +110,38 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     );
   };
 
-  useEffect(() => {
-    getTokenCoingeckoId();
-    if (tokenInfo) {
-      setValue("name", tokenInfo.name);
-      setValue("symbol", tokenInfo.symbol);
-      setValue("decimals", tokenInfo.decimals?.toString());
+  const getTokenCoingeckoId = async (contractAddressData) => {
+    try {
+      if (!contractAddressData || !tokenInfo?.symbol || !tokenInfo?.decimals)
+        return;
+      const res = await API.getTokenInfo({
+        network: MapChainIdToNetwork[chainStore.current.chainId],
+        tokenAddress: contractAddressData,
+      });
+      const data = res.data;
+      if (data && data.imgUrl) {
+        setValue("image", data.imgUrl);
+        setValue("coinGeckoId", data.coingeckoId);
+      } else {
+        throw new Error("Image URL not found for the Coingecko ID.");
+      }
+    } catch (err) {
+      console.log("getTokenCoingeckoId err", err);
     }
+  };
+  useEffect(() => {
+    if (!contractAddress || !tokenInfo?.symbol || !tokenInfo?.decimals) return;
+    setValue("symbol", tokenInfo?.symbol);
+    setValue("decimals", `${tokenInfo?.decimals}`);
+    setValue("name", tokenInfo?.name);
+    getTokenCoingeckoId(contractAddress);
   }, [contractAddress, tokenInfo]);
 
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
   const addTokenSuccess = (currency) => {
-    // const currentChainInfos = appInitStore.getChainInfos;
-    //
-    // const chain = currentChainInfos.find(
-    //   (c) => c.chainId === selectedChain.chainId
-    // );
-
     setLoading(false);
-    // const token: TokenType = {
-    //   coinDenom: currency.coinDenom,
-    //   coinMinimalDenom: `${currency.type}_${currency.coinDenom.toLowerCase()}`,
-    //   contractAddress: currency.contractAddress,
-    //   coinDecimals: currency.coinDecimals,
-    //   coinGeckoId: coingeckoId,
-    //   prefixToken:
-    //     currency?.prefixToken ?? null,
-    //   coinImageUrl: getValues('icon') ?? null
-    // };
-
-    // const newCurrencies = [...chain.currencies];
-    // newCurrencies.push(token);
-    //
-    // const newChainInfos = [...currentChainInfos];
-    //
-    // // Find the object with chainId and update its age
-    // for (let i = 0; i < newChainInfos.length; i++) {
-    //   if (newChainInfos[i].chainId === selectedChain.chainId) {
-    //     newChainInfos[i].currencies = newCurrencies;
-    //     break; // Exit the loop since we found the object
-    //   }
-    // }
-
-    // appInitStore.updateChainInfos(newChainInfos);
-
     resetTo(SCREENS.STACK.MainTab);
-
     showToast({
       message: "Token added",
     });
@@ -206,21 +149,33 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
   const submit = handleSubmit(async (data: any) => {
     try {
-      if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
-        setLoading(true);
-        const currency: CW20Currency = {
-          type: selectedType,
-          contractAddress: data.contractAddress,
-          coinMinimalDenom: `${selectedType}:${data.contractAddress}:${tokenInfo.name}`,
-          coinDenom: tokenInfo.symbol,
-          coinDecimals: tokenInfo.decimals,
-          coinImageUrl: coingeckoImg || unknownToken.coinImageUrl,
-          coinGeckoId: coingeckoId || unknownToken.coinGeckoId,
+      console.log(data, "submit");
+      let currency: CW20Currency | AppCurrency = {
+        type: "cw20",
+        contractAddress: data.contractAddress,
+        coinMinimalDenom: `cw20:${data.contractAddress}:${data.name}`,
+        coinDenom: data.symbol,
+        coinDecimals: Number(data.decimals),
+        coinImageUrl: data.image || unknownToken.coinImageUrl,
+        coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
+      };
+
+      if (
+        (data.contractAddress.startsWith("factory") ||
+          data.contractAddress.startsWith("ibc")) &&
+        selectedType !== "cw20"
+      ) {
+        currency = {
+          coinMinimalDenom: data.contractAddress,
+          coinDenom: data.symbol,
+          coinDecimals: Number(data.decimals),
+          coinImageUrl: data.image || unknownToken.coinImageUrl,
+          coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
         };
-        await tokensStore.addToken(selectedChain.chainId, currency);
-        // await tokensOf.addToken(currency);
-        addTokenSuccess(currency);
       }
+      setLoading(true);
+      await tokensStore.addToken(selectedChain.chainId, currency);
+      addTokenSuccess(currency);
     } catch (err) {
       setLoading(false);
       navigate(SCREENS.Home, {});
@@ -458,6 +413,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
           <Controller
             control={control}
+            rules={{
+              required: "Token Icon is required",
+            }}
             render={({ field: { onChange, onBlur, value, ref } }) => {
               return (
                 <TextInput
@@ -473,18 +431,47 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   label=""
                   topInInputContainer={
                     <View style={{ paddingBottom: 4 }}>
-                      <OWText>Token icon (Optional)</OWText>
+                      <OWText>Token icon</OWText>
                     </View>
                   }
                   returnKeyType="next"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={coingeckoImg}
                   editable={true}
                 />
               );
             }}
-            name="icon"
+            name="image"
+            defaultValue={""}
+          />
+          <Controller
+            control={control}
+            render={({ field: { onChange, onBlur, value, ref } }) => {
+              return (
+                <TextInput
+                  inputStyle={{
+                    borderColor: colors["neutral-border-strong"],
+                    borderRadius: 12,
+                  }}
+                  style={styles.textInput}
+                  onSubmitEditing={() => {
+                    submit();
+                  }}
+                  placeholder={"Enter coinGecko ID"}
+                  label=""
+                  topInInputContainer={
+                    <View style={{ paddingBottom: 4 }}>
+                      <OWText>CoinGecko ID (Optional)</OWText>
+                    </View>
+                  }
+                  returnKeyType="done"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  editable={true}
+                />
+              );
+            }}
+            name="coinGeckoId"
             defaultValue={""}
           />
 
