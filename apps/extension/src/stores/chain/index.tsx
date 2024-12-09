@@ -71,7 +71,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
         "_isSidePanel",
       ],
       storage: window.localStorage,
-    }).then(action((persistStore) => {}));
+    }).then(
+      action((persistStore) => {
+        console.log("store persisted");
+      })
+    );
     this.init();
   }
 

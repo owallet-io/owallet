@@ -1,15 +1,26 @@
 import { SimpleFetchRequestOptions, SimpleFetchResponse } from "./types";
 import { SimpleFetchError } from "./error";
 
-export function makeURL(baseURL: string, url: string): string {
-  const baseURLInstance = new URL(baseURL);
-  baseURL = removeLastSlashIfIs(baseURLInstance.origin);
-  url =
-    removeLastSlashIfIs(baseURLInstance.pathname) +
-    "/" +
-    removeFirstSlashIfIs(url);
+function isValidURL(string) {
+  try {
+    new URL(string);
+    return true; // If no error is thrown, the URL is valid
+  } catch (_) {
+    return false; // Invalid URL
+  }
+}
 
-  return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
+export function makeURL(baseURL: string, url: string): string {
+  if (isValidURL(baseURL)) {
+    const baseURLInstance = new URL(baseURL);
+    baseURL = removeLastSlashIfIs(baseURLInstance.origin);
+    url =
+      removeLastSlashIfIs(baseURLInstance.pathname) +
+      "/" +
+      removeFirstSlashIfIs(url);
+
+    return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
+  }
 }
 
 function removeFirstSlashIfIs(str: string): string {
