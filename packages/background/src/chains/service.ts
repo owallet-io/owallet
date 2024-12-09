@@ -46,7 +46,7 @@ export class ChainsService {
   protected updatedChainInfoKVStore: KVStore;
 
   @observable.ref
-  protected modularChainInfos: ReadonlyArray<ModularChainInfo>;
+  protected modularChainInfos: ReadonlyArray<ModularChainInfo> = [];
 
   @observable.ref
   protected suggestedChainInfos: ChainInfoWithSuggestedOptions[] = [];
@@ -1115,9 +1115,11 @@ export class ChainsService {
 
   getModularChainInfos = computedFn(
     (): ModularChainInfo[] => {
+      console.log("this.modularChainInfos", this.modularChainInfos);
+
       return this.modularChainInfos
-        .slice()
-        .map((modularChainInfo) => {
+        ?.slice()
+        ?.map((modularChainInfo) => {
           if (this.hasChainInfo(modularChainInfo.chainId)) {
             const cosmos = this.getChainInfoOrThrow(modularChainInfo.chainId);
             return {
