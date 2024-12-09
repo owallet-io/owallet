@@ -48,7 +48,16 @@ export const CW20CurrencySchema = (CurrencySchema as ObjectSchema<CW20Currency>)
       };
     }
   });
-
+export const LegacyBtcCurrencySchema = (
+  CurrencySchema as ObjectSchema<AppCurrency>
+).keys({
+  type: Joi.string().equal("legacy").required(),
+});
+export const SegwitBtcCurrencySchema = (
+  CurrencySchema as ObjectSchema<AppCurrency>
+).keys({
+  type: Joi.string().equal("segwit").required(),
+});
 export const Secret20CurrencySchema = (
   CurrencySchema as ObjectSchema<Secret20Currency>
 )
@@ -105,15 +114,6 @@ const GasPriceStepSchema = Joi.object<{
   low: Joi.number().strict().required(),
   average: Joi.number().strict().required(),
   high: Joi.number().strict().required(),
-}).custom((value) => {
-  if (value.low > value.average) {
-    throw new Error("Low gas price step can not be greater than average");
-  }
-  if (value.average > value.high) {
-    throw new Error("Average gas price step can not be greater than high");
-  }
-
-  return value;
 });
 
 export const FeeCurrencySchema = (
@@ -191,34 +191,45 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
       return value;
     })
     .required(),
-  // evm: Joi.object({
-  //   chainId: Joi.number().required(),
-  //   rpc: Joi.string()
-  //     .custom((value: string) => {
-  //       if (value.includes("?")) {
-  //         throw new Error("evm rpc should not have query string");
-  //       }
-  //
-  //       return value;
-  //     })
-  //     .required(),
-  // }).unknown(true),
-  // nodeProvider: Joi.object({
-  //   name: Joi.string().min(1).max(30).required(),
-  //   email: Joi.string().email({
-  //     tlds: {
-  //       allow: false,
-  //     },
-  //   }),
-  //   discord: Joi.string().uri(),
-  //   website: Joi.string().uri(),
-  // }),
+  grpc: Joi.string()
+    .uri()
+    .custom((value: string) => {
+      if (value.includes("?")) {
+        throw new Error("rest should not have query string");
+      }
+
+      return value;
+    })
+    .optional(),
+  evm: Joi.object({
+    chainId: Joi.number().required(),
+    rpc: Joi.string()
+      .custom((value: string) => {
+        if (value.includes("?")) {
+          throw new Error("evm rpc should not have query string");
+        }
+
+        return value;
+      })
+      .required(),
+  }).unknown(true),
+  nodeProvider: Joi.object({
+    name: Joi.string().min(1).max(30).required(),
+    email: Joi.string().email({
+      tlds: {
+        allow: false,
+      },
+    }),
+    discord: Joi.string().uri(),
+    website: Joi.string().uri(),
+  }),
   chainId: ChainIdSchema.required(),
   chainName: Joi.string().required().min(1).max(30),
   stakeCurrency: CurrencySchema,
   // walletUrl: Joi.string().uri(),
   // walletUrlForStaking: Joi.string().uri(),
   bip44: SuggestingBIP44Schema.required(),
+  bip84: SuggestingBIP44Schema.optional(),
   alternativeBIP44s: Joi.array()
     .items(SuggestingBIP44Schema)
     .custom((values: BIP44[]) => {
@@ -236,7 +247,13 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
   bech32Config: Bech32ConfigSchema,
   currencies: Joi.array()
     .min(1)
-    .items(CurrencySchema, CW20CurrencySchema, Secret20CurrencySchema)
+    .items(
+      CurrencySchema,
+      CW20CurrencySchema,
+      Secret20CurrencySchema,
+      LegacyBtcCurrencySchema,
+      SegwitBtcCurrencySchema
+    )
     .custom((values: AppCurrency[]) => {
       const dups: { [denom: string]: boolean | undefined } = {};
 

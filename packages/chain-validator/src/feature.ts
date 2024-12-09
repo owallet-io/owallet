@@ -24,6 +24,12 @@ export const SupportedChainFeatures = [
   "osmosis-base-fee-beta",
   "feemarket",
   "op-stack-l1-data-fee",
+  "btc",
+  "oasis",
+  "tron",
+  "not-support-staking",
+  "oasis-address",
+  "gen-address",
 ];
 
 /**

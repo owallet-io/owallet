@@ -23,8 +23,338 @@ import { Toggle } from "@components/toggle";
 import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
 import { _keyExtract, showToast } from "@utils/helper";
-import { ChainIdHelper } from "@owallet/cosmos";
+import { ChainIdHelper, Bech32Address } from "@owallet/cosmos";
 
+const embedChainInfos = [
+  {
+    rpc: "https://sapphire.oasis.io",
+    rest: "https://sapphire.oasis.io",
+    grpc: "https://grpc.oasis.dev",
+    chainId: "oasis-1",
+    chainName: "Oasis Mainnet",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 9,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 9,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    bip44: {
+      coinType: 474,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("oasis"),
+    feeCurrencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 9,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+        gasPriceStep: {
+          high: 0,
+          low: 0,
+          average: 0,
+        },
+      },
+    ],
+    features: ["oasis", "gen-address", "not-support-staking"],
+    txExplorer: {
+      name: "Oasis scan",
+      txUrl: "https://www.oasisscan.com/transactions/{txHash}",
+      accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
+    },
+  },
+  {
+    chainId: "oraibtc-mainnet-1",
+    chainName: "OraiBTC Bridge",
+    rpc: "https://btc.rpc.orai.io",
+    rest: "https://btc.lcd.orai.io",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    stakeCurrency: {
+      coinDenom: "ORAIBTC",
+      coinMinimalDenom: "uoraibtc",
+      coinDecimals: 6,
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [
+        {
+          ...this.stakeCurrency,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ];
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    txExplorer: {
+      name: "Scanium",
+      txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
+    },
+  },
+  {
+    rpc: "https://blockstream.info/api",
+    rest: "https://blockstream.info/api",
+    chainId: "bitcoin",
+    chainName: "Bitcoin",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    bip44: {
+      coinType: 0,
+    },
+    bip84: {
+      coinType: 0,
+    },
+    stakeCurrency: {
+      coinDenom: "BTC",
+      coinMinimalDenom: "segwit:btc",
+      coinDecimals: 8,
+      coinGeckoId: "bitcoin",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    },
+    bech32Config: Bech32Address.defaultBech32Config("bc"),
+    currencies: [
+      {
+        type: "legacy",
+        coinDenom: "BTC",
+        coinMinimalDenom: "legacy:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+      {
+        type: "segwit",
+        coinDenom: "BTC",
+        coinMinimalDenom: "segwit:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "segwit:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "legacy:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+      ];
+    },
+
+    features: ["gen-address", "btc", "not-support-staking"],
+    txExplorer: {
+      name: "BlockStream",
+      txUrl: "https://blockstream.info/tx/{txHash}",
+      accountUrl: "https://blockstream.info/address/{address}",
+    },
+  },
+  {
+    chainId: "oraibridge-subnet-2",
+    chainName: "OraiBridge",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    rpc: "https://bridge-v2.rpc.orai.io",
+    rest: "https://bridge-v2.lcd.orai.io",
+    stakeCurrency: {
+      coinDenom: "ORAIB",
+      coinMinimalDenom: "uoraib",
+      coinDecimals: 6,
+      coinImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("oraib"),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: "BEP20 ORAI",
+          coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
+          coinDecimals: 18,
+          coinGeckoId: "oraichain-token",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
+        },
+        {
+          coinDenom: "BEP20 AIRI",
+          coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
+          coinDecimals: 18,
+          coinGeckoId: "airight",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
+        },
+        {
+          coinDenom: "BEP20 USDT",
+          coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
+          coinDecimals: 18,
+          coinGeckoId: "tether",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+        },
+      ];
+    },
+    get feeCurrencies() {
+      return [
+        {
+          ...this.stakeCurrency,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ];
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    txExplorer: {
+      name: "Orai Bridge Scan",
+      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
+      accountUrl: "https://scan.bridge.orai.io/account/{address}",
+    },
+  },
+  {
+    rpc: "https://sapphire.oasis.io",
+    rest: "https://sapphire.oasis.io",
+    chainId: "eip155:23294",
+    evm: {
+      websocket: "wss://sapphire.oasis.io/ws",
+      rpc: "https://sapphire.oasis.io",
+      chainId: 23294,
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Sapphire",
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ["not-support-staking", "oasis-address"],
+    txExplorer: {
+      name: "Oasis Saphire Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+      accountUrl:
+        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+    },
+  },
+  {
+    rpc: "https://emerald.oasis.dev",
+    rest: "https://emerald.oasis.dev",
+    chainId: "eip155:42262",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Emerald",
+    evm: {
+      websocket: "wss://emerald.oasis.io/ws",
+      rpc: "https://emerald.oasis.dev",
+      chainId: 42262,
+    },
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ["not-support-staking", "oasis-address"],
+    txExplorer: {
+      name: "Oasis Emerald Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
+      accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
+    },
+  },
+];
 export const SelectChainsScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const [chains, setChains] = useState([]);
@@ -41,14 +371,14 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
           "https://keplr-chain-registry.vercel.app/api/chains"
         );
         if (!data.chains) return;
-        const chainsFilter = data.chains.filter(
-          (chain) =>
-            !EmbedChainInfos.some(
-              (embedChain) => embedChain.chainId === chain.chainId
-            ) &&
-            !/test|dev/i.test(chain?.chainName) &&
-            !chain?.chainId.includes("eip155")
-        );
+        const chainsFilter = embedChainInfos
+          .concat(data.chains)
+          .filter(
+            (chain) =>
+              !EmbedChainInfos.some(
+                (embedChain) => embedChain.chainId === chain.chainId
+              ) && !/test|dev/i.test(chain?.chainName)
+          );
         const sortedChains = chainsFilter.sort((a, b) => {
           const aHasChainInfo = chainInfoExists(a.chainId);
           const bHasChainInfo = chainInfoExists(b.chainId);
@@ -118,9 +448,7 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
         const chainInfo = chainStore.getChain(chainId);
         return !!chainInfo; // Returns true if chainInfo exists, false otherwise
       } else {
-        const [eip, chainNumber] = chainId.split(":");
-        const hex = chainNumber === 1 ? "01" : Number(chainNumber).toString(16);
-        const chainInfo = chainStore.getChain(`0x${hex}`);
+        const chainInfo = chainStore.getChain(chainId);
         return !!chainInfo;
       }
     } catch (e) {
@@ -162,8 +490,12 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
               {limitString(item?.chainName, 20)}
             </OWText>
             <OWText size={15} color={colors["neutral-text-body"]} weight="500">
-              {item.features?.includes("eth-address-gen") && !!item?.evm
+              {item.chainId?.includes("eip155:")
                 ? "Evm"
+                : item.features?.includes("oasis")
+                ? "Oasis"
+                : item.features?.includes("btc")
+                ? "BTC"
                 : "Cosmos"}
             </OWText>
           </View>
