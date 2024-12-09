@@ -27,6 +27,7 @@ import { AprItem } from "@stores/aprs";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { PageWithScrollViewInBottomTabView } from "@components/page";
+
 const zeroDec = new Dec(0);
 const dataOWalletStake = [
   {
@@ -139,6 +140,8 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
             }}
           >
             {dataOWalletStake.map((item, index) => {
+              const hasChain = chainStore.hasChain(item.chainId);
+              if (!hasChain) return;
               const chainInfo = chainStore.getChain(item.chainId);
               const chainAPR = aprList.filter(
                 ({ chainId }) => chainId === item.chainId
@@ -262,15 +265,26 @@ export const StakingInfraScreen: FunctionComponent = observer(() => {
   );
 
   const renderNetworks = () => {
+    const excludedKeywords = ["test", "bridge", "kawai"];
+    const excludedFeatures = ["oasis", "tron", "btc"];
+
     const stakeableChainsInfo = chainStore.chainInfosInUI.filter((chain) => {
-      if (
-        // chain.networkType === "cosmos" &&
-        !chain.chainName.toLowerCase().includes("test") &&
-        !chain.chainName.toLowerCase().includes("bridge") &&
-        !chain.chainName.toLowerCase().includes("kawai") &&
-        chain.chainName.toLowerCase().includes(search.toLowerCase())
-      )
-        return chain;
+      const chainName = chain.chainName.toLowerCase();
+      const chainId = chain.chainId.toLowerCase();
+
+      const hasExcludedKeyword = excludedKeywords.some((keyword) =>
+        chainName.includes(keyword)
+      );
+      const hasExcludedFeature = excludedFeatures.some((feature) =>
+        chain.features.includes(feature)
+      );
+
+      return (
+        !hasExcludedKeyword &&
+        !chainId.includes("eip155") &&
+        !hasExcludedFeature &&
+        chainName.includes(search.toLowerCase())
+      );
     });
 
     return (
