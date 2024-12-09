@@ -32,8 +32,8 @@
     "@owallet/unit": "*",
     "buffer": "^6.0.3",
     "long": "^4.0.0",
-    "utility-types": "^3.10.0",
-    "querystring": "0.2.1"
+    "querystring": "0.2.1",
+    "utility-types": "^3.10.0"
   },
   "peerDependencies": {
     "mobx": "^6",

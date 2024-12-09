@@ -5,7 +5,6 @@ import { SearchInput } from "../../home/components/search-input";
 import classnames from "classnames";
 import SlidingPane from "react-sliding-pane";
 import { observer } from "mobx-react-lite";
-import { useHistory } from "react-router";
 import { useIntl } from "react-intl";
 import { useStore } from "../../../stores";
 
@@ -13,7 +12,6 @@ export const ModalCurrency: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
 }> = observer(({ isOpen, onRequestClose }) => {
-  const history = useHistory();
   const intl = useIntl();
 
   const [keyword, setKeyword] = useState<string>("");
