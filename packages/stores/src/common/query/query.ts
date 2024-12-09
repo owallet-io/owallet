@@ -591,7 +591,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         };
 
         console.log(
-          "error on fetch 2",
+          "error on fetch",
           this.baseURL,
           this._url,
           e.request,
@@ -769,6 +769,11 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
   }
 
   protected getCacheKey(): string {
+    console.log(
+      "makeURL(this.baseURL, this.url)",
+      makeURL(this.baseURL, this.url)
+    );
+
     return makeURL(this.baseURL, this.url);
   }
 
