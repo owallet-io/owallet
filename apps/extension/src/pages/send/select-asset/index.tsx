@@ -36,7 +36,6 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
         "/ibc-transfer?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
       )}`
     );
-    같은 형태로 써야함...
    */
   const paramNavigateTo = searchParams.get("navigateTo");
   const paramNavigateReplace = searchParams.get("navigateReplace");
@@ -88,7 +87,6 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
 
   const filteredTokens = _filteredTokens.filter((token) => {
     if (paramIsIBCSwap) {
-      // skipQueriesStore.queryIBCSwap.isSwappableCurrency는 useMemo 안에 들어가면 observation이 안되서 따로 빼야한다...
       return skipQueriesStore.queryIBCSwap.isSwappableCurrency(
         token.chainInfo.chainId,
         token.token.currency

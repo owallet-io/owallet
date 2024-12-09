@@ -106,8 +106,8 @@ const handleGetInfosWithCoreTypesMsg: (
 ) => InternalHandler<GetChainInfosWithCoreTypesMsg> = (service) => {
   return () => {
     console.log(
-      " service.getChainInfosWithCoreTypes()",
-      service.getChainInfosWithCoreTypes()
+      "service.getModularChainInfos() 2",
+      service.getModularChainInfos()
     );
 
     return {

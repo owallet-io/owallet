@@ -46,7 +46,7 @@ export class ChainsService {
   protected updatedChainInfoKVStore: KVStore;
 
   @observable.ref
-  protected modularChainInfos: ReadonlyArray<ModularChainInfo>;
+  protected modularChainInfos: ReadonlyArray<ModularChainInfo> = [];
 
   @observable.ref
   protected suggestedChainInfos: ChainInfoWithSuggestedOptions[] = [];
@@ -203,8 +203,6 @@ export class ChainsService {
       );
       if (chainInfos) {
         runInAction(() => {
-          // embedChainInfos에 있는 chainInfo는 suggestedChainInfos에 넣지 않는다.
-          // embedChainInfos는 실행 이후에 변경되지 않기 때문에 여기서 처리해도 안전하다.
           this.suggestedChainInfos = chainInfos.filter(
             (chainInfo) =>
               !this.embedChainInfos.some(
@@ -281,10 +279,6 @@ export class ChainsService {
     });
   }
 
-  /**
-   * 이 서비스 자체를 포함한 다른 모든 서비스들이 init된 이후에 실행된다. (message를 받을 수 있는 상태 직전)
-   * 모든 서비스가 init이 된 이후에 실행될 추가적인 로직을 여기에 작성할 수 있다.
-   */
   async afterInit(): Promise<void> {
     const lastEmbedChainInfos = await this.kvStore.get<
       ChainInfoWithCoreTypes[]
@@ -522,7 +516,6 @@ export class ChainsService {
     const chainInfo = this.getChainInfoOrThrow(chainId);
 
     if (this.isEvmOnlyChain(chainInfo.chainId)) {
-      // TODO: evm 체인에서의 chain info 업데이트 로직에 대해서는 나중에 구현한다.
       return false;
     }
 
@@ -951,8 +944,6 @@ export class ChainsService {
           newChainInfo = {
             ...newChainInfo,
             ...repoChainInfo,
-            // stakeCurrency는 nullable하며 repo로부터 업데이트 되었을때
-            // repo에서 stakeCurrency가 없다면 명시적으로 지워져야한다.
             stakeCurrency: repoChainInfo.stakeCurrency
               ? repoChainInfo.stakeCurrency
               : undefined,
@@ -1115,9 +1106,11 @@ export class ChainsService {
 
   getModularChainInfos = computedFn(
     (): ModularChainInfo[] => {
+      console.log("this.modularChainInfos", this.modularChainInfos);
+
       return this.modularChainInfos
-        .slice()
-        .map((modularChainInfo) => {
+        ?.slice()
+        ?.map((modularChainInfo) => {
           if (this.hasChainInfo(modularChainInfo.chainId)) {
             const cosmos = this.getChainInfoOrThrow(modularChainInfo.chainId);
             return {
