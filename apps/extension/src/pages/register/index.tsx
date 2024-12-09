@@ -168,8 +168,6 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
 
   const headerContext = useRegisterHeaderContext(initials.header);
 
-  console.log("must be here");
-
   return (
     <RegisterHeaderProvider {...headerContext}>
       <RegisterHeader sceneRef={sceneRef} />

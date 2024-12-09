@@ -8,7 +8,6 @@ import { GlobalPermissionGetChainInfosPage } from "./get-chain-infos";
 import { useInteractionInfo } from "../../hooks";
 import { FormattedMessage } from "react-intl";
 import { PermissionBasicAccessForEVMPage } from "./basic-access-for-evm";
-import { PermissionBasicAccessForStarknetPage } from "./basic-access-for-starknet";
 
 const UnknownPermissionPage: FunctionComponent<{
   data: {

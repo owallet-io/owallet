@@ -634,7 +634,6 @@ export class ChainsService {
     const onApprove = async (
       receivedChainInfo: ChainInfoWithSuggestedOptions
     ) => {
-      // approve 이후에 이미 등록되어있으면 아무것도 하지 않는다...
       if (this.hasChainInfo(receivedChainInfo.chainId)) {
         return;
       }
