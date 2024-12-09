@@ -175,6 +175,393 @@ export const StakeCardAll = observer(({}) => {
     keyRingStore.selectedKeyInfo &&
     keyRingStore.selectedKeyInfo.type === "keystone";
 
+  // const claimAll = () => {
+  //   if (viewTokens.length > 0) {
+  //     setIsExpanded(true);
+  //   }
+
+  //   if (isLedger || isKeystone) {
+  //     return;
+  //   }
+
+  //   for (const viewToken of viewTokens) {
+  //     const chainId = viewToken.chainInfo.chainId;
+  //     const account = accountStore.getAccount(chainId);
+
+  //     if (account.bech32Address === '' || viewToken.chainInfo.features.includes('not-support-staking')) {
+  //       continue;
+  //     }
+
+  //     const chainInfo = chainStore.getChain(chainId);
+  //     const queries = queriesStore.get(chainId);
+  //     const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
+
+  //     const validatorAddresses = queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+
+  //     if (validatorAddresses.length === 0) {
+  //       continue;
+  //     }
+
+  //     const state = getClaimAllEachState(chainId);
+
+  //     state.setIsLoading(true);
+
+  //     const tx = account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+
+  //     (async () => {
+  //       let feeCurrency = chainInfo.hasFeature('feemarket')
+  //         ? undefined
+  //         : chainInfo.feeCurrencies.find(cur => cur.coinMinimalDenom === chainInfo.stakeCurrency?.coinMinimalDenom);
+
+  //       if (chainInfo.hasFeature('osmosis-base-fee-beta') && feeCurrency) {
+  //         const queryBaseFee = queriesStore.get(chainInfo.chainId).osmosis.queryBaseFee;
+  //         const queryRemoteBaseFeeStep = queriesStore.simpleQuery.queryGet<{
+  //           low?: number;
+  //           average?: number;
+  //           high?: number;
+  //         }>('https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws/osmosis/osmosis-base-fee-beta.json');
+
+  //         await queryBaseFee.waitFreshResponse();
+  //         await queryRemoteBaseFeeStep.waitFreshResponse();
+
+  //         const baseFee = queryBaseFee.baseFee;
+  //         const remoteBaseFeeStep = queryRemoteBaseFeeStep.response;
+  //         if (baseFee) {
+  //           const low = remoteBaseFeeStep?.data.low
+  //             ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.low)).toString(8))
+  //             : feeCurrency.gasPriceStep?.low ?? DefaultGasPriceStep.low;
+  //           const average = Math.max(
+  //             low,
+  //             remoteBaseFeeStep?.data.average
+  //               ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.average)).toString(8))
+  //               : feeCurrency.gasPriceStep?.average ?? DefaultGasPriceStep.average
+  //           );
+  //           const high = Math.max(
+  //             average,
+  //             remoteBaseFeeStep?.data.high
+  //               ? parseFloat(baseFee.mul(new Dec(remoteBaseFeeStep.data.high)).toString(8))
+  //               : feeCurrency.gasPriceStep?.high ?? DefaultGasPriceStep.high
+  //           );
+
+  //           feeCurrency = {
+  //             ...feeCurrency,
+  //             gasPriceStep: {
+  //               low,
+  //               average,
+  //               high
+  //             }
+  //           };
+  //         }
+  //       }
+
+  //       if (!feeCurrency) {
+  //         let prev:
+  //           | {
+  //               balance: CoinPretty;
+  //               price: PricePretty | undefined;
+  //             }
+  //           | undefined;
+
+  //         const feeCurrencies = await (async () => {
+  //           if (chainInfo.hasFeature('feemarket')) {
+  //             const queryFeeMarketGasPrices = queriesStore.get(chainId).cosmos.queryFeeMarketGasPrices;
+  //             await queryFeeMarketGasPrices.waitFreshResponse();
+
+  //             const result: FeeCurrency[] = [];
+
+  //             for (const gasPrice of queryFeeMarketGasPrices.gasPrices) {
+  //               const currency = await chainInfo.findCurrencyAsync(gasPrice.denom);
+  //               if (currency) {
+  //                 let multiplication = {
+  //                   low: 1.1,
+  //                   average: 1.2,
+  //                   high: 1.3
+  //                 };
+
+  //                 const multificationConfig = queriesStore.simpleQuery.queryGet<{
+  //                   [str: string]:
+  //                     | {
+  //                         low: number;
+  //                         average: number;
+  //                         high: number;
+  //                       }
+  //                     | undefined;
+  //                 }>('https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws', '/feemarket/info.json');
+
+  //                 if (multificationConfig.response) {
+  //                   const _default = multificationConfig.response.data['__default__'];
+  //                   if (
+  //                     _default &&
+  //                     _default.low != null &&
+  //                     typeof _default.low === 'number' &&
+  //                     _default.average != null &&
+  //                     typeof _default.average === 'number' &&
+  //                     _default.high != null &&
+  //                     typeof _default.high === 'number'
+  //                   ) {
+  //                     multiplication = {
+  //                       low: _default.low,
+  //                       average: _default.average,
+  //                       high: _default.high
+  //                     };
+  //                   }
+  //                   const specific = multificationConfig.response.data[chainInfo.chainIdentifier];
+  //                   if (
+  //                     specific &&
+  //                     specific.low != null &&
+  //                     typeof specific.low === 'number' &&
+  //                     specific.average != null &&
+  //                     typeof specific.average === 'number' &&
+  //                     specific.high != null &&
+  //                     typeof specific.high === 'number'
+  //                   ) {
+  //                     multiplication = {
+  //                       low: specific.low,
+  //                       average: specific.average,
+  //                       high: specific.high
+  //                     };
+  //                   }
+  //                 }
+
+  //                 result.push({
+  //                   ...currency,
+  //                   gasPriceStep: {
+  //                     low: parseFloat(new Dec(multiplication.low).mul(gasPrice.amount).toString()),
+  //                     average: parseFloat(new Dec(multiplication.average).mul(gasPrice.amount).toString()),
+  //                     high: parseFloat(new Dec(multiplication.high).mul(gasPrice.amount).toString())
+  //                   }
+  //                 });
+  //               }
+  //             }
+
+  //             return result;
+  //           } else {
+  //             return chainInfo.feeCurrencies;
+  //           }
+  //         })();
+
+  //         for (const chainFeeCurrency of feeCurrencies) {
+  //           const currency = await chainInfo.findCurrencyAsync(chainFeeCurrency.coinMinimalDenom);
+  //           if (currency) {
+  //             const balance = queries.queryBalances.getQueryBech32Address(account.bech32Address).getBalance(currency);
+  //             if (balance && balance.balance.toDec().gt(new Dec(0))) {
+  //               const price = await priceStore.waitCalculatePrice(balance.balance, 'usd');
+
+  //               if (!prev) {
+  //                 feeCurrency = {
+  //                   ...chainFeeCurrency,
+  //                   ...currency
+  //                 };
+  //                 prev = {
+  //                   balance: balance.balance,
+  //                   price
+  //                 };
+  //               } else {
+  //                 if (!prev.price) {
+  //                   if (prev.balance.toDec().lt(balance.balance.toDec())) {
+  //                     feeCurrency = {
+  //                       ...chainFeeCurrency,
+  //                       ...currency
+  //                     };
+  //                     prev = {
+  //                       balance: balance.balance,
+  //                       price
+  //                     };
+  //                   }
+  //                 } else if (price) {
+  //                   if (prev.price.toDec().lt(price.toDec())) {
+  //                     feeCurrency = {
+  //                       ...chainFeeCurrency,
+  //                       ...currency
+  //                     };
+  //                     prev = {
+  //                       balance: balance.balance,
+  //                       price
+  //                     };
+  //                   }
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       if (feeCurrency) {
+  //         try {
+  //           const simulated = await tx.simulate();
+
+  //           // Gas adjustment is 1.5
+  //           // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+  //           // Use high gas adjustment to prevent failure.
+  //           const gasEstimated = new Dec(simulated.gasUsed * 1.5).truncate();
+  //           let fee = {
+  //             denom: feeCurrency.coinMinimalDenom,
+  //             amount: new Dec(feeCurrency.gasPriceStep?.average ?? 0.025)
+  //               .mul(new Dec(gasEstimated))
+  //               .roundUp()
+  //               .toString()
+  //           };
+  //           await priceStore.waitResponse();
+  //           const averageFeePrice = priceStore.calculatePrice(new CoinPretty(feeCurrency, fee.amount), 'usd');
+  //           if (averageFeePrice && averageFeePrice.toDec().gte(new Dec(0.2))) {
+  //             fee = {
+  //               denom: feeCurrency.coinMinimalDenom,
+  //               amount: new Dec(feeCurrency.gasPriceStep?.low ?? 0.025).mul(new Dec(gasEstimated)).roundUp().toString()
+  //             };
+  //             console.log(
+  //               `(${chainId}) Choose low gas price because average fee price is greater or equal than 0.2 USD`
+  //             );
+  //           }
+
+  //           // Ensure fee currency fetched before querying balance
+  //           const feeCurrencyFetched = await chainInfo.findCurrencyAsync(feeCurrency.coinMinimalDenom);
+  //           if (!feeCurrencyFetched) {
+  //             state.setFailedReason(
+  //               new Error(
+  //                 intl.formatMessage({
+  //                   id: 'error.can-not-find-balance-for-fee-currency'
+  //                 })
+  //               )
+  //             );
+  //             return;
+  //           }
+  //           const balance = queries.queryBalances
+  //             .getQueryBech32Address(account.bech32Address)
+  //             .getBalance(feeCurrencyFetched);
+
+  //           if (!balance) {
+  //             state.setFailedReason(
+  //               new Error(
+  //                 intl.formatMessage({
+  //                   id: 'error.can-not-find-balance-for-fee-currency'
+  //                 })
+  //               )
+  //             );
+  //             return;
+  //           }
+
+  //           await balance.waitResponse();
+
+  //           if (new Dec(balance.balance.toCoin().amount).lt(new Dec(fee.amount))) {
+  //             state.setFailedReason(
+  //               new Error(
+  //                 intl.formatMessage({
+  //                   id: 'error.not-enough-balance-to-pay-fee'
+  //                 })
+  //               )
+  //             );
+  //             return;
+  //           }
+
+  //           if (
+  //             (viewToken.token.toCoin().denom === fee.denom &&
+  //               new Dec(viewToken.token.toCoin().amount).lte(new Dec(fee.amount))) ||
+  //             (await (async () => {
+  //               if (viewToken.token.toCoin().denom !== fee.denom) {
+  //                 if (viewToken.token.currency.coinGeckoId && feeCurrencyFetched.coinGeckoId) {
+  //                   const rewardPrice = await priceStore.waitCalculatePrice(viewToken.token, 'usd');
+  //                   const feePrice = await priceStore.waitCalculatePrice(
+  //                     new CoinPretty(feeCurrencyFetched, fee.amount),
+  //                     'usd'
+  //                   );
+  //                   if (
+  //                     rewardPrice &&
+  //                     rewardPrice.toDec().gt(new Dec(0)) &&
+  //                     feePrice &&
+  //                     feePrice.toDec().gt(new Dec(0))
+  //                   ) {
+  //                     if (rewardPrice.toDec().mul(new Dec(1.2)).lte(feePrice.toDec())) {
+  //                       return true;
+  //                     }
+  //                   }
+  //                 }
+  //               }
+
+  //               return false;
+  //             })())
+  //           ) {
+  //             state.setFailedReason(
+  //               new Error(
+  //                 intl.formatMessage({
+  //                   id: 'error.claimable-reward-is-smaller-than-the-required-fee'
+  //                 })
+  //               )
+  //             );
+  //             return;
+  //           }
+
+  //           await tx.send(
+  //             {
+  //               gas: gasEstimated.toString(),
+  //               amount: [fee]
+  //             },
+  //             '',
+  //             {
+  //               signAmino: async (chainId: string, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse> => {
+  //                 const requester = new RNMessageRequesterInternal();
+
+  //                 return await requester.sendMessage(
+  //                   BACKGROUND_PORT,
+  //                   new PrivilegeCosmosSignAminoWithdrawRewardsMsg(chainId, signer, signDoc)
+  //                 );
+  //               },
+  //               sendTx: async (chainId: string, tx: Uint8Array, mode: BroadcastMode): Promise<Uint8Array> => {
+  //                 const requester = new RNMessageRequesterInternal();
+
+  //                 return await requester.sendMessage(BACKGROUND_PORT, new SendTxMsg(chainId, tx, mode, true));
+  //               }
+  //             },
+  //             {
+  //               onBroadcasted: () => {},
+  //               onFulfill: (tx: any) => {
+  //                 setTimeout(() => {
+  //                   state.setIsLoading(false);
+  //                 }, 1000);
+
+  //                 if (tx.code) {
+  //                   state.setFailedReason(new Error(tx['raw_log']));
+  //                 }
+  //               }
+  //             }
+  //           );
+  //         } catch (e) {
+  //           if (isSimpleFetchError(e) && e.response) {
+  //             const response = e.response;
+  //             if (
+  //               response.status === 400 &&
+  //               response.data?.message &&
+  //               typeof response.data.message === 'string' &&
+  //               response.data.message.includes('invalid empty tx')
+  //             ) {
+  //               state.setFailedReason(
+  //                 new Error(
+  //                   intl.formatMessage({
+  //                     id: 'error.outdated-cosmos-sdk'
+  //                   })
+  //                 )
+  //               );
+  //               return;
+  //             }
+  //           }
+
+  //           state.setFailedReason(e);
+  //           console.log(e);
+  //           return;
+  //         }
+  //       } else {
+  //         state.setFailedReason(
+  //           new Error(
+  //             intl.formatMessage({
+  //               id: 'error.can-not-pay-for-fee-by-stake-currency'
+  //             })
+  //           )
+  //         );
+  //         return;
+  //       }
+  //     })();
+  //   }
+  // };
+
   const claimAll = () => {
     if (viewTokens.length > 0) {
       setIsExpanded(true);

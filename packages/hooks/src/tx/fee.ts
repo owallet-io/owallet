@@ -457,6 +457,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       for (let i = 0; i < queryFeeMarketGasPrices.gasPrices.length; i++) {
         const gasPrice = queryFeeMarketGasPrices.gasPrices[i];
+        // 일단 모든 currency에 대해서 find를 시도한다.
         this.chainInfo.findCurrency(gasPrice.denom);
       }
 
