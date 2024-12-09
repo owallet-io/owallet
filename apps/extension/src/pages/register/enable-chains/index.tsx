@@ -470,7 +470,6 @@ export const EnableChainsScene: FunctionComponent<{
               }
 
               try {
-                // 처리가능한 체인만 true를 반환한다.
                 KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
                   chainInfo.chainId
                 );
@@ -479,8 +478,7 @@ export const EnableChainsScene: FunctionComponent<{
                 return false;
               }
             }
-            // fallbackStarknetLedgerApp가 true이면 Starknet app이 필요없는 체인은 이전에 다 처리된 것이다.
-            // 그러므로 Starknet만 남기도록 한다.
+
             if (fallbackStarknetLedgerApp) {
               return false;
             }
@@ -1035,9 +1033,6 @@ export const EnableChainsScene: FunctionComponent<{
                     !!chainInfo.features?.includes("eth-key-sign");
 
                   if (isEthermintLike) {
-                    // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
-                    // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
-                    // Remove enable from enables
                     enables.splice(i, 1);
                     i--;
                     // And push it disables
@@ -1093,8 +1088,6 @@ export const EnableChainsScene: FunctionComponent<{
                   skipWelcome,
                 });
               } else {
-                // 어차피 bip44 coin type selection과 ethereum ledger app이 동시에 필요한 경우는 없다.
-                // (ledger에서는 coin type이 app당 할당되기 때문에...)
                 if (keyType === "ledger") {
                   if (fallbackStarknetLedgerApp) {
                     if (ledgerStarknetAppNeeds.length > 0) {
