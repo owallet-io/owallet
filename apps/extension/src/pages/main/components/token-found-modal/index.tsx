@@ -81,9 +81,6 @@ export const TokenFoundModal: FunctionComponent<{
 
     const needBIP44Selects: string[] = [];
 
-    // chainStore.tokenScans는 체인이 enable되고 나면 그 체인은 사라진다.
-    // 근데 로직상 enable 이후에 추가 로직이 있다.
-    // 그래서 일단 얇은 복사를 하고 이 값을 사용한다.
     const tokenScans = chainStore.tokenScans.slice();
 
     for (const enable of enables) {
@@ -169,7 +166,6 @@ export const TokenFoundModal: FunctionComponent<{
         style={{
           display: "flex",
           flexDirection: "column",
-          // 이 크기보다 커지면 아이템 갯수가 5개 넘어갔을 때 전체 스크롤이 생겨서 전체 스크롤이 생기지 않을 크기로 조절했습니다.
           maxHeight: "19.5rem",
           overflowY: "auto",
         }}
