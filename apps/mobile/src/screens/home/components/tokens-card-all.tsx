@@ -35,6 +35,7 @@ import { OWSearchInput } from "@src/components/ow-search-input";
 import images from "@src/assets/images";
 import { initPrice } from "./account-box-new";
 import { Dec } from "@owallet/unit";
+import { useIsNotReady } from "@screens/home";
 const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -45,19 +46,23 @@ export const TokensCardAll: FunctionComponent<{
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
   const { chainId } = chainStore.current;
-  const allBalances = appInitStore.getInitApp.isAllNetworks
-    ? hugeQueriesStore.getAllBalances(true)
-    : hugeQueriesStore.getAllBalancesByChainId(chainId);
-
-  console.log("allBalances", allBalances);
+  const allBalances = useMemo(() => {
+    return appInitStore.getInitApp.isAllNetworks
+      ? hugeQueriesStore.getAllBalances(true)
+      : hugeQueriesStore.getAllBalancesByChainId(chainId);
+  }, [
+    appInitStore.getInitApp.isAllNetworks,
+    hugeQueriesStore.getAllBalances(true),
+    hugeQueriesStore.getAllBalancesByChainId(chainId),
+  ]);
 
   const allBalancesNonZero = useMemo(() => {
     return allBalances.filter((token) => {
       return token.token.toDec().gt(zeroDec);
     });
   }, [allBalances]);
-
-  const isFirstTime = allBalancesNonZero.length === 0;
+  const isNotReady = useIsNotReady();
+  const isFirstTime = allBalancesNonZero.length === 0 && isNotReady;
   const trimSearch = keyword.trim();
   const _allBalancesSearchFiltered = useMemo(() => {
     return allBalances.filter((token) => {
@@ -80,29 +85,10 @@ export const TokensCardAll: FunctionComponent<{
     uiConfigStore.isHideLowBalance && hasLowBalanceTokens
       ? lowBalanceFilteredAllBalancesSearchFiltered
       : _allBalancesSearchFiltered;
-  // const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
-  //   ? dataTokens.filter((item, index) => {
-  //       const balance = new CoinPretty(
-  //         item.token.currency,
-  //         item.token.toCoin().amount
-  //       );
-  //       const price = priceStore.calculatePrice(balance, "usd");
-  //       return price?.toDec()?.gte(new Dec("0.1")) ?? false;
-  //     })
-  //   : dataTokens;
-  //
-  // const tokensAll =
-  //   tokens &&
-  //   tokens.filter((item, index) =>
-  //     item?.token?.currency?.coinDenom
-  //       ?.toLowerCase()
-  //       ?.includes(keyword.toLowerCase())
-  //   );
-  //
+
   const [toggle, setToggle] = useState(uiConfigStore.isHideLowBalance);
-  // const [openSide, setOpenSide] = useState(false);
+  const [viewMore, setViewMore] = useState(true);
   useEffect(() => {
-    // appInitStore.updateHideTokensWithoutBalance(toggle);
     uiConfigStore.setHideLowBalance(toggle);
   }, [toggle]);
   return (
@@ -153,9 +139,10 @@ export const TokensCardAll: FunctionComponent<{
         </View>
       </View>
       {!isFirstTime ? (
-        allBalancesSearchFiltered.map((item, index) => (
-          <TokenItem key={index.toString()} item={item} />
-        ))
+        (viewMore
+          ? allBalancesSearchFiltered?.slice(0, 5)
+          : allBalancesSearchFiltered
+        ).map((item, index) => <TokenItem key={index.toString()} item={item} />)
       ) : (
         <View
           style={{
@@ -191,28 +178,50 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
       )}
-      <OWButton
+      <View
         style={{
-          marginTop: Platform.OS === "android" ? 28 : 22,
-          marginHorizontal: 16,
-          width: metrics.screenWidth - 32,
-          borderRadius: 999,
+          marginVertical: 8,
         }}
-        icon={
-          <OWIcon
-            name="tdesignplus"
-            color={colors["neutral-text-title"]}
-            size={20}
-          />
-        }
-        label={"Add token"}
-        size="large"
-        type="secondary"
-        onPress={() => {
-          navigate(SCREENS.NetworkToken);
-          return;
-        }}
-      />
+      >
+        <OWButton
+          style={{
+            width: "100%",
+          }}
+          label={`View ${viewMore ? "More" : "Less"}`}
+          iconRight={
+            <OWIcon
+              name={viewMore ? "tdesignchevron-down" : "tdesignchevron-up"}
+              color={colors["primary-surface-pressed"]}
+              size={20}
+            />
+          }
+          onPress={() => setViewMore((prev) => !prev)}
+          contentAlign={"right"}
+          fullWidth={false}
+          type={"link"}
+        />
+        <OWButton
+          style={{
+            marginHorizontal: 16,
+            width: metrics.screenWidth - 32,
+            borderRadius: 999,
+          }}
+          icon={
+            <OWIcon
+              name="tdesignplus"
+              color={colors["neutral-text-title"]}
+              size={20}
+            />
+          }
+          label={"Add token"}
+          size="large"
+          type="secondary"
+          onPress={() => {
+            navigate(SCREENS.NetworkToken);
+            return;
+          }}
+        />
+      </View>
     </>
   );
 });
@@ -303,17 +312,6 @@ const TokenItem: FC<{
                 ? ` ${capitalizedText(item.token?.currency?.type)}`
                 : ""}
             </Text>
-            {/*{item.token?.currency?.type && item.token?.currency?.coinDenom === "BTC" && (*/}
-            {/*    <View style={styles.type}>*/}
-            {/*        <Text*/}
-            {/*            weight="400"*/}
-            {/*            size={12}*/}
-            {/*            color={colors["neutral-text-body-2"]}*/}
-            {/*        >*/}
-            {/*            {capitalizedText(item.token?.currency?.type)}*/}
-            {/*        </Text>*/}
-            {/*    </View>*/}
-            {/*)}*/}
           </View>
         </View>
         <View style={styles.rightBoxItem}>
