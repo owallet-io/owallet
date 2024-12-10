@@ -51,7 +51,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     protected readonly requester: MessageRequester
   ) {
     super(
-      //@ts-ignore
       embedChainInfos.map((chainInfo) => {
         return {
           ...chainInfo,
@@ -204,6 +203,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     });
   }
 
+  // chain info들을 list로 보여줄때 hideInUI인 얘들은 빼고 보여줘야한다
+  // property 이름이 얘매해서 일단 이렇게 지었다.
   @computed
   get chainInfosInListUI() {
     return this.chainInfos.filter((chainInfo) => {
@@ -355,8 +356,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    console.log("result.modulrChainInfos", result.modulrChainInfos);
-
     this.setEmbeddedChainInfosV2({
       chainInfos: result.chainInfos,
       modulrChainInfos: result.modulrChainInfos,

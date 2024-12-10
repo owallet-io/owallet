@@ -1,10 +1,17 @@
-import { action, autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { KVStore, PrefixKVStore } from '@owallet/common';
-import { simpleFetch } from '@owallet/simple-fetch';
-import Joi from 'joi';
-import { GetSidePanelIsSupportedMsg } from '@owallet/background';
-import { InExtensionMessageRequester } from '@owallet/router-extension';
-import { BACKGROUND_PORT } from '@owallet/router';
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
+import { KVStore, PrefixKVStore } from "@owallet/common";
+import { simpleFetch } from "@owallet/simple-fetch";
+import Joi from "joi";
+import { GetSidePanelIsSupportedMsg } from "@owallet/background";
+import { InExtensionMessageRequester } from "@owallet/router-extension";
+import { BACKGROUND_PORT } from "@owallet/router";
 
 interface VersionHistory {
   version: string;
@@ -33,18 +40,18 @@ const Schema = Joi.object<{
               title: Joi.string().required(),
               image: Joi.object({
                 default: Joi.string().required(),
-                light: Joi.string().required()
+                light: Joi.string().required(),
               }).optional(),
               aspectRatio: Joi.string().optional(),
-              paragraph: Joi.string().required()
+              paragraph: Joi.string().required(),
             })
           )
           .min(1)
           .required(),
-        isSidePanelBeta: Joi.boolean().optional()
+        isSidePanelBeta: Joi.boolean().optional(),
       })
     )
-    .required()
+    .required(),
 });
 
 export class ChangelogConfig {
@@ -61,14 +68,16 @@ export class ChangelogConfig {
     | undefined = undefined;
 
   constructor(kvStore: KVStore) {
-    this.kvStore = new PrefixKVStore(kvStore, 'change-log-config');
+    this.kvStore = new PrefixKVStore(kvStore, "change-log-config");
 
     makeObservable(this);
   }
 
   async init(lastVersion: string, currentVersion: string): Promise<void> {
     {
-      const saved = await this.kvStore.get<ChangelogConfig['_lastInfo']>('lastInfo');
+      const saved = await this.kvStore.get<ChangelogConfig["_lastInfo"]>(
+        "lastInfo"
+      );
       if (saved) {
         runInAction(() => {
           this._lastInfo = saved;
@@ -82,28 +91,43 @@ export class ChangelogConfig {
     }
 
     autorun(() => {
-      this.kvStore.set<ChangelogConfig['_lastInfo']>('lastInfo', toJS(this._lastInfo));
+      this.kvStore.set<ChangelogConfig["_lastInfo"]>(
+        "lastInfo",
+        toJS(this._lastInfo)
+      );
     });
   }
 
-  protected async fetchVersion(lastVersion: string, currentVersion: string): Promise<void> {
+  protected async fetchVersion(
+    lastVersion: string,
+    currentVersion: string
+  ): Promise<void> {
     try {
       const res = await simpleFetch<{
         versions: VersionHistory[];
-      }>(process.env['KEPLR_EXT_CONFIG_SERVER'], `/changelog/${lastVersion}/${currentVersion}`);
+      }>(
+        process.env["KEPLR_EXT_CONFIG_SERVER"],
+        `/changelog/${lastVersion}/${currentVersion}`
+      );
 
       const validated = await Schema.validateAsync(res.data);
 
-      if (validated.versions && validated.versions.find((v: any) => v.isSidePanelBeta === true)) {
+      if (
+        validated.versions &&
+        validated.versions.find((v: any) => v.isSidePanelBeta === true)
+      ) {
         const msg = new GetSidePanelIsSupportedMsg();
-        const res = await new InExtensionMessageRequester().sendMessage(BACKGROUND_PORT, msg);
+        const res = await new InExtensionMessageRequester().sendMessage(
+          BACKGROUND_PORT,
+          msg
+        );
         if (!res.supported) {
           runInAction(() => {
             this._lastInfo = {
               lastVersion,
               currentVersion,
               cleared: true,
-              histories: []
+              histories: [],
             };
           });
           return;
@@ -115,7 +139,7 @@ export class ChangelogConfig {
           lastVersion,
           currentVersion,
           cleared: false,
-          histories: validated.versions
+          histories: validated.versions,
         };
       });
     } catch (e) {
@@ -129,7 +153,7 @@ export class ChangelogConfig {
     if (this._lastInfo) {
       this._lastInfo = {
         ...this._lastInfo,
-        cleared: true
+        cleared: true,
       };
     }
   }

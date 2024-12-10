@@ -8,6 +8,8 @@ import { AppCurrency } from "@owallet/types";
 export class IBCSwapConfig {
   protected readonly kvStore: KVStore;
 
+  // 사실 UI 관련된 얘들은 ui config store 밑에 넣거나... 다른 곳으로 빠지는게 맞는 것 같지만...
+  // 일단은 귀찮아서 여기서 처리한다...
   @observable
   protected _lastAmountInChainId: string = "";
   @observable
@@ -140,6 +142,8 @@ export class IBCSwapConfig {
       return this.chainStore.chainInfosInUI[1];
     }
 
+    // Enabled된 체인들이 한개만 있을수도 있다는 점을 고려해야한다. 그러므로 chain infos in ui에서 두번째 체인을 찾을 수 없다면
+    // 그것과 상관없이 chain infos에서 찾는다.
     const find = this.chainStore.chainInfos.find((chainInfo) => {
       return (
         chainInfo.chainIdentifier !==

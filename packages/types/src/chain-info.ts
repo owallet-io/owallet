@@ -1,21 +1,27 @@
-import { Currency, AppCurrency, FeeCurrency } from './currency';
-import { BIP44, BIP84 } from './bip44';
-import { Bech32Config } from './bech32';
-import { EVMInfo } from './ethereum';
-export type NetworkType = 'cosmos' | 'evm' | 'bitcoin' | 'oasis';
+import { Currency, AppCurrency, FeeCurrency, ERC20Currency } from "./currency";
+import { BIP44, BIP84 } from "./bip44";
+import { Bech32Config } from "./bech32";
+import { EVMInfo } from "./ethereum";
+export type NetworkType = "cosmos" | "evm" | "bitcoin" | "oasis";
+
 export interface ChainInfo {
   readonly rpc: string;
-  readonly rest: string;
   readonly grpc?: string;
+  readonly rest: string;
   readonly nodeProvider?: {
     readonly name: string;
     readonly email?: string;
     readonly discord?: string;
     readonly website?: string;
   };
-  readonly networkType?: NetworkType;
   readonly chainId: string;
   readonly chainName: string;
+  readonly networkType?: NetworkType;
+  readonly txExplorer?: {
+    name?: string;
+    txUrl?: string;
+    accountUrl?: string;
+  };
   /**
    * This indicates the type of coin that can be used for stake.
    * You can get actual currency information from Currencies.
@@ -52,23 +58,29 @@ export interface ChainInfo {
   readonly hideInUI?: boolean;
 
   readonly evm?: EVMInfo;
-  readonly txExplorer?: {
-    readonly name: string;
-    readonly txUrl: string;
-    readonly accountUrl?: string;
-  };
 }
 
-export type ChainInfoWithoutEndpoints = Omit<ChainInfo, 'rest' | 'rpc' | 'nodeProvider' | 'evm'> & {
+export type ChainInfoWithoutEndpoints = Omit<
+  ChainInfo,
+  "rest" | "rpc" | "nodeProvider" | "evm"
+> & {
   readonly rest: undefined;
   readonly rpc: undefined;
   readonly nodeProvider: undefined;
-  readonly evm?: Omit<EVMInfo, 'rpc'> & {
+  readonly evm?: Omit<EVMInfo, "rpc"> & {
     readonly rpc: undefined;
   };
 };
 
-export type ChainInfoModule = 'cosmos' | 'starknet';
+export interface StarknetChainInfo {
+  readonly chainId: string;
+  readonly rpc: string;
+  readonly currencies: ERC20Currency[];
+  readonly ethContractAddress: string;
+  readonly strkContractAddress: string;
+}
+
+export type ChainInfoModule = "cosmos" | "starknet";
 
 export type ModularChainInfo =
   | {
@@ -81,4 +93,5 @@ export type ModularChainInfo =
       readonly chainId: string;
       readonly chainName: string;
       readonly chainSymbolImageUrl?: string;
+      readonly starknet: StarknetChainInfo;
     };

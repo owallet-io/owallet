@@ -8,6 +8,7 @@ import {
   ChainInfoWithoutEndpoints,
   EVMInfo,
   ModularChainInfo,
+  StarknetChainInfo,
 } from "@owallet/types";
 import {
   action,
@@ -42,11 +43,13 @@ export class ChainsService {
   }
 
   @observable.ref
-  protected updatedChainInfos: UpdatedChainInfo[] = [];
-  protected updatedChainInfoKVStore: KVStore;
+  protected embedChainInfos: ReadonlyArray<ChainInfoWithCoreTypes>;
+  @observable.ref
+  protected modularChainInfos: ReadonlyArray<ModularChainInfo>;
 
   @observable.ref
-  protected modularChainInfos: ReadonlyArray<ModularChainInfo> = [];
+  protected updatedChainInfos: UpdatedChainInfo[] = [];
+  protected updatedChainInfoKVStore: KVStore;
 
   @observable.ref
   protected suggestedChainInfos: ChainInfoWithSuggestedOptions[] = [];
@@ -74,7 +77,10 @@ export class ChainsService {
       kvStore: KVStore;
       updaterKVStore: KVStore;
     },
-    protected readonly embedChainInfos: ReadonlyArray<ChainInfoWithCoreTypes>,
+    // embedChainInfos는 실행 이후에 변경되어서는 안된다.
+    embedModularChainInfos: ReadonlyArray<
+      ModularChainInfo | ChainInfoWithCoreTypes
+    >,
     protected readonly suggestChainPrivilegedOrigins: string[],
     protected readonly communityChainInfoRepo: {
       readonly organizationName: string;
@@ -91,6 +97,34 @@ export class ChainsService {
         ) => void | Promise<void>)
       | undefined
   ) {
+    this.modularChainInfos = embedModularChainInfos.map((modularChainInfo) => {
+      if ("currencies" in modularChainInfo) {
+        return {
+          chainId: modularChainInfo.chainId,
+          chainName: modularChainInfo.chainName,
+          chainSymbolImageUrl: modularChainInfo.chainSymbolImageUrl,
+          cosmos: modularChainInfo,
+        };
+      }
+      return modularChainInfo;
+    });
+    this.embedChainInfos = embedModularChainInfos
+      .filter(
+        (modularChainInfo) =>
+          "currencies" in modularChainInfo || "cosmos" in modularChainInfo
+      )
+      .map((modularChainInfo) => {
+        if ("currencies" in modularChainInfo) {
+          return modularChainInfo;
+        }
+        if (!("cosmos" in modularChainInfo)) {
+          throw new Error("Can't be happen");
+        }
+        return {
+          ...modularChainInfo.cosmos,
+        };
+      });
+
     this.updatedChainInfoKVStore = new PrefixKVStore(
       kvStore,
       "updatedChainInfo"
@@ -203,6 +237,8 @@ export class ChainsService {
       );
       if (chainInfos) {
         runInAction(() => {
+          // embedChainInfos에 있는 chainInfo는 suggestedChainInfos에 넣지 않는다.
+          // embedChainInfos는 실행 이후에 변경되지 않기 때문에 여기서 처리해도 안전하다.
           this.suggestedChainInfos = chainInfos.filter(
             (chainInfo) =>
               !this.embedChainInfos.some(
@@ -279,6 +315,10 @@ export class ChainsService {
     });
   }
 
+  /**
+   * 이 서비스 자체를 포함한 다른 모든 서비스들이 init된 이후에 실행된다. (message를 받을 수 있는 상태 직전)
+   * 모든 서비스가 init이 된 이후에 실행될 추가적인 로직을 여기에 작성할 수 있다.
+   */
   async afterInit(): Promise<void> {
     const lastEmbedChainInfos = await this.kvStore.get<
       ChainInfoWithCoreTypes[]
@@ -516,6 +556,7 @@ export class ChainsService {
     const chainInfo = this.getChainInfoOrThrow(chainId);
 
     if (this.isEvmOnlyChain(chainInfo.chainId)) {
+      // TODO: evm 체인에서의 chain info 업데이트 로직에 대해서는 나중에 구현한다.
       return false;
     }
 
@@ -627,6 +668,7 @@ export class ChainsService {
     const onApprove = async (
       receivedChainInfo: ChainInfoWithSuggestedOptions
     ) => {
+      // approve 이후에 이미 등록되어있으면 아무것도 하지 않는다...
       if (this.hasChainInfo(receivedChainInfo.chainId)) {
         return;
       }
@@ -867,21 +909,32 @@ export class ChainsService {
       chainId: string
     ): {
       rpc: string;
-      rest: string;
+      rest?: string;
       evmRpc?: string;
     } => {
       const identifier = ChainIdHelper.parse(chainId).identifier;
       const originalChainInfos = this.embedChainInfos.concat(
         this.suggestedChainInfos
       );
-      const chainInfo = originalChainInfos.find(
-        (c) => ChainIdHelper.parse(c.chainId).identifier === identifier
-      );
+      const starknetChainInfos = this.modularChainInfos.reduce((acc, cur) => {
+        if ("starknet" in cur) {
+          acc.push(cur.starknet);
+        }
+        return acc;
+      }, [] as StarknetChainInfo[]);
+      const chainInfo =
+        originalChainInfos.find(
+          (c) => ChainIdHelper.parse(c.chainId).identifier === identifier
+        ) ||
+        starknetChainInfos.find(
+          (c) => ChainIdHelper.parse(c.chainId).identifier === identifier
+        );
       if (chainInfo) {
         return {
           rpc: chainInfo.rpc,
-          rest: chainInfo.rest,
-          evmRpc: chainInfo.evm?.rpc,
+          ...("rest" in chainInfo && { rest: chainInfo.rest }),
+          ...("evm" in chainInfo &&
+            chainInfo.evm != null && { evmRpc: chainInfo.evm.rpc }),
         };
       }
 
@@ -944,6 +997,8 @@ export class ChainsService {
           newChainInfo = {
             ...newChainInfo,
             ...repoChainInfo,
+            // stakeCurrency는 nullable하며 repo로부터 업데이트 되었을때
+            // repo에서 stakeCurrency가 없다면 명시적으로 지워져야한다.
             stakeCurrency: repoChainInfo.stakeCurrency
               ? repoChainInfo.stakeCurrency
               : undefined,
@@ -1078,6 +1133,7 @@ export class ChainsService {
     const chainInfo = this.getChainInfoOrThrow(chainId);
     return chainInfo.evm !== undefined;
   }
+
   isOasisChain(chainId: string): boolean {
     const chainInfo = this.getChainInfoOrThrow(chainId);
     return chainInfo.features.includes("oasis");
@@ -1106,11 +1162,9 @@ export class ChainsService {
 
   getModularChainInfos = computedFn(
     (): ModularChainInfo[] => {
-      console.log("this.modularChainInfos", this.modularChainInfos);
-
       return this.modularChainInfos
-        ?.slice()
-        ?.map((modularChainInfo) => {
+        .slice()
+        .map((modularChainInfo) => {
           if (this.hasChainInfo(modularChainInfo.chainId)) {
             const cosmos = this.getChainInfoOrThrow(modularChainInfo.chainId);
             return {
@@ -1121,6 +1175,17 @@ export class ChainsService {
             };
           }
 
+          // TODO: `mergeModularChainInfosWithDynamics` 같은 메소드로 빼기
+          if ("starknet" in modularChainInfo) {
+            const endpoint = this.getEndpoint(modularChainInfo.chainId);
+            return {
+              ...modularChainInfo,
+              starknet: {
+                ...modularChainInfo.starknet,
+                rpc: endpoint?.rpc || modularChainInfo.starknet.rpc,
+              },
+            };
+          }
           return modularChainInfo;
         })
         .concat(
@@ -1166,5 +1231,32 @@ export class ChainsService {
     }
 
     return modularChainInfo;
+  }
+
+  hasStarknetChainInfo(chainId: string): boolean {
+    const modularChainInfo = this.getModularChainInfo(chainId);
+    if (!modularChainInfo) {
+      return false;
+    }
+    return "starknet" in modularChainInfo;
+  }
+
+  getStarknetChainInfo(chainId: string): StarknetChainInfo | undefined {
+    const modularChainInfo = this.getModularChainInfo(chainId);
+    if (!modularChainInfo) {
+      return undefined;
+    }
+    if ("starknet" in modularChainInfo) {
+      return modularChainInfo.starknet;
+    }
+  }
+
+  getStarknetChainInfoOrThrow(chainId: string): StarknetChainInfo {
+    const starknetChainInfo = this.getStarknetChainInfo(chainId);
+    if (!starknetChainInfo) {
+      throw new Error(`There is no starknet chain info for ${chainId}`);
+    }
+
+    return starknetChainInfo;
   }
 }

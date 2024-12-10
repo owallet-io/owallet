@@ -18,13 +18,13 @@ import { CopyAddressConfig } from "./copy-address";
 import { ChainStore } from "../chain";
 import { AddressBookConfig } from "./address-book";
 import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
+import manifest from "../../manifest.v2.json";
 import { IBCSwapConfig } from "./ibc-swap";
 import { NewChainSuggestionConfig } from "./new-chain";
 import { ChangelogConfig } from "./changelog";
 import { SelectWalletConfig } from "./select-wallet";
 import { GetSidePanelIsSupportedMsg } from "@owallet/background";
 import { isRunningInSidePanel } from "../../utils";
-import manifest from "../../manifest.json";
 
 export interface UIConfigOptions {
   isDeveloperMode: boolean;

@@ -8,9 +8,6 @@ import * as ChainsUpdate from "./chains-update/internal";
 import * as SecretWasm from "./secret-wasm/internal";
 import * as BackgroundTx from "./tx/internal";
 import * as BackgroundTxEthereum from "./tx-ethereum/internal";
-import * as BackgroundTxOasis from "./tx-oasis/internal";
-import * as BackgroundTxBtc from "./tx-btc/internal";
-import * as BackgroundTxTron from "./tx-tron/internal";
 import * as TokenCW20 from "./token-cw20/internal";
 import * as TokenERC20 from "./token-erc20/internal";
 import * as Interaction from "./interaction/internal";
@@ -22,7 +19,6 @@ import * as Vault from "./vault/internal";
 import * as KeyRingV2 from "./keyring/internal";
 import * as KeyRingMnemonic from "./keyring-mnemonic/internal";
 import * as KeyRingLedger from "./keyring-ledger/internal";
-import * as KeyRingKeystone from "./keyring-keystone/internal";
 import * as KeyRingPrivateKey from "./keyring-private-key/internal";
 import * as KeyRingCosmos from "./keyring-cosmos/internal";
 import * as KeyRingOasis from "./keyring-oasis/internal";
@@ -51,9 +47,6 @@ export * from "./permission-interactive";
 export * from "./keyring";
 export * from "./vault";
 export * from "./keyring-cosmos";
-export * from "./keyring-oasis";
-export * from "./keyring-bitcoin";
-export * from "./keyring-tron";
 export * from "./keyring-ethereum";
 export * from "./keyring-keystone";
 export * from "./token-scan";
@@ -89,7 +82,7 @@ export function init(
   // Message requester to the content script.
   eventMsgRequester: MessageRequester,
   extensionMessageRequesterToUI: MessageRequester | undefined,
-  embedChainInfos: ChainInfo[],
+  embedChainInfos: (ChainInfo | ModularChainInfo)[],
   // The origins that are able to pass any permission.
   privilegedOrigins: string[],
   analyticsPrivilegedOrigins: string[],
@@ -183,16 +176,7 @@ export function init(
       chainsService,
       notification
     );
-  const backgroundTxOasisService =
-    new BackgroundTxOasis.BackgroundTxOasisService(chainsService, notification);
-  const backgroundTxBtcService = new BackgroundTxBtc.BackgroundTxBtcService(
-    chainsService,
-    notification
-  );
-  const backgroundTxTronService = new BackgroundTxTron.BackgroundTxTronService(
-    chainsService,
-    notification
-  );
+
   const phishingListService = new PhishingList.PhishingListService(
     {
       blockListUrl:
@@ -213,6 +197,7 @@ export function init(
     chainsService,
     vaultService
   );
+
   const keyringBaseMnemonic = new KeyRingMnemonic.KeyRingMnemonicService(
     vaultService
   );
@@ -220,7 +205,7 @@ export function init(
     vaultService
   );
   const keyringBaseLedger = new KeyRingLedger.KeyRingLedgerService();
-  const keyringBaseKeystone = new KeyRingKeystone.KeyRingKeystoneService();
+
   const keyRingV2Service = new KeyRingV2.KeyRingService(
     storeCreator("keyring-v2"),
     {
@@ -236,10 +221,9 @@ export function init(
     vaultService,
     analyticsService,
     [
-      keyringBaseMnemonic,
-      keyringBasePrivateKey,
-      keyringBaseLedger,
-      keyringBaseKeystone,
+      new KeyRingMnemonic.KeyRingMnemonicService(vaultService),
+      new KeyRingLedger.KeyRingLedgerService(),
+      new KeyRingPrivateKey.KeyRingPrivateKeyService(vaultService),
     ]
   );
   const keyRingCosmosService = new KeyRingCosmos.KeyRingCosmosService(
@@ -286,6 +270,7 @@ export function init(
       new KeyRingBtcLedgerService(vaultService, keyringBaseLedger),
     ])
   );
+
   const autoLockAccountService = new AutoLocker.AutoLockAccountService(
     storeCreator("auto-lock-account"),
     keyRingV2Service,
@@ -358,21 +343,6 @@ export function init(
     backgroundTxEthereumService,
     permissionInteractiveService
   );
-  BackgroundTxOasis.init(
-    router,
-    backgroundTxOasisService,
-    permissionInteractiveService
-  );
-  BackgroundTxBtc.init(
-    router,
-    backgroundTxBtcService,
-    permissionInteractiveService
-  );
-  BackgroundTxTron.init(
-    router,
-    backgroundTxTronService,
-    permissionInteractiveService
-  );
   PhishingList.init(router, phishingListService);
   AutoLocker.init(router, autoLockAccountService);
   Analytics.init(router, analyticsService);
@@ -382,18 +352,12 @@ export function init(
     keyRingCosmosService,
     permissionInteractiveService
   );
-  KeyRingOasis.init(router, keyRingOasisService, permissionInteractiveService);
-  KeyRingTron.init(router, keyRingTronService, permissionInteractiveService);
-  KeyRingBitcoin.init(
-    router,
-    keyRingBitcoinService,
-    permissionInteractiveService
-  );
   KeyRingEthereum.init(
     router,
     keyRingEthereumService,
     permissionInteractiveService
   );
+
   PermissionInteractive.init(router, permissionInteractiveService);
   ChainsUI.init(router, chainsUIService);
   ChainsUpdate.init(router, chainsUpdateService);
@@ -422,7 +386,6 @@ export function init(
       await chainsUpdateService.init();
       await keyRingV2Service.init();
       await keyRingCosmosService.init();
-      await keyRingOasisService.init();
       await keyRingEthereumService.init();
       await permissionService.init();
       await tokenCW20Service.init();
@@ -430,9 +393,6 @@ export function init(
 
       await backgroundTxService.init();
       await backgroundTxEthereumService.init();
-      await backgroundTxOasisService.init();
-      await backgroundTxBtcService.init();
-      await backgroundTxTronService.init();
       await phishingListService.init();
       await autoLockAccountService.init();
       await permissionInteractiveService.init();

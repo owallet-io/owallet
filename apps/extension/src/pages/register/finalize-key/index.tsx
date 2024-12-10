@@ -180,7 +180,7 @@ export const FinalizeKeyScene: FunctionComponent<{
           }
         }
 
-        dispatchGlobalEventExceptSelf("owallet_new_key_created", vaultId);
+        dispatchGlobalEventExceptSelf("keplr_new_key_created", vaultId);
 
         await Promise.allSettled(promises);
 
@@ -193,6 +193,11 @@ export const FinalizeKeyScene: FunctionComponent<{
         }[] = [];
 
         promises = [];
+        console.log(
+          "chainStore.modularChainInfos",
+          chainStore.modularChainInfos
+        );
+
         for (const modularChainInfo of chainStore.modularChainInfos) {
           if ("cosmos" in modularChainInfo) {
             const chainInfo = chainStore.getChain(

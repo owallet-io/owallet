@@ -22,6 +22,7 @@ const fallback = {
   net: false,
   os: false,
   url: false,
+  vm: false,
   path: require.resolve("path-browserify"),
   querystring: false,
   http: require.resolve("stream-http"),

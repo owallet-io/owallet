@@ -31,9 +31,9 @@ import { RegisterNamePasswordHardwareScene } from "./name-password-hardware";
 import { FinalizeKeyScene } from "./finalize-key";
 import { EnableChainsScene } from "./enable-chains";
 import { SelectDerivationPathScene } from "./select-derivation-path";
-import { useStore } from "../../stores";
 import { useSearchParams } from "react-router-dom";
 import { BackUpPrivateKeyScene } from "./back-up-private-key";
+import { useStore } from "../../stores";
 
 const Container = styled.div`
   min-width: 100vw;
@@ -47,15 +47,19 @@ export const RegisterPage: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore } = useStore();
 
   const isReady = useMemo(() => {
-    // if (chainStore.isInitializing) {
-    //   return false;
-    // }
+    // state 변화를 다 다루기 힘들기 때문에 미리 초기화 되어있어야만 하는 store들이 있다.
+    // 매우 빠르게 초기화가 완료되기 때문에 유저는 이를 인지하기 어렵다.
+    if (chainStore.isInitializing) {
+      return false;
+    }
 
     if (!keyRingStore.isInitialized) {
       return false;
     }
 
     if (keyRingStore.status === "locked") {
+      // 잠겨있으면 애초에 먼가 잘못된거고 유저가 이상한 경로로 접근한 것이다...
+      // 처리할 방법이 없으니 그냥 끈다.
       window.close();
     }
 
@@ -67,13 +71,6 @@ export const RegisterPage: FunctionComponent = observer(() => {
   ]);
 
   const intervalOnce = useRef(false);
-  console.log(
-    "isReady 1",
-    isReady,
-    chainStore.isInitializing,
-    keyRingStore.isInitialized,
-    keyRingStore.status
-  );
   useEffect(() => {
     if (isReady && !intervalOnce.current) {
       intervalOnce.current = true;
@@ -87,13 +84,6 @@ export const RegisterPage: FunctionComponent = observer(() => {
     }
   }, [isReady, keyRingStore]);
 
-  console.log(
-    "isReady 2",
-    isReady,
-    chainStore.isInitializing,
-    keyRingStore.isInitialized,
-    keyRingStore.status
-  );
   return <Container>{isReady ? <RegisterPageImpl /> : null}</Container>;
 });
 
@@ -104,6 +94,10 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
   const theme = useTheme();
 
   const [searchParams] = useSearchParams();
+
+  const route = searchParams.get("route");
+
+  console.log("searchParams route", route);
 
   const [initials] = useState(() => {
     const route = searchParams.get("route");
@@ -138,6 +132,9 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
     }
 
     const chainIds = searchParams.get("chainIds");
+
+    console.log("chainIds", chainIds);
+
     if (route === "select-derivation-path" && chainIds) {
       return {
         header: {
@@ -166,6 +163,8 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
     };
   });
 
+  console.log("initials", initials);
+
   const headerContext = useRegisterHeaderContext(initials.header);
 
   return (
@@ -174,10 +173,15 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
       <Box
         position="relative"
         marginX="auto"
-        backgroundColor={ColorPalette.white}
+        backgroundColor={
+          theme.mode === "light" ? ColorPalette.white : ColorPalette["gray-600"]
+        }
         borderRadius="1.5rem"
         style={{
-          boxShadow: "0px 1px 4px 0px rgba(43, 39, 55, 0.10)",
+          boxShadow:
+            theme.mode === "light"
+              ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+              : "none",
         }}
       >
         <FixedWidthSceneTransition

@@ -12,11 +12,11 @@ import {
   Bech32Config,
   BIP44,
   ChainInfo,
-  ChainInfoModule,
   Currency,
   ERC20Currency,
   FeeCurrency,
   ModularChainInfo,
+  ChainInfoModule,
 } from "@owallet/types";
 import {
   IChainInfoImpl,
@@ -62,6 +62,14 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     keepAlive(this, "unknownDenomMap");
   }
 
+  /*
+   * 해당되는 denom의 currency를 모를 때 이 메소드를 사용해서 등록을 요청할 수 있다.
+   * 이미 등록되어 있거나 등록을 시도 중이면 아무 행동도 하지 않는.
+   * 예를들어 네이티브 balance 쿼리에서 모르는 denom이 나오거나
+   * IBC denom의 등록을 요청할 때 쓸 수 있다.
+   * action 안에서는 autorun이 immediate로 실행되지 않으므로, 일단 @action 데코레이터는 사용하지 않는다.
+   * 하지만 이 메소드를 action 안에서 호출하면 여전히 immediate로 실행되지 않으므로, 이 경우도 고려해야한다.
+   */
   addUnknownDenoms(...coinMinimalDenoms: string[]) {
     this.addUnknownDenomsImpl(coinMinimalDenoms, true);
   }
@@ -82,6 +90,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           continue;
         } else if (reaction) {
           found = true;
+          // 로직상 reaction은 reactive할 필요가 없기 때문에
+          // 그냥 여기서 바꾼다.
           prior.reaction = reaction;
         }
       }
@@ -132,7 +142,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           this.chainId,
           coinMinimalDenom
         );
-
         if (generator) {
           const currency = generator.value;
           runInAction(() => {
@@ -285,7 +294,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-  
+   * Currency를 반환한다.
+   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -356,6 +366,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
+   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
@@ -383,7 +394,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   @action
-  addOrReplaceCurrency(currency: AppCurrency) {
+  protected addOrReplaceCurrency(currency: AppCurrency) {
     if (this.currencyMap.has(currency.coinMinimalDenom)) {
       const index = this.registeredCurrencies.findIndex(
         (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
@@ -458,15 +469,17 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     return this._embedded.rest;
   }
 
-  get rpc(): string {
-    return this._embedded.rpc;
-  }
   get grpc(): string {
     return this._embedded.grpc;
   }
   get txExplorer(): ChainInfo["txExplorer"] {
     return this._embedded.txExplorer;
   }
+
+  get rpc(): string {
+    return this._embedded.rpc;
+  }
+
   get walletUrl(): string | undefined {
     return this._embedded.walletUrl;
   }
@@ -553,7 +566,14 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
         return this._embedded.cosmos.currencies.concat(
           this.registeredCosmosCurrencies
         );
+      case "starknet":
+        if (!("starknet" in this._embedded)) {
+          throw new Error(`No starknet module for this chain: ${this.chainId}`);
+        }
 
+        return this._embedded.starknet.currencies.concat(
+          this.registeredStarkentCurrencies
+        );
       default:
         throw new Error(`Unknown module: ${module}`);
     }
@@ -649,6 +669,11 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
   @computed
   protected get starknetCurrencyMap(): Map<string, AppCurrency> {
     const result: Map<string, AppCurrency> = new Map();
+    if ("starknet" in this._embedded) {
+      for (const currency of this._embedded.starknet.currencies) {
+        result.set(currency.coinMinimalDenom, currency);
+      }
+    }
 
     return result;
   }
@@ -659,10 +684,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
 {
   @observable.ref
   protected _chainInfos: ChainInfoImpl<C>[] = [];
-
   @observable.ref
   protected _modularChainInfos: ModularChainInfo[] = [];
-
   @observable.ref
   protected _modularChainInfoImpls: ModularChainInfoImpl<ModularChainInfo>[] =
     [];
@@ -670,12 +693,13 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   @observable
   protected currencyRegistrars: CurrencyRegistrar[] = [];
 
-  constructor(embedChainInfos: C[]) {
+  constructor(embedChainInfos: (C | ModularChainInfo)[]) {
     makeObservable(this);
 
     this.setEmbeddedChainInfos(embedChainInfos);
 
     keepAlive(this, "chainInfoMap");
+    keepAlive(this, "modularChainInfoMap");
   }
 
   get chainInfos(): IChainInfoImpl<C>[] {
@@ -684,6 +708,10 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
 
   get modularChainInfos(): ModularChainInfo[] {
     return this._modularChainInfos;
+  }
+
+  get modularChainInfoImpls(): ModularChainInfoImpl<ModularChainInfo>[] {
+    return this._modularChainInfoImpls;
   }
 
   @computed
@@ -728,8 +756,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     const chainInfo = this.modularChainInfoMap.get(chainIdentifier.identifier);
 
     if (!chainInfo) {
-      // throw new Error(`Unknown modular chain info: ${chainId}`);
-      return;
+      throw new Error(`Unknown modular chain info: ${chainId}`);
     }
 
     return chainInfo;
@@ -773,17 +800,60 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   }
 
   @action
-  protected setEmbeddedChainInfos(chainInfos: C[]) {
-    this._chainInfos = chainInfos.map((chainInfo) => {
-      const prev = this.chainInfoMap.get(
+  protected setEmbeddedChainInfos(chainInfos: (C | ModularChainInfo)[]) {
+    this._chainInfos = chainInfos
+      .filter((chainInfo) => "currencies" in chainInfo || "cosmos" in chainInfo)
+      .map((chainInfo) => {
+        if ("cosmos" in chainInfo) {
+          // TODO: 이거 타이핑이 불가능한데 일단 대충 넘어가도록 처리한 것임.
+          //       chainInfo.cosmos는 ChainInfo 타입이기 때문에 C를 만족할 수 없다.
+          chainInfo = chainInfo.cosmos as C;
+        }
+        if (!("currencies" in chainInfo)) {
+          throw new Error("Can't happen");
+        }
+
+        const prev = this.chainInfoMap.get(
+          ChainIdHelper.parse(chainInfo.chainId).identifier
+        );
+        if (prev) {
+          prev.setEmbeddedChainInfo(chainInfo);
+          return prev;
+        }
+
+        return new ChainInfoImpl(chainInfo, this);
+      });
+    this._modularChainInfos = chainInfos.map((chainInfo) => {
+      if ("currencies" in chainInfo) {
+        return {
+          chainId: chainInfo.chainId,
+          chainName: chainInfo.chainName,
+          chainSymbolImageUrl: chainInfo.chainSymbolImageUrl,
+          cosmos: chainInfo as C,
+        };
+      }
+      return chainInfo;
+    });
+    this._modularChainInfoImpls = chainInfos.map((chainInfo) => {
+      const modularChainInfo =
+        "currencies" in chainInfo
+          ? {
+              chainId: chainInfo.chainId,
+              chainName: chainInfo.chainName,
+              chainSymbolImageUrl: chainInfo.chainSymbolImageUrl,
+              cosmos: chainInfo as C,
+            }
+          : chainInfo;
+
+      const prev = this.modularChainInfoImplMap.get(
         ChainIdHelper.parse(chainInfo.chainId).identifier
       );
       if (prev) {
-        prev.setEmbeddedChainInfo(chainInfo);
+        prev.setEmbeddedModularChainInfo(modularChainInfo);
         return prev;
       }
 
-      return new ChainInfoImpl(chainInfo, this);
+      return new ModularChainInfoImpl(modularChainInfo, this);
     });
   }
 
@@ -792,8 +862,6 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     chainInfos: C[];
     modulrChainInfos: ModularChainInfo[];
   }) {
-    console.log("infos setEmbeddedChainInfosV2", infos);
-
     this._chainInfos = infos.chainInfos.map((chainInfo) => {
       const prev = this.chainInfoMap.get(
         ChainIdHelper.parse(chainInfo.chainId).identifier
@@ -866,9 +934,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     | undefined {
     for (let i = 0; i < this.currencyRegistrars.length; i++) {
       const registrar = this.currencyRegistrars[i];
-
       const generator = registrar(chainId, coinMinimalDenom);
-
       if (generator) {
         return generator;
       }

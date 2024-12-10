@@ -42,8 +42,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Tag } from "../../../components/tag";
 import SimpleBar from "simplebar-react";
 import { useTheme } from "styled-components";
-import { VerticalCollapseTransition } from "../../../components/transition/vertical-collapse";
 import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
+import { VerticalCollapseTransition } from "../../../components/transition/vertical-collapse";
 
 export const EnableChainsScene: FunctionComponent<{
   vaultId: string;
@@ -187,6 +187,17 @@ export const EnableChainsScene: FunctionComponent<{
                   })()
                 );
               }
+            } else if ("starknet" in modularChainInfo) {
+              const account = accountStore.getAccount(
+                modularChainInfo.starknet.chainId
+              );
+              promises.push(
+                (async () => {
+                  if (account.walletStatus !== WalletStatus.Loaded) {
+                    await account.init();
+                  }
+                })()
+              );
             }
           }
 
@@ -313,7 +324,6 @@ export const EnableChainsScene: FunctionComponent<{
     const [enabledChainIdentifiers, setEnabledChainIdentifiers] = useState(
       () => {
         // We assume that the chain store can be already initialized.
-
         const enabledChainIdentifiers: string[] =
           chainStore.enabledChainIdentifiers;
 
@@ -343,9 +353,6 @@ export const EnableChainsScene: FunctionComponent<{
             chainInfo.stakeCurrency || chainInfo.currencies[0];
           const account = accountStore.getAccount(chainInfo.chainId);
 
-          // hideInUI인 chain은 UI 상에서 enable이 되지 않아야한다.
-          // 정말 만약의 수로 왜인지 그 체인에 유저가 자산등을 가지고 있을수도 있으니
-          // 여기서도 막아야한다
           if (!chainStore.isInChainInfosInListUI(chainInfo.chainId)) {
             continue;
           }
@@ -378,12 +385,6 @@ export const EnableChainsScene: FunctionComponent<{
                 data.balances &&
                 Array.isArray(data.balances) &&
                 data.balances.length > 0 &&
-                // nomic은 지들이 대충 구현한 가짜 rest를 쓰는데...
-                // 얘네들이 구현한게 cosmos-sdk의 실제 동작과 약간 차이가 있음
-                // cosmos-sdk에서는 balacne가 0인거는 response에 포함되지 않지만
-                // nomic은 대충 만들어서 balance가 0인거도 response에 포함됨
-                // 그래서 밑의 줄이 없으면 nomic이 무조건 enable된채로 시작되기 때문에
-                // 이 문제를 해결하기 위해서 로직을 추가함
                 data.balances.find((bal: any) => {
                   return (
                     bal.amount &&
@@ -429,19 +430,12 @@ export const EnableChainsScene: FunctionComponent<{
       return map;
     }, [enabledChainIdentifiers]);
 
-    // 기본적으로 최초로 활성화되어있던 체인의 경우 sort에서 우선권을 가진다.
     const [sortPriorityChainIdentifierMap] = useState(
       enabledChainIdentifierMap
     );
 
     const [search, setSearch] = useState<string>(initialSearchValue ?? "");
 
-    // 검색 뿐만 아니라 로직에 따른 선택할 수 있는 체인 목록을 가지고 있다.
-    // 그러니까 로직을 파악해서 주의해서 사용해야함.
-    // 그리고 이를 토대로 balance에 따른 sort를 진행한다.
-    // queries store의 구조 문제로 useMemo 안에서 balance에 따른 sort를 진행하긴 힘들다.
-    // 그래서 이를 위한 변수로 따로 둔다.
-    // 실제로는 modularChainInfos를 사용하면 된다.
     const preSortModularChainInfos = useMemo(() => {
       let modularChainInfos = chainStore.modularChainInfosInListUI.slice();
 
@@ -456,8 +450,6 @@ export const EnableChainsScene: FunctionComponent<{
               !!chainInfo.features?.includes("eth-address-gen") ||
               !!chainInfo.features?.includes("eth-key-sign");
 
-            // Ledger일 경우 ethereum app을 바로 처리할 수 없다.
-            // 이 경우 빼줘야한다.
             if (isEthermintLike && !fallbackEthereumLedgerApp) {
               return false;
             }
@@ -470,6 +462,7 @@ export const EnableChainsScene: FunctionComponent<{
               }
 
               try {
+                // 처리가능한 체인만 true를 반환한다.
                 KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
                   chainInfo.chainId
                 );
@@ -484,6 +477,8 @@ export const EnableChainsScene: FunctionComponent<{
             }
 
             return true;
+          } else if ("starknet" in modularChainInfo) {
+            return fallbackStarknetLedgerApp;
           } else {
             return false;
           }
@@ -606,6 +601,8 @@ export const EnableChainsScene: FunctionComponent<{
           return aPrice.gt(bPrice) ? -1 : 1;
         }
 
+        // balance의 fiat 기준으로 sort.
+        // 같으면 이름 기준으로 sort.
         return aModularChainInfo.chainName.localeCompare(
           bModularChainInfo.chainName
         );
@@ -637,6 +634,20 @@ export const EnableChainsScene: FunctionComponent<{
                 !!enabledModularChainInfo.cosmos.features?.includes(
                   "eth-key-sign"
                 ));
+
+            if (fallbackStarknetLedgerApp) {
+              if ("starknet" in enabledModularChainInfo) {
+                numSelected++;
+              }
+            } else if (fallbackEthereumLedgerApp) {
+              if (isEthereumAppNeed) {
+                numSelected++;
+              }
+            } else {
+              if (!isEthereumAppNeed) {
+                numSelected++;
+              }
+            }
           } else {
             numSelected++;
           }
@@ -800,6 +811,13 @@ export const EnableChainsScene: FunctionComponent<{
                       ).coinDenom
                         .toLowerCase()
                         .includes(trimSearchLowerCase);
+                    } else if ("starknet" in modularChainInfo) {
+                      return (
+                        modularChainInfo.starknet.currencies[0] ||
+                        modularChainInfo.starknet.currencies[1]
+                      ).coinDenom
+                        .toLowerCase()
+                        .includes(trimSearchLowerCase);
                     }
 
                     return false;
@@ -838,6 +856,14 @@ export const EnableChainsScene: FunctionComponent<{
                         />
                       );
                     }
+                  } else if ("starknet" in modularChainInfo) {
+                    return (
+                      <NextStepChainItem
+                        key={modularChainInfo.chainId}
+                        modularChainInfo={modularChainInfo}
+                        tagText="Starknet"
+                      />
+                    );
                   }
 
                   return null;
@@ -915,6 +941,9 @@ export const EnableChainsScene: FunctionComponent<{
             for (const chainIdentifier of enabledChainIdentifiersInPage) {
               const modularChainInfo =
                 chainStore.getModularChain(chainIdentifier);
+              if ("starknet" in modularChainInfo) {
+                return false;
+              }
             }
             return true;
           })()}
@@ -1033,6 +1062,9 @@ export const EnableChainsScene: FunctionComponent<{
                     !!chainInfo.features?.includes("eth-key-sign");
 
                   if (isEthermintLike) {
+                    // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
+                    // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
+                    // Remove enable from enables
                     enables.splice(i, 1);
                     i--;
                     // And push it disables
@@ -1050,7 +1082,17 @@ export const EnableChainsScene: FunctionComponent<{
                 }
 
                 const enable = enables[i];
-                // const modularChainInfo = chainStore.getModularChain(enable);
+                const modularChainInfo = chainStore.getModularChain(enable);
+
+                if ("starknet" in modularChainInfo) {
+                  // Remove enable from enables
+                  enables.splice(i, 1);
+                  i--;
+                  // And push it disables
+                  disables.push(enable);
+
+                  ledgerStarknetAppNeeds.push(enable);
+                }
               }
 
               await Promise.all([
@@ -1088,6 +1130,8 @@ export const EnableChainsScene: FunctionComponent<{
                   skipWelcome,
                 });
               } else {
+                // 어차피 bip44 coin type selection과 ethereum ledger app이 동시에 필요한 경우는 없다.
+                // (ledger에서는 coin type이 app당 할당되기 때문에...)
                 if (keyType === "ledger") {
                   if (fallbackStarknetLedgerApp) {
                     if (ledgerStarknetAppNeeds.length > 0) {
@@ -1097,6 +1141,35 @@ export const EnableChainsScene: FunctionComponent<{
 
                       if (!keyInfo) {
                         throw new Error("KeyInfo not found");
+                      }
+                      if (keyInfo.insensitive["Starknet"]) {
+                        await chainStore.enableChainInfoInUI(
+                          ...ledgerStarknetAppNeeds
+                        );
+                        dispatchGlobalEventExceptSelf(
+                          "keplr_enabled_chain_changed",
+                          keyInfo.id
+                        );
+                        replaceToWelcomePage();
+                      } else {
+                        const bip44Path = keyInfo.insensitive["bip44Path"];
+                        if (!bip44Path) {
+                          throw new Error("bip44Path not found");
+                        }
+
+                        sceneTransition.push("connect-ledger", {
+                          name: "",
+                          password: "",
+                          app: "Starknet",
+                          bip44Path,
+
+                          appendModeInfo: {
+                            vaultId,
+                            afterEnableChains: ledgerStarknetAppNeeds,
+                          },
+                          stepPrevious: stepPrevious,
+                          stepTotal: stepTotal,
+                        });
                       }
                     } else {
                       replaceToWelcomePage();
@@ -1343,7 +1416,11 @@ const NextStepChainItem: FunctionComponent<{
             <Gutter size="0.25rem" />
 
             <Subtitle4 color={ColorPalette["gray-300"]}>
-              <FormattedMessage id="pages.register.enable-chains.guide.can-select-evm-next-step" />
+              {"starknet" in modularChainInfo ? (
+                <FormattedMessage id="pages.register.enable-chains.guide.can-select-starknet-later-step" />
+              ) : (
+                <FormattedMessage id="pages.register.enable-chains.guide.can-select-evm-next-step" />
+              )}
             </Subtitle4>
           </YAxis>
         </XAxis>
