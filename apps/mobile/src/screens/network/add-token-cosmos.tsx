@@ -112,6 +112,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
   const getTokenCoingeckoId = async (contractAddressData) => {
     try {
+      console.log(contractAddressData, "contractAddressData");
       if (!contractAddressData || !tokenInfo?.symbol || !tokenInfo?.decimals)
         return;
       const res = await API.getTokenInfo({
@@ -120,6 +121,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       });
       const data = res.data;
       if (data && data.imgUrl) {
+        console.log(data, "data");
         setValue("image", data.imgUrl);
         setValue("coinGeckoId", data.coingeckoId);
       } else {
@@ -438,11 +440,13 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   onBlur={onBlur}
                   onChangeText={onChange}
                   editable={true}
+                  value={value}
                 />
               );
             }}
             name="image"
-            defaultValue={""}
+
+            // defaultValue={""}
           />
           <Controller
             control={control}
@@ -468,11 +472,12 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   onBlur={onBlur}
                   onChangeText={onChange}
                   editable={true}
+                  value={value}
                 />
               );
             }}
             name="coinGeckoId"
-            defaultValue={""}
+            // defaultValue={""}
           />
 
           {isSecret20 ? (
