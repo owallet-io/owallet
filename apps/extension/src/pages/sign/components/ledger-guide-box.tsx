@@ -80,7 +80,7 @@ export const LedgerGuideBox: FunctionComponent<{
                       title={intl.formatMessage({
                         id: "page.sign.components.ledger-guide.box.error-title",
                       })}
-                      paragraph="Tx size too large for Ledger device (This is a Ledger limitation Keplr can't fix)"
+                      paragraph="Tx size too large for Ledger device (This is a Ledger limitation OWallet can't fix)"
                     />
                   );
                 }

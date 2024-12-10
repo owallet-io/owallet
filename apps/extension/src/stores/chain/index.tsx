@@ -355,7 +355,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    console.log("result.chainInfos", result.chainInfos);
+    console.log("result.modulrChainInfos", result.modulrChainInfos);
 
     this.setEmbeddedChainInfosV2({
       chainInfos: result.chainInfos,

@@ -118,7 +118,7 @@
   "pages.register.back-up-private-key.import-button": "导入",
 
   "pages.register.connect-ledger.title": "请连接你的硬件钱包",
-  "pages.register.connect-ledger.paragraph": "Keplr 支援 Cosmos 應用程式鏈、所有 EVM 相容鏈，包括 Ethereum、Injective 和 Evmos，以及 Starknet。Ledger connection 會引導您依序瀏覽 Cosmos、EVM 和 Starknet。",
+  "pages.register.connect-ledger.paragraph": "OWallet 支援 Cosmos 應用程式鏈、所有 EVM 相容鏈，包括 Ethereum、Injective 和 Evmos，以及 Starknet。Ledger connection 會引導您依序瀏覽 Cosmos、EVM 和 Starknet。",
   "pages.register.connect-ledger.step-text": "步骤 {step}",
   "pages.register.connect-ledger.connect-ledger-step-paragraph": "连接并解锁你的Ledger。",
   "pages.register.connect-ledger.open-app-step-paragraph": "在你的Ledger设备上打开{app}应用。",
@@ -171,7 +171,7 @@
   "pages.register.pages.welcome.kado-link.paragraph": "买币",
   "pages.register.pages.welcome.stargaze-link.title": "Stargaze",
   "pages.register.pages.welcome.stargaze-link.paragraph": "购买和铸造NFT",
-  "pages.register.pages.welcome.dashboard-link.title": "Keplr Dashboard",
+  "pages.register.pages.welcome.dashboard-link.title": "OWallet Dashboard",
   "pages.register.pages.welcome.dashboard-link.paragraph": "管理投资组合和质押资产",
   "pages.register.pages.welcome.icns-link.title": "跨链名称服务（ICNS）",
   "pages.register.pages.welcome.icns-link.paragraph": "简化你的加密货币地址",
@@ -318,7 +318,7 @@
   "page.unlock.unlock-button": "解锁",
   "page.unlock.forgot-password-button": "忘记密码？",
 
-  "page.unlock.paragraph-section.keplr-here": "💫 Keplr 2.0 来啦！",
+  "page.unlock.paragraph-section.keplr-here": "💫 OWallet 2.0 来啦！",
   "page.unlock.paragraph-section.enter-password-to-upgrade": "输入你的密码进行升级。",
   "page.unlock.paragraph-section.welcome-back": "欢迎回来",
   "page.unlock.bottom-section.capslock-tooltip": "大写锁定已打开",

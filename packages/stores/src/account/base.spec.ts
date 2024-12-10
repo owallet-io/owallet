@@ -48,7 +48,7 @@ describe("Test Account set base", () => {
 
     expect(accountSetBase.walletStatus).toBe(WalletStatus.Loading);
 
-    // Need wait some time to get the Keplr.
+    // Need wait some time to get the OWallet.
     await (() => {
       return new Promise<void>((resolve) => {
         setTimeout(resolve, 1000);
@@ -105,7 +105,7 @@ describe("Test Account set base", () => {
 
     expect(accountSetBase.walletStatus).toBe(WalletStatus.NotInit);
 
-    // Need wait some time to get the Keplr.
+    // Need wait some time to get the OWallet.
     await (() => {
       return new Promise<void>((resolve) => {
         setTimeout(resolve, 1000);

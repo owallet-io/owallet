@@ -83,8 +83,8 @@ export class SecretWasmService {
   ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfoOrThrow(chainId);
 
-    // XXX: Keplr should generate the seed deterministically according to the account.
-    // Otherwise, it will lost the encryption/decryption key if Keplr is uninstalled or local storage is cleared.
+    // XXX: OWallet should generate the seed deterministically according to the account.
+    // Otherwise, it will lost the encryption/decryption key if OWallet is uninstalled or local storage is cleared.
     // For now, use the signature of some string to generate the seed.
     // It need to more research.
     const seed = await this.getSeed(chainInfo);
@@ -101,8 +101,8 @@ export class SecretWasmService {
   ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfoOrThrow(chainId);
 
-    // XXX: Keplr should generate the seed deterministically according to the account.
-    // Otherwise, it will lost the encryption/decryption key if Keplr is uninstalled or local storage is cleared.
+    // XXX: OWallet should generate the seed deterministically according to the account.
+    // Otherwise, it will lost the encryption/decryption key if OWallet is uninstalled or local storage is cleared.
     // For now, use the signature of some string to generate the seed.
     // It need to more research.
     const seed = await this.getSeed(chainInfo);

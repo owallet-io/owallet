@@ -1050,7 +1050,7 @@ export const EnableChainsScene: FunctionComponent<{
                 }
 
                 const enable = enables[i];
-                const modularChainInfo = chainStore.getModularChain(enable);
+                // const modularChainInfo = chainStore.getModularChain(enable);
               }
 
               await Promise.all([

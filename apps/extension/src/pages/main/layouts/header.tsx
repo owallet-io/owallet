@@ -244,7 +244,7 @@ export const MainHeaderLayout = observer<
     return (
       <HeaderLayout
         title={(() => {
-          const name = keyRingStore.selectedKeyInfo?.name || "Keplr Account";
+          const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
 
           if (icnsPrimaryName !== "") {
             return (

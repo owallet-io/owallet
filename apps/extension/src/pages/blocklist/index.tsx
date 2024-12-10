@@ -125,7 +125,7 @@ export const BlocklistPage: FunctionComponent = () => {
         <Box>
           <Styles.Title>SECURITY ALERT</Styles.Title>
           <Styles.Description>
-            Keplr has detected that this domain has been flagged as a phishing
+            OWallet has detected that this domain has been flagged as a phishing
             site. To protect the safety of your assets, we recommend you exit
             this website immediately.
           </Styles.Description>

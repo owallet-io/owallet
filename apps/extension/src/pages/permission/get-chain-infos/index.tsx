@@ -101,7 +101,7 @@ export const GlobalPermissionGetChainInfosPage: FunctionComponent<{
         <Box alignX="center">
           <Gutter size="2.5rem" />
           <Image
-            alt="Keplr Logo Image"
+            alt="OWallet Logo Image"
             src={require("../../../public/assets/logo-256.png")}
             style={{ width: "4.625rem", height: "4.625rem" }}
           />

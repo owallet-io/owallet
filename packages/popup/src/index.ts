@@ -1,6 +1,6 @@
 export const PopupSize = {
   width: 360,
-  // Keplr's default popup height is 600px.
+  // OWallet's default popup height is 600px.
   // Remember that below height includes status bar of OS.
   // If actual height excluded status bar is lesser than 600px,
   // it is hard to manage scroll bar of popup.

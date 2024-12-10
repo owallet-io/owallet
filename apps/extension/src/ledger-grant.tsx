@@ -72,7 +72,7 @@ const LedgerGrantPage: FunctionComponent = observer(() => {
           src={require(theme.mode === "light"
             ? "./public/assets/img/intro-logo-light.png"
             : "./public/assets/img/intro-logo.png")}
-          alt="Keplr logo"
+          alt="OWallet logo"
           style={{
             width: "10.625rem",
             aspectRatio: "453 / 153",

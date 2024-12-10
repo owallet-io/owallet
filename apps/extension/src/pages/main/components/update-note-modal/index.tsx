@@ -309,7 +309,7 @@ const CarouselPage: FunctionComponent<{
                     : ColorPalette["gray-300"]
                 }
               >
-                Open Keplr in a sidebar on your screen
+                Open OWallet in a sidebar on your screen
               </Body3>
             </YAxis>
 
