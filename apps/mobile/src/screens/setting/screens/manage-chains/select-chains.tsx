@@ -24,8 +24,9 @@ import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
 import { _keyExtract, showToast } from "@utils/helper";
 import { ChainIdHelper, Bech32Address } from "@owallet/cosmos";
+import { ChainInfo } from "@owallet/types";
 
-const embedChainInfos = [
+const embedChainInfos: ChainInfo[] = [
   {
     rpc: "https://sapphire.oasis.io",
     rest: "https://sapphire.oasis.io",
@@ -308,6 +309,60 @@ const embedChainInfos = [
       txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
       accountUrl:
         "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+    },
+  },
+  {
+    rpc: "https://rpc.ankr.com/fantom",
+    rest: "https://rpc.ankr.com/fantom",
+    chainId: "0xfa",
+    chainName: "Fantom Opera",
+    bip44: {
+      coinType: 60,
+    },
+    evm: {
+      websocket: "wss://fantom.callstaticrpc.com",
+      rpc: "https://rpc.ankr.com/fantom",
+      chainId: 250,
+    },
+    stakeCurrency: {
+      coinDenom: "FTM",
+      coinMinimalDenom: "ftm",
+      coinDecimals: 18,
+      coinGeckoId: "fantom",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/4001/standard/Fantom_round.png?1696504642",
+    },
+    bech32Config: Bech32Address.defaultBech32Config("evmos"),
+    chainSymbolImageUrl: "https://icons.llamao.fi/icons/chains/rsz_fantom.jpg",
+    get currencies() {
+      return [
+        {
+          coinDenom: "FTM",
+          coinMinimalDenom: "ftm",
+          coinDecimals: 18,
+          coinGeckoId: "fantom",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/4001/standard/Fantom_round.png?1696504642",
+        },
+      ];
+    },
+    get feeCurrencies() {
+      return [
+        {
+          ...this.stakeCurrency,
+          gasPriceStep: {
+            low: 1,
+            average: 1.25,
+            high: 1.5,
+          },
+        },
+      ];
+    },
+    features: ["not-support-staking"],
+    txExplorer: {
+      name: "FanTom Scan",
+      txUrl: "https://ftmscan.com/tx/{txHash}",
+      accountUrl: "https://ftmscan.com/address/{address}",
     },
   },
   {
