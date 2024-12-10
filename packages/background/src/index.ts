@@ -357,7 +357,13 @@ export function init(
     keyRingEthereumService,
     permissionInteractiveService
   );
-
+  KeyRingOasis.init(router, keyRingOasisService, permissionInteractiveService);
+  KeyRingTron.init(router, keyRingTronService, permissionInteractiveService);
+  KeyRingBitcoin.init(
+    router,
+    keyRingBitcoinService,
+    permissionInteractiveService
+  );
   PermissionInteractive.init(router, permissionInteractiveService);
   ChainsUI.init(router, chainsUIService);
   ChainsUpdate.init(router, chainsUpdateService);
