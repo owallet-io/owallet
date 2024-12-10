@@ -1161,7 +1161,7 @@ export const StakeCardAll = observer(({}) => {
                   label="Claim all"
                   disabled={
                     claimAllDisabled ||
-                    keyRingStore.selectedKeyInfo.type === "ledger"
+                    keyRingStore.selectedKeyInfo?.type === "ledger"
                   }
                   loading={claimAllIsLoading}
                   onPress={claimAll}

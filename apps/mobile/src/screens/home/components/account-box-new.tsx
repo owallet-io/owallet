@@ -96,7 +96,7 @@ export const AccountBoxAll: FunctionComponent<{
 
   const [isOpen, setModalOpen] = useState(false);
   const [isMoreOpen, setMoreModalOpen] = useState(false);
-  const [showChart, setShowChart] = useState(true);
+  const [showChart, setShowChart] = useState(false);
   const [chainListWithBalance, setChainListWithBalance] = useState([]);
   const [series, setSeries] = useState([]);
   const [sliceColor, setSliceColor] = useState([]);
