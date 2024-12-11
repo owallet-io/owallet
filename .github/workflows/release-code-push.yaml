@@ -44,6 +44,9 @@ jobs:
       - name: Checkout to repo
         uses: actions/checkout@v3
 
+      - name: Clean build folder
+        run: yarn clean
+
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
