@@ -1,23 +1,21 @@
 import { ChainsService } from "../chains";
 import { KeyRingService } from "../keyring";
-
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import { Key, TransactionType } from "@owallet/types";
-import { KeyRingCosmosService } from "../keyring-cosmos";
-import { Bech32Address } from "@owallet/cosmos";
-import * as oasis from "@oasisprotocol/client";
-import { KeyRingOasisBaseService } from "./keyring-base";
+import { Key } from "@owallet/types";
+import { KeyRingSvmBaseService } from "./keyring-base";
 import { Env } from "@owallet/router";
+import { KeyRingCosmosService } from "../keyring-cosmos";
+import { isBtcAddress } from "@owallet/common";
 
-export class KeyRingOasisService {
+export class KeyRingSvmService {
   constructor(
     protected readonly chainsService: ChainsService,
     public readonly keyRingService: KeyRingService,
     protected readonly interactionService: InteractionService,
     protected readonly chainsUIService: ChainsUIService,
     protected readonly msgPrivilegedOrigins: string[],
-    protected readonly keyRingOasisBaseService: KeyRingOasisBaseService
+    protected readonly keyRingSvmBaseService: KeyRingSvmBaseService
   ) {}
 
   async init() {
@@ -29,39 +27,52 @@ export class KeyRingOasisService {
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    const pubKey = await this.keyRingOasisBaseService.getPubKey(
-      chainId,
-      vaultId
-    );
-    const address = await oasis.staking.addressFromPublicKey(pubKey);
-    const bech32Address = new Bech32Address(address);
+    // const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    //
+    const pubKey = await this.keyRingSvmBaseService.getPubKey(chainId, vaultId);
+    //
+    // const legacyAddress = bitcoin.payments.p2pkh({
+    //   pubkey: Buffer.from(
+    //     pubKey.toKeyPair().getPublic().encodeCompressed("hex"),
+    //     "hex"
+    //   ),
+    // }).address;
+    //
+    // const pubKeyBip84 = await this.keyRingSvmBaseService.getPubKeyBip84(
+    //   chainId,
+    //   vaultId
+    // );
+    //
+    // const address = pubKeyBip84.getCosmosAddress();
+    // const bech32Address = new Bech32Address(address);
+    //
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
+
     return {
       name: this.keyRingService.getKeyRingName(vaultId),
-      algo: "secp256k1",
-      pubKey: pubKey,
-      address,
-      bech32Address: bech32Address.toBech32(
-        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
-      ),
+      algo: "",
+      pubKey: pubKey.toBytes(),
+      address: pubKey.toBytes(),
+      base58Address: pubKey.toBase58(),
       ethereumHexAddress: "",
       isNanoLedger: keyInfo.type === "ledger",
       isKeystone: keyInfo.type === "keystone",
+      bech32Address: "",
     };
   }
-  async signOasisSelected(
+
+  async signBtcSelected(
     env: Env,
     origin: string,
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: TransactionType
+    signType: "legacy" | "bech32"
   ): Promise<{
     signingData: Uint8Array;
-    signature?: oasis.types.SignatureSigned;
+    signature?: string;
   }> {
-    return await this.signOasis(
+    return await this.signBtc(
       env,
       origin,
       this.keyRingService.selectedVaultId,
@@ -72,26 +83,26 @@ export class KeyRingOasisService {
     );
   }
 
-  async signOasis(
+  async signBtc(
     env: Env,
     origin: string,
     vaultId: string,
     chainId: string,
     signer: string,
     message: Uint8Array,
-    signType: TransactionType
+    signType: "legacy" | "bech32"
   ): Promise<{
     signingData: Uint8Array;
-    signature?: oasis.types.SignatureSigned;
+    signature?: string;
   }> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
       throw new Error("Can't sign for hidden chain");
     }
-    const isOasisChain = this.chainsService.isOasisChain(chainId);
+    const isBtcChain = this.chainsService.isBtcChain(chainId);
 
-    if (!isOasisChain) {
-      throw new Error("Invalid Oasis chain");
+    if (!isBtcChain) {
+      throw new Error("Invalid Btc chain");
     }
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
@@ -106,20 +117,25 @@ export class KeyRingOasisService {
     }
 
     try {
-      Bech32Address.validate(signer);
+      const isValid = isBtcAddress(signer);
+      if (!isValid) {
+        throw Error("Invalid Btc Address");
+      }
     } catch {
-      console.error("Fail validate Bech32Address");
+      throw Error("Invalid Btc Address");
     }
 
     const key = await this.getKey(vaultId, chainId);
-    if (signer !== key.bech32Address) {
+    if (
+      (signType === "bech32" && signer !== key.bech32Address) ||
+      (signType === "legacy" && signer !== key.btcLegacyAddress)
+    ) {
       throw new Error("Signer mismatched");
     }
-
     return await this.interactionService.waitApproveV2(
       env,
-      "/sign-oasis",
-      "request-sign-oasis",
+      "/sign-svm",
+      "request-sign-svm",
       {
         origin,
         chainId,
@@ -132,7 +148,9 @@ export class KeyRingOasisService {
       },
       async (res: {
         signingData: Uint8Array;
-        signature?: oasis.types.SignatureSigned;
+        signature?: string;
+        inputs: any;
+        outputs: any;
       }) => {
         return await (async () => {
           if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
@@ -145,22 +163,19 @@ export class KeyRingOasisService {
               signature: res.signature,
             };
           } else {
-            switch (signType) {
-              case TransactionType.StakingTransfer: {
-                const signature = await this.keyRingOasisBaseService.sign(
-                  chainId,
-                  vaultId,
-                  res.signingData
-                );
-                return {
-                  signingData: res.signingData,
-                  signature: signature,
-                };
-              }
-
-              default:
-                throw new Error(`Unknown sign type: ${signType}`);
-            }
+            console.log(res.inputs, res.outputs, "res.inputs");
+            const signature = await this.keyRingSvmBaseService.sign(
+              chainId,
+              vaultId,
+              res.signingData,
+              res.inputs,
+              res.outputs,
+              signType
+            );
+            return {
+              signingData: res.signingData,
+              signature: signature,
+            };
           }
         })();
       }

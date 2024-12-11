@@ -26,6 +26,7 @@ import * as KeyRingKeystone from "./keyring-keystone/internal";
 import * as KeyRingPrivateKey from "./keyring-private-key/internal";
 import * as KeyRingCosmos from "./keyring-cosmos/internal";
 import * as KeyRingOasis from "./keyring-oasis/internal";
+import * as KeyRingSvm from "./keyring-solana/internal";
 import * as KeyRingTron from "./keyring-tron/internal";
 import * as KeyRingBitcoin from "./keyring-bitcoin/internal";
 import * as KeyRingEthereum from "./keyring-ethereum/internal";
@@ -52,6 +53,7 @@ export * from "./keyring";
 export * from "./vault";
 export * from "./keyring-cosmos";
 export * from "./keyring-oasis";
+export * from "./keyring-solana";
 export * from "./keyring-bitcoin";
 export * from "./keyring-tron";
 export * from "./keyring-ethereum";
@@ -70,6 +72,11 @@ import {
   KeyRingOasisPrivateKeyService,
   KeyRingOasisMnemonicService,
 } from "./keyring-oasis";
+import {
+  KeyRingSvmBaseService,
+  KeyRingSvmPrivateKeyService,
+  KeyRingSvmMnemonicService,
+} from "./keyring-solana";
 import {
   KeyRingTronBaseService,
   KeyRingTronPrivateKeyService,
@@ -262,6 +269,17 @@ export function init(
       new KeyRingOasisPrivateKeyService(vaultService, keyringBasePrivateKey),
     ])
   );
+  const keyRingSvmService = new KeyRingSvm.KeyRingSvmService(
+    chainsService,
+    keyRingV2Service,
+    interactionService,
+    chainsUIService,
+    msgPrivilegedOrigins,
+    new KeyRingSvmBaseService(chainsService, vaultService, [
+      new KeyRingSvmMnemonicService(vaultService, keyringBaseMnemonic),
+      new KeyRingSvmPrivateKeyService(vaultService, keyringBasePrivateKey),
+    ])
+  );
   const keyRingTronService = new KeyRingTron.KeyRingTronService(
     chainsService,
     keyRingV2Service,
@@ -423,6 +441,7 @@ export function init(
       await keyRingV2Service.init();
       await keyRingCosmosService.init();
       await keyRingOasisService.init();
+      await keyRingSvmService.init();
       await keyRingEthereumService.init();
       await permissionService.init();
       await tokenCW20Service.init();
