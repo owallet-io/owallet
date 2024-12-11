@@ -44,9 +44,6 @@ jobs:
       - name: Checkout to repo
         uses: actions/checkout@v3
 
-      - name: Clean build folder
-        run: yarn clean
-
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
@@ -57,6 +54,10 @@ jobs:
 
       - name: Build Libs
         run: yarn build:libs
+
+      - name: Build @owallet/hooks
+        working-directory: packages/hooks
+        run: yarn build
 
       - name: Build provider
         working-directory: apps/mobile
