@@ -247,7 +247,13 @@ export const AddTokenEVMScreen: FunctionComponent<{
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <OWBox>
+        <OWBox
+          style={[
+            {
+              backgroundColor: colors["neutral-surface-card"],
+            },
+          ]}
+        >
           <TouchableOpacity
             onPress={_onPressNetworkModal}
             style={{

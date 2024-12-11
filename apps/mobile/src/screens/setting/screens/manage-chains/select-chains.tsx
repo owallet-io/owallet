@@ -314,7 +314,7 @@ const embedChainInfos: ChainInfo[] = [
   {
     rpc: "https://rpc.ankr.com/fantom",
     rest: "https://rpc.ankr.com/fantom",
-    chainId: "0xfa",
+    chainId: "eip155:250",
     chainName: "Fantom Opera",
     bip44: {
       coinType: 60,
@@ -332,7 +332,6 @@ const embedChainInfos: ChainInfo[] = [
       coinImageUrl:
         "https://assets.coingecko.com/coins/images/4001/standard/Fantom_round.png?1696504642",
     },
-    bech32Config: Bech32Address.defaultBech32Config("evmos"),
     chainSymbolImageUrl: "https://icons.llamao.fi/icons/chains/rsz_fantom.jpg",
     get currencies() {
       return [
@@ -595,6 +594,7 @@ const styling = (colors) => {
     pageContainer: {
       paddingHorizontal: 16,
       marginTop: 0,
+      backgroundColor: colors["neutral-surface-card"],
     },
     searchContainer: {
       paddingBottom: 20,
