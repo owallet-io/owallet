@@ -6129,9 +6129,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.27, @oraichain/oraidex-common@npm:^1.1.32":
-  version: 1.1.32
-  resolution: "@oraichain/oraidex-common@npm:1.1.32"
+"@oraichain/oraidex-common@npm:^1.1.39":
+  version: 1.1.39
+  resolution: "@oraichain/oraidex-common@npm:1.1.39"
   dependencies:
     "@cosmjs/amino": ^0.32.4
     "@cosmjs/cosmwasm-stargate": ^0.32.4
@@ -6149,7 +6149,7 @@ __metadata:
     cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: f8737f6b99043b4777c89769f6aa073819e68bdf6992d746f2556c2080118a3f99e5a18a5985b737b3ae5c49c82d80ab1f4eabbaa7dfb3aeadfa77135a1529f5
+  checksum: 342ce06a340f32daaa9f15174ff540f2ef528d53cc9abb4c1c2f38e5954f0853eafb005155875a248e22dcfb41e163202dd0751eeb0795115786d160272629e5
   languageName: node
   linkType: hard
 
@@ -6180,6 +6180,22 @@ __metadata:
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
   checksum: 0bff305e5494161b0418b1817ac4793e9bfddb4fb7a060a4c8feac59e883e2f450a0f913ec4383d4e5a0d147faa1d13ffe4d858aea18dbc9b51ea5b1268690b8
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-universal-swap@npm:^1.1.23":
+  version: 1.1.23
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.23"
+  dependencies:
+    "@oraichain/common": ^1.0.3
+    "@oraichain/oraidex-common": ^1.1.27
+    "@oraichain/oraidex-contracts-sdk": ^1.0.49
+    "@oraichain/osor-api-contracts-sdk": ^1.0.2
+    bech32: 1.1.4
+    ethers: ^5.0.15
+    tronweb: 5.3.2
+    ts-protoc-gen: ^0.15.0
+  checksum: ed10cb21966d0e7353b7c850730c3e3724b9be62adc90b0557d7197413081983074b7f4384826076c6dd17edac8fd2c7d57d8063aa123f25aeea226a9915c011
   languageName: node
   linkType: hard
 
@@ -25987,10 +26003,9 @@ __metadata:
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
     "@oraichain/ethereum-multicall": ^1.0.2
-    "@oraichain/oraidex-common": ^1.1.32
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.22
+    "@oraichain/oraidex-universal-swap": ^1.1.23
     "@types/jest": 29.5.3
     "@types/node": ^16.6.2
     "@typescript-eslint/eslint-plugin": ^4.13.0
