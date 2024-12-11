@@ -30,6 +30,7 @@ export const SupportedChainFeatures = [
   "not-support-staking",
   "oasis-address",
   "gen-address",
+  "svm",
 ];
 
 /**

@@ -401,6 +401,7 @@ export function init(
     permissionInteractiveService
   );
   KeyRingOasis.init(router, keyRingOasisService, permissionInteractiveService);
+  KeyRingSvm.init(router, keyRingSvmService, permissionInteractiveService);
   KeyRingTron.init(router, keyRingTronService, permissionInteractiveService);
   KeyRingBitcoin.init(
     router,

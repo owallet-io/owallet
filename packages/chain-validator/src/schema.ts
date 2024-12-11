@@ -159,10 +159,36 @@ export const EIP155ChainIdSchema = Joi.string().custom((value: string) => {
 
   return value;
 });
+export const SolanaChainIdSchema = Joi.string().custom((value: string) => {
+  if (!value.includes(":")) {
+    throw new Error("Solana chain id should have colon as defined in CAIP-2");
+  } else {
+    const splits = value.split(":");
+    if (splits.length !== 2) {
+      throw new Error(
+        "Solana chain id should have only one colon as defined in CAIP-2"
+      );
+    }
 
+    const [namespace, reference] = splits;
+    if (namespace !== "solana") {
+      throw new Error("Namespace for Solana chain id should be 'solana'");
+    }
+
+    const referenceFound = reference.match(/[a-zA-Z0-9]{32}/);
+    if (!referenceFound) {
+      throw new Error(
+        "Reference for Solana chain id should be 1~32 characters"
+      );
+    }
+  }
+
+  return value;
+});
 export const ChainIdSchema = Joi.alternatives().try(
   Joi.string().min(1).max(30),
-  EIP155ChainIdSchema
+  EIP155ChainIdSchema,
+  SolanaChainIdSchema
 );
 
 export const SuggestingBIP44Schema = Joi.object<{ coinType: number }>({
@@ -335,41 +361,46 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
     );
   }
 
-  if (!EIP155ChainIdSchema.validate(value.chainId).error) {
-    if (value.bip44.coinType !== 60) {
-      throw new Error(
-        "if chainId is EIP-155 chain id defined in CAIP-2, coin type should be 60"
-      );
-    }
+  // if (!EIP155ChainIdSchema.validate(value.chainId).error) {
+  //   if (value.bip44.coinType !== 60) {
+  //     throw new Error(
+  //       "if chainId is EIP-155 chain id defined in CAIP-2, coin type should be 60"
+  //     );
+  //   }
+  //
+  //   // if (!value.evm) {
+  //   //   throw new Error(
+  //   //     "if chainId is EIP-155 chain id defined in CAIP-2, evm should be provided"
+  //   //   );
+  //   // }
+  //
+  //   if (value.bech32Config != null) {
+  //     throw new Error(
+  //       "if chainId is EIP-155 chain id defined in CAIP-2, bech32Config should be undefined"
+  //     );
+  //   }
+  // }
 
-    // if (!value.evm) {
-    //   throw new Error(
-    //     "if chainId is EIP-155 chain id defined in CAIP-2, evm should be provided"
-    //   );
-    // }
-
-    if (value.bech32Config != null) {
-      throw new Error(
-        "if chainId is EIP-155 chain id defined in CAIP-2, bech32Config should be undefined"
-      );
-    }
-  }
-
-  if (!value.bech32Config) {
-    if (value.bip44.coinType !== 60) {
-      throw new Error("if bech32Config is undefined, coin type should be 60");
-    }
-
-    // if (!value.evm) {
-    //   throw new Error("if bech32Config is undefined, evm should be provided");
-    // }
-
-    if (EIP155ChainIdSchema.validate(value.chainId).error) {
-      throw new Error(
-        "if bech32Config is undefined, chainId should be EIP-155 chain id defined in CAIP-2"
-      );
-    }
-  }
+  // if (!value.bech32Config) {
+  //   // if (value.bip44.coinType !== 60) {
+  //   //   throw new Error("if bech32Config is undefined, coin type should be 60");
+  //   // }
+  //
+  //   // if (!value.evm) {
+  //   //   throw new Error("if bech32Config is undefined, evm should be provided");
+  //   // }
+  //
+  //   if (EIP155ChainIdSchema.validate(value.chainId).error) {
+  //     throw new Error(
+  //       "if bech32Config is undefined, chainId should be EIP-155 chain id defined in CAIP-2"
+  //     );
+  //   }
+  //   if (SolanaChainIdSchema.validate(value.chainId).error) {
+  //     throw new Error(
+  //         "if bech32Config is undefined, chainId should be Solana chain id defined in CAIP-2"
+  //     );
+  //   }
+  // }
 
   // evm only chain이 아닌 ethermint같은 경우에만 위의 밸리데이션을 수행한다.
   // if (EIP155ChainIdSchema.validate(value.chainId).error) {

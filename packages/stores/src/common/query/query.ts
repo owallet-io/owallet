@@ -498,8 +498,6 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         local: false,
         timestamp: Date.now(),
       };
-      console.log("response data", this.baseURL, data);
-
       // Should not wait.
       this.saveResponse(response);
 
@@ -769,11 +767,6 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
   }
 
   protected getCacheKey(): string {
-    console.log(
-      "makeURL(this.baseURL, this.url)",
-      makeURL(this.baseURL, this.url)
-    );
-
     return makeURL(this.baseURL, this.url);
   }
 

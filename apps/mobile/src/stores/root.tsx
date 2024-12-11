@@ -475,7 +475,8 @@ export class RootStore {
       this.accountStore,
       this.tronAccountStore,
       this.ethereumAccountStore,
-      this.bitcoinAccountStore
+      this.bitcoinAccountStore,
+      this.solanaAccountStore
     );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),

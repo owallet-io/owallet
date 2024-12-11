@@ -1657,6 +1657,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   }
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    console.log(chainIds, "get-svm-keys-settled chainIds");
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(

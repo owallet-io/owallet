@@ -33,9 +33,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     browserStore,
     allAccountStore,
-    bitcoinAccountStore,
   } = useStore();
-
   const scrollViewRef = useRef<ScrollView | null>(null);
   useEffect(() => {
     // for (const embedChainInfo of EmbedChainInfos) {
@@ -65,6 +63,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setThemeOpen(true);
     }
   }, [appInitStore.getInitApp.isSelectTheme]);
+
   const isNotReady = useIsNotReady();
   const onRefresh = async () => {
     if (isNotReady) {
