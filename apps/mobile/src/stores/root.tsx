@@ -86,6 +86,7 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
 import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
+import { SvmAccountStore, SvmQueries } from "@owallet/stores-solana";
 
 // import {WebpageStore} from './webpage';
 
@@ -129,7 +130,8 @@ export class RootStore {
       EthereumQueries,
       OasisQueries,
       TrxQueries,
-      BtcQueries
+      BtcQueries,
+      SvmQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -143,6 +145,7 @@ export class RootStore {
   public readonly tronAccountStore: TrxAccountStore;
 
   public readonly bitcoinAccountStore: BtcAccountStore;
+  public readonly solanaAccountStore: SvmAccountStore;
 
   public readonly allAccountStore: AllAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
@@ -248,7 +251,8 @@ export class RootStore {
       }),
       OasisQueries.use(),
       TrxQueries.use(),
-      BtcQueries.use()
+      BtcQueries.use(),
+      SvmQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -442,6 +446,18 @@ export class RootStore {
       getOWalletFromWindow
     );
     this.bitcoinAccountStore = new BtcAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.solanaAccountStore = new SvmAccountStore(
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);

@@ -54,6 +54,7 @@
     "@oraichain/oraidex-universal-swap": "^1.1.22",
     "@owallet/stores-btc": "*",
     "@owallet/stores-oasis": "*",
+    "@owallet/stores-solana": "*",
     "@owallet/stores-trx": "*",
     "@react-native-async-storage/async-storage": "1.24.0",
     "@react-native-community/blur": "4.3.2",

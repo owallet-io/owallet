@@ -254,6 +254,7 @@ export interface OWallet {
   readonly oasis?: IOasisProvider;
   readonly bitcoin?: IBitcoinProvider;
   readonly tron?: ITronProvider;
+  readonly solana?: ISolanaProvider;
 }
 export interface IOasisProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
@@ -265,6 +266,17 @@ export interface IOasisProvider extends EventEmitter {
     data: string | Uint8Array,
     type: TransactionType
   ): Promise<types.SignatureSigned>;
+}
+export interface ISolanaProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  // sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string>;
+  // sign(
+  //     chainId: string,
+  //     signer: string,
+  //     data: string | Uint8Array,
+  //     type: TransactionType
+  // ): Promise<types.SignatureSigned>;
 }
 export interface IBitcoinProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;

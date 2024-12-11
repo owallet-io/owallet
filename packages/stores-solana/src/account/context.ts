@@ -19,7 +19,7 @@ export class AccountSvmSharedContext {
     const chainIdSet = new Set<string>(requests.map((req) => req.args[0]));
     const chainIds = Array.from(chainIdSet);
 
-    const settled = await owallet.oasis.getKeysSettled(chainIds);
+    const settled = await owallet.solana.getKeysSettled(chainIds);
 
     const settledMap = new Map<string, SettledResponse<Key>>();
     for (let i = 0; i < chainIds.length; i++) {

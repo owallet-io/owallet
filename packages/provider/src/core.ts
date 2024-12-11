@@ -25,6 +25,7 @@ import {
   ITronProvider,
   TransactionType,
   TransactionBtcType,
+  ISolanaProvider,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -558,6 +559,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       }, 100);
     });
   }
+
   async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
     await this.enable(chainId);
 
@@ -572,6 +574,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       }
     );
   }
+
   async signEthereum(
     chainId: string,
     signer: string,
@@ -998,6 +1001,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       {}
     );
   }
+
   async protectedTryOpenSidePanelIfEnabled(
     ignoreGestureFailure: boolean = false
   ): Promise<void> {
@@ -1274,7 +1278,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   public readonly oasis = new OasisProvider(this, this.requester);
   public readonly tron = new TronProvider(this, this.requester);
   public readonly bitcoin = new BitcoinProvider(this, this.requester);
+  public readonly solana = new SolanaProvider(this, this.requester);
 }
+
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
   chainId: string | null = null;
   selectedAddress: string | null = null;
@@ -1414,6 +1420,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }, 100);
     });
   }
+
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1455,6 +1462,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }
     );
   }
+
   async sign(
     chainId: string,
     signer: string,
@@ -1486,6 +1494,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }, 100);
     });
   }
+
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1510,6 +1519,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
 }
+
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   constructor(
     protected readonly owallet: OWallet,
@@ -1565,6 +1575,7 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       }, 100);
     });
   }
+
   async sendTx(chainId: string, signedTx: string): Promise<string> {
     await this.owallet.enable(chainId);
 
@@ -1579,6 +1590,7 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       }
     );
   }
+
   async sign(
     chainId: string,
     signer: string,
@@ -1611,6 +1623,64 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
     });
   }
 }
+
+class SolanaProvider extends EventEmitter implements ISolanaProvider {
+  constructor(
+    protected readonly owallet: OWallet,
+    protected readonly requester: MessageRequester
+  ) {
+    super();
+  }
+
+  async getKey(chainId: string): Promise<Key> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "get-svm-key",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "get-svm-keys-settled",
+        {
+          chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+}
+
 class TronProvider extends EventEmitter implements ITronProvider {
   constructor(
     protected readonly owallet: OWallet,

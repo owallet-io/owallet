@@ -153,7 +153,7 @@ export class SvmAccountBase {
     to: string;
   }): UnsignedSvmTransaction {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const isSvm = chainInfo.features.includes("oasis");
+    const isSvm = chainInfo.features.includes("svm");
     if (!isSvm) {
       throw new Error("No Svm chain info provided");
     }
