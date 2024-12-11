@@ -6157,9 +6157,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:^1.1.39":
-  version: 1.1.40
-  resolution: "@oraichain/oraidex-common@npm:1.1.40"
+"@oraichain/oraidex-common@npm:1.1.32":
+  version: 1.1.32
+  resolution: "@oraichain/oraidex-common@npm:1.1.32"
   dependencies:
     "@cosmjs/amino": ^0.32.4
     "@cosmjs/cosmwasm-stargate": ^0.32.4
@@ -6177,7 +6177,7 @@ __metadata:
     cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: 8cae34ee013fe036655c939a10642538112687c495fa231da83e07f3fd38bf676ce79f0b915217df8e6aca8221c7be3325f77741030c08a594f3b0edc72f38b7
+  checksum: f8737f6b99043b4777c89769f6aa073819e68bdf6992d746f2556c2080118a3f99e5a18a5985b737b3ae5c49c82d80ab1f4eabbaa7dfb3aeadfa77135a1529f5
   languageName: node
   linkType: hard
 
