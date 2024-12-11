@@ -594,6 +594,7 @@ const styling = (colors) => {
     pageContainer: {
       paddingHorizontal: 16,
       marginTop: 0,
+      backgroundColor: colors["neutral-surface-card"],
     },
     searchContainer: {
       paddingBottom: 20,
