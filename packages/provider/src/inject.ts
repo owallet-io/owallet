@@ -522,6 +522,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
   public defaultOptions: OWalletIntereactionOptions = {};
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
