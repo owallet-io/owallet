@@ -355,7 +355,7 @@ export const MenuBar: FunctionComponent<{
 
               await keyRingStore.lock();
 
-              dispatchGlobalEventExceptSelf("keplr_keyring_locked");
+              dispatchGlobalEventExceptSelf("owallet_keyring_locked");
             }}
           >
             <FormattedMessage id="page.main.components.menu-bar.lock-wallet-title" />

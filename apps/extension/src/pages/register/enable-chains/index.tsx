@@ -1115,7 +1115,7 @@ export const EnableChainsScene: FunctionComponent<{
               ]);
 
               dispatchGlobalEventExceptSelf(
-                "keplr_enabled_chain_changed",
+                "owallet_enabled_chain_changed",
                 vaultId
               );
 
@@ -1147,7 +1147,7 @@ export const EnableChainsScene: FunctionComponent<{
                           ...ledgerStarknetAppNeeds
                         );
                         dispatchGlobalEventExceptSelf(
-                          "keplr_enabled_chain_changed",
+                          "owallet_enabled_chain_changed",
                           keyInfo.id
                         );
                         replaceToWelcomePage();
@@ -1187,7 +1187,7 @@ export const EnableChainsScene: FunctionComponent<{
                           ...ledgerEthereumAppNeeds
                         );
                         dispatchGlobalEventExceptSelf(
-                          "keplr_enabled_chain_changed",
+                          "owallet_enabled_chain_changed",
                           keyInfo.id
                         );
                         sceneTransition.push("enable-chains", {

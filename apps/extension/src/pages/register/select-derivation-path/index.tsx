@@ -129,7 +129,7 @@ export const SelectDerivationPathScene: FunctionComponent<{
             }
             await chainStore.enableChainInfoInUIWithVaultId(vaultId, chainId);
 
-            dispatchGlobalEventExceptSelf("keplr_derivation_path_changed", {
+            dispatchGlobalEventExceptSelf("owallet_derivation_path_changed", {
               chainId,
               keyId: vaultId,
             });
@@ -251,10 +251,13 @@ export const SelectDerivationPathScene: FunctionComponent<{
                   chainId
                 );
 
-                dispatchGlobalEventExceptSelf("keplr_derivation_path_changed", {
-                  chainId,
-                  keyId: vaultId,
-                });
+                dispatchGlobalEventExceptSelf(
+                  "owallet_derivation_path_changed",
+                  {
+                    chainId,
+                    keyId: vaultId,
+                  }
+                );
 
                 goToNext.current();
               }

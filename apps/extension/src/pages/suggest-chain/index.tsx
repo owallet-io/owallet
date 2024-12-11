@@ -169,7 +169,7 @@ const SuggestChainPageImpl: FunctionComponent<{
                 await chainStore.updateChainInfosFromBackground();
                 await chainStore.updateEnabledChainIdentifiersFromBackground();
 
-                dispatchGlobalEventExceptSelf("keplr_suggested_chain_added");
+                dispatchGlobalEventExceptSelf("owallet_suggested_chain_added");
 
                 if (!proceedNext) {
                   if (

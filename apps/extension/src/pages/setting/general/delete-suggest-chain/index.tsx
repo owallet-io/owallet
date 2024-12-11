@@ -54,7 +54,7 @@ export const SettingGeneralDeleteSuggestChainPage: FunctionComponent = observer(
                       );
 
                       dispatchGlobalEventExceptSelf(
-                        "keplr_suggested_chain_removed"
+                        "owallet_suggested_chain_removed"
                       );
                     }}
                   />

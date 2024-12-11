@@ -987,7 +987,7 @@ const KeyringItem = observer<
             await keyRingStore.selectKeyRing(keyInfo.id);
             await chainStore.waitSyncedEnabledChains();
 
-            dispatchGlobalEventExceptSelf("keplr_keyring_changed");
+            dispatchGlobalEventExceptSelf("owallet_keyring_changed");
 
             navigate(-1);
           }}

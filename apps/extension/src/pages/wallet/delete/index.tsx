@@ -109,7 +109,7 @@ export const WalletDeletePage: FunctionComponent = observer(() => {
           if (vaultId) {
             await keyRingStore.deleteKeyRing(vaultId, data.password);
 
-            dispatchGlobalEventExceptSelf("keplr_keyring_changed");
+            dispatchGlobalEventExceptSelf("owallet_keyring_changed");
 
             navigate(-1);
           }
