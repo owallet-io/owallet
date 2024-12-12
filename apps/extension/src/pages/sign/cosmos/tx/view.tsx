@@ -533,7 +533,7 @@ export const CosmosTxView: FunctionComponent<{
             <XAxis>
               <H5
                 style={{
-                  color: ColorPalette["blue-400"],
+                  color: ColorPalette["purple-400"],
                   marginRight: "0.25rem",
                 }}
               >

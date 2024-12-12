@@ -177,8 +177,8 @@ export const TransactionFeeModal: FunctionComponent<{
                         borderRadius: "99999px",
                         backgroundColor:
                           theme.mode === "light"
-                            ? ColorPalette["blue-400"]
-                            : ColorPalette["blue-400"],
+                            ? ColorPalette["purple-400"]
+                            : ColorPalette["purple-400"],
                         marginRight: "0.3rem",
                       }}
                     />
@@ -463,9 +463,9 @@ const FeeSelectorStyle = {
 
     background-color: ${({ selected, theme }) =>
       selected
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : theme.mode === "light"
-        ? ColorPalette["blue-50"]
+        ? ColorPalette["purple-50"]
         : ColorPalette["gray-500"]};
   `,
   Title: styled(H5)<{ selected: boolean }>`
@@ -475,7 +475,7 @@ const FeeSelectorStyle = {
           ? ColorPalette["gray-50"]
           : ColorPalette["gray-50"]
         : theme.mode === "light"
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : ColorPalette["gray-50"]};
   `,
   Price: styled(Caption2)<{ selected: boolean }>`
@@ -483,16 +483,16 @@ const FeeSelectorStyle = {
     margin-top: 0.25rem;
     color: ${({ selected, theme }) =>
       selected
-        ? ColorPalette["blue-200"]
+        ? ColorPalette["purple-200"]
         : theme.mode === "light"
-        ? ColorPalette["blue-500"]
+        ? ColorPalette["purple-500"]
         : ColorPalette["gray-300"]};
   `,
   Amount: styled(Caption1)<{ selected: boolean }>`
     white-space: nowrap;
     margin-top: 0.25rem;
     color: ${({ selected }) =>
-      selected ? ColorPalette["blue-100"] : ColorPalette["gray-200"]};
+      selected ? ColorPalette["purple-100"] : ColorPalette["gray-200"]};
   `,
 };
 

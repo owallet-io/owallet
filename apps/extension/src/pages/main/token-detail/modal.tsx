@@ -360,7 +360,7 @@ export const TokenDetailModal: FunctionComponent<{
                 color={
                   isIBCCurrency
                     ? theme.mode === "light"
-                      ? ColorPalette["blue-400"]
+                      ? ColorPalette["purple-400"]
                       : ColorPalette["white"]
                     : theme.mode === "light"
                     ? ColorPalette["gray-500"]

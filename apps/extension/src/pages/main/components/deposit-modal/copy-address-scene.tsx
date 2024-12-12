@@ -466,10 +466,10 @@ const CopyAddressItem: FunctionComponent<{
                     if (isBookmarked) {
                       if (!blockInteraction && isBookmarkHover) {
                         return theme.mode === "light"
-                          ? ColorPalette["blue-300"]
-                          : ColorPalette["blue-500"];
+                          ? ColorPalette["purple-300"]
+                          : ColorPalette["purple-500"];
                       }
-                      return ColorPalette["blue-400"];
+                      return ColorPalette["purple-400"];
                     }
 
                     if (!blockInteraction && isBookmarkHover) {

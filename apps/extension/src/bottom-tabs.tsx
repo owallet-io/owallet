@@ -107,7 +107,7 @@ export const BottomTabsRouteProvider: FunctionComponent<
                       color: (() => {
                         if (theme.mode === "light") {
                           return isActive
-                            ? ColorPalette["blue-400"]
+                            ? ColorPalette["purple-400"]
                             : ColorPalette["gray-100"];
                         }
 
@@ -140,7 +140,7 @@ export const BottomTabsRouteProvider: FunctionComponent<
                           color={(() => {
                             if (theme.mode === "light") {
                               return isActive
-                                ? ColorPalette["blue-400"]
+                                ? ColorPalette["purple-400"]
                                 : ColorPalette["gray-200"];
                             }
 

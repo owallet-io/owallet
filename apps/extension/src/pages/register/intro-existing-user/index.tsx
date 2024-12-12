@@ -51,9 +51,6 @@ export const RegisterIntroExistingUserScene: FunctionComponent = () => {
               <FormattedMessage id="pages.register.intro-existing-user.recovery-title" />
             </RegisterH4>
             <Gutter size="0.5rem" />
-            <Subtitle3 color={ColorPalette["gray-200"]}>
-              <FormattedMessage id="pages.register.intro-existing-user.recovery-paragraph" />
-            </Subtitle3>
 
             <Gutter size="1.5rem" />
             <Button
@@ -78,20 +75,9 @@ export const RegisterIntroExistingUserScene: FunctionComponent = () => {
         />
         <Column weight={1}>
           <Box height="100%">
-            <RegisterH4
-              color={
-                theme.mode === "light"
-                  ? ColorPalette["gray-400"]
-                  : ColorPalette["gray-50"]
-              }
-            >
-              <FormattedMessage id="pages.register.intro-existing-user.social-recovery-title" />
-            </RegisterH4>
-
-            <Gutter size="0.5rem" />
             <div style={{ flex: 1 }}>
               <Subtitle3 color={ColorPalette["gray-200"]}>
-                <FormattedMessage id="pages.register.intro-existing-user.social-recovery-paragraph" />
+                <FormattedMessage id="pages.register.intro-existing-user.recovery-paragraph" />
               </Subtitle3>
             </div>
           </Box>

@@ -47,7 +47,7 @@ export const PinView: FunctionComponent = () => {
     >
       <Columns sum={1} alignY="top" gutter="1rem">
         <Box
-          backgroundColor={ColorPalette["blue-400"]}
+          backgroundColor={ColorPalette["purple-400"]}
           borderRadius="50%"
           padding="0.375rem"
         >

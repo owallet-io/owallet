@@ -103,7 +103,7 @@ export const Styles = {
     align-items: center;
 
     position: absolute;
-    color: ${ColorPalette["blue-200"]};
+    color: ${ColorPalette["purple-200"]};
   `,
   TextOverrideIcon: styled.div`
     display: flex;

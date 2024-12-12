@@ -230,13 +230,13 @@ const SVGNoneTextButton = styled(TextButton)`
   ${TextButtonStyles.Button} {
     color: ${({ theme }) =>
       theme.mode === "light"
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : ColorPalette["gray-50"]};
 
     :hover {
       color: ${({ theme }) =>
         theme.mode === "light"
-          ? ColorPalette["blue-500"]
+          ? ColorPalette["purple-500"]
           : ColorPalette["gray-200"]};
     }
   }

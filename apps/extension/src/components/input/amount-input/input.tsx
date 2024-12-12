@@ -351,15 +351,15 @@ const MaxButton: FunctionComponent<{
       color={
         isMax
           ? theme.mode === "light"
-            ? ColorPalette["blue-400"]
+            ? ColorPalette["purple-400"]
             : ColorPalette["gray-300"]
           : theme.mode === "light"
-          ? ColorPalette["blue-400"]
+          ? ColorPalette["purple-400"]
           : ColorPalette["gray-10"]
       }
       backgroundColor={
         theme.mode === "light"
-          ? ColorPalette["blue-50"]
+          ? ColorPalette["purple-50"]
           : ColorPalette["gray-500"]
       }
       borderRadius="0.25rem"
@@ -367,33 +367,33 @@ const MaxButton: FunctionComponent<{
       borderColor={
         isMax
           ? theme.mode === "light"
-            ? ColorPalette["blue-200"]
+            ? ColorPalette["purple-200"]
             : ColorPalette["gray-300"]
           : theme.mode === "light"
-          ? ColorPalette["blue-50"]
+          ? ColorPalette["purple-50"]
           : ColorPalette["gray-500"]
       }
       hover={{
         color: isMax
           ? theme.mode === "light"
-            ? ColorPalette["blue-500"]
+            ? ColorPalette["purple-500"]
             : ColorPalette["gray-300"]
           : theme.mode === "light"
-          ? ColorPalette["blue-400"]
+          ? ColorPalette["purple-400"]
           : ColorPalette["white"],
         backgroundColor: isMax
           ? theme.mode === "light"
-            ? ColorPalette["blue-100"]
+            ? ColorPalette["purple-100"]
             : ColorPalette["gray-500"]
           : theme.mode === "light"
-          ? ColorPalette["blue-100"]
+          ? ColorPalette["purple-100"]
           : ColorPalette["gray-550"],
         borderColor: isMax
           ? theme.mode === "light"
-            ? ColorPalette["blue-300"]
+            ? ColorPalette["purple-300"]
             : ColorPalette["gray-400"]
           : theme.mode === "light"
-          ? ColorPalette["blue-100"]
+          ? ColorPalette["purple-100"]
           : ColorPalette["gray-550"],
       }}
       onClick={(e) => {

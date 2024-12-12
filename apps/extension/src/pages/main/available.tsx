@@ -36,13 +36,13 @@ const NewTokenFoundButton = styled(TextButton)`
   ${Styles.Button} {
     color: ${(props) =>
       props.theme.mode === "light"
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : ColorPalette["gray-50"]};
 
     :hover {
       color: ${(props) =>
         props.theme.mode === "light"
-          ? ColorPalette["blue-500"]
+          ? ColorPalette["purple-500"]
           : ColorPalette["gray-200"]};
     }
   }

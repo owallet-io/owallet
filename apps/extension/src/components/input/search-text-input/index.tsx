@@ -24,7 +24,7 @@ export const SearchTextInput = forwardRef<
               if (props.value && typeof props.value === "string") {
                 return props.value.trim().length > 0
                   ? theme.mode === "light"
-                    ? ColorPalette["blue-400"]
+                    ? ColorPalette["purple-400"]
                     : ColorPalette["gray-200"]
                   : undefined;
               }

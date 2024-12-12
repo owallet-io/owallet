@@ -22,7 +22,7 @@ export const Tag: FunctionComponent<{
         alignY="center"
         backgroundColor={
           theme.mode === "light"
-            ? ColorPalette["blue-50"]
+            ? ColorPalette["purple-50"]
             : ColorPalette["gray-400"]
         }
         borderRadius="0.25rem"
@@ -32,7 +32,7 @@ export const Tag: FunctionComponent<{
         <Caption1
           color={
             theme.mode === "light"
-              ? ColorPalette["blue-400"]
+              ? ColorPalette["purple-400"]
               : ColorPalette["gray-100"]
           }
           style={{

@@ -22,11 +22,11 @@ const Styles = {
 
     color: ${(props) =>
       props.theme.mode === "light"
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : ColorPalette["gray-100"]};
     background-color: ${(props) =>
       props.theme.mode === "light"
-        ? ColorPalette["blue-50"]
+        ? ColorPalette["purple-50"]
         : ColorPalette["gray-500"]};
 
     padding: 0.375rem 0.75rem;

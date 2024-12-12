@@ -19,7 +19,7 @@ export const Styles = {
           ? ColorPalette["gray-100"]
           : ColorPalette["gray-500"]
         : isOpen
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : theme.mode === "light"
         ? ColorPalette["gray-100"]
         : ColorPalette["gray-400"]};
@@ -53,7 +53,7 @@ export const Styles = {
           ? theme.mode === "light"
             ? ColorPalette.white
             : ColorPalette["gray-200"]
-          : ColorPalette["blue-400"]};
+          : ColorPalette["purple-400"]};
     }
   `,
 };

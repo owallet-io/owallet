@@ -434,7 +434,7 @@ const PanelModeItemStylesTextContainer = styled(Box)<{
   color: ${(props) => {
     if (props.theme.mode === "light") {
       return props.isSelected
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : ColorPalette["gray-300"];
     }
 
@@ -464,12 +464,12 @@ const PanelModeItemStylesContainer = styled(Box)<{
   box-shadow: ${(props) => {
     if (props.theme.mode === "light") {
       return props.isSelected
-        ? `0 0 0 1px ${ColorPalette["blue-300"]} inset`
+        ? `0 0 0 1px ${ColorPalette["purple-300"]} inset`
         : `0 0 0 1px ${ColorPalette["gray-50"]} inset`;
     }
 
     return props.isSelected
-      ? `0 0 0 1px ${ColorPalette["blue-300"]} inset`
+      ? `0 0 0 1px ${ColorPalette["purple-300"]} inset`
       : "0 0 0 1px rgba(66, 66, 71, 0.20) inset";
   }};
 
@@ -479,7 +479,7 @@ const PanelModeItemStylesContainer = styled(Box)<{
         return;
       }
 
-      return Color(ColorPalette["blue-300"]).alpha(0.05).toString();
+      return Color(ColorPalette["purple-300"]).alpha(0.05).toString();
     }};
 
     box-shadow: ${(props) => {
@@ -487,7 +487,7 @@ const PanelModeItemStylesContainer = styled(Box)<{
         return;
       }
 
-      return `0 0 0 1px ${Color(ColorPalette["blue-300"])
+      return `0 0 0 1px ${Color(ColorPalette["purple-300"])
         .alpha(0.5)
         .toString()} inset`;
     }};
@@ -499,7 +499,7 @@ const PanelModeItemStylesContainer = styled(Box)<{
     ${PanelModeItemStylesTextContainer} {
       color: ${(props) => {
         if (props.theme.mode === "light") {
-          return ColorPalette["blue-400"];
+          return ColorPalette["purple-400"];
         }
 
         return ColorPalette["gray-50"];
@@ -607,7 +607,7 @@ const AnimatedTooltip: FunctionComponent = () => {
     >
       <Box
         position="relative"
-        backgroundColor={ColorPalette["blue-300"]}
+        backgroundColor={ColorPalette["purple-300"]}
         borderRadius="0.5rem"
       >
         <Box paddingX="0.75rem" paddingY="0.5rem">
@@ -636,7 +636,7 @@ const AnimatedTooltip: FunctionComponent = () => {
             viewBox="0 0 13 7"
           >
             <path
-              fill={ColorPalette["blue-300"]}
+              fill={ColorPalette["purple-300"]}
               d="M4.9 5.867a2 2 0 003.2 0L12.5 0H.5l4.4 5.867z"
             />
           </svg>

@@ -37,7 +37,7 @@ export const Styles = {
           ? ColorPalette["gray-100"]
           : ColorPalette["gray-400"]
         : checked
-        ? ColorPalette["blue-400"]
+        ? ColorPalette["purple-400"]
         : theme.mode === "light"
         ? ColorPalette["gray-100"]
         : ColorPalette["gray-400"]};

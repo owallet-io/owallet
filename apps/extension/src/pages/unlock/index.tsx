@@ -20,6 +20,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import { Buffer } from "buffer/";
 import { handleExternalInteractionWithNoProceedNext } from "../../utils";
+import images from "assets/images";
 
 export const UnlockPage: FunctionComponent = observer(() => {
   const { keyRingStore, interactionStore } = useStore();
@@ -28,13 +29,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
 
   const [isStartWithMigrating] = useState(() => keyRingStore.isMigrating);
   useEffect(() => {
-    // 계정이 많으면 migration이 오래 걸릴 수 있다.
-    // 이걸 못 참고 유저가 UI를 끄고 다시 킬수도 있기 때문에
-    // migration이 진행 중이라는 것에 대해서 우선적으로 UI를 처리해준다.
-    // 근데 이건 view에서만 처리해주고...
-    // background와의 통신이 단방향이기 때문에 migration이 끝났을 때 무슨 행동을 취하기가 어렵다.
-    // 어쨋든 이런 상황은 거의 발생하지 않기 때문에
-    // mobx를 통해서 추적하고 migration이 끝나면 그냥 window를 close한다.
     if (isStartWithMigrating) {
       autorun(() => {
         if (!keyRingStore.isMigrating) {
@@ -50,8 +44,7 @@ export const UnlockPage: FunctionComponent = observer(() => {
   const [error, setError] = useState<Error | undefined>();
 
   const [isMigrationSecondPhase, setIsMigrationSecondPhase] = useState(false);
-  // 유저가 enter를 누르고 처리하는 딜레이 동안 키보드를 또 누를수도 있다...
-  // 그 경우를 위해서 따로 state를 관리한다.
+
   const [migrationSecondPhasePassword, setMigrationSecondPhasePassword] =
     useState("");
 
@@ -79,12 +72,10 @@ export const UnlockPage: FunctionComponent = observer(() => {
 
   const animLoading = isLoading || keyRingStore.isMigrating;
   useEffect(() => {
-    // 현실적으로는 이 애니메이션은 마이그레이션 과정 중에서만 보이고 그게 의도이다.
     if (animRef.current) {
       if (animLoading) {
         animRef.current.goToAndPlay(0);
       } else {
-        // page가 넘어가기 직전에 애니메이션이 멈추지 않도록 약간의 delay를 준다.
         setTimeout(() => {
           animRef.current?.goToAndStop(0);
         }, 50);
@@ -92,8 +83,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
     }
   }, [animLoading]);
 
-  // post message를 쓸때 browser.extension.getViews()를 쓰는데 자기 자신을 제외하는 옵션은 없는 것 같음.
-  // 그냥 대충 각 view가 고유의 id를 가상으로 가지게 해서 처리한다.
   const [viewPostMessageId] = useState(() => {
     const bytes = new Uint8Array(10);
     crypto.getRandomValues(bytes);
@@ -151,7 +140,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
       console.log(e);
       setError(e);
 
-      // 사실 migration이 오류로 실패하면 이미 답이 없는 상황임...
       setIsMigrationSecondPhase(false);
       setMigrationSecondPhasePassword("");
     } finally {
@@ -159,8 +147,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
     }
   };
 
-  // view가 여러개일때 (예를들어 extension popup의 unlock 창과 외부 요청에 의해 unlock window가 열린 상태일때
-  // 한 곳에서 unlock이 완료되면 다른 view에서도 적절하게 처리해준다.
   useEffect(() => {
     const handler = async (e: MessageEvent) => {
       if (e.data?.type === "__keplr_unlocked_from_view") {
@@ -212,8 +198,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
           e.preventDefault();
 
           if (isMigrationSecondPhase) {
-            // Migration은 enter를 눌러서 진행할 수 없고 명시적으로 버튼을 눌러야한다.
-            // 근데 사실 migration 버튼은 type이 button이라 onSubmit이 발생할일은 없음.
             return;
           }
 
@@ -240,13 +224,15 @@ export const UnlockPage: FunctionComponent = observer(() => {
         <Box alignX="center">
           <Gutter size="6rem" />
 
-          <div
+          {/* <div
             ref={animContainerRef}
             style={{
               width: "12rem",
               height: "9.5rem",
             }}
-          />
+          /> */}
+
+          <img height={200} src={images.img_owallet} alt="img_owallet" />
         </Box>
 
         <ParagraphSection
@@ -268,8 +254,6 @@ export const UnlockPage: FunctionComponent = observer(() => {
 
         {(() => {
           if (isMigrationSecondPhase || keyRingStore.isMigrating) {
-            // keyRingStore.isMigrating은 migration을 누르고 UI을 껏다 켰을때 여전히 진행 중일 가능성이 있다.
-            // 그러므로 keyRingStore.isMigrating 처리에 우선권이 있어야한다는 점을 주의해야한다.
             return (
               <Box position="relative">
                 <Button
@@ -348,7 +332,7 @@ export const UnlockPage: FunctionComponent = observer(() => {
         })()}
 
         <Gutter size="3.125rem" />
-
+        {/* 
         {!isMigrationSecondPhase && !keyRingStore.isMigrating ? (
           <TextButton
             text={intl.formatMessage({
@@ -364,7 +348,7 @@ export const UnlockPage: FunctionComponent = observer(() => {
             }}
             style={{ width: "100%", color: ColorPalette["gray-300"] }}
           />
-        ) : null}
+        ) : null} */}
       </form>
     </Box>
   );
@@ -407,7 +391,6 @@ const ParagraphSection: FunctionComponent<{
               <FormattedMessage id="page.unlock.paragraph-section.enter-password-to-upgrade" />
             </Subtitle4>
 
-            {/* 대충 위치를 맞추기 위해서 밑에 대충 뭐를 채운다 */}
             <Gutter size="1.25rem" />
           </React.Fragment>
         ) : (
@@ -432,7 +415,6 @@ const BottomFormSection: FunctionComponent<{
   error: Error | undefined;
   setError: (error: Error | undefined) => void;
 
-  // Migration second phase면 text input을 감추고 guide box를 띄워준다.
   isMigrationSecondPhase: boolean;
 }> = ({ password, setPassword, error, setError, isMigrationSecondPhase }) => {
   const intl = useIntl();
@@ -517,10 +499,6 @@ const BottomFormSection: FunctionComponent<{
             }
           />
 
-          {/*
-            Second phase에서는 layout을 바꾸지 않으면서 guide box를 띄워야한다...
-            그래서 상위에 relative를 주고 text input은 유저에게만 안보이게 만든다음 absolute로 그린다.
-           */}
           {isMigrationSecondPhase ? (
             <Box
               position="absolute"

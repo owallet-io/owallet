@@ -817,10 +817,6 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
             <Column weight={1} />
 
             <Skeleton type="button" layer={1} isNotReady={isNotReady}>
-              {/*
-                 ledger일 경우 특수한 행동을 하진 못하고 그냥 collapse를 펼치기만 한다.
-                 특수한 기능이 없다는 것을 암시하기 위해서 ledger일때는 일반 버튼으로 처리한다.
-               */}
               {isLedger ? (
                 <Button
                   text={intl.formatMessage({

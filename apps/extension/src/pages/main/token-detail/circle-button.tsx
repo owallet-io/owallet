@@ -47,19 +47,19 @@ export const CircleButton: FunctionComponent<{
           backgroundColor={
             !isHover
               ? theme.mode === "light"
-                ? ColorPalette["blue-100"]
+                ? ColorPalette["purple-100"]
                 : ColorPalette["gray-400"]
               : theme.mode === "light"
-              ? ColorPalette["blue-100"]
+              ? ColorPalette["purple-100"]
               : ColorPalette["gray-400"]
           }
           style={{
             color: !isHover
               ? theme.mode === "light"
-                ? ColorPalette["blue-400"]
+                ? ColorPalette["purple-400"]
                 : ColorPalette["white"]
               : theme.mode === "light"
-              ? ColorPalette["blue-400"]
+              ? ColorPalette["purple-400"]
               : ColorPalette["gray-200"],
           }}
           after={

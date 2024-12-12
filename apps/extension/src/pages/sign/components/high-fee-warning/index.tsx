@@ -22,14 +22,14 @@ export const HighFeeWarning: FunctionComponent<{
         boxShadow: !checked
           ? `0 0 0 ${theme.mode === "light" ? "1px" : "2px"} inset ${
               theme.mode === "light"
-                ? ColorPalette["blue-400"]
-                : ColorPalette["blue-400"]
+                ? ColorPalette["purple-400"]
+                : ColorPalette["purple-400"]
             }`
           : undefined,
       }}
       backgroundColor={
         theme.mode === "light"
-          ? ColorPalette["blue-50"]
+          ? ColorPalette["purple-50"]
           : ColorPalette["gray-600"]
       }
     >
@@ -37,7 +37,7 @@ export const HighFeeWarning: FunctionComponent<{
         <Caption1
           color={
             theme.mode === "light"
-              ? ColorPalette["blue-400"]
+              ? ColorPalette["purple-400"]
               : ColorPalette["gray-100"]
           }
         >

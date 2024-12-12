@@ -30,11 +30,11 @@ const onClickSpringConfig = {
 };
 
 const gradient1Pos = "16.15%";
-const gradient1DefaultColor = ColorPalette["blue-400"];
+const gradient1DefaultColor = ColorPalette["purple-400"];
 const gradient1HoverColor = "#2C4BE2";
 
 const gradient2Pos = "100%";
-const gradient2DefaultColor = ColorPalette["blue-400"];
+const gradient2DefaultColor = ColorPalette["purple-400"];
 const gradient2HoverColor = "#7A59FF";
 
 const defaultBoxShadowColor = "#2723F700";

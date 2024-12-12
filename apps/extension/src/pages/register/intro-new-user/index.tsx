@@ -62,35 +62,26 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
 
             <Gutter size="1.5rem" />
 
-            <Stack gutter="0.625rem">
-              <Button
-                text={intl.formatMessage({
-                  id: "pages.register.intro-new-user.new-recovery-path-button",
-                })}
-                left={
-                  <KeyIcon
-                    width="1rem"
-                    height="1rem"
-                    color={ColorPalette["gray-10"]}
-                  />
-                }
-                size="large"
-                onClick={() => {
-                  sceneTransition.push("new-mnemonic");
-                }}
-              />
-              <TextButton
-                text={intl.formatMessage({
-                  id: "pages.register.intro-new-user.import-recovery-path-button",
-                })}
-                size="large"
-                onClick={() => {
-                  sceneTransition.replace("existing-user");
-                }}
-              />
-            </Stack>
-
-            <Box style={{ flex: 1 }} />
+            <Box style={{ flex: 1 }}>
+              <Stack gutter="0.625rem">
+                <Button
+                  text={intl.formatMessage({
+                    id: "pages.register.intro-new-user.new-recovery-path-button",
+                  })}
+                  left={
+                    <KeyIcon
+                      width="1rem"
+                      height="1rem"
+                      color={ColorPalette["gray-10"]}
+                    />
+                  }
+                  size="large"
+                  onClick={() => {
+                    sceneTransition.push("new-mnemonic");
+                  }}
+                />
+              </Stack>
+            </Box>
 
             <Columns sum={1} gutter="0.25rem" alignY="center">
               <XAxis>
@@ -114,6 +105,53 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
           }
         />
         <Column weight={1}>
+          <Box height="100%">
+            <RegisterH4
+              color={
+                theme.mode === "light"
+                  ? ColorPalette["gray-400"]
+                  : ColorPalette["gray-50"]
+              }
+            >
+              <FormattedMessage id="pages.register.intro-new-user.import-recovery-path-button" />
+            </RegisterH4>
+            <Gutter size="0.5rem" />
+            <Subtitle3 color={ColorPalette["gray-200"]}>
+              <FormattedMessage id="pages.register.intro-new-user.sign-up-social-paragraph" />
+              <br />
+              <br />
+            </Subtitle3>
+            <Gutter size="1.5rem" />
+
+            <Box style={{ flex: 1 }}>
+              <Stack gutter="0.625rem">
+                <Button
+                  color="secondary"
+                  text={intl.formatMessage({
+                    id: "pages.register.intro-new-user.import-recovery-path-button",
+                  })}
+                  size="large"
+                  onClick={() => {
+                    sceneTransition.replace("existing-user");
+                  }}
+                />
+              </Stack>
+            </Box>
+
+            <Columns sum={1} gutter="0.25rem" alignY="center">
+              <XAxis>
+                <BoltIcon />
+                <BoltIcon />
+                <BoltIcon />
+              </XAxis>
+
+              <Caption1 color={ColorPalette["gray-200"]}>
+                <FormattedMessage id="pages.register.intro-new-user.more-convenience-text" />
+              </Caption1>
+            </Columns>
+          </Box>
+        </Column>
+        {/* <Column weight={1}>
           <Box height="100%">
             <RegisterH4
               color={
@@ -146,7 +184,7 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
               </Caption1>
             </Columns>
           </Box>
-        </Column>
+        </Column> */}
       </Columns>
     </RegisterSceneBox>
   );

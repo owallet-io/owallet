@@ -275,7 +275,6 @@ export const HeaderLayout: FunctionComponent<
           <Skeleton
             isNotReady={isNotReady}
             dummyMinWidth="6.25rem"
-            /* 보통 문자열을 사용하는데 알파벳 j 같은 경우는 요소의 크기보다 밑이나 왼쪽으로 약간 삐져나온다. 이 부분도 안보이게 하기 위해서 약간 더 크게 스켈레톤을 그린다 */
             horizontalBleed="0.15rem"
             verticalBleed="0.15rem"
           >
@@ -310,17 +309,11 @@ export const HeaderLayout: FunctionComponent<
             bottom: additionalPaddingBottom || "0",
             display: hasMultipleBottomButton ? "grid" : undefined,
             gridTemplateColumns: hasMultipleBottomButton
-              ? `${"auto ".repeat(bottomButtons.length - 1)}1fr` // 마지막 버튼이 남은 공간을 다 채우도록 함
+              ? `${"auto ".repeat(bottomButtons.length - 1)}1fr`
               : undefined,
             gap: hasMultipleBottomButton ? "0.75rem" : undefined,
           }}
         >
-          {/*
-            scroll이 생겼을때 버튼 뒤로 UI가 보이는걸 대충 방지한다.
-            버튼들이 border radius를 가지고 있는데 이부분만 남기고 나머지만 안보여줄 효과적인 방법은 없다.
-            일단 border radius를 감안해서 약간 height를 적게 줘서 mock backplate를 만든다.
-            나중에 UI 상에서 문제가 된다면 따로 prop등을 임시로 사용해서 조절해야한다...
-          */}
           {bottomPadding !== "0" ? (
             <Styles.BottomButtonMockBackplate
               style={{

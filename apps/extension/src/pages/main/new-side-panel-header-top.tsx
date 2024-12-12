@@ -18,7 +18,7 @@ export const NewSidePanelHeaderTop: FunctionComponent<{
       height="3rem"
       backgroundColor={
         theme.mode === "light"
-          ? ColorPalette["blue-50"]
+          ? ColorPalette["purple-50"]
           : ColorPalette["gray-650"]
       }
       alignX="center"
@@ -38,7 +38,7 @@ export const NewSidePanelHeaderTop: FunctionComponent<{
       <Box
         color={
           theme.mode === "light"
-            ? ColorPalette["blue-400"]
+            ? ColorPalette["purple-400"]
             : ColorPalette["gray-50"]
         }
         zIndex={1}
@@ -76,7 +76,7 @@ export const NewSidePanelHeaderTop: FunctionComponent<{
         alignY="center"
         color={
           theme.mode === "light"
-            ? ColorPalette["blue-400"]
+            ? ColorPalette["purple-400"]
             : ColorPalette["gray-50"]
         }
         style={{
