@@ -1,9 +1,9 @@
 import React, { FC, useMemo, useState } from "react";
 import styles from "./style.module.scss";
 import { observer } from "mobx-react-lite";
-import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
+import { PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
-import { ViewRawToken, ViewToken } from "@owallet/types";
+import { ViewToken } from "@owallet/types";
 import {
   ChainIdEnum,
   removeDataInParentheses,

@@ -331,6 +331,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     if (!this.fee) {
       res = [];
     } else if ("type" in this.fee) {
+      console.log("goes type case fee 1", this.fee);
       res = [
         {
           amount: this.getFeeTypePrettyForFeeCurrency(
@@ -340,7 +341,11 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           currency: this.fee.currency,
         },
       ];
+
+      console.log("goes type case res 1", res);
     } else {
+      console.log("goes else case fee", this.fee);
+
       res = this.fee.map((fee) => {
         return {
           amount: fee
@@ -353,6 +358,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           currency: fee.currency,
         };
       });
+
+      console.log("goes else case res", res);
     }
 
     if (
@@ -553,9 +560,19 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     (feeCurrency: FeeCurrency, feeType: FeeType) => {
       const gas = this.gasConfig.gas;
       const gasPrice = this.getGasPriceForFeeCurrency(feeCurrency, feeType);
+
+      console.log("gasPrice222", gas, gasPrice.toString());
+
       const feeAmount = gasPrice
         .mul(new Dec(gas))
         .add(this.l1DataFee ?? new Dec(0));
+
+      console.log(
+        "feeAmount 2",
+        feeAmount.toString(),
+        feeAmount.roundUp().toString(),
+        this.l1DataFee
+      );
 
       return new CoinPretty(feeCurrency, feeAmount.roundUp()).maxDecimals(
         feeCurrency.coinDecimals
@@ -671,6 +688,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           const gasPrice = gasPrices.find(
             (gasPrice) => gasPrice.denom === feeCurrency.coinMinimalDenom
           );
+
+          console.log("gasPrice111 ", gasPrice);
+
           if (gasPrice) {
             let multiplication = {
               low: 1.1,
@@ -1097,8 +1117,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       }
     }
 
-    // TODO: 여기서 terra classic 관련 무슨 처리를 해야하는데 나중에 하자...
-
     const amount = this.amountConfig.amount;
 
     const needs = fee.slice();
@@ -1112,7 +1130,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             needs[i] = {
               ...need,
               amount: new Int(need.amount)
-                .add(new Int(amt.toCoin().amount))
+                // .add(new Int(amt.toCoin().amount))
                 .toString(),
             };
           }
@@ -1135,6 +1153,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             bal.currency.coinMinimalDenom === need.currency.coinMinimalDenom
         );
 
+      console.log("this.senderConfig.value", this.senderConfig.value);
+
       if (!bal) {
         return {
           warning: new Error(
@@ -1154,6 +1174,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           loadingState: "loading-block",
         };
       }
+
+      console.log("bal.balance.toCoin().amount 2", bal.balance.toCoin().amount);
+      console.log("need.amount", need.amount);
 
       if (new Int(bal.balance.toCoin().amount).lt(new Int(need.amount))) {
         return {

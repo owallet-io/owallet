@@ -257,15 +257,15 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
       },
-      {
-        coinDenom: "CAT",
-        coinMinimalDenom:
-          "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
-        coinDecimals: 6,
-        coinGeckoId: "simon-s-cat",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
-      },
+      // {
+      //   coinDenom: "CAT",
+      //   coinMinimalDenom:
+      //     "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
+      //   coinDecimals: 6,
+      //   coinGeckoId: "simon-s-cat",
+      //   coinImageUrl:
+      //     "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
+      // },
       {
         type: "cw20",
         coinDenom: "SCORAI",
