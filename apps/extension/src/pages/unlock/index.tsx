@@ -48,40 +48,40 @@ export const UnlockPage: FunctionComponent = observer(() => {
   const [migrationSecondPhasePassword, setMigrationSecondPhasePassword] =
     useState("");
 
-  const animContainerRef = useRef<HTMLDivElement | null>(null);
-  const animRef = useRef<AnimationItem | null>(null);
-  useEffect(() => {
-    if (animContainerRef.current) {
-      const anim = lottie.loadAnimation({
-        container: animContainerRef.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: false,
-        animationData: theme.mode === "light" ? AnimLogoLight : AnimLogo,
-      });
+  // const animContainerRef = useRef<HTMLDivElement | null>(null);
+  // const animRef = useRef<AnimationItem | null>(null);
+  // useEffect(() => {
+  //   if (animContainerRef.current) {
+  //     const anim = lottie.loadAnimation({
+  //       container: animContainerRef.current,
+  //       renderer: "svg",
+  //       loop: true,
+  //       autoplay: false,
+  //       animationData: theme.mode === "light" ? AnimLogoLight : AnimLogo,
+  //     });
 
-      animRef.current = anim;
+  //     animRef.current = anim;
 
-      return () => {
-        anim.destroy();
+  //     return () => {
+  //       anim.destroy();
 
-        animRef.current = null;
-      };
-    }
-  }, []);
+  //       animRef.current = null;
+  //     };
+  //   }
+  // }, []);
 
-  const animLoading = isLoading || keyRingStore.isMigrating;
-  useEffect(() => {
-    if (animRef.current) {
-      if (animLoading) {
-        animRef.current.goToAndPlay(0);
-      } else {
-        setTimeout(() => {
-          animRef.current?.goToAndStop(0);
-        }, 50);
-      }
-    }
-  }, [animLoading]);
+  // const animLoading = isLoading || keyRingStore.isMigrating;
+  // useEffect(() => {
+  //   if (animRef.current) {
+  //     if (animLoading) {
+  //       animRef.current.goToAndPlay(0);
+  //     } else {
+  //       setTimeout(() => {
+  //         animRef.current?.goToAndStop(0);
+  //       }, 50);
+  //     }
+  //   }
+  // }, [animLoading]);
 
   const [viewPostMessageId] = useState(() => {
     const bytes = new Uint8Array(10);

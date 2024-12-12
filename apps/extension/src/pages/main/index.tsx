@@ -400,7 +400,6 @@ export const MainPage: FunctionComponent<{
         }
       })()}
     >
-      {/* side panel에서만 보여준다. 보여주는 로직은 isRefreshButtonVisible를 다루는 useEffect를 참고. refresh button이 로딩중이면 모조건 보여준다. */}
       <RefreshButton
         visible={
           !isNotReady &&
@@ -597,10 +596,7 @@ export const MainPage: FunctionComponent<{
           <ClaimAll isNotReady={isNotReady} />
 
           <IbcHistoryView isNotReady={isNotReady} />
-          {/*
-            IbcHistoryView 자체가 list를 그리기 때문에 여기서 gutter를 처리하기는 힘들다.
-            그러므로 IbcHistoryView에서 gutter를 처리하도록 한다.
-          */}
+
           <Gutter size="0" />
 
           {tabStatus === "available" && !isNotReady ? (
@@ -648,7 +644,6 @@ export const MainPage: FunctionComponent<{
                         searchScrollAnim.start(218, {
                           from: simpleBarScrollRef.scrollTop,
                           onChange: (anim: any) => {
-                            // XXX: 이거 실제 파라미터랑 타입스크립트 인터페이스가 다르다...???
                             const v = anim.value != null ? anim.value : anim;
                             if (typeof v === "number") {
                               simpleBarScrollRef.scrollTop = v;
@@ -666,10 +661,6 @@ export const MainPage: FunctionComponent<{
             </Stack>
           ) : null}
 
-          {/*
-            AvailableTabView, StakedTabView가 컴포넌트로 빠지면서 밑의 얘들의 각각의 item들에는 stack이 안먹힌다는 걸 주의
-            각 컴포넌트에서 알아서 gutter를 처리해야한다.
-           */}
           {tabStatus === "available" ? (
             <AvailableTabView
               search={search}
@@ -678,10 +669,6 @@ export const MainPage: FunctionComponent<{
                 setIsOpenDepositModal(true);
               }}
               onMoreTokensClosed={() => {
-                // token list가 접히면서 scroll height가 작아지게 된다.
-                // scroll height가 작아지는 것은 위로 스크롤 하는 것과 같은 효과를 내기 때문에
-                // 아래와같은 처리가 없으면 token list를 접으면 refesh 버튼이 무조건 나타나게 된다.
-                // 이게 약간 어색해보이므로 token list를 접을때 1.5초 동안 refresh 버튼 기능을 없애버린다.
                 forcePreventScrollRefreshButtonVisible.current = true;
                 setTimeout(() => {
                   forcePreventScrollRefreshButtonVisible.current = false;
@@ -691,10 +678,6 @@ export const MainPage: FunctionComponent<{
           ) : (
             <StakedTabView
               onMoreTokensClosed={() => {
-                // token list가 접히면서 scroll height가 작아지게 된다.
-                // scroll height가 작아지는 것은 위로 스크롤 하는 것과 같은 효과를 내기 때문에
-                // 아래와같은 처리가 없으면 token list를 접으면 refesh 버튼이 무조건 나타나게 된다.
-                // 이게 약간 어색해보이므로 token list를 접을때 1.5초 동안 refresh 버튼 기능을 없애버린다.
                 forcePreventScrollRefreshButtonVisible.current = true;
                 setTimeout(() => {
                   forcePreventScrollRefreshButtonVisible.current = false;
@@ -715,7 +698,6 @@ export const MainPage: FunctionComponent<{
         isOpen={isOpenDepositModal}
         align="bottom"
         close={() => setIsOpenDepositModal(false)}
-        /* Simplebar를 사용하면 트랜지션이 덜덜 떨리는 문제가 있다... */
         forceNotUseSimplebar={true}
       >
         <DepositModal close={() => setIsOpenDepositModal(false)} />
@@ -724,7 +706,6 @@ export const MainPage: FunctionComponent<{
       <Modal
         isOpen={isChangelogModalOpen}
         close={() => {
-          // 꼭 모달 안에서 close 버튼을 눌러야만 닫을 수 있다.
           // setIsChangelogModalOpen(false);
         }}
         onCloseTransitionEnd={() => {
@@ -765,7 +746,6 @@ export const MainPage: FunctionComponent<{
 });
 
 const Styles = {
-  // hover style을 쉽게 넣으려고 그냥 styled-component로 만들었다.
   PrivacyModeButton: styled.div`
     color: ${(props) =>
       props.theme.mode === "light"
@@ -839,7 +819,6 @@ const RefreshButton: FunctionComponent<{
               queries.cosmos.queryRewards.getQueryBech32Address(
                 account.bech32Address
               );
-            // XXX: 얘는 구조상 waitFreshResponse()가 안되서 일단 쿼리가 끝인지 아닌지는 무시한다.
             queryBalance.fetch();
 
             promises.push(queryRewards.waitFreshResponse());
@@ -854,7 +833,6 @@ const RefreshButton: FunctionComponent<{
               queries.queryBalances.getQueryEthereumHexAddress(
                 account.ethereumHexAddress
               );
-            // XXX: 얘는 구조상 waitFreshResponse()가 안되서 일단 쿼리가 끝인지 아닌지는 무시한다.
             queryBalance.fetch();
 
             for (const currency of chainInfo.currencies) {
@@ -911,15 +889,11 @@ const RefreshButton: FunctionComponent<{
       easing: easings.linear,
     },
   });
-  // 밑에서 onRest callback에서 isLoading을 써야하기 때문에 이러한 처리가 필요함.
   const isLoadingRef = useRef(isLoading);
   isLoadingRef.current = isLoading;
   const prevIsLoading = useRef(isLoading);
   useEffect(() => {
-    // 이 코드의 목적은 rotate animation을 실행하는데
-    // isLoading이 false가 되었을때 마지막 rotate까지는 끝내도록 하기 위해서 따로 작성된 것임.
     if (prevIsLoading.current !== isLoading && isLoading) {
-      // prev 값과 비교하지 않으면 최초 mount 시점에서 0~360으로 바로 회전하게 된다.
       if (isLoading) {
         const onRest = () => {
           if (isLoadingRef.current) {
@@ -949,8 +923,6 @@ const RefreshButton: FunctionComponent<{
       }}
       style={{
         pointerEvents: translateY.to((v) =>
-          // visible이 false일때는 pointer-events를 none으로 해서 클릭을 막는다.
-          // visibleTranslateY / 2는 대충 정한 값임. 이 값보다 작으면 pointer-events를 none으로 해서 클릭을 막는다.
           v >= visibleTranslateY / 2 ? "none" : "auto"
         ),
 
