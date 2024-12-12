@@ -47,8 +47,6 @@ export const RegisterPage: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore } = useStore();
 
   const isReady = useMemo(() => {
-    // state 변화를 다 다루기 힘들기 때문에 미리 초기화 되어있어야만 하는 store들이 있다.
-    // 매우 빠르게 초기화가 완료되기 때문에 유저는 이를 인지하기 어렵다.
     if (chainStore.isInitializing) {
       return false;
     }
@@ -58,8 +56,6 @@ export const RegisterPage: FunctionComponent = observer(() => {
     }
 
     if (keyRingStore.status === "locked") {
-      // 잠겨있으면 애초에 먼가 잘못된거고 유저가 이상한 경로로 접근한 것이다...
-      // 처리할 방법이 없으니 그냥 끈다.
       window.close();
     }
 
@@ -97,8 +93,6 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
 
   const route = searchParams.get("route");
 
-  console.log("searchParams route", route);
-
   const [initials] = useState(() => {
     const route = searchParams.get("route");
     const vaultId = searchParams.get("vaultId");
@@ -133,8 +127,6 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
 
     const chainIds = searchParams.get("chainIds");
 
-    console.log("chainIds", chainIds);
-
     if (route === "select-derivation-path" && chainIds) {
       return {
         header: {
@@ -162,8 +154,6 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
       },
     };
   });
-
-  console.log("initials", initials);
 
   const headerContext = useRegisterHeaderContext(initials.header);
 

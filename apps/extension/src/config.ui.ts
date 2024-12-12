@@ -1,7 +1,7 @@
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
 
-export const HelpDeskUrl = "https://help.keplr.app";
+export const HelpDeskUrl = "https://owallet.io";
 export const TermsOfUseUrl = "https://terms-of-use.keplr.app";
 
 export const CoinGeckoAPIEndPoint =

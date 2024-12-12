@@ -1019,6 +1019,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   selectedAddress: string | null = null;
 
   isOWallet = true;
+  isOwallet = true;
   isMetaMask = true;
 
   protected _isConnected = false;

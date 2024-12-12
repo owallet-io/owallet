@@ -176,8 +176,8 @@ const HeaderIntro: FunctionComponent = () => {
       <YAxis alignX="center">
         <img
           src={require(theme.mode === "light"
-            ? "../../../../public/assets/img/intro-logo-light.png"
-            : "../../../../public/assets/img/intro-logo.png")}
+            ? "../../../../public/assets/orai_wallet_logo.png"
+            : "../../../../public/assets/orai_wallet_logo.png")}
           style={{
             height: "3.125rem",
           }}

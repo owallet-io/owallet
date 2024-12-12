@@ -20,6 +20,16 @@ export const ColorPalette = {
   "platinum-600": "#121924",
   "platinum-700": "#0A101C",
 
+  "purple-10": "#F4E5FF",
+  "purple-50": "#EBD1FF",
+  "purple-100": "#C170FF",
+  "purple-200": "#A22DFF",
+  "purple-300": "#7C00DB",
+  "purple-400": "#7C00DB",
+  "purple-500": "#5C00A3",
+  "purple-600": "#5C00A3",
+  "purple-700": "#5C00A3",
+
   "green-50": "#ECFDF6",
   "green-100": "#DBF9EC",
   "green-200": "#AAECD0",

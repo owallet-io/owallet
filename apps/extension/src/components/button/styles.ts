@@ -38,13 +38,13 @@ export const getLoadingColor = (
 ): string => {
   switch (buttonColor) {
     case "primary":
-      return ColorPalette["blue-200"];
+      return ColorPalette["purple-200"];
     case "secondary":
       return ColorPalette["gray-200"];
     case "danger":
       return ColorPalette["red-400"];
     default:
-      return ColorPalette["blue-200"];
+      return ColorPalette["purple-200"];
   }
 };
 
@@ -62,7 +62,7 @@ const buttonStyleFromColorAndMode: Record<
     light: {
       fill: {
         enabled: css`
-          background-color: ${ColorPalette["blue-400"]};
+          background-color: ${ColorPalette["purple-500"]};
 
           ${makeTextAndSvgColor(ColorPalette["white"])}
 
@@ -74,7 +74,7 @@ const buttonStyleFromColorAndMode: Record<
           }
         `,
         disabled: css`
-          background-color: ${ColorPalette["blue-400"]};
+          background-color: ${ColorPalette["purple-200"]};
 
           ::after {
             background-color: ${ColorPalette["gray-300"]};
@@ -88,7 +88,7 @@ const buttonStyleFromColorAndMode: Record<
     dark: {
       fill: {
         enabled: css`
-          background-color: ${ColorPalette["blue-400"]};
+          background-color: ${ColorPalette["purple-400"]};
 
           ${makeTextAndSvgColor(ColorPalette["white"])}
 
@@ -100,7 +100,7 @@ const buttonStyleFromColorAndMode: Record<
           }
         `,
         disabled: css`
-          background-color: ${ColorPalette["blue-400"]};
+          background-color: ${ColorPalette["purple-400"]};
 
           ::after {
             background-color: ${ColorPalette["gray-600"]};
@@ -116,9 +116,9 @@ const buttonStyleFromColorAndMode: Record<
     light: {
       fill: {
         enabled: css`
-          background-color: ${ColorPalette["blue-50"]};
+          background-color: ${ColorPalette["purple-50"]};
 
-          ${makeTextAndSvgColor(ColorPalette["blue-400"])}
+          ${makeTextAndSvgColor(ColorPalette["purple-400"])}
 
           :hover {
             ::after {
@@ -129,9 +129,9 @@ const buttonStyleFromColorAndMode: Record<
         `,
 
         disabled: css`
-          background-color: ${ColorPalette["blue-50"]};
+          background-color: ${ColorPalette["purple-50"]};
 
-          ${makeTextAndSvgColor(ColorPalette["blue-200"])}
+          ${makeTextAndSvgColor(ColorPalette["purple-200"])}
         `,
       },
     },

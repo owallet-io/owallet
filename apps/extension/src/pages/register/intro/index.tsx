@@ -31,11 +31,10 @@ export const RegisterIntroScene: FunctionComponent = observer(() => {
   return (
     <RegisterSceneBox>
       <YAxis alignX="center">
-        <video width="200" height="200" autoPlay={true} loop={true}>
-          <source
-            src={require("../../../public/assets/lottie/register/intro.webm")}
-          />
-        </video>
+        <img
+          height={200}
+          src={require("../../../public/assets/images/img_leverage.png")}
+        />
       </YAxis>
       <Gutter size="3.125rem" />
       <Stack gutter="1.25rem">
