@@ -65,14 +65,7 @@ export class KeyRingSvmBaseService {
 
     throw new Error("Unsupported keyRing vault");
   }
-  async sign(
-    chainId: string,
-    vaultId: string,
-    data: Uint8Array,
-    inputs: any,
-    outputs: any,
-    signType: "legacy" | "bech32"
-  ): Promise<string> {
+  async sign(chainId: string, vaultId: string, data: string): Promise<string> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");
     }
@@ -96,25 +89,13 @@ export class KeyRingSvmBaseService {
       return chainInfo.bip44.coinType;
     })();
 
-    return await this.signWithVault(
-      vault,
-      coinType,
-      data,
-      inputs,
-      outputs,
-      signType,
-      chainInfo
-    );
+    return await this.signWithVault(vault, coinType, data, chainInfo);
   }
 
   async signWithVault(
     vault: Vault,
     coinType: number,
-    data: Uint8Array,
-    //TODO: need check type inputs/outputs
-    inputs: any,
-    outputs: any,
-    signType: "legacy" | "bech32",
+    data: string,
     chainInfo: ChainInfo
   ): Promise<string> {
     if (this.vaultService.isLocked) {
@@ -123,9 +104,6 @@ export class KeyRingSvmBaseService {
 
     const keyRing = this.getVaultKeyRing(vault);
 
-    // return Promise.resolve(
-    //   keyRing.sign(vault, coinType, data, inputs, outputs, signType, chainInfo)
-    // );
-    return;
+    return Promise.resolve(keyRing.sign(vault, coinType, data, chainInfo));
   }
 }

@@ -28,14 +28,7 @@ export class KeyRingSvmPrivateKeyService implements KeyRingSvm {
     //
     // return new PubKeySecp256k1(publicKeyBytes);
   }
-  sign(
-    vault: Vault,
-    _coinType: number,
-    data: Uint8Array,
-    inputs: any,
-    outputs: any,
-    _signType: "legacy" | "bech32"
-  ): string {
+  sign(vault: Vault, _coinType: number, data: string): string {
     return;
     // const keyPair = this.getKeyPair(vault);
     // return signSignatureBtc(keyPair, data, inputs, outputs);

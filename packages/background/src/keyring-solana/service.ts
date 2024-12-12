@@ -5,8 +5,12 @@ import { ChainsUIService } from "../chains-ui";
 import { Key } from "@owallet/types";
 import { KeyRingSvmBaseService } from "./keyring-base";
 import { Env } from "@owallet/router";
-import { KeyRingCosmosService } from "../keyring-cosmos";
-import { isBtcAddress } from "@owallet/common";
+import { deserializeTransaction } from "@owallet/common";
+import { createSignInMessage } from "@solana/wallet-standard-util";
+import { TransactionSvmType } from "@owallet/types/build/svm";
+import { PublicKey, VersionedTransaction } from "@solana/web3.js";
+import { decode, encode } from "bs58";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
 
 export class KeyRingSvmService {
   constructor(
@@ -22,30 +26,315 @@ export class KeyRingSvmService {
     // TODO: ?
   }
 
+  // async requestSendAndConfirmTxSvm(
+  //     env: Env,
+  //     msgOrigin: string,
+  //     chainId: string,
+  //     signer: string,
+  //     unsignedTx: Uint8Array
+  // ): Promise<Uint8Array> {
+  //     try {
+  //         const key = await this.getKeySelected(chainId);
+  //
+  //         if (signer !== key.base58Address) {
+  //             throw new Error("Signer mismatched");
+  //         }
+  //
+  //         const newDataConfirm = await this.interactionService.waitApprove(
+  //             env,
+  //             "/sign-svm",
+  //             "request-sign-svm",
+  //             {
+  //                 msgOrigin,
+  //                 chainId,
+  //                 signer,
+  //                 unsignedTx,
+  //             }
+  //         );
+  //         return await this.keyRing.sendAndConfirmSvm(
+  //             chainId,
+  //             (newDataConfirm as any).unsignedTx
+  //         );
+  //     }
+  // }
+
+  async requestSignTransactionSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    tx: string
+  ): Promise<{
+    signature: string;
+    signedTx: string;
+  }> {
+    const key = await this.getKeySelected(chainId);
+    const keyInfo = this.keyRingService.getKeyInfo(
+      this.keyRingService.selectedVaultId
+    );
+    if (signer !== key.base58Address) {
+      throw new Error("Signer mismatched");
+    }
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-svm",
+      "request-sign-svm",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: new PublicKey(key.base58Address),
+        message: tx,
+        signType: TransactionSvmType.SIGN_TRANSACTION,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: { signingData: string; signature?: string }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            // return {
+            //     // signingData: res.signingData,
+            //     // signature: res.signature,
+            // };
+            return;
+          } else {
+            const transaction = deserializeTransaction(res.signingData);
+            const message = transaction.message.serialize();
+            const txMessage = encode(message);
+            const signature = await this.keyRingSvmBaseService.sign(
+              chainId,
+              this.keyRingService.selectedVaultId,
+              txMessage
+            );
+            const signedTx = VersionedTransaction.deserialize(
+              decode(res.signingData)
+            );
+            signedTx.addSignature(new PublicKey(signer), decode(signature));
+            return {
+              signature,
+              signedTx: encode(signedTx.serialize()),
+            };
+          }
+        })();
+      }
+    );
+  }
+
+  async requestSignAllTransactionSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    txs: Array<string>
+  ): Promise<
+    Array<{
+      signature: string;
+      signedTx: string;
+    }>
+  > {
+    const key = await this.getKeySelected(chainId);
+    const keyInfo = this.keyRingService.getKeyInfo(
+      this.keyRingService.selectedVaultId
+    );
+    if (signer !== key.base58Address) {
+      throw new Error("Signer mismatched");
+    }
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-svm",
+      "request-sign-svm",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: new PublicKey(key.base58Address),
+        message: txs,
+        signType: TransactionSvmType.SIGN_ALL_TRANSACTIONS,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: { signingDatas: string; signature?: string }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            // return {
+            //     signingData: res.signingData,
+            //     signature: res.signature,
+            // };
+            return;
+          } else {
+            const signatures: { signedTx: string; signature: string }[] = [];
+
+            for (let i = 0; i < res.signingDatas.length; i++) {
+              const tx = res.signingDatas[i];
+              try {
+                const transaction = deserializeTransaction(tx);
+                const message = transaction.message.serialize();
+                const txMessage = encode(message);
+                const signature = await this.keyRingSvmBaseService.sign(
+                  chainId,
+                  this.keyRingService.selectedVaultId,
+                  txMessage
+                );
+                const signedTx = VersionedTransaction.deserialize(decode(tx));
+                signedTx.addSignature(new PublicKey(signer), decode(signature));
+                signatures.push({
+                  signedTx: encode(signedTx.serialize()),
+                  signature,
+                });
+              } catch (e) {
+                console.error(e);
+                throw Error(JSON.stringify(e));
+              }
+            }
+            return signatures;
+          }
+        })();
+      }
+    );
+  }
+
+  async requestSignMessageSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    tx: string
+  ): Promise<{
+    signedMessage: string;
+  }> {
+    const key = await this.getKeySelected(chainId);
+    const keyInfo = this.keyRingService.getKeyInfo(
+      this.keyRingService.selectedVaultId
+    );
+    if (signer !== key.base58Address) {
+      throw new Error("Signer mismatched");
+    }
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-svm",
+      "request-sign-svm",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: new PublicKey(key.base58Address),
+        message: tx,
+        signType: TransactionSvmType.SIGN_MESSAGE,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: { signingData: string; signature?: string }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            // return {
+            //     signingData: res.signingData,
+            //     signature: res.signature,
+            // };
+            return;
+          } else {
+            const signature = await this.keyRingSvmBaseService.sign(
+              chainId,
+              this.keyRingService.selectedVaultId,
+              res.signingData
+            );
+            return {
+              signedMessage: signature,
+            };
+          }
+        })();
+      }
+    );
+  }
+
+  async requestSignInSvm(
+    env: Env,
+    msgOrigin: string,
+    chainId: string,
+    signer: string,
+    inputs: SolanaSignInInput
+  ): Promise<{
+    publicKey: string;
+    signedMessage: string;
+    signature: string;
+    connectionUrl: string;
+  }> {
+    const key = await this.getKeySelected(chainId);
+    const keyInfo = this.keyRingService.getKeyInfo(
+      this.keyRingService.selectedVaultId
+    );
+    const chainInfo = await this.chainsService.getChainInfo(chainId);
+    if (signer !== key.base58Address) {
+      throw new Error("Signer mismatched");
+    }
+    return await this.interactionService.waitApproveV2(
+      env,
+      "/sign-svm",
+      "request-sign-svm",
+      {
+        origin,
+        chainId,
+        signer,
+        pubKey: new PublicKey(key.base58Address),
+        message: inputs,
+        signType: TransactionSvmType.SIGN_IN,
+        keyType: keyInfo.type,
+        keyInsensitive: keyInfo.insensitive,
+      },
+      async (res: { signingData: string; signature?: string }) => {
+        return await (async () => {
+          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
+            if (!res.signature) {
+              throw new Error("Frontend should provide signature");
+            }
+
+            // return {
+            //     signingData: res.signingData,
+            //     signature: res.signature,
+            // };
+            return;
+          } else {
+            const message = createSignInMessage({
+              domain: msgOrigin,
+              address: signer,
+              ...(inputs ?? {}),
+            });
+
+            const encodedMessage = encode(message);
+            const signature = await this.keyRingSvmBaseService.sign(
+              chainId,
+              this.keyRingService.selectedVaultId,
+              encodedMessage
+            );
+            return {
+              signedMessage: encodedMessage,
+              signature,
+              publicKey: key.base58Address,
+              connectionUrl: chainInfo.rpc,
+            };
+          }
+        })();
+      }
+    );
+  }
+
   async getKeySelected(chainId: string): Promise<Key> {
     return await this.getKey(this.keyRingService.selectedVaultId, chainId);
   }
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
-    // const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    //
     const pubKey = await this.keyRingSvmBaseService.getPubKey(chainId, vaultId);
-    //
-    // const legacyAddress = bitcoin.payments.p2pkh({
-    //   pubkey: Buffer.from(
-    //     pubKey.toKeyPair().getPublic().encodeCompressed("hex"),
-    //     "hex"
-    //   ),
-    // }).address;
-    //
-    // const pubKeyBip84 = await this.keyRingSvmBaseService.getPubKeyBip84(
-    //   chainId,
-    //   vaultId
-    // );
-    //
-    // const address = pubKeyBip84.getCosmosAddress();
-    // const bech32Address = new Bech32Address(address);
-    //
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
 
     return {
@@ -59,126 +348,5 @@ export class KeyRingSvmService {
       isKeystone: keyInfo.type === "keystone",
       bech32Address: "",
     };
-  }
-
-  async signBtcSelected(
-    env: Env,
-    origin: string,
-    chainId: string,
-    signer: string,
-    message: Uint8Array,
-    signType: "legacy" | "bech32"
-  ): Promise<{
-    signingData: Uint8Array;
-    signature?: string;
-  }> {
-    return await this.signBtc(
-      env,
-      origin,
-      this.keyRingService.selectedVaultId,
-      chainId,
-      signer,
-      message,
-      signType
-    );
-  }
-
-  async signBtc(
-    env: Env,
-    origin: string,
-    vaultId: string,
-    chainId: string,
-    signer: string,
-    message: Uint8Array,
-    signType: "legacy" | "bech32"
-  ): Promise<{
-    signingData: Uint8Array;
-    signature?: string;
-  }> {
-    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    if (chainInfo.hideInUI) {
-      throw new Error("Can't sign for hidden chain");
-    }
-    const isBtcChain = this.chainsService.isBtcChain(chainId);
-
-    if (!isBtcChain) {
-      throw new Error("Invalid Btc chain");
-    }
-
-    const keyInfo = this.keyRingService.getKeyInfo(vaultId);
-    if (!keyInfo) {
-      throw new Error("Null key info");
-    }
-
-    if (keyInfo.type === "ledger") {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
-        chainId
-      );
-    }
-
-    try {
-      const isValid = isBtcAddress(signer);
-      if (!isValid) {
-        throw Error("Invalid Btc Address");
-      }
-    } catch {
-      throw Error("Invalid Btc Address");
-    }
-
-    const key = await this.getKey(vaultId, chainId);
-    if (
-      (signType === "bech32" && signer !== key.bech32Address) ||
-      (signType === "legacy" && signer !== key.btcLegacyAddress)
-    ) {
-      throw new Error("Signer mismatched");
-    }
-    return await this.interactionService.waitApproveV2(
-      env,
-      "/sign-svm",
-      "request-sign-svm",
-      {
-        origin,
-        chainId,
-        signer,
-        pubKey: key.pubKey,
-        message,
-        signType,
-        keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive,
-      },
-      async (res: {
-        signingData: Uint8Array;
-        signature?: string;
-        inputs: any;
-        outputs: any;
-      }) => {
-        return await (async () => {
-          if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
-            if (!res.signature) {
-              throw new Error("Frontend should provide signature");
-            }
-
-            return {
-              signingData: res.signingData,
-              signature: res.signature,
-            };
-          } else {
-            console.log(res.inputs, res.outputs, "res.inputs");
-            const signature = await this.keyRingSvmBaseService.sign(
-              chainId,
-              vaultId,
-              res.signingData,
-              res.inputs,
-              res.outputs,
-              signType
-            );
-            return {
-              signingData: res.signingData,
-              signature: signature,
-            };
-          }
-        })();
-      }
-    );
   }
 }

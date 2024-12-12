@@ -103,11 +103,7 @@ export interface KeyRingSvm {
   sign(
     vault: Vault,
     coinType: number,
-    data: Uint8Array,
-    //TODO: need check type inputs/outputs
-    inputs: any,
-    outputs: any,
-    signType: "legacy",
+    data: string,
     chainInfo: ChainInfo
   ): string | Promise<string>;
 }

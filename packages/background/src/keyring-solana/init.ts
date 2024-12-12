@@ -3,6 +3,10 @@ import { KeyRingSvmService } from "./service";
 import {
   GetSvmKeyMsg,
   GetSvmKeysSettledMsg,
+  RequestSignAllTransactionSvm,
+  RequestSignInSvm,
+  RequestSignMessageSvm,
+  RequestSignTransactionSvm,
   // RequestSignSvmMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
@@ -16,6 +20,10 @@ export function init(
 ): void {
   router.registerMessage(GetSvmKeyMsg);
   router.registerMessage(GetSvmKeysSettledMsg);
+  router.registerMessage(RequestSignAllTransactionSvm);
+  router.registerMessage(RequestSignInSvm);
+  router.registerMessage(RequestSignTransactionSvm);
+  router.registerMessage(RequestSignMessageSvm);
   // router.registerMessage(RequestSignSvmMsg);
 
   router.addHandler(ROUTE, getHandler(service, permissionInteractionService));

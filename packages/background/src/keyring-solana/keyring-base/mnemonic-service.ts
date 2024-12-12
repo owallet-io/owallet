@@ -1,15 +1,14 @@
 import { Buffer } from "buffer/";
 import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
-import { signSignatureBtc } from "@owallet/common";
 import { KeyRingSvm } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
-import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
+import { Mnemonic } from "@owallet/crypto";
 import { PublicKey } from "@solana/web3.js";
-
+import { decode, encode } from "bs58";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
-
+import nacl from "tweetnacl";
 export class KeyRingSvmMnemonicService implements KeyRingSvm {
   constructor(
     protected readonly vaultService: VaultService,
@@ -44,9 +43,6 @@ export class KeyRingSvmMnemonicService implements KeyRingSvm {
       const pubKey = vault.insensitive[tag] as string;
       return new PublicKey(pubKey);
     }
-
-    // const privKey = this.getPrivKey(vault, coinType, 44);
-    //
     const keypair = this.getKeyPair(vault);
     const pubKey = keypair.publicKey;
     const pubKeyText = pubKey.toBase58();
@@ -57,17 +53,11 @@ export class KeyRingSvmMnemonicService implements KeyRingSvm {
     return pubKey;
   }
 
-  sign(
-    vault: Vault,
-    coinType: number,
-    data: Uint8Array,
-    inputs: any,
-    outputs: any,
-    signType: "legacy" | "bech32"
-  ): string {
-    // const keyPair = this.getKeyPair(vault, coinType, signType);
-    // return signSignatureBtc(keyPair, data, inputs, outputs);
-    return;
+  sign(vault: Vault, coinType: number, txMsg: string): string {
+    if (!txMsg) throw Error("tx Not Empty");
+    const keypair = this.getKeyPair(vault);
+    const tx = Buffer.from(decode(txMsg));
+    return encode(nacl.sign.detached(new Uint8Array(tx), keypair.secretKey));
   }
   // protected getPrivKey(
   //   vault: Vault,
