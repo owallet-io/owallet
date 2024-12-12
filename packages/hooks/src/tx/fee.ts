@@ -783,10 +783,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       console.log("feeType", feeType);
 
       const ethereumQueries = this.queriesStore.get(this.chainId).ethereum;
-      console.log(
-        "this.canEIP1559TxFeesAndReady()",
-        this.canEIP1559TxFeesAndReady()
-      );
 
       if (ethereumQueries && this.canEIP1559TxFeesAndReady()) {
         const feeHistory =
@@ -1130,7 +1126,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             needs[i] = {
               ...need,
               amount: new Int(need.amount)
-                // .add(new Int(amt.toCoin().amount))
+                .add(new Int(amt.toCoin().amount))
                 .toString(),
             };
           }
