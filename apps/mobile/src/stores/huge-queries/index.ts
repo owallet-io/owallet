@@ -1,11 +1,21 @@
-import { ChainStore } from '../chain';
-import { CoinGeckoPriceStore, CosmosQueries, IChainInfoImpl, IQueriesStore, QueryError } from '@owallet/stores';
-import { CoinPretty, Dec, PricePretty } from '@owallet/unit';
-import { action, autorun, computed } from 'mobx';
-import { DenomHelper, getOasisAddress, MapChainIdToNetwork } from '@owallet/common';
-import { computedFn } from 'mobx-utils';
-import { BinarySortArray } from './sort';
-import { AllAccountStore } from '@stores/all-account-store';
+import { ChainStore } from "../chain";
+import {
+  CoinGeckoPriceStore,
+  CosmosQueries,
+  IChainInfoImpl,
+  IQueriesStore,
+  QueryError,
+} from "@owallet/stores";
+import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { action, autorun, computed } from "mobx";
+import {
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
+import { computedFn } from "mobx-utils";
+import { BinarySortArray } from "./sort";
+import { AllAccountStore } from "@stores/all-account-store";
 
 export interface ViewToken {
   chainInfo: IChainInfoImpl;
@@ -104,7 +114,7 @@ export class HugeQueriesStore {
       let account = this.accountStore.getAccount(chainInfo.chainId);
       const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
-      if (account.addressDisplay === '') {
+      if (account.addressDisplay === "") {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
@@ -115,20 +125,24 @@ export class HugeQueriesStore {
       }
       for (const currency of currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        const isERC20 = denomHelper.type === 'erc20';
-        const isMainCurrency = mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
+        // const isERC20 = denomHelper.type === 'erc20';
+        // const isMainCurrency = mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
 
-        let queryBalance =
-          this.chainStore.isEvmOnlyChain(chainInfo.chainId) && (isMainCurrency || isERC20)
-            ? queries.queryBalances.getQueryEthereumHexAddress(account.ethereumHexAddress)
-            : queries.queryBalances.getQueryBech32Address(account.bech32Address);
-        const isBtcLegacy = denomHelper.type === 'legacy';
+        let queryBalance = queries.queryBalances.getQueryByAddress(
+          account.addressDisplay
+        );
+        const isBtcLegacy = denomHelper.type === "legacy";
         if (isBtcLegacy) {
-          queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(account.btcLegacyAddress);
+          queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
+            account.btcLegacyAddress
+          );
         }
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
         if (!keysUsed.get(key)) {
-          if (chainInfo.stakeCurrency?.coinMinimalDenom === currency.coinMinimalDenom) {
+          if (
+            chainInfo.stakeCurrency?.coinMinimalDenom ===
+            currency.coinMinimalDenom
+          ) {
             const balance = queryBalance.stakable?.balance;
             if (!balance) {
               continue;
@@ -139,9 +153,11 @@ export class HugeQueriesStore {
             this.balanceBinarySort.pushAndSort(key, {
               chainInfo,
               token: balance,
-              price: currency.coinGeckoId ? this.priceStore.calculatePrice(balance) : undefined,
+              price: currency.coinGeckoId
+                ? this.priceStore.calculatePrice(balance)
+                : undefined,
               isFetching: queryBalance.stakable.isFetching,
-              error: queryBalance.stakable.error
+              error: queryBalance.stakable.error,
             });
           } else {
             const balance = queryBalance.getBalance(currency);
@@ -149,13 +165,17 @@ export class HugeQueriesStore {
               if (balance.balance.toDec().equals(HugeQueriesStore.zeroDec)) {
                 const denomHelper = new DenomHelper(currency.coinMinimalDenom);
                 // If the balance is zero and currency is "native" or "erc20", don't show it.
-                if (denomHelper.type === 'native' || denomHelper.type === 'erc20') {
+                if (
+                  denomHelper.type === "native" ||
+                  denomHelper.type === "erc20"
+                ) {
                   // However, if currency is native currency and not ibc, and same with currencies[0],
                   // just show it as 0 balance.
                   if (
                     chainInfo.currencies.length > 0 &&
-                    chainInfo.currencies[0].coinMinimalDenom === currency.coinMinimalDenom &&
-                    !currency.coinMinimalDenom.startsWith('ibc/')
+                    chainInfo.currencies[0].coinMinimalDenom ===
+                      currency.coinMinimalDenom &&
+                    !currency.coinMinimalDenom.startsWith("ibc/")
                   ) {
                   } else {
                     continue;
@@ -168,9 +188,11 @@ export class HugeQueriesStore {
               this.balanceBinarySort.pushAndSort(key, {
                 chainInfo,
                 token: balance.balance,
-                price: currency.coinGeckoId ? this.priceStore.calculatePrice(balance.balance) : undefined,
+                price: currency.coinGeckoId
+                  ? this.priceStore.calculatePrice(balance.balance)
+                  : undefined,
                 isFetching: balance.isFetching,
-                error: balance.error
+                error: balance.error,
               });
             }
           }
@@ -188,55 +210,73 @@ export class HugeQueriesStore {
     return this.balanceBinarySort.arr;
   }
 
-  getAllBalances = computedFn((allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
-    const keys: Map<string, boolean> = new Map();
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
-      for (const currency of chainInfo.currencies) {
-        const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        if (!allowIBCToken && denomHelper.type === 'native' && denomHelper.denom.startsWith('ibc/')) {
-          continue;
+  getAllBalances = computedFn(
+    (allowIBCToken: boolean): ReadonlyArray<ViewToken> => {
+      const keys: Map<string, boolean> = new Map();
+      for (const chainInfo of this.chainStore.chainInfosInUI) {
+        for (const currency of chainInfo.currencies) {
+          const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+          if (
+            !allowIBCToken &&
+            denomHelper.type === "native" &&
+            denomHelper.denom.startsWith("ibc/")
+          ) {
+            continue;
+          }
+
+          const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
+          keys.set(key, true);
+        }
+      }
+      return this.balanceBinarySort.arr.filter((viewToken) => {
+        const key = viewToken[BinarySortArray.SymbolKey];
+        return keys.get(key);
+      });
+    }
+  );
+  getAllBalancesByChainId = computedFn(
+    (chainId: string): ReadonlyArray<ViewToken> => {
+      if (!chainId) return;
+      const keys: Map<string, boolean> = new Map();
+      for (const chainInfo of this.chainStore.chainInfosInUI) {
+        for (const currency of chainInfo.currencies) {
+          const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
+          keys.set(key, true);
+        }
+      }
+      return this.balanceBinarySort.arr.filter((viewToken) => {
+        const key = viewToken[BinarySortArray.SymbolKey];
+        return keys.get(key) && viewToken.chainInfo.chainId === chainId;
+      });
+    }
+  );
+
+  filterLowBalanceTokens = computedFn(
+    (viewTokens: ReadonlyArray<ViewToken>): ViewToken[] => {
+      return viewTokens.filter((viewToken) => {
+        // Hide the unknown ibc tokens.
+        if (
+          "paths" in viewToken.token.currency &&
+          !viewToken.token.currency.originCurrency
+        ) {
+          return false;
         }
 
-        const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
-        keys.set(key, true);
-      }
+        // If currency has coinGeckoId, hide the low price tokens (under $1)
+        if (viewToken.token.currency.coinGeckoId != null) {
+          return (
+            this.priceStore
+              .calculatePrice(viewToken.token, "usd")
+              ?.toDec()
+              .gte(new Dec("1")) ?? false
+          );
+        }
+
+        // Else, hide the low balance tokens (under 0.001)
+        return viewToken.token.toDec().gte(new Dec("0.001"));
+      });
     }
-    return this.balanceBinarySort.arr.filter(viewToken => {
-      const key = viewToken[BinarySortArray.SymbolKey];
-      return keys.get(key);
-    });
-  });
-  getAllBalancesByChainId = computedFn((chainId: string): ReadonlyArray<ViewToken> => {
-    if (!chainId) return;
-    const keys: Map<string, boolean> = new Map();
-    for (const chainInfo of this.chainStore.chainInfosInUI) {
-      for (const currency of chainInfo.currencies) {
-        const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
-        keys.set(key, true);
-      }
-    }
-    return this.balanceBinarySort.arr.filter(viewToken => {
-      const key = viewToken[BinarySortArray.SymbolKey];
-      return keys.get(key) && viewToken.chainInfo.chainId === chainId;
-    });
-  });
-
-  filterLowBalanceTokens = computedFn((viewTokens: ReadonlyArray<ViewToken>): ViewToken[] => {
-    return viewTokens.filter(viewToken => {
-      // Hide the unknown ibc tokens.
-      if ('paths' in viewToken.token.currency && !viewToken.token.currency.originCurrency) {
-        return false;
-      }
-
-      // If currency has coinGeckoId, hide the low price tokens (under $1)
-      if (viewToken.token.currency.coinGeckoId != null) {
-        return this.priceStore.calculatePrice(viewToken.token, 'usd')?.toDec().gte(new Dec('1')) ?? false;
-      }
-
-      // Else, hide the low balance tokens (under 0.001)
-      return viewToken.token.toDec().gte(new Dec('0.001'));
-    });
-  });
+  );
 
   @computed
   get stakables(): ViewToken[] {
@@ -248,7 +288,7 @@ export class HugeQueriesStore {
       const key = `${chainInfo.chainIdentifier}/${chainInfo.stakeCurrency.coinMinimalDenom}`;
       keys.set(key, true);
     }
-    return this.balanceBinarySort.arr.filter(viewToken => {
+    return this.balanceBinarySort.arr.filter((viewToken) => {
       const key = viewToken[BinarySortArray.SymbolKey];
       return keys.get(key);
     });
@@ -259,11 +299,17 @@ export class HugeQueriesStore {
     const keys: Map<string, boolean> = new Map();
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       for (const currency of chainInfo.currencies) {
-        if (currency.coinMinimalDenom === chainInfo.stakeCurrency?.coinMinimalDenom) {
+        if (
+          currency.coinMinimalDenom ===
+          chainInfo.stakeCurrency?.coinMinimalDenom
+        ) {
           continue;
         }
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        if (denomHelper.type === 'native' && denomHelper.denom.startsWith('ibc/')) {
+        if (
+          denomHelper.type === "native" &&
+          denomHelper.denom.startsWith("ibc/")
+        ) {
           continue;
         }
 
@@ -271,7 +317,7 @@ export class HugeQueriesStore {
         keys.set(key, true);
       }
     }
-    return this.balanceBinarySort.arr.filter(viewToken => {
+    return this.balanceBinarySort.arr.filter((viewToken) => {
       const key = viewToken[BinarySortArray.SymbolKey];
       return keys.get(key);
     });
@@ -283,13 +329,16 @@ export class HugeQueriesStore {
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       for (const currency of chainInfo.currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        if (denomHelper.type === 'native' && denomHelper.denom.startsWith('ibc/')) {
+        if (
+          denomHelper.type === "native" &&
+          denomHelper.denom.startsWith("ibc/")
+        ) {
           const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
           keys.set(key, true);
         }
       }
     }
-    return this.balanceBinarySort.arr.filter(viewToken => {
+    return this.balanceBinarySort.arr.filter((viewToken) => {
       const key = viewToken[BinarySortArray.SymbolKey];
       return keys.get(key);
     });
@@ -301,11 +350,17 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryDelegation = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+      const queryDelegation =
+        queries.cosmos.queryDelegations.getQueryBech32Address(
+          account.bech32Address
+        );
       if (!queryDelegation.total) {
         continue;
       }
@@ -317,7 +372,7 @@ export class HugeQueriesStore {
         token: queryDelegation.total,
         price: this.priceStore.calculatePrice(queryDelegation.total),
         isFetching: queryDelegation.isFetching,
-        error: queryDelegation.error
+        error: queryDelegation.error,
       });
     }
 
@@ -337,11 +392,17 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address);
+      const queryUnbonding =
+        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+          account.bech32Address
+        );
 
       for (let i = 0; i < queryUnbonding.unbondings.length; i++) {
         const unbonding = queryUnbonding.unbondings[i];
@@ -350,7 +411,10 @@ export class HugeQueriesStore {
           if (!chainInfo.stakeCurrency) {
             continue;
           }
-          const balance = new CoinPretty(chainInfo.stakeCurrency, entry.balance);
+          const balance = new CoinPretty(
+            chainInfo.stakeCurrency,
+            entry.balance
+          );
 
           const key = `${chainInfo.chainId}/${account.bech32Address}/${i}/${j}`;
           prevKeyMap.delete(key);
@@ -360,9 +424,9 @@ export class HugeQueriesStore {
               token: balance,
               price: this.priceStore.calculatePrice(balance),
               isFetching: queryUnbonding.isFetching,
-              error: queryUnbonding.error
+              error: queryUnbonding.error,
             },
-            completeTime: entry.completion_time
+            completeTime: entry.completion_time,
           });
         }
       }
@@ -383,17 +447,27 @@ export class HugeQueriesStore {
 
   @action
   protected updateClaimableRewards(): void {
-    const prevKeyMap = new Map(this.claimableRewardsBinarySort.indexForKeyMap());
+    const prevKeyMap = new Map(
+      this.claimableRewardsBinarySort.indexForKeyMap()
+    );
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       const account = this.accountStore.getAccount(chainInfo.chainId);
-      if (account.bech32Address === '' || chainInfo.features.includes('not-support-staking')) {
+      if (
+        account.bech32Address === "" ||
+        chainInfo.features.includes("not-support-staking")
+      ) {
         continue;
       }
       const queries = this.queriesStore.get(chainInfo.chainId);
-      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
 
-      if (queryRewards.stakableReward && queryRewards.stakableReward.toDec().gt(new Dec(0))) {
+      if (
+        queryRewards.stakableReward &&
+        queryRewards.stakableReward.toDec().gt(new Dec(0))
+      ) {
         const key = `${chainInfo.chainId}/${account.bech32Address}`;
         prevKeyMap.delete(key);
         this.claimableRewardsBinarySort.pushAndSort(key, {
@@ -401,7 +475,7 @@ export class HugeQueriesStore {
           token: queryRewards.stakableReward,
           price: this.priceStore.calculatePrice(queryRewards.stakableReward),
           isFetching: queryRewards.isFetching,
-          error: queryRewards.error
+          error: queryRewards.error,
         });
       }
     }
@@ -449,7 +523,9 @@ export class HugeQueriesStore {
       const address = account.addressDisplay;
       const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
       if (!mapChainNetwork) continue;
-      data[mapChainNetwork] = chainInfo.features.includes('oasis-address') ? getOasisAddress(address) : address;
+      data[mapChainNetwork] = chainInfo.features.includes("oasis-address")
+        ? getOasisAddress(address)
+        : address;
     }
     return data;
   }

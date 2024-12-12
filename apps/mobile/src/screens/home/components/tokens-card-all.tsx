@@ -236,11 +236,11 @@ const TokenItem: FC<{
   if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
-    if (
-      !item.token?.currency?.coinGeckoId ||
-      !item.token?.currency?.coinImageUrl
-    )
-      return;
+    // if (
+    //   !item.token?.currency?.coinGeckoId ||
+    //   !item.token?.currency?.coinImageUrl
+    // )
+    //   return;
     navigate(SCREENS.TokenDetails, {
       item,
     });

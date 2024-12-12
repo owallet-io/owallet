@@ -10,7 +10,7 @@ import {
 import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { IntPretty } from "@keplr-wallet/unit";
-
+import { decode, encode } from "bs58";
 import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
 import { ethers } from "ethers";
@@ -20,6 +20,7 @@ import isValidDomain from "is-valid-domain";
 import { Bech32Config } from "@owallet/types";
 import "dotenv/config";
 import { validate } from "bitcoin-address-validation";
+import { Transaction, VersionedTransaction } from "@solana/web3.js";
 
 export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
@@ -32,6 +33,220 @@ export const getFavicon = (url) => {
   if (!url) return serviceGG + "https://orai.io";
   return serviceGG + url;
 };
+export const deserializeTransaction = (
+  serializedTx: string
+): VersionedTransaction => {
+  return VersionedTransaction.deserialize(decode(serializedTx));
+};
+
+export const deserializeLegacyTransaction = (serializedTx: string) => {
+  return Transaction.from(decode(serializedTx));
+};
+export const DEFAULT_PRIORITY_FEE = 50000;
+export const DEFAULT_COMPUTE_UNIT_LIMIT = 200_000;
+
+export async function _getPriorityFeeSolana(
+  transaction: string
+): Promise<number> {
+  try {
+    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "apollographql-client-name": "backpack-secure-ui",
+      },
+      body: JSON.stringify({
+        query: `query GetPriorityFeeEstimate($caip2: Caip2!, $transaction: String!) {
+  priorityFeeEstimate(caip2: $caip2, transaction: $transaction)
+}`,
+        variables: {
+          caip2: {
+            namespace: "solana",
+            reference: "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+          },
+          transaction,
+        },
+        operationName: "GetPriorityFeeEstimate",
+      }),
+    });
+
+    const json = await resp.json();
+    return json.data?.priorityFeeEstimate ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function getSimulationTxSolana(
+  transactions: Array<string>,
+  chainId: string,
+  account_address: string,
+  url: string
+) {
+  try {
+    const resp = await fetch(
+      `https://blockaid.xnftdata.com/v0/solana/message/scan`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          transactions: transactions,
+          chain: chainId,
+          account_address,
+          metadata: {
+            url,
+          },
+        }),
+      }
+    );
+
+    const json = await resp.json();
+    if (json?.status !== "SUCCESS") return;
+    return json.result;
+  } catch (e) {
+    console.log(e, "errr fetch data");
+  }
+}
+
+export async function _getBalancesSolana(
+  address: string,
+  chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+): Promise<number> {
+  try {
+    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "apollographql-client-name": "backpack-secure-ui",
+      },
+      body: JSON.stringify({
+        query: `query GetTokenBalances($address: String!, $caip2: Caip2!, $providerId: ProviderID!) {
+  wallet(address: $address, caip2: $caip2, providerId: $providerId) {
+    id
+    balances {
+      id
+      aggregate {
+        ...BalanceAggregateItem
+        __typename
+      }
+      tokens {
+        edges {
+          node {
+            ...TokenBalanceItem
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment TokenMarketDataItem on MarketData {
+  id
+  marketUrl
+  percentChange
+  price
+  value
+  valueChange
+  __typename
+}
+
+fragment TokenSolanaInfoItem on SolanaTokenInfo {
+  id
+  compressed
+  extensions {
+    id
+    currentInterestRate
+    group
+    permanentDelegate
+    transferFeePercentage
+    transferHook
+    __typename
+  }
+  spl20 {
+    id
+    amount
+    ticker
+    __typename
+  }
+  tokenProgram
+  __typename
+}
+
+fragment TokenMetadataItem on TokenListEntry {
+  id
+  address
+  decimals
+  logo
+  name
+  symbol
+  coingeckoId
+  __typename
+}
+
+fragment BalanceAggregateItem on BalanceAggregate {
+  id
+  percentChange
+  value
+  valueChange
+  __typename
+}
+
+fragment TokenBalanceItem on TokenBalance {
+  id
+  address
+  amount
+  decimals
+  displayAmount
+  marketData {
+    ...TokenMarketDataItem
+    __typename
+  }
+  solana {
+    ...TokenSolanaInfoItem
+    __typename
+  }
+  token
+  tokenListEntry {
+    ...TokenMetadataItem
+    __typename
+  }
+  __typename
+}`,
+        variables: {
+          caip2: {
+            namespace: "solana",
+            reference: chainId,
+          },
+          address,
+          providerId: "SOLANA",
+        },
+        operationName: "GetTokenBalances",
+      }),
+    });
+
+    const json = await resp.json();
+    return json.data;
+  } catch {
+    return 0;
+  }
+}
+
+export const SOL_DEV = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1";
+export const SOL_MAIN = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp";
+export const CHAIN_ID_SOL = SOL_MAIN;
+export const RPC_SOL_DEV = "https://api.devnet.solana.com";
+export const RPC_SOL_MAIN = "https://swr.xnftdata.com/rpc-proxy/";
+export const RPC_SOL = RPC_SOL_MAIN;
 export const formatAprString = (apr?: IntPretty, maxDecimals?: number) => {
   if (apr === undefined) {
     return "0.00";

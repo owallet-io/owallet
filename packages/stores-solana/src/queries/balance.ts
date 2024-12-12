@@ -1,17 +1,22 @@
-import { DenomHelper, parseRpcBalance } from "@owallet/common";
+import {
+  _getBalancesSolana,
+  API,
+  DenomHelper,
+  Network,
+  parseRpcBalance,
+} from "@owallet/common";
 import {
   BalanceRegistry,
   ChainGetter,
   IObservableQueryBalanceImpl,
   ObservableQuery,
+  QueryResponse,
   QuerySharedContext,
 } from "@owallet/stores";
 import { AppCurrency, ChainInfo } from "@owallet/types";
 import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
-// import * as oasis from "@oasisprotocol/client";
-// import { staking } from "@oasisprotocol/client";
-
+const tokenNative = "11111111111111111111111111111111";
 export class ObservableQuerySvmAccountBalanceImpl
   extends ObservableQuery<string, any>
   implements IObservableQueryBalanceImpl
@@ -21,7 +26,7 @@ export class ObservableQuerySvmAccountBalanceImpl
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly denomHelper: DenomHelper,
-    protected readonly bech32Address: string
+    protected readonly walletAddress: string
   ) {
     super(sharedContext, "", "");
 
@@ -30,25 +35,30 @@ export class ObservableQuerySvmAccountBalanceImpl
 
   protected override canFetch(): boolean {
     // If ethereum hex address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address.length > 0;
+    return this.walletAddress.length > 0;
   }
 
   @computed
   get balance(): CoinPretty {
-    const denom = this.denomHelper.denom;
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const currency = chainInfo.currencies.find(
-      (cur) => cur.coinMinimalDenom === denom
-    );
-    if (!currency) {
-      throw new Error(`Unknown currency: ${denom}`);
-    }
-
+    const currency = this.currency;
+    const denom = this.denomHelper.denom.replace("spl:", "");
     if (!this.response || !this.response.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
+    const tokenInfos = (this.response.data as any)?.wallet.balances.tokens
+      .edges;
+    if (!tokenInfos?.length) return;
 
-    return new CoinPretty(currency, new Int(BigInt(this.response.data)));
+    const token = tokenInfos.find((item, index) => {
+      if (denom === "sol") {
+        return item.node.token === tokenNative;
+      }
+      return item.node.token === denom;
+    });
+    if (!token) {
+      return new CoinPretty(currency, new Int(0)).ready(false);
+    }
+    return new CoinPretty(currency, new Int(token.node.amount));
   }
 
   @computed
@@ -59,25 +69,79 @@ export class ObservableQuerySvmAccountBalanceImpl
     return chainInfo.forceFindCurrency(denom);
   }
 
+  protected override getCacheKey(): string {
+    return `${super.getCacheKey()}-${this.walletAddress}-${
+      this.denomHelper.denom
+    }`;
+  }
+
+  protected onReceiveResponse(_: Readonly<QueryResponse<string>>) {
+    super.onReceiveResponse(_);
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const tokenInfos = (_.data as any)?.wallet.balances.tokens.edges;
+    if (!tokenInfos?.length) return;
+
+    // // 5. Map token metadata to currencies
+    const allTokenAddress = tokenInfos.filter(
+      (item, index) => item.node.tokenListEntry.address !== tokenNative
+    );
+    if (!allTokenAddress?.length) return;
+    const tokenAddresses = allTokenAddress
+      .map((item, index) => {
+        return `${Network.SOLANA}%2B${item.node.tokenListEntry.address}`;
+      })
+      .join(",");
+    API.getMultipleTokenInfo({
+      tokenAddresses: tokenAddresses,
+    })
+      .then((tokenInfosAll) => {
+        const currencyInfo = allTokenAddress.map((item) => {
+          const coinGeckoId = tokenInfosAll.find(
+            (token) => token.contractAddress == item.node.tokenListEntry.address
+          );
+          return {
+            coinImageUrl: item.node.tokenListEntry.logo,
+            coinDenom: item.node.tokenListEntry.symbol,
+            coinGeckoId:
+              coinGeckoId?.coingeckoId || item.node.tokenListEntry.coingeckoId,
+            coinDecimals: item.node.tokenListEntry.decimals,
+            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+          };
+        });
+        // // 6. Update chain info with currencies
+        chainInfo.addCurrencies(...currencyInfo);
+      })
+      .catch((e) => {
+        const currencyInfo = allTokenAddress.map((item) => {
+          return {
+            coinImageUrl: item.node.tokenListEntry.logo,
+            coinDenom: item.node.tokenListEntry.symbol,
+            coinGeckoId: item.node.tokenListEntry.coingeckoId,
+            coinDecimals: item.node.tokenListEntry.decimals,
+            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+          };
+        });
+        // // 6. Update chain info with currencies
+        chainInfo.addCurrencies(...currencyInfo);
+      });
+  }
+
+  async fetchSplBalances() {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    return (await _getBalancesSolana(
+      this.walletAddress,
+      chainInfo.chainId.replace("solana:", "")
+    )) as any;
+  }
+
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
-    // const chainInfo = this.chainGetter.getChain(this.chainId);
-    // const nic = new oasis.client.NodeInternal(chainInfo.grpc);
-    // const publicKey = await staking.addressFromBech32(this.bech32Address);
-    // const account = await nic.stakingAccount({ owner: publicKey, height: 0 });
-    // const grpcBalance = parseRpcBalance(account);
-    // return {
-    //   headers: {},
-    //   data: grpcBalance.available,
-    // };
-    return;
-  }
-
-  protected override getCacheKey(): string {
-    return `${super.getCacheKey()}-${this.bech32Address}-${
-      this.denomHelper.denom
-    }`;
+    const data = await this.fetchSplBalances();
+    return {
+      data: data,
+      headers: null,
+    };
   }
 }
 
@@ -95,8 +159,7 @@ export class ObservableQuerySvmAccountBalanceRegistry
   ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
-    if (!chainInfo.features.includes("oasis") || denomHelper.type !== "native")
-      return;
+    if (!chainInfo.chainId.includes("solana")) return;
     return new ObservableQuerySvmAccountBalanceImpl(
       this.sharedContext,
       chainId,
