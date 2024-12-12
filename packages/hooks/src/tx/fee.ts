@@ -331,7 +331,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     if (!this.fee) {
       res = [];
     } else if ("type" in this.fee) {
-      console.log("goes type case fee 1", this.fee);
       res = [
         {
           amount: this.getFeeTypePrettyForFeeCurrency(
@@ -341,11 +340,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           currency: this.fee.currency,
         },
       ];
-
-      console.log("goes type case res 1", res);
     } else {
-      console.log("goes else case fee", this.fee);
-
       res = this.fee.map((fee) => {
         return {
           amount: fee
@@ -358,8 +353,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           currency: fee.currency,
         };
       });
-
-      console.log("goes else case res", res);
     }
 
     if (
@@ -866,9 +859,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             );
             const maxFeePerGas = baseFeePerGasDec.add(maxPriorityFeePerGasDec);
 
-            console.log("maxPriorityFeePerGasDec", maxPriorityFeePerGasDec);
-            console.log("maxFeePerGas", maxFeePerGas);
-
             return {
               maxPriorityFeePerGas: maxPriorityFeePerGasDec.truncateDec(),
               maxFeePerGas: maxFeePerGas.truncateDec(),
@@ -1149,8 +1139,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             bal.currency.coinMinimalDenom === need.currency.coinMinimalDenom
         );
 
-      console.log("this.senderConfig.value", this.senderConfig.value);
-
       if (!bal) {
         return {
           warning: new Error(
@@ -1170,9 +1158,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           loadingState: "loading-block",
         };
       }
-
-      console.log("bal.balance.toCoin().amount 2", bal.balance.toCoin().amount);
-      console.log("need.amount", need.amount);
 
       if (new Int(bal.balance.toCoin().amount).lt(new Int(need.amount))) {
         return {
