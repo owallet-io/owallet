@@ -1191,7 +1191,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
     txExplorer: {
       name: "Neutaro",
-      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
+      txUrl: "https://explorer.neutaro.io/Neutaro/tx/{txHash}",
       //TODO: Not found account explorer for neutaro
       accountUrl: "https://nms1.neutaro.tech/account/{address}",
     },
