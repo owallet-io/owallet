@@ -113,6 +113,7 @@ export class KeyRingSvmService {
             const signedTx = VersionedTransaction.deserialize(
               decode(res.signingData)
             );
+            //@ts-ignore
             signedTx.addSignature(new PublicKey(signer), decode(signature));
             return {
               signature,
@@ -184,6 +185,7 @@ export class KeyRingSvmService {
                   txMessage
                 );
                 const signedTx = VersionedTransaction.deserialize(decode(tx));
+                //@ts-ignore
                 signedTx.addSignature(new PublicKey(signer), decode(signature));
                 signatures.push({
                   signedTx: encode(signedTx.serialize()),

@@ -20,7 +20,13 @@ import isValidDomain from "is-valid-domain";
 import { Bech32Config } from "@owallet/types";
 import "dotenv/config";
 import { validate } from "bitcoin-address-validation";
-import { Transaction, VersionedTransaction } from "@solana/web3.js";
+import {
+  Connection,
+  Finality,
+  GetVersionedTransactionConfig,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
 
 export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
@@ -111,7 +117,42 @@ export async function getSimulationTxSolana(
     console.log(e, "errr fetch data");
   }
 }
+export async function confirmTransaction(
+  c: Connection,
+  txSig: string,
+  commitmentOrConfig?: GetVersionedTransactionConfig | Finality
+): Promise<ReturnType<(typeof c)["getParsedTransaction"]>> {
+  return new Promise(async (resolve, reject) => {
+    setTimeout(
+      () =>
+        reject(new Error(`30 second timeout: unable to confirm transaction`)),
+      30000
+    );
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
+    const config = {
+      // Support confirming Versioned Transactions
+      maxSupportedTransactionVersion: 0,
+      ...(typeof commitmentOrConfig === "string"
+        ? {
+            commitment: commitmentOrConfig,
+          }
+        : commitmentOrConfig),
+    };
+
+    let tx = await c.getParsedTransaction(txSig, config);
+    while (tx === null) {
+      tx = await c.getParsedTransaction(txSig, config);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    resolve(tx);
+  });
+}
+export const isVersionedTransaction = (
+  tx: Transaction | VersionedTransaction
+): tx is VersionedTransaction => {
+  return "version" in tx;
+};
 export async function _getBalancesSolana(
   address: string,
   chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"

@@ -20,6 +20,21 @@ import * as oasis from "@oasisprotocol/client";
 import { types } from "@oasisprotocol/client";
 import { TransactionBtcType } from "../btc";
 import { ITronProvider } from "../tron";
+import {
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from "@solana/wallet-standard-features";
+import { OWalletSolana } from "@oraichain/owallet-wallet-standard/src/window";
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -267,17 +282,39 @@ export interface IOasisProvider extends EventEmitter {
     type: TransactionType
   ): Promise<types.SignatureSigned>;
 }
-export interface ISolanaProvider extends EventEmitter {
+export interface ISolanaProvider extends OWalletSolana {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
-  // sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string>;
-  // sign(
-  //     chainId: string,
-  //     signer: string,
-  //     data: string | Uint8Array,
-  //     type: TransactionType
-  // ): Promise<types.SignatureSigned>;
 }
+// export interface ISolanaProvider extends EventEmitter {
+//   getKey(chainId: string): Promise<Key>;
+//   publicKey: PublicKey | null;
+//   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+//   connect(options?: {
+//     onlyIfTrusted?: boolean;
+//     reconnect?: boolean;
+//   }): Promise<{ publicKey: PublicKey }>;
+//   disconnect(): Promise<void>;
+//   signTransaction<T extends Transaction | VersionedTransaction>(
+//     tx: T,
+//     publicKey?: PublicKey,
+//     connection?: Connection
+//   ): Promise<T>;
+//   signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput>;
+//   signAndSendTransaction<T extends Transaction | VersionedTransaction>(
+//     transaction: T,
+//     options?: SendOptions
+//   ): Promise<{ signature: TransactionSignature }>;
+//   signMessage(
+//     msg: Uint8Array,
+//     publicKey?: PublicKey
+//   ): Promise<{ signature: Uint8Array }>;
+//   signAllTransactions<T extends Transaction | VersionedTransaction>(
+//     txs: Array<T>,
+//     publicKey?: PublicKey,
+//     connection?: Connection
+//   ): Promise<Array<T>>;
+// }
 export interface IBitcoinProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;

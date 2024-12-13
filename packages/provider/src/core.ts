@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   ChainInfo,
   EthSignType,
@@ -43,7 +44,24 @@ import { OWalletCoreTypes } from "./core-types";
 import EventEmitter from "events";
 import { ChainIdEVM, TW } from "@owallet/types";
 import { types } from "@oasisprotocol/client";
-
+import {
+  Commitment,
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import {
+  confirmTransaction,
+  deserializeTransaction,
+  isVersionedTransaction,
+} from "@owallet/common";
+import { CHAIN_ID_SOL, RPC_SOL } from "@owallet/common";
+import { encode, decode } from "bs58";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
 export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
@@ -1625,14 +1643,16 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
 }
 
 class SolanaProvider extends EventEmitter implements ISolanaProvider {
+  private connection: Connection;
   constructor(
     protected readonly owallet: OWallet,
     protected readonly requester: MessageRequester
   ) {
     super();
+    this.connection = new Connection(RPC_SOL, "confirmed");
   }
 
-  async getKey(chainId: string): Promise<Key> {
+  async getKey(chainId: string, onlyIfTrusted: boolean): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
@@ -1642,6 +1662,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         "get-svm-key",
         {
           chainId,
+          silent: onlyIfTrusted,
         }
       )
         .then(resolve)
@@ -1657,7 +1678,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   }
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
-    console.log(chainIds, "get-svm-keys-settled chainIds");
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
@@ -1679,6 +1699,252 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         }
       }, 100);
     });
+  }
+  async connect(options?: {
+    onlyIfTrusted?: boolean;
+  }): Promise<{ publicKey: PublicKey }> {
+    const chainIds = [CHAIN_ID_SOL];
+    const key = await this.getKey(chainIds[0], options?.onlyIfTrusted);
+    // const msg = new GetKeyMsg(chainIds[0], options?.onlyIfTrusted);
+    // const key = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return { publicKey: new PublicKey(key.base58Address) };
+  }
+
+  public async signAllTransactions<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    txs: T[];
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+  }): Promise<T[]> {
+    const publicKey = request.publicKey;
+
+    const txStrs = await Promise.all(
+      request.txs.map(async (tx) => {
+        const txDecoded = deserializeTransaction(tx);
+        const preparedTx = await this.prepareTransaction({
+          publicKey: request.publicKey,
+          tx: txDecoded,
+          signers: request.signers,
+          customConnection: request.customConnection,
+          commitment: request.commitment,
+        });
+        return encode(preparedTx.serialize({ requireAllSignatures: false }));
+      })
+    );
+    const signatures = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-all-transaction-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: publicKey,
+        txs: txStrs,
+      }
+    );
+
+    // const msg = new RequestSignAllTransactionSvm(
+    //     CHAIN_ID_SOL,
+    //     publicKey,
+    //     txStrs
+    // );
+    // const signatures = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+
+    if (!signatures) {
+      throw Error("Transaction Rejected");
+    }
+
+    return signatures;
+  }
+
+  public async signAndSendTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    const options = request.options;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+    const finality = commitment === "finalized" ? "finalized" : "confirmed";
+
+    const signature = await this.send({
+      ...request,
+      options: {
+        commitment: "confirmed",
+        preflightCommitment: "confirmed",
+        ...request.options,
+      },
+    });
+    await confirmTransaction(this.connection, signature, finality);
+    return signature;
+  }
+
+  public async send<T extends Transaction | VersionedTransaction>(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    // const tx = request.tx;
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
+    const signers = request.signers;
+    const publicKey = request.publicKey;
+    const options = request.options;
+    const connection = request.customConnection ?? this.connection;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+
+    const result = await this.signTransaction({
+      tx,
+      signers,
+      publicKey,
+      customConnection: request.customConnection,
+      commitment,
+    });
+    const signedTx = VersionedTransaction.deserialize(
+      decode(result.signedTx)
+    ) as T;
+    const serializedTransaction = signedTx.serialize();
+    return connection.sendRawTransaction(serializedTransaction, options);
+  }
+
+  public async signIn(input?: SolanaSignInInput): Promise<{
+    signedMessage: string;
+    signature: string;
+    publicKey: string;
+    connectionUrl: string;
+  }> {
+    if (!input) throw Error("Transaction Rejected");
+    // const msg = new RequestSignInSvm(CHAIN_ID_SOL, input.address, input);
+    const result = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-in-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: input.address,
+        inputs: input,
+      }
+    );
+    // const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (!result) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
+
+  async disconnect(): Promise<void> {
+    //TODO: need handle
+    return;
+  }
+
+  public async signTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
+    const preparedTx = await this.prepareTransaction({
+      ...request,
+      tx,
+    });
+    const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
+    const result = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-transaction-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: publicKey,
+        inputs: txStr,
+      }
+    );
+    // const msg = new RequestSignTransactionSvm(CHAIN_ID_SOL, publicKey, txStr);
+    // const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (!result?.signature || !result?.signedTx) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
+
+  public async signMessage(request: {
+    publicKey: PublicKey;
+    message: Uint8Array;
+  }): Promise<Uint8Array> {
+    const svmResponse = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-message-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: request.publicKey,
+        inputs: encode(request.message),
+      }
+    );
+    // const msg = new RequestSignMessageSvm(
+    //     CHAIN_ID_SOL,
+    //     request.publicKey,
+    //     encode(request.message)
+    // );
+    // const svmResponse = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return decode(svmResponse.signedMessage);
+  }
+
+  private async prepareTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    commitment?: Commitment;
+    customConnection?: Connection;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    const signers = request.signers;
+    const connection = request.customConnection ?? this.connection;
+    const commitment = request.commitment;
+    const tx = request.tx;
+    if (!isVersionedTransaction(tx)) {
+      if (signers) {
+        signers.forEach((s: Signer) => {
+          tx.partialSign(s);
+        });
+      }
+      if (!tx.feePayer) {
+        tx.feePayer = publicKey;
+      }
+      if (!tx.recentBlockhash) {
+        const { blockhash } = await connection.getLatestBlockhash(commitment);
+        tx.recentBlockhash = blockhash;
+      }
+    } else {
+      if (signers) {
+        tx.sign(signers);
+      }
+    }
+    return tx;
   }
 }
 
