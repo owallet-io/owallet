@@ -25,10 +25,11 @@ import { Checkbox } from "../../components/checkbox";
 import { Caption2 } from "../../components/typography";
 import { ColorPalette } from "../../styles";
 import { FormattedMessage, useIntl } from "react-intl";
-import styled, { useTheme } from "styled-components";
+import styled, { useTheme, css } from "styled-components";
 import { DenomHelper } from "@owallet/common";
 import { TokenDetailModal } from "./token-detail";
 import { useSearchParams } from "react-router-dom";
+import Color from "color";
 
 const zeroDec = new Dec(0);
 
@@ -47,6 +48,41 @@ const NewTokenFoundButton = styled(TextButton)`
     }
   }
 `;
+
+const StylesCustom = {
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0.875rem"};
+    border-radius: 0.375rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
+  `,
+  IconContainer: styled.div`
+    color: ${ColorPalette["gray-300"]};
+  `,
+};
 
 export const AvailableTabView: FunctionComponent<{
   search: string;
@@ -197,7 +233,7 @@ export const AvailableTabView: FunctionComponent<{
             isNotReady={isNotReady}
           />
         ) : (
-          <React.Fragment>
+          <StylesCustom.Container>
             <Stack gutter="0.5rem">
               {TokenViewData.map(
                 ({ title, balance, lenAlwaysShown, tooltip }) => {
@@ -372,7 +408,7 @@ export const AvailableTabView: FunctionComponent<{
                 </YAxis>
               </Box>
             ) : null}
-          </React.Fragment>
+          </StylesCustom.Container>
         )}
 
         <Modal

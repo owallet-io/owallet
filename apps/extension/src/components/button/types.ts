@@ -3,6 +3,7 @@ import React, { CSSProperties } from "react";
 export type ButtonColor = "primary" | "secondary" | "danger";
 export type ButtonTheme = "dark" | "light";
 export type ButtonMode = "fill";
+export type ButtonShape = "round" | " square";
 export type ButtonType = "button" | "submit" | "reset";
 export type ButtonSize =
   | "default"
@@ -14,6 +15,7 @@ export type ButtonSize =
 export interface ButtonProps {
   color?: ButtonColor;
   mode?: ButtonMode;
+  shape?: ButtonShape;
   size?: ButtonSize;
   disabled?: boolean;
   left?: React.ReactNode;

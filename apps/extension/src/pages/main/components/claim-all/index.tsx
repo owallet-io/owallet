@@ -524,7 +524,6 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
                   .toString(),
               };
 
-              // USD 기준으로 average fee가 0.2달러를 넘으면 low로 설정해서 보낸다.
               const averageFeePrice = await priceStore.waitCalculatePrice(
                 new CoinPretty(feeCurrency, fee.amount),
                 "usd"
@@ -773,8 +772,7 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
           }
         }
       }
-      // 펼쳐지면서 그 때 loading 중이 아닐 경우에 에러를 지워준다.
-      // 펼쳐지는 순간에만 발생해야하기 때문에 claimAllIsLoading는 deps에서 없어야한다.
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isExpanded]);
 

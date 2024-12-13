@@ -29,7 +29,10 @@ import {
   QuestionIcon,
 } from "../../../../components/icon";
 import styled, { css, useTheme } from "styled-components";
-import { CurrencyImageFallback } from "../../../../components/image";
+import {
+  ChainImageFallback,
+  CurrencyImageFallback,
+} from "../../../../components/image";
 import { Tooltip } from "../../../../components/tooltip";
 import { DenomHelper } from "@owallet/common";
 import { XAxis } from "../../../../components/axis";
@@ -60,7 +63,6 @@ const Styles = {
         : ColorPalette["gray-650"]};
     padding ${({ forChange }) =>
       forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0.875rem"};
-    border-radius: 0.375rem;
     cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
     
     border: ${({ isError }) =>
@@ -70,11 +72,8 @@ const Styles = {
             .toString()}`
         : undefined};
 
-    box-shadow: ${(props) =>
-      props.theme.mode === "light" && !props.isNotReady
-        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
-        : "none"};;
-    
+    border-bottom: 1px solid ${ColorPalette["gray-50"]};
+
     ${({ disabled, theme }) => {
       if (!disabled) {
         return css`
@@ -157,7 +156,6 @@ interface TokenItemProps {
   // If this prop is provided, the copied button will be shown.
   copyAddress?: string;
 
-  // swap destination select 페이지에서 balance 숨기기 위한 옵션
   hideBalance?: boolean;
   showPrice24HChange?: boolean;
 }
@@ -284,6 +282,20 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
               currency={viewToken.token.currency}
               size="2rem"
             />
+            <Box
+              style={{
+                position: "absolute",
+                right: -10,
+                bottom: -6,
+                borderWidth: 1,
+                borderColor: ColorPalette["black"],
+              }}
+            >
+              <ChainImageFallback
+                chainInfo={viewToken.chainInfo}
+                size="1.1rem"
+              />
+            </Box>
           </Skeleton>
 
           <Gutter size="0.75rem" />
@@ -533,9 +545,7 @@ const DelayedLoadingRender: FunctionComponent<
         () => {
           setShow(true);
         },
-        // 유저가 토큰이 많은 경우에 locla state load하고 render하는데만 해도 500ms 가까이 걸리는 경우가 있다.
-        // 이런 경우에는 이 컴포넌트의 목표를 달성하지 못한건데...
-        // 일단 간단하게 그냥 처음에는 1초 기다리도록 처리한다...
+
         initialOnLoad ? 500 : 1000
       );
 
@@ -582,9 +592,6 @@ const CopyAddressButton: FunctionComponent<{
 
   parentIsHover: boolean;
 }> = ({ address, parentIsHover }) => {
-  // 구현이 좀 복잡해지고 읽기 어렵긴한데...
-  // 머 별 중요한 컴포넌트는 아니니까 ㅋ;
-
   const INITIAL_COPY_ADDRESS_CONTAINER_SIZE = 20;
 
   const theme = useTheme();
@@ -629,11 +636,6 @@ const CopyAddressButton: FunctionComponent<{
     }[]
   >([]);
 
-  // animateStack, pushAnimation는 컴포넌트 라이프사이클 동안 변하지 않아야 한다.
-  // useRef으로도 할 수 있을 것 같기는한데 일단 useCallback으로 했다.
-  // 이 함수들은 한번만 생성되고, 그 이후로는 변하지 않는다.
-  // 그러므로 deps는 무조건 빈 배열 ([])이거나 변하지 않는 값들만 있어야한다.
-  // 나머지 로직들은 이를 가정하고 짰기 때문에 이 가정이 틀려지면 전체적으로 로직을 다시 살펴봐야한다.
   const animateStack = useCallback(() => {
     setAnimationStack((prev) => {
       const blockAnimationIndex = prev.findIndex(
@@ -846,12 +848,6 @@ const CopyAddressButton: FunctionComponent<{
           setIsHover(true);
         }}
         onMouseOver={() => {
-          // onMouseOut에 대해서는 처리하지 않는다.
-          // onMouseOver는 레이아웃에 변경에 의해서도 이벤트가 발생하기 때문에
-          // 좀 디테일한 케이스를 처리하기 위해서 사용한다.
-          // 근데 onMouseOut까지 하면 isHover 값이 여러가지 이유로 수시로 변해서...
-          // 근데 hover out의 경우는 딱히 처리할 case가 보이지 않기 때문에
-          // copy address가 별 중요한 기능은 아니기 때문에 문제를 해결하지 않고 그냥 생략한다.
           setIsHover(true);
         }}
         onMouseLeave={() => {
@@ -971,15 +967,7 @@ const PriceChangeTag: FunctionComponent<{
     text: string;
     isNeg: boolean;
   } = (() => {
-    // Max decimals가 2인데 이 경우 숫자가 0.00123%같은 경우면 +0.00% 같은식으로 표시될 수 있다.
-    // 이 경우는 오차를 무시하고 0.00%로 생각한다.
-    if (
-      rate
-        .toDec()
-        .abs()
-        // 백분율을 고려해야되기 때문에 -2가 아니라 -4임
-        .lte(DecUtils.getTenExponentN(-4))
-    ) {
+    if (rate.toDec().abs().lte(DecUtils.getTenExponentN(-4))) {
       return {
         text: "0.00%",
         isNeg: false,

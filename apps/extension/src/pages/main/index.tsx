@@ -259,7 +259,6 @@ export const MainPage: FunctionComponent<{
   ]);
 
   const [isOpenDepositModal, setIsOpenDepositModal] = React.useState(false);
-  const [isOpenBuy, setIsOpenBuy] = React.useState(false);
 
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [search, setSearch] = useState("");
@@ -410,45 +409,48 @@ export const MainPage: FunctionComponent<{
           setIsRefreshButtonLoading(isLoading);
         }}
       />
+
       <Box paddingX="0.75rem" paddingBottom="1.5rem">
         <Stack gutter="0.75rem">
-          <YAxis alignX="center">
-            <LayeredHorizontalRadioGroup
-              items={[
-                {
-                  key: "available",
-                  text: intl.formatMessage({
-                    id: "page.main.components.string-toggle.available-tab",
-                  }),
-                },
-                {
-                  key: "staked",
-                  text: intl.formatMessage({
-                    id: "page.main.components.string-toggle.staked-tab",
-                  }),
-                },
-              ]}
-              selectedKey={tabStatus}
-              onSelect={(key) => {
-                analyticsStore.logEvent("click_main_tab", {
-                  tabName: key,
-                });
+          <Styles.Container isNotReady={isNotReady}>
+            <YAxis alignX="center">
+              <LayeredHorizontalRadioGroup
+                items={[
+                  {
+                    key: "available",
+                    text: intl.formatMessage({
+                      id: "page.main.components.string-toggle.available-tab",
+                    }),
+                  },
+                  {
+                    key: "staked",
+                    text: intl.formatMessage({
+                      id: "page.main.components.string-toggle.staked-tab",
+                    }),
+                  },
+                ]}
+                selectedKey={tabStatus}
+                onSelect={(key) => {
+                  analyticsStore.logEvent("click_main_tab", {
+                    tabName: key,
+                  });
 
-                setTabStatus(key as TabStatus);
+                  setTabStatus(key as TabStatus);
+                }}
+                itemMinWidth="5.75rem"
+                isNotReady={isNotReady}
+              />
+            </YAxis>
+            <Gutter size="1rem" />
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
               }}
-              itemMinWidth="5.75rem"
-              isNotReady={isNotReady}
-            />
-          </YAxis>
-          <CopyAddress
-            onClick={() => {
-              analyticsStore.logEvent("click_copyAddress");
-              setIsOpenDepositModal(true);
-            }}
-            isNotReady={isNotReady}
-          />
-          <Box position="relative">
-            {/* <DualChart
+              position="relative"
+            >
+              {/* <DualChart
               first={{
                 weight: availableChartWeight,
               }}
@@ -458,140 +460,141 @@ export const MainPage: FunctionComponent<{
               highlight={tabStatus === "available" ? "first" : "second"}
               isNotReady={isNotReady}
             /> */}
-            <Box
-              position="absolute"
-              style={{
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
 
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Gutter size="2rem" />
               <Box
-                alignX={isNotReady ? "center" : undefined}
-                onHoverStateChange={(isHover) => {
-                  if (!isNotReady) {
-                    animatedPrivacyModeHover.start(isHover ? 1 : 0);
-                  } else {
-                    animatedPrivacyModeHover.set(0);
-                  }
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
                 }}
               >
-                <Skeleton isNotReady={isNotReady}>
-                  <YAxis alignX="center">
-                    <XAxis alignY="center">
-                      <Subtitle3
-                        style={{
-                          color: ColorPalette["gray-300"],
-                        }}
-                      >
-                        {tabStatus === "available"
-                          ? intl.formatMessage({
-                              id: "page.main.chart.available",
-                            })
-                          : intl.formatMessage({
-                              id: "page.main.chart.staked",
-                            })}
-                      </Subtitle3>
-                      <animated.div
-                        style={{
-                          position: "relative",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "center",
-                          height: "1px",
-                          overflowX: "clip",
-                          width: animatedPrivacyModeHover.to(
-                            (v) => `${v * 1.25}rem`
-                          ),
-                        }}
-                      >
-                        <Styles.PrivacyModeButton
-                          as={animated.div}
+                <Box
+                  alignX={isNotReady ? "center" : undefined}
+                  onHoverStateChange={(isHover) => {
+                    if (!isNotReady) {
+                      animatedPrivacyModeHover.start(isHover ? 1 : 0);
+                    } else {
+                      animatedPrivacyModeHover.set(0);
+                    }
+                  }}
+                >
+                  <Skeleton isNotReady={isNotReady}>
+                    <YAxis alignX="center">
+                      <XAxis alignY="center">
+                        <Subtitle3
                           style={{
-                            position: "absolute",
-                            right: 0,
-                            cursor: "pointer",
-                            opacity: animatedPrivacyModeHover.to((v) =>
-                              Math.max(0, (v - 0.3) * (10 / 3))
-                            ),
-                            marginTop: "2px",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-
-                            uiConfigStore.toggleIsPrivacyMode();
+                            color: ColorPalette["gray-300"],
                           }}
                         >
-                          {uiConfigStore.isPrivacyMode ? (
-                            <EyeSlashIcon width="1rem" height="1rem" />
-                          ) : (
-                            <EyeIcon width="1rem" height="1rem" />
-                          )}
-                        </Styles.PrivacyModeButton>
-                      </animated.div>
-                    </XAxis>
-                  </YAxis>
-                </Skeleton>
-                <Gutter size="0.5rem" />
-                <Skeleton isNotReady={isNotReady} dummyMinWidth="8.125rem">
-                  <H1
-                    style={{
-                      color:
-                        theme.mode === "light"
-                          ? ColorPalette["gray-700"]
-                          : ColorPalette["gray-10"],
-                      textAlign: "center",
-                    }}
-                  >
-                    {uiConfigStore.hideStringIfPrivacyMode(
-                      tabStatus === "available"
-                        ? availableTotalPrice?.toString() || "-"
-                        : stakedTotalPrice?.toString() || "-",
-                      4
-                    )}
-                  </H1>
-                </Skeleton>
+                          {tabStatus === "available"
+                            ? intl.formatMessage({
+                                id: "page.main.chart.available",
+                              })
+                            : intl.formatMessage({
+                                id: "page.main.chart.staked",
+                              })}
+                        </Subtitle3>
+                        <animated.div
+                          style={{
+                            position: "relative",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            height: "1px",
+                            overflowX: "clip",
+                            width: animatedPrivacyModeHover.to(
+                              (v) => `${v * 1.25}rem`
+                            ),
+                          }}
+                        >
+                          <Styles.PrivacyModeButton
+                            as={animated.div}
+                            style={{
+                              position: "absolute",
+                              right: 0,
+                              cursor: "pointer",
+                              opacity: animatedPrivacyModeHover.to((v) =>
+                                Math.max(0, (v - 0.3) * (10 / 3))
+                              ),
+                              marginTop: "2px",
+                            }}
+                            onClick={(e) => {
+                              e.preventDefault();
+
+                              uiConfigStore.toggleIsPrivacyMode();
+                            }}
+                          >
+                            {uiConfigStore.isPrivacyMode ? (
+                              <EyeSlashIcon width="1rem" height="1rem" />
+                            ) : (
+                              <EyeIcon width="1rem" height="1rem" />
+                            )}
+                          </Styles.PrivacyModeButton>
+                        </animated.div>
+                      </XAxis>
+                    </YAxis>
+                  </Skeleton>
+                  <Gutter size="0.5rem" />
+                  <Skeleton isNotReady={isNotReady} dummyMinWidth="8.125rem">
+                    <H1
+                      style={{
+                        color:
+                          theme.mode === "light"
+                            ? ColorPalette["gray-700"]
+                            : ColorPalette["gray-10"],
+                      }}
+                    >
+                      {uiConfigStore.hideStringIfPrivacyMode(
+                        tabStatus === "available"
+                          ? availableTotalPrice?.toString() || "-"
+                          : stakedTotalPrice?.toString() || "-",
+                        4
+                      )}
+                    </H1>
+                  </Skeleton>
+                </Box>
               </Box>
+              <CopyAddress
+                onClick={() => {
+                  analyticsStore.logEvent("click_copyAddress");
+                  setIsOpenDepositModal(true);
+                }}
+                isNotReady={isNotReady}
+              />
             </Box>
-          </Box>
-          {tabStatus === "available" ? (
-            <Buttons
-              onClickDeposit={() => {
-                setIsOpenDepositModal(true);
-                analyticsStore.logEvent("click_deposit");
-              }}
-              onClickBuy={() => setIsOpenBuy(true)}
-              isNotReady={isNotReady}
-            />
-          ) : null}
+            <Gutter size="1rem" />
+            {tabStatus === "available" ? (
+              <Buttons
+                onClickDeposit={() => {
+                  setIsOpenDepositModal(true);
+                  analyticsStore.logEvent("click_deposit");
+                }}
+                onClickBuy={() => {}}
+                isNotReady={isNotReady}
+              />
+            ) : null}
+            {tabStatus === "staked" && !isNotReady ? (
+              <StakeWithKeplrDashboardButton
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  analyticsStore.logEvent("click_owalletDashboard", {
+                    tabName: tabStatus,
+                  });
 
-          {tabStatus === "staked" && !isNotReady ? (
-            <StakeWithKeplrDashboardButton
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                analyticsStore.logEvent("click_keplrDashboard", {
-                  tabName: tabStatus,
-                });
-
-                browser.tabs.create({
-                  url: "https://wallet.keplr.app/?modal=staking",
-                });
-              }}
-            >
-              <FormattedMessage id="page.main.chart.stake-with-keplr-dashboard-button" />
-              <Box color={ColorPalette["gray-300"]} marginLeft="0.5rem">
-                <ArrowTopRightOnSquareIcon width="1rem" height="1rem" />
-              </Box>
-            </StakeWithKeplrDashboardButton>
-          ) : null}
+                  browser.tabs.create({
+                    url: "https://owallet.io/staking",
+                  });
+                }}
+              >
+                <FormattedMessage id="page.main.chart.stake-with-keplr-dashboard-button" />
+                <Box color={ColorPalette["gray-300"]} marginLeft="0.5rem">
+                  <ArrowTopRightOnSquareIcon width="1rem" height="1rem" />
+                </Box>
+              </StakeWithKeplrDashboardButton>
+            ) : null}
+          </Styles.Container>
 
           <ClaimAll isNotReady={isNotReady} />
 
@@ -746,6 +749,21 @@ export const MainPage: FunctionComponent<{
 });
 
 const Styles = {
+  Container: styled.div<{ isNotReady?: boolean }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+  `,
   PrivacyModeButton: styled.div`
     color: ${(props) =>
       props.theme.mode === "light"

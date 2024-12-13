@@ -37,7 +37,7 @@ export const Buttons: FunctionComponent<{
             />
           </Skeleton>
         </Column>
-
+        {/* 
         <Column weight={1}>
           <Skeleton type="button" isNotReady={isNotReady}>
             <Button
@@ -48,7 +48,7 @@ export const Buttons: FunctionComponent<{
               onClick={onClickBuy}
             />
           </Skeleton>
-        </Column>
+        </Column> */}
 
         <Column weight={1}>
           <Skeleton type="button" isNotReady={isNotReady}>

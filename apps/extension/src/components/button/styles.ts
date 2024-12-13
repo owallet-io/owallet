@@ -8,7 +8,8 @@ import {
   ButtonTheme,
 } from "./types";
 
-export const ButtonRadius = "0.375rem";
+// export const ButtonRadius = "0.375rem";
+export const ButtonRadius = "5rem";
 
 export const makeTextAndSvgColor = (color: string) => {
   return css`

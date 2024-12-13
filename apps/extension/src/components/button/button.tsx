@@ -14,6 +14,7 @@ export const Button: FunctionComponent<ButtonProps> = ({
   isLoading,
   textOverrideIcon,
   type,
+  shape = "round",
   ...otherProps
 }) => {
   return (
