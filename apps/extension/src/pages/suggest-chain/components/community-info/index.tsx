@@ -106,7 +106,7 @@ export const CommunityInfoView: FunctionComponent<{
               alt="Chain Image"
               style={{ borderRadius: "50%" }}
               defaultSrc={require("../../../../public/assets/img/chain-icon-alt.png")}
-              src={require("../../../../public/assets/logo-256.png")}
+              src={require("../../../../public/assets/orai_wallet_logo.png")}
             />
           </Skeleton>
         </XAxis>

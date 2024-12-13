@@ -159,7 +159,7 @@ export const WelcomePage: FunctionComponent = observer(() => {
                         paragraph={intl.formatMessage({
                           id: "pages.register.pages.welcome.dashboard-link.paragraph",
                         })}
-                        src={require("../../../../public/assets/logo-256.png")}
+                        src={require("../../../../public/assets/orai_wallet_logo.png")}
                         url="https://wallet.keplr.app/"
                       />
                     </Column>

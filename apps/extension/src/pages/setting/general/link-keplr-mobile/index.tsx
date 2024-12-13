@@ -520,7 +520,7 @@ const QRCodeView: FunctionComponent<{
                 bgColor={ColorPalette.white}
                 fgColor={ColorPalette.black}
                 imageSettings={{
-                  src: require("../../../../public/assets/logo-256.png"),
+                  src: require("../../../../public/assets/orai_wallet_logo.png"),
                   width: 40,
                   height: 40,
                   excavate: true,

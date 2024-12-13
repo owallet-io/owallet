@@ -42,7 +42,7 @@ export const Splash: FunctionComponent = () => {
     >
       <Box alignX="center">
         <animated.img
-          src={require("../../public/assets/logo-256.png")}
+          src={require("../../public/assets/orai_wallet_logo.png")}
           alt="logo"
           style={{
             opacity,

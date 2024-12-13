@@ -43,7 +43,7 @@ export class BackgroundTxService {
 
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx is pending...",
         message: "Wait a second",
       });
@@ -216,7 +216,7 @@ export class BackgroundTxService {
       }
 
       notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx succeeds",
         // TODO: Let users know the tx id?
         message: "Congratulations!",
@@ -271,7 +271,7 @@ export class BackgroundTxService {
     }
 
     notification.create({
-      iconRelativeUrl: "assets/logo-256.png",
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
       title: "Tx failed",
       message,
     });

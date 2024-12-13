@@ -102,7 +102,7 @@ export const GlobalPermissionGetChainInfosPage: FunctionComponent<{
           <Gutter size="2.5rem" />
           <Image
             alt="OWallet Logo Image"
-            src={require("../../../public/assets/logo-256.png")}
+            src={require("../../../public/assets/orai_wallet_logo.png")}
             style={{ width: "4.625rem", height: "4.625rem" }}
           />
 

@@ -24,7 +24,7 @@ export class BackgroundTxBtcService {
   ): Promise<string> {
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx is pending...",
         message: "Wait a second",
       });
@@ -92,7 +92,7 @@ export class BackgroundTxBtcService {
   private static processTxResultNotification(notification: Notification): void {
     try {
       notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx succeeds",
         message: "Congratulations!",
       });
@@ -108,7 +108,7 @@ export class BackgroundTxBtcService {
     const message = e.message;
 
     notification.create({
-      iconRelativeUrl: "assets/logo-256.png",
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
       title: "Tx failed",
       message,
     });

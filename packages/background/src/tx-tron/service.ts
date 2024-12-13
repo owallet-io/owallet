@@ -1,10 +1,13 @@
-import { ChainsService } from '../chains';
-import { Notification } from '../tx/types';
-import { Transaction } from '@owallet/types';
-import { retry } from '@owallet/common';
+import { ChainsService } from "../chains";
+import { Notification } from "../tx/types";
+import { Transaction } from "@owallet/types";
+import { retry } from "@owallet/common";
 
 export class BackgroundTxTronService {
-  constructor(protected readonly chainsService: ChainsService, protected readonly notification: Notification) {}
+  constructor(
+    protected readonly chainsService: ChainsService,
+    protected readonly notification: Notification
+  ) {}
 
   async init(): Promise<void> {
     // noop
@@ -20,40 +23,42 @@ export class BackgroundTxTronService {
   ): Promise<string> {
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: 'assets/logo-256.png',
-        title: 'Tx is pending...',
-        message: 'Wait a second'
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        title: "Tx is pending...",
+        message: "Wait a second",
       });
     }
 
     try {
       const isTronChain = this.chainsService.isTronChain(chainId);
       if (!isTronChain) {
-        throw new Error('No Tron info chain');
+        throw new Error("No Tron info chain");
       }
 
-      let txHash = '';
+      let txHash = "";
       if (signedTx?.transaction?.txID) {
         txHash = signedTx.transaction.txID;
-      } else if (typeof signedTx === 'string') {
+      } else if (typeof signedTx === "string") {
         txHash = signedTx;
       }
 
       if (!txHash) {
-        throw new Error('No tx hash responded');
+        throw new Error("No tx hash responded");
       }
 
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {
             if (!txHash) {
-              console.error('No tx hash responded');
+              console.error("No tx hash responded");
               resolve();
             }
 
             if (txHash) {
               options?.onFulfill?.(signedTx);
-              BackgroundTxTronService.processTxResultNotification(this.notification);
+              BackgroundTxTronService.processTxResultNotification(
+                this.notification
+              );
               resolve();
             }
 
@@ -63,7 +68,7 @@ export class BackgroundTxTronService {
         {
           maxRetries: 10,
           waitMsAfterError: 500,
-          maxWaitMsAfterError: 4000
+          maxWaitMsAfterError: 4000,
         }
       );
 
@@ -71,7 +76,10 @@ export class BackgroundTxTronService {
     } catch (e) {
       console.error(e);
       if (!options.silent) {
-        BackgroundTxTronService.processTxErrorNotification(this.notification, e);
+        BackgroundTxTronService.processTxErrorNotification(
+          this.notification,
+          e
+        );
       }
       throw e;
     }
@@ -80,22 +88,25 @@ export class BackgroundTxTronService {
   private static processTxResultNotification(notification: Notification): void {
     try {
       notification.create({
-        iconRelativeUrl: 'assets/logo-256.png',
-        title: 'Tx succeeds',
-        message: 'Congratulations!'
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        title: "Tx succeeds",
+        message: "Congratulations!",
       });
     } catch (e) {
       BackgroundTxTronService.processTxErrorNotification(notification, e);
     }
   }
 
-  private static processTxErrorNotification(notification: Notification, e: Error): void {
+  private static processTxErrorNotification(
+    notification: Notification,
+    e: Error
+  ): void {
     const message = e.message;
 
     notification.create({
-      iconRelativeUrl: 'assets/logo-256.png',
-      title: 'Tx failed',
-      message
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
+      title: "Tx failed",
+      message,
     });
   }
 }

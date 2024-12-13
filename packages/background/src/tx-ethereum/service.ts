@@ -25,7 +25,7 @@ export class BackgroundTxEthereumService {
   ): Promise<string> {
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx is pending...",
         message: "Wait a second",
       });
@@ -126,7 +126,7 @@ export class BackgroundTxEthereumService {
   private static processTxResultNotification(notification: Notification): void {
     try {
       notification.create({
-        iconRelativeUrl: "assets/logo-256.png",
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
         title: "Tx succeeds",
         // TODO: Let users know the tx id?
         message: "Congratulations!",
@@ -143,7 +143,7 @@ export class BackgroundTxEthereumService {
     const message = e.message;
 
     notification.create({
-      iconRelativeUrl: "assets/logo-256.png",
+      iconRelativeUrl: "assets/orai_wallet_logo.png",
       title: "Tx failed",
       message,
     });
