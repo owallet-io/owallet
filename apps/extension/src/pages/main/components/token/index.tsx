@@ -197,6 +197,8 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
       return viewToken.token.currency.coinDenom;
     }, [viewToken.token.currency]);
 
+    console.log("viewToken.chainInfo", viewToken.chainInfo);
+
     const tag = useMemo(() => {
       const currency = viewToken.token.currency;
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
@@ -225,10 +227,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
       }
     }, [viewToken.token.currency]);
 
-    // 얘가 값이 있냐 없냐에 따라서 price change를 보여줄지 말지를 결정한다.
-    // prop에서 showPrice24HChange가 null 또는 false거나
-    // currency에 coingeckoId가 없다면 보여줄 수 없다.
-    // 또한 잘못된 coingeckoId일때는 response에 값이 있을 수 없으므로 안보여준다.
     const price24HChange = (() => {
       if (!showPrice24HChange) {
         return undefined;
@@ -251,12 +249,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
           setIsHover(true);
         }}
         onMouseOver={() => {
-          // onMouseOut에 대해서는 처리하지 않는다.
-          // onMouseOver는 레이아웃에 변경에 의해서도 이벤트가 발생하기 때문에
-          // 좀 디테일한 케이스를 처리하기 위해서 사용한다.
-          // 근데 onMouseOut까지 하면 isHover 값이 여러가지 이유로 수시로 변해서...
-          // 근데 hover out의 경우는 딱히 처리할 case가 보이지 않기 때문에
-          // copy address가 별 중요한 기능은 아니기 때문에 문제를 해결하지 않고 그냥 생략한다.
           setIsHover(true);
         }}
         onMouseLeave={() => {
@@ -327,11 +319,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
               ) : null}
 
               {viewToken.isFetching ? (
-                // 처음에는 무조건 로딩이 발생하는데 일반적으로 쿼리는 100ms 정도면 끝난다.
-                // 이정도면 유저가 별 문제를 느끼기 힘들기 때문에
-                // 일괄적으로 로딩을 보여줄 필요가 없다.
-                // 그러므로 로딩 상태가 500ms 이상 지속되면 로딩을 표시힌다.
-                // 근데 또 문제가 있어서 추가 사항이 있는데 그건 DelayedLoadingRender의 주석을 참고
                 <DelayedLoadingRender isFetching={viewToken.isFetching}>
                   <Box
                     marginLeft="0.25rem"
@@ -379,7 +366,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
               >
                 <Caption1 style={{ color: ColorPalette["gray-300"] }}>
                   {isIBC
-                    ? `on ${viewToken.chainInfo.chainName}`
+                    ? `${viewToken.chainInfo.chainName}`
                     : viewToken.chainInfo.chainName}
                 </Caption1>
               </Skeleton>
@@ -388,7 +375,10 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                 <React.Fragment>
                   <Gutter size="0.25rem" />
                   <Box alignY="center" height="1px">
-                    <TokenTag text={tag.text} tooltip={tag.tooltip} />
+                    <TokenTag
+                      text={tag.text.toUpperCase()}
+                      tooltip={tag.tooltip}
+                    />
                   </Box>
                 </React.Fragment>
               ) : null}
@@ -471,9 +461,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                 ) : (
                   <Subtitle3 color={ColorPalette["gray-300"]}>
                     {(() => {
-                      // XXX: 이 부분에서 hide balance가 true더라도
-                      //      isNotReady 상태에서 스켈레톤이 여전히 보이는 문제가 있긴한데...
-                      //      어차피 이 prop을 쓰는 때는 한정되어있고 지금은 문제가 안되니 이 문제는 패스한다.
                       if (hideBalance) {
                         return "";
                       }

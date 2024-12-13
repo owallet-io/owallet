@@ -43,8 +43,6 @@ export const BasicAccessModal = registerModal(
         .join(", ");
     }, [data]);
 
-    console.log('get here');
-
     const chainIds = useMemo(() => {
       return data?.chainIds.join(", ");
     }, [data]);

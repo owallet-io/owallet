@@ -448,7 +448,7 @@ export const MainPage: FunctionComponent<{
             isNotReady={isNotReady}
           />
           <Box position="relative">
-            <DualChart
+            {/* <DualChart
               first={{
                 weight: availableChartWeight,
               }}
@@ -457,7 +457,7 @@ export const MainPage: FunctionComponent<{
               }}
               highlight={tabStatus === "available" ? "first" : "second"}
               isNotReady={isNotReady}
-            />
+            /> */}
             <Box
               position="absolute"
               style={{
@@ -599,7 +599,7 @@ export const MainPage: FunctionComponent<{
 
           <Gutter size="0" />
 
-          {tabStatus === "available" && !isNotReady ? (
+          {/* {tabStatus === "available" && !isNotReady ? (
             <StakeWithKeplrDashboardButton
               type="button"
               onClick={(e) => {
@@ -618,7 +618,7 @@ export const MainPage: FunctionComponent<{
                 <ArrowTopRightOnSquareIcon width="1rem" height="1rem" />
               </Box>
             </StakeWithKeplrDashboardButton>
-          ) : null}
+          ) : null} */}
           {!isNotReady ? (
             <Stack gutter="0.75rem">
               {tabStatus === "available" ? (
@@ -844,7 +844,6 @@ const RefreshButton: FunctionComponent<{
 
               const denomHelper = new DenomHelper(currency.coinMinimalDenom);
               if (denomHelper.type === "erc20") {
-                // XXX: 얘는 구조상 waitFreshResponse()가 안되서 일단 쿼리가 끝인지 아닌지는 무시한다.
                 query.fetch();
               }
             }

@@ -52,8 +52,6 @@ export const AvailableTabView: FunctionComponent<{
   search: string;
   isNotReady?: boolean;
 
-  // 초기 유저에게 뜨는 alternative에서 get started 버튼을 누르면 copy address modal을 띄워야된다...
-  // 근데 컴포넌트가 분리되어있는데 이거 하려고 context api 쓰긴 귀찮아서 그냥 prop으로 대충 처리한다.
   onClickGetStarted: () => void;
   onMoreTokensClosed: () => void;
 }> = observer(
@@ -178,9 +176,6 @@ export const AvailableTabView: FunctionComponent<{
       return {
         chainId: searchParams.get("tokenChainId"),
         coinMinimalDenom: searchParams.get("tokenCoinMinimalDenom"),
-        // modal의 close transition을 유지하기 위해서는 위의 두 field가 존재하는지 만으로 판단하면 안된다...
-        // close transition이 끝난후에 위의 두 값을 지워줘야한다.
-        // close가 될 것인지는 밑의 값으로 판단한다.
         isTokenDetailModalOpen:
           searchParams.get("isTokenDetailModalOpen") === "true",
       };
