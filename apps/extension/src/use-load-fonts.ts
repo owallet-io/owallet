@@ -7,21 +7,21 @@ const languageToFontFaces: {
 } = {
   en: [
     new FontFace(
-      "Inter",
+      "Space Grotesk",
       `url(${require("./public/assets/font/SpaceGrotesk-Regular.ttf")})`,
       {
         weight: "400",
       }
     ),
     new FontFace(
-      "Inter",
+      "Space Grotesk",
       `url(${require("./public/assets/font/SpaceGrotesk-Medium.ttf")})`,
       {
         weight: "500",
       }
     ),
     new FontFace(
-      "Inter",
+      "Space Grotesk",
       `url(${require("./public/assets/font/SpaceGrotesk-Bold.ttf")})`,
       {
         weight: "700",

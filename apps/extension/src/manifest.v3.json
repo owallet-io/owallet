@@ -46,7 +46,7 @@
       "matches": ["<all_urls>"]
     },
     {
-      "resources": ["assets/Inter-SemiBold.ttf"],
+      "resources": ["assets/SpaceGrotesk-Bold.ttf"],
       "matches": ["<all_urls>"]
     },
     {

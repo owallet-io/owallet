@@ -1,7 +1,6 @@
 import "./src/background/background";
 
 import { version } from "./package.json";
-// import { ChainIdEnum } from "@owallet/common";
 import { OWallet } from "@owallet/provider";
 import { RNMessageRequesterInternal } from "./src/router";
 

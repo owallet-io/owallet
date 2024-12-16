@@ -39,7 +39,7 @@
   ],
   "web_accessible_resources": [
     "injectedScript.bundle.js",
-    "assets/Inter-SemiBold.ttf",
+    "assets/SpaceGrotesk-Bold.ttf",
     "assets/icon-128.png",
     "assets/megaphone.svg",
     "assets/locked-keplr-logo-128.png",
