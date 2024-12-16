@@ -17,7 +17,6 @@ import { useNavigate } from "react-router";
 import { TokenInfos } from "./token-info";
 import { RenderMessages } from "./messages";
 import { Modal } from "../../../components/modal";
-import { BuyCryptoModal } from "../components";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { CircleButton } from "./circle-button";
 import { AddressChip, QRCodeChip } from "../components/address-chip";
@@ -70,11 +69,12 @@ export const TokenDetailModal: FunctionComponent<{
     queriesStore,
     priceStore,
     price24HChangesStore,
-    skipQueriesStore,
     uiConfigStore,
   } = useStore();
 
   const theme = useTheme();
+
+  console.log("chainId token", chainId);
 
   const account = accountStore.getAccount(chainId);
   const modularChainInfo = chainStore.getModularChain(chainId);
@@ -82,15 +82,7 @@ export const TokenDetailModal: FunctionComponent<{
     if ("cosmos" in modularChainInfo) {
       return chainStore.getChain(chainId).forceFindCurrency(coinMinimalDenom);
     }
-    // TODO: 일단 cosmos가 아니면 대충에기에다가 force currency 로직을 박아놓는다...
-    //       나중에 이런 기능을 chain store 자체에다가 만들어야한다.
-    const modularChainInfoImpl = chainStore.getModularChainInfoImpl(chainId);
-    const res = modularChainInfoImpl
-      .getCurrencies("starknet")
-      .find((cur) => cur.coinMinimalDenom === coinMinimalDenom);
-    if (res) {
-      return res;
-    }
+
     return {
       coinMinimalDenom,
       coinDenom: coinMinimalDenom,
@@ -211,10 +203,7 @@ export const TokenDetailModal: FunctionComponent<{
           }&outCoinMinimalDenom=uusdc`
         );
       },
-      disabled: !skipQueriesStore.queryIBCSwap.isSwappableCurrency(
-        chainId,
-        currency
-      ),
+      disabled: true,
     },
     {
       icon: (
@@ -239,11 +228,6 @@ export const TokenDetailModal: FunctionComponent<{
         if ("cosmos" in modularChainInfo) {
           navigate(
             `/send?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
-          );
-        }
-        if ("starknet" in modularChainInfo) {
-          navigate(
-            `/starknet/send?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
           );
         }
       },
@@ -632,9 +616,8 @@ export const TokenDetailModal: FunctionComponent<{
             if (msgHistory.pages[0].response?.isUnsupported || !isSupported) {
               // TODO: 아직 cosmos 체인이 아니면 embedded인지 아닌지 구분할 수 없다.
               if (
-                ("cosmos" in modularChainInfo &&
-                  chainStore.getChain(chainId).embedded.embedded) ||
-                "starknet" in modularChainInfo
+                "cosmos" in modularChainInfo &&
+                chainStore.getChain(chainId).embedded.embedded
               ) {
                 return (
                   <EmptyView>
