@@ -86,7 +86,6 @@ export class KeyRingStore {
   }
 
   get isInitialized(): boolean {
-    console.log("get isInitialized", this._isInitialized);
     return this._isInitialized;
   }
 
@@ -243,7 +242,6 @@ export class KeyRingStore {
     password: string | undefined
   ) {
     const msg = new NewLedgerKeyMsg(pubKey, app, bip44HDPath, name, password);
-    console.log("msg", msg);
 
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)

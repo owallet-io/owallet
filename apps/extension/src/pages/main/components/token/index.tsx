@@ -62,7 +62,7 @@ const Styles = {
           : ColorPalette.white
         : ColorPalette["gray-650"]};
     padding ${({ forChange }) =>
-      forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0.875rem"};
+      forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0rem"};
     cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
     
     border: ${({ isError }) =>
@@ -80,7 +80,7 @@ const Styles = {
           &:hover {
             background-color: ${theme.mode === "light"
               ? ColorPalette["gray-10"]
-              : ColorPalette["gray-600"]};
+              : ColorPalette["gray-400"]};
           }
         `;
       }
@@ -194,8 +194,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
       }
       return viewToken.token.currency.coinDenom;
     }, [viewToken.token.currency]);
-
-    console.log("viewToken.chainInfo", viewToken.chainInfo);
 
     const tag = useMemo(() => {
       const currency = viewToken.token.currency;

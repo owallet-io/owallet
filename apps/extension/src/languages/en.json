@@ -583,7 +583,7 @@
   "page.main.components.string-toggle.available-tab": "Available",
   "page.main.components.string-toggle.staked-tab": "Staked",
   "page.main.components.copy-address.title": "Copy Address",
-  "page.main.components.buttons.deposit-button": "Deposit",
+  "page.main.components.buttons.deposit-button": "Receive",
   "page.main.components.buttons.buy-button": "Buy",
   "page.main.components.buttons.send-button": "Send",
   "page.main.components.claim-all.title": "Claimable Reward",

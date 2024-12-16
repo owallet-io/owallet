@@ -137,13 +137,10 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     }
 
     (async () => {
-      console.log("start 1");
       // Chain store should be initialized before creating the key.
       await chainStore.waitUntilInitialized();
-      console.log("waitUntilInitialized 1");
 
       await chainStore.updateChainInfosFromBackground();
-      console.log("updateChainInfosFromBackground 1");
 
       let vaultId: unknown;
 
@@ -154,7 +151,6 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           name,
           password
         );
-        console.log("newMnemonicKey", vaultId);
       } else if (privateKey) {
         vaultId = await keyRingStore.newPrivateKeyKey(
           Buffer.from(privateKey.hexValue, "hex"),

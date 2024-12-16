@@ -285,24 +285,16 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @flow
   protected *init() {
     this._isInitializing = true;
-    console.log("init start");
     yield this.keyRingStore.waitUntilInitialized();
-
-    console.log("keyRingStore waitUntilInitialized done");
 
     yield Promise.all([
       this.updateChainInfosFromBackground(),
       this.updateEnabledChainIdentifiersFromBackground(),
     ]);
 
-    console.log("updateChainInfosFromBackground done");
-
     autorun(() => {
       // Change the enabled chain identifiers when the selected key info is changed.
-      console.log(
-        "keyRingStore selectedKeyInfo",
-        this.keyRingStore.selectedKeyInfo
-      );
+
       if (this.keyRingStore.selectedKeyInfo) {
         this.updateEnabledChainIdentifiersFromBackground();
       }
