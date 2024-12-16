@@ -112,11 +112,6 @@ export const MenuBar: FunctionComponent<{
       }}
     >
       <Bleed horizontal="0.15rem">
-        {/*
-            좀 이상한 구조지만 clickable area를 조절하고
-            아이콘이 약간 오른쪽으로 치우져보이는 느낌을 없애기 위해서
-            어쩔 수 없이 약간 복잡해짐
-           */}
         <Box alignX="left">
           <Box onClick={close} cursor="pointer">
             <CloseIcon
@@ -160,7 +155,7 @@ export const MenuBar: FunctionComponent<{
         <Gutter size="1rem" />
 
         <Box
-          width="6.5rem"
+          width="9.5rem"
           style={{
             border: `1px solid ${
               theme.mode === "light"
@@ -189,6 +184,27 @@ export const MenuBar: FunctionComponent<{
             <FormattedMessage id="page.main.components.menu-bar.setting-title" />
           </Styles.MenuItem>
         ) : null}
+        <Box
+          width="9.5rem"
+          style={{
+            border: `1px solid ${
+              theme.mode === "light"
+                ? ColorPalette["gray-100"]
+                : ColorPalette["gray-400"]
+            }`,
+          }}
+        />
+        <Styles.MenuItem
+          onClick={async (e) => {
+            e.preventDefault();
+
+            await keyRingStore.lock();
+
+            dispatchGlobalEventExceptSelf("owallet_keyring_locked");
+          }}
+        >
+          <FormattedMessage id="page.main.components.menu-bar.lock-wallet-title" />
+        </Styles.MenuItem>
       </Stack>
 
       <Styles.Flex1 />
@@ -348,18 +364,6 @@ export const MenuBar: FunctionComponent<{
           ) : null}
 
           <Gutter size="1rem" />
-
-          <Styles.MenuItem
-            onClick={async (e) => {
-              e.preventDefault();
-
-              await keyRingStore.lock();
-
-              dispatchGlobalEventExceptSelf("owallet_keyring_locked");
-            }}
-          >
-            <FormattedMessage id="page.main.components.menu-bar.lock-wallet-title" />
-          </Styles.MenuItem>
 
           <Gutter size="1rem" />
 

@@ -97,13 +97,13 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
             onClick={() => navigate("/setting/general/authz")}
           />
 
-          <PageButton
+          {/* <PageButton
             title={intl.formatMessage({
               id: "page.setting.general.link-kpelr-mobile-title",
             })}
             endIcon={<RightArrowIcon />}
             onClick={() => navigate("/setting/general/link-keplr-mobile")}
-          />
+          /> */}
 
           {sidePanelSupported ? (
             <PageButton

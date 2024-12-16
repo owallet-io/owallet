@@ -2749,19 +2749,27 @@ export const EmbedChainInfos: (ChainInfo | ModularChainInfo)[] = [
 ];
 
 // The origins that are able to pass any permission that external webpages can have.
+// export const PrivilegedOrigins: string[] = [
+//   "https://wallet.keplr.app",
+//   "https://validator.keplr.app",
+//   "https://chains.keplr.app",
+//   "https://testnet.keplr.app",
+//   "https://multisig.keplr.app",
+// ];
+
 export const PrivilegedOrigins: string[] = [
-  "https://wallet.keplr.app",
-  "https://validator.keplr.app",
-  "https://chains.keplr.app",
-  "https://testnet.keplr.app",
-  "https://multisig.keplr.app",
+  "https://app.oraidex.io",
+  "https://futures.oraidex.io",
+  "https://orderbook.oraidex.io",
+  "https://hub.orai.io",
+  "https://scan.orai.io",
+  "https://multisig.orai.io",
+  "https://develop-v3.beta-oraidex.pages.dev",
 ];
 
 export const CommunityChainInfoRepo = {
-  organizationName: "chainapsis",
+  organizationName: "owallet-io",
   repoName: "keplr-chain-registry",
   branchName: "main",
-  alternativeURL: process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    ? process.env["KEPLR_EXT_CHAIN_REGISTRY_URL"]
-    : undefined,
+  alternativeURL: undefined,
 };
