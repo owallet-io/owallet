@@ -29,8 +29,7 @@ export const SuggestChainPage: FunctionComponent = observer(() => {
   if (!waitingData) {
     return null;
   }
-  // waiting data가 변하면 `SuggestChainPageImpl`가 unmount되고 다시 mount되는데,
-  // 이때, `SuggestChainPageImpl`의 key가 바뀌면서, `SuggestChainPageImpl`의 state가 초기화된다.
+
   return (
     <SuggestChainPageImpl key={waitingData.id} waitingData={waitingData} />
   );

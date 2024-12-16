@@ -126,14 +126,10 @@ export const WelcomePage: FunctionComponent = observer(() => {
                     </Column>
                     <Column weight={1}>
                       <LinkItem
-                        title={intl.formatMessage({
-                          id: "pages.register.pages.welcome.kado-link.title",
-                        })}
-                        paragraph={intl.formatMessage({
-                          id: "pages.register.pages.welcome.kado-link.paragraph",
-                        })}
-                        src={require("../../../../public/assets/img/fiat-on-ramp/kado.svg")}
-                        url="https://www.kado.money/"
+                        title={"Oraidex"}
+                        paragraph={"Swap Tokens"}
+                        src={require("../../../../public/assets/images/dApps_dex_logo.png")}
+                        url="https://app.oraidex.io/"
                       />
                     </Column>
                     <Column weight={1}>
@@ -160,10 +156,10 @@ export const WelcomePage: FunctionComponent = observer(() => {
                           id: "pages.register.pages.welcome.dashboard-link.paragraph",
                         })}
                         src={require("../../../../public/assets/orai_wallet_logo.png")}
-                        url="https://wallet.keplr.app/"
+                        url="https://owallet.io/"
                       />
                     </Column>
-                    <Column weight={1}>
+                    {/* <Column weight={1}>
                       <LinkItem
                         title={intl.formatMessage({
                           id: "pages.register.pages.welcome.icns-link.title",
@@ -174,7 +170,7 @@ export const WelcomePage: FunctionComponent = observer(() => {
                         src={require("../../../../public/assets/icns-logo.png")}
                         url="https://icns.xyz/"
                       />
-                    </Column>
+                    </Column> */}
                   </Columns>
                 </Stack>
               </Box>
@@ -206,7 +202,7 @@ export const WelcomePage: FunctionComponent = observer(() => {
               e.preventDefault();
 
               browser.tabs.create({
-                url: "https://twitter.com/intent/follow?twterm%5Efollow%7Ctwgr%5Ekeplrwallet&screen_name=KeplrWallet",
+                url: "https://x.com/owallet_io",
               });
             }}
           >
@@ -260,16 +256,11 @@ export const WelcomePage: FunctionComponent = observer(() => {
 
 const CongratsVideo: FunctionComponent<{ size: string }> = ({ size }) => {
   return (
-    <video
+    <img
       width={size}
       height={size}
-      autoPlay={true}
-      loop={true}
       style={{ borderRadius: "2.5rem", backgroundColor: "#1A1239" }}
-    >
-      <source
-        src={require("../../../../public/assets/lottie/register/congrats.webm")}
-      />
-    </video>
+      src={require("../../../../public/assets/images/Launch.png")}
+    />
   );
 };
