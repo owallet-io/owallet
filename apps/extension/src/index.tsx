@@ -247,7 +247,6 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
 
   const isReady: boolean = (() => {
     if (hasBeenReady.current) {
-      // 이미 ready 상태가 한번 되었다면 계속 강제로 ready 상태를 유지한다.
       return true;
     }
 
@@ -257,16 +256,13 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
 
     if (!checkIsStartFromInteractionWithSidePanelEnabledOnce.current) {
       checkIsStartFromInteractionWithSidePanelEnabledOnce.current = true;
-      // side panel에서 돌아가고 있으면서 최초의 isReady 상태일때 interaction이 있었는지 확인한다.
-      // 만약 내부의 interaction이라면 UI가 보이기도 전에 뭔가가 요청됐을리가 없으므로
-      // 최초로 interaction을 가지고 시작했다면 외부의 요청에 의한 interaction이다.
+
       if (isRunningInSidePanel() && interactionStore.data.length !== 0) {
         window.isStartFromInteractionWithSidePanelEnabled = true;
       }
     }
 
     if (keyRingStore.status === "unlocked") {
-      // mobx의 특성상 밑의 로직은 useMemo 안에서 처리할 수가 없어서 분리되었음.
       const firstAccount = accountStore.getAccount(
         chainStore.chainInfos[0].chainId
       );
@@ -332,13 +328,13 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               id: "bottom-tabs.home",
             }),
           },
-          {
-            pathname: "/ibc-swap",
-            icon: <BottomTabSwapIcon width="1.75rem" height="1.75rem" />,
-            text: intl.formatMessage({
-              id: "bottom-tabs.swap",
-            }),
-          },
+          // {
+          //   pathname: "/ibc-swap",
+          //   icon: <BottomTabSwapIcon width="1.75rem" height="1.75rem" />,
+          //   text: intl.formatMessage({
+          //     id: "bottom-tabs.swap",
+          //   }),
+          // },
           {
             pathname: "/activities",
             icon: <BottomTabActivityIcon width="1.75rem" height="1.75rem" />,
@@ -527,9 +523,9 @@ const App: FunctionComponent = () => {
                   <GlobalPopupStyle />
                 )}
                 <ScrollBarStyle />
-                {/* <ErrorBoundary> */}
-                <RoutesAfterReady />
-                {/* </ErrorBoundary> */}
+                <ErrorBoundary>
+                  <RoutesAfterReady />
+                </ErrorBoundary>
               </NotificationProvider>
             </ConfirmProvider>
           </ModalRootProvider>
