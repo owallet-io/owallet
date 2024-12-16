@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useRef, useEffect } from "react";
 import { Box } from "../../../../components/box";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
@@ -10,20 +10,38 @@ import { Gutter } from "../../../../components/gutter";
 import { Subtitle2 } from "../../../../components/typography";
 import { ColorPalette } from "../../../../styles";
 import { useTheme } from "styled-components";
-import { QRCodeSVG } from "qrcode.react";
 import { IconProps } from "../../../../components/icon/types";
 import { YAxis } from "../../../../components/axis";
+import QRCode from "qrcode";
+import { AddressChip } from "../../components/address-chip";
 
 export const QRCodeScene: FunctionComponent<{
   chainId: string;
   address?: string;
 }> = observer(({ chainId, address }) => {
-  const { chainStore } = useStore();
+  const { chainStore, accountStore } = useStore();
 
   const theme = useTheme();
-
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
   const modularChainInfo = chainStore.getModularChain(chainId);
+  const account = accountStore.getAccount(chainId);
 
+  useEffect(() => {
+    const isEVMOnlyChain =
+      "cosmos" in modularChainInfo &&
+      modularChainInfo.cosmos != null &&
+      chainStore.isEvmOnlyChain(chainId);
+
+    const address = isEVMOnlyChain
+      ? account.ethereumHexAddress
+      : account.bech32Address;
+
+    if (qrCodeRef.current && address) {
+      QRCode.toCanvas(qrCodeRef.current, address, {
+        width: 280,
+      });
+    }
+  }, [modularChainInfo, chainId]);
   const sceneTransition = useSceneTransition();
 
   if (!address) {
@@ -69,7 +87,6 @@ export const QRCodeScene: FunctionComponent<{
           <Subtitle2>{modularChainInfo.chainName}</Subtitle2>
 
           <Column weight={1} />
-          {/* 체인 아이콘과 이름을 중앙 정렬시키기 위해서 왼쪽과 맞춰야한다. 이를 위한 mock임 */}
           <Box width="2rem" height="2rem" />
         </Columns>
 
@@ -82,22 +99,20 @@ export const QRCodeScene: FunctionComponent<{
             borderRadius="1.25rem"
             padding="0.75rem"
           >
-            <QRCodeSVG
-              value={address}
-              size={176}
-              level="M"
-              bgColor={ColorPalette.white}
-              fgColor={ColorPalette.black}
-              imageSettings={{
-                src: require("../../../../public/assets/orai_wallet_logo.png"),
-                width: 40,
-                height: 40,
-                excavate: true,
+            <canvas
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 24,
               }}
+              id="qrcode"
+              ref={qrCodeRef}
             />
           </Box>
-
-          <Gutter size="2.5rem" />
+          <Gutter size="1.25rem" />
+          <AddressChip chainId={chainId} inModal={true} />
+          <Gutter size="1.25rem" />
         </YAxis>
       </Box>
     </Box>

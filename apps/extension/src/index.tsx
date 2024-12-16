@@ -523,9 +523,9 @@ const App: FunctionComponent = () => {
                   <GlobalPopupStyle />
                 )}
                 <ScrollBarStyle />
-                <ErrorBoundary>
-                  <RoutesAfterReady />
-                </ErrorBoundary>
+                {/* <ErrorBoundary> */}
+                <RoutesAfterReady />
+                {/* </ErrorBoundary> */}
               </NotificationProvider>
             </ConfirmProvider>
           </ModalRootProvider>

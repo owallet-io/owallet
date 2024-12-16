@@ -20,7 +20,7 @@ import { Modal } from "../../../components/modal";
 import { BuyCryptoModal } from "../components";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { CircleButton } from "./circle-button";
-import { AddressChip, QRCodeChip } from "./address-chip";
+import { AddressChip, QRCodeChip } from "../components/address-chip";
 import { ReceiveModal } from "./receive-modal";
 import { StakedBalance } from "./staked-balance";
 import { MsgItemSkeleton } from "./msg-items/skeleton";
@@ -113,7 +113,6 @@ export const TokenDetailModal: FunctionComponent<{
   const isIBCCurrency = "paths" in currency;
 
   const [isReceiveOpen, setIsReceiveOpen] = React.useState(false);
-  const [isOpenBuy, setIsOpenBuy] = React.useState(false);
 
   const balance = (() => {
     if ("cosmos" in modularChainInfo) {
@@ -371,7 +370,6 @@ export const TokenDetailModal: FunctionComponent<{
               </Body1>
             </span>
             <div style={{ flex: 1 }} />
-            {/* 뒤로가기 버튼과 좌우를 맞추기 위해서 존재... */}
             <Box width="1.5rem" height="1.5rem" />
           </XAxis>
         </Box>

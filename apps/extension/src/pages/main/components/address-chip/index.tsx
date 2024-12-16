@@ -12,9 +12,6 @@ import { useTheme } from "styled-components";
 
 export const AddressChip: FunctionComponent<{
   chainId: string;
-
-  // modal 안에서는 색상 문제로 안보여서
-  // modal 안에서는 배경색을 바꿈
   inModal?: boolean;
 }> = observer(({ chainId, inModal }) => {
   const { accountStore, chainStore } = useStore();

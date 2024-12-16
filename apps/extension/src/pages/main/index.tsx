@@ -450,17 +450,6 @@ export const MainPage: FunctionComponent<{
               }}
               position="relative"
             >
-              {/* <DualChart
-              first={{
-                weight: availableChartWeight,
-              }}
-              second={{
-                weight: stakedChartWeight,
-              }}
-              highlight={tabStatus === "available" ? "first" : "second"}
-              isNotReady={isNotReady}
-            /> */}
-
               <Box
                 style={{
                   display: "flex",

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useRef, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { Box } from "../../../../components/box";
 import { ColorPalette } from "../../../../styles";
@@ -8,9 +8,9 @@ import { H4, Subtitle3 } from "../../../../components/typography";
 import { XAxis } from "../../../../components/axis";
 import { useStore } from "../../../../stores";
 import { ChainImageFallback } from "../../../../components/image";
-import { QRCodeSVG } from "qrcode.react";
-import { AddressChip } from "../address-chip";
+import { AddressChip } from "../../components/address-chip";
 import { Button } from "../../../../components/button";
+import QRCode from "qrcode";
 
 export const ReceiveModal: FunctionComponent<{
   chainId: string;
@@ -19,15 +19,27 @@ export const ReceiveModal: FunctionComponent<{
   const { chainStore, accountStore } = useStore();
 
   const theme = useTheme();
+  const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
   const modularChainInfo = chainStore.getModularChain(chainId);
   const account = accountStore.getAccount(chainId);
-  const isStarknetChain =
-    "starknet" in modularChainInfo && modularChainInfo.starknet != null;
-  const isEVMOnlyChain =
-    "cosmos" in modularChainInfo &&
-    modularChainInfo.cosmos != null &&
-    chainStore.isEvmOnlyChain(chainId);
+
+  useEffect(() => {
+    const isEVMOnlyChain =
+      "cosmos" in modularChainInfo &&
+      modularChainInfo.cosmos != null &&
+      chainStore.isEvmOnlyChain(chainId);
+
+    const address = isEVMOnlyChain
+      ? account.ethereumHexAddress
+      : account.bech32Address;
+
+    if (qrCodeRef.current && address) {
+      QRCode.toCanvas(qrCodeRef.current, address, {
+        width: 280,
+      });
+    }
+  }, [modularChainInfo, chainId]);
 
   return (
     <Box
@@ -68,22 +80,15 @@ export const ReceiveModal: FunctionComponent<{
           borderRadius="1.25rem"
           padding="0.75rem"
         >
-          <QRCodeSVG
-            value={
-              isEVMOnlyChain
-                ? account.ethereumHexAddress
-                : account.bech32Address
-            }
-            size={176}
-            level="M"
-            bgColor={ColorPalette.white}
-            fgColor={ColorPalette.black}
-            imageSettings={{
-              src: require("../../../../public/assets/orai_wallet_logo.png"),
-              width: 40,
-              height: 40,
-              excavate: true,
+          <canvas
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24,
             }}
+            id="qrcode"
+            ref={qrCodeRef}
           />
         </Box>
 
