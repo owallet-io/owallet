@@ -95,7 +95,6 @@ const Styles = {
   `,
 };
 
-// XXX: 좀 이상하긴 한데 상위/하위 컴포넌트가 state를 공유하기 쉽게하려고 이렇게 한다...
 class ClaimAllEachState {
   @observable
   isLoading: boolean = false;
@@ -247,8 +246,6 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
       }
 
       if (isLedger) {
-        // Ledger에서 현실적으로 이 기능을 처리해주기 난감하다.
-        // disable하기보다는 일단 눌렀을때 expand를 시켜주고 아무것도 하지 않는다.
         return;
       }
 
@@ -283,7 +280,6 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
           account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
 
         (async () => {
-          // feemarket feature가 있는 경우 이후의 로직에서 사용할 수 있는 fee currency를 찾아야하기 때문에 undefined로 시작시킨다.
           let feeCurrency = chainInfo.hasFeature("feemarket")
             ? undefined
             : chainInfo.feeCurrencies.find(
@@ -689,8 +685,6 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
                     });
                   },
                   onFulfill: (tx: any) => {
-                    // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
-                    // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
                     setTimeout(() => {
                       state.setIsLoading(false);
                     }, 1000);
@@ -965,8 +959,6 @@ const ClaimTokenItem: FunctionComponent<{
       console.log(e);
     }
 
-    // TODO: gas price step이 고정되어있지 않은 경우에 대해서 처리 해야함 ex) osmosis-base-fee-beta
-
     try {
       await tx.send(
         {
@@ -1022,6 +1014,136 @@ const ClaimTokenItem: FunctionComponent<{
       });
     } finally {
       setIsSimulating(false);
+    }
+  };
+
+  const _onPressCompound = async () => {
+    setIsSimulating(true);
+    try {
+      if (state.failedReason) {
+        state.setFailedReason(undefined);
+        return;
+      }
+      const chainId = viewToken.chainInfo.chainId;
+      const account = accountStore.getAccount(chainId);
+
+      const queries = queriesStore.get(chainId);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
+      const validatorAddresses =
+        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+
+      if (validatorAddresses.length === 0) {
+        return;
+      }
+      const validatorRewards = validatorAddresses.map((validatorAddress) => {
+        const rewards = queryRewards.getStakableRewardOf(validatorAddress);
+        return { validatorAddress, rewards };
+      });
+
+      let gas = new Int(validatorAddresses.length * defaultGasPerDelegation);
+      let gasUsed = 0;
+      const claimTx =
+        account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+      validatorRewards.map(async (v) => {
+        const delegateTx = account.cosmos.makeDelegateTx(
+          v.rewards.toDec().toString(),
+          v.validatorAddress
+        );
+        const simulated = await delegateTx.simulate();
+
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gasUsed += simulated.gasUsed;
+      });
+
+      try {
+        setIsSimulating(true);
+        validatorRewards.map(async (v) => {
+          const delegateTx = account.cosmos.makeDelegateTx(
+            v.rewards.toDec().toString(),
+            v.validatorAddress
+          );
+          const simulated = await delegateTx.simulate();
+          // Gas adjustment is 1.5
+          // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+          // Use high gas adjustment to prevent failure.
+          gasUsed += simulated.gasUsed;
+        });
+
+        const simulated = await claimTx.simulate();
+
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        // gas = new Dec(simulated.gasUsed * 1.5).truncate();
+        gasUsed += simulated.gasUsed;
+      } catch (e) {
+        console.log(e);
+      }
+
+      gas = new Dec(gasUsed * 1.5).truncate();
+
+      const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(
+        validatorAddresses,
+        validatorRewards
+      );
+
+      // try {
+      //   const simulated = await tx.simulate();
+
+      //   // Gas adjustment is 2
+      //   // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+      //   // Use high gas adjustment to prevent failure.
+      //   gas = new Dec(simulated.gasUsed * 2).truncate();
+      // } catch (e) {
+      //   console.log(e);
+      // }
+
+      await tx.send(
+        {
+          gas: gas.toString(),
+          amount: [],
+        },
+        "",
+        {},
+        {
+          onBroadcasted: (txHash) => {
+            setIsSimulating(false);
+            notification.show(
+              "success",
+              intl.formatMessage({ id: "notification.transaction-success" }),
+              ""
+            );
+          },
+          onFulfill: (tx: any) => {
+            setIsSimulating(false);
+            if (tx.code != null && tx.code !== 0) {
+              notification.show(
+                "failed",
+                JSON.stringify(tx.log ?? tx.raw_log),
+                ""
+              );
+              return;
+            } else {
+              notification.show(
+                "success",
+                intl.formatMessage({ id: "notification.transaction-success" }),
+                ""
+              );
+            }
+          },
+        }
+      );
+    } catch (e) {
+      console.error({ errorClaim: e });
+      setIsSimulating(false);
+      if (!e?.message?.startsWith("Transaction Rejected")) {
+        notification.show("failed", JSON.stringify(e?.message), "");
+        return;
+      }
     }
   };
 
@@ -1092,31 +1214,50 @@ const ClaimTokenItem: FunctionComponent<{
           content={
             state.failedReason?.message || state.failedReason?.toString()
           }
-          // 아이템이 한개만 있으면 tooltip이 VerticalCollapseTransition가 overflow: hidden이라
-          // 위/아래로 나타나면 가려져서 유저가 오류 메세지를 볼 방법이 없다.
-          // VerticalCollapseTransition가 overflow: hidden이여야 하는건 필수적이므로 이 부분을 수정할 순 없기 때문에
-          // 대충 아이템이 한개면 tooltip이 왼족에 나타나도록 한다.
           allowedPlacements={itemsLength === 1 ? ["left"] : undefined}
         >
-          <Button
-            text={intl.formatMessage({
-              id: "page.main.components.claim-all.claim-button",
-            })}
-            size="small"
-            color="secondary"
-            isLoading={isLoading}
-            disabled={viewToken.token.toDec().lte(new Dec(0))}
-            textOverrideIcon={
-              state.failedReason ? (
-                <WarningIcon
-                  width="1rem"
-                  height="1rem"
-                  color={ColorPalette["gray-200"]}
-                />
-              ) : undefined
-            }
-            onClick={claim}
-          />
+          <Box>
+            <Columns sum={1} gutter="0.625rem">
+              <Button
+                text={intl.formatMessage({
+                  id: "page.main.components.claim-all.claim-button",
+                })}
+                size="small"
+                color="secondary"
+                isLoading={isLoading}
+                disabled={viewToken.token.toDec().lte(new Dec(0))}
+                textOverrideIcon={
+                  state.failedReason ? (
+                    <WarningIcon
+                      width="1rem"
+                      height="1rem"
+                      color={ColorPalette["gray-200"]}
+                    />
+                  ) : undefined
+                }
+                onClick={claim}
+              />
+              <Button
+                text={intl.formatMessage({
+                  id: "page.main.components.claim-all.compound-button",
+                })}
+                size="small"
+                color="primary"
+                isLoading={isLoading}
+                disabled={viewToken.token.toDec().lte(new Dec(0))}
+                textOverrideIcon={
+                  state.failedReason ? (
+                    <WarningIcon
+                      width="1rem"
+                      height="1rem"
+                      color={ColorPalette["gray-200"]}
+                    />
+                  ) : undefined
+                }
+                onClick={_onPressCompound}
+              />
+            </Columns>
+          </Box>
         </Tooltip>
       </Columns>
     </Box>

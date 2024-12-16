@@ -19,7 +19,7 @@ const MoreModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(({ close }) => {
   const { colors } = useTheme();
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
 
   const chainId = chainStore.current.chainId;
   const isDydx = chainId?.includes("dydx-mainnet");

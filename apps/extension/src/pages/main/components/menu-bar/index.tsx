@@ -82,8 +82,6 @@ export const MenuBar: FunctionComponent<{
   const prevIsOpen = useRef(isOpen);
   useEffect(() => {
     if (showSidePanelRecommendationTooltip) {
-      // 좀 이상한데. Modal은 open될때 컴포넌트가 마운트되고 close되면 언마운트 되기 때문에
-      // 여기서 true, true인 경우가 맞음...
       if (prevIsOpen.current && isOpen) {
         setTimeout(() => {
           setAnimateSidePanelRecommendationTooltip(true);
@@ -625,9 +623,6 @@ const AnimatedTooltip: FunctionComponent = () => {
             top: "99%",
             left: "50%",
             transform: "translateX(-50%)",
-
-            // 왜인지는 모르겠고 line height가 이 엘레먼트의 최소 하이트를 결정하더라...
-            // svg가 line height 기본값보다 작기 때문에 강제로 0으로 설정해준다.
             lineHeight: 0,
           }}
         >
