@@ -2338,7 +2338,7 @@ export const EmbedChainInfos: (ChainInfo | ModularChainInfo)[] = [
       websocket: "wss://evm-56.keplr.app/websocket",
     },
     chainId: "eip155:56",
-    chainName: "BNB Smart Chain",
+    chainName: "BNB Chain",
     chainSymbolImageUrl:
       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:56/chain.png",
     bip44: {

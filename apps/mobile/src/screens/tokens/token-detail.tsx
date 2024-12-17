@@ -76,7 +76,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
       headerTitle: () => <OWHeaderTitle chainData={item.chainInfo} />,
     });
   }, [item.chainInfo]);
-  console.log(item.token.toCoin().amount, "item.token");
+
   return (
     <>
       <MoreModal

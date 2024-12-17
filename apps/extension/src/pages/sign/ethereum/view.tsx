@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { SignEthereumInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
@@ -47,13 +41,8 @@ import { Image } from "../../../components/image";
 import { Column, Columns } from "../../../components/column";
 import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
+import Web3 from "web3-utils";
 
-/**
- * CosmosTxView의 주석을 꼭 참고하셈
- * 이 View는 아직 실험적이고 임시로 구현한거임
- * evmos에서 ADR-036 view랑 똑같이 구현해놔서 그게 마음에 안들어서 2.0에서 잠시 뺐다가
- * 쓰는 사람들이 약간 있길래 최소한의 UI로 먼저 구현함
- */
 export const EthereumSigningView: FunctionComponent<{
   interactionData: NonNullable<SignEthereumInteractionStore["waitingData"]>;
 }> = observer(({ interactionData }) => {
@@ -227,6 +216,11 @@ export const EthereumSigningView: FunctionComponent<{
         gasPrice
       ) {
         unsignedTx.gasPrice = gasPrice;
+      }
+
+      if (!unsignedTx.maxPriorityFeePerGas) {
+        // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
+        unsignedTx.maxPriorityFeePerGas = Web3.toWei("1", "gwei");
       }
 
       setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), "utf8"));
@@ -416,14 +410,6 @@ export const EthereumSigningView: FunctionComponent<{
                     interactionInfo.interaction &&
                     interactionInfo.interactionInternal
                   ) {
-                    // XXX: 약간 난해한 부분인데
-                    //      내부의 tx의 경우에는 tx 이후의 routing을 요청한 쪽에서 처리한다.
-                    //      하지만 tx를 처리할때 tx broadcast 등의 과정이 있고
-                    //      서명 페이지에서는 이러한 과정이 끝났는지 아닌지를 파악하기 힘들다.
-                    //      만약에 밑과같은 처리를 하지 않으면 interaction data가 먼저 지워지면서
-                    //      화면이 깜빡거리는 문제가 발생한다.
-                    //      이 문제를 해결하기 위해서 내부의 tx는 보내는 쪽에서 routing을 잘 처리한다고 가정하고
-                    //      페이지를 벗어나고 나서야 data를 지우도록한다.
                     await unmountPromise.promise;
                   }
                 }

@@ -299,7 +299,7 @@ export const TronWebProvider = (rpc: string = "https://api.trongrid.io") => {
     });
     return tronWeb;
   } catch (e) {
-    console.log(e, "ee");
+    console.log(e, "TronWebProvider error");
   }
 };
 export const getCoinTypeByChainId = (chainId) => {

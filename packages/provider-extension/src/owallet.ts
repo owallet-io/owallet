@@ -569,6 +569,7 @@ export class OWallet implements IOWallet {
   }
 
   public readonly ethereum = new EthereumProvider(this);
+  // Need to inject tron here
 }
 
 const waitDocumentReady = (): Promise<void> => {

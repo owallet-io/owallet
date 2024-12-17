@@ -85,6 +85,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, "keplr", owallet);
   defineUnwritablePropertyIfPossible(window, "bitcoin", owallet.bitcoin);
   defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
+  defineUnwritablePropertyIfPossible(window, "eth_owallet", owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronWeb_owallet", owallet.tron);

@@ -31,7 +31,7 @@ export class InExtensionMessageRequester implements MessageRequester {
       })
     );
 
-    console.log("result", result, msg);
+    // console.log("result", result, msg);
 
     if (!result) {
       throw new Error("Null result");
