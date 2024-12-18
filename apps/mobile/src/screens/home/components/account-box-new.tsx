@@ -665,6 +665,7 @@ export const AccountBoxAll: FunctionComponent<{
         }}
       />
       <OWBox style={[styles.containerOWBox]}>
+        <Image source={{}} />
         <View style={styles.containerInfoAccount}>
           <TouchableOpacity
             disabled={isLoading}
