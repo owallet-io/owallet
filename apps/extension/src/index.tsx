@@ -90,8 +90,8 @@ import {
   BottomTabHomeIcon,
   BottomTabSettingIcon,
   BottomTabsRouteProvider,
-  BottomTabSwapIcon,
 } from "./bottom-tabs";
+import { SendTronPage } from "./pages/send/amount/tron";
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -363,6 +363,9 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
                 element={<MainPage setIsNotReady={setMainPageIsNotReady} />}
               />
               <Route path="/send" element={<SendAmountPage />} />
+              <Route path="/send-tron" element={<SendTronPage />} />
+              <Route path="/send-oasis" element={<SendAmountPage />} />
+              <Route path="/send-btc" element={<SendAmountPage />} />
               <Route
                 path="/send/select-asset"
                 element={<SendSelectAssetPage />}

@@ -1481,6 +1481,8 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
 }
 
 class TronProvider extends EventEmitter implements ITronProvider {
+  isOwallet = true;
+
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {

@@ -74,8 +74,6 @@ export const TokenDetailModal: FunctionComponent<{
 
   const theme = useTheme();
 
-  console.log("chainId token", chainId);
-
   const account = accountStore.getAccount(chainId);
   const modularChainInfo = chainStore.getModularChain(chainId);
   const currency = (() => {
@@ -143,7 +141,6 @@ export const TokenDetailModal: FunctionComponent<{
 
       return map.get(chainInfo.chainIdentifier) ?? false;
     }
-    // XXX: 어차피 cosmos 기반이 아니면 backend에서 지원하지 않음...
     return false;
   }, [chainStore, modularChainInfo, querySupported.response]);
 
@@ -479,13 +476,10 @@ export const TokenDetailModal: FunctionComponent<{
                 let textDeco: "green" | undefined = undefined;
                 let text = price.roundTo(3).toString();
                 if (price24HChange) {
-                  // Max decimals가 2인데 이 경우 숫자가 0.00123%같은 경우면 +0.00% 같은식으로 표시될 수 있다.
-                  // 이 경우는 오차를 무시하고 0.00%로 생각한다.
                   if (
                     price24HChange
                       .toDec()
                       .abs()
-                      // 백분율을 고려해야되기 때문에 -2가 아니라 -4임
                       .lte(DecUtils.getTenExponentN(-4))
                   ) {
                     text += " (0.00%)";
@@ -549,7 +543,6 @@ export const TokenDetailModal: FunctionComponent<{
 
           <Gutter size="1.25rem" />
           {(() => {
-            // 최초 loading 중인 경우
             if (msgHistory.pages.length === 0) {
               return (
                 <Box padding="0.75rem" paddingTop="0">
@@ -614,7 +607,6 @@ export const TokenDetailModal: FunctionComponent<{
             }
 
             if (msgHistory.pages[0].response?.isUnsupported || !isSupported) {
-              // TODO: 아직 cosmos 체인이 아니면 embedded인지 아닌지 구분할 수 없다.
               if (
                 "cosmos" in modularChainInfo &&
                 chainStore.getChain(chainId).embedded.embedded
@@ -648,7 +640,6 @@ export const TokenDetailModal: FunctionComponent<{
               );
             }
 
-            // 아무 history도 없는 경우
             if (msgHistory.pages[0].response?.msgs.length === 0) {
               return (
                 <EmptyView>

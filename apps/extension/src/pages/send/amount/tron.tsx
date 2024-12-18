@@ -59,7 +59,7 @@ const Styles = {
   `,
 };
 
-export const SendAmountPage: FunctionComponent = observer(() => {
+export const SendTronPage: FunctionComponent = observer(() => {
   const {
     analyticsStore,
     accountStore,
@@ -128,7 +128,6 @@ export const SendAmountPage: FunctionComponent = observer(() => {
     queriesStore,
     chainId,
     sender,
-    // TODO: 이 값을 config 밑으로 빼자
     isEvmTx ? 21000 : 300000,
     isIBCTransfer,
     {
@@ -255,7 +254,6 @@ export const SendAmountPage: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
   useEffect(() => {
     const chainInfo = chainStore.getChain(chainId);
-    // feemarket 이상하게 만들어서 simulate하면 더 적은 gas가 나온다 귀찮아서 대충 처리.
     if (chainInfo.hasFeature("feemarket")) {
       if (
         currentFeeCurrencyCoinMinimalDenom !==
