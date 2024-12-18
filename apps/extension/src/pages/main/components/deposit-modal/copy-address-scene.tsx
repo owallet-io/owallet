@@ -28,7 +28,7 @@ import {
   useSceneEvents,
   useSceneTransition,
 } from "../../../../components/transition";
-import { ModularChainInfo } from "@owallet/types";
+import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 
 export const CopyAddressScene: FunctionComponent<{
   close: () => void;
@@ -39,6 +39,7 @@ export const CopyAddressScene: FunctionComponent<{
     keyRingStore,
     uiConfigStore,
     analyticsStore,
+    tronAccountStore,
   } = useStore();
 
   const intl = useIntl();
@@ -50,20 +51,11 @@ export const CopyAddressScene: FunctionComponent<{
   useSceneEvents({
     onDidVisible: () => {
       if (searchRef.current) {
-        // XXX: Scene transition 컴포넌트가 최초 scene의 경우 onDidVisible를 발생 못시키는 문제가 있다.
-        //      이 문제 때문에 그냥 mount일때와 onDidVisible일때 모두 focus를 준다.
         searchRef.current.focus();
       }
     },
   });
 
-  // 북마크된 체인과 sorting을 위한 state는 분리되어있다.
-  // 이걸 분리하지 않고 북마크된 체인은 무조건 올린다고 가정하면
-  // 유저 입장에서 북마크 버튼을 누르는 순간 그 체인은 위로 올라가게 되고
-  // 아래에 있던 체인의 경우는 유저가 보기에 갑자기 사라진 것처럼 보일 수 있고
-  // 그게 아니더라도 추가적인 인터렉션을 위해서 스크롤이 필요해진다.
-  // 이 문제를 해결하기 위해서 state가 분리되어있다.
-  // 처음 시자할때는 북마크된 체인 기준으로 하고 이후에 북마크가 해제된 체인의 경우만 정렬 우선순위에서 뺀다.
   const [sortPriorities, setSortPriorities] = useState<
     Record<string, true | undefined>
   >(() => {
@@ -111,6 +103,14 @@ export const CopyAddressScene: FunctionComponent<{
 
         if (modularChainInfo.chainId.startsWith("injective")) {
           return undefined;
+        }
+
+        if (modularChainInfo.chainId === ChainIdEVM.TRON) {
+          const accountTronInfo = tronAccountStore.getAccount(
+            modularChainInfo.chainId
+          );
+
+          return accountTronInfo.base58Address;
         }
 
         return accountInfo.hasEthereumHexAddress
@@ -299,9 +299,6 @@ export const CopyAddressScene: FunctionComponent<{
         <Box paddingX="0.75rem">
           {addresses
             .map((address) => {
-              // CopyAddressItem 컴포넌트는 ethereumAddress가 있냐 없냐에 따라서 다르게 동작한다.
-              // ethereumAddress가 있으면 두개의 CopyAddressItem 컴포넌트를 각각 렌더링하기 위해서
-              // ethereumAddress가 있으면 두개의 address로 쪼개서 리턴하고 flat으로 펼져서 렌더링한다.
               if (address.ethereumAddress && address.bech32Address) {
                 return [
                   {
@@ -388,8 +385,6 @@ const CopyAddressItem: FunctionComponent<{
       address.modularChainInfo.cosmos != null &&
       chainStore.isEvmOnlyChain(address.modularChainInfo.chainId);
 
-    // 클릭 영역 문제로 레이아웃이 복잡해졌다.
-    // 알아서 잘 해결하자
     return (
       <Box height="4rem" borderRadius="0.375rem" alignY="center">
         <XAxis alignY="center">
@@ -485,7 +480,6 @@ const CopyAddressItem: FunctionComponent<{
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  // 컨테이너로의 전파를 막아야함
                   e.stopPropagation();
 
                   if (blockInteraction) {
@@ -556,7 +550,7 @@ const CopyAddressItem: FunctionComponent<{
                     }
 
                     if (address.ethereumAddress) {
-                      return address.ethereumAddress.length === 42
+                      return address.ethereumAddress.length <= 42
                         ? `${address.ethereumAddress.slice(
                             0,
                             10

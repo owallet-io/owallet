@@ -33,7 +33,7 @@ import { XAxis, YAxis } from "../../../../components/axis";
 export const TokenFoundModal: FunctionComponent<{
   close: () => void;
 }> = observer(({ close }) => {
-  const { chainStore, keyRingStore } = useStore();
+  const { chainStore, keyRingStore, tronAccountStore } = useStore();
   const intl = useIntl();
   const theme = useTheme();
 
@@ -85,6 +85,7 @@ export const TokenFoundModal: FunctionComponent<{
 
     for (const enable of enables) {
       const modularChainInfo = chainStore.getModularChain(enable);
+
       if ("cosmos" in modularChainInfo) {
         if (
           keyRingStore.needKeyCoinTypeFinalize(
@@ -106,11 +107,19 @@ export const TokenFoundModal: FunctionComponent<{
             tokenScan.infos.length === 1 &&
             tokenScan.infos[0].coinType != null
           ) {
-            await keyRingStore.finalizeKeyCoinType(
-              keyRingStore.selectedKeyInfo.id,
-              enable,
-              tokenScan.infos[0].coinType
-            );
+            if (modularChainInfo.cosmos.features.includes("tron")) {
+              await keyRingStore.finalizeKeyCoinType(
+                keyRingStore.selectedKeyInfo.id,
+                enable,
+                modularChainInfo.cosmos.bip44.coinType
+              );
+            } else {
+              await keyRingStore.finalizeKeyCoinType(
+                keyRingStore.selectedKeyInfo.id,
+                enable,
+                tokenScan.infos[0].coinType
+              );
+            }
           }
         }
       } else if ("starknet" in modularChainInfo) {

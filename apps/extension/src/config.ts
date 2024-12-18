@@ -2182,6 +2182,164 @@ export const EmbedChainInfos: (ChainInfo | ModularChainInfo)[] = [
     features: [],
   },
   {
+    rpc: "https://api.trongrid.io",
+    rest: "https://apilist.tronscanapi.com",
+    chainId: "eip155:728126428",
+    chainName: "Tron",
+    evm: {
+      rpc: "https://api.trongrid.io/jsonrpc",
+      chainId: 728126428,
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+    stakeCurrency: {
+      coinDenom: "TRX",
+      coinMinimalDenom: "trx",
+      coinDecimals: 6,
+      coinGeckoId: "tron",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+    },
+    currencies: [
+      {
+        coinDenom: "TRX",
+        coinMinimalDenom: "trx",
+        coinDecimals: 6,
+        coinGeckoId: "tron",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+      },
+      {
+        contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
+        coinDenom: "USDC",
+        coinMinimalDenom: "erc20:0x3487b63D30B5B2C87fb7fFa8bcfADE38EAaC1abe",
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+        coinDecimals: 6,
+      },
+      {
+        contractAddress: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+        coinMinimalDenom: "erc20:0xa614f803B6FD780986A42c78Ec9c7f77e6DeD13C",
+        coinDenom: "USDT",
+        coinDecimals: 6,
+        coinGeckoId: "tether",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+      },
+      {
+        contractAddress: "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+        coinMinimalDenom: "erc20:0x891cdb91d149f23B1a45D9c5Ca78a88d0cB44C18",
+        coinDenom: "WTRX",
+        coinDecimals: 6,
+        coinGeckoId: "wrapped-tron",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
+      },
+    ],
+    bip44: {
+      coinType: 195,
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    features: ["base58-address", "not-support-staking", "tron"],
+    txExplorer: {
+      name: "Tronscan",
+      txUrl: "https://tronscan.org/#/transaction/{txHash}",
+      accountUrl: "https://tronscan.org/#/address/{address}",
+    },
+  },
+  {
+    rpc: "https://sapphire.oasis.io",
+    rest: "https://sapphire.oasis.io",
+    chainId: "eip155:23294",
+    evm: {
+      websocket: "wss://sapphire.oasis.io/ws",
+      rpc: "https://sapphire.oasis.io",
+      chainId: 23294,
+    },
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Sapphire",
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ["not-support-staking", "oasis-address"],
+    txExplorer: {
+      name: "Oasis Saphire Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+      accountUrl:
+        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+    },
+  },
+  {
+    rpc: "https://emerald.oasis.dev",
+    rest: "https://emerald.oasis.dev",
+    chainId: "eip155:42262",
+    chainSymbolImageUrl:
+      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    chainName: "Oasis Emerald",
+    evm: {
+      websocket: "wss://emerald.oasis.io/ws",
+      rpc: "https://emerald.oasis.dev",
+      chainId: 42262,
+    },
+    bip44: {
+      coinType: 60,
+    },
+    stakeCurrency: {
+      coinDenom: "ROSE",
+      coinMinimalDenom: "rose",
+      coinDecimals: 18,
+      coinGeckoId: "oasis-network",
+      coinImageUrl:
+        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    },
+    currencies: [
+      {
+        coinDenom: "ROSE",
+        coinMinimalDenom: "rose",
+        coinDecimals: 18,
+        coinGeckoId: "oasis-network",
+        coinImageUrl:
+          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+
+    features: ["not-support-staking", "oasis-address"],
+    txExplorer: {
+      name: "Oasis Emerald Scan",
+      txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
+      accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
+    },
+  },
+  {
     rpc: "https://evm-8453.keplr.app",
     rest: "https://evm-8453.keplr.app",
     evm: {

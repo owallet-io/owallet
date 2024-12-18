@@ -25,7 +25,7 @@ import { Checkbox } from "../../components/checkbox";
 import { Caption2 } from "../../components/typography";
 import { ColorPalette } from "../../styles";
 import { FormattedMessage, useIntl } from "react-intl";
-import styled, { useTheme, css } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { DenomHelper } from "@owallet/common";
 import { TokenDetailModal } from "./token-detail";
 import { useSearchParams } from "react-router-dom";
@@ -92,7 +92,7 @@ export const AvailableTabView: FunctionComponent<{
   onMoreTokensClosed: () => void;
 }> = observer(
   ({ search, isNotReady, onClickGetStarted, onMoreTokensClosed }) => {
-    const { hugeQueriesStore, chainStore, accountStore, uiConfigStore } =
+    const { hugeQueriesStore, chainStore, allAccountStore, uiConfigStore } =
       useStore();
     const intl = useIntl();
     const theme = useTheme();
@@ -319,7 +319,7 @@ export const AvailableTabView: FunctionComponent<{
                               return undefined;
                             }
 
-                            const account = accountStore.getAccount(
+                            const account = allAccountStore.getAccount(
                               viewToken.chainInfo.chainId
                             );
                             const isEVMOnlyChain = chainStore.isEvmOnlyChain(
@@ -327,8 +327,8 @@ export const AvailableTabView: FunctionComponent<{
                             );
 
                             return isEVMOnlyChain
-                              ? account.ethereumHexAddress
-                              : account.bech32Address;
+                              ? account.addressDisplay
+                              : account.addressDisplay;
                           })()}
                           showPrice24HChange={
                             uiConfigStore.show24HChangesInMagePage

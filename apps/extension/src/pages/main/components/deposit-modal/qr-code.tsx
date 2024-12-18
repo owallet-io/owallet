@@ -19,29 +19,19 @@ export const QRCodeScene: FunctionComponent<{
   chainId: string;
   address?: string;
 }> = observer(({ chainId, address }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore } = useStore();
 
   const theme = useTheme();
   const qrCodeRef = useRef<HTMLCanvasElement>(null);
   const modularChainInfo = chainStore.getModularChain(chainId);
-  const account = accountStore.getAccount(chainId);
 
   useEffect(() => {
-    const isEVMOnlyChain =
-      "cosmos" in modularChainInfo &&
-      modularChainInfo.cosmos != null &&
-      chainStore.isEvmOnlyChain(chainId);
-
-    const address = isEVMOnlyChain
-      ? account.ethereumHexAddress
-      : account.bech32Address;
-
     if (qrCodeRef.current && address) {
       QRCode.toCanvas(qrCodeRef.current, address, {
         width: 280,
       });
     }
-  }, [modularChainInfo, chainId]);
+  }, [modularChainInfo, chainId, address]);
   const sceneTransition = useSceneTransition();
 
   if (!address) {
@@ -111,7 +101,7 @@ export const QRCodeScene: FunctionComponent<{
             />
           </Box>
           <Gutter size="1.25rem" />
-          <AddressChip chainId={chainId} inModal={true} />
+          <AddressChip chainId={chainId} address={address} inModal={true} />
           <Gutter size="1.25rem" />
         </YAxis>
       </Box>

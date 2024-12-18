@@ -9,12 +9,16 @@ import { Bech32Address } from "@owallet/cosmos";
 import Lottie from "lottie-web";
 import { Gutter } from "../../../../components/gutter";
 import { useTheme } from "styled-components";
+import { ChainIdEVM } from "@owallet/types";
 
 export const AddressChip: FunctionComponent<{
   chainId: string;
+  address?: string;
   inModal?: boolean;
-}> = observer(({ chainId, inModal }) => {
-  const { accountStore, chainStore } = useStore();
+}> = observer(({ chainId, address, inModal }) => {
+  const { accountStore, chainStore, tronAccountStore } = useStore();
+
+  const [copyAddress, setCopyAddress] = useState("");
 
   const modularChainInfo = chainStore.getModularChain(chainId);
   const isEVMOnlyChain = (() => {
@@ -30,6 +34,25 @@ export const AddressChip: FunctionComponent<{
 
   const [isHover, setIsHover] = useState(false);
   const [animCheck, setAnimCheck] = useState(false);
+
+  useEffect(() => {
+    if (address) {
+      setCopyAddress(address);
+    } else {
+      if (chainId === ChainIdEVM.TRON) {
+        const accountTron = tronAccountStore.getAccount(
+          modularChainInfo.chainId
+        );
+        setCopyAddress(accountTron.base58Address);
+      } else {
+        const finalAddress = isEVMOnlyChain
+          ? account.ethereumHexAddress
+          : account.bech32Address;
+
+        setCopyAddress(finalAddress);
+      }
+    }
+  }, [address, account, isEVMOnlyChain, chainId]);
 
   useEffect(() => {
     if (animCheck) {
@@ -78,9 +101,7 @@ export const AddressChip: FunctionComponent<{
 
         if ("cosmos" in modularChainInfo) {
           // copy address
-          navigator.clipboard.writeText(
-            isEVMOnlyChain ? account.ethereumHexAddress : account.bech32Address
-          );
+          navigator.clipboard.writeText(copyAddress);
         } else {
         }
         setAnimCheck(true);
@@ -98,11 +119,8 @@ export const AddressChip: FunctionComponent<{
           {(() => {
             if ("cosmos" in modularChainInfo) {
               return isEVMOnlyChain
-                ? `${account.ethereumHexAddress.slice(
-                    0,
-                    10
-                  )}...${account.ethereumHexAddress.slice(32)}`
-                : Bech32Address.shortenAddress(account.bech32Address, 16);
+                ? `${copyAddress.slice(0, 10)}...${copyAddress.slice(32)}`
+                : Bech32Address.shortenAddress(copyAddress, 16);
             }
           })()}
         </Body3>

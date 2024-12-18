@@ -74,6 +74,10 @@ import {
 } from "@owallet/stores-internal";
 import { setInteractionDataHref } from "../utils";
 import { InteractionPingMsg } from "@owallet/background";
+import { BtcAccountStore } from "@owallet/stores-btc";
+import { TrxAccountStore } from "@owallet/stores-trx";
+import { OasisAccountStore } from "@owallet/stores-oasis";
+import { AllAccountStore } from "./all-account-store";
 
 let _sidePanelWindowId: number | undefined;
 async function getSidePanelWindowId(): Promise<number | undefined> {
@@ -123,6 +127,13 @@ export class RootStore {
     [CosmosAccount, CosmwasmAccount, SecretAccount]
   >;
   public readonly ethereumAccountStore: EthereumAccountStore;
+
+  public readonly oasisAccountStore: OasisAccountStore;
+  public readonly tronAccountStore: TrxAccountStore;
+
+  public readonly bitcoinAccountStore: BtcAccountStore;
+
+  public readonly allAccountStore: AllAccountStore;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly price24HChangesStore: Price24HChangesStore;
   public readonly hugeQueriesStore: HugeQueriesStore;
@@ -405,6 +416,30 @@ export class RootStore {
     this.ethereumAccountStore = new EthereumAccountStore(
       this.chainStore,
       getOWalletFromWindow
+    );
+
+    this.oasisAccountStore = new OasisAccountStore(
+      window,
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.tronAccountStore = new TrxAccountStore(
+      window,
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.bitcoinAccountStore = new BtcAccountStore(
+      window,
+      this.chainStore,
+      getOWalletFromWindow
+    );
+    this.allAccountStore = new AllAccountStore(
+      this.chainStore,
+      this.oasisAccountStore,
+      this.accountStore,
+      this.tronAccountStore,
+      this.ethereumAccountStore,
+      this.bitcoinAccountStore
     );
 
     this.priceStore = new CoinGeckoPriceStore(

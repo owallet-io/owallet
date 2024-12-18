@@ -74,8 +74,14 @@ export const EnableChainsScene: FunctionComponent<{
     skipWelcome,
     initialSearchValue,
   }) => {
-    const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
-      useStore();
+    const {
+      chainStore,
+      accountStore,
+      tronAccountStore,
+      queriesStore,
+      priceStore,
+      keyRingStore,
+    } = useStore();
 
     const navigate = useNavigate();
     const intl = useIntl();
@@ -130,7 +136,6 @@ export const EnableChainsScene: FunctionComponent<{
     useEffectOnce(() => {
       if (candidateAddresses.length === 0) {
         (async () => {
-          // TODO: 이거 뭔가 finalize-key scene이랑 공통 hook 쓸 수 잇게 하던가 함수를 공유해야할 듯...?
           const candidateAddresses: {
             chainId: string;
             bech32Addresses: {
@@ -166,6 +171,12 @@ export const EnableChainsScene: FunctionComponent<{
                   })()
                 );
               } else {
+                if (chainInfo.features.includes("tron")) {
+                  const accountTron = tronAccountStore.getAccount(
+                    chainInfo.chainId
+                  );
+                  console.log("accountTron", accountTron.base58Address);
+                }
                 const account = accountStore.getAccount(chainInfo.chainId);
                 promises.push(
                   (async () => {
@@ -187,17 +198,6 @@ export const EnableChainsScene: FunctionComponent<{
                   })()
                 );
               }
-            } else if ("starknet" in modularChainInfo) {
-              const account = accountStore.getAccount(
-                modularChainInfo.starknet.chainId
-              );
-              promises.push(
-                (async () => {
-                  if (account.walletStatus !== WalletStatus.Loaded) {
-                    await account.init();
-                  }
-                })()
-              );
             }
           }
 
@@ -224,7 +224,6 @@ export const EnableChainsScene: FunctionComponent<{
       return map;
     }, [candidateAddresses]);
 
-    // Select derivation scene으로 이동한 후에는 coin type을 여기서 자동으로 finalize 하지 않도록 보장한다.
     const sceneMovedToSelectDerivation = useRef(false);
 
     // Handle coin type selection.
@@ -236,7 +235,6 @@ export const EnableChainsScene: FunctionComponent<{
 
           if (keyRingStore.needKeyCoinTypeFinalize(vaultId, chainInfo)) {
             if (candidateAddress.bech32Addresses.length === 1) {
-              // finalize-key scene을 통하지 않고도 이 scene으로 들어올 수 있는 경우가 있기 때문에...
               keyRingStore.finalizeKeyCoinType(
                 vaultId,
                 candidateAddress.chainId,
@@ -454,15 +452,12 @@ export const EnableChainsScene: FunctionComponent<{
               return false;
             }
 
-            // fallbackEthereumLedgerApp가 true이면 ethereum app이 필요없는 체인은 이전에 다 처리된 것이다.
-            // 이게 true이면 ethereum app이 필요하고 가능한 체인만 남기면 된다.
             if (fallbackEthereumLedgerApp) {
               if (!isEthermintLike) {
                 return false;
               }
 
               try {
-                // 처리가능한 체인만 true를 반환한다.
                 KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
                   chainInfo.chainId
                 );
@@ -601,8 +596,6 @@ export const EnableChainsScene: FunctionComponent<{
           return aPrice.gt(bPrice) ? -1 : 1;
         }
 
-        // balance의 fiat 기준으로 sort.
-        // 같으면 이름 기준으로 sort.
         return aModularChainInfo.chainName.localeCompare(
           bModularChainInfo.chainName
         );
@@ -837,7 +830,6 @@ export const EnableChainsScene: FunctionComponent<{
 
                     const isLedgerSupported = (() => {
                       try {
-                        // 처리가능한 체인만 true를 반환한다.
                         KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
                           chainInfo.chainId
                         );
