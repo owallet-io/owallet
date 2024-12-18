@@ -5,6 +5,7 @@ import {
   RefreshControl,
   ScrollView,
   StyleSheet,
+  View,
 } from "react-native";
 import { useStore } from "../../stores";
 import { observer } from "mobx-react-lite";
@@ -15,6 +16,12 @@ import { MainTabHome } from "./components";
 import { StakeCardAll } from "./components/stake-card-all";
 import { NewThemeModal } from "@src/modals/theme-modal/theme";
 import messaging from "@react-native-firebase/messaging";
+import { OWBox } from "@components/card";
+import { metrics, spacing } from "@src/themes";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { imagesNoel } from "@assets/images/noels";
+import OWText from "@components/text/ow-text";
+import OWButtonIcon from "@components/button/ow-button-icon";
 // import { NewThemeModal } from "@src/modals/theme/new-theme";
 
 export const useIsNotReady = () => {
@@ -119,6 +126,55 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <AccountBoxAll isLoading={false} />
 
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
+      <View>
+        <OWBox
+          style={{
+            marginHorizontal: 16,
+            marginTop: 8,
+            width: metrics.screenWidth - 32,
+            paddingHorizontal: 16,
+            backgroundColor: colors["neutral-surface-card"],
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 16,
+          }}
+        >
+          <View>
+            <OWIcon
+              type={"images"}
+              source={imagesNoel.img_owallet}
+              size={32}
+              resizeMode={"contain"}
+            />
+          </View>
+          <View
+            style={{
+              maxWidth: metrics.screenWidth - 110,
+            }}
+          >
+            <OWText weight={"600"}>’Tis the Season of ...Gaining! ✨</OWText>
+            <OWText weight={"400"} size={12}>
+              🎁 Deck your wallet and wrap up the year in style with OWallet!
+              🎄🎉
+            </OWText>
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              top: 16,
+              right: 8,
+            }}
+          >
+            <OWButtonIcon
+              colorIcon={colors["neutral-icon-on-light"]}
+              // onPress={onGoBack}
+              name="tdesignclose"
+              fullWidth={false}
+              sizeIcon={20}
+            />
+          </View>
+        </OWBox>
+      </View>
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>
   );

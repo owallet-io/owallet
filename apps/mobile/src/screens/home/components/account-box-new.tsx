@@ -29,6 +29,7 @@ import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
 import {
+  eventTheme,
   shortenAddress,
   shuffleArray,
   sortChainsByPrice,
@@ -43,6 +44,8 @@ import PieChart from "react-native-pie-chart";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import MoreModal from "./more-modal";
+import { imagesNoel } from "@assets/images/noels";
+
 const zeroDec = new Dec("0");
 export const initPrice = new PricePretty(
   {
@@ -492,7 +495,6 @@ export const AccountBoxAll: FunctionComponent<{
       </View>
     );
   };
-
   const renderAssetsByChain = () => {
     // if (
     //   (chainStore.current.networkType !== "cosmos" &&
@@ -665,8 +667,34 @@ export const AccountBoxAll: FunctionComponent<{
         }}
       />
       <OWBox style={[styles.containerOWBox]}>
-        <Image source={{}} />
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.cloud_top_box}
+            style={{
+              width: 60,
+              height: 35,
+              position: "absolute",
+              top: -7,
+              right: "50%",
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
         <View style={styles.containerInfoAccount}>
+          {eventTheme === "noel" ? (
+            <Image
+              source={imagesNoel.avatar_noel}
+              style={{
+                width: 36,
+                height: 26,
+                position: "absolute",
+                top: -12,
+                left: -16,
+                zIndex: 1000,
+              }}
+              resizeMode={"contain"}
+            />
+          ) : null}
           <TouchableOpacity
             disabled={isLoading}
             onPress={_onPressMyWallet}
@@ -718,6 +746,20 @@ export const AccountBoxAll: FunctionComponent<{
                   color={colors["neutral-icon-on-light"]}
                 />
               </TouchableOpacity>
+              {eventTheme === "noel" ? (
+                <Image
+                  source={imagesNoel.bell_light}
+                  style={{
+                    width: 30,
+                    height: 60,
+                    position: "absolute",
+                    top: 29,
+                    right: 10,
+                    zIndex: 1000,
+                  }}
+                  resizeMode={"contain"}
+                />
+              ) : null}
             </View>
           ) : (
             <OWButton

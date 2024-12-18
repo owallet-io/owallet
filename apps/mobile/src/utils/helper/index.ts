@@ -29,7 +29,12 @@ export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = "FAILED";
 export const SUCCESS = "SUCCESS";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
-
+export const eventTheme: "noel" | "owallet" | "halloween" = "noel";
+// export const getUrlImageByTheme = (theme:"noel" | "owallet" | "halloween")=>{
+//   if(theme === "noel"){
+//
+//   }
+// }
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",

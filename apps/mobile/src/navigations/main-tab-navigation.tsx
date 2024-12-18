@@ -21,7 +21,7 @@ import { useStore } from "@src/stores";
 
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
-  const { colors, dark } = useTheme();
+  const { colors, dark, images } = useTheme();
 
   const { appInitStore } = useStore();
 
@@ -59,7 +59,7 @@ export const MainTabNavigation: FC = observer(() => {
                   <View style={styles.paddingIcon}>
                     <OWIcon
                       type="images"
-                      source={imagesGlobal.swap}
+                      source={images.btn_center_bottom_tab}
                       size={50}
                     />
                   </View>

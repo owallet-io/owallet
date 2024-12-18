@@ -12,7 +12,8 @@ import { useMapStyles } from "./hooks";
 import { LoadingSpinner } from "../spinner";
 import { useTheme } from "@src/themes/theme-provider";
 import OWText, { OWTextProps } from "../text/ow-text";
-
+import LinearGradient from "react-native-linear-gradient";
+import { eventTheme } from "@utils/helper";
 export interface IOWButtonProps extends TouchableOpacityProps {
   type?: "primary" | "secondary" | "link" | "modal" | "danger";
   size?: "medium" | "small" | "large" | "default";
@@ -53,6 +54,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const styles = styling();
   const { colors } = useTheme();
+
   return (
     <TouchableOpacity
       {...props}
@@ -68,6 +70,27 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         style,
       ]}
     >
+      {eventTheme === "noel" &&
+      type === "primary" &&
+      !disabled &&
+      !style?.backgroundColor ? (
+        <LinearGradient
+          colors={[
+            "rgba(255, 255, 255, 0.48)", // Shadow color
+            "transparent",
+          ]}
+          start={{ x: 0, y: 0.05 }} // Gradient start point (center-top)
+          end={{ x: 0, y: 0.95 }} // Gradient end point (center-bottom)
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: 32,
+          }}
+        />
+      ) : null}
       {loading ? (
         <View>
           <View
@@ -100,6 +123,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
                   styles.textBtn,
                   styles.iconInBtn,
                   styleMapped.text,
+
                   textStyle,
                 ]}
                 color={colors["neutral-text-action-on-dark-bg"]}

@@ -2,6 +2,7 @@ import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CoinGeckoPrices } from "@oraichain/oraidex-common";
+
 // import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
 
 export class AppInit {
@@ -61,7 +62,6 @@ export class AppInit {
   get getInitApp() {
     return this.initApp;
   }
-
   @computed
   get getChainInfos() {
     return this.initApp.chainInfos;
@@ -71,10 +71,12 @@ export class AppInit {
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
   }
+
   @action
   updateSelectTheme() {
     this.initApp = { ...this.initApp, isSelectTheme: true };
   }
+
   // @action
   // updateMultipleAssets(data: IMultipleAsset) {
   //   this.multipleAssets = { ...data };
@@ -129,6 +131,7 @@ export class AppInit {
   updateHideTokensWithoutBalance(hideTokensWithoutBalance) {
     this.initApp = { ...this.initApp, hideTokensWithoutBalance };
   }
+
   @action
   updateVisibleTabBar(visibleTabBar) {
     this.initApp = { ...this.initApp, visibleTabBar };
