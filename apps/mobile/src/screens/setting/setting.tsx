@@ -29,6 +29,7 @@ import { SCREENS } from "@src/common/constants";
 import { ThemeModal } from "./components/theme-modal";
 import { eventTheme } from "@utils/helper";
 import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 export const NewSettingScreen: FunctionComponent = observer((props) => {
   const {
@@ -138,7 +139,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
-            source={require("../../assets/image/img_owallet.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_owallet
+                : images.img_owallet
+            }
             fadeDuration={0}
             resizeMode="contain"
           />
