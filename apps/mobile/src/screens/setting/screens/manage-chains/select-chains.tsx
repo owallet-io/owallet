@@ -561,7 +561,6 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
     );
   };
-  console.log(chains, "chains kaka");
   return (
     <PageWithView>
       <OWBox style={styles.pageContainer}>
