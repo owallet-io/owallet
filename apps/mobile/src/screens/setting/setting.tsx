@@ -226,9 +226,16 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
+      style={{
+        paddingTop: 0,
+      }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <View>
+      <View
+        style={{
+          paddingTop: 20,
+        }}
+      >
         {eventTheme === "noel" ? (
           <Image
             source={imagesNoel.left_top_setting_noel}
@@ -236,7 +243,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
               width: 45,
               height: 18,
               position: "absolute",
-              top: 0,
+              top: 20,
               left: 26,
               zIndex: 1000,
             }}
@@ -250,7 +257,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
               width: 65,
               height: 38,
               position: "absolute",
-              top: -5,
+              top: 16,
               right: 15,
               zIndex: 1000,
             }}
@@ -264,7 +271,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
               width: 150,
               height: 55,
               position: "absolute",
-              top: -30,
+              top: -9,
               left: "30%",
               zIndex: 1000,
             }}

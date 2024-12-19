@@ -92,6 +92,7 @@ export const AccountBoxAll: FunctionComponent<{
     queriesStore,
     priceStore,
     allAccountStore,
+    keyRingStore,
   } = useStore();
 
   const { colors } = useTheme();
@@ -650,7 +651,7 @@ export const AccountBoxAll: FunctionComponent<{
       </View>
     );
   };
-
+  const selectedKeyInfo = keyRingStore.selectedKeyInfo;
   return (
     <View>
       <CopyAddressModal
@@ -715,7 +716,7 @@ export const AccountBoxAll: FunctionComponent<{
               fadeDuration={0}
             />
             <Text style={styles.labelName}>
-              {accountOrai?.name || account?.name || "..."}
+              {selectedKeyInfo?.name || "OWallet Account"}
             </Text>
             <DownArrowIcon
               height={15}

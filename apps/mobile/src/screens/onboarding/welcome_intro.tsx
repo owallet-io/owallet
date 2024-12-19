@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    position: "absolute",
+    // position: "absolute",
     bottom: metrics.screenHeight > 800 ? 0.1 * -metrics.screenHeight : 0,
     alignSelf: "center",
   },
