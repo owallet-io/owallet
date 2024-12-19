@@ -67,7 +67,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
   const contractAddress =
     initialCoinMinimalDenom.split(":").length > 1
       ? initialCoinMinimalDenom.split(":")[1]
-      : initialCoinMinimalDenom;
+      : null;
 
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);
@@ -402,6 +402,48 @@ export const SendTronPage: FunctionComponent = observer(() => {
             if (isEvmTx) {
               ethereumAccount.setIsSendingTx(true);
 
+              const unsignedTx = tronAccount.makeSendTokenTx({
+                address: sender,
+                currency: sendConfigs.amountConfig.amount[0].currency,
+                amount: sendConfigs.amountConfig.amount[0]
+                  .toDec()
+                  .mul(
+                    new Dec(
+                      10 **
+                        sendConfigs.amountConfig.amount[0].currency.coinDecimals
+                    )
+                  )
+                  .round()
+                  .toString(),
+                recipient: sendConfigs.recipientConfig.recipient,
+                contractAddress,
+              });
+
+              console.log("unsignedTx", unsignedTx);
+
+              await tronAccount.sendTx(unsignedTx, {
+                onBroadcasted: (txHash) => {
+                  tronAccount.setIsSendingTx(false);
+                  // Do some thing with txHash
+                },
+                onFulfill: (txReceipt) => {
+                  queryBalances
+                    .getQueryEthereumHexAddress(sender)
+                    .balances.forEach((balance) => {
+                      if (
+                        balance.currency.coinMinimalDenom ===
+                          coinMinimalDenom ||
+                        sendConfigs.feeConfig.fees.some(
+                          (fee) =>
+                            fee.currency.coinMinimalDenom ===
+                            balance.currency.coinMinimalDenom
+                        )
+                      ) {
+                        balance.fetch();
+                      }
+                    });
+                },
+              });
               ethereumAccount.setIsSendingTx(false);
             }
             if (!isDetachedMode) {
@@ -412,6 +454,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
               window.close();
             }
           } catch (e) {
+            console.log("error on Send Tron", e);
             if (e?.message === "Request rejected") {
               return;
             }
@@ -420,7 +463,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
               ethereumAccount.setIsSendingTx(false);
             }
 
-            console.log("error on Send Tron", e);
             notification.show(
               "failed",
               intl.formatMessage({ id: "error.transaction-failed" }),

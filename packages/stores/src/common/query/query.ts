@@ -591,7 +591,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         };
 
         console.log(
-          "error on fetch 2",
+          "QueryError on fetch",
           this.baseURL,
           this._url,
           e.request,

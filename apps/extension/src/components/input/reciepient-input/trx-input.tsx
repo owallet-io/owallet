@@ -56,8 +56,6 @@ export const TronRecipientInput = observer<
     const theme = useTheme();
     const { recipientConfig, memoConfig, checkSendMySelft } = props;
 
-    console.log("is checkSendMySelft", checkSendMySelft);
-
     const [isAddressBookModalOpen, setIsAddressBookModalOpen] =
       React.useState(false);
 
