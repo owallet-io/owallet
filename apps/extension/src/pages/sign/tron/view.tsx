@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { SignTronInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
@@ -13,37 +13,20 @@ import { OWalletError } from "@owallet/router";
 import { ErrModuleLedgerSign } from "../utils/ledger-types";
 import { Buffer } from "buffer/";
 import { LedgerGuideBox } from "../components/ledger-guide-box";
-import { EthSignType } from "@owallet/types";
-import { handleEthereumPreSignByLedger } from "../utils/handle-eth-sign";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import SimpleBar from "simplebar-react";
-import { ViewDataButton } from "../components/view-data-button";
-import { UnsignedTransaction } from "@ethersproject/transactions";
-import { defaultRegistry } from "../components/eth-tx/registry";
-import { ChainImageFallback } from "../../../components/image";
 import { Gutter } from "../../../components/gutter";
 import { useUnmount } from "../../../hooks/use-unmount";
-import { FeeSummary } from "../components/fee-summary";
-import { FeeControl } from "../../../components/input/fee-control";
-import {
-  useAmountConfig,
-  useFeeConfig,
-  useGasSimulator,
-  useGetFeeTron,
-  useSenderConfig,
-  useSendTronTxConfig,
-  useZeroAllowedGasConfig,
-} from "@owallet/hooks";
+
+import { useGetFeeTron, useSendTronTxConfig } from "@owallet/hooks";
 import { handleExternalInteractionWithNoProceedNext } from "../../../utils";
 import {
   DEFAULT_FEE_LIMIT_TRON,
-  MemoryKVStore,
   toDisplay,
   TronWebProvider,
 } from "@owallet/common";
 import { Image } from "../../../components/image";
-import { Column, Columns } from "../../../components/column";
 import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
@@ -91,7 +74,6 @@ export const TronSigningView: FunctionComponent<{
     addressToFetch,
     1
   );
-  const gasConfig = useZeroAllowedGasConfig(chainStore, chainId, 0);
 
   if (!parsedData.raw_data_hex) {
     const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
@@ -187,7 +169,9 @@ export const TronSigningView: FunctionComponent<{
         signature = await handleTronPreSignByLedger(
           interactionData,
           transaction.raw_data_hex,
-          ledgerBLE.getTransport
+          {
+            useWebHID: uiConfigStore.useWebHIDLedger,
+          }
         );
 
         transaction.signature = [signature];
@@ -242,26 +226,7 @@ export const TronSigningView: FunctionComponent<{
             width: "3.25rem",
           },
           onClick: async () => {
-            await signTronInteractionStore.rejectWithProceedNext(
-              interactionData.id,
-              async (proceedNext) => {
-                if (!proceedNext) {
-                  if (
-                    interactionInfo.interaction &&
-                    !interactionInfo.interactionInternal
-                  ) {
-                    handleExternalInteractionWithNoProceedNext();
-                  } else if (
-                    interactionInfo.interaction &&
-                    interactionInfo.interactionInternal
-                  ) {
-                    window.history.length > 1 ? navigate(-1) : navigate("/");
-                  } else {
-                    navigate("/", { replace: true });
-                  }
-                }
-              }
-            );
+            approve();
           },
         },
         {
@@ -327,117 +292,54 @@ export const TronSigningView: FunctionComponent<{
           overflow: "auto",
         }}
       >
-        {isTxSigning ? (
-          <Box marginBottom="0.5rem" alignX="center" alignY="center">
-            <Box
-              padding="0.375rem 0.625rem 0.375rem 0.75rem"
-              backgroundColor={
-                theme.mode === "light"
-                  ? ColorPalette.white
-                  : ColorPalette["gray-600"]
-              }
-              borderRadius="20rem"
-            >
-              <XAxis alignY="center">
-                <Body3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-500"]
-                      : ColorPalette["gray-200"]
-                  }
-                >
-                  <FormattedMessage
-                    id="page.sign.ethereum.requested-network"
-                    values={{
-                      network: chainInfo.chainName,
-                    }}
-                  />
-                </Body3>
-                <Gutter direction="horizontal" size="0.5rem" />
-                <ChainImageFallback
-                  size="1.25rem"
-                  chainInfo={chainInfo}
-                  alt={chainInfo.chainName}
-                />
-              </XAxis>
-            </Box>
-          </Box>
-        ) : (
-          <Box
-            padding="1rem"
-            backgroundColor={
+        (
+        <Box
+          padding="1rem"
+          backgroundColor={
+            theme.mode === "light"
+              ? ColorPalette.white
+              : ColorPalette["gray-600"]
+          }
+          borderRadius="0.375rem"
+          style={{
+            boxShadow:
               theme.mode === "light"
-                ? ColorPalette.white
-                : ColorPalette["gray-600"]
-            }
-            borderRadius="0.375rem"
-            style={{
-              boxShadow:
-                theme.mode === "light"
-                  ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
-                  : "none",
-            }}
-          >
-            <XAxis alignY="center">
-              <Image
-                alt="sign-custom-image"
-                src={require("../../../public/assets/img/sign-adr36.png")}
-                style={{ width: "3rem", height: "3rem" }}
-              />
-              <Gutter size="0.75rem" />
-              <YAxis>
-                <H5
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-500"]
-                      : ColorPalette["gray-10"]
-                  }
-                >
-                  <FormattedMessage id="Prove account ownership to" />
-                </H5>
-                <Gutter size="2px" />
-                <Body3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-300"]
-                      : ColorPalette["gray-200"]
-                  }
-                >
-                  {interactionData?.data.origin || ""}
-                </Body3>
-              </YAxis>
-            </XAxis>
-          </Box>
-        )}
-
+                ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+                : "none",
+          }}
+        >
+          <XAxis alignY="center">
+            <Image
+              alt="sign-custom-image"
+              src={require("../../../public/assets/img/sign-adr36.png")}
+              style={{ width: "3rem", height: "3rem" }}
+            />
+            <Gutter size="0.75rem" />
+            <YAxis>
+              <H5
+                color={
+                  theme.mode === "light"
+                    ? ColorPalette["gray-500"]
+                    : ColorPalette["gray-10"]
+                }
+              >
+                <FormattedMessage id="Prove account ownership to" />
+              </H5>
+              <Gutter size="2px" />
+              <Body3
+                color={
+                  theme.mode === "light"
+                    ? ColorPalette["gray-300"]
+                    : ColorPalette["gray-200"]
+                }
+              >
+                {interactionData?.data.origin || ""}
+              </Body3>
+            </YAxis>
+          </XAxis>
+        </Box>
+        )
         <Gutter size="0.75rem" />
-
-        {isTxSigning && (
-          <Box marginBottom="0.5rem">
-            <Columns sum={1} alignY="center">
-              <XAxis>
-                <H5
-                  style={{
-                    color:
-                      theme.mode === "light"
-                        ? ColorPalette["gray-500"]
-                        : ColorPalette["gray-50"],
-                  }}
-                >
-                  <FormattedMessage
-                    id={"page.sign.ethereum.transaction.summary"}
-                  />
-                </H5>
-              </XAxis>
-              <Column weight={1} />
-
-              <ViewDataButton
-                isViewData={isViewData}
-                setIsViewData={setIsViewData}
-              />
-            </Columns>
-          </Box>
-        )}
         <SimpleBar
           autoHide={false}
           style={{
@@ -457,7 +359,7 @@ export const TronSigningView: FunctionComponent<{
                 : "none",
           }}
         >
-          {isTxSigning && !isUnknownContractExecution ? (
+          {!isUnknownContractExecution ? (
             <Box>
               {isViewData ? (
                 <Box
@@ -487,19 +389,14 @@ export const TronSigningView: FunctionComponent<{
                     }
                   >
                     {(() => {
-                      const { icon, title, content } = defaultRegistry.render(
-                        interactionData.data.chainId,
-                        JSON.parse(
-                          Buffer.from(interactionData.data.message).toString()
-                        ) as UnsignedTransaction
-                      );
-
+                      const title = "Execute Contract";
+                      const icon = <img src={chainInfo.chainSymbolImageUrl} />;
                       if (icon !== undefined && title !== undefined) {
                         return (
                           <MessageItem
                             icon={icon}
                             title={title}
-                            content={content}
+                            content={signingDataText}
                           />
                         );
                       }
@@ -530,35 +427,9 @@ export const TronSigningView: FunctionComponent<{
             </Box>
           )}
         </SimpleBar>
-
         <Box height="0" minHeight="0.75rem" />
-
         {!isViewData ? <div style={{ flex: 1 }} /> : null}
-
-        {isTxSigning &&
-          (() => {
-            if (interactionData.isInternal) {
-              return (
-                <FeeSummary
-                  feeConfig={feeConfig}
-                  gasConfig={gasConfig}
-                  gasSimulator={gasSimulator}
-                  isForEVMTx
-                />
-              );
-            }
-
-            return (
-              <FeeControl
-                feeConfig={feeConfig}
-                senderConfig={senderConfig}
-                gasConfig={gasConfig}
-                gasSimulator={gasSimulator}
-                isForEVMTx
-              />
-            );
-          })()}
-
+        Fee
         <LedgerGuideBox
           data={{
             keyInsensitive: interactionData.data.keyInsensitive,
