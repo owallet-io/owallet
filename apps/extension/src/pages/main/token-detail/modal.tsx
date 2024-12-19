@@ -27,6 +27,7 @@ import { Stack } from "../../../components/stack";
 import { EmptyView } from "../../../components/empty-view";
 import { DenomHelper } from "@owallet/common";
 import { ChainIdHelper } from "@owallet/cosmos";
+import { ChainIdEVM } from "@owallet/types";
 
 const Styles = {
   Container: styled.div`
@@ -223,6 +224,12 @@ export const TokenDetailModal: FunctionComponent<{
       text: "Send",
       onClick: () => {
         if ("cosmos" in modularChainInfo) {
+          if (modularChainInfo.chainId === ChainIdEVM.TRON) {
+            navigate(
+              `/send-tron?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
+            );
+            return;
+          }
           navigate(
             `/send?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
           );

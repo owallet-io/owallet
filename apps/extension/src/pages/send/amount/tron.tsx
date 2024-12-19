@@ -52,6 +52,7 @@ import { GuideBox } from "../../../components/guide-box";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { amountToAmbiguousAverage, isRunningInSidePanel } from "../../../utils";
 import { EthTxStatus } from "@owallet/types";
+import { TronRecipientInput } from "../../../components/input/reciepient-input/trx-input";
 
 const Styles = {
   Flex1: styled.div`
@@ -384,8 +385,11 @@ export const SendTronPage: FunctionComponent = observer(() => {
     }
   });
 
+  const configValidate = { ...sendConfigs };
+  delete configValidate.recipientConfig;
+
   const txConfigsValidate = useTxConfigsValidate({
-    ...sendConfigs,
+    ...configValidate,
     gasSimulator,
   });
 
@@ -449,7 +453,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
   return (
     <HeaderLayout
-      title={intl.formatMessage({ id: "page.send.amount.title" })}
+      title={intl.formatMessage({ id: "page.send.amount.title" }) + " Tron"}
       displayFlex={true}
       fixedMinHeight={true}
       left={<BackButton />}
@@ -872,7 +876,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
           </VerticalCollapseTransition>
           <Gutter size="0" />
 
-          <RecipientInput
+          <TronRecipientInput
             ref={addressRef}
             historyType={historyType}
             recipientConfig={sendConfigs.recipientConfig}

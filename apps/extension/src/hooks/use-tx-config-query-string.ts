@@ -39,10 +39,6 @@ export const useTxConfigsQueryString = (
     }
     const initialAmount = searchParams.get("initialAmount");
     if (initialAmount) {
-      // AmountInput에는 price based 모드가 있다.
-      // 하지만 이 state는 AmountInput Component에서 다뤄지므로 여기서 처리하기가 힘들다.
-      // 어쨋든 처음에는 non price mode로 시작히므로 이렇게 해도 큰 문제는 없다.
-      // TODO: 나중에 해결한다.
       configs.amountConfig.setValue(initialAmount);
     }
     const initialRecipient = searchParams.get("initialRecipient");
@@ -62,7 +58,6 @@ export const useTxConfigsQueryString = (
         .forceFindCurrency(initialFeeCurrency);
       configs.feeConfig.setFee({
         currency,
-        // XXX: 일단 귀찮아서 any로 처리...
         type: initialFeeType as any,
       });
     }

@@ -128,7 +128,6 @@ export const SendAmountPage: FunctionComponent = observer(() => {
     queriesStore,
     chainId,
     sender,
-    // TODO: 이 값을 config 밑으로 빼자
     isEvmTx ? 21000 : 300000,
     isIBCTransfer,
     {
