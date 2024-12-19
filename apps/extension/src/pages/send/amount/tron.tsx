@@ -64,6 +64,10 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
   const initialChainId = searchParams.get("chainId");
   const initialCoinMinimalDenom = searchParams.get("coinMinimalDenom");
+  const contractAddress =
+    initialCoinMinimalDenom.split(":").length > 1
+      ? initialCoinMinimalDenom.split(":")[1]
+      : initialCoinMinimalDenom;
 
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);

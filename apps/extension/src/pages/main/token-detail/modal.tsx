@@ -73,6 +73,8 @@ export const TokenDetailModal: FunctionComponent<{
     uiConfigStore,
   } = useStore();
 
+  console.log("coinMinimalDenom", coinMinimalDenom);
+
   const theme = useTheme();
 
   const account = accountStore.getAccount(chainId);
@@ -226,7 +228,7 @@ export const TokenDetailModal: FunctionComponent<{
         if ("cosmos" in modularChainInfo) {
           if (modularChainInfo.chainId === ChainIdEVM.TRON) {
             navigate(
-              `/send-tron?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
+              `/send-tron?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}&contractAddress=${coinMinimalDenom}`
             );
             return;
           }
