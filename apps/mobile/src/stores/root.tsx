@@ -2,9 +2,7 @@ import {
   APR_API_URL,
   CommunityChainInfoRepo,
   EmbedChainInfos,
-  urlTxHistory,
 } from "@owallet/common";
-
 import {
   AccountStore,
   CosmosAccount,
@@ -17,7 +15,6 @@ import {
   OsmosisQueries,
   ICNSQueries,
   SecretAccount,
-  QuerySharedContext,
   LSMCurrencyRegistrar,
   AgoricQueries,
   CosmwasmAccount,
@@ -43,7 +40,6 @@ import EventEmitter from "eventemitter3";
 import { HugeQueriesStore } from "./huge-queries";
 import { ChainStore } from "./chain";
 import { FiatCurrency } from "@owallet/types";
-// import {UIConfigStore} from './ui-config';
 import {
   ICNSInfo,
   CoinGeckoAPIEndPoint,
@@ -51,31 +47,17 @@ import {
   FiatCurrencies,
   TokenContractListURL,
   EthereumEndpoint,
-  SwapVenue,
 } from "@owallet/common";
 import { TokenContractsQueries } from "./token-contracts";
 import { AprQueries } from "./aprs";
-// import {CosmosGovernanceQueries} from './governance/quries';
-// import {CosmosGovernanceQueriesV1} from './governance/v1/quries';
-// import {ScamProposalStore} from './scam-proposal';
 import { KeychainStore } from "./keychain";
 import { WalletConnectStore } from "./wallet-connect";
 import {
-  AxelarEVMBridgeCurrencyRegistrar,
   GravityBridgeCurrencyRegistrar,
   OWalletETCQueries,
 } from "@owallet/stores-etc";
-// import {
-//     SkipQueries,
-//     SwapUsageQueries,
-//     Price24HChangesStore,
-// } from '@owallet/stores-internal';
 import { DeepLinkStore } from "./deep-link";
-import {
-  EthereumQueries,
-  EthereumAccountStore,
-  ERC20CurrencyRegistrar,
-} from "@owallet/stores-eth";
+import { EthereumQueries, EthereumAccountStore } from "@owallet/stores-eth";
 import { AppInit, appInit } from "@stores/app_init";
 import { ModalStore } from "@stores/modal";
 import { UniversalSwapStore, universalSwapStore } from "@stores/universal_swap";
@@ -86,8 +68,6 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
 import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
-
-// import {WebpageStore} from './webpage';
 
 export class RootStore {
   public readonly keyRingStore: KeyRingStore;
@@ -124,8 +104,6 @@ export class RootStore {
       ICNSQueries,
       TokenContractsQueries,
       AprQueries,
-      // CosmosGovernanceQueries,
-      // CosmosGovernanceQueriesV1,
       EthereumQueries,
       OasisQueries,
       TrxQueries,
@@ -210,13 +188,14 @@ export class RootStore {
     this.signBtcInteractionStore = new SignBtcInteractionStore(
       this.interactionStore
     );
+    this.signTronInteractionStore = new SignTronInteractionStore(
+      this.interactionStore
+    );
     this.chainSuggestStore = new ChainSuggestStore(
       this.interactionStore,
       CommunityChainInfoRepo
     );
-    this.signTronInteractionStore = new SignTronInteractionStore(
-      this.interactionStore
-    );
+
     this.queriesStore = new QueriesStore(
       new AsyncKVStore("store_queries"),
       this.chainStore,

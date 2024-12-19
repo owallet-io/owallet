@@ -40,6 +40,9 @@ import {
   ICNSInteractionStore,
   PermissionManagerStore,
   SignEthereumInteractionStore,
+  SignOasisInteractionStore,
+  SignTronInteractionStore,
+  SignBtcInteractionStore,
 } from "@owallet/stores-core";
 import {
   OWalletETCQueries,
@@ -74,9 +77,10 @@ import {
 } from "@owallet/stores-internal";
 import { setInteractionDataHref } from "../utils";
 import { InteractionPingMsg } from "@owallet/background";
-import { BtcAccountStore } from "@owallet/stores-btc";
-import { TrxAccountStore } from "@owallet/stores-trx";
-import { OasisAccountStore } from "@owallet/stores-oasis";
+import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
+import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
+import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
+
 import { AllAccountStore } from "./all-account-store";
 
 let _sidePanelWindowId: number | undefined;
@@ -105,6 +109,9 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signOasisInteractionStore: SignOasisInteractionStore;
+  public readonly signTronInteractionStore: SignTronInteractionStore;
+  public readonly signBtcInteractionStore: SignBtcInteractionStore;
   public readonly chainSuggestStore: ChainSuggestStore;
   public readonly icnsInteractionStore: ICNSInteractionStore;
 
@@ -118,7 +125,10 @@ export class RootStore {
       OWalletETCQueries,
       ICNSQueries,
       TokenContractsQueries,
-      EthereumQueries
+      EthereumQueries,
+      OasisQueries,
+      TrxQueries,
+      BtcQueries
     ]
   >;
   public readonly swapUsageQueries: SwapUsageQueries;
@@ -251,6 +261,16 @@ export class RootStore {
       this.interactionStore
     );
 
+    this.signOasisInteractionStore = new SignOasisInteractionStore(
+      this.interactionStore
+    );
+    this.signBtcInteractionStore = new SignBtcInteractionStore(
+      this.interactionStore
+    );
+    this.signTronInteractionStore = new SignTronInteractionStore(
+      this.interactionStore
+    );
+
     this.chainSuggestStore = new ChainSuggestStore(
       this.interactionStore,
       CommunityChainInfoRepo
@@ -280,7 +300,10 @@ export class RootStore {
       EthereumQueries.use({
         coingeckoAPIBaseURL: CoinGeckoAPIEndPoint,
         coingeckoAPIURI: CoinGeckoCoinDataByTokenAddress,
-      })
+      }),
+      OasisQueries.use(),
+      TrxQueries.use(),
+      BtcQueries.use()
     );
     this.swapUsageQueries = new SwapUsageQueries(
       this.queriesStore.sharedContext,

@@ -5,21 +5,21 @@ import { useInteractionInfo } from "../../../hooks";
 import { TronSigningView } from "./view";
 import { Splash } from "../../../components/splash";
 
-export const SignEthereumTxPage: FunctionComponent = observer(() => {
-  const { signEthereumInteractionStore } = useStore();
+export const SignTronTxPage: FunctionComponent = observer(() => {
+  const { signTronInteractionStore } = useStore();
 
   useInteractionInfo({
     onWindowClose: () => {
-      signEthereumInteractionStore.rejectAll();
+      signTronInteractionStore.rejectAll();
     },
   });
 
   return (
     <React.Fragment>
-      {signEthereumInteractionStore.waitingData ? (
+      {signTronInteractionStore.waitingData ? (
         <TronSigningView
-          key={signEthereumInteractionStore.waitingData.id}
-          interactionData={signEthereumInteractionStore.waitingData}
+          key={signTronInteractionStore.waitingData.id}
+          interactionData={signTronInteractionStore.waitingData}
         />
       ) : (
         <Splash />

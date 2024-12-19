@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { SignEthereumInteractionStore } from "@owallet/stores-core";
+import { SignTronInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
 import { Body2, Body3, H5 } from "../../../components/typography";
@@ -30,29 +30,35 @@ import {
   useAmountConfig,
   useFeeConfig,
   useGasSimulator,
+  useGetFeeTron,
   useSenderConfig,
+  useSendTronTxConfig,
   useZeroAllowedGasConfig,
 } from "@owallet/hooks";
 import { handleExternalInteractionWithNoProceedNext } from "../../../utils";
-import { EthTxBase } from "../components/eth-tx/render/tx-base";
-import { MemoryKVStore } from "@owallet/common";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
+import {
+  DEFAULT_FEE_LIMIT_TRON,
+  MemoryKVStore,
+  toDisplay,
+  TronWebProvider,
+} from "@owallet/common";
 import { Image } from "../../../components/image";
 import { Column, Columns } from "../../../components/column";
 import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
-import Web3 from "web3-utils";
+import { MessageItem } from "../components/message-item";
+import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 
 export const TronSigningView: FunctionComponent<{
-  interactionData: NonNullable<SignEthereumInteractionStore["waitingData"]>;
+  interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
 }> = observer(({ interactionData }) => {
   const {
     chainStore,
     uiConfigStore,
-    signEthereumInteractionStore,
-    accountStore,
-    ethereumAccountStore,
+    signTronInteractionStore,
+    tronAccountStore,
     queriesStore,
+    keyRingStore,
   } = useStore();
   const intl = useIntl();
   const theme = useTheme();
@@ -60,244 +66,58 @@ export const TronSigningView: FunctionComponent<{
 
   const interactionInfo = useInteractionInfo({
     onUnmount: async () => {
-      await signEthereumInteractionStore.rejectWithProceedNext(
+      await signTronInteractionStore.rejectWithProceedNext(
         interactionData.id,
         () => {}
       );
     },
   });
 
-  const { message, signType, signer, chainId } = interactionData.data;
+  const { chainId } = interactionData.data;
 
-  const account = accountStore.getAccount(chainId);
-  const ethereumAccount = ethereumAccountStore.getAccount(chainId);
+  const [loading, setLoading] = useState(false);
+
+  const account = tronAccountStore.getAccount(chainId);
+  const addressToFetch = account.ethereumHexAddress;
+  const data = JSON.parse(interactionData?.data?.data);
+
+  const parsedData = typeof data === "string" ? JSON.parse(data) : data;
   const chainInfo = chainStore.getChain(chainId);
-
-  const senderConfig = useSenderConfig(chainStore, chainId, signer);
+  const queries = queriesStore.get(chainId);
+  const sendConfigs = useSendTronTxConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    addressToFetch,
+    1
+  );
   const gasConfig = useZeroAllowedGasConfig(chainStore, chainId, 0);
-  const amountConfig = useAmountConfig(
-    chainStore,
-    queriesStore,
-    chainId,
-    senderConfig
+
+  if (!parsedData.raw_data_hex) {
+    const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
+    sendConfigs.amountConfig.setCurrency(currency);
+    sendConfigs.recipientConfig.setValue(parsedData.recipient || "");
+    const displayAmount = toDisplay(
+      parsedData.amount,
+      chainInfo.stakeCurrency.coinDecimals
+    );
+    sendConfigs.amountConfig.setValue(displayAmount.toString());
+  }
+
+  const feeResult = useGetFeeTron(
+    account.base58Address,
+    sendConfigs.amountConfig,
+    sendConfigs.recipientConfig,
+    queries.tron,
+    chainInfo,
+    keyRingStore.selectedKeyInfo.id,
+    keyRingStore,
+    parsedData.raw_data_hex ? parsedData : null
   );
-  const feeConfig = useFeeConfig(
-    chainStore,
-    queriesStore,
-    chainId,
-    senderConfig,
-    amountConfig,
-    gasConfig
-  );
-
-  const [signingDataBuff, setSigningDataBuff] = useState(Buffer.from(message));
-  const isTxSigning = signType === EthSignType.TRANSACTION;
-
-  const gasSimulator = useGasSimulator(
-    new MemoryKVStore("gas-simulator.ethereum.sign"),
-    chainStore,
-    chainInfo.chainId,
-    gasConfig,
-    feeConfig,
-    "evm/native",
-    () => {
-      if (!isTxSigning) {
-        throw new Error(
-          "Gas simulator is only working for transaction signing"
-        );
-      }
-
-      if (chainInfo.evm == null) {
-        throw new Error("Gas simulator is only working with EVM info");
-      }
-
-      const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
-
-      return {
-        simulate: () =>
-          ethereumAccount.simulateGas(account.ethereumHexAddress, {
-            to: unsignedTx.to,
-            data: unsignedTx.data,
-            value: unsignedTx.value,
-          }),
-      };
-    }
-  );
-
-  const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } = (() => {
-    if (isTxSigning) {
-      const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } =
-        feeConfig.getEIP1559TxFees(
-          feeConfig.type === "manual"
-            ? uiConfigStore.lastFeeOption || "average"
-            : feeConfig.type
-        );
-
-      return maxFeePerGas && maxPriorityFeePerGas
-        ? {
-            maxFeePerGas: `0x${BigInt(
-              maxFeePerGas.truncate().toString()
-            ).toString(16)}`,
-            maxPriorityFeePerGas: `0x${BigInt(
-              maxPriorityFeePerGas.truncate().toString()
-            ).toString(16)}`,
-            gasPrice: undefined,
-          }
-        : {
-            maxFeePerGas: undefined,
-            maxPriorityFeePerGas: undefined,
-            gasPrice: `0x${BigInt(
-              gasPrice?.truncate().toString() ?? 0
-            ).toString(16)}`,
-          };
-    }
-
-    return {
-      maxFeePerGas: undefined,
-      maxPriorityFeePerGas: undefined,
-      gasPrice: undefined,
-    };
-  })();
-
-  useEffect(() => {
-    if (isTxSigning) {
-      const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
-
-      const gasLimitFromTx = BigInt(unsignedTx.gasLimit ?? unsignedTx.gas ?? 0);
-      if (gasLimitFromTx > 0) {
-        gasConfig.setValue(gasLimitFromTx.toString());
-
-        const gasPriceFromTx = BigInt(
-          unsignedTx.maxFeePerGas ?? unsignedTx.gasPrice ?? 0
-        );
-        if (gasPriceFromTx > 0) {
-          feeConfig.setFee(
-            new CoinPretty(
-              chainInfo.currencies[0],
-              new Dec(gasConfig.gas).mul(new Dec(gasPriceFromTx))
-            )
-          );
-        }
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (isTxSigning && !interactionData.isInternal) {
-      const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
-
-      if (gasConfig.gas > 0) {
-        unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
-
-        if (!unsignedTx.maxFeePerGas && !unsignedTx.gasPrice) {
-          unsignedTx.maxFeePerGas = `0x${new Int(
-            feeConfig.getFeePrimitive()[0].amount
-          )
-            .div(new Int(gasConfig.gas))
-            .toBigNumber()
-            .toString(16)}`;
-        }
-      }
-
-      if (
-        !unsignedTx.maxPriorityFeePerGas &&
-        !unsignedTx.gasPrice &&
-        maxPriorityFeePerGas
-      ) {
-        unsignedTx.maxPriorityFeePerGas =
-          unsignedTx.maxPriorityFeePerGas ?? maxPriorityFeePerGas;
-      }
-
-      if (
-        !unsignedTx.gasPrice &&
-        !unsignedTx.maxFeePerGas &&
-        !unsignedTx.maxPriorityFeePerGas &&
-        gasPrice
-      ) {
-        unsignedTx.gasPrice = gasPrice;
-      }
-
-      if (!unsignedTx.maxPriorityFeePerGas) {
-        // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
-        unsignedTx.maxPriorityFeePerGas = Web3.toWei("1", "gwei");
-      }
-
-      setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), "utf8"));
-    }
-  }, [
-    gasConfig.gas,
-    isTxSigning,
-    message,
-    maxFeePerGas,
-    maxPriorityFeePerGas,
-    gasPrice,
-    gasSimulator,
-    gasConfig,
-    feeConfig,
-    interactionData.isInternal,
-  ]);
-
-  useEffect(() => {
-    (async () => {
-      if (isTxSigning && chainInfo.features.includes("op-stack-l1-data-fee")) {
-        const { to, gasLimit, value, data, chainId }: UnsignedTransaction =
-          JSON.parse(Buffer.from(message).toString("utf8"));
-
-        const l1DataFee = await ethereumAccount.simulateOpStackL1Fee({
-          to,
-          gasLimit,
-          value,
-          data,
-          chainId,
-        });
-        feeConfig.setL1DataFee(new Dec(BigInt(l1DataFee)));
-      }
-    })();
-  }, [chainInfo.features, ethereumAccount, feeConfig, isTxSigning, message]);
-
-  useEffect(() => {
-    if (isTxSigning) {
-      // Refresh EIP-1559 fee every 12 seconds.
-      const intervalId = setInterval(() => {
-        feeConfig.refreshEIP1559TxFees();
-      }, 12000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [isTxSigning, feeConfig]);
 
   const signingDataText = useMemo(() => {
-    switch (signType) {
-      case EthSignType.MESSAGE:
-        // If the message is 32 bytes, it's probably a hash.
-        if (signingDataBuff.length === 32) {
-          return signingDataBuff.toString("hex");
-        } else {
-          const text = (() => {
-            const string = signingDataBuff.toString("utf8");
-            if (string.startsWith("0x")) {
-              return Buffer.from(string.slice(2), "hex").toString("utf8");
-            }
-
-            return string;
-          })();
-
-          // If the text contains RTL mark, escape it.
-          return text.replace(/\u202E/giu, "\\u202E");
-        }
-      case EthSignType.TRANSACTION:
-        return JSON.stringify(
-          JSON.parse(signingDataBuff.toString("utf8")),
-          null,
-          2
-        );
-      case EthSignType.EIP712:
-        return JSON.stringify(JSON.parse(signingDataBuff.toString()), null, 2);
-      default:
-        return signingDataBuff.toString("hex");
-    }
-  }, [signingDataBuff, signType]);
+    return JSON.stringify(parsedData);
+  }, [parsedData]);
 
   const [isViewData, setIsViewData] = useState(false);
 
@@ -327,10 +147,83 @@ export const TronSigningView: FunctionComponent<{
 
   const isLoading = isLedgerInteracting;
 
+  const approve = async () => {
+    try {
+      let signature = undefined;
+      let transaction;
+      if (interactionData.data.keyType === "ledger") {
+        setLoading(true);
+        const tronWeb = TronWebProvider(chainInfo.rpc);
+
+        if (parsedData?.contractAddress) {
+          transaction = (
+            await tronWeb.transactionBuilder.triggerSmartContract(
+              parsedData?.contractAddress,
+              "transfer(address,uint256)",
+              {
+                callValue: 0,
+                feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
+                userFeePercentage: 100,
+                shouldPollResponse: false,
+              },
+              [
+                { type: "address", value: parsedData.recipient },
+                { type: "uint256", value: parsedData.amount },
+              ],
+              parsedData.address
+            )
+          ).transaction;
+        } else {
+          transaction = await tronWeb.transactionBuilder.sendTrx(
+            parsedData.recipient,
+            parsedData.amount,
+            parsedData.address
+          );
+        }
+
+        setIsLedgerInteracting(true);
+        setLedgerInteractingError(undefined);
+
+        signature = await handleTronPreSignByLedger(
+          interactionData,
+          transaction.raw_data_hex,
+          ledgerBLE.getTransport
+        );
+
+        transaction.signature = [signature];
+
+        await tronWeb.trx.sendRawTransaction(transaction);
+        setLoading(false);
+      }
+
+      await signTronInteractionStore.approveWithProceedNext(
+        interactionData.id,
+        interactionData.data.keyType === "ledger"
+          ? JSON.stringify(transaction)
+          : Buffer.from(
+              Buffer.from(JSON.stringify(interactionData.data.data)).toString(
+                "hex"
+              )
+            ),
+        signature,
+        async () => {
+          // noop
+          setLoading(false);
+        },
+        {
+          preDelay: 200,
+        }
+      );
+    } catch (e) {
+      console.log("error on sign Tron", e);
+      setLoading(false);
+    }
+  };
+
   return (
     <HeaderLayout
       title={intl.formatMessage({
-        id: `page.sign.ethereum.${signType}.title`,
+        id: `page.sign.cosmos.tx.title`,
       })}
       fixedHeight={true}
       left={
@@ -349,7 +242,7 @@ export const TronSigningView: FunctionComponent<{
             width: "3.25rem",
           },
           onClick: async () => {
-            await signEthereumInteractionStore.rejectWithProceedNext(
+            await signTronInteractionStore.rejectWithProceedNext(
               interactionData.id,
               async (proceedNext) => {
                 if (!proceedNext) {
@@ -383,16 +276,9 @@ export const TronSigningView: FunctionComponent<{
               if (interactionData.data.keyType === "ledger") {
                 setIsLedgerInteracting(true);
                 setLedgerInteractingError(undefined);
-                signature = await handleEthereumPreSignByLedger(
-                  interactionData,
-                  Buffer.from(signingDataText),
-                  {
-                    useWebHID: uiConfigStore.useWebHIDLedger,
-                  }
-                );
               }
 
-              await signEthereumInteractionStore.approveWithProceedNext(
+              await signTronInteractionStore.approveWithProceedNext(
                 interactionData.id,
                 Buffer.from(signingDataText),
                 signature,
@@ -610,7 +496,7 @@ export const TronSigningView: FunctionComponent<{
 
                       if (icon !== undefined && title !== undefined) {
                         return (
-                          <EthTxBase
+                          <MessageItem
                             icon={icon}
                             title={title}
                             content={content}

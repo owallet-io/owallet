@@ -5121,6 +5121,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ledgerhq/hw-app-trx@npm:6.29.3":
+  version: 6.29.3
+  resolution: "@ledgerhq/hw-app-trx@npm:6.29.3"
+  dependencies:
+    "@ledgerhq/hw-transport": ^6.31.3
+  checksum: a8544fcf8bfe45edba62dd81da91a9cef5a86baa9d2826baa9f7fbf8eb4ce05b8eff20f936e3f1c96cdb1ca023e796ed4134f9d414013c8eed5b9e0afbef5236
+  languageName: node
+  linkType: hard
+
 "@ledgerhq/hw-app-trx@npm:^6.29.4":
   version: 6.29.4
   resolution: "@ledgerhq/hw-app-trx@npm:6.29.4"
@@ -6305,6 +6314,7 @@ __metadata:
     "@floating-ui/react-dom": ^2.1.2
     "@fortawesome/fontawesome-free": ^5.11.2
     "@ledgerhq/hw-app-eth": 6.29.3
+    "@ledgerhq/hw-app-trx": 6.29.3
     "@owallet/analytics": ^0.9.14
     "@owallet/background": ^0.9.16
     "@owallet/common": ^0.9.10

@@ -86,7 +86,7 @@ export const TronRecipientInput = observer<
         <TextInput
           ref={ref}
           label={intl.formatMessage({
-            id: "components.input.recipient-input.wallet-address-label",
+            id: "components.input.recipient-input.wallet-address-only-label",
           })}
           value={recipientConfig.value}
           autoComplete="off"

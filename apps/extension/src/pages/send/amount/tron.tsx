@@ -385,6 +385,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
     }
   });
 
+  // Ignore validatation for recipientConfig for Tron
   const configValidate = { ...sendConfigs };
   delete configValidate.recipientConfig;
 
@@ -675,76 +676,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
                       new InExtensionMessageRequester().sendMessage(
                         BACKGROUND_PORT,
                         new LogAnalyticsEventMsg("send", params)
-                      );
-                    } else if (ibcChannelFluent != null) {
-                      const pathChainIds = [chainId].concat(
-                        ...ibcChannelFluent.channels.map(
-                          (channel) => channel.counterpartyChainId
-                        )
-                      );
-                      const intermediateChainIds: string[] = [];
-                      if (pathChainIds.length > 2) {
-                        intermediateChainIds.push(...pathChainIds.slice(1, -1));
-                      }
-
-                      const inCurrencyPrice =
-                        await priceStore.waitCalculatePrice(
-                          sendConfigs.amountConfig.amount[0],
-                          "usd"
-                        );
-
-                      const params: Record<
-                        string,
-                        | number
-                        | string
-                        | boolean
-                        | number[]
-                        | string[]
-                        | undefined
-                      > = {
-                        originDenom: ibcChannelFluent.originDenom,
-                        originCommonDenom: (() => {
-                          const currency = chainStore
-                            .getChain(ibcChannelFluent.originChainId)
-                            .forceFindCurrency(ibcChannelFluent.originDenom);
-                          if ("paths" in currency && currency.originCurrency) {
-                            return currency.originCurrency.coinDenom;
-                          }
-                          return currency.coinDenom;
-                        })(),
-                        originChainId: ibcChannelFluent.originChainId,
-                        originChainIdentifier: ChainIdHelper.parse(
-                          ibcChannelFluent.originChainId
-                        ).identifier,
-                        sourceChainId: chainId,
-                        sourceChainIdentifier:
-                          ChainIdHelper.parse(chainId).identifier,
-                        destinationChainId: ibcChannelFluent.destinationChainId,
-                        destinationChainIdentifier: ChainIdHelper.parse(
-                          ibcChannelFluent.destinationChainId
-                        ).identifier,
-                        pathChainIds,
-                        pathChainIdentifiers: pathChainIds.map(
-                          (chainId) => ChainIdHelper.parse(chainId).identifier
-                        ),
-                        intermediateChainIds,
-                        intermediateChainIdentifiers: intermediateChainIds.map(
-                          (chainId) => ChainIdHelper.parse(chainId).identifier
-                        ),
-                        isToOrigin:
-                          ibcChannelFluent.destinationChainId ===
-                          ibcChannelFluent.originChainId,
-                        inAvg: amountToAmbiguousAverage(
-                          sendConfigs.amountConfig.amount[0]
-                        ),
-                      };
-                      if (inCurrencyPrice) {
-                        params["inFiatAvg"] =
-                          amountToAmbiguousAverage(inCurrencyPrice);
-                      }
-                      new InExtensionMessageRequester().sendMessage(
-                        BACKGROUND_PORT,
-                        new LogAnalyticsEventMsg("ibc_send", params)
                       );
                     }
                   },
