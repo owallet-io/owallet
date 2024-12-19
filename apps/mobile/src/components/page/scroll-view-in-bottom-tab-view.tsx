@@ -2,6 +2,7 @@ import React from "react";
 import { PageWithScrollView } from "./scroll-view";
 import { ScrollViewProps, ScrollView, StyleSheet } from "react-native";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { isAndroid } from "@common/constants";
 
 // eslint-disable-next-line react/display-name
 export const PageWithScrollViewInBottomTabView = React.forwardRef<
@@ -22,7 +23,11 @@ export const PageWithScrollViewInBottomTabView = React.forwardRef<
       disableSafeArea={true}
       {...rest}
       style={StyleSheet.flatten([
-        { marginBottom: bottomTabBarHeight + 16 },
+        {
+          marginBottom: isAndroid
+            ? bottomTabBarHeight
+            : bottomTabBarHeight + 16,
+        },
         style,
       ])}
       ref={ref}
