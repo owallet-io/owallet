@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import React, { FC } from "react";
 
 import { useTheme } from "@src/themes/theme-provider";
@@ -18,6 +18,7 @@ import { NewSettingScreen } from "@src/screens/setting/setting";
 import OWHeaderTitle from "../components/header/ow-header-title";
 import { useGetNewHeaderHeight } from "@src/hooks";
 import { useStore } from "@src/stores";
+import LottieView from "lottie-react-native";
 
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
@@ -57,10 +58,11 @@ export const MainTabNavigation: FC = observer(() => {
               } else {
                 return (
                   <View style={styles.paddingIcon}>
-                    <OWIcon
-                      type="images"
-                      source={images.btn_center_bottom_tab}
-                      size={50}
+                    <LottieView
+                      source={require("@src/assets/animations/snow-btn.json")}
+                      style={{ width: 50, height: 50 }}
+                      autoPlay
+                      loop
                     />
                   </View>
                 );
