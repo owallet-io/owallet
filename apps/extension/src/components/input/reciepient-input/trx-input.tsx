@@ -5,7 +5,6 @@ import {
   EmptyAddressError,
   IMemoConfig,
   InvalidHexError,
-  InvalidTronAddressError,
   IRecipientConfig,
   IRecipientConfigWithENS,
   IRecipientConfigWithICNS,
@@ -18,10 +17,9 @@ import { ColorPalette } from "../../../styles";
 import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { useTheme } from "styled-components";
-import { AppCurrency, ChainIdEVM } from "@owallet/types";
+import { AppCurrency } from "@owallet/types";
 
 export interface RecipientInputWithAddressBookProps {
-  historyType: string;
   recipientConfig: IRecipientConfig;
 
   memoConfig: IMemoConfig;
@@ -44,6 +42,7 @@ export type RecipientInputProps = (
   | RecipientInputWithoutAddressBookProps
 ) & {
   bottom?: React.ReactNode;
+  checkSendMySelft?: string;
 };
 
 export const TronRecipientInput = observer<
@@ -51,13 +50,13 @@ export const TronRecipientInput = observer<
   HTMLInputElement
 >(
   (props, ref) => {
-    const { analyticsStore, tronAccountStore } = useStore();
-    const account = tronAccountStore.getAccount(ChainIdEVM.TRON);
+    const { analyticsStore } = useStore();
 
-    const sender = account.base58Address;
     const intl = useIntl();
     const theme = useTheme();
-    const { recipientConfig, memoConfig } = props;
+    const { recipientConfig, memoConfig, checkSendMySelft } = props;
+
+    console.log("is checkSendMySelft", checkSendMySelft);
 
     const [isAddressBookModalOpen, setIsAddressBookModalOpen] =
       React.useState(false);
@@ -75,11 +74,6 @@ export const TronRecipientInput = observer<
       }
       return false;
     })();
-
-    const checkSendMySelft =
-      recipientConfig.recipient?.trim() === sender
-        ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
-        : null;
 
     return (
       <Box>
@@ -133,16 +127,16 @@ export const TronRecipientInput = observer<
               return;
             }
 
+            if (checkSendMySelft) {
+              return checkSendMySelft;
+            }
+
             if (err instanceof InvalidHexError) {
               return;
             }
 
             if (err) {
               return err.message || err.toString();
-            }
-
-            if (checkSendMySelft) {
-              return checkSendMySelft.message;
             }
           })()}
         />

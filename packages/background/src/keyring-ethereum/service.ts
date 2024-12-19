@@ -324,7 +324,7 @@ export class KeyRingEthereumService {
     let currentChainId =
       this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
 
-    console.log("currentChainId request", method, currentChainId, params);
+    // console.log("currentChainId request", method, currentChainId, params);
 
     if (currentChainId == null) {
       if (method === "owallet_initProviderState") {

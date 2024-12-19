@@ -8,50 +8,36 @@ import React, {
 import { observer } from "mobx-react-lite";
 import { HeaderLayout } from "../../../layouts/header";
 import { BackButton } from "../../../layouts/header/components";
-
 import { Stack } from "../../../components/stack";
-
 import styled from "styled-components";
 import { useSearchParams } from "react-router-dom";
-
 import { useStore } from "../../../stores";
 import {
+  InvalidTronAddressError,
   useGasSimulator,
   useSendMixedIBCTransferConfig,
   useTxConfigsValidate,
 } from "@owallet/hooks";
 import { useNavigate } from "react-router";
-import { AmountInput, RecipientInput } from "../../../components/input";
+import { AmountInput } from "../../../components/input";
 import { TokenItem } from "../../main/components";
-import { Caption2, Subtitle3 } from "../../../components/typography";
+import { Subtitle3 } from "../../../components/typography";
 import { Box } from "../../../components/box";
-import { MemoInput } from "../../../components/input/memo-input";
-import { XAxis, YAxis } from "../../../components/axis";
+import { YAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
 import { FeeControl } from "../../../components/input/fee-control";
 import { useNotification } from "../../../hooks/notification";
 import { DenomHelper, ExtensionKVStore } from "@owallet/common";
 import { ENSInfo, ICNSInfo } from "../../../config.ui";
-import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import { CoinPretty, Dec } from "@owallet/unit";
 import { ColorPalette } from "../../../styles";
 import { openPopupWindow } from "@owallet/popup";
 import { InExtensionMessageRequester } from "@owallet/router-extension";
 import { BACKGROUND_PORT, Message } from "@owallet/router";
-import { LogAnalyticsEventMsg, SendTxAndRecordMsg } from "@owallet/background";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
-import { LayeredHorizontalRadioGroup } from "../../../components/radio-group";
-import { Modal } from "../../../components/modal";
-import {
-  DestinationChainView,
-  IBCTransferSelectDestinationModal,
-} from "./ibc-transfer";
-import { useIBCChannelConfigQueryString } from "../../../hooks/use-ibc-channel-config-query-string";
-import { VerticalCollapseTransition } from "../../../components/transition/vertical-collapse";
-import { GuideBox } from "../../../components/guide-box";
 import { ChainIdHelper } from "@owallet/cosmos";
-import { amountToAmbiguousAverage, isRunningInSidePanel } from "../../../utils";
-import { EthTxStatus } from "@owallet/types";
+import { isRunningInSidePanel } from "../../../utils";
 import { TronRecipientInput } from "../../../components/input/reciepient-input/trx-input";
 
 const Styles = {
@@ -65,10 +51,9 @@ export const SendTronPage: FunctionComponent = observer(() => {
     analyticsStore,
     accountStore,
     ethereumAccountStore,
+    tronAccountStore,
     chainStore,
     queriesStore,
-    skipQueriesStore,
-    priceStore,
   } = useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 
@@ -91,12 +76,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
   const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
   const isErc20 = new DenomHelper(currency.coinMinimalDenom).type === "erc20";
 
-  const [isIBCTransfer, setIsIBCTransfer] = useState(false);
-  const [
-    isIBCTransferDestinationModalOpen,
-    setIsIBCTransferDestinationModalOpen,
-  ] = useState(false);
-
   useEffect(() => {
     if (addressRef.current) {
       addressRef.current.focus();
@@ -117,6 +96,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
   const account = accountStore.getAccount(chainId);
   const ethereumAccount = ethereumAccountStore.getAccount(chainId);
+  const tronAccount = tronAccountStore.getAccount(chainId);
 
   const queryBalances = queriesStore.get(chainId).queryBalances;
   const sender = isEvmTx ? account.ethereumHexAddress : account.bech32Address;
@@ -130,7 +110,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
     chainId,
     sender,
     isEvmTx ? 21000 : 300000,
-    isIBCTransfer,
+    false,
     {
       allowHexAddressToBech32Address:
         !isEvmChain &&
@@ -143,7 +123,10 @@ export const SendTronPage: FunctionComponent = observer(() => {
     }
   );
   sendConfigs.amountConfig.setCurrency(currency);
-
+  const checkSendMySelft =
+    sendConfigs.recipientConfig.recipient?.trim() === tronAccount.base58Address
+      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
+      : null;
   const gasSimulatorKey = useMemo(() => {
     const txType: "evm" | "cosmos" = isEvmTx ? "evm" : "cosmos";
 
@@ -183,20 +166,10 @@ export const SendTronPage: FunctionComponent = observer(() => {
     chainId,
     sendConfigs.gasConfig,
     sendConfigs.feeConfig,
-    isIBCTransfer ? `ibc/${gasSimulatorKey}` : gasSimulatorKey,
+    gasSimulatorKey,
     () => {
       if (!sendConfigs.amountConfig.currency) {
         throw new Error("Send currency not set");
-      }
-
-      if (isIBCTransfer) {
-        if (
-          sendConfigs.channelConfig.uiProperties.loadingState ===
-            "loading-block" ||
-          sendConfigs.channelConfig.uiProperties.error != null
-        ) {
-          throw new Error("Not ready to simulate tx");
-        }
       }
 
       // Prefer not to use the gas config or fee config,
@@ -219,16 +192,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
       // I don't know why, but simulation does not work for secret20
       if (denomHelper.type === "secret20") {
         throw new Error("Simulating secret wasm not supported");
-      }
-
-      if (isIBCTransfer) {
-        return account.cosmos.makePacketForwardIBCTransferTx(
-          accountStore,
-          sendConfigs.channelConfig.channels,
-          sendConfigs.amountConfig.amount[0].toDec().toString(),
-          sendConfigs.amountConfig.amount[0].currency,
-          sendConfigs.recipientConfig.recipient
-        );
       }
 
       if (isEvmTx) {
@@ -341,7 +304,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (isEvmTx) {
-      // Refresh EIP-1559 fee every 12 seconds.
       const intervalId = setInterval(() => {
         sendConfigs.feeConfig.refreshEIP1559TxFees();
       }, 12000);
@@ -379,11 +341,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
     ...sendConfigs,
     gasSimulator,
   });
-  useIBCChannelConfigQueryString(sendConfigs.channelConfig, (channels) => {
-    if (channels && channels.length > 0) {
-      setIsIBCTransfer(true);
-    }
-  });
 
   // Ignore validatation for recipientConfig for Tron
   const configValidate = { ...sendConfigs };
@@ -394,63 +351,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
     gasSimulator,
   });
 
-  const [isIBCRecipientSetAuto, setIsIBCRecipientSetAuto] = useState(false);
-  const [ibcRecipientAddress, setIBCRecipientAddress] = useState("");
-
-  useEffect(() => {
-    if (
-      !isIBCTransfer ||
-      sendConfigs.recipientConfig.value !== ibcRecipientAddress
-    ) {
-      setIsIBCRecipientSetAuto(false);
-    }
-  }, [ibcRecipientAddress, sendConfigs.recipientConfig.value, isIBCTransfer]);
-
-  const [ibcChannelFluent, setIBCChannelFluent] = useState<
-    | {
-        destinationChainId: string;
-        originDenom: string;
-        originChainId: string;
-
-        channels: {
-          portId: string;
-          channelId: string;
-
-          counterpartyChainId: string;
-        }[];
-      }
-    | undefined
-  >(undefined);
-
   const isDetachedMode = searchParams.get("detached") === "true";
-
-  const historyType = isIBCTransfer ? "basic-send/ibc" : "basic-send";
-
-  const [isSendingIBCToken, setIsSendingIBCToken] = useState(false);
-  useEffect(() => {
-    if (!isIBCTransfer) {
-      if (
-        new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom)
-          .type === "native" &&
-        sendConfigs.amountConfig.currency.coinMinimalDenom.startsWith("ibc/")
-      ) {
-        setIsSendingIBCToken(true);
-        return;
-      }
-    }
-
-    setIsSendingIBCToken(false);
-  }, [isIBCTransfer, sendConfigs.amountConfig.currency]);
-
-  // Prefetch IBC channels to reduce the UI flickering(?) when open ibc channel modal.
-  try {
-    skipQueriesStore.queryIBCPacketForwardingTransfer.getIBCChannels(
-      chainId,
-      currency.coinMinimalDenom
-    );
-  } catch (e) {
-    console.log(e);
-  }
 
   return (
     <HeaderLayout
@@ -479,15 +380,14 @@ export const SendTronPage: FunctionComponent = observer(() => {
       }
       bottomButtons={[
         {
-          disabled: txConfigsValidate.interactionBlocked,
+          disabled: txConfigsValidate.interactionBlocked || !!checkSendMySelft,
           text: intl.formatMessage({ id: "button.next" }),
           color: "primary",
           size: "large",
           type: "submit",
           isLoading: isEvmTx
             ? ethereumAccount.isSendingTx
-            : accountStore.getAccount(chainId).isSendingMsg ===
-              (!isIBCTransfer ? "send" : "ibcTransfer"),
+            : accountStore.getAccount(chainId).isSendingMsg === "send",
         },
       ]}
       onSubmit={async (e) => {
@@ -497,210 +397,9 @@ export const SendTronPage: FunctionComponent = observer(() => {
           try {
             if (isEvmTx) {
               ethereumAccount.setIsSendingTx(true);
-              const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } =
-                sendConfigs.feeConfig.getEIP1559TxFees(
-                  sendConfigs.feeConfig.type
-                );
 
-              const unsignedTx = ethereumAccount.makeSendTokenTx({
-                currency: sendConfigs.amountConfig.amount[0].currency,
-                amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-                to: sendConfigs.recipientConfig.recipient,
-                gasLimit: sendConfigs.gasConfig.gas,
-                maxFeePerGas: maxFeePerGas?.toString(),
-                maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
-                gasPrice: gasPrice?.toString(),
-              });
-              await ethereumAccount.sendEthereumTx(sender, unsignedTx, {
-                onFulfill: (txReceipt) => {
-                  queryBalances
-                    .getQueryEthereumHexAddress(sender)
-                    .balances.forEach((balance) => {
-                      if (
-                        balance.currency.coinMinimalDenom ===
-                          coinMinimalDenom ||
-                        sendConfigs.feeConfig.fees.some(
-                          (fee) =>
-                            fee.currency.coinMinimalDenom ===
-                            balance.currency.coinMinimalDenom
-                        )
-                      ) {
-                        balance.fetch();
-                      }
-                    });
-                  queryBalances
-                    .getQueryBech32Address(account.bech32Address)
-                    .balances.forEach((balance) => {
-                      if (
-                        balance.currency.coinMinimalDenom ===
-                          coinMinimalDenom ||
-                        sendConfigs.feeConfig.fees.some(
-                          (fee) =>
-                            fee.currency.coinMinimalDenom ===
-                            balance.currency.coinMinimalDenom
-                        )
-                      ) {
-                        balance.fetch();
-                      }
-                    });
-
-                  if (txReceipt.status === EthTxStatus.Success) {
-                    notification.show(
-                      "success",
-                      intl.formatMessage({
-                        id: "notification.transaction-success",
-                      }),
-                      ""
-                    );
-                  } else {
-                    notification.show(
-                      "failed",
-                      intl.formatMessage({ id: "error.transaction-failed" }),
-                      ""
-                    );
-                  }
-                },
-              });
               ethereumAccount.setIsSendingTx(false);
-            } else {
-              const tx = isIBCTransfer
-                ? accountStore
-                    .getAccount(chainId)
-                    .cosmos.makePacketForwardIBCTransferTx(
-                      accountStore,
-                      sendConfigs.channelConfig.channels,
-                      sendConfigs.amountConfig.amount[0].toDec().toString(),
-                      sendConfigs.amountConfig.amount[0].currency,
-                      sendConfigs.recipientConfig.recipient
-                    )
-                : accountStore
-                    .getAccount(chainId)
-                    .makeSendTokenTx(
-                      sendConfigs.amountConfig.amount[0].toDec().toString(),
-                      sendConfigs.amountConfig.amount[0].currency,
-                      sendConfigs.recipientConfig.recipient
-                    );
-
-              await tx.send(
-                sendConfigs.feeConfig.toStdFee(),
-                sendConfigs.memoConfig.memo,
-                {
-                  preferNoSetFee: true,
-                  preferNoSetMemo: true,
-                  sendTx: async (chainId, tx, mode) => {
-                    let msg: Message<Uint8Array> = new SendTxAndRecordMsg(
-                      historyType,
-                      chainId,
-                      sendConfigs.recipientConfig.chainId,
-                      tx,
-                      mode,
-                      false,
-                      sendConfigs.senderConfig.sender,
-                      sendConfigs.recipientConfig.recipient,
-                      sendConfigs.amountConfig.amount.map((amount) => {
-                        return {
-                          amount: DecUtils.getTenExponentN(
-                            amount.currency.coinDecimals
-                          )
-                            .mul(amount.toDec())
-                            .toString(),
-                          denom: amount.currency.coinMinimalDenom,
-                        };
-                      }),
-                      sendConfigs.memoConfig.memo
-                    );
-                    if (isIBCTransfer) {
-                      if (msg instanceof SendTxAndRecordMsg) {
-                        msg = msg.withIBCPacketForwarding(
-                          sendConfigs.channelConfig.channels,
-                          {
-                            currencies: chainStore.getChain(chainId).currencies,
-                          }
-                        );
-                      } else {
-                        throw new Error("Invalid message type");
-                      }
-                    }
-                    return await new InExtensionMessageRequester().sendMessage(
-                      BACKGROUND_PORT,
-                      msg
-                    );
-                  },
-                },
-                {
-                  onBroadcasted: async () => {
-                    chainStore.enableVaultsWithCosmosAddress(
-                      sendConfigs.recipientConfig.chainId,
-                      sendConfigs.recipientConfig.recipient
-                    );
-
-                    if (!isIBCTransfer) {
-                      const inCurrencyPrice =
-                        await priceStore.waitCalculatePrice(
-                          sendConfigs.amountConfig.amount[0],
-                          "usd"
-                        );
-
-                      const params: Record<
-                        string,
-                        | number
-                        | string
-                        | boolean
-                        | number[]
-                        | string[]
-                        | undefined
-                      > = {
-                        denom:
-                          sendConfigs.amountConfig.amount[0].currency
-                            .coinMinimalDenom,
-                        commonDenom: (() => {
-                          const currency =
-                            sendConfigs.amountConfig.amount[0].currency;
-                          if ("paths" in currency && currency.originCurrency) {
-                            return currency.originCurrency.coinDenom;
-                          }
-                          return currency.coinDenom;
-                        })(),
-                        chainId: sendConfigs.recipientConfig.chainId,
-                        chainIdentifier: ChainIdHelper.parse(
-                          sendConfigs.recipientConfig.chainId
-                        ).identifier,
-                        inAvg: amountToAmbiguousAverage(
-                          sendConfigs.amountConfig.amount[0]
-                        ),
-                      };
-                      if (inCurrencyPrice) {
-                        params["inFiatAvg"] =
-                          amountToAmbiguousAverage(inCurrencyPrice);
-                      }
-                      new InExtensionMessageRequester().sendMessage(
-                        BACKGROUND_PORT,
-                        new LogAnalyticsEventMsg("send", params)
-                      );
-                    }
-                  },
-                  onFulfill: (tx: any) => {
-                    if (tx.code != null && tx.code !== 0) {
-                      console.log(tx.log ?? tx.raw_log);
-                      notification.show(
-                        "failed",
-                        intl.formatMessage({ id: "error.transaction-failed" }),
-                        ""
-                      );
-                      return;
-                    }
-                    notification.show(
-                      "success",
-                      intl.formatMessage({
-                        id: "notification.transaction-success",
-                      }),
-                      ""
-                    );
-                  },
-                }
-              );
             }
-
             if (!isDetachedMode) {
               navigate("/", {
                 replace: true,
@@ -717,7 +416,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
               ethereumAccount.setIsSendingTx(false);
             }
 
-            console.log(e);
+            console.log("error on Send Tron", e);
             notification.show(
               "failed",
               intl.formatMessage({ id: "error.transaction-failed" }),
@@ -765,103 +464,21 @@ export const SendTronPage: FunctionComponent = observer(() => {
             />
           </YAxis>
 
-          {!isErc20 && !isEVMOnlyChain && (
-            <LayeredHorizontalRadioGroup
-              size="large"
-              selectedKey={isIBCTransfer ? "ibc-transfer" : "send"}
-              items={[
-                {
-                  key: "send",
-                  text: intl.formatMessage({
-                    id: "page.send.type.send",
-                  }),
-                },
-                {
-                  key: "ibc-transfer",
-                  text: intl.formatMessage({
-                    id: "page.send.type.ibc-transfer",
-                  }),
-                },
-              ]}
-              onSelect={(key) => {
-                if (key === "ibc-transfer") {
-                  if (sendConfigs.channelConfig.channels.length === 0) {
-                    setIsIBCTransferDestinationModalOpen(true);
-                  }
-                } else {
-                  sendConfigs.channelConfig.setChannels([]);
-                  setIsIBCTransfer(false);
-                }
-              }}
-            />
-          )}
-
-          <VerticalCollapseTransition collapsed={!isIBCTransfer}>
-            <DestinationChainView
-              ibcChannelConfig={sendConfigs.channelConfig}
-              onClick={() => {
-                setIsIBCTransferDestinationModalOpen(true);
-              }}
-            />
-            <Gutter size="0.75rem" />
-          </VerticalCollapseTransition>
           <Gutter size="0" />
 
           <TronRecipientInput
             ref={addressRef}
-            historyType={historyType}
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             currency={sendConfigs.amountConfig.currency}
-            permitAddressBookSelfKeyInfo={isIBCTransfer}
-            bottom={
-              <VerticalCollapseTransition
-                collapsed={!isIBCRecipientSetAuto}
-                transitionAlign="top"
-              >
-                <Gutter size="0.25rem" />
-                <XAxis>
-                  <Gutter size="0.5rem" />
-                  <Caption2 color={ColorPalette["platinum-200"]}>
-                    <FormattedMessage id="page.send.amount.ibc-send-recipient-auto-filled" />
-                  </Caption2>
-                </XAxis>
-              </VerticalCollapseTransition>
-            }
+            checkSendMySelft={checkSendMySelft?.message}
           />
 
           <AmountInput amountConfig={sendConfigs.amountConfig} />
 
-          {!isEvmTx && (
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              placeholder={intl.formatMessage({
-                id: isIBCTransfer
-                  ? "components.input.memo-input.optional-placeholder"
-                  : "page.send.amount.memo-placeholder",
-              })}
-            />
-          )}
-
-          <VerticalCollapseTransition collapsed={!isIBCTransfer}>
-            <GuideBox
-              color="warning"
-              title={intl.formatMessage({
-                id: "page.send.amount.ibc-transfer-warning.title",
-              })}
-            />
-            <Gutter size="0.75rem" />
-          </VerticalCollapseTransition>
           <Gutter size="0" />
-          <VerticalCollapseTransition collapsed={!isSendingIBCToken}>
-            <GuideBox
-              color="warning"
-              title={intl.formatMessage({
-                id: "page.send.amount.avoid-cex-warning.title",
-              })}
-            />
-            <Gutter size="0.75rem" />
-          </VerticalCollapseTransition>
+
+          <Gutter size="0.75rem" />
           <Gutter size="0" />
 
           <Styles.Flex1 />
@@ -876,30 +493,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
           />
         </Stack>
       </Box>
-
-      <Modal
-        isOpen={isIBCTransferDestinationModalOpen}
-        align="bottom"
-        close={() => {
-          setIsIBCTransferDestinationModalOpen(false);
-        }}
-      >
-        <IBCTransferSelectDestinationModal
-          chainId={chainId}
-          denom={currency.coinMinimalDenom}
-          recipientConfig={sendConfigs.recipientConfig}
-          ibcChannelConfig={sendConfigs.channelConfig}
-          setIsIBCTransfer={setIsIBCTransfer}
-          setAutomaticRecipient={(address: string) => {
-            setIsIBCRecipientSetAuto(true);
-            setIBCRecipientAddress(address);
-          }}
-          setIBCChannelsInfoFluent={setIBCChannelFluent}
-          close={() => {
-            setIsIBCTransferDestinationModalOpen(false);
-          }}
-        />
-      </Modal>
     </HeaderLayout>
   );
 });
