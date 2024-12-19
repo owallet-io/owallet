@@ -7,7 +7,7 @@ import {
   ViewStyle,
   View,
 } from "react-native";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useMapStyles } from "./hooks";
 import { LoadingSpinner } from "../spinner";
 import { useTheme } from "@src/themes/theme-provider";
@@ -54,7 +54,9 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const styles = styling();
   const { colors } = useTheme();
-
+  // useEffect(() => {
+  //   alert(styleMapped.btn.borderRadius,"styleMapped.btn.borderRadius")
+  // }, [styleMapped.btn.borderRadius]);
   return (
     <TouchableOpacity
       {...props}
