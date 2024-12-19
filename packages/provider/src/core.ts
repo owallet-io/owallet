@@ -54,14 +54,21 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
+// import {
+//     confirmTransaction,
+//     deserializeTransaction,
+//     isVersionedTransaction,
+// } from "@owallet/common";
+import { encode, decode } from "bs58";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
 import {
+  CHAIN_ID_SOL,
   confirmTransaction,
   deserializeTransaction,
   isVersionedTransaction,
-} from "@owallet/common";
-import { CHAIN_ID_SOL, RPC_SOL } from "@owallet/common";
-import { encode, decode } from "bs58";
-import { SolanaSignInInput } from "@solana/wallet-standard-features";
+  RPC_SOL,
+} from "./utils";
+
 export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
@@ -1644,15 +1651,18 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
 
 class SolanaProvider extends EventEmitter implements ISolanaProvider {
   private connection: Connection;
+  publicKey: PublicKey | null;
+
   constructor(
     protected readonly owallet: OWallet,
     protected readonly requester: MessageRequester
   ) {
     super();
+
     this.connection = new Connection(RPC_SOL, "confirmed");
   }
 
-  async getKey(chainId: string, onlyIfTrusted: boolean): Promise<Key> {
+  async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
       sendSimpleMessage(
@@ -1662,7 +1672,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         "get-svm-key",
         {
           chainId,
-          silent: onlyIfTrusted,
         }
       )
         .then(resolve)
@@ -1700,14 +1709,34 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       }, 100);
     });
   }
+
   async connect(options?: {
     onlyIfTrusted?: boolean;
+    reconnect?: boolean;
   }): Promise<{ publicKey: PublicKey }> {
-    const chainIds = [CHAIN_ID_SOL];
-    const key = await this.getKey(chainIds[0], options?.onlyIfTrusted);
-    // const msg = new GetKeyMsg(chainIds[0], options?.onlyIfTrusted);
-    // const key = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    return { publicKey: new PublicKey(key.base58Address) };
+    const chainId = CHAIN_ID_SOL;
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "connect-svm",
+        {
+          chainId,
+          silent: options?.onlyIfTrusted,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
   }
 
   public async signAllTransactions<
@@ -1813,6 +1842,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       commitment,
     });
     const signedTx = VersionedTransaction.deserialize(
+      //@ts-ignore
       decode(result.signedTx)
     ) as T;
     const serializedTransaction = signedTx.serialize();
@@ -1825,8 +1855,8 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     publicKey: string;
     connectionUrl: string;
   }> {
+    console.log(input, "input");
     if (!input) throw Error("Transaction Rejected");
-    // const msg = new RequestSignInSvm(CHAIN_ID_SOL, input.address, input);
     const result = await sendSimpleMessage(
       this.requester,
       BACKGROUND_PORT,
@@ -1838,7 +1868,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         inputs: input,
       }
     );
-    // const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     if (!result) {
       throw Error("Transaction Rejected");
     }
@@ -1877,11 +1906,9 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       {
         chainId: CHAIN_ID_SOL,
         signer: publicKey,
-        inputs: txStr,
+        tx: txStr,
       }
     );
-    // const msg = new RequestSignTransactionSvm(CHAIN_ID_SOL, publicKey, txStr);
-    // const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     if (!result?.signature || !result?.signedTx) {
       throw Error("Transaction Rejected");
     }
@@ -1900,15 +1927,9 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       {
         chainId: CHAIN_ID_SOL,
         signer: request.publicKey,
-        inputs: encode(request.message),
+        message: encode(request.message),
       }
     );
-    // const msg = new RequestSignMessageSvm(
-    //     CHAIN_ID_SOL,
-    //     request.publicKey,
-    //     encode(request.message)
-    // );
-    // const svmResponse = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     return decode(svmResponse.signedMessage);
   }
 

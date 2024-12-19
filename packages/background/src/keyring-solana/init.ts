@@ -1,6 +1,7 @@
 import { Router } from "@owallet/router";
 import { KeyRingSvmService } from "./service";
 import {
+  ConnectSvmMsg,
   GetSvmKeyMsg,
   GetSvmKeysSettledMsg,
   RequestSignAllTransactionSvm,
@@ -19,6 +20,7 @@ export function init(
   permissionInteractionService: PermissionInteractiveService
 ): void {
   router.registerMessage(GetSvmKeyMsg);
+  router.registerMessage(ConnectSvmMsg);
   router.registerMessage(GetSvmKeysSettledMsg);
   router.registerMessage(RequestSignAllTransactionSvm);
   router.registerMessage(RequestSignInSvm);

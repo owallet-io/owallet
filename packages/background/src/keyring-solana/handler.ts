@@ -13,11 +13,13 @@ import {
   RequestSignAllTransactionSvm,
   RequestSignMessageSvm,
   RequestSignInSvm,
+  ConnectSvmMsg,
   // RequestSignBtcMsg,
 } from "./messages";
 
 import { KeyRingSvmService } from "./service";
 import { PermissionInteractiveService } from "../permission-interactive";
+import { PublicKey } from "@solana/web3.js";
 
 export const getHandler: (
   service: KeyRingSvmService,
@@ -29,6 +31,11 @@ export const getHandler: (
         return handleGetSvmKeyMsg(service, permissionInteractionService)(
           env,
           msg as GetSvmKeyMsg
+        );
+      case ConnectSvmMsg:
+        return handleConnectSvmMsg(service, permissionInteractionService)(
+          env,
+          msg as ConnectSvmMsg
         );
       case GetSvmKeysSettledMsg:
         return handleGetSvmKeysSettledMsg(
@@ -114,6 +121,23 @@ const handleGetSvmKeyMsg: (
     return await service.getKeySelected(msg.chainId);
   };
 };
+const handleConnectSvmMsg: (
+  service: KeyRingSvmService,
+  permissionInteractionService: PermissionInteractiveService
+) => InternalHandler<ConnectSvmMsg> = (
+  service,
+  permissionInteractionService
+) => {
+  return async (env, msg) => {
+    await permissionInteractionService.ensureEnabled(
+      env,
+      [msg.chainId],
+      msg.origin
+    );
+    const key = await service.getKeySelected(msg.chainId);
+    return { publicKey: new PublicKey(key.base58Address) };
+  };
+};
 
 const handleGetSvmKeysSettledMsg: (
   service: KeyRingSvmService,
@@ -166,6 +190,7 @@ const handleRequestSignTransactionSvm: (
   permissionInteractionService
 ) => {
   return async (env, msg) => {
+    console.log(msg, "msg sign svm");
     await permissionInteractionService.ensureEnabled(
       env,
       [msg.chainId],

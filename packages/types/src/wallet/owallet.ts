@@ -282,39 +282,40 @@ export interface IOasisProvider extends EventEmitter {
     type: TransactionType
   ): Promise<types.SignatureSigned>;
 }
-export interface ISolanaProvider extends OWalletSolana {
-  getKey(chainId: string): Promise<Key>;
-  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
-}
-// export interface ISolanaProvider extends EventEmitter {
+// export interface ISolanaProvider extends OWalletSolana {
 //   getKey(chainId: string): Promise<Key>;
-//   publicKey: PublicKey | null;
 //   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
-//   connect(options?: {
-//     onlyIfTrusted?: boolean;
-//     reconnect?: boolean;
-//   }): Promise<{ publicKey: PublicKey }>;
-//   disconnect(): Promise<void>;
-//   signTransaction<T extends Transaction | VersionedTransaction>(
-//     tx: T,
-//     publicKey?: PublicKey,
-//     connection?: Connection
-//   ): Promise<T>;
-//   signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput>;
-//   signAndSendTransaction<T extends Transaction | VersionedTransaction>(
-//     transaction: T,
-//     options?: SendOptions
-//   ): Promise<{ signature: TransactionSignature }>;
-//   signMessage(
-//     msg: Uint8Array,
-//     publicKey?: PublicKey
-//   ): Promise<{ signature: Uint8Array }>;
-//   signAllTransactions<T extends Transaction | VersionedTransaction>(
-//     txs: Array<T>,
-//     publicKey?: PublicKey,
-//     connection?: Connection
-//   ): Promise<Array<T>>;
 // }
+export interface ISolanaProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  publicKey: PublicKey | null;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  connect?(options?: {
+    onlyIfTrusted?: boolean;
+    reconnect?: boolean;
+  }): Promise<{ publicKey: PublicKey }>;
+  // connect(options): Promise<{ publicKey: PublicKey }>;
+  disconnect(): Promise<void>;
+  signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<T>;
+  signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput>;
+  signAndSendTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T,
+    options?: SendOptions
+  ): Promise<{ signature: TransactionSignature }>;
+  signMessage(
+    msg: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{ signature: Uint8Array }>;
+  signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<Array<T>>;
+}
 export interface IBitcoinProvider extends EventEmitter {
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;

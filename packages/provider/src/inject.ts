@@ -56,13 +56,15 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { encode, decode } from "bs58";
-
+// import {CHAIN_ID_SOL} from "@owallet/common";
 import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-import { isReactNative, isWeb } from "@owallet/common";
-// import { OWalletSolanaWalletAccount } from "@oraichain/owallet-wallet-standard";
+// import {isReactNative, isWeb} from "@owallet/common";
+import { initialize } from "@oraichain/owallet-wallet-standard";
+
+// initialize(owallet.solana as any);
 export interface ProxyRequest {
   type: "proxy-request";
   id: string;
@@ -100,18 +102,16 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
 }
 
 export function injectOWalletToWindow(owallet: IOWallet): void {
-  if (isWeb) {
-    import("@oraichain/owallet-wallet-standard")
-      .then(({ initialize }) => {
-        initialize(owallet.solana);
-      })
-      .catch((error) => {
-        console.error(
-          "Failed to load @oraichain/owallet-wallet-standard:",
-          error
-        );
-      });
-  }
+  import("@oraichain/owallet-wallet-standard")
+    .then(({ initialize }) => {
+      initialize(owallet.solana as any);
+    })
+    .catch((error) => {
+      console.error(
+        "Failed to load @oraichain/owallet-wallet-standard:",
+        error
+      );
+    });
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
   defineUnwritablePropertyIfPossible(window, "keplr", owallet);
   defineUnwritablePropertyIfPossible(window, "owalletSolana", owallet.solana);
@@ -151,6 +151,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
  */
 export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   public isOwallet: boolean = true;
+
   static startProxy(
     owallet: IOWallet & OWalletCoreTypes,
     eventListener: {
@@ -1343,7 +1344,10 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     })) as string;
   };
 }
+
 class SolanaProvider extends EventEmitter implements ISolanaProvider {
+  isOWallet = true;
+
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
@@ -1361,9 +1365,9 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     protected readonly parseMessage?: (message: any) => any
   ) {
     super();
-    window.addEventListener("keplr_keystorechange", async () => {
-      await this.connect({ onlyIfTrusted: true, reconnect: true });
-    });
+    // window.addEventListener("keplr_keystorechange", async () => {
+    //   await this.connect({ onlyIfTrusted: true, reconnect: true });
+    // });
   }
 
   protected _requestMethod = async (
@@ -1430,41 +1434,40 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod("getKeysSettled", [chainIds]);
   }
-  publicKey: PublicKey | null;
-  isConnected: boolean;
 
-  #connect(publicKey: string) {
-    this.isConnected = true;
+  publicKey: PublicKey | null;
+  protected _isConnected: boolean;
+
+  protected _connectWallet(publicKey: string) {
+    this._isConnected = true;
     this.publicKey = new PublicKey(publicKey);
     this.emit("connect", { publicKey });
-    // this.emit("accountChanged", { publicKey });
   }
 
-  async connect(options?: {
+  connect = async (options?: {
     onlyIfTrusted?: boolean;
     reconnect?: boolean;
-  }): Promise<{ publicKey: PublicKey }> {
+  }): Promise<any> => {
     if (this.publicKey && !options?.reconnect) {
       return { publicKey: this.publicKey };
     }
     const { publicKey } = await this._requestMethod("connect", [options]);
-    this.#connect(publicKey);
+    this._connectWallet(publicKey);
     if (options?.onlyIfTrusted) {
       this.emit("accountChanged", new PublicKey(publicKey));
     }
     return { publicKey: new PublicKey(publicKey) };
-  }
-
-  async disconnect(): Promise<void> {
+  };
+  disconnect = async (): Promise<void> => {
     this.publicKey = null;
     this.emit("disconnect");
-  }
+  };
 
-  async signTransaction<T extends Transaction | VersionedTransaction>(
+  signTransaction = async <T extends Transaction | VersionedTransaction>(
     tx: T,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<T> {
+  ): Promise<T> => {
     if (!this.publicKey) {
       await this.connect();
     }
@@ -1485,12 +1488,11 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     ) as T;
     console.warn(solanaRes);
     return solanaRes;
-  }
+  };
 
-  async signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput> {
+  signIn = async (input?: SolanaSignInInput): Promise<SolanaSignInOutput> => {
     const response = await this._requestMethod("signIn", [input ?? {}]);
-    this.#connect(response.publicKey);
-    if (!isWeb) return;
+    this._connectWallet(response.publicKey);
     import("@oraichain/owallet-wallet-standard")
       .then(({ OWalletSolanaWalletAccount }) => {
         return {
@@ -1508,22 +1510,23 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
           error
         );
       });
-  }
+    return;
+  };
 
-  async signAndSendTransaction<T extends Transaction | VersionedTransaction>(
+  signAndSendTransaction = async <T extends Transaction | VersionedTransaction>(
     transaction: T,
     options?: SendOptions
-  ): Promise<{ signature: TransactionSignature }> {
+  ): Promise<{ signature: TransactionSignature }> => {
     return this.sendAndConfirm(transaction, [], options);
-  }
+  };
 
-  async sendAndConfirm<T extends Transaction | VersionedTransaction>(
+  sendAndConfirm = async <T extends Transaction | VersionedTransaction>(
     tx: T,
     signers?: Signer[],
     options?: ConfirmOptions,
     connection?: Connection,
     publicKey?: PublicKey
-  ): Promise<{ signature: TransactionSignature }> {
+  ): Promise<{ signature: TransactionSignature }> => {
     if (!this.publicKey) {
       await this.connect();
     }
@@ -1542,12 +1545,12 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     ]);
 
     return { signature: solanaResponse };
-  }
+  };
 
-  async signMessage(
+  signMessage = async (
     msg: Uint8Array,
     publicKey?: PublicKey
-  ): Promise<{ signature: Uint8Array }> {
+  ): Promise<{ signature: Uint8Array }> => {
     if (!this.publicKey) {
       await this.connect();
     }
@@ -1561,13 +1564,13 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       },
     ]);
     return { signature: solanaResponse };
-  }
+  };
 
-  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+  signAllTransactions = async <T extends Transaction | VersionedTransaction>(
     txs: Array<T>,
     publicKey?: PublicKey,
     connection?: Connection
-  ): Promise<Array<T>> {
+  ): Promise<Array<T>> => {
     if (!this.publicKey) {
       await this.connect();
     }
@@ -1588,7 +1591,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       VersionedTransaction.deserialize(decode(signedTx))
     );
     return txsRs as T[];
-  }
+  };
 }
 
 class OasisProvider extends EventEmitter implements IOasisProvider {

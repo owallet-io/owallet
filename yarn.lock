@@ -8939,6 +8939,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solana/web3.js@npm:1.98.0":
+  version: 1.98.0
+  resolution: "@solana/web3.js@npm:1.98.0"
+  dependencies:
+    "@babel/runtime": ^7.25.0
+    "@noble/curves": ^1.4.2
+    "@noble/hashes": ^1.4.0
+    "@solana/buffer-layout": ^4.0.1
+    agentkeepalive: ^4.5.0
+    bigint-buffer: ^1.1.5
+    bn.js: ^5.2.1
+    borsh: ^0.7.0
+    bs58: ^4.0.1
+    buffer: 6.0.3
+    fast-stable-stringify: ^1.0.0
+    jayson: ^4.1.1
+    node-fetch: ^2.7.0
+    rpc-websockets: ^9.0.2
+    superstruct: ^2.0.2
+  checksum: f2c39e53e2aa4ba893565b2914112f203d15dcc23d6170edf6f696e735a24469989896827ecc456b99a8c6781c96f1a12a22277e6f82d65545b0925546ab7b8f
+  languageName: node
+  linkType: hard
+
 "@solana/web3.js@npm:=1.58.0":
   version: 1.58.0
   resolution: "@solana/web3.js@npm:1.58.0"
@@ -8963,7 +8986,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.95.4":
+"@solana/web3.js@npm:^1.32.0":
   version: 1.95.8
   resolution: "@solana/web3.js@npm:1.95.8"
   dependencies:
@@ -26355,7 +26378,7 @@ __metadata:
     "@solana/wallet-standard-chains": 1.1.0
     "@solana/wallet-standard-features": 1.2.0
     "@solana/wallet-standard-util": 1.1.1
-    "@solana/web3.js": ^1.95.4
+    "@solana/web3.js": 1.98.0
     "@types/jest": 29.5.3
     "@types/node": ^16.6.2
     "@typescript-eslint/eslint-plugin": ^4.13.0

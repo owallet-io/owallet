@@ -28,7 +28,7 @@ export class KeyRingSvmService {
 
   // async requestSendAndConfirmTxSvm(
   //     env: Env,
-  //     msgOrigin: string,
+  //     origin: string,
   //     chainId: string,
   //     signer: string,
   //     unsignedTx: Uint8Array
@@ -45,7 +45,7 @@ export class KeyRingSvmService {
   //             "/sign-svm",
   //             "request-sign-svm",
   //             {
-  //                 msgOrigin,
+  //                 origin,
   //                 chainId,
   //                 signer,
   //                 unsignedTx,
@@ -60,7 +60,7 @@ export class KeyRingSvmService {
 
   async requestSignTransactionSvm(
     env: Env,
-    msgOrigin: string,
+    origin: string,
     chainId: string,
     signer: string,
     tx: string
@@ -127,7 +127,7 @@ export class KeyRingSvmService {
 
   async requestSignAllTransactionSvm(
     env: Env,
-    msgOrigin: string,
+    origin: string,
     chainId: string,
     signer: string,
     txs: Array<string>
@@ -205,7 +205,7 @@ export class KeyRingSvmService {
 
   async requestSignMessageSvm(
     env: Env,
-    msgOrigin: string,
+    origin: string,
     chainId: string,
     signer: string,
     tx: string
@@ -262,7 +262,7 @@ export class KeyRingSvmService {
 
   async requestSignInSvm(
     env: Env,
-    msgOrigin: string,
+    origin: string,
     chainId: string,
     signer: string,
     inputs: SolanaSignInInput
@@ -308,7 +308,7 @@ export class KeyRingSvmService {
             return;
           } else {
             const message = createSignInMessage({
-              domain: msgOrigin,
+              domain: origin,
               address: signer,
               ...(inputs ?? {}),
             });

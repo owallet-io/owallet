@@ -3,6 +3,7 @@ import { Key, SettledResponses, TransactionType } from "@owallet/types";
 import { ROUTE } from "./constants";
 import { SolanaSignInInput } from "@solana/wallet-standard-features";
 import { isBase58 } from "@owallet/common";
+import { PublicKey } from "@solana/web3.js";
 
 export class GetSvmKeyMsg extends Message<Key> {
   public static type() {
@@ -29,6 +30,36 @@ export class GetSvmKeyMsg extends Message<Key> {
 
   type(): string {
     return GetSvmKeyMsg.type();
+  }
+}
+export class ConnectSvmMsg extends Message<{ publicKey: PublicKey }> {
+  public static type() {
+    return "connect-svm";
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly silent?: boolean
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error("chainId is not set");
+    }
+  }
+
+  override approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ConnectSvmMsg.type();
   }
 }
 
@@ -98,7 +129,7 @@ export class RequestSignAllTransactionSvm extends Message<
 
     const isValid = isBase58(this.signer);
     if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
-    if (!this.txs) throw new OWalletError("keyring", 230, "tx not set");
+    if (!this.txs) throw new OWalletError("keyring", 230, "txs not set");
   }
 
   approveExternal(): boolean {
