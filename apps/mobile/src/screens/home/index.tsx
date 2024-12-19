@@ -126,55 +126,59 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <AccountBoxAll isLoading={false} />
 
       {appInitStore.getInitApp.isAllNetworks ? <StakeCardAll /> : null}
-      <View>
-        <OWBox
-          style={{
-            marginHorizontal: 16,
-            marginTop: 8,
-            width: metrics.screenWidth - 32,
-            paddingHorizontal: 16,
-            backgroundColor: colors["neutral-surface-card"],
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 16,
-          }}
-        >
-          <View>
-            <OWIcon
-              type={"images"}
-              source={imagesNoel.img_owallet}
-              size={32}
-              resizeMode={"contain"}
-            />
-          </View>
-          <View
+      {!appInitStore.getInitApp.hideTipNoel ? (
+        <View>
+          <OWBox
             style={{
-              maxWidth: metrics.screenWidth - 110,
+              marginHorizontal: 16,
+              marginTop: 8,
+              width: metrics.screenWidth - 32,
+              paddingHorizontal: 16,
+              backgroundColor: colors["neutral-surface-card"],
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 16,
             }}
           >
-            <OWText weight={"600"}>’Tis the Season of ...Gaining! ✨</OWText>
-            <OWText weight={"400"} size={12}>
-              🎁 Deck your wallet and wrap up the year in style with OWallet!
-              🎄🎉
-            </OWText>
-          </View>
-          <View
-            style={{
-              position: "absolute",
-              top: 16,
-              right: 8,
-            }}
-          >
-            <OWButtonIcon
-              colorIcon={colors["neutral-icon-on-light"]}
-              // onPress={onGoBack}
-              name="tdesignclose"
-              fullWidth={false}
-              sizeIcon={20}
-            />
-          </View>
-        </OWBox>
-      </View>
+            <View>
+              <OWIcon
+                type={"images"}
+                source={imagesNoel.img_owallet}
+                size={32}
+                resizeMode={"contain"}
+              />
+            </View>
+            <View
+              style={{
+                maxWidth: metrics.screenWidth - 110,
+              }}
+            >
+              <OWText weight={"600"}>’Tis the Season of ...Gaining! ✨</OWText>
+              <OWText weight={"400"} size={12}>
+                🎁 Deck your wallet and wrap up the year in style with OWallet!
+                🎄🎉
+              </OWText>
+            </View>
+            <View
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 8,
+              }}
+            >
+              <OWButtonIcon
+                colorIcon={colors["neutral-icon-on-light"]}
+                onPress={() => {
+                  appInitStore.updateHideTipNoel();
+                }}
+                name="tdesignclose"
+                fullWidth={false}
+                sizeIcon={20}
+              />
+            </View>
+          </OWBox>
+        </View>
+      ) : null}
       <MainTabHome />
     </PageWithScrollViewInBottomTabView>
   );

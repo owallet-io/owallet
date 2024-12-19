@@ -17,6 +17,7 @@ export class AppInit {
     theme: "dark" | "light";
     wallet: "owallet" | "injective" | "osmosis";
     hideTestnet: boolean;
+    hideTipNoel: boolean;
     hideTokensWithoutBalance: boolean;
     visibleTabBar?: string;
     feeOption?: "low" | "average" | "high";
@@ -37,6 +38,7 @@ export class AppInit {
     this.initApp = {
       visibleTabBar: null,
       status: true,
+      hideTipNoel: false,
       passcodeType: "alphabet",
       date_updated: null,
       theme: "light",
@@ -75,6 +77,11 @@ export class AppInit {
   @action
   updateSelectTheme() {
     this.initApp = { ...this.initApp, isSelectTheme: true };
+  }
+
+  @action
+  updateHideTipNoel() {
+    this.initApp = { ...this.initApp, hideTipNoel: true };
   }
 
   // @action

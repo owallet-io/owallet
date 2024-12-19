@@ -106,6 +106,9 @@ export const AccountBoxAll: FunctionComponent<{
 
   const chainId = chainStore.current.chainId;
   const account = allAccountStore.getAccount(chainId);
+  const accountOrai = accountStore.hasAccount("Oraichain")
+    ? accountStore.getAccount("Oraichain")
+    : null;
 
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
@@ -711,7 +714,9 @@ export const AccountBoxAll: FunctionComponent<{
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text style={styles.labelName}>{account?.name || "..."}</Text>
+            <Text style={styles.labelName}>
+              {accountOrai?.name || account?.name || "..."}
+            </Text>
             <DownArrowIcon
               height={15}
               color={colors["neutral-icon-on-light"]}
@@ -721,9 +726,6 @@ export const AccountBoxAll: FunctionComponent<{
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
                 onPress={() => {
-                  // startTransition(() => {
-                  //   setShowChart(!showChart);
-                  // });
                   setShowChart(!showChart);
                 }}
                 style={styles.button}
