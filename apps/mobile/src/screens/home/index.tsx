@@ -41,6 +41,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     allAccountStore,
     bitcoinAccountStore,
+    keyRingStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -106,6 +107,23 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   };
   const [refreshing, _] = useState(false);
+  useEffect(() => {
+    (async () => {
+      const allExist = chainStore.chainInfos.every((item) =>
+        chainStore.enabledChainIdentifiers.includes(item.chainIdentifier)
+      );
+      if (!allExist) {
+        const chainsEnable = chainStore.chainInfos.map(
+          (chainInfo, index) => chainInfo.chainIdentifier
+        );
+        await chainStore.enableChainInfoInUIWithVaultId(
+          keyRingStore.selectedKeyInfo.id,
+          ...chainsEnable
+        );
+      }
+    })();
+  }, [chainStore.enabledChainIdentifiers, keyRingStore.selectedKeyInfo.id]);
+
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
