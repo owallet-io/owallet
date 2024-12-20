@@ -16,6 +16,7 @@ import { useFocusOnMount } from "../../../hooks/use-focus-on-mount";
 import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { FormattedMessage, useIntl } from "react-intl";
+import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 
 const Styles = {
   Container: styled(Stack)`
@@ -96,6 +97,19 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
     return true;
   });
 
+  const getSendLink = (modularChainInfo: ModularChainInfo) => {
+    if (modularChainInfo.chainId === ChainIdEVM.TRON) {
+      return "/send-tron";
+    } else if (
+      "starknet" in modularChainInfo &&
+      modularChainInfo.starknet != null
+    ) {
+      return "/starknet/send";
+    } else {
+      return "/send";
+    }
+  };
+
   return (
     <HeaderLayout
       title={intl.formatMessage({ id: "page.send.select-asset.title" })}
@@ -140,8 +154,7 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
           const modularChainInfo = chainStore.getModularChain(
             viewToken.chainInfo.chainId
           );
-          const isStarknet =
-            "starknet" in modularChainInfo && modularChainInfo.starknet != null;
+
           return (
             <TokenItem
               viewToken={viewToken}
@@ -150,7 +163,7 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
                 if (paramNavigateTo) {
                   navigate(
                     paramNavigateTo
-                      .replace("/send", isStarknet ? "/starknet/send" : "/send")
+                      .replace("/send", getSendLink(modularChainInfo))
                       .replace("{chainId}", viewToken.chainInfo.chainId)
                       .replace(
                         "{coinMinimalDenom}",
