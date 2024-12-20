@@ -99,6 +99,8 @@ export const useGetFeeTron = (
     try {
       let amountEnergyFee = new Int(0);
       let signedTxn;
+      console.log("dataReq", dataReq);
+
       if (dataReq.raw_data_hex) {
         const signedTx = await keyringStore.simulateSignTron(
           dataReq,
@@ -249,6 +251,9 @@ export const useGetFeeTron = (
             ? //@ts-ignore
               amountConfig.amount[0].currency.contractAddress
             : null;
+
+        console.log("contractAddress", contractAddress);
+
         const dataReq = {
           address: contractAddress,
           functionSelector: "transfer(address,uint256)",

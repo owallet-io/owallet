@@ -163,7 +163,6 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
         //      This is intended because this logic is only for the first time and avoid global re-rendering.
         // Start init for registered chains so that users can see account address more quickly.
 
-        // old
         for (const modularChainInfo of chainStore.modularChainInfos) {
           const account = accountStore.getAccount(modularChainInfo.chainId);
           // Because {autoInit: true} is given as the option on account store,

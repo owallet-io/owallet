@@ -18,7 +18,6 @@ import { useTheme } from "styled-components";
 import SimpleBar from "simplebar-react";
 import { Gutter } from "../../../components/gutter";
 import { useUnmount } from "../../../hooks/use-unmount";
-
 import { useGetFeeTron, useSendTronTxConfig } from "@owallet/hooks";
 import { handleExternalInteractionWithNoProceedNext } from "../../../utils";
 import {
@@ -26,7 +25,6 @@ import {
   toDisplay,
   TronWebProvider,
 } from "@owallet/common";
-import { Image } from "../../../components/image";
 import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
@@ -429,7 +427,62 @@ export const TronSigningView: FunctionComponent<{
         </SimpleBar>
         <Box height="0" minHeight="0.75rem" />
         {!isViewData ? <div style={{ flex: 1 }} /> : null}
-        Fee
+        <Box>
+          <YAxis alignX="center">
+            <Box
+              paddingBottom="0.21rem"
+              cursor="pointer"
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <XAxis alignY="center">
+                <Box minWidth="0.875rem" />
+                <Body2
+                  color={(() => {
+                    return theme.mode === "light"
+                      ? ColorPalette["purple-400"]
+                      : ColorPalette["white"];
+                  })()}
+                  style={{
+                    textDecoration: "underline",
+                    textUnderlineOffset: "0.2rem",
+                  }}
+                >
+                  {
+                    <FormattedMessage
+                      id="components.input.fee-control.fee"
+                      values={{
+                        assets: ` ${
+                          toDisplay(
+                            feeResult?.feeTrx?.amount,
+                            chainInfo.stakeCurrency.coinDecimals
+                          ) ?? 0
+                        } 
+                    ${
+                      feeResult?.feeTrx?.denom?.toUpperCase() ??
+                      chainInfo.feeCurrencies[0].coinDenom
+                    }`,
+                      }}
+                    />
+                  }
+                </Body2>
+                <Body2
+                  color={
+                    theme.mode === "light"
+                      ? ColorPalette["gray-300"]
+                      : ColorPalette["gray-300"]
+                  }
+                  style={{
+                    textDecoration: "underline",
+                    whiteSpace: "pre-wrap",
+                    textUnderlineOffset: "0.2rem",
+                  }}
+                ></Body2>
+              </XAxis>
+            </Box>
+          </YAxis>
+        </Box>
         <LedgerGuideBox
           data={{
             keyInsensitive: interactionData.data.keyInsensitive,

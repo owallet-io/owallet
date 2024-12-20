@@ -36,7 +36,6 @@ import { InExtensionMessageRequester } from "@owallet/router-extension";
 import { BACKGROUND_PORT, Message } from "@owallet/router";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
-import { ChainIdHelper } from "@owallet/cosmos";
 import { isRunningInSidePanel } from "../../../utils";
 import { TronRecipientInput } from "../../../components/input/reciepient-input/trx-input";
 
@@ -54,6 +53,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
     tronAccountStore,
     chainStore,
     queriesStore,
+    keyRingStore,
   } = useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 
@@ -127,6 +127,9 @@ export const SendTronPage: FunctionComponent = observer(() => {
     }
   );
   sendConfigs.amountConfig.setCurrency(currency);
+
+  const queries = queriesStore.get(chainId);
+
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === tronAccount.base58Address
       ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
@@ -418,8 +421,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
                 recipient: sendConfigs.recipientConfig.recipient,
                 contractAddress,
               });
-
-              console.log("unsignedTx", unsignedTx);
 
               await tronAccount.sendTx(unsignedTx, {
                 onBroadcasted: (txHash) => {
