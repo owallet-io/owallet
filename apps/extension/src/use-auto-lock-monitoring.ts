@@ -18,9 +18,6 @@ export const useAutoLockMonitoring = () => {
         const requester = new InExtensionMessageRequester();
         const res = await requester.sendMessage(BACKGROUND_PORT, msg);
         if (res.lockOnSleep || res.duration > 0) {
-          // view가 켜져있으면 자동으로 lock이 되지 않지만
-          // 컴퓨터가 sleep이 되었을때 lock되는건 view에서 처리할 수 없다.
-          // 이 경우 view가 꺼지지 않은 상태로 keyring이 lock되면 어차피 정상 작동할 수 없으므로 window를 닫는다.
           window.close();
         }
       }
