@@ -15,7 +15,7 @@ import {
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, unknownToken } from "@owallet/common";
 import { Dec } from "@owallet/unit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -35,6 +35,19 @@ export const eventTheme: "noel" | "owallet" | "halloween" = "noel";
 //
 //   }
 // }
+export const oraiToken =
+  "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png";
+export const getImageFromToken = (item) => {
+  const { coinImageUrl, coinGeckoId } = item?.token?.currency || {};
+
+  const resolvedImageUrl =
+    !coinImageUrl || coinImageUrl.includes("missing.")
+      ? unknownToken?.coinImageUrl
+      : coinGeckoId === "oraichain-token"
+      ? oraiToken
+      : coinImageUrl;
+  return resolvedImageUrl;
+};
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",

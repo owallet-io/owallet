@@ -19,6 +19,7 @@ import { SCREENS } from "@src/common/constants";
 import { DenomHelper, unknownToken } from "@owallet/common";
 import {
   eventTheme,
+  getImageFromToken,
   maskedNumber,
   removeDataInParentheses,
   shortenAddress,
@@ -156,12 +157,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
                   style={{ borderRadius: 999 }}
                   type="images"
                   source={{
-                    uri:
-                      item.token?.currency?.coinImageUrl?.includes(
-                        "missing.png"
-                      ) || !item.token?.currency?.coinImageUrl
-                        ? unknownToken.coinImageUrl
-                        : item.token?.currency?.coinImageUrl,
+                    uri: getImageFromToken(item),
                   }}
                   size={24}
                 />

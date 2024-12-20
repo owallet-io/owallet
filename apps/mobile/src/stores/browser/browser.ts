@@ -4,6 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const DAppInfos = [
   {
+    id: 0,
+    name: "TEST SOLANA",
+    uri: "https://anza-xyz.github.io/wallet-adapter/example/",
+  },
+  {
     id: 1,
     name: "Oraidex",
     uri: "https://app.oraidex.io/",

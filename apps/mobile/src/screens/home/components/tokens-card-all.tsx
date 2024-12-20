@@ -19,6 +19,7 @@ import {
 import { useStore } from "@src/stores";
 import {
   capitalizedText,
+  getImageFromToken,
   maskedNumber,
   removeDataInParentheses,
 } from "@utils/helper";
@@ -36,6 +37,7 @@ import images from "@src/assets/images";
 import { initPrice } from "./account-box-new";
 import { Dec } from "@owallet/unit";
 import { useIsNotReady } from "@screens/home";
+
 const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -249,6 +251,7 @@ const TokenItem: FC<{
   const price24h = item.token?.currency?.coinGeckoId
     ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
     : 0;
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -264,12 +267,7 @@ const TokenItem: FC<{
               style={{ borderRadius: 999 }}
               type="images"
               source={{
-                uri:
-                  item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                  !item.token?.currency?.coinImageUrl ||
-                  item.token?.currency?.coinImageUrl?.includes("missing.svg")
-                    ? unknownToken?.coinImageUrl
-                    : item.token?.currency?.coinImageUrl,
+                uri: getImageFromToken(item),
               }}
               size={32}
             />
