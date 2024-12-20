@@ -53,7 +53,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
     tronAccountStore,
     chainStore,
     queriesStore,
-    keyRingStore,
   } = useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 

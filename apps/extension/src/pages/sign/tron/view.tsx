@@ -29,6 +29,7 @@ import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
 import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
+import { useNotification } from "../../../hooks/notification";
 
 export const TronSigningView: FunctionComponent<{
   interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
@@ -43,7 +44,7 @@ export const TronSigningView: FunctionComponent<{
   } = useStore();
   const intl = useIntl();
   const theme = useTheme();
-  const navigate = useNavigate();
+  const notification = useNotification();
 
   const interactionInfo = useInteractionInfo({
     onUnmount: async () => {
@@ -191,6 +192,13 @@ export const TronSigningView: FunctionComponent<{
         async () => {
           // noop
           setLoading(false);
+          notification.show(
+            "success",
+            intl.formatMessage({
+              id: "notification.transaction-success",
+            }),
+            ""
+          );
         },
         {
           preDelay: 200,
@@ -307,7 +315,11 @@ export const TronSigningView: FunctionComponent<{
               );
             } catch (e) {
               console.log(e);
-
+              notification.show(
+                "failed",
+                intl.formatMessage({ id: "error.transaction-failed" }),
+                ""
+              );
               if (e instanceof OWalletError) {
                 if (e.module === ErrModuleLedgerSign) {
                   setLedgerInteractingError(e);
