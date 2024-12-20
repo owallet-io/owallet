@@ -21,6 +21,9 @@ import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { GoBack } from "@components/icon";
 import OWButtonIcon from "@components/button/ow-button-icon";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const {
@@ -134,7 +137,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                 width: 140,
                 height: 140,
               }}
-              source={require("../../../assets/image/img_search.png")}
+              source={
+                eventTheme === "noel"
+                  ? imagesNoel.img_search
+                  : images.img_search
+              }
               resizeMode="contain"
               fadeDuration={0}
             />
@@ -228,7 +235,11 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
                   width: 120,
                   height: 68,
                 }}
-                source={require("../../../assets/images/img_invest.png")}
+                source={
+                  eventTheme === "noel"
+                    ? imagesNoel.img_invest
+                    : images.img_invest
+                }
                 resizeMode="contain"
                 fadeDuration={0}
               />

@@ -199,73 +199,73 @@ const embedChainInfos: ChainInfo[] = [
       accountUrl: "https://blockstream.info/address/{address}",
     },
   },
-  {
-    chainId: "oraibridge-subnet-2",
-    chainName: "OraiBridge",
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    rpc: "https://bridge-v2.rpc.orai.io",
-    rest: "https://bridge-v2.lcd.orai.io",
-    stakeCurrency: {
-      coinDenom: "ORAIB",
-      coinMinimalDenom: "uoraib",
-      coinDecimals: 6,
-      coinImageUrl:
-        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("oraib"),
-    // List of all coin/tokens used in this chain.
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: "BEP20 ORAI",
-          coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
-          coinDecimals: 18,
-          coinGeckoId: "oraichain-token",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
-        },
-        {
-          coinDenom: "BEP20 AIRI",
-          coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
-          coinDecimals: 18,
-          coinGeckoId: "airight",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
-        },
-        {
-          coinDenom: "BEP20 USDT",
-          coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
-          coinDecimals: 18,
-          coinGeckoId: "tether",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
-        },
-      ];
-    },
-    get feeCurrencies() {
-      return [
-        {
-          ...this.stakeCurrency,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-        },
-      ];
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
-    txExplorer: {
-      name: "Orai Bridge Scan",
-      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
-      accountUrl: "https://scan.bridge.orai.io/account/{address}",
-    },
-  },
+  // {
+  //   chainId: "oraibridge-subnet-2",
+  //   chainName: "OraiBridge",
+  //   chainSymbolImageUrl:
+  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+  //   rpc: "https://bridge-v2.rpc.orai.io",
+  //   rest: "https://bridge-v2.lcd.orai.io",
+  //   stakeCurrency: {
+  //     coinDenom: "ORAIB",
+  //     coinMinimalDenom: "uoraib",
+  //     coinDecimals: 6,
+  //     coinImageUrl:
+  //       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+  //   },
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("oraib"),
+  //   // List of all coin/tokens used in this chain.
+  //   get currencies() {
+  //     return [
+  //       this.stakeCurrency,
+  //       {
+  //         coinDenom: "BEP20 ORAI",
+  //         coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "oraichain-token",
+  //         coinImageUrl:
+  //           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
+  //       },
+  //       {
+  //         coinDenom: "BEP20 AIRI",
+  //         coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "airight",
+  //         coinImageUrl:
+  //           "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
+  //       },
+  //       {
+  //         coinDenom: "BEP20 USDT",
+  //         coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "tether",
+  //         coinImageUrl:
+  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+  //       },
+  //     ];
+  //   },
+  //   get feeCurrencies() {
+  //     return [
+  //       {
+  //         ...this.stakeCurrency,
+  //         gasPriceStep: {
+  //           low: 0,
+  //           average: 0,
+  //           high: 0,
+  //         },
+  //       },
+  //     ];
+  //   },
+  //   features: ["stargate", "ibc-transfer", "cosmwasm"],
+  //   txExplorer: {
+  //     name: "Orai Bridge Scan",
+  //     txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
+  //     accountUrl: "https://scan.bridge.orai.io/account/{address}",
+  //   },
+  // },
   {
     rpc: "https://sapphire.oasis.io",
     rest: "https://sapphire.oasis.io",
@@ -613,7 +613,6 @@ export const SelectChainsScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
     );
   };
-  console.log(chains, "chains kaka");
   return (
     <PageWithView>
       <OWBox style={styles.pageContainer}>

@@ -3,7 +3,13 @@ import { observer } from "mobx-react-lite";
 import { spacing } from "../../themes";
 import { navigate, setOptions } from "../../router/root";
 import { useTheme } from "@src/themes/theme-provider";
-import { StyleSheet, View, InteractionManager, Clipboard } from "react-native";
+import {
+  StyleSheet,
+  View,
+  InteractionManager,
+  Clipboard,
+  Image,
+} from "react-native";
 import OWText from "@src/components/text/ow-text";
 import { useStore } from "@src/stores";
 import { OWButton } from "@src/components/button";
@@ -12,6 +18,7 @@ import { useSimpleTimer } from "@src/hooks";
 import { SCREENS } from "@src/common/constants";
 import { DenomHelper, unknownToken } from "@owallet/common";
 import {
+  eventTheme,
   maskedNumber,
   removeDataInParentheses,
   shortenAddress,
@@ -27,6 +34,8 @@ import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import MoreModal from "../home/components/more-modal";
 import { OWHeaderTitle } from "@components/header";
+import { imagesNoel } from "@assets/images/noels";
+import OWCard from "@components/card/ow-card";
 
 export const TokenDetailsScreen: FunctionComponent = observer((props) => {
   const { chainStore, priceStore, allAccountStore, keyRingStore } = useStore();
@@ -94,7 +103,20 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <OWBox style={styles.containerOWBox}>
+        <OWCard type={"normal"} style={styles.containerOWBox}>
+          {eventTheme === "noel" ? (
+            <Image
+              source={imagesNoel.bar}
+              style={{
+                width: metrics.screenWidth,
+                height: 8,
+                position: "absolute",
+                top: -16,
+                left: -32,
+              }}
+              resizeMode={"contain"}
+            />
+          ) : null}
           <View style={styles.containerInfoAccount}>
             <OWButton
               type="secondary"
@@ -253,7 +275,7 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
               }}
             />
           </View>
-        </OWBox>
+        </OWCard>
         <TokenChart
           denom={removeDataInParentheses(item.token.currency.coinDenom)}
           coinGeckoId={item.token.currency.coinGeckoId}
@@ -297,32 +319,63 @@ export const TokenDetailsScreen: FunctionComponent = observer((props) => {
           alignSelf: "center",
         }}
       >
-        <OWButton
-          label="Swap"
-          onPress={() => {
-            navigation.navigate("SendNavigation", {
-              params: {
-                chain: item.chainInfo.chainId,
+        <View>
+          {eventTheme === "noel" ? (
+            <Image
+              source={imagesNoel.left_btn_noel}
+              style={{
+                width: 60,
+                height: 28,
+                position: "absolute",
+                top: 17,
+                left: 8,
+                zIndex: 1000,
+                // right: "50%",
+              }}
+              resizeMode={"contain"}
+            />
+          ) : null}
+          {eventTheme === "noel" ? (
+            <Image
+              source={imagesNoel.right_btn_noel}
+              style={{
+                width: 24,
+                height: 28,
+                position: "absolute",
+                top: 17,
+                right: 10,
+                zIndex: 1000,
+              }}
+              resizeMode={"contain"}
+            />
+          ) : null}
+          <OWButton
+            label="Swap"
+            onPress={() => {
+              navigation.navigate("SendNavigation", {
+                params: {
+                  chain: item.chainInfo.chainId,
+                },
+              });
+            }}
+            icon={
+              <View style={{ transform: [{ rotate: "130deg" }] }}>
+                <OWIcon
+                  color={colors["neutral-text-action-on-dark-bg"]}
+                  name={"tdesign_swap"}
+                  size={20}
+                />
+              </View>
+            }
+            style={[
+              styles.bottomBtn,
+              {
+                width: metrics.screenWidth - 32,
               },
-            });
-          }}
-          icon={
-            <View style={{ transform: [{ rotate: "130deg" }] }}>
-              <OWIcon
-                color={colors["neutral-text-action-on-dark-bg"]}
-                name={"tdesign_swap"}
-                size={20}
-              />
-            </View>
-          }
-          style={[
-            styles.bottomBtn,
-            {
-              width: metrics.screenWidth - 32,
-            },
-          ]}
-          textStyle={styles.txtBtnSend}
-        />
+            ]}
+            textStyle={styles.txtBtnSend}
+          />
+        </View>
       </View>
     </>
   );
@@ -337,6 +390,7 @@ const useStyles = (colors) => {
       padding: spacing["16"],
       borderRadius: 24,
       backgroundColor: colors["neutral-surface-card"],
+      zIndex: 1000,
     },
     overview: {
       marginTop: 12,
@@ -373,6 +427,7 @@ const useStyles = (colors) => {
       flexDirection: "row",
       justifyContent: "space-between",
       alignSelf: "center",
+      paddingTop: 8,
     },
     getStarted: {
       borderRadius: 999,
