@@ -238,14 +238,56 @@ export const TronSigningView: FunctionComponent<{
           onClick: async () => {
             try {
               let signature;
+              let transaction;
+
               if (interactionData.data.keyType === "ledger") {
+                const tronWeb = TronWebProvider(chainInfo.rpc);
                 setIsLedgerInteracting(true);
                 setLedgerInteractingError(undefined);
+                if (parsedData?.contractAddress) {
+                  transaction = (
+                    await tronWeb.transactionBuilder.triggerSmartContract(
+                      parsedData?.contractAddress,
+                      "transfer(address,uint256)",
+                      {
+                        callValue: 0,
+                        feeLimit:
+                          parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
+                        userFeePercentage: 100,
+                        shouldPollResponse: false,
+                      },
+                      [
+                        { type: "address", value: parsedData.recipient },
+                        { type: "uint256", value: parsedData.amount },
+                      ],
+                      parsedData.address
+                    )
+                  ).transaction;
+                } else {
+                  transaction = await tronWeb.transactionBuilder.sendTrx(
+                    parsedData.recipient,
+                    parsedData.amount,
+                    parsedData.address
+                  );
+                }
+                signature = await handleTronPreSignByLedger(
+                  interactionData,
+                  transaction.raw_data_hex,
+                  {
+                    useWebHID: uiConfigStore.useWebHIDLedger,
+                  }
+                );
+
+                transaction.signature = [signature];
+
+                await tronWeb.trx.sendRawTransaction(transaction);
               }
 
               await signTronInteractionStore.approveWithProceedNext(
                 interactionData.id,
-                Buffer.from(signingDataText),
+                interactionData.data.keyType === "ledger"
+                  ? JSON.stringify(transaction)
+                  : Buffer.from(signingDataText),
                 signature,
                 async (proceedNext) => {
                   if (!proceedNext) {
@@ -292,53 +334,6 @@ export const TronSigningView: FunctionComponent<{
           overflow: "auto",
         }}
       >
-        (
-        <Box
-          padding="1rem"
-          backgroundColor={
-            theme.mode === "light"
-              ? ColorPalette.white
-              : ColorPalette["gray-600"]
-          }
-          borderRadius="0.375rem"
-          style={{
-            boxShadow:
-              theme.mode === "light"
-                ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
-                : "none",
-          }}
-        >
-          <XAxis alignY="center">
-            <Image
-              alt="sign-custom-image"
-              src={require("../../../public/assets/img/sign-adr36.png")}
-              style={{ width: "3rem", height: "3rem" }}
-            />
-            <Gutter size="0.75rem" />
-            <YAxis>
-              <H5
-                color={
-                  theme.mode === "light"
-                    ? ColorPalette["gray-500"]
-                    : ColorPalette["gray-10"]
-                }
-              >
-                <FormattedMessage id="Prove account ownership to" />
-              </H5>
-              <Gutter size="2px" />
-              <Body3
-                color={
-                  theme.mode === "light"
-                    ? ColorPalette["gray-300"]
-                    : ColorPalette["gray-200"]
-                }
-              >
-                {interactionData?.data.origin || ""}
-              </Body3>
-            </YAxis>
-          </XAxis>
-        </Box>
-        )
         <Gutter size="0.75rem" />
         <SimpleBar
           autoHide={false}
@@ -390,7 +385,12 @@ export const TronSigningView: FunctionComponent<{
                   >
                     {(() => {
                       const title = "Execute Contract";
-                      const icon = <img src={chainInfo.chainSymbolImageUrl} />;
+                      const icon = (
+                        <img
+                          style={{ width: 30, height: 30 }}
+                          src={chainInfo.chainSymbolImageUrl}
+                        />
+                      );
                       if (icon !== undefined && title !== undefined) {
                         return (
                           <MessageItem

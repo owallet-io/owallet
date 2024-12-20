@@ -1,6 +1,5 @@
 import { OWalletError, Message } from "@owallet/router";
 import { ROUTE } from "./constants";
-import { TW } from "@owallet/common";
 
 // Return the tx hash
 export class SendTxTronMsg extends Message<string> {

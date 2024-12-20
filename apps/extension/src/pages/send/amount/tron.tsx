@@ -403,7 +403,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
               ethereumAccount.setIsSendingTx(true);
 
               const unsignedTx = tronAccount.makeSendTokenTx({
-                address: sender,
+                address: tronAccount.base58Address,
                 currency: sendConfigs.amountConfig.amount[0].currency,
                 amount: sendConfigs.amountConfig.amount[0]
                   .toDec()

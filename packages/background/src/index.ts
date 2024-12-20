@@ -8,6 +8,7 @@ import * as ChainsUpdate from "./chains-update/internal";
 import * as SecretWasm from "./secret-wasm/internal";
 import * as BackgroundTx from "./tx/internal";
 import * as BackgroundTxEthereum from "./tx-ethereum/internal";
+import * as BackgroundTxTron from "./tx-tron/internal";
 import * as TokenCW20 from "./token-cw20/internal";
 import * as TokenERC20 from "./token-erc20/internal";
 import * as Interaction from "./interaction/internal";
@@ -167,6 +168,11 @@ export function init(
   );
 
   const backgroundTxService = new BackgroundTx.BackgroundTxService(
+    chainsService,
+    notification
+  );
+
+  const backgroundTxTronService = new BackgroundTxTron.BackgroundTxTronService(
     chainsService,
     notification
   );
@@ -343,6 +349,11 @@ export function init(
     backgroundTxEthereumService,
     permissionInteractiveService
   );
+  BackgroundTxTron.init(
+    router,
+    backgroundTxTronService,
+    permissionInteractiveService
+  );
   PhishingList.init(router, phishingListService);
   AutoLocker.init(router, autoLockAccountService);
   Analytics.init(router, analyticsService);
@@ -400,6 +411,7 @@ export function init(
 
       await backgroundTxService.init();
       await backgroundTxEthereumService.init();
+      await backgroundTxTronService.init();
       await phishingListService.init();
       await autoLockAccountService.init();
       await permissionInteractiveService.init();
