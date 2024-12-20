@@ -1365,9 +1365,9 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     protected readonly parseMessage?: (message: any) => any
   ) {
     super();
-    // window.addEventListener("keplr_keystorechange", async () => {
-    //   await this.connect({ onlyIfTrusted: true, reconnect: true });
-    // });
+    window.addEventListener("keplr_keystorechange", async () => {
+      await this.connect({ onlyIfTrusted: true, reconnect: true });
+    });
   }
 
   protected _requestMethod = async (
@@ -1491,26 +1491,23 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   };
 
   signIn = async (input?: SolanaSignInInput): Promise<SolanaSignInOutput> => {
-    const response = await this._requestMethod("signIn", [input ?? {}]);
-    this._connectWallet(response.publicKey);
-    import("@oraichain/owallet-wallet-standard")
-      .then(({ OWalletSolanaWalletAccount }) => {
-        return {
-          account: new OWalletSolanaWalletAccount({
-            address: response.publicKey,
-            publicKey: new PublicKey(response.publicKey).toBuffer(),
-          }),
-          signedMessage: decode(response.signedMessage),
-          signature: decode(response.signature),
-        };
-      })
-      .catch((error) => {
-        console.error(
-          "Failed to load @oraichain/owallet-wallet-standard:",
-          error
-        );
-      });
-    return;
+    try {
+      const response = await this._requestMethod("signIn", [input ?? {}]);
+      this._connectWallet(response.publicKey);
+      const { OWalletSolanaWalletAccount } = await import(
+        "@oraichain/owallet-wallet-standard"
+      );
+      return {
+        account: new OWalletSolanaWalletAccount({
+          address: response.publicKey,
+          publicKey: new PublicKey(response.publicKey).toBuffer(),
+        }),
+        signedMessage: decode(response.signedMessage),
+        signature: decode(response.signature),
+      };
+    } catch (e) {
+      console.error("Failed to load @oraichain/owallet-wallet-standard:", e);
+    }
   };
 
   signAndSendTransaction = async <T extends Transaction | VersionedTransaction>(

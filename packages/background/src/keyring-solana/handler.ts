@@ -247,7 +247,6 @@ const handleRequestSignInSvm: (
       env,
       msg.origin,
       msg.chainId,
-      msg.signer,
       msg.inputs
     );
   };

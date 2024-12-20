@@ -1855,7 +1855,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     publicKey: string;
     connectionUrl: string;
   }> {
-    console.log(input, "input");
     if (!input) throw Error("Transaction Rejected");
     const result = await sendSimpleMessage(
       this.requester,
@@ -1864,7 +1863,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       "request-sign-in-svm",
       {
         chainId: CHAIN_ID_SOL,
-        signer: input.address,
         inputs: input,
       }
     );

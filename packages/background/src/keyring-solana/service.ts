@@ -264,7 +264,6 @@ export class KeyRingSvmService {
     env: Env,
     origin: string,
     chainId: string,
-    signer: string,
     inputs: SolanaSignInInput
   ): Promise<{
     publicKey: string;
@@ -277,9 +276,6 @@ export class KeyRingSvmService {
       this.keyRingService.selectedVaultId
     );
     const chainInfo = await this.chainsService.getChainInfo(chainId);
-    if (signer !== key.base58Address) {
-      throw new Error("Signer mismatched");
-    }
     return await this.interactionService.waitApproveV2(
       env,
       "/sign-svm",
@@ -287,7 +283,7 @@ export class KeyRingSvmService {
       {
         origin,
         chainId,
-        signer,
+        signer: key.base58Address,
         pubKey: new PublicKey(key.base58Address),
         message: inputs,
         signType: TransactionSvmType.SIGN_IN,
@@ -307,12 +303,12 @@ export class KeyRingSvmService {
             // };
             return;
           } else {
-            const message = createSignInMessage({
+            const dataSignInMsg = {
               domain: origin,
-              address: signer,
+              address: key.base58Address,
               ...(inputs ?? {}),
-            });
-
+            };
+            const message = createSignInMessage(dataSignInMsg);
             const encodedMessage = encode(message);
             const signature = await this.keyRingSvmBaseService.sign(
               chainId,

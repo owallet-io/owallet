@@ -338,7 +338,7 @@ export const SignSvmModal = registerModal(
             >
               <ScrollView persistentScrollbar={true}>
                 <OWText style={style.flatten(["body3"])}>
-                  {signingDataText}
+                  {JSON.stringify(signingDataText)}
                 </OWText>
               </ScrollView>
             </Box>

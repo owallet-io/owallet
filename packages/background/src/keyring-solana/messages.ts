@@ -156,7 +156,6 @@ export class RequestSignInSvm extends Message<{
 
   constructor(
     public readonly chainId: string,
-    public readonly signer: string,
     public readonly inputs: SolanaSignInInput
   ) {
     super();
@@ -166,13 +165,6 @@ export class RequestSignInSvm extends Message<{
     if (!this.chainId) {
       throw new OWalletError("keyring", 270, "chain id not set");
     }
-
-    if (!this.signer) {
-      throw new OWalletError("keyring", 230, "signer not set");
-    }
-
-    const isValid = isBase58(this.signer);
-    if (!isValid) throw new OWalletError("keyring", 230, "Invalid signer");
     if (!this.inputs) throw new OWalletError("keyring", 230, "inputs not set");
   }
 
