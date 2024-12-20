@@ -158,23 +158,18 @@ export class KeyRingSvmService {
         keyType: keyInfo.type,
         keyInsensitive: keyInfo.insensitive,
       },
-      async (res: { signingDatas: string; signature?: string }) => {
+      async (res: { signingData: string; signature?: string }) => {
         return await (async () => {
           if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
             if (!res.signature) {
               throw new Error("Frontend should provide signature");
             }
-
-            // return {
-            //     signingData: res.signingData,
-            //     signature: res.signature,
-            // };
             return;
           } else {
             const signatures: { signedTx: string; signature: string }[] = [];
 
-            for (let i = 0; i < res.signingDatas.length; i++) {
-              const tx = res.signingDatas[i];
+            for (let i = 0; i < res.signingData.length; i++) {
+              const tx = res.signingData[i];
               try {
                 const transaction = deserializeTransaction(tx);
                 const message = transaction.message.serialize();

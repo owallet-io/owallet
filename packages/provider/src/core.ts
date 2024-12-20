@@ -1774,14 +1774,6 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         txs: txStrs,
       }
     );
-
-    // const msg = new RequestSignAllTransactionSvm(
-    //     CHAIN_ID_SOL,
-    //     publicKey,
-    //     txStrs
-    // );
-    // const signatures = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-
     if (!signatures) {
       throw Error("Transaction Rejected");
     }
