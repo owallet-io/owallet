@@ -1879,6 +1879,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     commitment?: Commitment;
   }): Promise<T> {
     const publicKey = request.publicKey;
+    console.log(request, "tx core");
     const tx =
       typeof request.tx === "string"
         ? deserializeTransaction(request.tx)

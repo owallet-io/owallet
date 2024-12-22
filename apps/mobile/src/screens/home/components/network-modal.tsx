@@ -199,7 +199,7 @@ export const NetworkModal: FC<{
               <OWIcon
                 name={"tdesignblockchain"}
                 size={20}
-                // color={colors["neutral-text-title"]}
+                color={colors["neutral-text-title"]}
               />
             ) : (
               <OWIcon

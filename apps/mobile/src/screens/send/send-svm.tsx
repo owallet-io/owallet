@@ -35,6 +35,7 @@ import {
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
 import { FeeCurrency } from "@owallet/types";
+import { DenomHelper } from "@owallet/common";
 
 export const SendSvmScreen: FunctionComponent<{
   chainId: string;
@@ -87,12 +88,23 @@ export const SendSvmScreen: FunctionComponent<{
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
         try {
-          account.setIsSendingTx(true);
-          const unsignedTx = account.makeSendTokenTx({
+          // account.setIsSendingTx(true);
+          const denom = new DenomHelper(
+            sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom
+          );
+          console.log(denom, "denom");
+          const amount = DecUtils.getTenExponentN(
+            sendConfigs.amountConfig.amount[0].currency.coinDecimals
+          )
+            .mul(sendConfigs.amountConfig.amount[0].toDec())
+            .roundUp()
+            .toString();
+          const unsignedTx = await account.makeSendTokenTx({
             currency: sendConfigs.amountConfig.amount[0].currency,
-            amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
+            amount: amount,
             to: sendConfigs.recipientConfig.recipient,
           });
+          // console.log(unsignedTx,"unsignedTx");
           await account.sendTx(sender, unsignedTx, {
             onBroadcasted: (txHash) => {
               account.setIsSendingTx(false);

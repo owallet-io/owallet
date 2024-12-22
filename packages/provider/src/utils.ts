@@ -59,5 +59,5 @@ export async function confirmTransaction(
 export const isVersionedTransaction = (
   tx: Transaction | VersionedTransaction
 ): tx is VersionedTransaction => {
-  return "version" in tx;
+  return tx != null && typeof tx === "object" && "version" in tx;
 };

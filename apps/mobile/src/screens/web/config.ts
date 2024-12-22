@@ -3,7 +3,7 @@ import { ImageSourcePropType } from "react-native";
 // export const InjectedProviderUrl =
 //   process.env.INJECTED_PROVIDER_URL || 'https://static.orai.io/injected-provider-merge.bundle.js';
 export const InjectedProviderUrl =
-  "http://192.168.10.51:8080/injected-provider.bundle.js?k=1";
+  "http://10.29.40.220:8080/injected-provider.bundle.js?k=1";
 
 export type DAppInfo = {
   name: string;

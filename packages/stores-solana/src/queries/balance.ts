@@ -16,6 +16,7 @@ import {
 import { AppCurrency, ChainInfo } from "@owallet/types";
 import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
+import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 const tokenNative = "11111111111111111111111111111111";
 export class ObservableQuerySvmAccountBalanceImpl
   extends ObservableQuery<string, any>
@@ -105,7 +106,11 @@ export class ObservableQuerySvmAccountBalanceImpl
             coinGeckoId:
               coinGeckoId?.coingeckoId || item.node.tokenListEntry.coingeckoId,
             coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+            coinMinimalDenom:
+              item.node.solana?.tokenProgram ===
+              TOKEN_2022_PROGRAM_ID.toBase58()
+                ? `spl20:${item.node.tokenListEntry.address}`
+                : `spl:${item.node.tokenListEntry.address}`,
           };
         });
         // // 6. Update chain info with currencies
@@ -118,7 +123,11 @@ export class ObservableQuerySvmAccountBalanceImpl
             coinDenom: item.node.tokenListEntry.symbol,
             coinGeckoId: item.node.tokenListEntry.coingeckoId,
             coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+            coinMinimalDenom:
+              item.node.solana?.tokenProgram ===
+              TOKEN_2022_PROGRAM_ID.toBase58()
+                ? `spl20:${item.node.tokenListEntry.address}`
+                : `spl:${item.node.tokenListEntry.address}`,
           };
         });
         // // 6. Update chain info with currencies
