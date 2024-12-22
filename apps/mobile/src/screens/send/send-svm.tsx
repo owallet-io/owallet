@@ -32,6 +32,7 @@ import {
 import {
   createTransferInstruction,
   getAssociatedTokenAddress,
+  TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
 import { FeeCurrency } from "@owallet/types";
@@ -103,6 +104,7 @@ export const SendSvmScreen: FunctionComponent<{
             currency: sendConfigs.amountConfig.amount[0].currency,
             amount: amount,
             to: sendConfigs.recipientConfig.recipient,
+            memo: sendConfigs.memoConfig.memo,
           });
           // console.log(unsignedTx,"unsignedTx");
           await account.sendTx(sender, unsignedTx, {
@@ -168,25 +170,24 @@ export const SendSvmScreen: FunctionComponent<{
               lamports: BigInt(amount),
             })
           );
-          if (
-            sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom.startsWith(
-              "spl"
-            )
-          ) {
-            const mintPublicKey = new PublicKey(
-              sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom.replace(
-                "spl:",
-                ""
-              )
-            );
+          const denom = new DenomHelper(
+            sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom
+          );
+          if (denom.type.startsWith("spl")) {
+            const mintPublicKey = new PublicKey(denom.contractAddress);
+            const isToken2020 = denom.type.includes("spl20");
             // Get the associated token accounts for the sender and receiver
             const senderTokenAccount = await getAssociatedTokenAddress(
               mintPublicKey,
-              fromPublicKey
+              fromPublicKey,
+              isToken2020 ? true : undefined, // Allow Token2022
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
             );
             const receiverTokenAccount = await getAssociatedTokenAddress(
               mintPublicKey,
-              toPublicKey
+              toPublicKey,
+              isToken2020 ? true : undefined, // Allow Token2022
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
             );
 
             // Create SPL token transfer instruction
@@ -194,7 +195,9 @@ export const SendSvmScreen: FunctionComponent<{
               senderTokenAccount, // Sender's token account
               receiverTokenAccount, // Receiver's token account
               fromPublicKey, // Payer's public key
-              BigInt(amount) // Amount to transfer (raw amount, not adjusted for decimals)
+              BigInt(amount),
+              undefined, // Amount to transfer (raw amount, not adjusted for decimals)
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
             );
 
             // Create a transaction
@@ -300,7 +303,7 @@ export const SendSvmScreen: FunctionComponent<{
             <OWCard
               type="normal"
               style={[
-                // isRecipientError ? styles.errorBorder : null,
+                // isRecipientError ? styles.errorBorder : undefined,
                 {
                   backgroundColor: colors["neutral-surface-card"],
                 },

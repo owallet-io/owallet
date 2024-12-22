@@ -19,6 +19,7 @@ import {
 import { simpleFetch } from "@owallet/simple-fetch";
 import {
   createAssociatedTokenAccountInstruction,
+  createTransferCheckedInstruction,
   createTransferInstruction,
   getAssociatedTokenAddress,
   TOKEN_2022_PROGRAM_ID,
@@ -36,6 +37,7 @@ import {
 import { encode, decode } from "bs58";
 import { confirmTransaction } from "@owallet/provider";
 import { Dec } from "@owallet/unit";
+import { createMemoInstruction } from "@solana/spl-memo";
 
 // import { ListSvmScan } from "@owallet/types";
 
@@ -170,10 +172,12 @@ export class SvmAccountBase {
     currency,
     amount,
     to,
+    memo,
   }: {
     currency: AppCurrency;
     amount: string;
     to: string;
+    memo: string;
   }): Promise<Transaction> {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const isSvm = chainInfo.features.includes("svm");
@@ -195,21 +199,19 @@ export class SvmAccountBase {
     );
     if (denomHelper.type.includes("spl")) {
       const isToken2020 = denomHelper.type.includes("spl20");
-      const tokenMintAddress = new PublicKey(
-        denomHelper.contractAddress.replace("spl:", "")
-      );
+      const tokenMintAddress = new PublicKey(denomHelper.contractAddress);
       const senderTokenAccount = await getAssociatedTokenAddress(
         tokenMintAddress, // Token mint
         senderPublicKey, // Owner of the sender account
-        isToken2020 ? true : null, // Allow Token2022
-        isToken2020 ? TOKEN_2022_PROGRAM_ID : null // Token2022 Program ID
+        isToken2020 ? true : undefined, // Allow Token2022
+        isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
       );
 
       const recipientTokenAccount = await getAssociatedTokenAddress(
         tokenMintAddress, // Token mint
         recipientPublicKey, // Owner of the recipient account
-        isToken2020 ? true : null, // Allow Token2022
-        isToken2020 ? TOKEN_2022_PROGRAM_ID : null // Token2022 Program ID
+        isToken2020 ? true : undefined, // Allow Token2022
+        isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
       );
       transaction = new Transaction(); // Check if sender's token account exists (not usually required since sender owns the token)
       const senderAccountInfo = await connection.getAccountInfo(
@@ -222,7 +224,7 @@ export class SvmAccountBase {
             senderTokenAccount, // Associated token account to create
             senderPublicKey, // Owner of the account
             tokenMintAddress, // Token mint
-            isToken2020 ? TOKEN_2022_PROGRAM_ID : null // Token2022 Program ID
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
           )
         );
       }
@@ -238,20 +240,25 @@ export class SvmAccountBase {
             recipientTokenAccount, // Associated token account to create
             recipientPublicKey, // Owner of the account
             tokenMintAddress, // Token mint
-            isToken2020 ? TOKEN_2022_PROGRAM_ID : null // Token2022 Program ID
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
           )
         );
       }
       transaction.add(
-        createTransferInstruction(
+        createTransferCheckedInstruction(
           senderTokenAccount, // Source token account
+          tokenMintAddress,
           recipientTokenAccount, // Destination token account
           senderPublicKey, // Owner of the source account
           BigInt(amount), // Amount to transfer
-          [], // Multi-signers (if any)
-          isToken2020 ? TOKEN_2022_PROGRAM_ID : null // Token2022 Program ID
+          currency.coinDecimals,
+          undefined, // Multi-signers (if any)
+          isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
         )
       );
+    }
+    if (memo) {
+      transaction.add(createMemoInstruction(memo));
     }
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
@@ -333,34 +340,8 @@ export class SvmAccountBase {
         onTxEvents.onBroadcasted(signature);
       }
       await confirmTransaction(connection, signature, "confirmed");
+
       return signature;
-      // retry(
-      //     () => {
-      //         return new Promise<void>(async (resolve, reject) => {
-      //             const {status, data} = await simpleFetch<ListSvmScan>(
-      //                 `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${this.addressDisplay}`
-      //             );
-      //             if (data && status === 200) {
-      //                 if (!data.data?.list) return;
-      //                 for (const itemList of data.data?.list) {
-      //                     if (!itemList?.txHash) return;
-      //                     if (itemList?.txHash === txHash && itemList.status) {
-      //                         onTxEvents?.onFulfill?.(itemList);
-      //                         resolve();
-      //                     }
-      //                 }
-      //             }
-      //             reject();
-      //         });
-      //     },
-      //     {
-      //         maxRetries: 10,
-      //         waitMsAfterError: 500,
-      //         maxWaitMsAfterError: 4000,
-      //     }
-      // );
-      //
-      // return txHash;
     } catch (e) {
       if (onTxEvents?.onBroadcastFailed) {
         onTxEvents.onBroadcastFailed(e);

@@ -42,7 +42,7 @@ export class ObservableQuerySvmAccountBalanceImpl
   @computed
   get balance(): CoinPretty {
     const currency = this.currency;
-    const denom = this.denomHelper.denom.replace("spl:", "");
+    const contractAddress = this.denomHelper.contractAddress;
     if (!this.response || !this.response.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
@@ -51,10 +51,10 @@ export class ObservableQuerySvmAccountBalanceImpl
     if (!tokenInfos?.length) return;
 
     const token = tokenInfos.find((item, index) => {
-      if (denom === "sol") {
+      if (!contractAddress) {
         return item.node.token === tokenNative;
       }
-      return item.node.token === denom;
+      return item.node.token === contractAddress;
     });
     if (!token) {
       return new CoinPretty(currency, new Int(0)).ready(false);
