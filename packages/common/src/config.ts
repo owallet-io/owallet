@@ -144,6 +144,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
             "https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2",
         },
         {
+          coinDenom: "RACKS",
+          coinGeckoId: "black-rack",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraigyiRnYoCgFiaLnpiaPvJjZbs5zzmWHp4sxBgZq3",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://ipfs.io/ipfs/QmVRPsBSHpamDzcDzVL9wsbB9gr4frtNrrFF7g44Xa9FuS",
+        },
+        {
           coinDenom: "TON",
           coinMinimalDenom:
             "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/ton",
