@@ -87,7 +87,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         continue;
       }
       const queries = queriesStore.get(chainInfo.chainId);
-      const queryBalance = queries.queryBalances.getQueryBech32Address(
+      const queryBalance = queries.queryBalances.getQueryByAddress(
         account.addressDisplay
       );
       const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(

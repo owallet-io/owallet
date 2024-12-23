@@ -183,6 +183,7 @@ import { useStore } from "../../stores";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useStyle } from "../../styles";
 import {
+  InsufficientFeeError,
   useAmountConfig,
   useFeeConfig,
   useGasConfig,
@@ -190,10 +191,10 @@ import {
   useTxConfigsValidate,
 } from "@owallet/hooks";
 import { Column, Columns } from "../../components/column";
-import { Text } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { Gutter } from "../../components/gutter";
 import { Box } from "../../components/box";
-import { XAxis } from "../../components/axis";
+import { XAxis, YAxis } from "../../components/axis";
 import { CloseIcon } from "../../components/icon";
 import {
   ScrollView,
@@ -216,18 +217,23 @@ import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
 import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { Connection } from "@solana/web3.js";
-import { deserializeTransaction } from "@owallet/common";
+import { deserializeTransaction, getSimulationTxSolana } from "@owallet/common";
+import { defaultProtoCodec } from "@owallet/cosmos";
+import { MessageItem } from "@src/modals/sign/cosmos/message-item";
+import { HighFeeWarning } from "@src/modals/sign/components/high-fee-warning";
+import ItemDivided from "@screens/transactions/components/item-divided";
+import { GuideBox } from "@components/guide-box";
 
 export const SignSvmModal = registerModal(
   observer<{
     interactionData: NonNullable<SignSvmInteractionStore["waitingData"]>;
   }>(({ interactionData }) => {
     const { chainStore, signSvmInteractionStore, queriesStore } = useStore();
-
+    const [simulationData, setSimulationData] = useState();
     const intl = useIntl();
     const style = useStyle();
 
-    const [isViewData, setIsViewData] = useState(true);
+    const [isViewData, setIsViewData] = useState(false);
 
     const chainId = interactionData.data.chainId;
     const chainInfo = chainStore.getChain(chainId);
@@ -330,14 +336,16 @@ export const SignSvmModal = registerModal(
                 },
               ];
               feeConfig.setManualFee(fee);
-              // const result = await getSimulationTxSolana(
-              //     [(data.data.data as any)?.tx],
-              //     chainInfo.chainId.replace("solana:", ""),
-              //     accountInfo.base58Address,
-              //     data.data.msgOrigin
-              // );
+              const result = await getSimulationTxSolana(
+                [data.message as string],
+                chainInfo.chainId.replace("solana:", ""),
+                data.signer,
+                data.origin
+              );
+              console.log(result, "result");
               // if (!result.simulation) return;
-              // setSimulationData(result.simulation);
+
+              setSimulationData(result);
             })();
           } catch (e) {
             console.log(e, "errr deserializeTransaction");
@@ -345,6 +353,8 @@ export const SignSvmModal = registerModal(
         }
       }
     }, [interactionData.data]);
+    console.log(simulationData, "simulationData");
+    const hasError = simulationData?.status === "ERROR";
     return (
       <WrapViewModal
         title={intl.formatMessage({
@@ -369,7 +379,8 @@ export const SignSvmModal = registerModal(
 
           <Gutter size={8} />
 
-          {isViewData ? (
+          {isViewData ||
+          interactionData.data.signType !== "sign-transaction" ? (
             <Box
               maxHeight={128}
               backgroundColor={colors["neutral-surface-bg"]}
@@ -390,16 +401,78 @@ export const SignSvmModal = registerModal(
               backgroundColor={colors["neutral-surface-bg"]}
               borderRadius={6}
             >
-              {
-                //@ts-ignore
-                defaultRegistry.render(
-                  interactionData.data.chainId,
-                  interactionData.data.message
-                  // JSON.parse(
-                  //   Buffer.from(interactionData.data.message).toString()
-                  // ) as UnsignedOasisTransaction
-                ).content
-              }
+              <ScrollView persistentScrollbar={true}>
+                {!simulationData &&
+                interactionData.data.signType === "sign-transaction" ? (
+                  <OWText>Simulating...</OWText>
+                ) : null}
+                {/*{simulationData?.status === "ERROR"?}*/}
+                {hasError ? (
+                  <Box width="100%">
+                    {/*<Gutter size={16} />*/}
+                    <OWText weight={"600"} color={colors["error-text-action"]}>
+                      Simulation Failed:
+                    </OWText>
+                    <Gutter size={2} />
+                    <OWText color={colors["neutral-text-body"]}>
+                      {simulationData?.error_details?.message || ""}
+                    </OWText>
+                  </Box>
+                ) : null}
+                {simulationData?.status === "SUCCESS" &&
+                  simulationData?.result?.simulation?.account_summary?.account_assets_diff.map(
+                    (item) => {
+                      return (
+                        <>
+                          <Box
+                            alignY={"center"}
+                            style={{
+                              justifyContent: "space-between",
+                              flexDirection: "row",
+                            }}
+                          >
+                            <OWText
+                              weight={"600"}
+                              color={
+                                item.out
+                                  ? colors["error-text-action"]
+                                  : item.in
+                                  ? colors["success-text-action"]
+                                  : null
+                              }
+                            >
+                              {item.out ? "Send" : "Receive"}
+                            </OWText>
+
+                            <YAxis alignX={"right"}>
+                              <OWText
+                                weight={"600"}
+                                color={
+                                  item.out
+                                    ? colors["error-text-action"]
+                                    : item.in
+                                    ? colors["success-text-action"]
+                                    : null
+                                }
+                              >
+                                {`${(item.out || item.in).value} ${
+                                  item.asset.symbol || "SOL"
+                                }`}
+                              </OWText>
+                              <OWText color={colors["neutral-text-body"]}>
+                                ≈ $
+                                {((item.out || item.in).usd_price || 0).toFixed(
+                                  2
+                                )}
+                              </OWText>
+                            </YAxis>
+                          </Box>
+                          <ItemDivided />
+                        </>
+                      );
+                    }
+                  )}
+              </ScrollView>
             </Box>
           )}
 
@@ -475,5 +548,16 @@ export const ViewDataButton: FunctionComponent<{
         )}
       </XAxis>
     </TouchableWithoutFeedback>
+  );
+};
+const Divider = () => {
+  const style = useStyle();
+  const { colors } = useTheme();
+  return (
+    <Box
+      height={1}
+      marginX={12}
+      backgroundColor={colors["neutral-border-default"]}
+    />
   );
 };

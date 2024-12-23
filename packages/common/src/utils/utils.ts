@@ -110,9 +110,9 @@ export async function getSimulationTxSolana(
       }
     );
 
-    const json = await resp.json();
-    if (json?.status !== "SUCCESS") return;
-    return json.result;
+    return await resp.json();
+    // if (json?.status !== "SUCCESS") return;
+    // return json;
   } catch (e) {
     console.log(e, "errr fetch data");
   }

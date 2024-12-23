@@ -85,11 +85,10 @@ export const SendSvmScreen: FunctionComponent<{
     const txConfigsValidate = useTxConfigsValidate({
       ...sendConfigs,
     });
-
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
         try {
-          // account.setIsSendingTx(true);
+          account.setIsSendingTx(true);
           const denom = new DenomHelper(
             sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom
           );
