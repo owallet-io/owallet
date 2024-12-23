@@ -441,7 +441,7 @@ export const LinkStakeView: FunctionComponent = observer(() => {
         paddingTop: 8,
       }}
     >
-      <div className={styleStake.vertical}>{renderAPR()}</div>
+      {/*<div className={styleStake.vertical}>{renderAPR()}</div>*/}
       <div style={{ flex: 1 }} />
       <div
         onClick={(e) => {

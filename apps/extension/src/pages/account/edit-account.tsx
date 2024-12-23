@@ -91,7 +91,8 @@ export const EditAccountPage = observer(() => {
         )}
         {wallet?.type !== "ledger" &&
           !chainStore.isAllNetwork &&
-          chainStore.current.chainId !== ChainIdEnum.Oasis && (
+          chainStore.current.chainId !== ChainIdEnum.Oasis &&
+          !chainStore.current.chainId.startsWith("solana") && (
             <div onClick={onShowPrivKey} className={styles.actionItem}>
               <span className={styles.leftTitle}>Reveal Private Key</span>
               <div className={styles.blockRight}>

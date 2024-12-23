@@ -7,6 +7,7 @@ import {
   signerFromPrivateKey,
   splitPathStringToHDPath,
   typeBtcLedgerByAddress,
+  DenomHelper,
 } from "@owallet/common";
 import * as BytesUtils from "@ethersproject/bytes";
 import { keccak256 } from "@ethersproject/keccak256";
@@ -100,9 +101,12 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import {
+  createAssociatedTokenAccountInstruction,
+  createTransferCheckedInstruction,
   createTransferInstruction,
   getAssociatedTokenAddress,
   getOrCreateAssociatedTokenAccount,
+  TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
 import { encode, decode } from "bs58";
@@ -1289,6 +1293,7 @@ export class KeyRing {
     const { amount, currency, recipient, memo } = JSON.parse(unsignedTx);
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     const sender = Mnemonic.generateWalletSolanaFromSeed(this.mnemonic);
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
     const connection = new Connection(chainInfo.rpc, "confirmed");
     // Recipient's public key
     const toPubkey = new PublicKey(recipient);
@@ -1299,30 +1304,63 @@ export class KeyRing {
         lamports: BigInt(amount), // 0.1 SOL in lamports
       })
     );
-    if (currency.coinMinimalDenom.startsWith("spl")) {
-      const denom = currency.coinMinimalDenom.replace("spl:", "");
-      const mintPublicKey = new PublicKey(denom);
-      // Get the associated token accounts for the sender and receiver
-      const senderTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        sender,
-        mintPublicKey,
-        sender.publicKey
-      );
-      const receiverTokenAccount = await getOrCreateAssociatedTokenAccount(
-        connection,
-        sender,
-        mintPublicKey,
-        toPubkey
+    if (denomHelper.type.includes("spl")) {
+      const isToken2020 = denomHelper.type.includes("spl20");
+      const tokenMintAddress = new PublicKey(denomHelper.contractAddress);
+      const senderTokenAccount = await getAssociatedTokenAddress(
+        tokenMintAddress, // Token mint
+        sender.publicKey, // Owner of the sender account
+        isToken2020 ? true : undefined, // Allow Token2022
+        isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
       );
 
-      // Create SPL token transfer instruction
-      transaction = new Transaction().add(
-        createTransferInstruction(
-          senderTokenAccount.address,
-          receiverTokenAccount.address,
-          sender.publicKey,
-          BigInt(amount)
+      const recipientTokenAccount = await getAssociatedTokenAddress(
+        tokenMintAddress, // Token mint
+        toPubkey, // Owner of the recipient account
+        isToken2020 ? true : undefined, // Allow Token2022
+        isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+      );
+      transaction = new Transaction(); // Check if sender's token account exists (not usually required since sender owns the token)
+      const senderAccountInfo = await connection.getAccountInfo(
+        senderTokenAccount
+      );
+      if (!senderAccountInfo) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            sender.publicKey, // Payer
+            senderTokenAccount, // Associated token account to create
+            sender.publicKey, // Owner of the account
+            tokenMintAddress, // Token mint
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+          )
+        );
+      }
+
+      // Check if recipient's token account exists
+      const recipientAccountInfo = await connection.getAccountInfo(
+        recipientTokenAccount
+      );
+      if (!recipientAccountInfo) {
+        transaction.add(
+          createAssociatedTokenAccountInstruction(
+            sender.publicKey, // Payer
+            recipientTokenAccount, // Associated token account to create
+            toPubkey, // Owner of the account
+            tokenMintAddress, // Token mint
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+          )
+        );
+      }
+      transaction.add(
+        createTransferCheckedInstruction(
+          senderTokenAccount, // Source token account
+          tokenMintAddress,
+          recipientTokenAccount, // Destination token account
+          sender.publicKey, // Owner of the source account
+          BigInt(amount), // Amount to transfer
+          currency.coinDecimals,
+          undefined, // Multi-signers (if any)
+          isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
         )
       );
     }

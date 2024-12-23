@@ -21,6 +21,7 @@ import {
 } from "../../balances";
 import { QuerySharedContext } from "src/common/query/context";
 import { ObservableEvmChainJsonRpcQuery } from "../../evm-contract/evm-chain-json-rpc";
+import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 
 const tokenNative = "11111111111111111111111111111111";
 
@@ -68,7 +69,8 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
   @computed
   get balance(): CoinPretty {
     const currency = this.currency;
-    const denom = this.denomHelper.denom.replace("spl:", "");
+    // const denom = this.denomHelper.denom.replace("spl:", "");
+    const contractAddress = this.denomHelper.contractAddress;
     if (!this.nativeBalances.response || !this.response.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
@@ -77,10 +79,10 @@ export class ObservableQueryBalanceNative extends ObservableQueryBalanceInner {
     if (!tokenInfos?.length) return;
 
     const token = tokenInfos.find((item, index) => {
-      if (denom === "sol") {
+      if (!contractAddress) {
         return item.node.token === tokenNative;
       }
-      return item.node.token === denom;
+      return item.node.token === contractAddress;
     });
     if (!token) {
       return new CoinPretty(currency, new Int(0)).ready(false);
@@ -149,7 +151,11 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
             coinGeckoId:
               coinGeckoId?.coingeckoId || item.node.tokenListEntry.coingeckoId,
             coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+            coinMinimalDenom:
+              item.node.solana?.tokenProgram ===
+              TOKEN_2022_PROGRAM_ID.toBase58()
+                ? `spl20:${item.node.tokenListEntry.address}`
+                : `spl:${item.node.tokenListEntry.address}`,
           };
         });
         // // 6. Update chain info with currencies
@@ -162,7 +168,11 @@ export class ObservableQuerySvmBalances extends ObservableEvmChainJsonRpcQuery<s
             coinDenom: item.node.tokenListEntry.symbol,
             coinGeckoId: item.node.tokenListEntry.coingeckoId,
             coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom: `spl:${item.node.tokenListEntry.address}`,
+            coinMinimalDenom:
+              item.node.solana?.tokenProgram ===
+              TOKEN_2022_PROGRAM_ID.toBase58()
+                ? `spl20:${item.node.tokenListEntry.address}`
+                : `spl:${item.node.tokenListEntry.address}`,
           };
         });
         // // 6. Update chain info with currencies

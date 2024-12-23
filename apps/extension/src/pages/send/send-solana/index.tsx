@@ -16,6 +16,7 @@ import { useSendTxConfig } from "@owallet/hooks";
 import { fitPopupWindow } from "@owallet/popup";
 import {
   _getPriorityFeeSolana,
+  DenomHelper,
   EthereumEndpoint,
   useLanguage,
 } from "@owallet/common";
@@ -45,6 +46,7 @@ import { CoinPrimitive } from "@owallet/stores";
 import {
   createTransferInstruction,
   getAssociatedTokenAddress,
+  TOKEN_2022_PROGRAM_ID,
 } from "@solana/spl-token";
 
 export const SendSolanaPage: FunctionComponent<{
@@ -182,25 +184,24 @@ export const SendSolanaPage: FunctionComponent<{
             lamports: BigInt(amount),
           })
         );
-        if (
-          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-            "spl"
-          )
-        ) {
-          const mintPublicKey = new PublicKey(
-            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.replace(
-              "spl:",
-              ""
-            )
-          );
+        const denom = new DenomHelper(
+          sendConfigs.amountConfig.sendCurrency.coinMinimalDenom
+        );
+        if (denom.type.startsWith("spl")) {
+          const mintPublicKey = new PublicKey(denom.contractAddress);
+          const isToken2020 = denom.type.includes("spl20");
           // Get the associated token accounts for the sender and receiver
           const senderTokenAccount = await getAssociatedTokenAddress(
             mintPublicKey,
-            fromPublicKey
+            fromPublicKey,
+            isToken2020 ? true : undefined, // Allow Token2022
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
           );
           const receiverTokenAccount = await getAssociatedTokenAddress(
             mintPublicKey,
-            toPublicKey
+            toPublicKey,
+            isToken2020 ? true : undefined, // Allow Token2022
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
           );
 
           // Create SPL token transfer instruction
@@ -208,7 +209,9 @@ export const SendSolanaPage: FunctionComponent<{
             senderTokenAccount, // Sender's token account
             receiverTokenAccount, // Receiver's token account
             fromPublicKey, // Payer's public key
-            BigInt(amount) // Amount to transfer (raw amount, not adjusted for decimals)
+            BigInt(amount),
+            undefined, // Amount to transfer (raw amount, not adjusted for decimals)
+            isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
           );
 
           // Create a transaction
