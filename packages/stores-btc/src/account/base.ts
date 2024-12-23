@@ -94,7 +94,6 @@ export class BtcAccountBase {
     yield this.sharedContext.getKey(this.chainId, (res) => {
       if (res.status === "fulfilled") {
         const key = res.value;
-        console.log(key, "key btc");
         this._bech32Address = key.bech32Address;
         this._ethereumHexAddress = key.ethereumHexAddress;
         this._isNanoLedger = key.isNanoLedger;

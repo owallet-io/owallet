@@ -3,6 +3,7 @@ import { StyleSheet, ViewProps } from "react-native";
 import { useStyle } from "../../styles";
 import { PageWithView } from "./view";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { isAndroid } from "@common/constants";
 
 export const PageWithViewInBottomTabView: FunctionComponent<ViewProps> = (
   props
@@ -19,7 +20,9 @@ export const PageWithViewInBottomTabView: FunctionComponent<ViewProps> = (
       style={StyleSheet.flatten([
         style.flatten(["flex-1"]),
         {
-          marginBottom: bottomTabBarHeight + 16,
+          marginBottom: isAndroid
+            ? bottomTabBarHeight
+            : bottomTabBarHeight + 16,
         },
         propStyle,
       ])}
