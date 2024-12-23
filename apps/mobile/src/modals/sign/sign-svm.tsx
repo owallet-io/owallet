@@ -215,6 +215,8 @@ import { TransactionType } from "@owallet/types";
 import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
 import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { Connection } from "@solana/web3.js";
+import { deserializeTransaction } from "@owallet/common";
 
 export const SignSvmModal = registerModal(
   observer<{
@@ -305,6 +307,44 @@ export const SignSvmModal = registerModal(
       }
     };
     const { colors } = useTheme();
+    useEffect(() => {
+      if (interactionData.data) {
+        const data = interactionData.data;
+
+        if (data?.message) {
+          try {
+            const connection = new Connection(chainInfo.rpc, "confirmed");
+            const transferInstruction = deserializeTransaction(
+              data?.message as string
+            ).message as any;
+            (async () => {
+              const feeInLamports = await connection.getFeeForMessage(
+                transferInstruction
+              );
+              if (!feeInLamports?.value) return;
+              const baseFee = new Dec(feeInLamports.value || 0);
+              const fee = [
+                {
+                  amount: baseFee.roundUp().toString(),
+                  currency: feeConfig.chainInfo.feeCurrencies[0],
+                },
+              ];
+              feeConfig.setManualFee(fee);
+              // const result = await getSimulationTxSolana(
+              //     [(data.data.data as any)?.tx],
+              //     chainInfo.chainId.replace("solana:", ""),
+              //     accountInfo.base58Address,
+              //     data.data.msgOrigin
+              // );
+              // if (!result.simulation) return;
+              // setSimulationData(result.simulation);
+            })();
+          } catch (e) {
+            console.log(e, "errr deserializeTransaction");
+          }
+        }
+      }
+    }, [interactionData.data]);
     return (
       <WrapViewModal
         title={intl.formatMessage({
@@ -364,9 +404,9 @@ export const SignSvmModal = registerModal(
           )}
 
           {/*<Gutter size={60} />*/}
-          {interactionData.isInternal && (
-            <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />
-          )}
+          {/*{interactionData.isInternal && (*/}
+          <FeeSummary feeConfig={feeConfig} gasConfig={gasConfig} />
+          {/*)}*/}
 
           <Gutter size={12} />
 
