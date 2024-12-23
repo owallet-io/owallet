@@ -1632,55 +1632,55 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
     },
   },
-  {
-    rpc: "https://testnet.sapphire.oasis.io",
-    rest: "https://testnet.sapphire.oasis.io",
-    grpc: "https://grpc.oasis.dev",
-    chainId: "0x5aff",
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-    chainName: "Oasis Sapphire Testnet",
-    bip44: {
-      coinType: 60,
-    },
-    coinType: 60,
-    stakeCurrency: {
-      coinDenom: "ROSE",
-      coinMinimalDenom: "rose",
-      coinDecimals: 18,
-      coinGeckoId: "oasis-network",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-      gasPriceStep: {
-        low: 1,
-        average: 1.25,
-        high: 1.5,
-      },
-    },
-    bech32Config: Bech32Address.defaultBech32Config("evmos"),
-    networkType: "evm",
-    currencies: [
-      {
-        coinDenom: "ROSE",
-        coinMinimalDenom: "rose",
-        coinDecimals: 18,
-        coinGeckoId: "oasis-network",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-
-    features: ["ibc-go", "stargate", "isEvm"],
-    txExplorer: {
-      name: "Oasis Saphire Scan",
-      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
-      accountUrl:
-        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
-    },
-  },
+  // {
+  //   rpc: "https://testnet.sapphire.oasis.io",
+  //   rest: "https://testnet.sapphire.oasis.io",
+  //   grpc: "https://grpc.oasis.dev",
+  //   chainId: "0x5aff",
+  //   chainSymbolImageUrl:
+  //     "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   chainName: "Oasis Sapphire Testnet",
+  //   bip44: {
+  //     coinType: 60,
+  //   },
+  //   coinType: 60,
+  //   stakeCurrency: {
+  //     coinDenom: "ROSE",
+  //     coinMinimalDenom: "rose",
+  //     coinDecimals: 18,
+  //     coinGeckoId: "oasis-network",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //     gasPriceStep: {
+  //       low: 1,
+  //       average: 1.25,
+  //       high: 1.5,
+  //     },
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("evmos"),
+  //   networkType: "evm",
+  //   currencies: [
+  //     {
+  //       coinDenom: "ROSE",
+  //       coinMinimalDenom: "rose",
+  //       coinDecimals: 18,
+  //       coinGeckoId: "oasis-network",
+  //       coinImageUrl:
+  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //
+  //   features: ["ibc-go", "stargate", "isEvm"],
+  //   txExplorer: {
+  //     name: "Oasis Saphire Scan",
+  //     txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+  //     accountUrl:
+  //       "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+  //   },
+  // },
   {
     rpc: "https://rpc-neutron.keplr.app",
     rest: "https://lcd-neutron.keplr.app",
@@ -1783,123 +1783,123 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: "https://nms1.neutaro.tech/account/{address}",
     },
   },
-  {
-    rpc: "https://testnet-rpc.orai.io",
-    rest: "https://testnet-lcd.orai.io",
-    chainId: "Oraichain-testnet",
-    chainName: "Oraichain-testnet",
-    networkType: "cosmos",
-    stakeCurrency: {
-      coinDenom: "ORAI",
-      coinMinimalDenom: "orai",
-      coinDecimals: 6,
-      coinGeckoId: "oraichain-token",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-      gasPriceStep: {
-        low: 0.003,
-        average: 0.005,
-        high: 0.007,
-      },
-    },
-    bip44: {
-      coinType: 118,
-    },
-    coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config("orai"),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          type: "cw20",
-          coinDenom: "AIRI",
-          coinMinimalDenom:
-            "cw20:orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2:aiRight Token",
-          contractAddress: "orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2",
-          coinDecimals: 6,
-          coinGeckoId: "airight",
-          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
-        },
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "cosmwasm"],
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    txExplorer: {
-      name: "Oraiscan",
-      txUrl: "https://testnet.scan.orai.io/txs/{txHash}",
-      accountUrl: "https://testnet.scan.orai.io/account/{address}",
-    },
-    // beta: true // use v1beta1
-  },
+  // {
+  //   rpc: "https://testnet-rpc.orai.io",
+  //   rest: "https://testnet-lcd.orai.io",
+  //   chainId: "Oraichain-testnet",
+  //   chainName: "Oraichain-testnet",
+  //   networkType: "cosmos",
+  //   stakeCurrency: {
+  //     coinDenom: "ORAI",
+  //     coinMinimalDenom: "orai",
+  //     coinDecimals: 6,
+  //     coinGeckoId: "oraichain-token",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+  //     gasPriceStep: {
+  //       low: 0.003,
+  //       average: 0.005,
+  //       high: 0.007,
+  //     },
+  //   },
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   coinType: 118,
+  //   bech32Config: Bech32Address.defaultBech32Config("orai"),
+  //   get currencies() {
+  //     return [
+  //       this.stakeCurrency,
+  //       {
+  //         type: "cw20",
+  //         coinDenom: "AIRI",
+  //         coinMinimalDenom:
+  //           "cw20:orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2:aiRight Token",
+  //         contractAddress: "orai1gwe4q8gme54wdk0gcrtsh4ykwvd7l9n3dxxas2",
+  //         coinDecimals: 6,
+  //         coinGeckoId: "airight",
+  //         coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
+  //       },
+  //     ];
+  //   },
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //   features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "cosmwasm"],
+  //   chainSymbolImageUrl:
+  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+  //   txExplorer: {
+  //     name: "Oraiscan",
+  //     txUrl: "https://testnet.scan.orai.io/txs/{txHash}",
+  //     accountUrl: "https://testnet.scan.orai.io/account/{address}",
+  //   },
+  //   // beta: true // use v1beta1
+  // },
 
-  {
-    rest: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-    rpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-    chainId: "0x61",
-    chainName: "BNB Chain Testnet",
-    bip44: {
-      coinType: 60,
-    },
-    coinType: 60,
-    stakeCurrency: {
-      coinDenom: "BNB",
-      coinMinimalDenom: "bnb",
-      coinDecimals: 18,
-      coinGeckoId: "binancecoin",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-      gasPriceStep: {
-        low: 1,
-        average: 1.25,
-        high: 1.5,
-      },
-    },
-    bech32Config: Bech32Address.defaultBech32Config("evmos"),
-    networkType: "evm",
-    get currencies() {
-      return [
-        {
-          coinDenom: "BNB",
-          coinMinimalDenom: "bnb",
-          coinDecimals: 18,
-          coinGeckoId: "binancecoin",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-        },
-        {
-          coinDenom: "ORAI",
-          coinMinimalDenom:
-            "erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token",
-          coinDecimals: 18,
-          coinGeckoId: "oraichain-token",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-        },
-        {
-          coinDenom: "AIRI",
-          coinMinimalDenom:
-            "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token",
-          coinDecimals: 18,
-          coinGeckoId: "airight",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
-        },
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    features: ["isEvm"],
-    txExplorer: {
-      name: "Bsc Scan Testnet",
-      txUrl: "https://testnet.bscscan.com/tx/{txHash}",
-      accountUrl: "https://testnet.bscscan.com/address/{address}",
-    },
-  },
+  // {
+  //   rest: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+  //   rpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+  //   chainId: "0x61",
+  //   chainName: "BNB Chain Testnet",
+  //   bip44: {
+  //     coinType: 60,
+  //   },
+  //   coinType: 60,
+  //   stakeCurrency: {
+  //     coinDenom: "BNB",
+  //     coinMinimalDenom: "bnb",
+  //     coinDecimals: 18,
+  //     coinGeckoId: "binancecoin",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+  //     gasPriceStep: {
+  //       low: 1,
+  //       average: 1.25,
+  //       high: 1.5,
+  //     },
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("evmos"),
+  //   networkType: "evm",
+  //   get currencies() {
+  //     return [
+  //       {
+  //         coinDenom: "BNB",
+  //         coinMinimalDenom: "bnb",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "binancecoin",
+  //         coinImageUrl:
+  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+  //       },
+  //       {
+  //         coinDenom: "ORAI",
+  //         coinMinimalDenom:
+  //           "erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "oraichain-token",
+  //         coinImageUrl:
+  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+  //       },
+  //       {
+  //         coinDenom: "AIRI",
+  //         coinMinimalDenom:
+  //           "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token",
+  //         coinDecimals: 18,
+  //         coinGeckoId: "airight",
+  //         coinImageUrl:
+  //           "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
+  //       },
+  //     ];
+  //   },
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //   features: ["isEvm"],
+  //   txExplorer: {
+  //     name: "Bsc Scan Testnet",
+  //     txUrl: "https://testnet.bscscan.com/tx/{txHash}",
+  //     accountUrl: "https://testnet.bscscan.com/address/{address}",
+  //   },
+  // },
   {
     rpc: "https://rpc-juno.keplr.app",
     rest: "https://lcd-juno.keplr.app",
