@@ -41,13 +41,9 @@ export const TextInput = forwardRef<
           error={error}
           disabled={props.disabled}
           errorBorder={props.errorBorder}
+          borderRadius={style.borderRadius}
         >
           <Columns sum={1}>
-            {/*
-               left, right props이 변했을때 컴포넌트 자체의 구조가 바뀌면서 text input이 re-render되서 focus를 잃을 수 있다
-               이 문제 때문에 컴포넌트의 render 구조를 유지하기 위해서 MockBox를 사용한다.
-               쓸데없어 보이지만 중요한 친구임.
-             */}
             <MockBox show={!!left}>
               <Box alignY="center" marginLeft="1rem">
                 <Styles.Icon>
@@ -63,6 +59,7 @@ export const TextInput = forwardRef<
                 paragraph={paragraph}
                 error={error}
                 ref={ref}
+                height={style.height}
               />
             </Column>
 

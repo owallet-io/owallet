@@ -538,8 +538,8 @@
   "page.main.chart.staked": "Total Staked",
   "page.main.chart.stake-with-keplr-dashboard-button": "Stake with OWallet Dashboard",
   "page.main.chart.manage-portfolio-in-keplr-dashboard": "Manage Portfolio in OWallet Dashboard",
-  "page.main.search-placeholder": "Search for asset or chain (i.e. ATOM, Cosmos)",
-  "page.main.available.available-balance-title": "Available Balance",
+  "page.main.search-placeholder": "Search for tokens",
+  "page.main.available.available-balance-title": "Available Tokens",
   "page.main.available.available-balance-tooltip": "The amount of your assets that are available for use or transfer immediately, except for those that are currently staked or locked in LP pools.",
   "page.main.available.hide-low-balance": "Hide Dust",
   "page.main.available.search-empty-view-title": "Oops!",
@@ -659,7 +659,7 @@
   "components.address-book-modal.my-account-tab.input.search.placeholder": "Search wallet name or address",
 
   "components.collapsible-list.view-more-tokens": "View {remain} more tokens",
-  "components.collapsible-list.collapse": "Collapse",
+  "components.collapsible-list.collapse": "View less",
   "components.collapsible-list.view-more": "View {remain} more",
 
   "button.confirm": "Confirm",

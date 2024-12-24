@@ -5,7 +5,6 @@ import { TextInput } from "../text-input";
 import { ColorPalette } from "../../../styles";
 import { useTheme } from "styled-components";
 
-// 사실 딱히 기능은 없는데 약간의 데코레이션이 들어가 있어서 그냥 따로 뺌
 // eslint-disable-next-line react/display-name
 export const SearchTextInput = forwardRef<
   HTMLInputElement,
@@ -17,6 +16,10 @@ export const SearchTextInput = forwardRef<
     <TextInput
       {...props}
       ref={ref}
+      style={{
+        borderRadius: "25rem",
+        height: "2rem",
+      }}
       left={
         <Box
           style={{

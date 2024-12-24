@@ -172,7 +172,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
     hideBalance,
     showPrice24HChange,
   }) => {
-    const { priceStore, price24HChangesStore, uiConfigStore } = useStore();
+    const { priceStore, uiConfigStore } = useStore();
     const navigate = useNavigate();
     const intl = useIntl();
     const theme = useTheme();
@@ -225,18 +225,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
         };
       }
     }, [viewToken.token.currency]);
-
-    const price24HChange = (() => {
-      if (!showPrice24HChange) {
-        return undefined;
-      }
-      if (!viewToken.token.currency.coinGeckoId) {
-        return undefined;
-      }
-      return price24HChangesStore.get24HChange(
-        viewToken.token.currency.coinGeckoId
-      );
-    })();
 
     return (
       <Styles.Container
@@ -322,7 +310,19 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                 </Subtitle2>
               </Skeleton>
 
-              {price24h ? (
+              {tag ? (
+                <React.Fragment>
+                  <Gutter size="0.25rem" />
+                  <Box alignY="center" height="1px">
+                    <TokenTag
+                      text={tag.text.toUpperCase()}
+                      tooltip={tag.tooltip}
+                    />
+                  </Box>
+                </React.Fragment>
+              ) : null}
+
+              {price24h && showPrice24HChange ? (
                 <React.Fragment>
                   <Gutter size="0.25rem" />
                   <Box alignY="center" height="1px">
@@ -385,18 +385,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                     : viewToken.chainInfo.chainName}
                 </Caption1>
               </Skeleton>
-
-              {tag ? (
-                <React.Fragment>
-                  <Gutter size="0.25rem" />
-                  <Box alignY="center" height="1px">
-                    <TokenTag
-                      text={tag.text.toUpperCase()}
-                      tooltip={tag.tooltip}
-                    />
-                  </Box>
-                </React.Fragment>
-              ) : null}
 
               {!isNotReady && copyAddress ? (
                 <Box alignY="center" height="1px">
@@ -985,7 +973,7 @@ const PriceChangeTag: FunctionComponent<{
 
       const isNeg = res.startsWith("-");
       return {
-        text: isNeg ? res.replace("-", "") : res,
+        text: isNeg ? res.replace("-", "-") : "+" + res,
         isNeg,
       };
     }
@@ -995,6 +983,10 @@ const PriceChangeTag: FunctionComponent<{
 
   return (
     <Box
+      borderWidth="0.015rem"
+      borderColor={
+        info.isNeg ? ColorPalette["red-400"] : ColorPalette["green-400"]
+      }
       height="1.125rem"
       minHeight="1.125rem"
       borderRadius="0.375rem"
@@ -1002,49 +994,24 @@ const PriceChangeTag: FunctionComponent<{
       alignY="center"
       backgroundColor={(() => {
         if (theme.mode === "light") {
-          return info.isNeg
-            ? ColorPalette["orange-50"]
-            : ColorPalette["green-50"];
+          return info.isNeg ? ColorPalette["red-50"] : ColorPalette["green-50"];
         }
 
         return info.isNeg
-          ? Color(ColorPalette["orange-700"]).alpha(0.4).toString()
+          ? Color(ColorPalette["red-700"]).alpha(0.4).toString()
           : Color(ColorPalette["green-700"]).alpha(0.2).toString();
       })()}
       color={(() => {
         if (theme.mode === "light") {
           return info.isNeg
-            ? ColorPalette["orange-400"]
+            ? ColorPalette["red-400"]
             : ColorPalette["green-500"];
         }
 
-        return info.isNeg
-          ? ColorPalette["orange-400"]
-          : ColorPalette["green-400"];
+        return info.isNeg ? ColorPalette["red-400"] : ColorPalette["green-400"];
       })()}
     >
       <XAxis alignY="center">
-        {info.isNeg ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="10"
-            fill="none"
-            viewBox="0 0 12 10"
-          >
-            <path stroke="currentColor" d="M1 1l4 5.5 2.667-3L11 9" />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="10"
-            fill="none"
-            viewBox="0 0 12 10"
-          >
-            <path stroke="currentColor" d="M1 9l4-5.5 2.667 3L11 1" />
-          </svg>
-        )}
         <Gutter size="0.25rem" />
         <Caption2>{info.text}</Caption2>
       </XAxis>

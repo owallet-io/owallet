@@ -48,18 +48,12 @@ export const Styles = {
   >`
     position: relative;
     ::after {
-      // Border를 그리기 위해 사용하는 부분임
-      // 이 부분 없이 Container 자체에 border를 그리면
-      // border가 자리를 차지해서 Container의 크기를 늘리게 됨
-      // 이 문제를 해결하기 위해서 이런 트릭을 사용함
       content: "";
-
       position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
-
       border-width: 1px;
       border-style: solid;
       border-color: ${(props) => {
@@ -73,7 +67,13 @@ export const Styles = {
           ? ColorPalette["gray-100"]
           : ColorPalette["gray-400"];
       }};
-      border-radius: 0.5rem;
+      border-radius: ${(props) => {
+        if (props.borderRadius) {
+          return props.borderRadius;
+        }
+
+        return "0.5rem";
+      }};
 
       pointer-events: none;
     }
@@ -113,9 +113,12 @@ export const Styles = {
       }
     }}
   `,
-  TextInput: styled.input<TextInputProps & { isTextarea?: boolean }>`
+  TextInput: styled.input<
+    TextInputProps & { isTextarea?: boolean; height: string }
+  >`
     width: 100%;
-    height: ${({ isTextarea }) => (isTextarea ? undefined : "3.25rem")};
+    height: ${({ isTextarea, height }) =>
+      isTextarea ? undefined : height ?? "3.25rem"};
     margin: 0;
     padding: ${({ isTextarea }) =>
       isTextarea ? "0.75rem 0.75rem" : "0 0.75rem"};

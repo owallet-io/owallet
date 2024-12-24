@@ -4,7 +4,13 @@ import { Button } from "../../../../components/button";
 import { Stack } from "../../../../components/stack";
 import { Box } from "../../../../components/box";
 import { VerticalCollapseTransition } from "../../../../components/transition/vertical-collapse";
-import { Body2, Subtitle2, Subtitle3 } from "../../../../components/typography";
+import {
+  Body1,
+  Body2,
+  H1,
+  Subtitle2,
+  Subtitle3,
+} from "../../../../components/typography";
 import { ColorPalette } from "../../../../styles";
 import { ViewToken } from "../../index";
 import styled, { css, useTheme } from "styled-components";
@@ -777,9 +783,9 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
             <Stack gutter="0.5rem">
               <YAxis alignX="left">
                 <Skeleton layer={1} isNotReady={isNotReady}>
-                  <Body2 style={{ color: ColorPalette["gray-300"] }}>
+                  <Body1>
                     <FormattedMessage id="page.main.components.claim-all.title" />
-                  </Body2>
+                  </Body1>
                 </Skeleton>
               </YAxis>
 
@@ -789,19 +795,19 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
                   isNotReady={isNotReady}
                   dummyMinWidth="5.125rem"
                 >
-                  <Subtitle2
+                  <H1
                     style={{
                       color:
                         theme.mode === "light"
-                          ? ColorPalette["gray-700"]
-                          : ColorPalette["gray-10"],
+                          ? ColorPalette["green-500"]
+                          : ColorPalette["green-500"],
                     }}
                   >
                     {uiConfigStore.hideStringIfPrivacyMode(
                       totalPrice ? totalPrice.separator(" ").toString() : "?",
                       3
                     )}
-                  </Subtitle2>
+                  </H1>
                 </Skeleton>
               </YAxis>
             </Stack>

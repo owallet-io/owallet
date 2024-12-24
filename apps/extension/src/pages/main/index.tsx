@@ -26,9 +26,14 @@ import {
 } from "../../components/icon";
 import { Box } from "../../components/box";
 import { Modal } from "../../components/modal";
-import { DualChart } from "./components/chart";
 import { Gutter } from "../../components/gutter";
-import { H1, Subtitle3, Subtitle4 } from "../../components/typography";
+import { Toggle } from "../../components/toggle";
+import {
+  Caption2,
+  H1,
+  Subtitle3,
+  Subtitle4,
+} from "../../components/typography";
 import { ColorPalette, SidePanelMaxWidth } from "../../styles";
 import { AvailableTabView } from "./available";
 import { StakedTabView } from "./staked";
@@ -56,6 +61,7 @@ import { BottomTabsHeightRem } from "../../bottom-tabs";
 import { DenomHelper } from "@owallet/common";
 import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
 import { ModularChainInfo } from "@owallet/types";
+import Color from "color";
 
 export interface ViewToken {
   token: CoinPretty;
@@ -63,6 +69,38 @@ export interface ViewToken {
   isFetching: boolean;
   error: QueryError<any> | undefined;
 }
+
+const StylesCustom = {
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0.875rem"};
+    border-radius: 0.375rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
+  `,
+};
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -591,82 +629,103 @@ export const MainPage: FunctionComponent<{
 
           <Gutter size="0" />
 
-          {/* {tabStatus === "available" && !isNotReady ? (
-            <StakeWithKeplrDashboardButton
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                analyticsStore.logEvent("click_keplrDashboard", {
-                  tabName: tabStatus,
-                });
-
-                browser.tabs.create({
-                  url: "https://wallet.keplr.app/",
-                });
-              }}
-            >
-              <FormattedMessage id="page.main.chart.manage-portfolio-in-keplr-dashboard" />
-              <Box color={ColorPalette["gray-300"]} marginLeft="0.5rem">
-                <ArrowTopRightOnSquareIcon width="1rem" height="1rem" />
-              </Box>
-            </StakeWithKeplrDashboardButton>
-          ) : null} */}
-          {!isNotReady ? (
-            <Stack gutter="0.75rem">
-              {tabStatus === "available" ? (
-                <SearchTextInput
-                  ref={searchRef}
-                  value={search}
-                  onChange={(e) => {
-                    e.preventDefault();
-
-                    setSearch(e.target.value);
-
-                    if (e.target.value.trim().length > 0) {
-                      if (!isEnteredSearch) {
-                        setIsEnteredSearch(true);
-                      }
-
-                      const simpleBarScrollRef =
-                        globalSimpleBar.ref.current?.getScrollElement();
-                      if (
-                        simpleBarScrollRef &&
-                        simpleBarScrollRef.scrollTop < 218
-                      ) {
-                        searchScrollAnim.start(218, {
-                          from: simpleBarScrollRef.scrollTop,
-                          onChange: (anim: any) => {
-                            const v = anim.value != null ? anim.value : anim;
-                            if (typeof v === "number") {
-                              simpleBarScrollRef.scrollTop = v;
-                            }
-                          },
-                        });
-                      }
-                    }
-                  }}
-                  placeholder={intl.formatMessage({
-                    id: "page.main.search-placeholder",
-                  })}
-                />
-              ) : null}
-            </Stack>
-          ) : null}
-
           {tabStatus === "available" ? (
-            <AvailableTabView
-              search={search}
-              isNotReady={isNotReady}
-              onClickGetStarted={() => {
-                setIsOpenDepositModal(true);
-              }}
-              onMoreTokensClosed={() => {
-                forcePreventScrollRefreshButtonVisible.current = true;
-                setTimeout(() => {
-                  forcePreventScrollRefreshButtonVisible.current = false;
-                }, 1500);
-              }}
-            />
+            <StylesCustom.Container>
+              {!isNotReady ? (
+                <Stack>
+                  {tabStatus === "available" ? (
+                    <Box
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingBottom: "1.5rem",
+                      }}
+                    >
+                      <Box
+                        style={{
+                          width: "65%",
+                        }}
+                      >
+                        <SearchTextInput
+                          ref={searchRef}
+                          value={search}
+                          onChange={(e) => {
+                            e.preventDefault();
+
+                            setSearch(e.target.value);
+
+                            if (e.target.value.trim().length > 0) {
+                              if (!isEnteredSearch) {
+                                setIsEnteredSearch(true);
+                              }
+
+                              const simpleBarScrollRef =
+                                globalSimpleBar.ref.current?.getScrollElement();
+                              if (
+                                simpleBarScrollRef &&
+                                simpleBarScrollRef.scrollTop < 218
+                              ) {
+                                searchScrollAnim.start(218, {
+                                  from: simpleBarScrollRef.scrollTop,
+                                  onChange: (anim: any) => {
+                                    const v =
+                                      anim.value != null ? anim.value : anim;
+                                    if (typeof v === "number") {
+                                      simpleBarScrollRef.scrollTop = v;
+                                    }
+                                  },
+                                });
+                              }
+                            }
+                          }}
+                          placeholder={intl.formatMessage({
+                            id: "page.main.search-placeholder",
+                          })}
+                        />
+                      </Box>
+                      <React.Fragment>
+                        <Caption2
+                          onClick={() => {
+                            uiConfigStore.setHideLowBalance(
+                              !uiConfigStore.isHideLowBalance
+                            );
+                          }}
+                          color={ColorPalette["gray-300"]}
+                        >
+                          <FormattedMessage id="page.main.available.hide-low-balance" />
+                        </Caption2>
+
+                        <Toggle
+                          height={16}
+                          width={32}
+                          isOpen={uiConfigStore.isHideLowBalance}
+                          setIsOpen={() => {
+                            uiConfigStore.setHideLowBalance(
+                              !uiConfigStore.isHideLowBalance
+                            );
+                          }}
+                        />
+                      </React.Fragment>
+                    </Box>
+                  ) : null}
+                </Stack>
+              ) : null}
+              <AvailableTabView
+                search={search}
+                isNotReady={isNotReady}
+                onClickGetStarted={() => {
+                  setIsOpenDepositModal(true);
+                }}
+                onMoreTokensClosed={() => {
+                  forcePreventScrollRefreshButtonVisible.current = true;
+                  setTimeout(() => {
+                    forcePreventScrollRefreshButtonVisible.current = false;
+                  }, 1500);
+                }}
+              />
+            </StylesCustom.Container>
           ) : (
             <StakedTabView
               onMoreTokensClosed={() => {
