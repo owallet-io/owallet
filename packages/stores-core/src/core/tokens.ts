@@ -244,8 +244,6 @@ export class TokensStore {
         );
     const res = await this.requester.sendMessage(BACKGROUND_PORT, msg);
     runInAction(() => {
-      // Remove 이후에는 지워진 토큰에 대한 싱크를 맞추기 위해서 clearTokensFromChainInfos를 호출한다.
-      // 그냥 다 지우고 다시 다 설정하는 방식임.
       this.clearTokensFromChainInfos();
 
       const newTokenMap = new Map(this.tokenMap);

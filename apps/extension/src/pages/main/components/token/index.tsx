@@ -46,7 +46,7 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { animated, useSpringValue, to } from "@react-spring/web";
 import { defaultSpringConfig } from "../../../../styles/spring";
 import { Bech32Address } from "@owallet/cosmos";
-import { DecUtils, RatePretty } from "@owallet/unit";
+import { Dec, DecUtils, RatePretty } from "@owallet/unit";
 
 const Styles = {
   Container: styled.div<{
@@ -180,6 +180,9 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
     const [isHover, setIsHover] = useState(false);
 
     const pricePretty = priceStore.calculatePrice(viewToken.token);
+    const price24h = priceStore.getPrice24hChange(
+      viewToken.token.currency.coinGeckoId
+    );
 
     const isIBC = useMemo(() => {
       return viewToken.token.currency.coinMinimalDenom.startsWith("ibc/");
@@ -319,11 +322,13 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                 </Subtitle2>
               </Skeleton>
 
-              {price24HChange ? (
+              {price24h ? (
                 <React.Fragment>
                   <Gutter size="0.25rem" />
                   <Box alignY="center" height="1px">
-                    <PriceChangeTag rate={price24HChange} />
+                    <PriceChangeTag
+                      rate={new RatePretty(new Dec(price24h).quo(new Dec(100)))}
+                    />
                   </Box>
                 </React.Fragment>
               ) : null}

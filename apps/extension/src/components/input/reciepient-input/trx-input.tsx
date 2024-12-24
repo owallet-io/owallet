@@ -59,20 +59,6 @@ export const TronRecipientInput = observer<
     const [isAddressBookModalOpen, setIsAddressBookModalOpen] =
       React.useState(false);
 
-    const isICNSName: boolean = (() => {
-      if ("isICNSName" in recipientConfig) {
-        return recipientConfig.isICNSName;
-      }
-      return false;
-    })();
-
-    const isENSName: boolean = (() => {
-      if ("isENSName" in recipientConfig) {
-        return recipientConfig.isENSName;
-      }
-      return false;
-    })();
-
     return (
       <Box>
         <TextInput
@@ -108,10 +94,7 @@ export const TronRecipientInput = observer<
             ) : null
           }
           paragraph={(() => {
-            if (
-              (isICNSName || isENSName) &&
-              !recipientConfig.uiProperties.error
-            ) {
+            if (!recipientConfig.uiProperties.error) {
               return recipientConfig.recipient;
             }
           })()}

@@ -536,7 +536,6 @@ const FeeSelector: FunctionComponent<{
           }}
           selected={feeConfig.type === "low"}
         >
-          {/* 텍스트의 길이 등에 의해서 레이아웃이 변하는걸 막기 위해서 가라로 1px의 너비르 가지는 Box로 감싸준다. */}
           <Box width="1px" alignX="center">
             <FeeSelectorStyle.Title selected={feeConfig.type === "low"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.low" />
@@ -597,7 +596,6 @@ const FeeSelector: FunctionComponent<{
           }}
           selected={feeConfig.type === "average"}
         >
-          {/* 텍스트의 길이 등에 의해서 레이아웃이 변하는걸 막기 위해서 가라로 1px의 너비르 가지는 Box로 감싸준다. */}
           <Box width="1px" alignX="center">
             <FeeSelectorStyle.Title selected={feeConfig.type === "average"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.average" />
@@ -666,7 +664,6 @@ const FeeSelector: FunctionComponent<{
           }}
           selected={feeConfig.type === "high"}
         >
-          {/* 텍스트의 길이 등에 의해서 레이아웃이 변하는걸 막기 위해서 가라로 1px의 너비르 가지는 Box로 감싸준다. */}
           <Box width="1px" alignX="center">
             <FeeSelectorStyle.Title selected={feeConfig.type === "high"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.high" />

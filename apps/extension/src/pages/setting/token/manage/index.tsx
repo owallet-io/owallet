@@ -70,7 +70,6 @@ export const SettingTokenListPage: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    // secret20은 계정에 귀속되기 때문에 보려면 계정이 초기화되어있어야 가능하다...
     const disposal = autorun(() => {
       const account = accountStore.getAccount(chainId);
       if (account.bech32Address === "") {
