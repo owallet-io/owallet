@@ -37,6 +37,8 @@ import images from "@src/assets/images";
 import { initPrice } from "./account-box-new";
 import { Dec } from "@owallet/unit";
 import { useIsNotReady } from "@screens/home";
+import { XAxis } from "@components/axis";
+import { Box } from "@components/box";
 
 const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
@@ -288,22 +290,54 @@ const TokenItem: FC<{
           </View>
 
           <View style={styles.pl12}>
-            <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
+            <XAxis alignY={"center"}>
               <Text
-                size={12}
-                color={
-                  price24h < 0
-                    ? colors["error-text-body"]
-                    : colors["success-text-body"]
-                }
-                style={styles.profit}
+                size={16}
+                color={colors["neutral-text-heading"]}
+                weight="600"
               >
-                {price24h > 0 ? "+" : ""}
-                {maskedNumber(price24h, 2, 2)}%
+                {removeDataInParentheses(
+                  item.token?.currency?.coinDenom
+                ).trim()}
               </Text>
-            </Text>
-            <Text weight="400" color={colors["neutral-text-body"]}>
+              <Box
+                marginLeft={5}
+                borderWidth={1}
+                borderColor={
+                  price24h < 0
+                    ? colors["error-border-pressed"]
+                    : colors["success-border-pressed"]
+                }
+                backgroundColor={
+                  price24h < 0
+                    ? colors["error-surface-subtle"]
+                    : colors["success-surface-subtle"]
+                }
+                paddingX={4}
+                borderRadius={16}
+              >
+                <Text
+                  size={12}
+                  weight={"500"}
+                  color={
+                    price24h < 0
+                      ? colors["error-text-body"]
+                      : colors["success-text-body"]
+                  }
+                  style={styles.profit}
+                >
+                  {price24h > 0 ? "+" : ""}
+                  {maskedNumber(price24h, 2, 2)}%
+                </Text>
+              </Box>
+            </XAxis>
+            <Text
+              style={{
+                lineHeight: 24,
+              }}
+              weight="400"
+              color={colors["neutral-text-body"]}
+            >
               {item?.chainInfo?.chainName}
               {item.token?.currency?.type &&
               item.token?.currency?.coinDenom === "BTC"
@@ -367,14 +401,15 @@ const styling = (colors) =>
       justifyContent: "space-between",
       marginVertical: 8,
       marginHorizontal: 16,
+      alignItems: "center",
     },
     btnItem: {
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
     },
     profit: {
-      fontWeight: "400",
-      lineHeight: 20,
+      // fontWeight: "400",
+      lineHeight: 16,
     },
     iconWrap: {
       width: 44,
