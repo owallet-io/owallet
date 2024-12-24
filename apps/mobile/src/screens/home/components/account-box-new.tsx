@@ -355,7 +355,7 @@ export const AccountBoxAll: FunctionComponent<{
           style={{
             alignItems: "center",
             flexDirection: "row",
-            paddingBottom: 16,
+            paddingVertical: 8,
           }}
         >
           <Text variant="bigText" style={styles.labelTotalAmount}>
@@ -371,7 +371,9 @@ export const AccountBoxAll: FunctionComponent<{
   const renderPieChartPortfolio = () => {
     if (series.length > 0 && series[0] > 0) {
       return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", paddingTop: 8 }}
+        >
           {series.length > 0 && series[0] > 0 ? (
             <View
               style={{
@@ -456,7 +458,7 @@ export const AccountBoxAll: FunctionComponent<{
       ?.toString();
     const stakedPercent = 100 - Number(percentAvailable || 0);
     return (
-      <View style={{ marginVertical: 16 }}>
+      <View style={{ marginVertical: 8 }}>
         <View
           style={{
             width: "100%",
@@ -727,6 +729,19 @@ export const AccountBoxAll: FunctionComponent<{
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
                 onPress={() => {
+                  navigate(SCREENS.QRScreen);
+                  return;
+                }}
+                style={styles.button}
+              >
+                <OWIcon
+                  size={18}
+                  name="tdesignqrcode"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
                   setShowChart(!showChart);
                 }}
                 style={styles.button}
@@ -753,10 +768,10 @@ export const AccountBoxAll: FunctionComponent<{
                 <Image
                   source={imagesNoel.bell_light}
                   style={{
-                    width: 30,
-                    height: 60,
+                    width: 25,
+                    height: 42,
                     position: "absolute",
-                    top: 29,
+                    top: 33,
                     right: 10,
                     zIndex: 1000,
                   }}
@@ -792,17 +807,7 @@ export const AccountBoxAll: FunctionComponent<{
             />
           )}
         </View>
-        <View style={styles.overview}>{renderTotalBalance()}</View>
-        {!appInitStore.getInitApp.isAllNetworks ||
-        appInitStore.getInitApp.isAllNetworks ? (
-          <View
-            style={{
-              height: 1,
-              width: "100%",
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
-        ) : null}
+        <View>{renderTotalBalance()}</View>
         {appInitStore.getInitApp.isAllNetworks
           ? renderAvailableperStaked()
           : renderAssetsByChain()}
