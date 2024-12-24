@@ -37,6 +37,8 @@ import {
 import { createMemoInstruction } from "@solana/spl-memo";
 import { FeeCurrency } from "@owallet/types";
 import { DenomHelper } from "@owallet/common";
+import { RecipientInput } from "@components/input/reciepient-input";
+import { useFocusAfterRouting } from "@hooks/use-focus";
 
 export const SendSvmScreen: FunctionComponent<{
   chainId: string;
@@ -45,13 +47,18 @@ export const SendSvmScreen: FunctionComponent<{
   setSelectedKey: (key) => void;
 }> = observer(
   ({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
-    const { chainStore, solanaAccountStore, queriesStore, appInitStore } =
-      useStore();
+    const {
+      chainStore,
+      solanaAccountStore,
+      queriesStore,
+      priceStore,
+      appInitStore,
+    } = useStore();
     const { colors } = useTheme();
     const styles = styling(colors);
 
     const chainInfo = chainStore.getChain(chainId);
-
+    const addressRef = useFocusAfterRouting();
     const navigation = useNavigation();
     useEffect(() => {
       if (appInitStore.getInitApp.isAllNetworks) return;
@@ -85,6 +92,7 @@ export const SendSvmScreen: FunctionComponent<{
     const txConfigsValidate = useTxConfigsValidate({
       ...sendConfigs,
     });
+
     const submitSend = async () => {
       if (!txConfigsValidate.interactionBlocked) {
         try {
@@ -139,6 +147,7 @@ export const SendSvmScreen: FunctionComponent<{
             },
           });
         } catch (e) {
+          account.setIsSendingTx(false);
           console.log(e, "eee svm");
           if (e?.message === "Request rejected") {
             return;
@@ -322,6 +331,14 @@ export const SendSvmScreen: FunctionComponent<{
                 }}
                 inputContainerStyle={styles.inputContainerAddress}
               />
+              {/*  <RecipientInput*/}
+              {/*      ref={addressRef}*/}
+              {/*      historyType={"basic-send"}*/}
+              {/*      recipientConfig={sendConfigs.recipientConfig}*/}
+              {/*      memoConfig={sendConfigs.memoConfig}*/}
+              {/*      currency={sendConfigs.amountConfig.currency}*/}
+              {/*      permitAddressBookSelfKeyInfo={false}*/}
+              {/*  />*/}
             </OWCard>
             <OWCard
               style={[
@@ -385,7 +402,9 @@ export const SendSvmScreen: FunctionComponent<{
                   style={{ paddingLeft: 4 }}
                   color={colors["neutral-text-body"]}
                 >
-                  {/*{estimatePrice}*/}
+                  {priceStore
+                    .calculatePrice(sendConfigs.amountConfig.amount[0])
+                    ?.toString()}
                 </OWText>
               </View>
             </OWCard>

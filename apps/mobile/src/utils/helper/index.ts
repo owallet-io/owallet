@@ -179,7 +179,7 @@ export const convertArrToObject = (arr, label = `Validator`) => {
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
-  if (!inputString) return;
+  if (!inputString) return "";
   return inputString.replace(/\([^)]*\)/g, "");
 };
 export const extractDataInParentheses = (
