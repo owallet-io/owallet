@@ -233,6 +233,7 @@ const modeColors = {
   "neutral-border-brutal": ["#323133", "#FFF"],
   "neutral-border-strong": ["#6A6B71", "#242325"],
   "neutral-border-bold": ["#909298", "#242325"],
+  "neutral-border-active": ["#FBFBFB", "#242325"],
   "neutral-border-disable": ["#242325", "#F5F5F7"],
   "neutral-text-heading": ["#EBEDF2", "#242325"],
   "neutral-text-title": ["#F5F5F7", "#242325"],

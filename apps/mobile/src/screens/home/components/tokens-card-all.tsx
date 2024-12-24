@@ -190,17 +190,21 @@ export const TokensCardAll: FunctionComponent<{
         <OWButton
           style={{
             width: "100%",
+            marginBottom: 8,
           }}
-          label={`View ${viewMore ? "More" : "Less"}`}
+          label={`View ${viewMore ? "more" : "less"}`}
           iconRight={
             <OWIcon
               name={viewMore ? "tdesignchevron-down" : "tdesignchevron-up"}
-              color={colors["primary-surface-pressed"]}
+              color={colors["neutral-text-body"]}
               size={20}
             />
           }
+          textStyle={{
+            color: colors["neutral-text-body"],
+          }}
           onPress={() => setViewMore((prev) => !prev)}
-          contentAlign={"right"}
+          contentAlign={"center"}
           fullWidth={false}
           type={"link"}
         />
@@ -212,16 +216,17 @@ export const TokensCardAll: FunctionComponent<{
           }}
           icon={
             <OWIcon
-              name="tdesignplus"
+              name="tdesignlist"
               color={colors["neutral-text-title"]}
               size={20}
             />
           }
-          label={"Add token"}
+          label={"Manage token"}
           size="large"
           type="secondary"
           onPress={() => {
-            navigate(SCREENS.NetworkToken);
+            navigate(SCREENS.ManageToken);
+            // navigate(SCREENS.NetworkToken);
             return;
           }}
         />
@@ -240,11 +245,6 @@ const TokenItem: FC<{
   if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
-    // if (
-    //   !item.token?.currency?.coinGeckoId ||
-    //   !item.token?.currency?.coinImageUrl
-    // )
-    //   return;
     navigate(SCREENS.TokenDetails, {
       item,
     });
@@ -327,7 +327,7 @@ const TokenItem: FC<{
                   style={styles.profit}
                 >
                   {price24h > 0 ? "+" : ""}
-                  {maskedNumber(price24h, 2, 2)}%
+                  {!price24h ? "0.00" : maskedNumber(price24h, 2, 2)}%
                 </Text>
               </Box>
             </XAxis>
