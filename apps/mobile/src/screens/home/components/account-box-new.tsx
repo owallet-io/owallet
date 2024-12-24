@@ -516,7 +516,9 @@ export const AccountBoxAll: FunctionComponent<{
       <View
         style={{
           paddingTop: 12,
-          paddingBottom: 6,
+          paddingBottom: 8,
+          borderTopWidth: 1,
+          borderTopColor: colors["neutral-border-default"],
         }}
       >
         <View
