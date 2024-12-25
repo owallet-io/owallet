@@ -374,67 +374,6 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
                       {first != now || index === 0 ? (
                         <Styles.Date>{now}</Styles.Date>
                       ) : null}
-                      {/* <Styles.TokenItem>
-                      <Styles.WrapLeftBlock>
-                        <div>
-                          <Styles.TokenWrap>
-                            <img
-                              style={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: 999,
-                              }}
-                              src={
-                                currency?.coinImageUrl?.includes(
-                                  "missing.png"
-                                ) ||
-                                !currency?.coinImageUrl ||
-                                currency?.coinImageUrl?.includes("missing.svg")
-                                  ? unknownToken.coinImageUrl
-                                  : currency?.coinImageUrl
-                              }
-                            />
-                            <Styles.ChainWrap>
-                              <img
-                                style={{
-                                  width: 18,
-                                  height: 18,
-                                  borderRadius: 999,
-                                }}
-                                src={
-                                  chainInfo?.chainSymbolImageUrl ||
-                                  unknownToken.coinImageUrl
-                                }
-                              />
-                            </Styles.ChainWrap>
-                          </Styles.TokenWrap>
-                        </div>
-                        <Styles.BodyTokenItem>
-                          <Styles.TokenTitle>{method}</Styles.TokenTitle>
-                          <Styles.TokenSubTitle>
-                            {formatAddress(item.txhash, 5)}
-                          </Styles.TokenSubTitle>
-                        </Styles.BodyTokenItem>
-                      </Styles.WrapLeftBlock>
-                      <Styles.RightBlock>
-                        <Styles.TokenTitle
-                          style={{
-                            color: !isSent
-                              ? ColorPalette["green-500"]
-                              : ColorPalette["red-500"],
-                          }}
-                        >
-                          {`${!isSent ? "+" : "-"}${amount
-                            .maxDecimals(4)
-                            .trim(true)
-                            ?.toString()
-                            .replace("-", "")}`}
-                        </Styles.TokenTitle>
-                        <Styles.TokenSubTitle>
-                          {priceAmount?.toString().replace("-", "")}
-                        </Styles.TokenSubTitle>
-                      </Styles.RightBlock>
-                    </Styles.TokenItem> */}
 
                       <Styles.TokenContainer isNotReady={isNotReady}>
                         <Columns sum={1} gutter="0.5rem" alignY="center">

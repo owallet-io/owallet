@@ -256,7 +256,7 @@ export const BottomTabSettingIcon: FunctionComponent<{
       width={width}
       height={height}
       fill="none"
-      viewBox="0 0 19 19"
+      viewBox="0 0 28 28"
     >
       <path
         fill="currentColor"
@@ -270,7 +270,7 @@ export const BottomTabSettingIcon: FunctionComponent<{
       height={height}
       fill="none"
       stroke="none"
-      viewBox="0 0 19 19"
+      viewBox="0 0 28 28"
     >
       <path
         fill="currentColor"
