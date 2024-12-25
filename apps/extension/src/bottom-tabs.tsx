@@ -178,19 +178,17 @@ export const BottomTabHomeIcon: FunctionComponent<{
   return isActive ? (
     <img
       src={require("assets/images/assets-light-active.png")}
-      alt="OWallet logo"
+      alt="assets logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   ) : (
     <img
       src={require("assets/images/assets-light-inactive.png")}
-      alt="OWallet logo"
+      alt="assets logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   );
@@ -205,19 +203,17 @@ export const BottomTabExploreIcon: FunctionComponent<{
   return isActive ? (
     <img
       src={require("assets/images/explore-light-active.png")}
-      alt="OWallet logo"
+      alt="explore logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   ) : (
     <img
       src={require("assets/images/explore-light-inactive.png")}
-      alt="OWallet logo"
+      alt="explore logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   );
@@ -232,19 +228,17 @@ export const BottomTabActivityIcon: FunctionComponent<{
   return isActive ? (
     <img
       src={require("assets/images/history-light-active.png")}
-      alt="OWallet logo"
+      alt="History logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   ) : (
     <img
       src={require("assets/images/history-light-inactive.png")}
-      alt="OWallet logo"
+      alt="History logo"
       style={{
-        width: width ?? 28,
-        height: height ?? 28,
+        width: width ?? 19,
       }}
     />
   );
@@ -262,7 +256,7 @@ export const BottomTabSettingIcon: FunctionComponent<{
       width={width}
       height={height}
       fill="none"
-      viewBox="0 0 28 28"
+      viewBox="0 0 19 19"
     >
       <path
         fill="currentColor"
@@ -276,7 +270,7 @@ export const BottomTabSettingIcon: FunctionComponent<{
       height={height}
       fill="none"
       stroke="none"
-      viewBox="0 0 28 28"
+      viewBox="0 0 19 19"
     >
       <path
         fill="currentColor"
