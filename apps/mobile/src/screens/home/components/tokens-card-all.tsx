@@ -70,16 +70,19 @@ export const TokensCardAll: FunctionComponent<{
   const trimSearch = keyword.trim();
   const _allBalancesSearchFiltered = useMemo(() => {
     return allBalances.filter((token) => {
+      const key = `${token.chainInfo.chainId}/${token.token.currency.coinMinimalDenom}`;
+      const isHide = appInitStore.getInitApp.manageToken?.[key];
       return (
-        token.chainInfo.chainName
+        (token.chainInfo.chainName
           .toLowerCase()
           .includes(trimSearch.toLowerCase()) ||
-        token.token.currency.coinDenom
-          .toLowerCase()
-          .includes(trimSearch.toLowerCase())
+          token.token.currency.coinDenom
+            .toLowerCase()
+            .includes(trimSearch.toLowerCase())) &&
+        !isHide
       );
     });
-  }, [allBalances, trimSearch]);
+  }, [allBalances, trimSearch, appInitStore.getInitApp.manageToken]);
   const hasLowBalanceTokens =
     hugeQueriesStore.filterLowBalanceTokens(allBalances).length > 0;
   const lowBalanceFilteredAllBalancesSearchFiltered =

@@ -25,6 +25,7 @@ export class AppInit {
     yesterdayPriceFeed: Array<any>;
     balances: object;
     chainInfos: Array<any>;
+    manageToken: Record<string, boolean>;
   };
   // @persist("object")
   // @observable
@@ -52,18 +53,20 @@ export class AppInit {
       balances: {},
       chainInfos: [],
       yesterdayPriceFeed: [],
+      manageToken: {},
     };
-    this.multipleAssets = {
-      totalPriceBalance: "0",
-      dataTokens: [],
-      dataTokensByChain: null,
-    };
+    // this.multipleAssets = {
+    //   totalPriceBalance: "0",
+    //   dataTokens: [],
+    //   dataTokensByChain: null,
+    // };
   }
 
   @computed
   get getInitApp() {
     return this.initApp;
   }
+
   @computed
   get getChainInfos() {
     return this.initApp.chainInfos;
@@ -72,6 +75,17 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+
+  @action
+  updateManageToken(keyToken: string, isHide: boolean) {
+    this.initApp = {
+      ...this.initApp,
+      manageToken: {
+        ...this.initApp.manageToken,
+        [keyToken]: isHide,
+      },
+    };
   }
 
   @action

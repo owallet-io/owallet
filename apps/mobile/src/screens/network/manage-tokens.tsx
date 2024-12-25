@@ -103,6 +103,8 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
     const Denom = removeDataInParentheses(
       item.token?.currency?.coinDenom
     ).trim();
+    const key = `${item?.chainInfo?.chainId}/${item.token?.currency.coinMinimalDenom}`;
+    const isHide = appInitStore.getInitApp.manageToken?.[key];
     return (
       <Box
         key={`${item.chainInfo?.chainId}-${item.token?.toString()}`}
@@ -187,10 +189,13 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
                 </Text>
               </View>
               <OWButtonIcon
-                name={"eye-slash"}
+                name={isHide ? "eye-slash" : "eye"}
                 sizeIcon={24}
-                colorIcon={colors["neutral-icon-on-light"]}
-                onPress={() => {}}
+                colorIcon={colors["neutral-text-body"]}
+                onPress={() => {
+                  console.log(key);
+                  appInitStore.updateManageToken(key, !isHide);
+                }}
                 style={{
                   width: 32,
                   height: 32,

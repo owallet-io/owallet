@@ -171,7 +171,7 @@ export const TokenSelectorModal: FunctionComponent<{
     // modalPersistent,
   }) => {
     const { colors } = useTheme();
-
+    const { appInitStore } = useStore();
     const [search, setSearch] = useState("");
 
     return (
@@ -199,7 +199,7 @@ export const TokenSelectorModal: FunctionComponent<{
             }}
             isBottomSheet={true}
             placeholderTextColor={colors["neutral-text-body"]}
-            placeholder="Search for a token"
+            placeholder="Search token"
             onChangeText={(t) => setSearch(t)}
             defaultValue={search}
           />
@@ -218,13 +218,19 @@ export const TokenSelectorModal: FunctionComponent<{
           persistentScrollbar={true}
         >
           {items
-            .filter(
-              (token) =>
-                token.token.currency.coinMinimalDenom.includes(
-                  search.toUpperCase()
-                ) ||
-                token.token.currency.coinDenom.includes(search.toUpperCase())
-            )
+            .filter((token) => {
+              const key = `${token.chainInfo.chainId}/${token.token.currency.coinMinimalDenom}`;
+              const isHide = appInitStore.getInitApp.manageToken?.[key];
+              return (
+                (token.chainInfo.chainName
+                  .toLowerCase()
+                  .includes(search.toLowerCase()) ||
+                  token.token.currency.coinDenom
+                    .toLowerCase()
+                    .includes(search.toLowerCase())) &&
+                !isHide
+              );
+            })
             .map((token, i) => {
               return (
                 <TokenView
