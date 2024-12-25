@@ -109,7 +109,7 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
     return (
       <Box
         key={`${item.chainInfo?.chainId}-${item.token?.toString()}`}
-        style={styles.btnItem}
+        style={{ ...styles.btnItem, opacity: isHide ? 0.5 : 1 }}
       >
         <View style={[styles.wraperItem]}>
           <View style={styles.leftBoxItem}>
