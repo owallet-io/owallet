@@ -413,12 +413,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const handleUrl = (txHash) => {
     return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
       "{txHash}",
-      chainInfo.features.includes("btc") ||
-        chainInfo.features.includes("oasis") ||
-        chainInfo.features.includes("tron") ||
-        chainId?.includes("eip155")
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash
     );
   };
   const handleOnExplorer = async () => {

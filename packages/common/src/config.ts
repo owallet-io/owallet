@@ -438,8 +438,8 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["gen-address", "svm", "not-support-staking"],
     txExplorer: {
       name: "Sol Explorer",
-      txUrl: "https://explorer.solana.com/tx/{txHash}",
-      accountUrl: "https://explorer.solana.com/address/{address}",
+      txUrl: "https://solscan.io/tx/{txHash}",
+      accountUrl: "https://solscan.io/address/{address}",
     },
   },
   {

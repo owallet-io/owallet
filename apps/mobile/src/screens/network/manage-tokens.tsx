@@ -14,6 +14,7 @@ import {
   delay,
   EmbedChainInfos,
   fetchRetry,
+  formatAddress,
   limitString,
   unknownToken,
 } from "@owallet/common";
@@ -97,7 +98,11 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
     }
   }, [chainStore.current.chainId, appInitStore.getInitApp.isAllNetworks]);
   const styles = styling(colors);
+
   const renderChain = ({ item }) => {
+    const Denom = removeDataInParentheses(
+      item.token?.currency?.coinDenom
+    ).trim();
     return (
       <Box
         key={`${item.chainInfo?.chainId}-${item.token?.toString()}`}
@@ -137,9 +142,7 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
                   color={colors["neutral-text-heading"]}
                   weight="600"
                 >
-                  {removeDataInParentheses(
-                    item.token?.currency?.coinDenom
-                  ).trim()}
+                  {Denom?.length > 15 ? formatAddress(Denom, 14) : Denom}
                 </Text>
               </XAxis>
               <Text
@@ -159,7 +162,7 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
           </View>
           <View style={styles.rightBoxItem}>
             <XAxis alignY={"center"}>
-              <View style={{ alignItems: "flex-end" }}>
+              <View style={{ alignItems: "flex-end", width: "50%" }}>
                 <Text
                   size={16}
                   style={{ lineHeight: 24 }}
@@ -295,9 +298,11 @@ const styling = (colors) => {
     },
     leftBoxItem: {
       flexDirection: "row",
+      flex: 0.5,
     },
     rightBoxItem: {
       alignItems: "flex-end",
+      flex: 1,
     },
     wraperItem: {
       flexDirection: "row",
@@ -305,6 +310,7 @@ const styling = (colors) => {
       marginVertical: 8,
       marginHorizontal: 16,
       alignItems: "center",
+      flexWrap: "wrap",
     },
     btnItem: {
       borderBottomColor: colors["neutral-border-default"],
