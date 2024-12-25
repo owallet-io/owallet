@@ -348,12 +348,19 @@ export const SignSvmModal = registerModal(
               setSimulationData(result);
             })();
           } catch (e) {
+            setSimulationData({
+              status: "ERROR",
+              error_details: {
+                message: JSON.stringify(e),
+              },
+            });
             console.log(e, "errr deserializeTransaction");
           }
         }
       }
     }, [interactionData.data]);
     console.log(simulationData, "simulationData");
+    console.log(feeConfig.fees[0]?.toCoin().amount, "feeConfig.fees[0]");
     const hasError = simulationData?.status === "ERROR";
     return (
       <WrapViewModal
@@ -422,6 +429,33 @@ export const SignSvmModal = registerModal(
                 {simulationData?.status === "SUCCESS" &&
                   simulationData?.result?.simulation?.account_summary?.account_assets_diff.map(
                     (item) => {
+                      const valueCheck = ((): Dec => {
+                        if (item.asset_type === "SOL" && item.out) {
+                          return new Dec(item.out.raw_value || 0).sub(
+                            new Dec(feeConfig.fees[0]?.toCoin()?.amount || 0)
+                          );
+                        }
+                        return new Dec((item.out || item.in).raw_value);
+                      })();
+                      const value = ((): string => {
+                        if (
+                          item.asset_type === "SOL" &&
+                          item.out &&
+                          valueCheck &&
+                          valueCheck.gt(new Dec(0))
+                        ) {
+                          return new CoinPretty(
+                            chainInfo.feeCurrencies[0],
+                            valueCheck
+                          )
+                            .trim(true)
+                            .toString();
+                        }
+                        return `${(item.out || item.in).value} ${
+                          item.asset.symbol
+                        }`;
+                      })();
+                      if (valueCheck && valueCheck.lte(new Dec(0))) return;
                       return (
                         <>
                           <Box
@@ -455,9 +489,7 @@ export const SignSvmModal = registerModal(
                                     : null
                                 }
                               >
-                                {`${(item.out || item.in).value} ${
-                                  item.asset.symbol || "SOL"
-                                }`}
+                                {value || ""}
                               </OWText>
                               <OWText color={colors["neutral-text-body"]}>
                                 ≈ $

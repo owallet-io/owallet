@@ -115,6 +115,7 @@ export async function getSimulationTxSolana(
     // return json;
   } catch (e) {
     console.log(e, "errr fetch data");
+    throw Error(e);
   }
 }
 export async function confirmTransaction(
