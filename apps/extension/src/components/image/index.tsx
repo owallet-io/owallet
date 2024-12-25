@@ -117,6 +117,8 @@ export const CurrencyImageFallback: FunctionComponent<
 
   const { style, size, currency, chainInfo, ...otherProps } = props;
 
+  console.log("currency", currency);
+
   return (
     <div
       style={{

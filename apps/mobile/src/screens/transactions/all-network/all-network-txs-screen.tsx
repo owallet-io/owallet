@@ -53,6 +53,8 @@ const AllNetworkTxsScreen = observer(() => {
           ? getOasisAddress(address)
           : address,
       };
+  console.log("allArr", allArr);
+
   const fetchData = async (addrByNetworks, isLoadMore = false) => {
     try {
       if (!isLoadMore) setLoading(true);
