@@ -1,25 +1,14 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { Box } from "../../components/box";
 import { MainHeaderLayout } from "../main/layouts/header";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
-import { usePaginatedCursorQuery } from "../main/token-detail/hook";
-import { ResMsgsHistory } from "../main/token-detail/types";
-import { PaginationLimit, Relations } from "../main/token-detail/constants";
-import { RenderMessages } from "../main/token-detail/messages";
 import { ColorPalette } from "../../styles";
 import { Stack } from "../../components/stack";
-import { MsgItemSkeleton } from "../main/token-detail/msg-items/skeleton";
 import styled, { css, useTheme } from "styled-components";
 import { Gutter } from "../../components/gutter";
-import { Dropdown } from "../../components/dropdown";
 import { EmptyView } from "../../components/empty-view";
-import {
-  Caption1,
-  H4,
-  Subtitle2,
-  Subtitle3,
-} from "../../components/typography";
+import { Caption1, Subtitle2, Subtitle3 } from "../../components/typography";
 import { useGlobarSimpleBar } from "../../hooks/global-simplebar";
 import { IAccountStore, IChainInfoImpl, IChainStore } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -34,7 +23,6 @@ import {
   MapNetworkToChainId,
   unknownToken,
 } from "@owallet/common";
-import { useLoadingIndicator } from "../../components/loading-indicator";
 import { AllNetworkItemTx } from "@owallet/types";
 import { CoinPretty, Dec } from "@owallet/unit";
 import moment from "moment";

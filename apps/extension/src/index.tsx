@@ -94,6 +94,7 @@ import {
 } from "./bottom-tabs";
 import { SendTronPage } from "./pages/send/amount/tron";
 import { SignTronTxPage } from "./pages/sign/tron";
+import { ExplorePage } from "pages/explore/explore-page";
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -324,28 +325,28 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
         tabs={[
           {
             pathname: "/",
-            icon: <BottomTabHomeIcon width="1.25rem" height="1.75rem" />,
+            icon: <BottomTabHomeIcon width="1.25rem" height="1.25rem" />,
             text: intl.formatMessage({
               id: "bottom-tabs.home",
             }),
           },
           {
             pathname: "/activities",
-            icon: <BottomTabActivityIcon width="1.25rem" height="1.75rem" />,
+            icon: <BottomTabActivityIcon width="1.25rem" height="1.25rem" />,
             text: intl.formatMessage({
               id: "bottom-tabs.activity",
             }),
           },
           {
             pathname: "/explore",
-            icon: <BottomTabExploreIcon width="1.25rem" height="1.75rem" />,
+            icon: <BottomTabExploreIcon width="1.25rem" height="1.25rem" />,
             text: intl.formatMessage({
               id: "bottom-tabs.explore",
             }),
           },
           {
             pathname: "/setting",
-            icon: <BottomTabSettingIcon width="1.25rem" height="1.75rem" />,
+            icon: <BottomTabSettingIcon width="1.25rem" height="1.25rem" />,
             text: intl.formatMessage({
               id: "bottom-tabs.settings",
             }),
@@ -373,6 +374,7 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               />
 
               <Route path="/activities" element={<ActivitiesPage />} />
+              <Route path="/explore" element={<ExplorePage />} />
               <Route path="/setting" element={<SettingPage />} />
               <Route path="/setting/general" element={<SettingGeneralPage />} />
               <Route
