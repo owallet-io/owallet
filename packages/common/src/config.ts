@@ -386,8 +386,8 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     txExplorer: {
       name: "Oraiscan",
-      txUrl: "https://scan.orai.io/txs/{txHash}",
-      accountUrl: "https://scan.orai.io/account/{address}",
+      txUrl: "https://scanium.io/Oraichain/tx/{txHash}",
+      accountUrl: "https://scanium.io/account/{address}",
     },
   },
   {
@@ -437,9 +437,9 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     features: ["gen-address", "svm", "not-support-staking"],
     txExplorer: {
-      name: "Sol Scan",
-      txUrl: "https://solscan.io/tx/{txHash}",
-      accountUrl: "https://solscan.io/address/{address}",
+      name: "Sol Explorer",
+      txUrl: "https://explorer.solana.com/tx/{txHash}",
+      accountUrl: "https://explorer.solana.com/address/{address}",
     },
   },
   {
@@ -967,8 +967,8 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["stargate", "ibc-transfer", "cosmwasm"],
     txExplorer: {
       name: "Orai Bridge Scan",
-      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
-      accountUrl: "https://scan.bridge.orai.io/account/{address}",
+      txUrl: "https://scanium.io/OraiBridge/tx/{txHash}",
+      accountUrl: "https://scanium.io/OraiBridge/account/{address}",
     },
   },
   // {
@@ -1291,12 +1291,12 @@ export const ChainIdentifierToTxExplorerMap: Record<
   { name: string; txUrl: string } | undefined
 > = {
   cosmoshub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/cosmos/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/cosmos/tx/{txHash}",
   },
   Oraichain: {
     name: "Oraiscan",
-    txUrl: "https://scan.orai.io/txs/{txHash}",
+    txUrl: "https://scanium.io/Oraichain/tx/{txHash}",
   },
   Neutaro: {
     name: "Neutaro",
@@ -1304,136 +1304,136 @@ export const ChainIdentifierToTxExplorerMap: Record<
   },
 
   osmosis: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/osmosis/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/osmosis/tx/{txHash}",
   },
   secret: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/secret/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/secret/tx/{txHash}",
   },
   akashnet: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/akash/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/akash/tx/{txHash}",
   },
   mars: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/mars-protocol/txs/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/mars-protocol/txs/{txHash}",
   },
   "crypto-org-chain-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/crypto-org/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/crypto-org/tx/{txHash}",
   },
   "shentu-2.2": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/shentu/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/shentu/tx/{txHash}",
   },
   irishub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/iris/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/iris/tx/{txHash}",
   },
   regen: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/regen/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/regen/tx/{txHash}",
   },
   core: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/persistence/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/persistence/tx/{txHash}",
   },
   sentinelhub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/sentinel/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/sentinel/tx/{txHash}",
   },
   juno: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/juno/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/juno/tx/{txHash}",
   },
   stargaze: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/stargaze/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/stargaze/tx/{txHash}",
   },
   "axelar-dojo": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/axelar/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/axelar/tx/{txHash}",
   },
   sommelier: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/sommelier/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/sommelier/tx/{txHash}",
   },
   umee: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/umee/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/umee/tx/{txHash}",
   },
   "gravity-bridge": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/gravity-bridge/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/gravity-bridge/tx/{txHash}",
   },
   "tgrade-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/tgrade/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/tgrade/tx/{txHash}",
   },
   stride: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/stride/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/stride/tx/{txHash}",
   },
   evmos_9001: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/evmos/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/evmos/tx/{txHash}",
   },
   injective: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/injective/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/injective/tx/{txHash}",
   },
   kava_2222: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/kava/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/kava/tx/{txHash}",
   },
   quicksilver: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/quicksilver/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/quicksilver/tx/{txHash}",
   },
   phoenix: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/terra/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/terra/tx/{txHash}",
   },
   quasar: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/quasar/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/quasar/tx/{txHash}",
   },
   noble: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/noble/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/noble/tx/{txHash}",
   },
   omniflixhub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/omniflix/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/omniflix/tx/{txHash}",
   },
   kyve: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/kyve/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/kyve/tx/{txHash}",
   },
   neutron: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/neutron/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/neutron/tx/{txHash}",
   },
   "likecoin-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/likecoin/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/likecoin/tx/{txHash}",
   },
   passage: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/passage/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/passage/tx/{txHash}",
   },
   dymension_1100: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/dymension/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/dymension/tx/{txHash}",
   },
   chihuahua: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/chihuahua/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/chihuahua/tx/{txHash}",
   },
   dimension_37: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/xpla/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/xpla/tx/{txHash}",
   },
 };
 
