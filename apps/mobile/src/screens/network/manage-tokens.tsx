@@ -82,6 +82,7 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
           return (
             <OWButtonIcon
               sizeIcon={24}
+              disabled={true}
               typeIcon={"images"}
               colorIcon={"red"}
               source={{
@@ -210,7 +211,11 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
     );
   };
   return (
-    <PageWithView>
+    <PageWithView
+      style={{
+        paddingTop: 8,
+      }}
+    >
       <OWBox style={styles.pageContainer}>
         <XAxis>
           <OWSearchInput
