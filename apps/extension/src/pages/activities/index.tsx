@@ -22,8 +22,6 @@ import { Bech32Address } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import { FormattedMessage } from "react-intl";
 
-// React hook으로 처리하기 귀찮은 부분이 많아서
-// 그냥 대충 mobx로...
 class OtherBech32Addresses {
   @observable.ref
   protected supportedChainList: IChainInfoImpl[] = [];
@@ -88,6 +86,9 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
   const [otherBech32Addresses] = useState(
     () => new OtherBech32Addresses(chainStore, accountStore, "cosmoshub")
   );
+
+  console.log("otherBech32Addresses", otherBech32Addresses);
+
   const account = accountStore.getAccount("cosmoshub");
 
   const [selectedKey, setSelectedKey] = useState<string>("__all__");
@@ -152,8 +153,6 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
       .map((address) => `${address.chainIdentifier}:${address.bech32Address}`)
       .join(",")}`,
     (key: string) => {
-      // key가 아래와 같으면 querySupported나 account 중 하나도 load되지 않은 경우다.
-      // 이런 경우 query를 할 필요가 없다.
       return key !== `${selectedKey}//`;
     }
   );
@@ -311,7 +310,6 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
             );
           }
 
-          // 아무 history도 없는 경우
           if (msgHistory.pages[0].response?.msgs.length === 0) {
             return (
               <EmptyView

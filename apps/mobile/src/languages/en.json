@@ -691,7 +691,7 @@
   "new-feature.ibc-swap.title": "✨ Swap is Here!",
   "new-feature.ibc-swap.paragraph": "Swap tokens between different chains with a simple click. Give it a try!",
   "new-feature.ibc-swap.button": "Got it!",
-  "components.empty-view.text": "No {subject} Yet",
+  "components.empty-view.text": "No {subject} Found",
   "components.input.recipient-input.wallet-address-label": "Wallet Address or ICNS",
   "components.input.amount-input.amount-label": "Amount",
   "components.input.amount-input.max-button": "Max",

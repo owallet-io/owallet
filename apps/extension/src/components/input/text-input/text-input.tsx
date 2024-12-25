@@ -41,7 +41,7 @@ export const TextInput = forwardRef<
           error={error}
           disabled={props.disabled}
           errorBorder={props.errorBorder}
-          borderRadius={style.borderRadius}
+          borderRadius={style?.borderRadius}
         >
           <Columns sum={1}>
             <MockBox show={!!left}>
@@ -59,7 +59,7 @@ export const TextInput = forwardRef<
                 paragraph={paragraph}
                 error={error}
                 ref={ref}
-                height={style.height}
+                height={style?.height}
               />
             </Column>
 
