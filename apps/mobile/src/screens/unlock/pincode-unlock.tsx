@@ -215,6 +215,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       chainStore.selectChain(ChainIdEnum.Injective);
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
+    } else {
+      appInitStore.selectAllNetworks(true);
     }
   };
 

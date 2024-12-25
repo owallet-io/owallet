@@ -324,34 +324,53 @@ export const SignSvmModal = registerModal(
               data?.message as string
             ).message as any;
             (async () => {
-              const feeInLamports = await connection.getFeeForMessage(
-                transferInstruction
-              );
-              if (!feeInLamports?.value) return;
-              const baseFee = new Dec(feeInLamports.value || 0);
-              const fee = [
-                {
-                  amount: baseFee.roundUp().toString(),
-                  currency: feeConfig.chainInfo.feeCurrencies[0],
-                },
-              ];
-              feeConfig.setManualFee(fee);
-              const result = await getSimulationTxSolana(
-                [data.message as string],
-                chainInfo.chainId.replace("solana:", ""),
-                data.signer,
-                data.origin
-              );
-              console.log(result, "result");
-              // if (!result.simulation) return;
+              try {
+                const feeInLamports = await connection.getFeeForMessage(
+                  transferInstruction
+                );
+                if (!feeInLamports?.value) return;
+                const baseFee = new Dec(feeInLamports.value || 0);
+                const fee = [
+                  {
+                    amount: baseFee.roundUp().toString(),
+                    currency: feeConfig.chainInfo.feeCurrencies[0],
+                  },
+                ];
+                feeConfig.setManualFee(fee);
 
-              setSimulationData(result);
+                const result = await getSimulationTxSolana(
+                  [data.message as string],
+                  chainInfo.chainId.replace("solana:", ""),
+                  data.signer,
+                  data.origin
+                );
+                console.log(result, "result");
+                // if (!result.simulation) return;
+                if (!result) {
+                  setSimulationData({
+                    status: "ERROR",
+                    error_details: {
+                      message: " Network request failed",
+                    },
+                  });
+                  return;
+                }
+                setSimulationData(result);
+              } catch (e) {
+                console.log(e, "eeerrr");
+                setSimulationData({
+                  status: "ERROR",
+                  error_details: {
+                    message: e?.message || JSON.stringify(e),
+                  },
+                });
+              }
             })();
           } catch (e) {
             setSimulationData({
               status: "ERROR",
               error_details: {
-                message: JSON.stringify(e),
+                message: e?.message || JSON.stringify(e),
               },
             });
             console.log(e, "errr deserializeTransaction");
