@@ -87,6 +87,7 @@ import { isRunningInSidePanel } from "./helpers/side-panel";
 import { useIntl } from "react-intl";
 import {
   BottomTabActivityIcon,
+  BottomTabExploreIcon,
   BottomTabHomeIcon,
   BottomTabSettingIcon,
   BottomTabsRouteProvider,
@@ -328,18 +329,18 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               id: "bottom-tabs.home",
             }),
           },
-          // {
-          //   pathname: "/ibc-swap",
-          //   icon: <BottomTabSwapIcon width="1.75rem" height="1.75rem" />,
-          //   text: intl.formatMessage({
-          //     id: "bottom-tabs.swap",
-          //   }),
-          // },
           {
             pathname: "/activities",
             icon: <BottomTabActivityIcon width="1.75rem" height="1.75rem" />,
             text: intl.formatMessage({
               id: "bottom-tabs.activity",
+            }),
+          },
+          {
+            pathname: "/explore",
+            icon: <BottomTabExploreIcon width="1.75rem" height="1.75rem" />,
+            text: intl.formatMessage({
+              id: "bottom-tabs.explore",
             }),
           },
           {

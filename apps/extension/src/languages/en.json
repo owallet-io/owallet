@@ -23,7 +23,8 @@
   "error.outdated-cosmos-sdk": "Not supported: outdated version of cosmos-sdk",
   "error.can-not-find-fee-for-claim-all": "Can't find fee currency to pay",
 
-  "bottom-tabs.home": "Home",
+  "bottom-tabs.home": "Assets",
+  "bottom-tabs.explore": "Explore",
   "bottom-tabs.swap": "Swap",
   "bottom-tabs.activity": "Activity",
   "bottom-tabs.settings": "Settings",

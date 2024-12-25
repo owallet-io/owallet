@@ -9,10 +9,6 @@ import { Box } from "./components/box";
 
 export const BottomTabsHeightRem = "3.75rem";
 
-// XXX: Tab 아이콘을 활성 상태에 따라 바꾸려고 쓰임.
-//      여기서 Context API를 쓰는게 에바인 것 같기는 한데
-//      원래는 active state에 따라서 아이콘이 변하는 디자인이 아니였는데
-//      나중에 바뀜에 따라서 기능을 추가해야하는데 귀찮아서 이렇게 처리함.
 const BottomTabActiveStateContext = React.createContext<{
   isActive: boolean;
 } | null>(null);
@@ -86,7 +82,6 @@ export const BottomTabsRouteProvider: FunctionComponent<
               <Box
                 key={i}
                 style={{
-                  // text의 길이와 상관없이 모든 tab이 균등하게 나눠져야 하므로 상위에 width: 1px를 주는 trick을 사용한다.
                   width: "1px",
                 }}
               >
@@ -181,62 +176,50 @@ export const BottomTabHomeIcon: FunctionComponent<{
   const isActive = useIsTabActive();
 
   return isActive ? (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="none"
-      stroke="none"
-      viewBox="0 0 28 28"
-    >
-      <path
-        fill="currentColor"
-        d="M15.403 3.844a2.1 2.1 0 00-2.807 0l-7.7 6.918a2.1 2.1 0 00-.697 1.561V22.2a2.1 2.1 0 002.1 2.1h2.8a2.1 2.1 0 002.1-2.1v-5.6a.7.7 0 01.7-.7h4.2a.7.7 0 01.7.7v5.6a2.1 2.1 0 002.1 2.1h2.8a2.1 2.1 0 002.1-2.1v-9.877a2.098 2.098 0 00-.696-1.56l-7.7-6.92z"
-      />
-    </svg>
+    <img
+      src={require("assets/images/assets-light-active.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
   ) : (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="none"
-      stroke="none"
-      viewBox="0 0 28 28"
-    >
-      <path
-        stroke="currentColor"
-        strokeWidth="2.2"
-        d="M15.403 3.844a2.1 2.1 0 00-2.807 0l-7.7 6.918a2.1 2.1 0 00-.697 1.561V22.2a2.1 2.1 0 002.1 2.1h2.8a2.1 2.1 0 002.1-2.1v-5.6a.7.7 0 01.7-.7h4.2a.7.7 0 01.7.7v5.6a2.1 2.1 0 002.1 2.1h2.8a2.1 2.1 0 002.1-2.1v-9.877a2.098 2.098 0 00-.696-1.56l-7.7-6.92z"
-      />
-    </svg>
+    <img
+      src={require("assets/images/assets-light-inactive.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
   );
 };
 
-export const BottomTabSwapIcon: FunctionComponent<{
+export const BottomTabExploreIcon: FunctionComponent<{
   width: string;
   height: string;
 }> = ({ width, height }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="none"
-      stroke="none"
-      viewBox="0 0 28 28"
-    >
-      <g clipPath="url(#clip0_5910_45809)">
-        <path
-          fill="currentColor"
-          d="M7.207 12.929L1 19.214 7.207 25.5v-4.714H18.11v-3.143H7.207v-4.714zM27 9.786L20.793 3.5v4.714H9.89v3.143h10.904v4.714L27 9.786z"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_5910_45809">
-          <path fill="#fff" d="M0 0H28V28H0z" transform="translate(0 .5)" />
-        </clipPath>
-      </defs>
-    </svg>
+  const isActive = useIsTabActive();
+
+  return isActive ? (
+    <img
+      src={require("assets/images/explore-light-active.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
+  ) : (
+    <img
+      src={require("assets/images/explore-light-inactive.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
   );
 };
 
@@ -247,34 +230,23 @@ export const BottomTabActivityIcon: FunctionComponent<{
   const isActive = useIsTabActive();
 
   return isActive ? (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="none"
-      viewBox="0 0 28 28"
-    >
-      <path
-        fill="currentColor"
-        fillRule="evenodd"
-        d="M7 4.5a1 1 0 00-1 1v18a1 1 0 001 1h14a1 1 0 001-1v-13a1 1 0 00-.293-.707l-5-5A1 1 0 0016 4.5H7zM16 6l4 4h-4V6zm-7 9.5a1 1 0 011-1h8a1 1 0 010 2h-8a1 1 0 01-1-1zm0 4a1 1 0 011-1h8a1 1 0 010 2h-8a1 1 0 01-1-1z"
-        clipRule="evenodd"
-      />
-    </svg>
+    <img
+      src={require("assets/images/history-light-active.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
   ) : (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={width}
-      height={height}
-      fill="none"
-      stroke="none"
-      viewBox="0 0 28 28"
-    >
-      <path
-        fill="currentColor"
-        d="M17.584 6.167h-9.75V23.5h13V9.417h-3.25v-3.25zM7.834 4h10.833L23 8.334V23.5a2.166 2.166 0 01-2.166 2.167h-13A2.167 2.167 0 015.667 23.5V6.167A2.167 2.167 0 017.834 4zM10 13.75h8.667v2.167H10V13.75zm0 4.334h8.667v2.166H10v-2.166z"
-      />
-    </svg>
+    <img
+      src={require("assets/images/history-light-inactive.png")}
+      alt="OWallet logo"
+      style={{
+        width: width ?? 28,
+        height: height ?? 28,
+      }}
+    />
   );
 };
 

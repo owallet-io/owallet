@@ -36,7 +36,16 @@ const fallback = {
 const commonResolve = (dir) => ({
   extensions: [".ts", ".tsx", ".js", ".jsx"],
   alias: {
-    assets: path.resolve(__dirname, dir),
+    // assets: path.resolve(__dirname, dir),
+    assets: path.resolve(__dirname, "./src/public/assets"),
+    components: path.resolve(__dirname, "./src/components"),
+    pages: path.resolve(__dirname, "./src/pages"),
+    layouts: path.resolve(__dirname, "./src/layouts"),
+    helpers: path.resolve(__dirname, "./src/helpers"),
+    src: path.resolve(__dirname, "./src"),
+    stores: path.resolve(__dirname, "./src/stores"),
+    theme: path.resolve(__dirname, "./src/theme"),
+    hooks: path.resolve(__dirname, "./src/hooks"),
   },
   fallback,
 });
