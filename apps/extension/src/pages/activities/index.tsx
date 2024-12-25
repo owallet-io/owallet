@@ -10,7 +10,7 @@ import { RenderMessages } from "../main/token-detail/messages";
 import { ColorPalette } from "../../styles";
 import { Stack } from "../../components/stack";
 import { MsgItemSkeleton } from "../main/token-detail/msg-items/skeleton";
-import { useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { Gutter } from "../../components/gutter";
 import { Dropdown } from "../../components/dropdown";
 import { EmptyView } from "../../components/empty-view";
@@ -20,7 +20,19 @@ import { IAccountStore, IChainInfoImpl, IChainStore } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { Bech32Address } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
-import { FormattedMessage } from "react-intl";
+import {
+  API,
+  convertObjChainAddressToString,
+  formatAddress,
+  getTimeMilliSeconds,
+  MapNetworkToChainId,
+  unknownToken,
+} from "@owallet/common";
+import { useLoadingIndicator } from "../../components/loading-indicator";
+import { AllNetworkItemTx } from "@owallet/types";
+import { CoinPretty, Dec } from "@owallet/unit";
+import moment from "moment";
+import Color from "color";
 
 class OtherBech32Addresses {
   @observable.ref
@@ -80,82 +92,139 @@ class OtherBech32Addresses {
   }
 }
 
+const Styles = {
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    display: flex;
+    flex-direction: column;
+    background-color: #242325;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    margin-right: -16px;
+    margin-left: -16px;
+    padding: 16px;
+  `,
+  Title: styled.div`
+    color: #f5f5f7;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px; /* 150% */
+    text-transform: uppercase;
+    text-align: center;
+  `,
+  Date: styled.div`
+    color: #f5f5f7;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px; /* 142.857% */
+  `,
+  TokenItem: styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #2d2855;
+    &:hover: {
+      background-color: #3b3569;
+      border-radius: 8px;
+      padding-left: 8px;
+      padding-right: 8px;
+      margin-left: -8px;
+      margin-right: -8px;
+    }
+  `,
+  WrapLeftBlock: styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+  `,
+  TokenWrap: styled.div`
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background-color: #2d2855;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  `,
+  ChainWrap: styled.div`
+    position: absolute;
+    right: -3px;
+    bottom: -1px;
+    border-radius: 999px;
+    width: 21px;
+    height: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #242325;
+    border: 1px solid #909298;
+  `,
+  BodyTokenItem: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  `,
+  TokenTitle: styled.div`
+    color: #f5f5f7;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+  `,
+  TokenSubTitle: styled.div`
+    color: #afaad8;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+  `,
+  RightBlock: styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+  `,
+};
+
 export const ActivitiesPage: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, priceStore, queriesStore } = useStore();
+  const {
+    accountStore,
+    hugeQueriesStore,
+    chainStore,
+    priceStore,
+    keyRingStore,
+  } = useStore();
 
-  const [otherBech32Addresses] = useState(
-    () => new OtherBech32Addresses(chainStore, accountStore, "cosmoshub")
-  );
+  const allArr = hugeQueriesStore.getAllAddrByChain;
+  console.log("allArr", allArr);
 
-  console.log("otherBech32Addresses", otherBech32Addresses);
-
-  const account = accountStore.getAccount("cosmoshub");
-
-  const [selectedKey, setSelectedKey] = useState<string>("__all__");
-
-  const querySupported = queriesStore.simpleQuery.queryGet<string[]>(
-    process.env["KEPLR_EXT_CONFIG_SERVER"],
-    "/tx-history/supports"
-  );
-
-  const supportedChainList = useMemo(() => {
-    const map = new Map<string, boolean>();
-    for (const chainIdentifier of querySupported.response?.data ?? []) {
-      map.set(chainIdentifier, true);
+  const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);
+  const getWalletHistory = async (addrByNetworks) => {
+    try {
+      const data = await API.getTxsAllNetwork({
+        addrByNetworks: addrByNetworks,
+        offset: 0,
+        limit: 30,
+      });
+      setHistories(data.data);
+    } catch (err) {
+      console.log("getWalletHistory err", err);
+    } finally {
     }
+  };
 
-    return chainStore.chainInfosInListUI.filter((chainInfo) => {
-      return map.get(chainInfo.chainIdentifier) ?? false;
-    });
-  }, [chainStore.chainInfosInListUI, querySupported.response?.data]);
-
-  otherBech32Addresses.setSupportedChainList(supportedChainList);
-
-  const msgHistory = usePaginatedCursorQuery<ResMsgsHistory>(
-    process.env["KEPLR_EXT_TX_HISTORY_BASE_URL"],
-    () => {
-      return `/history/msgs/keplr-multi-chain?baseBech32Address=${
-        account.bech32Address
-      }&chainIdentifiers=${(() => {
-        if (selectedKey === "__all__") {
-          return supportedChainList
-            .map((chainInfo) => chainInfo.chainId)
-            .join(",");
-        }
-        return selectedKey;
-      })()}&relations=${Relations.join(",")}&vsCurrencies=${
-        priceStore.defaultVsCurrency
-      }&limit=${PaginationLimit}${(() => {
-        if (otherBech32Addresses.otherBech32Addresses.length === 0) {
-          return "";
-        }
-        return `&otherBech32Addresses=${otherBech32Addresses.otherBech32Addresses
-          .map(
-            (address) => `${address.chainIdentifier}:${address.bech32Address}`
-          )
-          .join(",")}`;
-      })()}`;
-    },
-    (_, prev) => {
-      return {
-        cursor: prev.nextCursor,
-      };
-    },
-    (res) => {
-      if (!res.nextCursor) {
-        return true;
-      }
-      return false;
-    },
-    `${selectedKey}/${supportedChainList
-      .map((chainInfo) => chainInfo.chainId)
-      .join(",")}/${otherBech32Addresses.otherBech32Addresses
-      .map((address) => `${address.chainIdentifier}:${address.bech32Address}`)
-      .join(",")}`,
-    (key: string) => {
-      return key !== `${selectedKey}//`;
-    }
-  );
+  useEffect(() => {
+    setHistories([]);
+    const allAddress = convertObjChainAddressToString(allArr);
+    if (!allAddress) return;
+    getWalletHistory(allAddress);
+  }, []);
 
   const theme = useTheme();
 
@@ -176,7 +245,7 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
               rect.y + rect.height - scrollRect.y - scrollRect.height;
 
             if (remainingBottomY < scrollRect.height / 10) {
-              msgHistory.next();
+              // Do something like load more
             }
           }
         };
@@ -188,7 +257,7 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
         };
       }
     }
-  }, [globalSimpleBar.ref, msgHistory]);
+  }, [globalSimpleBar.ref]);
 
   return (
     <MainHeaderLayout
@@ -202,171 +271,135 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
       }}
     >
       <Box>
-        <Box alignX="center" alignY="center" paddingY="1.25rem">
-          <H4
-            color={
-              theme.mode === "light"
-                ? ColorPalette["black"]
-                : ColorPalette["white"]
-            }
-          >
-            <FormattedMessage id="page.activity.title" />
-          </H4>
-        </Box>
-        <Box paddingX="0.75rem">
-          <Dropdown
-            size="large"
-            allowSearch={true}
-            searchExcludedKeys={["__all__"]}
-            selectedItemKey={selectedKey}
-            onSelect={(key) => {
-              setSelectedKey(key);
-            }}
-            items={[
-              {
-                key: "__all__",
-                label: "All",
-              },
-              ...supportedChainList.map((chainInfo) => {
-                return {
-                  key: chainInfo.chainId,
-                  label: chainInfo.chainName,
-                };
-              }),
-            ]}
-          />
-        </Box>
-        <Gutter size="0.5rem" />
+        <Styles.Container>
+          <Styles.Title>Last 30 transactions</Styles.Title>
+          <div>
+            {histories?.length > 0 ? (
+              histories.map((item, index) => {
+                const fiat = priceStore.defaultVsCurrency;
+                console.log(item, "item");
+                let currency = unknownToken;
 
-        {(() => {
-          // 최초 loading 중인 경우
-          if (msgHistory.pages.length === 0) {
-            return (
-              <Box padding="0.75rem" paddingTop="0">
-                <Box paddingX="0.375rem" marginBottom="0.5rem" marginTop="0">
-                  <Box
-                    width="5.125rem"
-                    height="0.8125rem"
-                    backgroundColor={
-                      theme.mode === "light"
-                        ? ColorPalette["white"]
-                        : ColorPalette["gray-600"]
-                    }
-                  />
-                </Box>
-                <Stack gutter="0.5rem">
-                  <MsgItemSkeleton />
-                  <MsgItemSkeleton />
-                  <MsgItemSkeleton />
-                  <MsgItemSkeleton />
-                  <MsgItemSkeleton />
-                </Stack>
-              </Box>
-            );
-          }
-
-          if (msgHistory.pages.find((page) => page.error != null)) {
-            return (
-              <EmptyView
-                style={{
-                  marginTop: "2rem",
-                  marginBottom: "2rem",
-                }}
-                altSvg={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="73"
-                    height="73"
-                    fill="none"
-                    viewBox="0 0 73 73"
+                if (item.tokenInfos?.length > 0 && item.tokenInfos[0]) {
+                  currency = {
+                    coinDenom: item.tokenInfos[0]?.abbr,
+                    coinImageUrl: item.tokenInfos[0]?.imgUrl,
+                    coinGeckoId: item.tokenInfos[0]?.coingeckoId,
+                    coinMinimalDenom: item.tokenInfos[0]?.denom,
+                    coinDecimals: item.tokenInfos[0]?.decimal,
+                  };
+                }
+                const amount =
+                  item?.amount?.[0] && currency
+                    ? new CoinPretty(currency, new Dec(item.amount[0]))
+                    : new CoinPretty(unknownToken, new Dec("0"));
+                const priceAmount = priceStore.calculatePrice(amount, fiat);
+                const first =
+                  index > 0 &&
+                  moment(
+                    getTimeMilliSeconds(histories[index - 1]?.timestamp)
+                  ).format("MMM D, YYYY");
+                const now = moment(getTimeMilliSeconds(item?.timestamp)).format(
+                  "MMM D, YYYY"
+                );
+                const isSent =
+                  item.userAddress?.toLowerCase() ===
+                    item.fromAddress?.toLowerCase() ||
+                  item.fromAddress?.toLowerCase() ===
+                    item.toAddress?.toLowerCase();
+                const method = isSent ? "Sent" : "Received";
+                const chainInfo = chainStore.getChain(
+                  MapNetworkToChainId[item.network]
+                );
+                return (
+                  <div
+                    style={{
+                      opacity: currency === unknownToken ? 0.5 : 1,
+                      cursor: "pointer",
+                    }}
+                    key={index}
+                    onClick={() => {
+                      window.open(item?.explorer);
+                    }}
                   >
-                    <path
-                      stroke={
-                        theme.mode === "light"
-                          ? ColorPalette["gray-200"]
-                          : ColorPalette["gray-400"]
-                      }
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="6"
-                      d="M46.15 49.601a13.635 13.635 0 00-9.626-4.006 13.636 13.636 0 00-9.72 4.006m37.03-13.125c0 15.11-12.249 27.357-27.358 27.357S9.12 51.585 9.12 36.476 21.367 9.12 36.476 9.12c15.11 0 27.357 12.248 27.357 27.357zm-34.197-6.839c0 1.26-.51 2.28-1.14 2.28-.63 0-1.14-1.02-1.14-2.28 0-1.26.51-2.28 1.14-2.28.63 0 1.14 1.02 1.14 2.28zm-1.14 0h.023v.046h-.023v-.046zm17.098 0c0 1.26-.51 2.28-1.14 2.28-.63 0-1.14-1.02-1.14-2.28 0-1.26.51-2.28 1.14-2.28.63 0 1.14 1.02 1.14 2.28zm-1.14 0h.023v.046h-.023v-.046z"
-                    />
-                  </svg>
-                }
-              >
-                <Box marginX="2rem">
-                  <Stack alignX="center" gutter="0.1rem">
-                    <Subtitle3>Network error.</Subtitle3>
-                    <Subtitle3
-                      style={{
-                        textAlign: "center",
-                      }}
-                    >
-                      Please try again after a few minutes.
-                    </Subtitle3>
-                  </Stack>
-                </Box>
-              </EmptyView>
-            );
-          }
-
-          if (msgHistory.pages[0].response?.msgs.length === 0) {
-            return (
-              <EmptyView
+                    {first != now || index === 0 ? (
+                      <Styles.Date>{now}</Styles.Date>
+                    ) : null}
+                    <Styles.TokenItem>
+                      <Styles.WrapLeftBlock>
+                        <div>
+                          <Styles.TokenWrap>
+                            <img
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 999,
+                              }}
+                              src={
+                                currency?.coinImageUrl?.includes(
+                                  "missing.png"
+                                ) ||
+                                !currency?.coinImageUrl ||
+                                currency?.coinImageUrl?.includes("missing.svg")
+                                  ? unknownToken.coinImageUrl
+                                  : currency?.coinImageUrl
+                              }
+                            />
+                            <Styles.ChainWrap>
+                              <img
+                                style={{
+                                  width: 18,
+                                  height: 18,
+                                  borderRadius: 999,
+                                }}
+                                src={
+                                  chainInfo?.chainSymbolImageUrl ||
+                                  unknownToken.coinImageUrl
+                                }
+                              />
+                            </Styles.ChainWrap>
+                          </Styles.TokenWrap>
+                        </div>
+                        <Styles.BodyTokenItem>
+                          <Styles.TokenTitle>{method}</Styles.TokenTitle>
+                          <Styles.TokenSubTitle>
+                            {formatAddress(item.txhash, 5)}
+                          </Styles.TokenSubTitle>
+                        </Styles.BodyTokenItem>
+                      </Styles.WrapLeftBlock>
+                      <Styles.RightBlock>
+                        <Styles.TokenTitle
+                          style={{
+                            color: !isSent
+                              ? ColorPalette["green-500"]
+                              : ColorPalette["red-500"],
+                          }}
+                        >
+                          {`${!isSent ? "+" : "-"}${amount
+                            .maxDecimals(4)
+                            .trim(true)
+                            ?.toString()
+                            .replace("-", "")}`}
+                        </Styles.TokenTitle>
+                        <Styles.TokenSubTitle>
+                          {priceAmount?.toString().replace("-", "")}
+                        </Styles.TokenSubTitle>
+                      </Styles.RightBlock>
+                    </Styles.TokenItem>
+                  </div>
+                );
+              })
+            ) : (
+              <div
                 style={{
-                  marginTop: "2rem",
-                  marginBottom: "2rem",
+                  height: "calc(100vh - 200px)",
                 }}
               >
-                <Box marginX="2rem">
-                  <Subtitle3>No recent transaction history</Subtitle3>
-                </Box>
-              </EmptyView>
-            );
-          }
-
-          return (
-            <RenderMessages
-              msgHistory={msgHistory}
-              targetDenom={(msg) => {
-                // "custom/merged-claim-rewards"는 예외임
-                if (msg.relation === "custom/merged-claim-rewards") {
-                  if (!msg.denoms || msg.denoms.length === 0) {
-                    throw new Error(`Invalid denoms: ${msg.denoms})`);
-                  }
-                  const chainInfo = chainStore.getChain(msg.chainId);
-                  if (chainInfo.chainIdentifier === "dydx-mainnet") {
-                    // dydx는 USDC에 우선권을 줌
-                    if (
-                      msg.denoms.includes(
-                        "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5"
-                      )
-                    ) {
-                      return "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5";
-                    }
-                  }
-                  if (chainInfo.stakeCurrency) {
-                    if (
-                      msg.denoms.includes(
-                        chainInfo.stakeCurrency.coinMinimalDenom
-                      )
-                    ) {
-                      return chainInfo.stakeCurrency.coinMinimalDenom;
-                    }
-                  }
-                  return msg.denoms[0];
-                }
-                if (!msg.denoms || msg.denoms.length !== 1) {
-                  // 백엔드에서 denoms는 무조건 한개 오도록 보장한다.
-                  throw new Error(`Invalid denoms: ${msg.denoms})`);
-                }
-
-                return msg.denoms[0];
-              }}
-              isInAllActivitiesPage={true}
-            />
-          );
-        })()}
+                <EmptyView />
+              </div>
+            )}
+          </div>
+        </Styles.Container>
       </Box>
     </MainHeaderLayout>
   );

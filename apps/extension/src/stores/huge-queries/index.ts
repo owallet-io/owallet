@@ -9,7 +9,11 @@ import {
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { action, autorun, computed } from "mobx";
-import { DenomHelper } from "@owallet/common";
+import {
+  DenomHelper,
+  getOasisAddress,
+  MapChainIdToNetwork,
+} from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
 import { ChainIdHelper } from "@owallet/cosmos";
@@ -31,13 +35,6 @@ export interface ViewTokenCosmosOnly {
   error: QueryError<any> | undefined;
 }
 
-/**
- * 거대한 쿼리를 만든다.
- * 거대하기 때문에 로직을 분리하기 위해서 따로 만들었다.
- * 근데 이름그대로 거대한 쿼리를 만들기 때문에 꼭 필요할때만 써야한다.
- * 특정 밸런스가 필요하다고 여기서 balance를 다 가져와서 그 중에 한개만 찾아서 쓰고 그러면 안된다.
- * 꼭 필요할때만 쓰자
- */
 export class HugeQueriesStore {
   protected static zeroDec = new Dec(0);
 
@@ -530,5 +527,20 @@ export class HugeQueriesStore {
     } else {
       return 1;
     }
+  }
+
+  @computed
+  get getAllAddrByChain(): Record<string, string> {
+    const data: Record<string, string> = {};
+    for (const chainInfo of this.chainStore.chainInfosInUI) {
+      const account = this.accountStore.getAccount(chainInfo.chainId);
+      const address = account.addressDisplay;
+      const mapChainNetwork = MapChainIdToNetwork[chainInfo.chainId];
+      if (!mapChainNetwork) continue;
+      data[mapChainNetwork] = chainInfo.features.includes("oasis-address")
+        ? getOasisAddress(address)
+        : address;
+    }
+    return data;
   }
 }

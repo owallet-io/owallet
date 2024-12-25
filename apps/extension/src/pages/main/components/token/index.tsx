@@ -1012,7 +1012,6 @@ const PriceChangeTag: FunctionComponent<{
       })()}
     >
       <XAxis alignY="center">
-        <Gutter size="0.25rem" />
         <Caption2>{info.text}</Caption2>
       </XAxis>
     </Box>

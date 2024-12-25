@@ -171,18 +171,7 @@ export const MainPage: FunctionComponent<{
     }
     return result;
   }, [hugeQueriesStore.allKnownBalances, priceStore]);
-  const availableChartWeight = (() => {
-    if (!isNotReady && uiConfigStore.isPrivacyMode) {
-      if (tabStatus === "available") {
-        return 1;
-      }
-      return 0;
-    }
 
-    return availableTotalPrice && !isNotReady
-      ? Number.parseFloat(availableTotalPrice.toDec().toString())
-      : 0;
-  })();
   const stakedTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.delegations) {
