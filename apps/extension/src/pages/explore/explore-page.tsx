@@ -124,19 +124,15 @@ const Styles = {
     margin: 0 -16px;
     padding: 16px 0;
   `,
-  Title: styled.div`
+  Title: styled.span`
     color: ${ColorPalette["gray-650"]};
     font-size: 16px;
     font-weight: 400;
-    line-height: 24px;
-    padding: 0 16px;
   `,
   TitleEco: styled.div`
-    padding: 0 16px;
-    color: ${ColorPalette["gray-450"]};
+    color: ${ColorPalette["purple-600"]};
     font-size: 22px;
     font-weight: 700;
-    line-height: 28px;
   `,
   ContainerTypeNetwork: styled.div`
     padding-top: 8px;
@@ -150,16 +146,19 @@ const Styles = {
     justify-content: center;
     padding: 10px;
     cursor: pointer;
-    border-bottom: ${(props) => (props.active ? 2 : 1)} solid
+    border-bottom: ${(props) => (props.active ? `2px` : `0`)} solid
       ${(props) =>
-        props.active ? ColorPalette["purple-450"] : ColorPalette["gray-450"]};
+        props.active ? ColorPalette["purple-400"] : ColorPalette["gray-400"]};
   `,
   TitleTxtItem: styled.div<{ active?: boolean }>`
     font-weight: 600;
     line-height: 24px;
     font-size: 16px;
-    color: ${(props) =>
-      props.active ? ColorPalette["purple-450"] : ColorPalette["gray-450"]};
+    color: ${(props) => {
+      return props.active
+        ? ColorPalette["purple-400"]
+        : ColorPalette["gray-400"];
+    }};
   `,
   ListExplore: styled.div`
     padding: 16px;
@@ -218,9 +217,10 @@ export const ExplorePage = () => {
       <Box paddingX="0.75rem" paddingBottom="1.5rem">
         <Stack gutter="0.75rem">
           <div>
-            <Styles.Title>Ecosystem</Styles.Title>
-            <br />
-            <Styles.TitleEco>Oraichain</Styles.TitleEco>
+            <Styles.TitleEco>
+              Oraichain <Styles.Title>Ecosystem</Styles.Title>
+            </Styles.TitleEco>
+
             <Styles.ContainerTypeNetwork>
               {types.map((item, index) => (
                 <Styles.ItemTypeNetwork
