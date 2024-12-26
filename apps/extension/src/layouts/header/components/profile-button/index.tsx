@@ -1,6 +1,5 @@
 import React, { FunctionComponent } from "react";
 import { Box } from "../../../../components/box";
-import { ProfileCircleIcon } from "../../../../components/icon";
 import { useNavigate } from "react-router";
 
 export const ProfileButton: FunctionComponent = () => {
@@ -14,7 +13,15 @@ export const ProfileButton: FunctionComponent = () => {
         navigate("/wallet/select");
       }}
     >
-      <ProfileCircleIcon />
+      {/* <ProfileCircleIcon /> */}
+      <img
+        width={24}
+        height={24}
+        style={{
+          borderRadius: 999,
+        }}
+        src={require("assets/images/default-avatar.png")}
+      />
     </Box>
   );
 };

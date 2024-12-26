@@ -99,7 +99,7 @@ export const StakedTabView: FunctionComponent<{
                   onMoreTokensClosed();
                 }
               }}
-              title={<TokenTitleView title={title} tooltip={tooltip} />}
+              title={<TokenTitleView title={title} />}
               lenAlwaysShown={lenAlwaysShown}
               items={balance.map((viewToken) => {
                 if ("altSentence" in viewToken) {

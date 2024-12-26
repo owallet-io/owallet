@@ -53,11 +53,11 @@ export const CopyAddress: FunctionComponent<{
       <XAxis alignY="center">
         <Skeleton type="copyAddress" isNotReady={isNotReady}>
           <Styles.Container onClick={onClick}>
+            <CopyOutlineIcon width="1rem" height="1rem" />
+            <Gutter size="2px" />
             <Caption1>
               <FormattedMessage id="page.main.components.copy-address.title" />
             </Caption1>
-            <Gutter size="2px" />
-            <CopyOutlineIcon width="1rem" height="1rem" />
           </Styles.Container>
         </Skeleton>
       </XAxis>

@@ -19,11 +19,7 @@ import {
 } from "./components";
 import { Stack } from "../../components/stack";
 import { CoinPretty, PricePretty } from "@owallet/unit";
-import {
-  ArrowTopRightOnSquareIcon,
-  EyeIcon,
-  EyeSlashIcon,
-} from "../../components/icon";
+import { ArrowTopRightOnSquareIcon } from "../../components/icon";
 import { Box } from "../../components/box";
 import { Modal } from "../../components/modal";
 import { Gutter } from "../../components/gutter";
@@ -32,6 +28,7 @@ import {
   Caption2,
   H1,
   Subtitle3,
+  Subtitle1,
   Subtitle4,
 } from "../../components/typography";
 import { ColorPalette, SidePanelMaxWidth } from "../../styles";
@@ -46,7 +43,6 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useGlobarSimpleBar } from "../../hooks/global-simplebar";
 import styled, { useTheme } from "styled-components";
 import { IbcHistoryView } from "./components/ibc-history-view";
-import { LayeredHorizontalRadioGroup } from "../../components/radio-group";
 import { XAxis, YAxis } from "../../components/axis";
 import { DepositModal } from "./components/deposit-modal";
 import { MainHeaderLayout, MainHeaderLayoutRef } from "./layouts/header";
@@ -62,6 +58,7 @@ import { DenomHelper } from "@owallet/common";
 import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
 import { ModularChainInfo } from "@owallet/types";
 import Color from "color";
+import { DoubleSortIcon } from "components/icon/double-sort";
 
 export interface ViewToken {
   token: CoinPretty;
@@ -236,18 +233,6 @@ export const MainPage: FunctionComponent<{
     }
     return result;
   }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings, priceStore]);
-  const stakedChartWeight = (() => {
-    if (!isNotReady && uiConfigStore.isPrivacyMode) {
-      if (tabStatus === "staked") {
-        return 1;
-      }
-      return 0;
-    }
-
-    return stakedTotalPrice && !isNotReady
-      ? Number.parseFloat(stakedTotalPrice.toDec().toString())
-      : 0;
-  })();
 
   const lastTotalAvailableAmbiguousAvg = useRef(-1);
   const lastTotalStakedAmbiguousAvg = useRef(-1);
@@ -395,6 +380,7 @@ export const MainPage: FunctionComponent<{
   }, []);
 
   const mainHeaderLayoutRef = useRef<MainHeaderLayoutRef | null>(null);
+  const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
 
   return (
     <MainHeaderLayout
@@ -440,35 +426,46 @@ export const MainPage: FunctionComponent<{
       <Box paddingX="0.75rem" paddingBottom="1.5rem">
         <Stack gutter="0.75rem">
           <Styles.Container isNotReady={isNotReady}>
-            <YAxis alignX="center">
-              <LayeredHorizontalRadioGroup
-                items={[
-                  {
-                    key: "available",
-                    text: intl.formatMessage({
-                      id: "page.main.components.string-toggle.available-tab",
-                    }),
-                  },
-                  {
-                    key: "staked",
-                    text: intl.formatMessage({
-                      id: "page.main.components.string-toggle.staked-tab",
-                    }),
-                  },
-                ]}
-                selectedKey={tabStatus}
-                onSelect={(key) => {
-                  analyticsStore.logEvent("click_main_tab", {
-                    tabName: key,
-                  });
-
-                  setTabStatus(key as TabStatus);
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                paddingBottom: "1rem",
+              }}
+            >
+              <Box
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
-                itemMinWidth="5.75rem"
+              >
+                <img
+                  width={24}
+                  height={24}
+                  style={{
+                    borderRadius: 999,
+                  }}
+                  src={require("assets/images/default-avatar.png")}
+                />
+                <Gutter size="0.5rem" />
+                <Subtitle1>{name}</Subtitle1>
+                <img
+                  width={24}
+                  height={24}
+                  src={require("assets/images/tdesign_chevron_down.svg")}
+                />
+              </Box>
+              <CopyAddress
+                onClick={() => {
+                  analyticsStore.logEvent("click_copyAddress");
+                  setIsOpenDepositModal(true);
+                }}
                 isNotReady={isNotReady}
               />
-            </YAxis>
-            <Gutter size="1rem" />
+            </Box>
             <Box
               style={{
                 display: "flex",
@@ -501,6 +498,15 @@ export const MainPage: FunctionComponent<{
                         <Subtitle3
                           style={{
                             color: ColorPalette["gray-300"],
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (tabStatus === "available") {
+                              setTabStatus("staked" as TabStatus);
+                            } else {
+                              setTabStatus("available" as TabStatus);
+                            }
                           }}
                         >
                           {tabStatus === "available"
@@ -537,15 +543,14 @@ export const MainPage: FunctionComponent<{
                             }}
                             onClick={(e) => {
                               e.preventDefault();
-
-                              uiConfigStore.toggleIsPrivacyMode();
+                              if (tabStatus === "available") {
+                                setTabStatus("staked" as TabStatus);
+                              } else {
+                                setTabStatus("available" as TabStatus);
+                              }
                             }}
                           >
-                            {uiConfigStore.isPrivacyMode ? (
-                              <EyeSlashIcon width="1rem" height="1rem" />
-                            ) : (
-                              <EyeIcon width="1rem" height="1rem" />
-                            )}
+                            <DoubleSortIcon width="1rem" height="1rem" />
                           </Styles.PrivacyModeButton>
                         </animated.div>
                       </XAxis>
@@ -555,10 +560,15 @@ export const MainPage: FunctionComponent<{
                   <Skeleton isNotReady={isNotReady} dummyMinWidth="8.125rem">
                     <H1
                       style={{
+                        cursor: "pointer",
                         color:
                           theme.mode === "light"
                             ? ColorPalette["gray-700"]
                             : ColorPalette["gray-10"],
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        uiConfigStore.toggleIsPrivacyMode();
                       }}
                     >
                       {uiConfigStore.hideStringIfPrivacyMode(
@@ -571,13 +581,6 @@ export const MainPage: FunctionComponent<{
                   </Skeleton>
                 </Box>
               </Box>
-              <CopyAddress
-                onClick={() => {
-                  analyticsStore.logEvent("click_copyAddress");
-                  setIsOpenDepositModal(true);
-                }}
-                isNotReady={isNotReady}
-              />
             </Box>
             <Gutter size="1rem" />
             {tabStatus === "available" ? (
@@ -716,14 +719,16 @@ export const MainPage: FunctionComponent<{
               />
             </StylesCustom.Container>
           ) : (
-            <StakedTabView
-              onMoreTokensClosed={() => {
-                forcePreventScrollRefreshButtonVisible.current = true;
-                setTimeout(() => {
-                  forcePreventScrollRefreshButtonVisible.current = false;
-                }, 1500);
-              }}
-            />
+            <StylesCustom.Container>
+              <StakedTabView
+                onMoreTokensClosed={() => {
+                  forcePreventScrollRefreshButtonVisible.current = true;
+                  setTimeout(() => {
+                    forcePreventScrollRefreshButtonVisible.current = false;
+                  }, 1500);
+                }}
+              />
+            </StylesCustom.Container>
           )}
 
           {tabStatus === "available" &&

@@ -165,7 +165,6 @@ export const MainHeaderLayout = observer<
       );
       kvStore.get<boolean>("hasSeen").then((hasSeen) => {
         if (hasSeen == null) {
-          // 한번도 side menu가 열린적이 없으면 tooltip을 보여준다.
           setShowSidePanelRecommendationTooltip(true);
         }
       });
@@ -173,7 +172,6 @@ export const MainHeaderLayout = observer<
     const prevIsOpenMenu = useRef(isOpenMenu);
     useEffect(() => {
       if (showSidePanelRecommendationTooltip && isOpenMenu) {
-        // 한번이라도 side menu가 열린적이 있으면 tooltip을 보여주지 않는다.
         const kvStore = new ExtensionKVStore(
           "_side_menu_side_panel_recommendation_tooltip"
         );
@@ -181,7 +179,6 @@ export const MainHeaderLayout = observer<
       }
 
       if (isOpenMenu !== prevIsOpenMenu.current) {
-        // side menu가 닫히는 순간에 tooltip을 없앤다.
         if (
           prevIsOpenMenu.current &&
           !isOpenMenu &&
@@ -194,7 +191,6 @@ export const MainHeaderLayout = observer<
     }, [showSidePanelRecommendationTooltip, isOpenMenu]);
 
     useEffect(() => {
-      // showNewSidePanelHeaderTop이 true면서 사이드 메뉴가 열렸으면 당연히 false로 바꿔줘야함
       if (isOpenMenu && uiConfigStore.showNewSidePanelHeaderTop) {
         uiConfigStore.setShowNewSidePanelHeaderTop(false);
       }
@@ -274,7 +270,6 @@ export const MainHeaderLayout = observer<
         })()}
         left={
           <React.Fragment>
-            {/* 일종의 padding left인데 cursor를 가지게 하면서 밑에서 tooltip도 함께 사용하기 위해서 다른 Box로 분리되어있음 */}
             <Box
               width="1rem"
               height="1.5rem"
@@ -381,7 +376,6 @@ export const MainHeaderLayout = observer<
                 }))}
                 selectedItemKey={currentChainIdForStarknet}
                 activeTabOrigin={activeTabOrigin}
-                isForStarknet={true}
               >
                 <Box
                   borderRadius="99999px"
@@ -530,15 +524,7 @@ const ChainSelector: FunctionComponent<
     isForStarknet?: boolean;
   }>
 > = observer(
-  ({
-    children,
-    isOpen,
-    close,
-    items,
-    selectedItemKey,
-    activeTabOrigin,
-    isForStarknet,
-  }) => {
+  ({ children, isOpen, close, items, selectedItemKey, activeTabOrigin }) => {
     const { x, y, strategy, refs } = useFloating({
       placement: "bottom-end",
       middleware: [
@@ -672,9 +658,7 @@ const ChainSelector: FunctionComponent<
               }}
             >
               <Body2>
-                {`${
-                  isForStarknet ? "Starknet" : "EVM"
-                } compatible chains require users to`}
+                {`${"EVM"} compatible chains require users to`}
                 <br /> {"manually switch between networks in"}
                 <br />
                 {"their wallets."}

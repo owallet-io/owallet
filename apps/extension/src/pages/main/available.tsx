@@ -213,39 +213,7 @@ export const AvailableTabView: FunctionComponent<{
                           onMoreTokensClosed();
                         }
                       }}
-                      title={
-                        <TokenTitleView
-                          title={title}
-                          // tooltip={tooltip}
-                          // right={
-                          //   hasLowBalanceTokens ? (
-                          //     <React.Fragment>
-                          //       <Caption1
-                          //         onClick={() => {
-                          //           uiConfigStore.setHideLowBalance(
-                          //             !uiConfigStore.isHideLowBalance
-                          //           );
-                          //         }}
-                          //         color={ColorPalette["gray-300"]}
-                          //       >
-                          //         <FormattedMessage id="page.main.available.hide-low-balance" />
-                          //       </Caption1>
-
-                          //       <Gutter size="0.25rem" />
-
-                          //       <Toggle
-                          //         isOpen={uiConfigStore.isHideLowBalance}
-                          //         setIsOpen={() => {
-                          //           uiConfigStore.setHideLowBalance(
-                          //             !uiConfigStore.isHideLowBalance
-                          //           );
-                          //         }}
-                          //       />
-                          //     </React.Fragment>
-                          //   ) : undefined
-                          // }
-                        />
-                      }
+                      title={<TokenTitleView title={title} />}
                       lenAlwaysShown={lenAlwaysShown}
                       items={balance.map((viewToken) => (
                         <TokenItem

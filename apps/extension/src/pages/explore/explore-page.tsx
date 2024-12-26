@@ -118,11 +118,12 @@ const Styles = {
           : ColorPalette.white
         : ColorPalette["gray-650"]};
 
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    height: 100%;
-    margin: 0 -16px;
-    padding: 16px 0;
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
   `,
   Title: styled.span`
     color: ${ColorPalette["gray-650"]};
@@ -216,7 +217,7 @@ export const ExplorePage = () => {
     <MainHeaderLayout>
       <Box paddingX="0.75rem" paddingBottom="1.5rem">
         <Stack gutter="0.75rem">
-          <div>
+          <Styles.Container>
             <Styles.TitleEco>
               Oraichain <Styles.Title>Ecosystem</Styles.Title>
             </Styles.TitleEco>
@@ -253,7 +254,7 @@ export const ExplorePage = () => {
                 );
               })}
             </Styles.ListExplore>
-          </div>
+          </Styles.Container>
         </Stack>
       </Box>
     </MainHeaderLayout>
