@@ -64,6 +64,12 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
       }));
   }, [allBalances, trimSearch]);
   const [stateMap, setStateMap] = useState(_allBalancesSearchFiltered || []);
+  useEffect(() => {
+    setStateMap(_allBalancesSearchFiltered);
+    return () => {
+      setStateMap([]);
+    };
+  }, [_allBalancesSearchFiltered]);
   const navigation = useNavigation();
   useEffect(() => {
     if (!appInitStore.getInitApp.isAllNetworks) {
