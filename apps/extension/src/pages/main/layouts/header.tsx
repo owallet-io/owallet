@@ -240,12 +240,12 @@ export const MainHeaderLayout = observer<
     return (
       <HeaderLayout
         title={(() => {
-          const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
+          // const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
 
           if (icnsPrimaryName !== "") {
             return (
               <Columns sum={1} alignY="center" gutter="0.25rem">
-                <Box>{name}</Box>
+                {/* <Box>{name}</Box> */}
 
                 <Tooltip
                   content={
@@ -266,7 +266,7 @@ export const MainHeaderLayout = observer<
             );
           }
 
-          return name;
+          return "";
         })()}
         left={
           <React.Fragment>

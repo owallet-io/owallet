@@ -6,10 +6,12 @@ export interface TextInputProps {
 
   paragraph?: string;
   error?: string;
+  border?: boolean;
   errorBorder?: boolean;
   isLoading?: boolean;
 
   className?: string;
+  textAlign?: string;
 
   disabled?: boolean;
   style?: CSSProperties;

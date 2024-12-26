@@ -8,7 +8,6 @@ import {
   IRecipientConfigWithENS,
   IRecipientConfigWithICNS,
 } from "@owallet/hooks";
-import { ProfileIcon } from "../../icon";
 import { Box } from "../../box";
 import { AddressBookModal } from "../../address-book-modal";
 import { IconButton } from "../../icon-button";
@@ -17,6 +16,7 @@ import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import { AppCurrency } from "@owallet/types";
+import { ContactIcon } from "components/icon/contact";
 
 export interface RecipientInputWithAddressBookProps {
   historyType: string;
@@ -102,6 +102,7 @@ export const RecipientInput = observer<RecipientInputProps, HTMLInputElement>(
       <Box>
         <TextInput
           ref={ref}
+          border={false}
           label={intl.formatMessage({
             id:
               isICNSEnabled && isENSEnabled
@@ -143,6 +144,7 @@ export const RecipientInput = observer<RecipientInputProps, HTMLInputElement>(
 
             e.preventDefault();
           }}
+          placeholder={"Enter recipient address"}
           right={
             memoConfig ? (
               <IconButton
@@ -157,7 +159,7 @@ export const RecipientInput = observer<RecipientInputProps, HTMLInputElement>(
                 }
                 padding="0.25rem"
               >
-                <ProfileIcon width="1.5rem" height="1.5rem" />
+                <ContactIcon width="1.5rem" height="1.5rem" />
               </IconButton>
             ) : null
           }

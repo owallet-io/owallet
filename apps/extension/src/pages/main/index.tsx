@@ -59,6 +59,7 @@ import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
 import { ModularChainInfo } from "@owallet/types";
 import Color from "color";
 import { DoubleSortIcon } from "components/icon/double-sort";
+import { useNavigate } from "react-router";
 
 export interface ViewToken {
   token: CoinPretty;
@@ -124,6 +125,7 @@ export const MainPage: FunctionComponent<{
   const isNotReady = useIsNotReady();
   const intl = useIntl();
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const setIsNotReadyRef = useRef(setIsNotReady);
   setIsNotReadyRef.current = setIsNotReady;
@@ -433,6 +435,7 @@ export const MainPage: FunctionComponent<{
                 justifyContent: "space-between",
                 alignItems: "center",
                 paddingBottom: "1rem",
+                cursor: "pointer",
               }}
             >
               <Box
@@ -440,6 +443,9 @@ export const MainPage: FunctionComponent<{
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
+                }}
+                onClick={() => {
+                  navigate("/wallet/select");
                 }}
               >
                 <img

@@ -27,6 +27,7 @@ export const MemoInput: FunctionComponent<{
           label ??
           intl.formatMessage({ id: "components.input.memo-input.memo-label" })
         }
+        border={false}
         placeholder={placeholder}
         onChange={(e) => {
           e.preventDefault();

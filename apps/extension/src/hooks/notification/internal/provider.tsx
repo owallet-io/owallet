@@ -147,11 +147,6 @@ const NotificationView: FunctionComponent<{
   const [visible, setVisible] = useState(false);
   const theme = useTheme();
 
-  // XXX: VerticalCollapseTransition의 고질적인 문제로 인해서
-  //      처음에 false로 시작한 후 그 직후 렌더링에서 바로 true로 했을 경우
-  //      제대로 된 애니메이션이 실행되지 않는다.
-  //      이 문제를 해결하기 위해서 VerticalCollapseTransition의 resize 핸들러가 작동한 후에
-  //      visible을 true로 변경하도록 한다.
   const [resizeInit, setResizeInit] = useState(false);
   const [visibleOnAfterInit, setVisibleOnAfterInit] = useState(false);
 

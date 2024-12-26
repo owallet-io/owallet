@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { HeaderProps } from "./types";
-// import { Subtitle1 } from "../../components/typography";
+import { Subtitle1 } from "../../components/typography";
 import { ColorPalette } from "../../styles";
 import { Box } from "../../components/box";
 import {
@@ -271,7 +271,7 @@ export const HeaderLayout: FunctionComponent<
         {left && !isNotReady ? (
           <Styles.HeaderLeft>{left}</Styles.HeaderLeft>
         ) : null}
-        {/* <Styles.HeaderTitle>
+        <Styles.HeaderTitle>
           <Skeleton
             isNotReady={isNotReady}
             dummyMinWidth="6.25rem"
@@ -280,7 +280,7 @@ export const HeaderLayout: FunctionComponent<
           >
             <Subtitle1>{title}</Subtitle1>
           </Skeleton>
-        </Styles.HeaderTitle> */}
+        </Styles.HeaderTitle>
 
         {right && !isNotReady ? (
           <Styles.HeaderRight>{right}</Styles.HeaderRight>

@@ -54,7 +54,13 @@ export const Styles = {
       bottom: 0;
       left: 0;
       right: 0;
-      border-width: 1px;
+      border-width: ${(props) => {
+        if (props.border) {
+          return "1px";
+        }
+
+        return 0;
+      }};
       border-style: solid;
       border-color: ${(props) => {
         if (props.error || props.errorBorder) {
@@ -120,6 +126,7 @@ export const Styles = {
     height: ${({ isTextarea, height }) =>
       isTextarea ? undefined : height ?? "3.25rem"};
     margin: 0;
+    text-align: ${(props) => props.textAlign ?? "left"};
     padding: ${({ isTextarea }) =>
       isTextarea ? "0.75rem 0.75rem" : "0 0.75rem"};
     background-color: ${(props) =>

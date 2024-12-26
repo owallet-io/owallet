@@ -8,12 +8,9 @@ import React, {
 import { observer } from "mobx-react-lite";
 import { HeaderLayout } from "../../../layouts/header";
 import { BackButton } from "../../../layouts/header/components";
-
 import { Stack } from "../../../components/stack";
-
-import styled from "styled-components";
 import { useSearchParams } from "react-router-dom";
-
+import styled from "styled-components";
 import { useStore } from "../../../stores";
 import {
   useGasSimulator,
@@ -21,7 +18,7 @@ import {
   useTxConfigsValidate,
 } from "@owallet/hooks";
 import { useNavigate } from "react-router";
-import { AmountInput, RecipientInput } from "../../../components/input";
+import { RecipientInput, TokenAmountInput } from "../../../components/input";
 import { TokenItem } from "../../main/components";
 import { Caption2, Subtitle3 } from "../../../components/typography";
 import { Box } from "../../../components/box";
@@ -52,10 +49,40 @@ import { GuideBox } from "../../../components/guide-box";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { amountToAmbiguousAverage, isRunningInSidePanel } from "../../../utils";
 import { EthTxStatus } from "@owallet/types";
+import Color from "color";
 
 const Styles = {
   Flex1: styled.div`
     flex: 1;
+  `,
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    border-radius: 1rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 2px 6px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
   `,
 };
 
@@ -254,7 +281,6 @@ export const SendAmountPage: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
   useEffect(() => {
     const chainInfo = chainStore.getChain(chainId);
-    // feemarket 이상하게 만들어서 simulate하면 더 적은 gas가 나온다 귀찮아서 대충 처리.
     if (chainInfo.hasFeature("feemarket")) {
       if (
         currentFeeCurrencyCoinMinimalDenom !==
@@ -476,7 +502,7 @@ export const SendAmountPage: FunctionComponent = observer(() => {
       bottomButtons={[
         {
           disabled: txConfigsValidate.interactionBlocked,
-          text: intl.formatMessage({ id: "button.next" }),
+          text: intl.formatMessage({ id: "page.send.amount.title" }),
           color: "primary",
           size: "large",
           type: "submit",
@@ -872,41 +898,53 @@ export const SendAmountPage: FunctionComponent = observer(() => {
             <Gutter size="0.75rem" />
           </VerticalCollapseTransition>
           <Gutter size="0" />
-
-          <RecipientInput
-            ref={addressRef}
-            historyType={historyType}
-            recipientConfig={sendConfigs.recipientConfig}
-            memoConfig={sendConfigs.memoConfig}
-            currency={sendConfigs.amountConfig.currency}
-            permitAddressBookSelfKeyInfo={isIBCTransfer}
-            bottom={
-              <VerticalCollapseTransition
-                collapsed={!isIBCRecipientSetAuto}
-                transitionAlign="top"
-              >
-                <Gutter size="0.25rem" />
-                <XAxis>
-                  <Gutter size="0.5rem" />
-                  <Caption2 color={ColorPalette["platinum-200"]}>
-                    <FormattedMessage id="page.send.amount.ibc-send-recipient-auto-filled" />
-                  </Caption2>
-                </XAxis>
-              </VerticalCollapseTransition>
-            }
-          />
-
-          <AmountInput amountConfig={sendConfigs.amountConfig} />
+          <Styles.Container>
+            <RecipientInput
+              ref={addressRef}
+              historyType={historyType}
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
+              currency={sendConfigs.amountConfig.currency}
+              permitAddressBookSelfKeyInfo={isIBCTransfer}
+              bottom={
+                <VerticalCollapseTransition
+                  collapsed={!isIBCRecipientSetAuto}
+                  transitionAlign="top"
+                >
+                  <Gutter size="0.25rem" />
+                  <XAxis>
+                    <Gutter size="0.5rem" />
+                    <Caption2 color={ColorPalette["platinum-200"]}>
+                      <FormattedMessage id="page.send.amount.ibc-send-recipient-auto-filled" />
+                    </Caption2>
+                  </XAxis>
+                </VerticalCollapseTransition>
+              }
+            />
+          </Styles.Container>
+          <Styles.Container>
+            <TokenAmountInput
+              viewToken={{
+                token: balance?.balance ?? new CoinPretty(currency, "0"),
+                chainInfo: chainStore.getChain(chainId),
+                isFetching: balance?.isFetching ?? false,
+                error: balance?.error,
+              }}
+              amountConfig={sendConfigs.amountConfig}
+            />
+          </Styles.Container>
 
           {!isEvmTx && (
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              placeholder={intl.formatMessage({
-                id: isIBCTransfer
-                  ? "components.input.memo-input.optional-placeholder"
-                  : "page.send.amount.memo-placeholder",
-              })}
-            />
+            <Styles.Container>
+              <MemoInput
+                memoConfig={sendConfigs.memoConfig}
+                placeholder={intl.formatMessage({
+                  id: isIBCTransfer
+                    ? "components.input.memo-input.optional-placeholder"
+                    : "page.send.amount.memo-placeholder",
+                })}
+              />
+            </Styles.Container>
           )}
 
           <VerticalCollapseTransition collapsed={!isIBCTransfer}>

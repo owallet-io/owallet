@@ -24,6 +24,8 @@ export const TextInput = forwardRef<
       bottom,
       isLoading,
       autoComplete,
+      border = true,
+      textAlign = "left",
       ...props
     },
     ref
@@ -35,11 +37,11 @@ export const TextInput = forwardRef<
           <Column weight={1} />
           {rightLabel ? <Box>{rightLabel}</Box> : null}
         </Columns>
-
         <Styles.TextInputContainer
           paragraph={paragraph}
           error={error}
           disabled={props.disabled}
+          border={border}
           errorBorder={props.errorBorder}
           borderRadius={style?.borderRadius}
         >
@@ -55,11 +57,13 @@ export const TextInput = forwardRef<
             <Column weight={1}>
               <Styles.TextInput
                 {...props}
+                textAlign={textAlign}
                 autoComplete={autoComplete || "off"}
                 paragraph={paragraph}
                 error={error}
                 ref={ref}
                 height={style?.height}
+                placeholder={props.placeholder ?? label ?? ""}
               />
             </Column>
 

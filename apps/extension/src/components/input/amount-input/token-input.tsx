@@ -15,9 +15,11 @@ import { VerticalCollapseTransition } from "../../transition/vertical-collapse";
 import { Columns } from "../../column";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
+import { ViewToken } from "pages/main";
 
-export const AmountInput: FunctionComponent<{
+export const TokenAmountInput: FunctionComponent<{
   amountConfig: IAmountConfig;
+  viewToken: ViewToken;
 }> = observer(({ amountConfig }) => {
   if (amountConfig.amount.length !== 1) {
     throw new Error(
@@ -68,9 +70,7 @@ export const AmountInput: FunctionComponent<{
   return (
     <TextInput
       ref={inputRef}
-      label={intl.formatMessage({
-        id: "components.input.amount-input.amount-label",
-      })}
+      textAlign="right"
       border={false}
       type="number"
       value={(() => {
@@ -362,7 +362,7 @@ const MaxButton: FunctionComponent<{
           ? ColorPalette["purple-50"]
           : ColorPalette["gray-500"]
       }
-      borderRadius="0.25rem"
+      borderRadius="5rem"
       borderWidth={"1px"}
       borderColor={
         isMax
@@ -411,7 +411,8 @@ const MaxButton: FunctionComponent<{
           fontSize: "0.85rem",
         }}
       >
-        <FormattedMessage id="components.input.amount-input.max-button" />
+        100%
+        {/* <FormattedMessage id="components.input.amount-input.max-button" /> */}
       </Button2>
     </Box>
   );
