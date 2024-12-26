@@ -220,7 +220,7 @@ export const TokenSelectorModal: FunctionComponent<{
           {items
             .filter((token) => {
               const key = `${token.chainInfo.chainId}/${token.token.currency.coinMinimalDenom}`;
-              const isHide = appInitStore.getInitApp.manageToken?.[key];
+              const isHide = appInitStore.isItemUpdated(key);
               return (
                 (token.chainInfo.chainName
                   .toLowerCase()

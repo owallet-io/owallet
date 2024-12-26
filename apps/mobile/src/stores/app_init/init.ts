@@ -27,9 +27,9 @@ export class AppInit {
     chainInfos: Array<any>;
     manageToken: Record<string, boolean>;
   };
-  // @persist("object")
-  // @observable
-  // protected multipleAssets: IMultipleAsset;
+  @persist("map")
+  @observable
+  protected stateTokenMap = new Map();
 
   @observable
   protected notiData: {};
@@ -62,6 +62,18 @@ export class AppInit {
     // };
   }
 
+  @action
+  updateTokenState(itemId, isUpdated) {
+    this.stateTokenMap.set(itemId, isUpdated);
+  }
+  @computed
+  get tokenMap() {
+    return this.stateTokenMap;
+  }
+
+  isItemUpdated(itemId) {
+    return this.stateTokenMap.get(itemId) || false;
+  }
   @computed
   get getInitApp() {
     return this.initApp;

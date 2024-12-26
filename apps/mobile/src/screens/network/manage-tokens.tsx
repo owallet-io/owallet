@@ -1,47 +1,28 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
-import { PageWithScrollView, PageWithView } from "@components/page";
+import { PageWithView } from "@components/page";
 import { OWBox } from "@components/card";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import OWIcon from "@components/ow-icon/ow-icon";
-import {
-  delay,
-  EmbedChainInfos,
-  fetchRetry,
-  formatAddress,
-  limitString,
-  unknownToken,
-} from "@owallet/common";
+import { delay, formatAddress, unknownToken } from "@owallet/common";
 import { useTheme } from "@src/themes/theme-provider";
-import OWText from "@components/text/ow-text";
-import OWFlatList from "@components/page/ow-flat-list";
-import { Toggle } from "@components/toggle";
 import { OWSearchInput } from "@components/ow-search-input";
 import { useStore } from "@src/stores";
 import {
-  _keyExtract,
   capitalizedText,
   getImageFromToken,
   maskedNumber,
   removeDataInParentheses,
-  showToast,
 } from "@utils/helper";
+import { FlashList } from "@shopify/flash-list";
+
 import { XAxis, YAxis } from "@components/axis";
 import OWButtonIcon from "@components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { useIsNotReady } from "@screens/home";
 import { Text } from "@components/text";
-import { Box } from "@components/box";
 import { initPrice } from "@screens/home/components";
-import { metrics } from "@src/themes";
-import { OWHeaderTitle } from "@components/header";
 import { useNavigation } from "@react-navigation/native";
 
 export const ManageTokenScreen: FunctionComponent = observer(() => {
@@ -63,17 +44,26 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
   const isFirstTime = allBalances.length === 0 && isNotReady;
   const trimSearch = keyword.trim();
   const _allBalancesSearchFiltered = useMemo(() => {
-    return allBalances.filter((token) => {
-      return (
-        token.chainInfo.chainName
-          .toLowerCase()
-          .includes(trimSearch.toLowerCase()) ||
-        token.token.currency.coinDenom
-          .toLowerCase()
-          .includes(trimSearch.toLowerCase())
-      );
-    });
+    return allBalances
+      .filter((token) => {
+        return (
+          token.chainInfo.chainName
+            .toLowerCase()
+            .includes(trimSearch.toLowerCase()) ||
+          token.token.currency.coinDenom
+            .toLowerCase()
+            .includes(trimSearch.toLowerCase())
+        );
+      })
+      .map((item) => ({
+        ...item,
+        isHidden:
+          appInitStore.isItemUpdated(
+            `${item?.chainInfo?.chainId}/${item.token?.currency.coinMinimalDenom}`
+          ) || false,
+      }));
   }, [allBalances, trimSearch]);
+  const [stateMap, setStateMap] = useState(_allBalancesSearchFiltered || []);
   const navigation = useNavigation();
   useEffect(() => {
     if (!appInitStore.getInitApp.isAllNetworks) {
@@ -99,15 +89,30 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
     }
   }, [chainStore.current.chainId, appInitStore.getInitApp.isAllNetworks]);
   const styles = styling(colors);
-
+  const handleItemClick = async (itemId) => {
+    setStateMap((prev) =>
+      prev.map((item) =>
+        `${item?.chainInfo?.chainId}/${item.token?.currency.coinMinimalDenom}` ===
+        itemId
+          ? { ...item, isHidden: !item.isHidden }
+          : item
+      )
+    );
+    await delay(100);
+    const currentStatus = appInitStore.isItemUpdated(itemId);
+    appInitStore.updateTokenState(itemId, !currentStatus);
+  };
   const renderChain = ({ item }) => {
     const Denom = removeDataInParentheses(
       item.token?.currency?.coinDenom
     ).trim();
     const key = `${item?.chainInfo?.chainId}/${item.token?.currency.coinMinimalDenom}`;
-    const isHide = appInitStore.getInitApp.manageToken?.[key];
+    const isHide = item.isHidden;
     return (
-      <Box
+      <TouchableOpacity
+        onPress={() => {
+          handleItemClick(key);
+        }}
         key={`${item.chainInfo?.chainId}-${item.token?.toString()}`}
         style={{ ...styles.btnItem, opacity: isHide ? 0.5 : 1 }}
       >
@@ -193,10 +198,7 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
                 name={isHide ? "eye-slash" : "eye"}
                 sizeIcon={24}
                 colorIcon={colors["neutral-text-body"]}
-                onPress={() => {
-                  console.log(key);
-                  appInitStore.updateManageToken(key, !isHide);
-                }}
+                disabled={true}
                 style={{
                   width: 32,
                   height: 32,
@@ -207,9 +209,10 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
             </XAxis>
           </View>
         </View>
-      </Box>
+      </TouchableOpacity>
     );
   };
+
   return (
     <PageWithView
       style={{
@@ -246,13 +249,19 @@ export const ManageTokenScreen: FunctionComponent = observer(() => {
             colorIcon={colors["neutral-text-action-on-light-bg"]}
           />
         </XAxis>
-        <OWFlatList
-          // loading={isLoading}
-          style={styles.flatList}
-          data={!isFirstTime ? _allBalancesSearchFiltered : []}
-          renderItem={renderChain}
-          keyExtractor={_keyExtract}
-        />
+        <View
+          style={{
+            flex: 1,
+            marginHorizontal: -16,
+          }}
+        >
+          <FlashList
+            data={!isFirstTime ? stateMap : []}
+            renderItem={renderChain}
+            estimatedItemSize={200}
+            onEndReachedThreshold={0.5}
+          />
+        </View>
       </OWBox>
     </PageWithView>
   );
@@ -263,6 +272,7 @@ const styling = (colors) => {
       paddingHorizontal: 16,
       marginTop: 0,
       backgroundColor: colors["neutral-surface-card"],
+      flex: 1,
     },
     searchContainer: {
       paddingBottom: 20,

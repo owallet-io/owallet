@@ -71,7 +71,7 @@ export const TokensCardAll: FunctionComponent<{
   const _allBalancesSearchFiltered = useMemo(() => {
     return allBalances.filter((token) => {
       const key = `${token.chainInfo.chainId}/${token.token.currency.coinMinimalDenom}`;
-      const isHide = appInitStore.getInitApp.manageToken?.[key];
+      const isHide = appInitStore.isItemUpdated(key);
       return (
         (token.chainInfo.chainName
           .toLowerCase()
@@ -82,7 +82,7 @@ export const TokensCardAll: FunctionComponent<{
         !isHide
       );
     });
-  }, [allBalances, trimSearch, appInitStore.getInitApp.manageToken]);
+  }, [allBalances, trimSearch, Array.from(appInitStore.tokenMap.entries())]);
   const hasLowBalanceTokens =
     hugeQueriesStore.filterLowBalanceTokens(allBalances).length > 0;
   const lowBalanceFilteredAllBalancesSearchFiltered =
