@@ -20,9 +20,7 @@ export const PageWithViewInBottomTabView: FunctionComponent<ViewProps> = (
       style={StyleSheet.flatten([
         style.flatten(["flex-1"]),
         {
-          marginBottom: isAndroid
-            ? bottomTabBarHeight
-            : bottomTabBarHeight + 16,
+          marginBottom: bottomTabBarHeight,
         },
         propStyle,
       ])}

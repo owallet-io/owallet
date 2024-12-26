@@ -123,11 +123,10 @@ export const BrowserScreen = observer(() => {
       return;
     }
   };
-  console.log(browserStore.getBookmarks, "browserStore.getBookmarks");
   return (
     <PageWithViewInBottomTabView
       style={{
-        backgroundColor: colors["neutral-surface-action"],
+        // backgroundColor: colors["neutral-surface-action"],
         flexGrow: 1,
       }}
     >

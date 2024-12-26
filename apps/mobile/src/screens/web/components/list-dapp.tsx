@@ -10,7 +10,8 @@ export const ListDapp: FC<{ data: any }> = ({ data }) => {
       style={{
         flex: 1,
         paddingHorizontal: 4,
-        paddingVertical: 16,
+        paddingTop: 8,
+        paddingBottom: 0,
         backgroundColor: colors["neutral-surface-card"],
       }}
     >
