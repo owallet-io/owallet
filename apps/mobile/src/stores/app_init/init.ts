@@ -2,6 +2,7 @@ import { observable, action, makeObservable, computed } from "mobx";
 import { create, persist } from "mobx-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { CoinGeckoPrices } from "@oraichain/oraidex-common";
+import { DAppInfos } from "@stores/browser";
 
 // import { IMultipleAsset } from "@src/screens/home/hooks/use-multiple-assets";
 
@@ -31,6 +32,9 @@ export class AppInit {
   @observable
   protected stateTokenMap = new Map();
 
+  @persist("list")
+  @observable
+  protected bookmarks: Array<any> = DAppInfos;
   @observable
   protected notiData: {};
 
@@ -69,6 +73,40 @@ export class AppInit {
   @computed
   get tokenMap() {
     return this.stateTokenMap;
+  }
+  @action
+  updateBookmarks(bookmarks) {
+    this.bookmarks = bookmarks;
+  }
+  @action
+  removeBoorkmark(boorkmark) {
+    if (this.bookmarks?.length <= 0) return;
+    const tempBookMarks = [...this.bookmarks];
+    const rIndex = tempBookMarks.findIndex((b) =>
+      b?.uri?.includes(boorkmark?.uri)
+    );
+    if (rIndex !== -1) {
+      tempBookMarks.splice(rIndex, 1);
+      this.bookmarks = tempBookMarks;
+    }
+  }
+  @action
+  addBoorkmark(boorkmark) {
+    const tempBookMarks = this.bookmarks?.length > 0 ? [...this.bookmarks] : [];
+    const rIndex = tempBookMarks.findIndex((b) =>
+      b?.uri?.includes(boorkmark?.uri)
+    );
+    if (rIndex === -1) {
+      tempBookMarks.push(boorkmark);
+      this.bookmarks = tempBookMarks;
+    } else {
+      this.removeBoorkmark(boorkmark);
+    }
+  }
+
+  @computed
+  get getBookmarks() {
+    return this.bookmarks;
   }
 
   isItemUpdated(itemId) {

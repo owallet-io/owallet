@@ -74,7 +74,7 @@ export const DetailsBrowserScreen = observer((props) => {
   const [canGoForward, setCanGoForward] = useState(false);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const { keyRingStore, chainStore, browserStore } = useStore();
+  const { keyRingStore, chainStore, browserStore, appInitStore } = useStore();
   const route = useRoute();
   const [useProperty, setUseProperty] = useState({
     percent: 0, //range:  0 - 1
@@ -239,12 +239,12 @@ export const DetailsBrowserScreen = observer((props) => {
 
   const onAddBookMark = (bookmark) => {
     if (!bookmark) return;
-    browserStore.addBoorkmark(bookmark);
+    appInitStore.addBoorkmark(bookmark);
     return;
   };
   const isActiveBoorkmark = (uri) => {
     if (!uri) return false;
-    const isActive = browserStore.getBookmarks.findIndex(
+    const isActive = appInitStore.getBookmarks.findIndex(
       (item) => item?.uri === uri
     );
     return isActive !== -1 ? true : false;
