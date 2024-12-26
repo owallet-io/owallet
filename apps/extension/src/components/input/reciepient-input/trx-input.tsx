@@ -4,12 +4,10 @@ import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   IMemoConfig,
-  InvalidHexError,
   IRecipientConfig,
   IRecipientConfigWithENS,
   IRecipientConfigWithICNS,
 } from "@owallet/hooks";
-import { ProfileIcon } from "../../icon";
 import { Box } from "../../box";
 import { AddressBookModal } from "../../address-book-modal";
 import { IconButton } from "../../icon-button";
@@ -18,10 +16,14 @@ import { useStore } from "../../../stores";
 import { useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import { AppCurrency } from "@owallet/types";
+import { ContactIcon } from "components/icon/contact";
 
 export interface RecipientInputWithAddressBookProps {
-  recipientConfig: IRecipientConfig;
-
+  historyType: string;
+  recipientConfig:
+    | IRecipientConfig
+    | IRecipientConfigWithICNS
+    | IRecipientConfigWithENS;
   memoConfig: IMemoConfig;
   currency: AppCurrency;
 
@@ -42,8 +44,12 @@ export type RecipientInputProps = (
   | RecipientInputWithoutAddressBookProps
 ) & {
   bottom?: React.ReactNode;
-  checkSendMySelft?: string;
+  checkSendMySelft: string;
 };
+
+function numOfCharacter(str: string, c: string): number {
+  return str.split(c).length - 1;
+}
 
 export const TronRecipientInput = observer<
   RecipientInputProps,
@@ -51,7 +57,6 @@ export const TronRecipientInput = observer<
 >(
   (props, ref) => {
     const { analyticsStore } = useStore();
-
     const intl = useIntl();
     const theme = useTheme();
     const { recipientConfig, memoConfig, checkSendMySelft } = props;
@@ -59,22 +64,91 @@ export const TronRecipientInput = observer<
     const [isAddressBookModalOpen, setIsAddressBookModalOpen] =
       React.useState(false);
 
+    const isICNSName: boolean = (() => {
+      if ("isICNSName" in recipientConfig) {
+        return recipientConfig.isICNSName;
+      }
+      return false;
+    })();
+    const isICNSEnabled: boolean = (() => {
+      if ("isICNSEnabled" in recipientConfig) {
+        return recipientConfig.isICNSEnabled;
+      }
+      return false;
+    })();
+    const isICNSFetching: boolean = (() => {
+      if ("isICNSFetching" in recipientConfig) {
+        return recipientConfig.isICNSFetching;
+      }
+      return false;
+    })();
+
+    const isENSName: boolean = (() => {
+      if ("isENSName" in recipientConfig) {
+        return recipientConfig.isENSName;
+      }
+      return false;
+    })();
+    const isENSEnabled: boolean = (() => {
+      if ("isENSEnabled" in recipientConfig) {
+        return recipientConfig.isENSEnabled;
+      }
+      return false;
+    })();
+    const isENSFetching: boolean = (() => {
+      if ("isENSFetching" in recipientConfig) {
+        return recipientConfig.isENSFetching;
+      }
+      return false;
+    })();
+
     return (
       <Box>
         <TextInput
           ref={ref}
+          border={false}
           label={intl.formatMessage({
-            id: "components.input.recipient-input.wallet-address-only-label",
+            id:
+              isICNSEnabled && isENSEnabled
+                ? "components.input.recipient-input.wallet-address-label-icns-ens"
+                : isENSEnabled
+                ? "components.input.recipient-input.wallet-address-label-ens"
+                : "components.input.recipient-input.wallet-address-label",
           })}
           value={recipientConfig.value}
           autoComplete="off"
           onChange={(e) => {
             let value = e.target.value;
 
+            if (
+              // If icns is possible and users enters ".", complete bech32 prefix automatically.
+              "isICNSEnabled" in recipientConfig &&
+              isICNSEnabled &&
+              value.length > 0 &&
+              value[value.length - 1] === "." &&
+              numOfCharacter(value, ".") === 1 &&
+              numOfCharacter(recipientConfig.value, ".") === 0
+            ) {
+              value = value + recipientConfig.icnsExpectedBech32Prefix;
+            }
+
+            if (
+              // If ens is possible and users enters ".", append ens  domain automatically.
+              "isENSEnabled" in recipientConfig &&
+              isENSEnabled &&
+              value.length > 0 &&
+              value[value.length - 1] === "." &&
+              numOfCharacter(value, ".") === 1 &&
+              numOfCharacter(recipientConfig.value, ".") === 0
+            ) {
+              value = value + recipientConfig.ensExpectedDomain;
+            }
+
             recipientConfig.setValue(value);
 
             e.preventDefault();
           }}
+          placeholder={"Enter recipient address"}
           right={
             memoConfig ? (
               <IconButton
@@ -89,12 +163,16 @@ export const TronRecipientInput = observer<
                 }
                 padding="0.25rem"
               >
-                <ProfileIcon width="1.5rem" height="1.5rem" />
+                <ContactIcon width="1.5rem" height="1.5rem" />
               </IconButton>
             ) : null
           }
+          isLoading={isICNSFetching || isENSFetching}
           paragraph={(() => {
-            if (!recipientConfig.uiProperties.error) {
+            if (
+              (isICNSName || isENSName) &&
+              !recipientConfig.uiProperties.error
+            ) {
               return recipientConfig.recipient;
             }
           })()}
@@ -110,10 +188,6 @@ export const TronRecipientInput = observer<
 
             if (checkSendMySelft) {
               return checkSendMySelft;
-            }
-
-            if (err instanceof InvalidHexError) {
-              return;
             }
 
             if (err) {

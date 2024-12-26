@@ -9,18 +9,18 @@ import { TextInput } from "../text-input";
 import { useStore } from "../../../stores";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { Box } from "../../box";
-import { Body2, Body3, Button2 } from "../../typography";
+import { Body3, Button2, Subtitle3 } from "../../typography";
 import { ColorPalette } from "../../../styles";
-import { VerticalCollapseTransition } from "../../transition/vertical-collapse";
 import { Columns } from "../../column";
-import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import { ViewToken } from "pages/main";
+import { TokenItem } from "pages/main/components";
+import { useNavigate } from "react-router";
 
 export const TokenAmountInput: FunctionComponent<{
   amountConfig: IAmountConfig;
   viewToken: ViewToken;
-}> = observer(({ amountConfig }) => {
+}> = observer(({ amountConfig, viewToken }) => {
   if (amountConfig.amount.length !== 1) {
     throw new Error(
       `Amount input component only handles single amount: ${amountConfig.amount
@@ -30,7 +30,6 @@ export const TokenAmountInput: FunctionComponent<{
   }
 
   const { chainStore, priceStore } = useStore();
-  const intl = useIntl();
 
   const price = (() => {
     return priceStore.calculatePrice(amountConfig.amount[0]);
@@ -59,19 +58,19 @@ export const TokenAmountInput: FunctionComponent<{
       }
     };
   }, []);
-
-  const [renderPriceSymbol, setRenderPriceSymbol] = useState(isPriceBased);
-  useEffect(() => {
-    if (isPriceBased) {
-      setRenderPriceSymbol(true);
-    }
-  }, [isPriceBased]);
+  const navigate = useNavigate();
 
   return (
     <TextInput
       ref={inputRef}
       textAlign="right"
       border={false}
+      noPadding={true}
+      styleInput={{
+        fontSize: 30,
+        fontWeight: 500,
+      }}
+      placeholder={"0"}
       type="number"
       value={(() => {
         if (isPriceBased) {
@@ -139,18 +138,28 @@ export const TokenAmountInput: FunctionComponent<{
         }
       }}
       left={
-        renderPriceSymbol ? (
-          <PriceSymbol
-            show={isPriceBased}
-            onTransitionEnd={() => {
-              if (!isPriceBased) {
-                setRenderPriceSymbol(false);
-              }
+        <Box
+          style={{
+            backgroundColor: ColorPalette["gray-10"],
+            borderRadius: "99rem",
+            padding: "0.5rem 1rem",
+          }}
+        >
+          <TokenItem
+            viewToken={viewToken}
+            forChange
+            showLeft={false}
+            onClick={() => {
+              navigate(
+                `/send/select-asset?navigateReplace=true&navigateTo=${encodeURIComponent(
+                  "/send?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
+                )}`
+              );
             }}
           />
-        ) : null
+        </Box>
       }
-      right={(() => {
+      top={(() => {
         if (
           // In the case of terra classic, tax is applied in proportion to the amount.
           // However, in this case, the tax itself changes the fee,
@@ -164,7 +173,28 @@ export const TokenAmountInput: FunctionComponent<{
           return undefined;
         }
 
-        return <MaxButton amountConfig={amountConfig} />;
+        return (
+          <Box
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Subtitle3>
+              Balance:{" "}
+              {viewToken.token
+                ?.trim(true)
+                ?.shrink(true)
+                ?.maxDecimals(6)
+                .hideDenom(true)
+                .toString()}
+            </Subtitle3>
+            <MaxButton amountConfig={amountConfig} />
+          </Box>
+        );
       })()}
       bottom={
         price ? (
@@ -219,67 +249,6 @@ export const TokenAmountInput: FunctionComponent<{
   );
 });
 
-const PriceSymbol: FunctionComponent<{
-  show: boolean;
-  onTransitionEnd: () => void;
-}> = observer(({ show, onTransitionEnd }) => {
-  const { priceStore } = useStore();
-  const theme = useTheme();
-
-  const [hasInit, setHasInit] = useState(false);
-
-  const [collapsed, setCollapsed] = useState(true);
-
-  useEffect(() => {
-    if (hasInit) {
-      setCollapsed(!show);
-    }
-  }, [hasInit, show]);
-
-  const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
-  if (!fiatCurrency) {
-    return null;
-  }
-
-  return (
-    <Box position="relative" alignY="center">
-      <Body2
-        color={
-          theme.mode === "light"
-            ? ColorPalette["gray-400"]
-            : ColorPalette["gray-50"]
-        }
-        style={{
-          opacity: 0,
-        }}
-      >
-        {fiatCurrency.symbol}
-      </Body2>
-      <Box position="absolute" width="100%">
-        <VerticalCollapseTransition
-          transitionAlign="center"
-          collapsed={collapsed}
-          onResize={() => {
-            setHasInit(true);
-          }}
-          onTransitionEnd={onTransitionEnd}
-        >
-          <Body2
-            color={
-              theme.mode === "light"
-                ? ColorPalette["gray-400"]
-                : ColorPalette["gray-50"]
-            }
-          >
-            {fiatCurrency.symbol}
-          </Body2>
-        </VerticalCollapseTransition>
-      </Box>
-    </Box>
-  );
-});
-
 const BottomPriceButton: FunctionComponent<{
   text: string;
   onClick: () => void;
@@ -287,7 +256,16 @@ const BottomPriceButton: FunctionComponent<{
   const theme = useTheme();
 
   return (
-    <Box marginTop="0.375rem" marginLeft="0.375rem" alignX="left">
+    <Box
+      style={{
+        alignItems: "flex-end",
+        display: "flex",
+        padding: 8,
+      }}
+      marginTop="0.375rem"
+      marginLeft="0.375rem"
+      alignX="left"
+    >
       <Box
         color={
           theme.mode === "light"
@@ -308,20 +286,7 @@ const BottomPriceButton: FunctionComponent<{
         cursor="pointer"
       >
         <Columns sum={1} alignY="center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1.125rem"
-            height="1.125rem"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill="currentColor"
-              fillRule="evenodd"
-              d="M13.2 2.24a.75.75 0 00.04 1.06l2.1 1.95H6.75a.75.75 0 000 1.5h8.59l-2.1 1.95a.75.75 0 101.02 1.1l3.5-3.25a.75.75 0 000-1.1l-3.5-3.25a.75.75 0 00-1.06.04zm-6.4 8a.75.75 0 00-1.06-.04l-3.5 3.25a.75.75 0 000 1.1l3.5 3.25a.75.75 0 101.02-1.1l-2.1-1.95h8.59a.75.75 0 000-1.5H4.66l2.1-1.95a.75.75 0 00.04-1.06z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <img src={require("assets/icon/tdesign_swap.svg")} alt="logo" />
           <Body3
             style={{
               marginLeft: "0.3rem",
@@ -339,81 +304,160 @@ const MaxButton: FunctionComponent<{
   amountConfig: IAmountConfig;
 }> = observer(({ amountConfig }) => {
   const isMax = amountConfig.fraction === 1;
+  const isHalf = amountConfig.fraction === 0.5;
   const theme = useTheme();
 
   return (
     <Box
-      cursor="pointer"
-      height="1.625rem"
-      alignX="center"
-      alignY="center"
-      paddingX="0.5rem"
-      color={
-        isMax
-          ? theme.mode === "light"
-            ? ColorPalette["purple-400"]
-            : ColorPalette["gray-300"]
-          : theme.mode === "light"
-          ? ColorPalette["purple-400"]
-          : ColorPalette["gray-10"]
-      }
-      backgroundColor={
-        theme.mode === "light"
-          ? ColorPalette["purple-50"]
-          : ColorPalette["gray-500"]
-      }
-      borderRadius="5rem"
-      borderWidth={"1px"}
-      borderColor={
-        isMax
-          ? theme.mode === "light"
-            ? ColorPalette["purple-200"]
-            : ColorPalette["gray-300"]
-          : theme.mode === "light"
-          ? ColorPalette["purple-50"]
-          : ColorPalette["gray-500"]
-      }
-      hover={{
-        color: isMax
-          ? theme.mode === "light"
-            ? ColorPalette["purple-500"]
-            : ColorPalette["gray-300"]
-          : theme.mode === "light"
-          ? ColorPalette["purple-400"]
-          : ColorPalette["white"],
-        backgroundColor: isMax
-          ? theme.mode === "light"
-            ? ColorPalette["purple-100"]
-            : ColorPalette["gray-500"]
-          : theme.mode === "light"
-          ? ColorPalette["purple-100"]
-          : ColorPalette["gray-550"],
-        borderColor: isMax
-          ? theme.mode === "light"
-            ? ColorPalette["purple-300"]
-            : ColorPalette["gray-400"]
-          : theme.mode === "light"
-          ? ColorPalette["purple-100"]
-          : ColorPalette["gray-550"],
-      }}
-      onClick={(e) => {
-        e.preventDefault();
-
-        if (amountConfig.fraction > 0) {
-          amountConfig.setFraction(0);
-        } else {
-          amountConfig.setFraction(1);
-        }
+      style={{
+        display: "flex",
+        flexDirection: "row",
       }}
     >
-      <Button2
-        style={{
-          fontSize: "0.85rem",
+      <Box
+        cursor="pointer"
+        height="1.625rem"
+        alignX="center"
+        alignY="center"
+        paddingX="0.5rem"
+        marginX="0.25rem"
+        color={
+          isHalf
+            ? theme.mode === "light"
+              ? ColorPalette["purple-400"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-400"]
+            : ColorPalette["gray-10"]
+        }
+        backgroundColor={
+          theme.mode === "light"
+            ? ColorPalette["purple-50"]
+            : ColorPalette["gray-500"]
+        }
+        borderRadius="5rem"
+        borderWidth={"1px"}
+        borderColor={
+          isHalf
+            ? theme.mode === "light"
+              ? ColorPalette["purple-200"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-50"]
+            : ColorPalette["gray-500"]
+        }
+        hover={{
+          color: isHalf
+            ? theme.mode === "light"
+              ? ColorPalette["purple-500"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-400"]
+            : ColorPalette["white"],
+          backgroundColor: isHalf
+            ? theme.mode === "light"
+              ? ColorPalette["purple-100"]
+              : ColorPalette["gray-500"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-100"]
+            : ColorPalette["gray-550"],
+          borderColor: isHalf
+            ? theme.mode === "light"
+              ? ColorPalette["purple-300"]
+              : ColorPalette["gray-400"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-100"]
+            : ColorPalette["gray-550"],
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          if (amountConfig.fraction > 0) {
+            amountConfig.setFraction(0);
+          } else {
+            amountConfig.setFraction(0.5);
+          }
         }}
       >
-        100%
-        {/* <FormattedMessage id="components.input.amount-input.max-button" /> */}
-      </Button2>
+        <Button2
+          style={{
+            fontSize: "0.85rem",
+          }}
+        >
+          50%
+        </Button2>
+      </Box>
+      <Box
+        cursor="pointer"
+        height="1.625rem"
+        alignX="center"
+        alignY="center"
+        paddingX="0.5rem"
+        color={
+          isMax
+            ? theme.mode === "light"
+              ? ColorPalette["purple-400"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-400"]
+            : ColorPalette["gray-10"]
+        }
+        backgroundColor={
+          theme.mode === "light"
+            ? ColorPalette["purple-50"]
+            : ColorPalette["gray-500"]
+        }
+        borderRadius="5rem"
+        borderWidth={"1px"}
+        borderColor={
+          isMax
+            ? theme.mode === "light"
+              ? ColorPalette["purple-200"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-50"]
+            : ColorPalette["gray-500"]
+        }
+        hover={{
+          color: isMax
+            ? theme.mode === "light"
+              ? ColorPalette["purple-500"]
+              : ColorPalette["gray-300"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-400"]
+            : ColorPalette["white"],
+          backgroundColor: isMax
+            ? theme.mode === "light"
+              ? ColorPalette["purple-100"]
+              : ColorPalette["gray-500"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-100"]
+            : ColorPalette["gray-550"],
+          borderColor: isMax
+            ? theme.mode === "light"
+              ? ColorPalette["purple-300"]
+              : ColorPalette["gray-400"]
+            : theme.mode === "light"
+            ? ColorPalette["purple-100"]
+            : ColorPalette["gray-550"],
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+
+          if (amountConfig.fraction > 0) {
+            amountConfig.setFraction(0);
+          } else {
+            amountConfig.setFraction(1);
+          }
+        }}
+      >
+        <Button2
+          style={{
+            fontSize: "0.85rem",
+          }}
+        >
+          100%
+        </Button2>
+      </Box>
     </Box>
   );
 });

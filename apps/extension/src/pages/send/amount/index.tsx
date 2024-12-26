@@ -835,11 +835,11 @@ export const SendAmountPage: FunctionComponent = observer(() => {
       >
         <Stack gutter="0.75rem" flex={1}>
           <YAxis>
-            <Subtitle3>
+            {/* <Subtitle3>
               <FormattedMessage id="page.send.amount.asset-title" />
-            </Subtitle3>
+            </Subtitle3> */}
             <Gutter size="0.375rem" />
-            <TokenItem
+            {/* <TokenItem
               viewToken={{
                 token: balance?.balance ?? new CoinPretty(currency, "0"),
                 chainInfo: chainStore.getChain(chainId),
@@ -854,7 +854,7 @@ export const SendAmountPage: FunctionComponent = observer(() => {
                   )}`
                 );
               }}
-            />
+            /> */}
           </YAxis>
 
           {!isErc20 && !isEVMOnlyChain && (

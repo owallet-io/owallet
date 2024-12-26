@@ -19,19 +19,31 @@ export const TextInput = forwardRef<
       paragraph,
       error,
       rightLabel,
+      top,
       left,
       right,
       bottom,
       isLoading,
       autoComplete,
       border = true,
+      noPadding = false,
       textAlign = "left",
+      styleInput,
       ...props
     },
     ref
   ) => {
     return (
       <Styles.Container className={className} style={style}>
+        {top ? (
+          <Box
+            style={{
+              padding: 8,
+            }}
+          >
+            {top}
+          </Box>
+        ) : null}
         <Columns sum={1} alignY="center">
           {label ? <Label content={label} isLoading={isLoading} /> : null}
           <Column weight={1} />
@@ -47,7 +59,7 @@ export const TextInput = forwardRef<
         >
           <Columns sum={1}>
             <MockBox show={!!left}>
-              <Box alignY="center" marginLeft="1rem">
+              <Box alignY="center" marginLeft={noPadding ? "0rem" : "1rem"}>
                 <Styles.Icon>
                   <Box>{left}</Box>
                 </Styles.Icon>
@@ -57,6 +69,7 @@ export const TextInput = forwardRef<
             <Column weight={1}>
               <Styles.TextInput
                 {...props}
+                style={styleInput}
                 textAlign={textAlign}
                 autoComplete={autoComplete || "off"}
                 paragraph={paragraph}
@@ -68,7 +81,7 @@ export const TextInput = forwardRef<
             </Column>
 
             <MockBox show={!!right}>
-              <Box alignY="center" marginRight="1rem">
+              <Box alignY="center" marginRight={noPadding ? "0rem" : "1rem"}>
                 <Styles.Icon>
                   <Box>{right}</Box>
                 </Styles.Icon>

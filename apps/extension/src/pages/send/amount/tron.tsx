@@ -19,9 +19,8 @@ import {
   useTxConfigsValidate,
 } from "@owallet/hooks";
 import { useNavigate } from "react-router";
-import { AmountInput } from "../../../components/input";
-import { TokenItem } from "../../main/components";
-import { Subtitle3 } from "../../../components/typography";
+import { TokenAmountInput } from "../../../components/input";
+
 import { Box } from "../../../components/box";
 import { YAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
@@ -32,16 +31,45 @@ import { ENSInfo, ICNSInfo } from "../../../config.ui";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { ColorPalette } from "../../../styles";
 import { openPopupWindow } from "@owallet/popup";
-import { InExtensionMessageRequester } from "@owallet/router-extension";
-import { BACKGROUND_PORT, Message } from "@owallet/router";
-import { FormattedMessage, useIntl } from "react-intl";
+
+import { useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
 import { isRunningInSidePanel } from "../../../utils";
 import { TronRecipientInput } from "../../../components/input/reciepient-input/trx-input";
+import Color from "color";
 
 const Styles = {
   Flex1: styled.div`
     flex: 1;
+  `,
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    border-radius: 1rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 2px 6px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
   `,
 };
 
@@ -126,8 +154,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
     }
   );
   sendConfigs.amountConfig.setCurrency(currency);
-
-  const queries = queriesStore.get(chainId);
 
   const checkSendMySelft =
     sendConfigs.recipientConfig.recipient?.trim() === tronAccount.base58Address
@@ -488,11 +514,11 @@ export const SendTronPage: FunctionComponent = observer(() => {
       >
         <Stack gutter="0.75rem" flex={1}>
           <YAxis>
-            <Subtitle3>
+            {/* <Subtitle3>
               <FormattedMessage id="page.send.amount.asset-title" />
-            </Subtitle3>
+            </Subtitle3> */}
             <Gutter size="0.375rem" />
-            <TokenItem
+            {/* <TokenItem
               viewToken={{
                 token: balance?.balance ?? new CoinPretty(currency, "0"),
                 chainInfo: chainStore.getChain(chainId),
@@ -507,21 +533,31 @@ export const SendTronPage: FunctionComponent = observer(() => {
                   )}`
                 );
               }}
-            />
+            /> */}
           </YAxis>
 
           <Gutter size="0" />
 
-          <TronRecipientInput
-            ref={addressRef}
-            recipientConfig={sendConfigs.recipientConfig}
-            memoConfig={sendConfigs.memoConfig}
-            currency={sendConfigs.amountConfig.currency}
-            checkSendMySelft={checkSendMySelft?.message}
-          />
-
-          <AmountInput amountConfig={sendConfigs.amountConfig} />
-
+          <Styles.Container>
+            <TronRecipientInput
+              ref={addressRef}
+              recipientConfig={sendConfigs.recipientConfig}
+              memoConfig={sendConfigs.memoConfig}
+              currency={sendConfigs.amountConfig.currency}
+              checkSendMySelft={checkSendMySelft?.message}
+            />
+          </Styles.Container>
+          <Styles.Container>
+            <TokenAmountInput
+              viewToken={{
+                token: balance?.balance ?? new CoinPretty(currency, "0"),
+                chainInfo: chainStore.getChain(chainId),
+                isFetching: balance?.isFetching ?? false,
+                error: balance?.error,
+              }}
+              amountConfig={sendConfigs.amountConfig}
+            />
+          </Styles.Container>
           <Gutter size="0" />
 
           <Gutter size="0.75rem" />

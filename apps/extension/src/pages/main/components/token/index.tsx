@@ -54,25 +54,35 @@ const Styles = {
     isError: boolean;
     disabled?: boolean;
     isNotReady?: boolean;
+    showLeft?: boolean;
   }>`
     background-color: ${(props) =>
-      props.theme.mode === "light"
+      !props.showLeft
+        ? ColorPalette["gray-10"]
+        : props.theme.mode === "light"
         ? props.isNotReady
           ? ColorPalette["skeleton-layer-0"]
           : ColorPalette.white
         : ColorPalette["gray-650"]};
-    padding ${({ forChange }) =>
-      forChange ? "0.875rem 0.25rem 0.875rem 1rem" : "1rem 0rem"};
+    padding ${({ forChange, showLeft }) =>
+      !showLeft
+        ? "0rem 0rem"
+        : forChange
+        ? "0.875rem 0.25rem 0.875rem 1rem"
+        : "1rem 0rem"};
     cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
     
-    border: ${({ isError }) =>
-      isError
+    border: ${({ isError, showLeft }) =>
+      !showLeft
+        ? "0px"
+        : isError
         ? `1.5px solid ${Color(ColorPalette["yellow-400"])
             .alpha(0.5)
             .toString()}`
         : undefined};
 
-    border-bottom: 1px solid ${ColorPalette["gray-50"]};
+    border-bottom: ${({ showLeft }) =>
+      !showLeft ? "0px" : `1px solid ${Color(ColorPalette["gray-50"])}`};
 
     ${({ disabled, theme }) => {
       if (!disabled) {
@@ -157,6 +167,7 @@ interface TokenItemProps {
   copyAddress?: string;
 
   hideBalance?: boolean;
+  showLeft?: boolean;
   showPrice24HChange?: boolean;
 }
 
@@ -171,6 +182,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
     copyAddress,
     hideBalance,
     showPrice24HChange,
+    showLeft = true,
   }) => {
     const { priceStore, uiConfigStore } = useStore();
     const navigate = useNavigate();
@@ -231,6 +243,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
         forChange={forChange}
         isError={viewToken.error != null}
         disabled={disabled}
+        showLeft={showLeft}
         isNotReady={isNotReady}
         onMouseEnter={() => {
           setIsHover(true);
@@ -402,94 +415,96 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
 
           <Column weight={1} />
 
-          <Columns sum={1} gutter="0.25rem" alignY="center">
-            <Stack gutter="0.25rem" alignX="right">
-              {!hideBalance ? (
-                <Skeleton
-                  layer={1}
-                  isNotReady={isNotReady}
-                  dummyMinWidth="3.25rem"
-                >
-                  <Subtitle3
-                    color={
-                      theme.mode === "light"
-                        ? ColorPalette["gray-700"]
-                        : ColorPalette["gray-10"]
-                    }
+          {!showLeft ? null : (
+            <Columns sum={1} gutter="0.25rem" alignY="center">
+              <Stack gutter="0.25rem" alignX="right">
+                {!hideBalance ? (
+                  <Skeleton
+                    layer={1}
+                    isNotReady={isNotReady}
+                    dummyMinWidth="3.25rem"
                   >
-                    {uiConfigStore.hideStringIfPrivacyMode(
-                      viewToken.token
-                        .hideDenom(true)
-                        .maxDecimals(6)
-                        .inequalitySymbol(true)
-                        .shrink(true)
-                        .toString(),
-                      2
-                    )}
-                  </Subtitle3>
-                </Skeleton>
-              ) : null}
-              <Skeleton
-                layer={1}
-                isNotReady={isNotReady}
-                dummyMinWidth="4.5rem"
-              >
-                {viewToken.error?.data &&
-                viewToken.error.data instanceof WrongViewingKeyError ? (
-                  <Box position="relative" alignX="right">
                     <Subtitle3
                       color={
                         theme.mode === "light"
-                          ? ColorPalette["gray-200"]
-                          : ColorPalette["gray-100"]
+                          ? ColorPalette["gray-700"]
+                          : ColorPalette["gray-10"]
                       }
-                      style={{
-                        textDecoration: "underline",
-                        position: "absolute",
-                        whiteSpace: "nowrap",
-                      }}
                     >
-                      <FormattedMessage id="page.main.components.token.set-your-viewing-key" />
-                    </Subtitle3>
-                    <Subtitle3
-                      style={{
-                        textDecoration: "underline",
-                        whiteSpace: "nowrap",
-                        opacity: 0,
-                      }}
-                    >
-                      &nbps;
-                    </Subtitle3>
-                  </Box>
-                ) : (
-                  <Subtitle3 color={ColorPalette["gray-300"]}>
-                    {(() => {
-                      if (hideBalance) {
-                        return "";
-                      }
-
-                      if (altSentence) {
-                        return altSentence;
-                      }
-
-                      return uiConfigStore.hideStringIfPrivacyMode(
-                        pricePretty
-                          ? pricePretty.inequalitySymbol(true).toString()
-                          : "-",
+                      {uiConfigStore.hideStringIfPrivacyMode(
+                        viewToken.token
+                          .hideDenom(true)
+                          .maxDecimals(6)
+                          .inequalitySymbol(true)
+                          .shrink(true)
+                          .toString(),
                         2
-                      );
-                    })()}
-                  </Subtitle3>
-                )}
-              </Skeleton>
-            </Stack>
+                      )}
+                    </Subtitle3>
+                  </Skeleton>
+                ) : null}
+                <Skeleton
+                  layer={1}
+                  isNotReady={isNotReady}
+                  dummyMinWidth="4.5rem"
+                >
+                  {viewToken.error?.data &&
+                  viewToken.error.data instanceof WrongViewingKeyError ? (
+                    <Box position="relative" alignX="right">
+                      <Subtitle3
+                        color={
+                          theme.mode === "light"
+                            ? ColorPalette["gray-200"]
+                            : ColorPalette["gray-100"]
+                        }
+                        style={{
+                          textDecoration: "underline",
+                          position: "absolute",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        <FormattedMessage id="page.main.components.token.set-your-viewing-key" />
+                      </Subtitle3>
+                      <Subtitle3
+                        style={{
+                          textDecoration: "underline",
+                          whiteSpace: "nowrap",
+                          opacity: 0,
+                        }}
+                      >
+                        &nbps;
+                      </Subtitle3>
+                    </Box>
+                  ) : (
+                    <Subtitle3 color={ColorPalette["gray-300"]}>
+                      {(() => {
+                        if (hideBalance) {
+                          return "";
+                        }
 
-            {forChange ? (
-              <Styles.IconContainer>
-                <ArrowRightIcon />
-              </Styles.IconContainer>
-            ) : null}
-          </Columns>
+                        if (altSentence) {
+                          return altSentence;
+                        }
+
+                        return uiConfigStore.hideStringIfPrivacyMode(
+                          pricePretty
+                            ? pricePretty.inequalitySymbol(true).toString()
+                            : "-",
+                          2
+                        );
+                      })()}
+                    </Subtitle3>
+                  )}
+                </Skeleton>
+              </Stack>
+
+              {forChange ? (
+                <Styles.IconContainer>
+                  <ArrowRightIcon />
+                </Styles.IconContainer>
+              ) : null}
+            </Columns>
+          )}
         </Columns>
       </Styles.Container>
     );
