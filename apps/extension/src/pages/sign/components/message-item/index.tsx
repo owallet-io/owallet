@@ -16,7 +16,7 @@ export const MessageItem: FunctionComponent<{
   return (
     <Box padding="1rem">
       <Columns sum={1}>
-        <Box
+        {/* <Box
           width="2.5rem"
           minWidth="2.5rem"
           height="2.5rem"
@@ -24,7 +24,7 @@ export const MessageItem: FunctionComponent<{
           alignY="center"
         >
           {icon}
-        </Box>
+        </Box> */}
 
         <Gutter size="0.5rem" />
 

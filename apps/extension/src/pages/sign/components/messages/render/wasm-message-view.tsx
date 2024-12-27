@@ -6,6 +6,49 @@ import { Button } from "../../../../../components/button";
 import { Box } from "../../../../../components/box";
 import { XAxis } from "../../../../../components/axis";
 import { FormattedMessage } from "react-intl";
+import Color from "color";
+import styled, { css, useTheme } from "styled-components";
+import { ColorPalette } from "src/styles";
+import { ArrowDownIcon, ArrowUpIcon } from "components/icon";
+import { VerticalCollapseTransition } from "components/transition/vertical-collapse";
+
+const Styles = {
+  ExpandButton: styled(Box)<{ viewTokenCount: number }>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 1.5rem;
+
+    cursor: pointer;
+
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+
+    ${({ viewTokenCount }) => {
+      if (viewTokenCount === 0) {
+        return css`
+          cursor: not-allowed;
+        `;
+      }
+
+      return css`
+        :hover {
+          background-color: ${(props) =>
+            props.theme.mode === "light"
+              ? ColorPalette["gray-10"]
+              : Color(ColorPalette["gray-600"]).alpha(0.5).toString()};
+        }
+
+        :active {
+          background-color: ${(props) =>
+            props.theme.mode === "light"
+              ? ColorPalette["gray-50"]
+              : ColorPalette["gray-500"]};
+        }
+      `;
+    }};
+  `,
+};
 
 export const WasmMessageView: FunctionComponent<{
   chainId: string;
@@ -14,7 +57,7 @@ export const WasmMessageView: FunctionComponent<{
 }> = observer(({ chainId, msg, isSecretWasm }) => {
   const { accountStore } = useStore();
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
 
   const [detailsMsg, setDetailsMsg] = useState(() =>
@@ -62,7 +105,16 @@ export const WasmMessageView: FunctionComponent<{
 
   return (
     <Box>
-      {isOpen ? (
+      <VerticalCollapseTransition
+        collapsed={!isOpen}
+        onTransitionEnd={() => {}}
+      >
+        <pre style={{ width: "15rem", margin: "0", marginBottom: "0.5rem" }}>
+          {isOpen ? detailsMsg : ""}
+        </pre>
+        {warningMsg ? <div>{warningMsg}</div> : null}
+      </VerticalCollapseTransition>
+      {/* {isOpen ? (
         <React.Fragment>
           <pre style={{ width: "15rem", margin: "0", marginBottom: "0.5rem" }}>
             {isOpen ? detailsMsg : ""}
@@ -85,7 +137,34 @@ export const WasmMessageView: FunctionComponent<{
             toggleOpen();
           }}
         />
-      </XAxis>
+      </XAxis> */}
+      <Styles.ExpandButton
+        paddingX="0.125rem"
+        alignX="center"
+        onClick={() => {
+          toggleOpen();
+        }}
+      >
+        <Box
+          style={{
+            opacity: 1,
+          }}
+        >
+          {!isOpen ? (
+            <ArrowDownIcon
+              width="1.25rem"
+              height="1.25rem"
+              color={ColorPalette["gray-300"]}
+            />
+          ) : (
+            <ArrowUpIcon
+              width="1.25rem"
+              height="1.25rem"
+              color={ColorPalette["gray-300"]}
+            />
+          )}
+        </Box>
+      </Styles.ExpandButton>
     </Box>
   );
 });

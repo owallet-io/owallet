@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { SignInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../../components/box";
 import { Column, Columns } from "../../../../components/column";
@@ -46,18 +46,41 @@ import { HighFeeWarning } from "../../components/high-fee-warning";
 import { handleExternalInteractionWithNoProceedNext } from "../../../../utils";
 import { useNavigate } from "react-router-dom";
 import { ApproveIcon, CancelIcon } from "../../../../components/button";
+import Color from "color";
+import styled from "styled-components";
 
-/**
- * 서명을 처리할때 웹페이지에서 연속적으로 서명을 요청했을 수 있고
- * 그러면 서명할 데이터에 대해서 FIFO 순으로 순차적으로 UI에서 표시하고 처리해준다.
- * 하지만 문제는 tx관련된 hook들은 구현의 간단함을 위해서 한 컴포넌트 라이프사이클에서
- * 하나의 tx에 대해서만 처리하고 이후 다른 tx가 필요하다고 다시 초기화하거나 할 수 없도록 되어있다.
- * 이 문제 때문에 각 서명 데이터에 대해서 처리되고 나면 그 컴포넌트는 unmount되고
- * 같은 컴포넌트가 새롭게 mount되어야 한다.
- * 그렇기 때문에 처리 로직이 완전히 이 컴포넌트로 분리되어있고
- * 이 컴포넌트를 호출하는 쪽에서 "key" prop을 통해서 위의 요구사항을 꼭 만족시켜야한다.
- * 또한 prop으로 받는 "interactionData"는 절대로 불변해야한다.
- */
+const Styles = {
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    border-radius: 1rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 2px 6px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
+  `,
+};
+
 export const CosmosTxView: FunctionComponent<{
   interactionData: NonNullable<SignInteractionStore["waitingData"]>;
 }> = observer(({ interactionData }) => {
@@ -119,9 +142,6 @@ export const CosmosTxView: FunctionComponent<{
     memoConfig.setValue(memo);
     if (
       data.data.signOptions.preferNoSetFee ||
-      // 자동으로 fee를 다뤄줄 수 있는건 fee가 하나인 경우이다.
-      // fee가 여러개인 경우는 일반적인 경우가 아니기 때문에
-      // 케플러에서 처리해줄 수 없다. 그러므로 옵션을 무시하고 fee 설정을 각 웹사이트에 맡긴다.
       data.data.signDocWrapper.fees.length >= 2
     ) {
       feeConfig.setFee(
@@ -173,7 +193,6 @@ export const CosmosTxView: FunctionComponent<{
   useEffect(() => {
     try {
       if (
-        // 라이크코인의 요청으로 일단 얘는 스킵...
         interactionData.data.origin === "https://liker.land" ||
         interactionData.data.origin === "https://app.like.co"
       ) {
@@ -205,10 +224,6 @@ export const CosmosTxView: FunctionComponent<{
               return;
             }
           } else if (anyMsg.grant.authorization.spend_limit) {
-            // SendAuthorization의 경우 spend_limit를 가진다.
-            // omit 되지 않도록 옵션이 설정되어있기 때문에 비어있더라도 빈 배열을 가지고 있어서 이렇게 확인이 가능하다.
-            // 근데 사실 다른 authorization도 spend_limit를 가질 수 있으므로 이건 좀 위험한 방법이다.
-            // 근데 어차피 버그 버전을 위한거라서 그냥 이렇게 해도 될듯.
             setIsSendAuthzGrant(true);
             return;
           }
@@ -246,9 +261,6 @@ export const CosmosTxView: FunctionComponent<{
                 grantMsg.grant.authorization.typeUrl ===
                 "/cosmos.authz.v1beta1.GenericAuthorization"
               ) {
-                // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
-                //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
-                //      일단 이렇게 처리하고 넘어간다.
                 const factory = defaultProtoCodec.unpackAnyFactory(
                   grantMsg.grant.authorization.typeUrl
                 );
@@ -300,9 +312,6 @@ export const CosmosTxView: FunctionComponent<{
   });
 
   const preferNoSetFee = (() => {
-    // 자동으로 fee를 다뤄줄 수 있는건 fee가 하나인 경우이다.
-    // fee가 여러개인 경우는 일반적인 경우가 아니기 때문에
-    // 케플러에서 처리해줄 수 없다. 그러므로 옵션을 무시하고 fee 설정을 각 웹사이트에 맡긴다.
     if (interactionData.data.signDocWrapper.fees.length >= 2) {
       return true;
     }
@@ -409,19 +418,10 @@ export const CosmosTxView: FunctionComponent<{
               interactionInfo.interaction &&
               interactionInfo.interactionInternal
             ) {
-              // XXX: 약간 난해한 부분인데
-              //      내부의 tx의 경우에는 tx 이후의 routing을 요청한 쪽에서 처리한다.
-              //      하지만 tx를 처리할때 tx broadcast 등의 과정이 있고
-              //      서명 페이지에서는 이러한 과정이 끝났는지 아닌지를 파악하기 힘들다.
-              //      만약에 밑과같은 처리를 하지 않으면 interaction data가 먼저 지워지면서
-              //      화면이 깜빡거리는 문제가 발생한다.
-              //      이 문제를 해결하기 위해서 내부의 tx는 보내는 쪽에서 routing을 잘 처리한다고 가정하고
-              //      페이지를 벗어나고 나서야 data를 지우도록한다.
               await unmountPromise.promise;
             }
           },
           {
-            // XXX: 단지 special button의 애니메이션을 보여주기 위해서 delay를 넣음...ㅋ;
             preDelay: 200,
           }
         );
@@ -503,7 +503,6 @@ export const CosmosTxView: FunctionComponent<{
             );
           },
         },
-        // 유저가 enter를 눌러서 우발적으로(?) approve를 누르지 않도록 onSubmit을 의도적으로 사용하지 않았음.
         {
           isSpecial: true,
           text: intl.formatMessage({ id: "button.approve" }),
@@ -530,15 +529,7 @@ export const CosmosTxView: FunctionComponent<{
           }}
         >
           <Columns sum={1} alignY="center">
-            <XAxis>
-              <H5
-                style={{
-                  color: ColorPalette["purple-400"],
-                  marginRight: "0.25rem",
-                }}
-              >
-                {msgs.length}
-              </H5>
+            <XAxis alignY="center">
               <H5
                 style={{
                   color:
@@ -547,8 +538,26 @@ export const CosmosTxView: FunctionComponent<{
                       : ColorPalette["gray-50"],
                 }}
               >
-                <FormattedMessage id="page.sign.cosmos.tx.messages" />
+                <FormattedMessage id="page.sign.cosmos.tx.messages" />:
               </H5>
+              <Box
+                style={{
+                  padding: "0.25rem",
+                  borderRadius: "0.35rem",
+                  backgroundColor: ColorPalette["purple-700"],
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <H5
+                  style={{
+                    color: ColorPalette["white"],
+                    marginRight: "0.25rem",
+                  }}
+                >
+                  {msgs.length}
+                </H5>
+              </Box>
             </XAxis>
             <Column weight={1} />
             <ViewDataButton
@@ -566,7 +575,7 @@ export const CosmosTxView: FunctionComponent<{
             flex: !isViewData ? "0 1 auto" : 1,
             overflow: "auto",
             opacity: isLedgerAndDirect ? 0.5 : undefined,
-            borderRadius: "0.375rem",
+            borderRadius: "1rem",
             backgroundColor:
               theme.mode === "light"
                 ? ColorPalette.white
@@ -604,9 +613,6 @@ export const CosmosTxView: FunctionComponent<{
                 {msgs.map((msg, i) => {
                   const r = defaultRegistry.render(
                     chainId,
-                    // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
-                    //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
-                    //      일단 이렇게 처리하고 넘어간다.
                     defaultProtoCodec,
                     msg
                   );
@@ -633,12 +639,12 @@ export const CosmosTxView: FunctionComponent<{
           }}
         >
           {preferNoSetMemo ? (
-            <React.Fragment>
-              <ReadonlyMemo memo={memoConfig.memo} />
+            <Styles.Container>
+              <ReadonlyMemo memo={memoConfig.memo} border={false} />
               <Gutter size="0.75rem" />
-            </React.Fragment>
+            </Styles.Container>
           ) : (
-            <React.Fragment>
+            <Styles.Container>
               <MemoInput
                 memoConfig={memoConfig}
                 placeholder={intl.formatMessage({
@@ -646,7 +652,7 @@ export const CosmosTxView: FunctionComponent<{
                 })}
               />
               <Gutter size="0.75rem" />
-            </React.Fragment>
+            </Styles.Container>
           )}
         </Box>
 
@@ -672,7 +678,6 @@ export const CosmosTxView: FunctionComponent<{
             opacity: isLedgerAndDirect ? 0.5 : undefined,
           }}
         >
-          {/* direct aux는 수수료를 설정할수도 없으니 보여줄 필요가 없다. */}
           {"isDirectAux" in interactionData.data &&
           interactionData.data.isDirectAux
             ? null
@@ -759,7 +764,8 @@ export const CosmosTxView: FunctionComponent<{
 
 const ReadonlyMemo: FunctionComponent<{
   memo: string;
-}> = ({ memo }) => {
+  border?: boolean;
+}> = ({ memo, border = true }) => {
   const theme = useTheme();
 
   return (
@@ -770,10 +776,11 @@ const ReadonlyMemo: FunctionComponent<{
       padding="1rem"
       borderRadius="0.375rem"
       style={{
-        boxShadow:
-          theme.mode === "light"
-            ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
-            : undefined,
+        boxShadow: border
+          ? null
+          : theme.mode === "light"
+          ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+          : undefined,
       }}
     >
       <XAxis alignY="center">
@@ -806,9 +813,7 @@ const ReadonlyMemo: FunctionComponent<{
             textOverflow: "ellipsis",
           }}
         >
-          {memo || (
-            <FormattedMessage id="page.sign.cosmos.tx.readonly-memo.empty" />
-          )}
+          {memo || "No memo"}
         </Subtitle3>
       </XAxis>
     </Box>

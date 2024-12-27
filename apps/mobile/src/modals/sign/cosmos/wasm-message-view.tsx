@@ -92,9 +92,6 @@ export const WasmMessageView: FunctionComponent<{
           fullWidth={false}
           size="small"
           type="secondary"
-          // style={{
-          //   backgroundColor: style.get("color-gray-400").color,
-          // }}
           label={
             isOpen
               ? intl.formatMessage({

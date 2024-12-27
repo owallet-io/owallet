@@ -246,6 +246,8 @@ export const HeaderLayout: FunctionComponent<
       | ({ isSpecial: true } & SpecialButtonProps),
     index: number
   ) => {
+    console.log("button", button);
+
     if (button.isSpecial) {
       return <SpecialButton key={index} {...button} />;
     }
