@@ -540,6 +540,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
           <Styles.Container>
             <TronRecipientInput
+              historyType="send"
               ref={addressRef}
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}

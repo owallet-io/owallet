@@ -20,11 +20,12 @@ const Styles = {
 export const EmptyView: FunctionComponent<
   PropsWithChildren<{
     subject?: string;
+    plainSubject?: string;
     altSvg?: React.ReactElement;
 
     style?: React.CSSProperties;
   }>
-> = ({ subject, altSvg, style, children }) => {
+> = ({ subject, altSvg, style, children, plainSubject }) => {
   const theme = useTheme();
 
   return (
@@ -43,7 +44,9 @@ export const EmptyView: FunctionComponent<
             : ColorPalette["gray-400"]
         }
       >
-        {subject ? (
+        {plainSubject ? (
+          plainSubject
+        ) : subject ? (
           <FormattedMessage
             id="components.empty-view.text"
             values={{ subject }}

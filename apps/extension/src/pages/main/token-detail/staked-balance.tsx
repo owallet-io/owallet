@@ -71,7 +71,7 @@ export const StakedBalance: FunctionComponent<{
         padding="1rem"
       >
         <XAxis alignY="center">
-          {theme.mode === "light" ? (
+          {/* {theme.mode === "light" ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"
@@ -137,8 +137,8 @@ export const StakedBalance: FunctionComponent<{
                 </linearGradient>
               </defs>
             </svg>
-          )}
-          <Gutter size="0.75rem" />
+          )} */}
+          {/* <Gutter size="0.75rem" /> */}
           <YAxis>
             {(() => {
               if (

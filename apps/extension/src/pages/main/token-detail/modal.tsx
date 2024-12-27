@@ -28,11 +28,12 @@ import { EmptyView } from "../../../components/empty-view";
 import { DenomHelper } from "@owallet/common";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainIdEVM } from "@owallet/types";
+import Color from "color";
+import { ChainImageFallback, CurrencyImageFallback } from "components/image";
 
 const Styles = {
   Container: styled.div`
     height: 100vh;
-
     background: ${({ theme }) => {
       if (theme.mode === "light") {
         return "linear-gradient(90deg, #FCFAFF 2.44%, #FBFBFF 96.83%)";
@@ -57,6 +58,35 @@ const Styles = {
     font-size: 1.75rem;
     line-height: 2.125rem;
   `,
+  BoxContainer: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "1rem 1rem 0.875rem 1rem" : "1rem 0.875rem"};
+    border-radius: 0.375rem;
+    margin: 0.85rem;
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    align-items: center;
+  `,
 };
 
 export const TokenDetailModal: FunctionComponent<{
@@ -73,12 +103,11 @@ export const TokenDetailModal: FunctionComponent<{
     uiConfigStore,
   } = useStore();
 
-  console.log("coinMinimalDenom", coinMinimalDenom);
-
   const theme = useTheme();
 
   const account = accountStore.getAccount(chainId);
   const modularChainInfo = chainStore.getModularChain(chainId);
+  const chainInfo = chainStore.getChain(chainId);
   const currency = (() => {
     if ("cosmos" in modularChainInfo) {
       return chainStore.getChain(chainId).forceFindCurrency(coinMinimalDenom);
@@ -129,23 +158,23 @@ export const TokenDetailModal: FunctionComponent<{
 
   const navigate = useNavigate();
 
-  const querySupported = queriesStore.simpleQuery.queryGet<string[]>(
-    process.env["KEPLR_EXT_CONFIG_SERVER"],
-    "/tx-history/supports"
-  );
+  // const querySupported = queriesStore.simpleQuery.queryGet<string[]>(
+  //   process.env["KEPLR_EXT_CONFIG_SERVER"],
+  //   "/tx-history/supports"
+  // );
 
-  const isSupported: boolean = useMemo(() => {
-    if ("cosmos" in modularChainInfo) {
-      const chainInfo = chainStore.getChain(modularChainInfo.chainId);
-      const map = new Map<string, boolean>();
-      for (const chainIdentifier of querySupported.response?.data ?? []) {
-        map.set(chainIdentifier, true);
-      }
+  // const isSupported: boolean = useMemo(() => {
+  //   if ("cosmos" in modularChainInfo) {
+  //     const chainInfo = chainStore.getChain(modularChainInfo.chainId);
+  //     const map = new Map<string, boolean>();
+  //     for (const chainIdentifier of querySupported.response?.data ?? []) {
+  //       map.set(chainIdentifier, true);
+  //     }
 
-      return map.get(chainInfo.chainIdentifier) ?? false;
-    }
-    return false;
-  }, [chainStore, modularChainInfo, querySupported.response]);
+  //     return map.get(chainInfo.chainIdentifier) ?? false;
+  //   }
+  //   return false;
+  // }, [chainStore, modularChainInfo, querySupported.response]);
 
   const buttons: {
     icon: React.ReactElement;
@@ -156,18 +185,15 @@ export const TokenDetailModal: FunctionComponent<{
     {
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
+          width="21"
           height="20"
+          viewBox="0 0 21 20"
           fill="none"
-          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.56"
-            d="M16.25 3.75l-12.5 12.5m0 0h9.375m-9.375 0V6.875"
+            d="M2.16669 1.66675H9.66669V9.16675H2.16669V1.66675ZM3.83335 3.33341V7.50008H8.00002V3.33341H3.83335ZM11.3334 1.66675H18.8334V9.16675H11.3334V1.66675ZM13 3.33341V7.50008H17.1667V3.33341H13ZM5.08335 4.58341H6.75335V6.25341H5.08335V4.58341ZM14.25 4.58341H15.92V6.25341H14.25V4.58341ZM11.33 10.8301H13V12.5001H11.33V10.8301ZM17.1634 10.8301H18.8334V12.5001H17.1634V10.8301ZM2.16669 10.8334H9.66669V18.3334H2.16669V10.8334ZM3.83335 12.5001V16.6667H8.00002V12.5001H3.83335ZM13.83 13.3301H15.5V14.9967H17.1667V16.6634H18.8334V18.3334H17.1634V16.6667H15.4967V15.0001H13.83V13.3301ZM5.08335 13.7501H6.75335V15.4201H5.08335V13.7501ZM11.33 16.6634H13V18.3334H11.33V16.6634Z"
+            fill="#242325"
           />
         </svg>
       ),
@@ -177,50 +203,59 @@ export const TokenDetailModal: FunctionComponent<{
       },
       disabled: isIBCCurrency,
     },
+    // {
+    //   icon: (
+    //     <svg
+    //       xmlns="http://www.w3.org/2000/svg"
+    //       width="20"
+    //       height="20"
+    //       fill="none"
+    //       viewBox="0 0 20 20"
+    //     >
+    //       <path
+    //         stroke="currentColor"
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //         strokeWidth="1.56"
+    //         d="M6.25 17.5L2.5 13.75m0 0L6.25 10M2.5 13.75h11.25m0-11.25l3.75 3.75m0 0L13.75 10m3.75-3.75H6.25"
+    //       />
+    //     </svg>
+    //   ),
+    //   text: "Swap",
+    //   onClick: () => {
+    //     navigate(
+    //       `/ibc-swap?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}&outChainId=${
+    //         chainStore.getChain("noble").chainId
+    //       }&outCoinMinimalDenom=uusdc`
+    //     );
+    //   },
+    //   disabled: true,
+    // },
     {
       icon: (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
+          width="21"
           height="20"
+          viewBox="0 0 21 20"
           fill="none"
-          viewBox="0 0 20 20"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.56"
-            d="M6.25 17.5L2.5 13.75m0 0L6.25 10M2.5 13.75h11.25m0-11.25l3.75 3.75m0 0L13.75 10m3.75-3.75H6.25"
-          />
-        </svg>
-      ),
-      text: "Swap",
-      onClick: () => {
-        navigate(
-          `/ibc-swap?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}&outChainId=${
-            chainStore.getChain("noble").chainId
-          }&outCoinMinimalDenom=uusdc`
-        );
-      },
-      disabled: true,
-    },
-    {
-      icon: (
-        <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          fill="none"
-          viewBox="0 0 20 20"
         >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.56"
-            d="M3.75 16.25l12.5-12.5m0 0H6.875m9.375 0v9.375"
-          />
+          <g clip-path="url(#clip0_3350_28316)">
+            <path
+              d="M0.743286 1.38745L20.5016 9.99995L0.744119 18.6133L3.78329 9.99995L0.743286 1.38745ZM5.25662 10.8333L3.58995 15.5541L16.3325 9.99995L3.58995 4.44662L5.25662 9.16662H9.66662V10.8333H5.25662Z"
+              fill="#242325"
+            />
+          </g>
+          <defs>
+            <clipPath id="clip0_3350_28316">
+              <rect
+                width="20"
+                height="20"
+                fill="white"
+                transform="translate(0.5)"
+              />
+            </clipPath>
+          </defs>
         </svg>
       ),
       text: "Send",
@@ -326,8 +361,14 @@ export const TokenDetailModal: FunctionComponent<{
               </svg>
             </Box>
             <div style={{ flex: 1 }} />
-            <span>
-              <Body1
+            <Box
+              style={{
+                flex: 1,
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              {/* <Body1
                 as="span"
                 color={
                   theme.mode === "light"
@@ -343,8 +384,13 @@ export const TokenDetailModal: FunctionComponent<{
 
                   return `${denom} on `;
                 })()}
-              </Body1>
+              </Body1> */}
+              <ChainImageFallback chainInfo={chainInfo} size="1.1rem" />
+              <Gutter size="0.375rem" />
               <Body1
+                style={{
+                  fontWeight: 600,
+                }}
                 as="span"
                 color={
                   isIBCCurrency
@@ -358,7 +404,7 @@ export const TokenDetailModal: FunctionComponent<{
               >
                 {modularChainInfo.chainName}
               </Body1>
-            </span>
+            </Box>
             <div style={{ flex: 1 }} />
             <Box width="1.5rem" height="1.5rem" />
           </XAxis>
@@ -373,81 +419,141 @@ export const TokenDetailModal: FunctionComponent<{
             overflowY: "auto",
           }}
         >
-          {!isIBCCurrency ? (
-            <React.Fragment>
-              <Gutter size="0.25rem" />
-              <YAxis alignX="center">
-                <XAxis alignY="center">
-                  <AddressChip chainId={chainId} />
-                  <Gutter size="0.25rem" />
-                  <QRCodeChip
-                    onClick={() => {
-                      setIsReceiveOpen(true);
-                    }}
-                  />
-                </XAxis>
-              </YAxis>
-            </React.Fragment>
-          ) : null}
-          <Gutter size="1.375rem" />
-          <YAxis alignX="center">
-            <Styles.Balance
+          <Styles.BoxContainer>
+            {!isIBCCurrency ? (
+              <React.Fragment>
+                <Gutter size="0.25rem" />
+                <YAxis alignX="center">
+                  <XAxis alignY="center">
+                    <AddressChip chainId={chainId} />
+                    <Gutter size="0.25rem" />
+                    {/* <QRCodeChip
+                      onClick={() => {
+                        setIsReceiveOpen(true);
+                      }}
+                    /> */}
+                  </XAxis>
+                </YAxis>
+              </React.Fragment>
+            ) : null}
+            <Gutter size="1.375rem" />
+            <Box
               style={{
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["black"]
-                    : ColorPalette["gray-10"],
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              {uiConfigStore.hideStringIfPrivacyMode(
-                balance
-                  ? balance.balance
-                      .maxDecimals(6)
-                      .inequalitySymbol(true)
-                      .shrink(true)
-                      .hideIBCMetadata(true)
-                      .toString()
-                  : `0 ${currency.coinDenom}`,
-                4
-              )}
-            </Styles.Balance>
-            <Gutter size="0.25rem" />
-            <Subtitle3 color={ColorPalette["gray-300"]}>
-              {uiConfigStore.hideStringIfPrivacyMode(
-                balance
-                  ? (() => {
-                      const price = priceStore.calculatePrice(balance.balance);
-                      return price ? price.toString() : "-";
-                    })()
-                  : "-",
-                2
-              )}
-            </Subtitle3>
-          </YAxis>
-          <Gutter size="1.25rem" />
-          <YAxis alignX="center">
-            <XAxis>
-              <Gutter size="0.875rem" />
+              <Box
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <CurrencyImageFallback
+                  chainInfo={chainInfo}
+                  currency={currency}
+                  size="2rem"
+                />
+                <Gutter size="0.375rem" />
+                <Styles.Balance
+                  style={{
+                    color:
+                      theme.mode === "light"
+                        ? ColorPalette["black"]
+                        : ColorPalette["gray-10"],
+                  }}
+                >
+                  {uiConfigStore.hideStringIfPrivacyMode(
+                    balance
+                      ? balance.balance
+                          .maxDecimals(6)
+                          .inequalitySymbol(true)
+                          .shrink(true)
+                          .hideIBCMetadata(true)
+                          .toString()
+                      : `0 ${currency.coinDenom}`,
+                    4
+                  )}
+                </Styles.Balance>
+              </Box>
+              <Gutter size="0.25rem" />
+              <Subtitle3 color={ColorPalette["gray-300"]}>
+                {uiConfigStore.hideStringIfPrivacyMode(
+                  balance
+                    ? (() => {
+                        const price = priceStore.calculatePrice(
+                          balance.balance
+                        );
+                        return price ? price.toString() : "-";
+                      })()
+                    : "-",
+                  2
+                )}
+              </Subtitle3>
+            </Box>
+            <Gutter size="1.25rem" />
+            <Box
+              style={{
+                width: "100%",
+                height: 1,
+                backgroundColor: ColorPalette["gray-50"],
+              }}
+            />
+            <Box
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
               {buttons.map((obj, i) => {
                 return (
                   <React.Fragment key={i.toString()}>
-                    <Gutter size="1.875rem" />
-                    <CircleButton
+                    {/* <CircleButton
                       text={obj.text}
                       icon={obj.icon}
                       onClick={obj.onClick}
                       disabled={obj.disabled}
-                    />
-                    {i === buttons.length - 1 ? (
-                      <Gutter size="1.875rem" />
+                    /> */}
+                    <Box>
+                      <Box
+                        style={{
+                          cursor: "pointer",
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                        onClick={obj.onClick}
+                      >
+                        <Box>{obj.icon}</Box>
+                        <Gutter size="0.5rem" />
+                        <Body1
+                          style={{
+                            color: ColorPalette["gray-400"],
+                            fontWeight: 500,
+                          }}
+                        >
+                          {obj.text}
+                        </Body1>
+                      </Box>
+                    </Box>
+                    {i < buttons.length - 1 ? (
+                      <Box
+                        style={{
+                          width: 1,
+                          height: 40,
+                          backgroundColor: ColorPalette["gray-50"],
+                        }}
+                      />
                     ) : null}
                   </React.Fragment>
                 );
               })}
-              <Gutter size="0.875rem" />
-            </XAxis>
-          </YAxis>
-
+            </Box>
+          </Styles.BoxContainer>
+          {/* 
           {(() => {
             if ("cosmos" in modularChainInfo) {
               const chainInfo = chainStore.getChain(chainId);
@@ -465,7 +571,7 @@ export const TokenDetailModal: FunctionComponent<{
               }
             }
             return null;
-          })()}
+          })()} */}
 
           {(() => {
             const infos: {
@@ -545,13 +651,13 @@ export const TokenDetailModal: FunctionComponent<{
             return (
               <React.Fragment>
                 <Gutter size="1.25rem" />
-                <TokenInfos title="Token Info" infos={infos} />
+                <TokenInfos title="" infos={infos} />
               </React.Fragment>
             );
           })()}
 
           <Gutter size="1.25rem" />
-          {(() => {
+          {/* {(() => {
             if (msgHistory.pages.length === 0) {
               return (
                 <Box padding="0.75rem" paddingTop="0">
@@ -665,7 +771,7 @@ export const TokenDetailModal: FunctionComponent<{
                 targetDenom={coinMinimalDenom}
               />
             );
-          })()}
+          })()} */}
         </SimpleBar>
       </Styles.Body>
 

@@ -19,6 +19,7 @@ import styled, { useTheme } from "styled-components";
 import { FormattedMessage, useIntl } from "react-intl";
 import { DenomHelper } from "@owallet/common";
 import { SearchTextInput } from "../input";
+import { EmptyView } from "components/empty-view";
 
 type Type = "recent" | "contacts" | "accounts";
 
@@ -376,10 +377,8 @@ export const AddressBookModal: FunctionComponent<{
             >
               <Bleed top="3rem">
                 <YAxis alignX="center">
-                  <EmptyIcon size="4.5rem" />
-                  <Gutter size="1.25rem" />
-                  <Subtitle3>
-                    {(() => {
+                  <EmptyView
+                    plainSubject={(() => {
                       switch (type) {
                         case "accounts":
                           return intl.formatMessage({
@@ -391,7 +390,8 @@ export const AddressBookModal: FunctionComponent<{
                           });
                       }
                     })()}
-                  </Subtitle3>
+                  />
+                  <Gutter size="1.25rem" />
                 </YAxis>
               </Bleed>
             </Box>
@@ -401,24 +401,3 @@ export const AddressBookModal: FunctionComponent<{
     );
   }
 );
-const EmptyIcon: FunctionComponent<{
-  size: string;
-}> = ({ size }) => {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      fill="none"
-      viewBox="0 0 72 72"
-    >
-      <path
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="7.5"
-        d="M45.5 40.5h-18m12.182-21.568l-6.364-6.364a4.5 4.5 0 00-3.182-1.318H14A6.75 6.75 0 007.25 18v36A6.75 6.75 0 0014 60.75h45A6.75 6.75 0 0065.75 54V27A6.75 6.75 0 0059 20.25H42.864a4.5 4.5 0 01-3.182-1.318z"
-      />
-    </svg>
-  );
-};
