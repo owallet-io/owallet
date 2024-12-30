@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import { HeaderProps } from "./types";
-import { Subtitle1 } from "../../components/typography";
+import { Subtitle1, Subtitle3 } from "../../components/typography";
 import { ColorPalette } from "../../styles";
 import { Box } from "../../components/box";
 import {
@@ -246,8 +246,6 @@ export const HeaderLayout: FunctionComponent<
       | ({ isSpecial: true } & SpecialButtonProps),
     index: number
   ) => {
-    console.log("button", button);
-
     if (button.isSpecial) {
       return <SpecialButton key={index} {...button} />;
     }
