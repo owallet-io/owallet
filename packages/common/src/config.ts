@@ -20,6 +20,7 @@ export function defaultBech32Config(
       mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
   };
 }
+
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
   process.env["KEPLR_EXT_COINGECKO_ENDPOINT"] ||
@@ -1446,6 +1447,7 @@ export const PrivilegedOrigins: string[] = [
   "https://scan.orai.io",
   "https://multisig.orai.io",
   "https://develop-v3.beta-oraidex.pages.dev",
+  "http://192.168.10.152:3000",
 ];
 
 export const CommunityChainInfoRepo = {
