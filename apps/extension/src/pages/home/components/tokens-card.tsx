@@ -5,6 +5,7 @@ import { CoinPretty, Dec, Int, PricePretty } from "@owallet/unit";
 import { useStore } from "../../../stores";
 import { ViewRawToken, ViewToken } from "@owallet/types";
 import {
+  avatarName,
   ChainIdEnum,
   removeDataInParentheses,
   unknownToken,
@@ -171,8 +172,12 @@ const TokenItem: FC<{
               className={styles.token}
               src={
                 item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                !item.token?.currency?.coinImageUrl
-                  ? unknownToken.coinImageUrl
+                !item.token?.currency?.coinImageUrl ||
+                item.token?.currency?.coinImageUrl === unknownToken.coinImageUrl
+                  ? avatarName.replace(
+                      "{name}",
+                      item.token?.currency?.coinDenom
+                    )
                   : item.token?.currency?.coinImageUrl
               }
             />

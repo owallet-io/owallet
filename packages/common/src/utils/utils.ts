@@ -41,7 +41,7 @@ import {
   TokenInvalidMintError,
   TokenInvalidOwnerError,
 } from "@solana/spl-token";
-
+export const avatarName = `https://ui-avatars.com/api/?name={name}&background=random`;
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";

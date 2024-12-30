@@ -18,6 +18,7 @@ import colors from "../../theme/colors";
 import { Text } from "../common/text";
 import { Button } from "../common/button";
 import { Input } from "./input";
+import { avatarName } from "@owallet/common";
 
 export const removeDataInParentheses = (inputString: string): string => {
   if (!inputString) return;
@@ -207,10 +208,16 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 alignItems: "center",
               }}
             >
-              {amountConfig.sendCurrency.coinImageUrl ? (
+              {amountConfig.sendCurrency.coinDenom ? (
                 <img
                   style={{ width: 20, height: 20, borderRadius: 20 }}
-                  src={amountConfig.sendCurrency.coinImageUrl}
+                  src={
+                    amountConfig.sendCurrency?.coinImageUrl ||
+                    avatarName.replace(
+                      "{name}",
+                      amountConfig.sendCurrency.coinDenom
+                    )
+                  }
                   alt="logo"
                 />
               ) : null}

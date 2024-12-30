@@ -173,7 +173,8 @@ export const HomePage = observer(() => {
                 item2.coinMinimalDenom
               ).contractAddress.toLowerCase() ===
               item.contractAddress.toLowerCase()
-          ) < 0
+          ) < 0 &&
+          item.coingeckoId !== null
       )
       .map((tokeninfo) => {
         const infoToken = {

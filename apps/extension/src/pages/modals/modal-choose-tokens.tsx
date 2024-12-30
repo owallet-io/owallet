@@ -13,6 +13,7 @@ import {
   removeDataInParentheses,
   extractDataInParentheses,
   unknownToken,
+  avatarName,
 } from "@owallet/common";
 
 const TokenItem: FC<{
@@ -67,8 +68,10 @@ const TokenItem: FC<{
             <img
               className={styles.token}
               src={
-                !image || image === "missing.png"
-                  ? unknownToken.coinImageUrl
+                !image ||
+                image === "missing.png" ||
+                image === unknownToken.coinImageUrl
+                  ? avatarName.replace("{name}", name)
                   : image
               }
             />

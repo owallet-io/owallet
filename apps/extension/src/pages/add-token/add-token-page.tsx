@@ -14,6 +14,7 @@ import { useInteractionInfo } from "@owallet/hooks";
 
 import {
   API,
+  avatarName,
   ChainIdEnum,
   MapChainIdToNetwork,
   unknownToken,
@@ -23,6 +24,7 @@ import Colors from "theme/colors";
 import Web3 from "web3";
 import { Text } from "components/common/text";
 import { toast } from "react-toastify";
+import { ModalConfirm } from "pages/home/modals/modal-confirm";
 
 interface FormData {
   contractAddress: string;
@@ -37,8 +39,12 @@ export const AddTokenPage = observer(() => {
   const intl = useIntl();
   const history = useHistory();
   const [isShowNetwork, setIsShowNetwork] = useState(false);
+  const [isShowConfirm, setIsConfirm] = useState(false);
   const onRequestCloseNetwork = () => {
     setIsShowNetwork(false);
+  };
+  const onRequestModalConfirm = () => {
+    setIsConfirm(false);
   };
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -112,7 +118,10 @@ export const AddTokenPage = observer(() => {
       }:${data.contractAddress}:${data.name}`,
       coinDenom: data.symbol,
       coinDecimals: Number(data.decimals),
-      coinImageUrl: data.image || unknownToken.coinImageUrl,
+      coinImageUrl:
+        data.image ||
+        avatarName.replace("{name}", data.symbol) ||
+        unknownToken.coinImageUrl,
       coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
     };
     if (
@@ -124,7 +133,10 @@ export const AddTokenPage = observer(() => {
         coinMinimalDenom: data.contractAddress,
         coinDenom: data.symbol,
         coinDecimals: Number(data.decimals),
-        coinImageUrl: data.image || unknownToken.coinImageUrl,
+        coinImageUrl:
+          data.image ||
+          avatarName.replace("{name}", data.symbol) ||
+          unknownToken.coinImageUrl,
         coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
       };
     }
@@ -156,17 +168,14 @@ export const AddTokenPage = observer(() => {
   return (
     <LayoutWithButtonBottom
       titleButton={"Import token"}
-      onClickButtonBottom={onSubmit}
+      onClickButtonBottom={handleSubmit(() => {
+        if (!isShowConfirm) {
+          setIsConfirm(true);
+        }
+      })}
       title="Add Token"
     >
       <div className={styles.container}>
-        <div className={styles.alert}>
-          <img src={require("assets/svg/ow_error-circle.svg")} />
-          <span className={styles.textAlert}>
-            Before importing a token, ensure {"it's"} trustworthy to avoid scams
-            and security risks.
-          </span>
-        </div>
         <div
           onClick={() => {
             setIsShowNetwork(true);
@@ -191,7 +200,13 @@ export const AddTokenPage = observer(() => {
           />
         </div>
         {chainStore.current.chainId !== ChainIdEnum.Bitcoin ? (
-          <Form onSubmit={onSubmit}>
+          <Form
+            onSubmit={handleSubmit(() => {
+              if (!isShowConfirm) {
+                setIsConfirm(true);
+              }
+            })}
+          >
             <Input
               type="text"
               label={intl.formatMessage({
@@ -244,6 +259,7 @@ export const AddTokenPage = observer(() => {
               })}
               readOnly={false}
               name="name"
+              error={errors.name?.message}
               ref={register({
                 required: "Name is required",
               })}
@@ -277,14 +293,14 @@ export const AddTokenPage = observer(() => {
             />
             <Input
               type="text"
-              label={"Image"}
+              label={"Image (Optional)"}
               readOnly={false}
               placeHolder={
                 "Ex: https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498"
               }
               name={"image"}
               ref={register({
-                required: "Image is required",
+                required: false,
               })}
               error={errors.image?.message}
             />
@@ -306,11 +322,56 @@ export const AddTokenPage = observer(() => {
             not supported yet! Please try another network.
           </Text>
         )}
+        {/*      <div className={styles.alert}>*/}
+        {/*          <img src={require("assets/svg/ow_error-circle.svg")}/>*/}
+        {/*          <div style={{*/}
+        {/*              flexDirection: "column",*/}
+        {/*              display: "flex"*/}
+        {/*          }}>*/}
+        {/*              <span className={styles.textAlert}>*/}
+        {/*  • Before importing a token, ensure {"it's"} trustworthy to avoid scams*/}
+        {/*  and security risks.*/}
+        {/*</span>*/}
+        {/*              <span className={styles.textAlert}>*/}
+        {/*             • Please disable “Hide Dust” if the added token is not found.*/}
+        {/*          </span>*/}
+        {/*              <span className={styles.textAlert}>*/}
+        {/*             • If the token has no amount, it will not be displayed.*/}
+        {/*          </span>*/}
+        {/*          </div>*/}
+        {/*      </div>*/}
       </div>
       <ModalNetwork
         isHideAllNetwork={true}
         isOpen={isShowNetwork}
         onRequestClose={onRequestCloseNetwork}
+      />
+      <ModalConfirm
+        onSubmit={onSubmit}
+        isOpen={isShowConfirm}
+        onRequestClose={onRequestModalConfirm}
+        content={
+          <div className={styles.alert}>
+            <img src={require("assets/svg/ow_error-circle.svg")} />
+            <div
+              style={{
+                flexDirection: "column",
+                display: "flex",
+              }}
+            >
+              <span className={styles.textAlert}>
+                • Before importing a token, ensure {"it's"} trustworthy to avoid
+                scams and security risks.
+              </span>
+              <span className={styles.textAlert}>
+                • Please disable “Hide Dust” if the added token is not found.
+              </span>
+              <span className={styles.textAlert}>
+                • If the token has no amount, it will not be displayed.
+              </span>
+            </div>
+          </div>
+        }
       />
     </LayoutWithButtonBottom>
   );

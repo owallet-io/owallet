@@ -152,7 +152,6 @@ const SignTronContent: FunctionComponent = () => {
     };
   }, [feeTrx]);
   const feeLimitData = feeLimit?.gt(new Int(0)) ? feeLimit?.toString() : null;
-
   return (
     <div
       style={{

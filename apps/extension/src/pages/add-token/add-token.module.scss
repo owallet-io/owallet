@@ -1,5 +1,22 @@
 @import '../../styles/var';
+.alert {
+  display: flex;
+  flex-direction: row;
+  padding: 12px;
+  border-radius: 12px;
+  align-items: center;
+  gap: 8px;
+  background-color: $warning-surface-subtle;
 
+  .text-alert {
+    color: $neutral-text-title;
+    font-size: 14px;
+    font-weight: 600;
+    padding-bottom: 3px;
+    padding-top: 3px;
+    line-height: 18px; /* 142.857% */
+  }
+}
 .container {
   background-color: $neutral-surface-card;
   height: 100%;
@@ -12,22 +29,7 @@
   height: calc(100vh - 130px);
   overflow: scroll;
 
-  .alert {
-    display: flex;
-    flex-direction: row;
-    padding: 12px;
-    border-radius: 12px;
-    align-items: center;
-    gap: 8px;
-    background-color: $warning-surface-subtle;
 
-    .text-alert {
-      color: $neutral-text-title;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 20px; /* 142.857% */
-    }
-  }
 
   .chain-info {
     height: 56px;
