@@ -13,7 +13,7 @@ export const ModalConfirm: FC<{
   isOpen: boolean;
   onRequestClose: () => void;
   content: ReactNode;
-  onSubmit: () => void;
+  onSubmit: any;
 }> = observer(({ isOpen, onRequestClose, content, onSubmit }) => {
   return (
     <SlidingPane
