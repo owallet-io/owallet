@@ -274,6 +274,23 @@ export class HugeQueriesStore {
     }
   );
 
+  getAllBalancesByChainId = computedFn(
+    (chainId: string): ReadonlyArray<ViewToken> => {
+      if (!chainId) return;
+      const keys: Map<string, boolean> = new Map();
+      for (const chainInfo of this.chainStore.chainInfosInUI) {
+        for (const currency of chainInfo.currencies) {
+          const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
+          keys.set(key, true);
+        }
+      }
+      return this.balanceBinarySort.arr.filter((viewToken) => {
+        const key = viewToken[BinarySortArray.SymbolKey];
+        return keys.get(key) && viewToken.chainInfo.chainId === chainId;
+      });
+    }
+  );
+
   filterLowBalanceTokens = computedFn(
     (viewTokens: ReadonlyArray<ViewToken>): ViewToken[] => {
       return viewTokens.filter((viewToken) => {
