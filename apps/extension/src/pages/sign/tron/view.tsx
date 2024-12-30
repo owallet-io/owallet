@@ -2,7 +2,7 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { SignTronInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
-import { Body2, Body3, H5 } from "../../../components/typography";
+import { Body2, Subtitle3 } from "../../../components/typography";
 import { ColorPalette } from "../../../styles";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -25,11 +25,11 @@ import {
   toDisplay,
   TronWebProvider,
 } from "@owallet/common";
-import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
 import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 import { useNotification } from "../../../hooks/notification";
+import { AddressChip } from "pages/main/components/address-chip";
 
 export const TronSigningView: FunctionComponent<{
   interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
@@ -225,12 +225,10 @@ export const TronSigningView: FunctionComponent<{
       }
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
-          style: {
-            width: "3.25rem",
-          },
+          color: "danger",
           onClick: async () => {
             approve();
           },
@@ -504,6 +502,52 @@ export const TronSigningView: FunctionComponent<{
           ledgerInteractingError={ledgerInteractingError}
           isInternal={interactionData.isInternal}
         />
+        <div
+          style={{
+            borderTop: "1px solid" + ColorPalette["gray-100"],
+            marginTop: 4,
+          }}
+        >
+          <div
+            style={{
+              flexDirection: "row",
+              display: "flex",
+              padding: 8,
+              justifyContent: "space-between",
+              backgroundColor: ColorPalette["gray-50"],
+              borderRadius: 12,
+              marginTop: 8,
+            }}
+          >
+            <div
+              style={{
+                flexDirection: "row",
+                display: "flex",
+              }}
+            >
+              <img
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 40,
+                  marginRight: 8,
+                }}
+                src={require("assets/images/default-avatar.png")}
+              />
+              <div style={{ flexDirection: "column", display: "flex" }}>
+                <Subtitle3
+                  style={{
+                    padding: "2px 6px",
+                  }}
+                  color={ColorPalette["gray-500"]}
+                >
+                  {keyRingStore.selectedKeyInfo?.name || "OWallet Account"}
+                </Subtitle3>
+                <AddressChip chainId={chainId} />
+              </div>
+            </div>
+          </div>
+        </div>
       </Box>
     </HeaderLayout>
   );

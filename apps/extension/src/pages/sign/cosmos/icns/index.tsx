@@ -47,12 +47,11 @@ export const SignCosmosICNSPage: FunctionComponent = observer(() => {
       fixedHeight={true}
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          // textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
-          style: {
-            width: "3.25rem",
-          },
+          color: "danger",
           onClick: async () => {
             if (icnsInteractionStore.waitingData) {
               await icnsInteractionStore.rejectWithProceedNext(
@@ -109,12 +108,6 @@ export const SignCosmosICNSPage: FunctionComponent = observer(() => {
     >
       <Box height="100%" padding="0.75rem" paddingBottom="0">
         <Box alignX="center">
-          <Image
-            alt="OWallet Logo Image"
-            src={require("../../../../public/assets/icns-logo.svg")}
-            style={{ width: "4.625rem", height: "4.625rem" }}
-          />
-
           <Gutter size="1.125rem" />
 
           <H2

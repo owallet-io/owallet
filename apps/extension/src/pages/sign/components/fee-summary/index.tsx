@@ -41,9 +41,6 @@ export const FeeSummary: FunctionComponent<{
             ? ColorPalette["white"]
             : ColorPalette["gray-600"]
         }
-        // light theme에서 box shadow가 있어도 sign page가 overflow: auto라서 box shadow가 보이지 않는다.
-        // 그렇다고 sign page에 overflow: visible을 주면 다른 부분에서 더 큰 문제가 생기기 때문에
-        // light theme에서는 일단 margin bottom을 준다.
         marginBottom={theme.mode === "light" ? "4px" : undefined}
         style={{
           boxShadow:

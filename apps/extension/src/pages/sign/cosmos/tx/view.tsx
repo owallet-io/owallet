@@ -543,17 +543,17 @@ export const CosmosTxView: FunctionComponent<{
               </H5>
               <Box
                 style={{
-                  padding: "0.25rem",
+                  padding: "0.25rem 0.35rem",
                   borderRadius: "0.35rem",
                   backgroundColor: ColorPalette["purple-700"],
                   alignItems: "center",
                   justifyContent: "center",
+                  marginLeft: "0.35rem",
                 }}
               >
                 <H5
                   style={{
                     color: ColorPalette["white"],
-                    marginRight: "0.25rem",
                   }}
                 >
                   {msgs.length}
@@ -677,6 +677,7 @@ export const CosmosTxView: FunctionComponent<{
         <Box
           style={{
             opacity: isLedgerAndDirect ? 0.5 : undefined,
+            paddingBottom: "0.75rem",
           }}
         >
           {"isDirectAux" in interactionData.data &&
@@ -690,28 +691,30 @@ export const CosmosTxView: FunctionComponent<{
                 }
 
                 return (
-                  <FeeControl
-                    feeConfig={feeConfig}
-                    senderConfig={senderConfig}
-                    gasConfig={gasConfig}
-                    disableAutomaticFeeSet={preferNoSetFee}
-                  />
+                  <Styles.Container>
+                    <FeeControl
+                      feeConfig={feeConfig}
+                      senderConfig={senderConfig}
+                      gasConfig={gasConfig}
+                      disableAutomaticFeeSet={preferNoSetFee}
+                    />
+                  </Styles.Container>
                 );
               })()}
 
           {isHighFee ? (
-            <React.Fragment>
+            <Styles.Container>
               <Gutter size="0.75rem" />
               <HighFeeWarning
                 checked={isHighFeeApproved}
                 onChange={(v) => setIsHighFeeApproved(v)}
               />
-            </React.Fragment>
+            </Styles.Container>
           ) : null}
         </Box>
 
         {isSendAuthzGrant ? (
-          <React.Fragment>
+          <Styles.Container>
             <Gutter size="0.75rem" />
             <GuideBox
               color="warning"
@@ -729,11 +732,11 @@ export const CosmosTxView: FunctionComponent<{
                 </Box>
               }
             />
-          </React.Fragment>
+          </Styles.Container>
         ) : null}
 
         {isLedgerAndDirect ? (
-          <React.Fragment>
+          <Styles.Container>
             <Gutter size="0.75rem" />
             <GuideBox
               color="warning"
@@ -744,7 +747,7 @@ export const CosmosTxView: FunctionComponent<{
                 id: "page.sign.cosmos.tx.warning-paragraph",
               })}
             />
-          </React.Fragment>
+          </Styles.Container>
         ) : null}
 
         <LedgerGuideBox
@@ -820,14 +823,6 @@ const ReadonlyMemo: FunctionComponent<{
         theme.mode === "light" ? ColorPalette.white : ColorPalette["gray-600"]
       }
       padding="1rem"
-      borderRadius="0.375rem"
-      style={{
-        boxShadow: border
-          ? null
-          : theme.mode === "light"
-          ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
-          : undefined,
-      }}
     >
       <XAxis alignY="center">
         <Subtitle3
