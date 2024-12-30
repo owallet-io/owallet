@@ -147,7 +147,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDenom: "RACKS",
           coinGeckoId: "black-rack",
           coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraigyiRnYoCgFiaLnpiaPvJjZbs5zzmWHp4sxBgZq3",
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
           coinDecimals: 6,
           coinImageUrl:
             "https://ipfs.io/ipfs/QmVRPsBSHpamDzcDzVL9wsbB9gr4frtNrrFF7g44Xa9FuS",
