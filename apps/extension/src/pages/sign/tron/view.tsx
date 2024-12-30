@@ -505,7 +505,7 @@ export const TronSigningView: FunctionComponent<{
         <div
           style={{
             borderTop: "1px solid" + ColorPalette["gray-100"],
-            marginTop: 4,
+            marginTop: 8,
           }}
         >
           <div

@@ -43,6 +43,40 @@ import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import Web3 from "web3-utils";
 import { AddressChip } from "pages/main/components/address-chip";
+import Color from "color";
+import styled from "styled-components";
+
+const Styles = {
+  Container: styled.div<{
+    forChange: boolean | undefined;
+    isError: boolean;
+    disabled?: boolean;
+    isNotReady?: boolean;
+  }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+    padding ${({ forChange }) =>
+      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    border-radius: 1rem;
+    
+    border: ${({ isError }) =>
+      isError
+        ? `1.5px solid ${Color(ColorPalette["yellow-400"])
+            .alpha(0.5)
+            .toString()}`
+        : undefined};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 2px 6px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};;
+    
+  `,
+};
 
 export const EthereumSigningView: FunctionComponent<{
   interactionData: NonNullable<SignEthereumInteractionStore["waitingData"]>;
@@ -664,13 +698,15 @@ export const EthereumSigningView: FunctionComponent<{
             }
 
             return (
-              <FeeControl
-                feeConfig={feeConfig}
-                senderConfig={senderConfig}
-                gasConfig={gasConfig}
-                gasSimulator={gasSimulator}
-                isForEVMTx
-              />
+              <Styles.Container>
+                <FeeControl
+                  feeConfig={feeConfig}
+                  senderConfig={senderConfig}
+                  gasConfig={gasConfig}
+                  gasSimulator={gasSimulator}
+                  isForEVMTx
+                />
+              </Styles.Container>
             );
           })()}
 
@@ -686,7 +722,7 @@ export const EthereumSigningView: FunctionComponent<{
         <div
           style={{
             borderTop: "1px solid" + ColorPalette["gray-100"],
-            marginTop: 4,
+            marginTop: 8,
           }}
         >
           <div
