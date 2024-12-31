@@ -14,6 +14,7 @@ import {
   API,
   ChainIdEnum,
   DenomHelper,
+  fetchRetry,
   MapChainIdToNetwork,
   Network,
   unknownToken,
@@ -33,6 +34,7 @@ import {
   getAssociatedTokenAddress,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
+import { AppCurrency } from "@owallet/types";
 
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
@@ -96,6 +98,38 @@ export const HomePage = observer(() => {
     }, 400), // Adjust the debounce time (ms) as needed
     []
   );
+  useEffect(() => {
+    fetchRetry(
+      `https://raw.githubusercontent.com/owallet-io/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
+    )
+      .then((res) => {
+        console.log(res, "Resss");
+        if (res && res.currencies?.length > 0) {
+          // const currencyOrai: AppCurrency[] = [];
+          for (const currency of res.currencies) {
+            const {
+              coinDenom,
+              coinGeckoId,
+              coinMinimalDenom,
+              coinDecimals,
+              coinImageUrl,
+            } = currency || {};
+            const token: AppCurrency = {
+              coinImageUrl: coinImageUrl,
+              coinGeckoId: coinGeckoId,
+              coinMinimalDenom: coinMinimalDenom,
+              coinDecimals: coinDecimals,
+              coinDenom: coinDenom,
+            };
+            // currencyOrai.push(token);
+            tokensStore.addToken("Oraichain", token);
+          }
+          // const OraiChain = chainStore.getChain("Oraichain");
+          // OraiChain.addCurrencies(...currencyOrai);
+        }
+      })
+      .catch((err) => console.log(err, "Errr"));
+  }, []);
   useEffect(() => {
     debouncedSetUaw(availableTotalPriceEmbedOnlyUSD);
     return () => {};

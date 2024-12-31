@@ -125,166 +125,171 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [
         this.stakeCurrency,
         {
-          type: "cw20",
-          coinDenom: "AIRI",
+          coinDenom: "ATOM",
+          coinGeckoId: "cosmos",
           coinMinimalDenom:
-            "cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token",
+            "ibc/A2E2EEC9057A4A1C2C0A6A4C78B0239118DF5F278830F50B4A6BDD7A66506B78",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1481/standard/cosmos_hub.png",
+        },
+        {
+          coinDenom: "NTMPI",
+          coinGeckoId: "neutaro",
+          coinMinimalDenom:
+            "ibc/576B1D63E401B6A9A071C78A1D1316D016EC9333D2FEB14AD503FAC4B8731CD1",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/36277/standard/Neutaro_logo.jpg?1711371142",
+        },
+        {
+          coinDenom: "AIRI",
+          coinGeckoId: "airight",
+          coinMinimalDenom:
+            "cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:AIRI",
+          type: "cw20",
           contractAddress: "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
           coinDecimals: 6,
-          coinGeckoId: "airight",
-          coinImageUrl: "https://i.ibb.co/m8mCyMr/airi.png",
-        },
-        {
-          coinDenom: "MAX",
-          coinGeckoId: "max-2",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
-          coinDecimals: 6,
           coinImageUrl:
-            "https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2",
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/airi.png",
         },
         {
-          coinDenom: "RACKS",
-          coinGeckoId: "black-rack",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
-          coinDecimals: 6,
-          coinImageUrl:
-            "https://ipfs.io/ipfs/QmVRPsBSHpamDzcDzVL9wsbB9gr4frtNrrFF7g44Xa9FuS",
-        },
-        {
-          coinDenom: "TON",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/ton",
-          coinDecimals: 9,
-          coinGeckoId: "the-open-network",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
-        },
-        {
-          coinDenom: "PEPE",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE",
-          coinDecimals: 6,
-          coinGeckoId: "pepe",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/29850/standard/pepe-token.jpeg?1696528776",
-        },
-        {
-          coinDenom: "HMSTR",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/HMSTR",
-          coinDecimals: 9,
-          coinGeckoId: "hamster-kombat",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
-        },
-        {
-          coinDenom: "CAT",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
-          coinDecimals: 6,
-          coinGeckoId: "simon-s-cat",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
-        },
-        {
-          type: "cw20",
-          coinDenom: "SCORAI",
-          coinMinimalDenom:
-            "cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:stake-comp-orai",
-          contractAddress:
-            "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
-          coinDecimals: 6,
-          coinGeckoId: "scorai",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/28897/standard/Orchai_LOGO.png",
-        },
-        {
-          type: "cw20",
-          coinDenom: "OCH",
-          coinMinimalDenom:
-            "cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH",
-          contractAddress:
-            "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
-          coinDecimals: 6,
-          coinGeckoId: "och",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png",
-        },
-        {
-          type: "cw20",
-          coinDenom: "BTC",
-          coinMinimalDenom:
-            "cw20:orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd:orai BTC Token",
-          contractAddress:
-            "orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd",
-          coinDecimals: 6,
-          coinGeckoId: "bitcoin",
-          coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
-        },
-        {
-          coinDenom: "BTC V2",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc",
-          coinDecimals: 14,
-          coinGeckoId: "bitcoin",
-          coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
-        },
-        {
-          type: "cw20",
-          coinDenom: "ORAIX",
-          coinMinimalDenom:
-            "cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:OraiDex Token",
-          contractAddress: "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
-          coinDecimals: 6,
-          coinGeckoId: "oraidex",
-          coinImageUrl: "https://i.ibb.co/VmMJtf7/oraix.png",
-        },
-        {
-          type: "cw20",
           coinDenom: "USDT",
+          coinGeckoId: "tether",
           coinMinimalDenom:
-            "cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:Tether",
+            "cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT",
+          type: "cw20",
           contractAddress: "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
           coinDecimals: 6,
-          coinGeckoId: "tether",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
         },
         {
-          type: "cw20",
           coinDenom: "USDC",
+          coinGeckoId: "usd-coin",
           coinMinimalDenom:
             "cw20:orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd:USDC",
+          type: "cw20",
           contractAddress:
             "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
           coinDecimals: 6,
-          coinGeckoId: "usd-coin",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
         },
         {
+          coinDenom: "OSMO",
+          coinMinimalDenom:
+            "ibc/9C4DCD21B48231D0BC2AC3D1B74A864746B37E4292694C93C617324250D002FC",
+          coinDecimals: 6,
+          coinGeckoId: "osmosis",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/16724/standard/osmo.png?1696516298",
+        },
+        {
+          coinDenom: "BEP20 KWT",
+          coinGeckoId: "kawaii-islands",
+          coinMinimalDenom:
+            "ibc/4F7464EEE736CCFB6B444EB72DE60B3B43C0DD509FFA2B87E05D584467AAE8C8",
+          coinDecimals: 18,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+        },
+        {
+          coinDenom: "KWT",
+          coinGeckoId: "kawaii-islands",
+          coinMinimalDenom:
+            "cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:KWT",
           type: "cw20",
+          contractAddress: "orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+        },
+        {
+          coinDenom: "BEP20 MILKY",
+          coinGeckoId: "milky-token",
+          coinMinimalDenom:
+            "ibc/E12A2298AC40011C79F02F26C324BD54DF20F4B2904CB9028BFDEDCFAA89B906",
+          coinDecimals: 18,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
+        },
+        {
+          coinDenom: "MILKY",
+          coinGeckoId: "milky-token",
+          coinMinimalDenom:
+            "cw20:orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw:MILKY",
+          type: "cw20",
+          contractAddress: "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png",
+        },
+        {
+          coinDenom: "ORAIX",
+          coinMinimalDenom:
+            "cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:ORAIX",
+          type: "cw20",
+          contractAddress: "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+          coinGeckoId: "oraidex",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/oraix.png",
+        },
+        {
+          coinDenom: "scORAI",
+          coinMinimalDenom:
+            "cw20:orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp:scORAI",
+          type: "cw20",
+          contractAddress:
+            "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
+          coinGeckoId: "scorai",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/28897/standard/Orchai_LOGO.png?1696527873",
+        },
+        {
           coinDenom: "wTRX",
+          coinGeckoId: "tron",
           coinMinimalDenom:
             "cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX",
+          type: "cw20",
           contractAddress:
             "orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0",
           coinDecimals: 6,
-          coinGeckoId: "tron",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png",
         },
         {
+          coinDenom: "scATOM",
+          coinMinimalDenom:
+            "cw20:orai19q4qak2g3cj2xc2y3060t0quzn3gfhzx08rjlrdd3vqxhjtat0cq668phq:scATOM",
           type: "cw20",
+          contractAddress:
+            "orai19q4qak2g3cj2xc2y3060t0quzn3gfhzx08rjlrdd3vqxhjtat0cq668phq",
+          coinGeckoId: "scatom",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/33050/standard/orchai_logo_white_copy_4x-8_%281%29.png?1700473937",
+        },
+        {
+          coinDenom: "IBC INJ",
+          coinGeckoId: "injective-protocol",
+          coinMinimalDenom:
+            "ibc/49D820DFDE9F885D7081725A58202ABA2F465CAEE4AFBC683DFB79A8E013E83E",
+          coinDecimals: 18,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png",
+        },
+        {
           coinDenom: "INJ",
+          coinGeckoId: "injective-protocol",
           coinMinimalDenom:
             "cw20:orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49:INJ",
           contractAddress:
             "orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49",
+          type: "cw20",
           coinDecimals: 6,
-          coinGeckoId: "injective-protocol",
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png",
         },
@@ -299,6 +304,102 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinImageUrl:
             "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png",
+        },
+        {
+          coinDenom: "BTC.legacy",
+          coinGeckoId: "bitcoin",
+          coinMinimalDenom:
+            "cw20:orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd:USAT",
+          type: "cw20",
+          contractAddress:
+            "orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png",
+        },
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc",
+          coinDecimals: 14,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/1.png",
+        },
+        {
+          coinDenom: "OCH",
+          coinGeckoId: "och",
+          coinMinimalDenom:
+            "cw20:orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q:OCH",
+          type: "cw20",
+          contractAddress:
+            "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/34236/standard/orchai_logo_white_copy_4x-8_%281%29.png?1704307670",
+        },
+        {
+          coinDenom: "PEPE",
+          coinGeckoId: "pepe",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extPEPE",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/29850/standard/pepe-token.jpeg?1696528776",
+        },
+        {
+          coinDenom: "HMSTR",
+          coinGeckoId: "hamster-kombat",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/HMSTR",
+          coinDecimals: 9,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
+        },
+        {
+          coinDenom: "DOGE",
+          coinGeckoId: "dogecoin",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/DogeBNB",
+          coinDecimals: 8,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/5/standard/dogecoin.png?1696501409",
+        },
+        {
+          coinDenom: "WSOL",
+          coinGeckoId: "solana",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraib0x4VH72cCsNwZwLtHtBnXuCxHWf4mB",
+          coinDecimals: 9,
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+        },
+        {
+          coinDenom: "MAX",
+          coinGeckoId: "max-2",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/oraim8c9d1nkfuQk9EzGYEUGxqL3MHQYndRw1huVo5h",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://pump.mypinata.cloud/ipfs/QmcGwYebsQfYbNSM9QDAMS2wKZ8fZNEiMbezJah1zgEWWS?img-width=256&img-dpr=2",
+        },
+        {
+          coinDenom: "TON",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/ton",
+          coinDecimals: 9,
+          coinGeckoId: "the-open-network",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
+        },
+        {
+          coinDenom: "RACKS",
+          coinMinimalDenom:
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
+          coinDecimals: 6,
+          coinGeckoId: "black-rack",
+          coinImageUrl:
+            "https://ipfs.io/ipfs/QmVRPsBSHpamDzcDzVL9wsbB9gr4frtNrrFF7g44Xa9FuS",
         },
       ];
     },
