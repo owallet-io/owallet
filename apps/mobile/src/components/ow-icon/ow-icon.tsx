@@ -16,7 +16,7 @@ const OWIcon = ({
   ...props
 }: IOWIconProps) => {
   const [imageDefault, setImageDefault] = useState(
-    "https://assets.coingecko.com/coins/images/12931/standard/orai.png?1696512718"
+    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png"
   );
   const [isErrorLoad, setIsErrorLoad] = useState(false);
   useEffect(() => {

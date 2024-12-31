@@ -13,7 +13,7 @@ import { DownArrowIcon } from "../icon";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { Bech32Address } from "@owallet/cosmos";
 import { TextInput } from "./input";
-import { DenomHelper, formatAddress } from "@owallet/common";
+import { avatarName, DenomHelper, formatAddress } from "@owallet/common";
 import { Text } from "@src/components/text";
 import { ObservableQueryBalanceInner } from "@owallet/stores";
 import { observer } from "mobx-react-lite";
@@ -41,7 +41,9 @@ export const TokenView: FunctionComponent<{
   const getName = () => {
     return removeDataInParentheses(name);
   };
-  const image = balance.token.currency?.coinImageUrl;
+  const image =
+    balance.token.currency?.coinImageUrl ||
+    avatarName.replace("{name}", name || "unknown");
   let contractAddress: string = "Native";
   let amount = balance.token
     ?.trim(true)

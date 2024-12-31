@@ -19,7 +19,7 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
-import { unknownToken, MapChainIdToNetwork } from "@owallet/common";
+import { unknownToken, MapChainIdToNetwork, avatarName } from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
@@ -151,14 +151,16 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
   const submit = handleSubmit(async (data: any) => {
     try {
-      console.log(data, "submit");
       let currency: CW20Currency | AppCurrency = {
         type: "cw20",
         contractAddress: data.contractAddress,
         coinMinimalDenom: `cw20:${data.contractAddress}:${data.name}`,
         coinDenom: data.symbol,
         coinDecimals: Number(data.decimals),
-        coinImageUrl: data.image || unknownToken.coinImageUrl,
+        coinImageUrl:
+          data.image ||
+          avatarName.replace("{name}", data.symbol) ||
+          unknownToken.coinImageUrl,
         coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
       };
 
@@ -171,7 +173,10 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           coinMinimalDenom: data.contractAddress,
           coinDenom: data.symbol,
           coinDecimals: Number(data.decimals),
-          coinImageUrl: data.image || unknownToken.coinImageUrl,
+          coinImageUrl:
+            data.image ||
+            avatarName.replace("{name}", data.symbol) ||
+            unknownToken.coinImageUrl,
           coinGeckoId: data.coinGeckoId || unknownToken.coinGeckoId,
         };
       }
@@ -422,7 +427,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           <Controller
             control={control}
             rules={{
-              required: "Token Icon is required",
+              required: false,
             }}
             render={({ field: { onChange, onBlur, value, ref } }) => {
               return (
@@ -439,7 +444,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   label=""
                   topInInputContainer={
                     <View style={{ paddingBottom: 4 }}>
-                      <OWText>Token icon</OWText>
+                      <OWText>Token Icon (Optional)</OWText>
                     </View>
                   }
                   returnKeyType="next"

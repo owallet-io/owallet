@@ -118,6 +118,7 @@ export async function getSimulationTxSolana(
     throw Error(e);
   }
 }
+export const avatarName = `https://ui-avatars.com/api/?name={name}&background=random`;
 export async function confirmTransaction(
   c: Connection,
   txSig: string,
