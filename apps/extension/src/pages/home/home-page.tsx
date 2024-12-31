@@ -100,7 +100,7 @@ export const HomePage = observer(() => {
   );
   useEffect(() => {
     fetchRetry(
-      `https://raw.githubusercontent.com/owallet-io/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
+      `https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
     )
       .then((res) => {
         if (res && res.currencies?.length > 0) {
