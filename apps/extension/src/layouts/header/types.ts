@@ -4,6 +4,7 @@ import { SpecialButtonProps } from "../../components/special-button";
 
 export interface HeaderProps {
   title: string | ReactNode;
+  titleContent?: React.JSX.Element;
   left?: ReactNode;
   right?: ReactNode;
 

@@ -29,10 +29,14 @@ import {
   useSceneTransition,
 } from "../../../../components/transition";
 import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
+import { TokenTag } from "../token";
 
 export const CopyAddressScene: FunctionComponent<{
+  title?: string;
+  onClick?: (chainId: string) => void;
+  isSelectNetwork?: boolean;
   close: () => void;
-}> = observer(({ close }) => {
+}> = observer(({ close, title, onClick, isSelectNetwork }) => {
   const {
     chainStore,
     accountStore,
@@ -206,7 +210,9 @@ export const CopyAddressScene: FunctionComponent<{
               : ColorPalette.white
           }
         >
-          <FormattedMessage id="page.main.components.deposit-modal.title" />
+          {title ?? (
+            <FormattedMessage id="page.main.components.deposit-modal.title" />
+          )}
         </Subtitle1>
       </YAxis>
 
@@ -297,6 +303,87 @@ export const CopyAddressScene: FunctionComponent<{
         ) : null}
 
         <Box paddingX="0.75rem">
+          {isSelectNetwork && (
+            <Box height="4rem" borderRadius="0.375rem" alignY="center">
+              <XAxis alignY="center">
+                <Box
+                  height="4rem"
+                  borderRadius="0.375rem"
+                  alignY="center"
+                  cursor={blockInteraction ? undefined : "pointer"}
+                  paddingLeft="1rem"
+                  style={{
+                    flex: 1,
+                  }}
+                  onClick={async (e) => {
+                    e.preventDefault();
+
+                    if (typeof onClick === "function") {
+                      onClick("all");
+                      return;
+                    }
+
+                    setTimeout(() => {
+                      close();
+                    }, 500);
+                  }}
+                >
+                  <XAxis alignY="center">
+                    <Gutter size="0.5rem" />
+                    <Box
+                      style={{
+                        borderRadius: "99rem",
+                        backgroundColor: ColorPalette["gray-50"],
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "0.25rem",
+                      }}
+                    >
+                      <img
+                        width={32}
+                        height={32}
+                        src={require("assets/svg/Tokens.svg")}
+                      />
+                    </Box>
+
+                    <Gutter size="0.5rem" />
+                    <YAxis>
+                      <XAxis alignY="center">
+                        <Subtitle3
+                          color={
+                            theme.mode === "light"
+                              ? ColorPalette["gray-700"]
+                              : ColorPalette["gray-10"]
+                          }
+                        >
+                          {"All networks"}
+                        </Subtitle3>
+                        {uiConfigStore.currentNetwork === "all" && (
+                          <React.Fragment>
+                            <Gutter size="0.25rem" />
+                            <Box alignY="center" height="1px">
+                              <TokenTag text={"selected".toUpperCase()} />
+                            </Box>
+                          </React.Fragment>
+                        )}
+                        <Gutter size="0.25rem" />
+                      </XAxis>
+                    </YAxis>
+
+                    <div
+                      style={{
+                        flex: 1,
+                      }}
+                    />
+
+                    <Gutter size="0.5rem" />
+                  </XAxis>
+                </Box>
+
+                <Gutter size="0.38rem" />
+              </XAxis>
+            </Box>
+          )}
           {addresses
             .map((address) => {
               if (address.ethereumAddress && address.bech32Address) {
@@ -328,6 +415,8 @@ export const CopyAddressScene: FunctionComponent<{
                   blockInteraction={blockInteraction}
                   setBlockInteraction={setBlockInteraction}
                   setSortPriorities={setSortPriorities}
+                  onClick={onClick}
+                  isSelectNetwork={isSelectNetwork}
                 />
               );
             })}
@@ -345,7 +434,8 @@ const CopyAddressItem: FunctionComponent<{
     starknetAddress?: string;
   };
   close: () => void;
-
+  onClick?: (chainId: string) => void;
+  isSelectNetwork?: boolean;
   blockInteraction: boolean;
   setBlockInteraction: (block: boolean) => void;
   setSortPriorities: (
@@ -357,6 +447,8 @@ const CopyAddressItem: FunctionComponent<{
   ({
     address,
     close,
+    onClick,
+    isSelectNetwork = false,
     blockInteraction,
     setBlockInteraction,
     setSortPriorities,
@@ -420,6 +512,11 @@ const CopyAddressItem: FunctionComponent<{
             onClick={async (e) => {
               e.preventDefault();
 
+              if (typeof onClick === "function") {
+                onClick(address.modularChainInfo.chainId);
+                return;
+              }
+
               await navigator.clipboard.writeText(
                 address.starknetAddress ||
                   address.ethereumAddress ||
@@ -459,15 +556,26 @@ const CopyAddressItem: FunctionComponent<{
 
               <Gutter size="0.5rem" />
               <YAxis>
-                <Subtitle3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-700"]
-                      : ColorPalette["gray-10"]
-                  }
-                >
-                  {address.modularChainInfo.chainName}
-                </Subtitle3>
+                <XAxis alignY="center">
+                  <Subtitle3
+                    color={
+                      theme.mode === "light"
+                        ? ColorPalette["gray-700"]
+                        : ColorPalette["gray-10"]
+                    }
+                  >
+                    {address.modularChainInfo.chainName}
+                  </Subtitle3>
+                  {uiConfigStore.currentNetwork ===
+                    address.modularChainInfo.chainId && (
+                    <React.Fragment>
+                      <Gutter size="0.25rem" />
+                      <Box alignY="center" height="1px">
+                        <TokenTag text={"selected".toUpperCase()} />
+                      </Box>
+                    </React.Fragment>
+                  )}
+                </XAxis>
                 <Gutter size="0.25rem" />
                 <Caption1 color={ColorPalette["gray-300"]}>
                   {(() => {
@@ -496,62 +604,68 @@ const CopyAddressItem: FunctionComponent<{
                 }}
               />
 
-              <Box padding="0.5rem" alignX="center" alignY="center">
-                {hasCopied ? (
-                  <CheckToggleIcon
-                    width="1.25rem"
-                    height="1.25rem"
-                    color={ColorPalette["green-400"]}
-                  />
-                ) : (
-                  <CopyOutlineIcon
-                    width="1.25rem"
-                    height="1.25rem"
-                    color={
-                      theme.mode === "light"
-                        ? ColorPalette["gray-300"]
-                        : ColorPalette.white
-                    }
-                  />
-                )}
-              </Box>
+              {!isSelectNetwork && (
+                <Box padding="0.5rem" alignX="center" alignY="center">
+                  {hasCopied ? (
+                    <CheckToggleIcon
+                      width="1.25rem"
+                      height="1.25rem"
+                      color={ColorPalette["green-400"]}
+                    />
+                  ) : (
+                    <CopyOutlineIcon
+                      width="1.25rem"
+                      height="1.25rem"
+                      color={
+                        theme.mode === "light"
+                          ? ColorPalette["gray-300"]
+                          : ColorPalette.white
+                      }
+                    />
+                  )}
+                </Box>
+              )}
+
               <Gutter size="0.5rem" />
             </XAxis>
           </Box>
 
           <Gutter size="0.38rem" />
-          <XAxis alignY="center">
-            <IconButton
-              padding="0.5rem"
-              hoverColor={
-                theme.mode === "light"
-                  ? ColorPalette["gray-50"]
-                  : ColorPalette["gray-500"]
-              }
-              disabled={hasCopied}
-              onClick={() => {
-                sceneTransition.push("qr-code", {
-                  chainId: address.modularChainInfo.chainId,
-                  address:
-                    address.starknetAddress ||
-                    address.ethereumAddress ||
-                    address.bech32Address,
-                });
-              }}
-            >
-              <QRCodeIcon
-                width="1.25rem"
-                height="1.25rem"
-                color={
+          {!isSelectNetwork && (
+            <XAxis alignY="center">
+              <IconButton
+                padding="0.5rem"
+                hoverColor={
                   theme.mode === "light"
-                    ? ColorPalette["gray-300"]
-                    : ColorPalette.white
+                    ? ColorPalette["gray-50"]
+                    : ColorPalette["gray-500"]
                 }
-              />
-            </IconButton>
+                disabled={hasCopied}
+                onClick={() => {
+                  sceneTransition.push("qr-code", {
+                    chainId: address.modularChainInfo.chainId,
+                    address:
+                      address.starknetAddress ||
+                      address.ethereumAddress ||
+                      address.bech32Address,
+                  });
+                }}
+              >
+                <QRCodeIcon
+                  width="1.25rem"
+                  height="1.25rem"
+                  color={
+                    theme.mode === "light"
+                      ? ColorPalette["gray-300"]
+                      : ColorPalette.white
+                  }
+                />
+              </IconButton>
 
-            <Gutter size="0.75rem" direction="horizontal" />
-          </XAxis>
+              <Gutter size="0.75rem" direction="horizontal" />
+            </XAxis>
+          )}
+
           <XAxis alignY="center">
             <Box
               cursor={

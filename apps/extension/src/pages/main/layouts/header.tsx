@@ -20,7 +20,7 @@ import { MenuBar } from "../components";
 import { HeaderProps } from "../../../layouts/header/types";
 import { ColorPalette } from "../../../styles";
 import { YAxis } from "../../../components/axis";
-import { Body2, Subtitle3 } from "../../../components/typography";
+import { Body2, Subtitle1, Subtitle3 } from "../../../components/typography";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Gutter } from "../../../components/gutter";
 import { Button } from "../../../components/button";
@@ -34,6 +34,7 @@ import { autoUpdate, offset, shift, useFloating } from "@floating-ui/react-dom";
 import SimpleBar from "simplebar-react";
 import { ExtensionKVStore } from "@owallet/common";
 import { getActiveTabOrigin } from "../../../utils/browser-api";
+import { DepositModal } from "../components/deposit-modal";
 
 export interface MainHeaderLayoutRef {
   toggleSideMenu: () => void;
@@ -59,28 +60,22 @@ export const MainHeaderLayout = observer<
   (props, ref) => {
     const { children, ...otherProps } = props;
 
-    const {
-      keyRingStore,
-      uiConfigStore,
-      chainStore,
-      accountStore,
-      queriesStore,
-    } = useStore();
+    const { uiConfigStore, chainStore } = useStore();
 
-    const icnsPrimaryName = (() => {
-      if (
-        uiConfigStore.icnsInfo &&
-        chainStore.hasChain(uiConfigStore.icnsInfo.chainId)
-      ) {
-        const queries = queriesStore.get(uiConfigStore.icnsInfo.chainId);
-        const icnsQuery = queries.icns.queryICNSNames.getQueryContract(
-          uiConfigStore.icnsInfo.resolverContractAddress,
-          accountStore.getAccount(uiConfigStore.icnsInfo.chainId).bech32Address
-        );
+    // const icnsPrimaryName = (() => {
+    //   if (
+    //     uiConfigStore.icnsInfo &&
+    //     chainStore.hasChain(uiConfigStore.icnsInfo.chainId)
+    //   ) {
+    //     const queries = queriesStore.get(uiConfigStore.icnsInfo.chainId);
+    //     const icnsQuery = queries.icns.queryICNSNames.getQueryContract(
+    //       uiConfigStore.icnsInfo.resolverContractAddress,
+    //       accountStore.getAccount(uiConfigStore.icnsInfo.chainId).bech32Address
+    //     );
 
-        return icnsQuery.primaryName.split(".")[0];
-      }
-    })();
+    //     return icnsQuery.primaryName.split(".")[0];
+    //   }
+    // })();
 
     const theme = useTheme();
     const intl = useIntl();
@@ -153,6 +148,7 @@ export const MainHeaderLayout = observer<
     );
 
     const [isOpenMenu, setIsOpenMenu] = React.useState(false);
+    const [isOpenNetwork, setIsOpenNetwork] = React.useState(false);
 
     const [
       showSidePanelRecommendationTooltip,
@@ -240,33 +236,73 @@ export const MainHeaderLayout = observer<
     return (
       <HeaderLayout
         title={(() => {
-          // const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
+          // if (icnsPrimaryName !== "") {
+          //   return (
+          //     <Columns sum={1} alignY="center" gutter="0.25rem">
+          //       {/* <Box>{name}</Box> */}
 
-          if (icnsPrimaryName !== "") {
-            return (
-              <Columns sum={1} alignY="center" gutter="0.25rem">
-                {/* <Box>{name}</Box> */}
-
-                <Tooltip
-                  content={
-                    <div style={{ whiteSpace: "nowrap" }}>
-                      ICNS : {icnsPrimaryName}
-                    </div>
-                  }
-                >
-                  <Image
-                    alt="icns-icon"
-                    src={require(theme.mode === "light"
-                      ? "../../../public/assets/img/icns-icon-light.png"
-                      : "../../../public/assets/img/icns-icon.png")}
-                    style={{ width: "1rem", height: "1rem" }}
-                  />
-                </Tooltip>
-              </Columns>
-            );
-          }
+          //       <Tooltip
+          //         content={
+          //           <div style={{ whiteSpace: "nowrap" }}>
+          //             ICNS : {icnsPrimaryName}
+          //           </div>
+          //         }
+          //       >
+          //         <Image
+          //           alt="icns-icon"
+          //           src={require(theme.mode === "light"
+          //             ? "../../../public/assets/img/icns-icon-light.png"
+          //             : "../../../public/assets/img/icns-icon.png")}
+          //           style={{ width: "1rem", height: "1rem" }}
+          //         />
+          //       </Tooltip>
+          //     </Columns>
+          //   );
+          // }
 
           return "";
+        })()}
+        titleContent={(() => {
+          const chainInfo =
+            uiConfigStore.currentNetwork === "all"
+              ? null
+              : chainStore.getChain(uiConfigStore.currentNetwork);
+          const network =
+            uiConfigStore.currentNetwork === "all"
+              ? "All networks"
+              : chainInfo?.chainName;
+
+          return (
+            <Box
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                display: "flex",
+                cursor: "pointer",
+              }}
+              onClick={() => setIsOpenNetwork(true)}
+            >
+              <Box marginRight="0.25rem">
+                {uiConfigStore.currentNetwork === "all" ? (
+                  <img
+                    width={20}
+                    height={20}
+                    src={require("assets/svg/Tokens.svg")}
+                  />
+                ) : (
+                  <ChainImageFallback chainInfo={chainInfo} size="1.5rem" />
+                )}
+              </Box>
+
+              <Subtitle1>{network.toUpperCase()}</Subtitle1>
+
+              <img
+                width={20}
+                height={20}
+                src={require("assets/images/tdesign_chevron_down.svg")}
+              />
+            </Box>
+          );
         })()}
         left={
           <React.Fragment>
@@ -500,6 +536,23 @@ export const MainHeaderLayout = observer<
             showSidePanelRecommendationTooltip={
               showSidePanelRecommendationTooltip
             }
+          />
+        </Modal>
+
+        <Modal
+          isOpen={isOpenNetwork}
+          align="bottom"
+          close={() => setIsOpenNetwork(false)}
+          forceNotUseSimplebar={true}
+        >
+          <DepositModal
+            title="Networks"
+            onClick={(chainId) => {
+              uiConfigStore.setNetwork(chainId);
+              setIsOpenNetwork(false);
+            }}
+            isSelectNetwork={true}
+            close={() => setIsOpenNetwork(false)}
           />
         </Modal>
       </HeaderLayout>

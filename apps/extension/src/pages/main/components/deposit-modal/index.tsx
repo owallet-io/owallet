@@ -8,8 +8,11 @@ import { CopyAddressScene } from "./copy-address-scene";
 import { QRCodeScene } from "./qr-code";
 
 export const DepositModal: FunctionComponent<{
+  title?: string;
+  onClick?: (chainId: string) => void;
+  isSelectNetwork?: boolean;
   close: () => void;
-}> = observer(({ close }) => {
+}> = observer(({ close, title, onClick, isSelectNetwork }) => {
   const theme = useTheme();
 
   return (
@@ -35,6 +38,9 @@ export const DepositModal: FunctionComponent<{
           name: "copy-address",
           props: {
             close,
+            title,
+            onClick,
+            isSelectNetwork,
           },
         }}
         transitionAlign="bottom"

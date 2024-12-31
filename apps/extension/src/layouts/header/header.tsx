@@ -185,6 +185,7 @@ export const HeaderLayout: FunctionComponent<
   PropsWithChildren<HeaderProps>
 > = ({
   title,
+  titleContent,
   left,
   right,
   bottomButtons,
@@ -271,16 +272,32 @@ export const HeaderLayout: FunctionComponent<
         {left && !isNotReady ? (
           <Styles.HeaderLeft>{left}</Styles.HeaderLeft>
         ) : null}
-        <Styles.HeaderTitle>
-          <Skeleton
-            isNotReady={isNotReady}
-            dummyMinWidth="6.25rem"
-            horizontalBleed="0.15rem"
-            verticalBleed="0.15rem"
-          >
-            <Subtitle1>{title}</Subtitle1>
-          </Skeleton>
-        </Styles.HeaderTitle>
+
+        {titleContent && (
+          <Styles.HeaderTitle>
+            <Skeleton
+              isNotReady={isNotReady}
+              dummyMinWidth="6.25rem"
+              horizontalBleed="0.15rem"
+              verticalBleed="0.15rem"
+            >
+              {titleContent}
+            </Skeleton>
+          </Styles.HeaderTitle>
+        )}
+
+        {title && !titleContent ? (
+          <Styles.HeaderTitle>
+            <Skeleton
+              isNotReady={isNotReady}
+              dummyMinWidth="6.25rem"
+              horizontalBleed="0.15rem"
+              verticalBleed="0.15rem"
+            >
+              <Subtitle1>{title}</Subtitle1>
+            </Skeleton>
+          </Styles.HeaderTitle>
+        ) : null}
 
         {right && !isNotReady ? (
           <Styles.HeaderRight>{right}</Styles.HeaderRight>

@@ -928,7 +928,7 @@ const CopyAddressButton: FunctionComponent<{
   );
 };
 
-const TokenTag: FunctionComponent<{
+export const TokenTag: FunctionComponent<{
   text: string;
   tooltip?: string;
 }> = ({ text, tooltip }) => {

@@ -33,8 +33,8 @@ export interface UIConfigOptions {
   rememberLastFeeOption: boolean;
   lastFeeOption: "low" | "average" | "high" | false;
   show24HChangesInMagePage: boolean;
-
   useWebHIDLedger: boolean;
+  network: string;
 }
 
 export class UIConfigStore {
@@ -58,8 +58,8 @@ export class UIConfigStore {
     rememberLastFeeOption: false,
     lastFeeOption: false,
     show24HChangesInMagePage: true,
-
     useWebHIDLedger: false,
+    network: "all",
   };
 
   @observable
@@ -283,6 +283,15 @@ export class UIConfigStore {
   @action
   setHideLowBalance(value: boolean) {
     this.options.hideLowBalance = value;
+  }
+
+  get currentNetwork(): string {
+    return this.options.network;
+  }
+
+  @action
+  setNetwork(value: string) {
+    this.options.network = value;
   }
 
   get useWebHIDLedger(): boolean {
