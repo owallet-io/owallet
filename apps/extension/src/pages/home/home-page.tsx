@@ -103,9 +103,8 @@ export const HomePage = observer(() => {
       `https://raw.githubusercontent.com/owallet-io/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
     )
       .then((res) => {
-        console.log(res, "Resss");
         if (res && res.currencies?.length > 0) {
-          // const currencyOrai: AppCurrency[] = [];
+          const currencyOrai: AppCurrency[] = [];
           for (const currency of res.currencies) {
             const {
               coinDenom,
@@ -121,11 +120,11 @@ export const HomePage = observer(() => {
               coinDecimals: coinDecimals,
               coinDenom: coinDenom,
             };
-            // currencyOrai.push(token);
-            tokensStore.addToken("Oraichain", token);
+            currencyOrai.push(token);
+            // tokensStore.addToken("Oraichain", token);
           }
-          // const OraiChain = chainStore.getChain("Oraichain");
-          // OraiChain.addCurrencies(...currencyOrai);
+          const OraiChain = chainStore.getChain("Oraichain");
+          OraiChain.addCurrencies(...currencyOrai);
         }
       })
       .catch((err) => console.log(err, "Errr"));
