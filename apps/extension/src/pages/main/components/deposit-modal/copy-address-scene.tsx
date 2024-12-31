@@ -441,93 +441,22 @@ const CopyAddressItem: FunctionComponent<{
             }}
           >
             <XAxis alignY="center">
+              <Gutter size="0.5rem" />
               <Box
-                cursor={
-                  blockInteraction ||
-                  (!isEVMOnlyChain && address.ethereumAddress)
-                    ? undefined
-                    : "pointer"
-                }
-                onHoverStateChange={(isHover) => {
-                  setIsBookmarkHover(isHover);
-                }}
                 style={{
-                  opacity: !isEVMOnlyChain && address.ethereumAddress ? 0 : 1,
-                  pointerEvents:
-                    !isEVMOnlyChain && address.ethereumAddress
-                      ? "none"
-                      : undefined,
-                  color: (() => {
-                    if (isBookmarked) {
-                      if (!blockInteraction && isBookmarkHover) {
-                        return theme.mode === "light"
-                          ? ColorPalette["purple-300"]
-                          : ColorPalette["purple-500"];
-                      }
-                      return ColorPalette["purple-400"];
-                    }
-
-                    if (!blockInteraction && isBookmarkHover) {
-                      return theme.mode === "light"
-                        ? ColorPalette["gray-200"]
-                        : ColorPalette["gray-400"];
-                    }
-
-                    return theme.mode === "light"
-                      ? ColorPalette["gray-100"]
-                      : ColorPalette["gray-300"];
-                  })(),
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  if (blockInteraction) {
-                    return;
-                  }
-
-                  const newIsBookmarked = !isBookmarked;
-
-                  analyticsStore.logEvent("click_favoriteChain", {
-                    chainId: address.modularChainInfo.chainId,
-                    chainName: address.modularChainInfo.chainName,
-                    isFavorite: newIsBookmarked,
-                  });
-
-                  if (keyRingStore.selectedKeyInfo) {
-                    if (newIsBookmarked) {
-                      uiConfigStore.copyAddressConfig.bookmarkChain(
-                        keyRingStore.selectedKeyInfo.id,
-                        address.modularChainInfo.chainId
-                      );
-                    } else {
-                      uiConfigStore.copyAddressConfig.unbookmarkChain(
-                        keyRingStore.selectedKeyInfo.id,
-                        address.modularChainInfo.chainId
-                      );
-
-                      setSortPriorities((priorities) => {
-                        const identifier = ChainIdHelper.parse(
-                          address.modularChainInfo.chainId
-                        ).identifier;
-                        const newPriorities = { ...priorities };
-                        if (newPriorities[identifier]) {
-                          delete newPriorities[identifier];
-                        }
-                        return newPriorities;
-                      });
-                    }
-                  }
+                  borderRadius: "99rem",
+                  backgroundColor: ColorPalette["gray-50"],
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "0.25rem",
                 }}
               >
-                <StarIcon width="1.25rem" height="1.25rem" />
+                <ChainImageFallback
+                  chainInfo={address.modularChainInfo}
+                  size="2rem"
+                />
               </Box>
-              <Gutter size="0.5rem" />
 
-              <ChainImageFallback
-                chainInfo={address.modularChainInfo}
-                size="2rem"
-              />
               <Gutter size="0.5rem" />
               <YAxis>
                 <Subtitle3
@@ -542,13 +471,6 @@ const CopyAddressItem: FunctionComponent<{
                 <Gutter size="0.25rem" />
                 <Caption1 color={ColorPalette["gray-300"]}>
                   {(() => {
-                    if (address.starknetAddress) {
-                      return `${address.starknetAddress.slice(
-                        0,
-                        10
-                      )}...${address.starknetAddress.slice(-8)}`;
-                    }
-
                     if (address.ethereumAddress) {
                       return address.ethereumAddress.length <= 42
                         ? `${address.ethereumAddress.slice(
@@ -627,6 +549,90 @@ const CopyAddressItem: FunctionComponent<{
                 }
               />
             </IconButton>
+
+            <Gutter size="0.75rem" direction="horizontal" />
+          </XAxis>
+          <XAxis alignY="center">
+            <Box
+              cursor={
+                blockInteraction || (!isEVMOnlyChain && address.ethereumAddress)
+                  ? undefined
+                  : "pointer"
+              }
+              onHoverStateChange={(isHover) => {
+                setIsBookmarkHover(isHover);
+              }}
+              style={{
+                opacity: !isEVMOnlyChain && address.ethereumAddress ? 0 : 1,
+                pointerEvents:
+                  !isEVMOnlyChain && address.ethereumAddress
+                    ? "none"
+                    : undefined,
+                color: (() => {
+                  if (isBookmarked) {
+                    if (!blockInteraction && isBookmarkHover) {
+                      return theme.mode === "light"
+                        ? ColorPalette["purple-300"]
+                        : ColorPalette["purple-500"];
+                    }
+                    return ColorPalette["purple-400"];
+                  }
+
+                  if (!blockInteraction && isBookmarkHover) {
+                    return theme.mode === "light"
+                      ? ColorPalette["gray-200"]
+                      : ColorPalette["gray-400"];
+                  }
+
+                  return theme.mode === "light"
+                    ? ColorPalette["gray-100"]
+                    : ColorPalette["gray-300"];
+                })(),
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (blockInteraction) {
+                  return;
+                }
+
+                const newIsBookmarked = !isBookmarked;
+
+                analyticsStore.logEvent("click_favoriteChain", {
+                  chainId: address.modularChainInfo.chainId,
+                  chainName: address.modularChainInfo.chainName,
+                  isFavorite: newIsBookmarked,
+                });
+
+                if (keyRingStore.selectedKeyInfo) {
+                  if (newIsBookmarked) {
+                    uiConfigStore.copyAddressConfig.bookmarkChain(
+                      keyRingStore.selectedKeyInfo.id,
+                      address.modularChainInfo.chainId
+                    );
+                  } else {
+                    uiConfigStore.copyAddressConfig.unbookmarkChain(
+                      keyRingStore.selectedKeyInfo.id,
+                      address.modularChainInfo.chainId
+                    );
+
+                    setSortPriorities((priorities) => {
+                      const identifier = ChainIdHelper.parse(
+                        address.modularChainInfo.chainId
+                      ).identifier;
+                      const newPriorities = { ...priorities };
+                      if (newPriorities[identifier]) {
+                        delete newPriorities[identifier];
+                      }
+                      return newPriorities;
+                    });
+                  }
+                }
+              }}
+            >
+              <StarIcon width="1.25rem" height="1.25rem" />
+            </Box>
             <Gutter size="0.75rem" direction="horizontal" />
           </XAxis>
         </XAxis>
