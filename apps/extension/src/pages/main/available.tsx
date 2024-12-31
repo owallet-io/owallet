@@ -59,7 +59,12 @@ export const AvailableTabView: FunctionComponent<{
     const intl = useIntl();
     const theme = useTheme();
 
-    const allBalances = hugeQueriesStore.getAllBalances(true);
+    const allBalances =
+      uiConfigStore.currentNetwork === "all"
+        ? hugeQueriesStore.getAllBalances(true)
+        : hugeQueriesStore.getAllBalancesByChainId(
+            uiConfigStore.currentNetwork
+          );
     const allBalancesNonZero = useMemo(() => {
       return allBalances.filter((token) => {
         return token.token.toDec().gt(zeroDec);

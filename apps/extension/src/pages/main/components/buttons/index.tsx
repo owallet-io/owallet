@@ -14,11 +14,14 @@ export const Buttons: FunctionComponent<{
   onClickBuy: () => void;
   isNotReady?: boolean;
 }> = observer(({ onClickDeposit, onClickBuy, isNotReady }) => {
-  const { hugeQueriesStore } = useStore();
+  const { hugeQueriesStore, uiConfigStore } = useStore();
   const navigate = useNavigate();
   const intl = useIntl();
 
-  const balances = hugeQueriesStore.getAllBalances(true);
+  const balances =
+    uiConfigStore.currentNetwork === "all"
+      ? hugeQueriesStore.getAllBalances(true)
+      : hugeQueriesStore.getAllBalancesByChainId(uiConfigStore.currentNetwork);
   const hasBalance = useMemo(() => {
     return balances.find((bal) => bal.token.toDec().gt(new Dec(0))) != null;
   }, [balances]);
