@@ -24,10 +24,13 @@ import {
   MapChainIdToNetwork,
   avatarName,
   fetchRetry,
+  ChainIdEnum,
 } from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { PrivKeyConfirmModal } from "@screens/setting/components/privkey-confirm-modal";
+import { AddTokenConfirmModal } from "@screens/setting/components/add-token-confirm-modal";
 
 interface FormData {
   viewingKey?: string;
@@ -189,6 +192,23 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   }, [contractAddress, selectedChain?.chainId]);
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
+  const onGoBack = () => {
+    modalStore.close();
+  };
+  const _onPressExportPrivkeyModal = handleSubmit(() => {
+    modalStore.setOptions({
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false,
+      },
+    });
+    modalStore.setChildren(
+      <AddTokenConfirmModal onClose={onGoBack} onConfirm={submit} />
+    );
+    // setTimeout(() => {
+    //   setKeyringLoading(false);
+    // }, 500);
+  });
   const addTokenSuccess = (currency) => {
     setLoading(false);
     resetTo(SCREENS.STACK.MainTab);
@@ -237,6 +257,8 @@ export const AddTokenCosmosScreen: FunctionComponent<{
         message: JSON.stringify(err.message),
         type: "danger",
       });
+    } finally {
+      onGoBack();
     }
   });
 
@@ -247,7 +269,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           label="Save"
           disabled={loading}
           loading={loading}
-          onPress={submit}
+          onPress={_onPressExportPrivkeyModal}
           style={[
             {
               width: metrics.screenWidth - 32,
@@ -326,9 +348,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                       color={colors["neutral-icon-on-light"]}
                     />
                   }
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
+                  onSubmitEditing={_onPressExportPrivkeyModal}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
