@@ -11,12 +11,7 @@ import { useStore } from "../../../stores";
 import { BackButton } from "../../../layouts/header/components";
 import { HeaderLayout } from "../../../layouts/header";
 import { Box } from "../../../components/box";
-import {
-  Body2,
-  Subtitle2,
-  Subtitle3,
-  Subtitle4,
-} from "../../../components/typography";
+import { Body2, Subtitle2, Subtitle3 } from "../../../components/typography";
 import { XAxis, YAxis } from "../../../components/axis";
 import { ColorPalette } from "../../../styles";
 import { Gutter } from "../../../components/gutter";

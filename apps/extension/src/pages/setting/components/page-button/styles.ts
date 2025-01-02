@@ -7,15 +7,14 @@ export const Styles = {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
     min-height: 4.625rem;
-    background-color: ${(props) =>
-      props.theme.mode === "light"
-        ? ColorPalette["gray-10"]
-        : ColorPalette["gray-600"]};
     padding: 1rem;
-    border-radius: 0.375rem;
     cursor: ${({ onClick }) => (onClick ? "pointer" : "auto")};
+    border-bottom: 1px solid;
+    border-bottom-color: ${(props) =>
+      props.theme.mode === "light"
+        ? ColorPalette["gray-50"]
+        : ColorPalette["gray-10"]};
   `,
   Title: styled(Subtitle2)`
     color: ${(props) =>

@@ -13,9 +13,27 @@ import { Box } from "../../components/box";
 import { FormattedMessage, useIntl } from "react-intl";
 import { MainHeaderLayout } from "../main/layouts/header";
 import { H3 } from "../../components/typography";
-import { useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { ColorPalette } from "../../styles";
-import { Gutter } from "../../components/gutter";
+
+const Styles = {
+  Content: styled(Stack)`
+    margin-top: 1.125rem;
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+  `,
+};
 
 export const SettingPage: FunctionComponent = observer(() => {
   const navigate = useNavigate();
@@ -26,7 +44,7 @@ export const SettingPage: FunctionComponent = observer(() => {
   return (
     <MainHeaderLayout>
       <Box padding="0.75rem" paddingTop="0">
-        <Box paddingY="1.15rem" alignX="center" alignY="center">
+        <Box alignX="center" alignY="center">
           <H3
             color={
               theme.mode === "light"
@@ -37,51 +55,52 @@ export const SettingPage: FunctionComponent = observer(() => {
             <FormattedMessage id="page.setting.title" />
           </H3>
         </Box>
-        <Gutter size="0.5rem" />
-        <Stack gutter="0.5rem">
-          <PageButton
-            title={intl.formatMessage({ id: "page.setting.general-title" })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.general-paragraph",
-            })}
-            startIcon={<SettingIcon width="1rem" height="1rem" />}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general")}
-          />
+        <Styles.Content>
+          <Stack gutter="0.375rem">
+            <PageButton
+              title={intl.formatMessage({ id: "page.setting.general-title" })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.general-paragraph",
+              })}
+              startIcon={<SettingIcon width="1rem" height="1rem" />}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({ id: "page.setting.advanced-title" })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.advanced-paragraph",
-            })}
-            startIcon={<RocketLaunchIcon width="1rem" height="1rem" />}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/advanced")}
-          />
+            <PageButton
+              title={intl.formatMessage({ id: "page.setting.advanced-title" })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.advanced-paragraph",
+              })}
+              startIcon={<RocketLaunchIcon width="1rem" height="1rem" />}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/advanced")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.security-privacy-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.security-privacy-paragraph",
-            })}
-            startIcon={<KeyIcon width="1rem" height="1rem" />}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/security")}
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.security-privacy-title",
+              })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.security-privacy-paragraph",
+              })}
+              startIcon={<KeyIcon width="1rem" height="1rem" />}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/security")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.manage-token-list-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.manage-token-list-paragraph",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/token/list")}
-          />
-        </Stack>
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.manage-token-list-title",
+              })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.manage-token-list-paragraph",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/token/list")}
+            />
+          </Stack>
+        </Styles.Content>
       </Box>
     </MainHeaderLayout>
   );

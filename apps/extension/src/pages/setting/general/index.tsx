@@ -19,6 +19,27 @@ import { InExtensionMessageRequester } from "@owallet/router-extension";
 import { BACKGROUND_PORT } from "@owallet/router";
 import { Subtitle2 } from "../../../components/typography";
 import { toggleSidePanelMode } from "../../../utils";
+import styled, { useTheme } from "styled-components";
+import { ColorPalette } from "src/styles";
+
+const Styles = {
+  Content: styled(Stack)`
+    margin-top: 1.125rem;
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+  `,
+};
 
 export const SettingGeneralPage: FunctionComponent = observer(() => {
   const { keyRingStore, uiConfigStore } = useStore();
@@ -52,52 +73,53 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
       left={<BackButton />}
     >
       <Box padding="0.75rem" paddingTop="0">
-        <Stack gutter="0.5rem">
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.language-title",
-            })}
-            paragraph={language.languageFullName}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general/language")}
-          />
+        <Styles.Content>
+          <Stack gutter="0.5rem">
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.language-title",
+              })}
+              paragraph={language.languageFullName}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general/language")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.currency-title",
-            })}
-            paragraph={(() => {
-              return uiConfigStore.fiatCurrency.currency.toUpperCase();
-            })()}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general/fiat")}
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.currency-title",
+              })}
+              paragraph={(() => {
+                return uiConfigStore.fiatCurrency.currency.toUpperCase();
+              })()}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general/fiat")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.contacts-title",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/contacts/list")}
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.contacts-title",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/contacts/list")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.theme-title",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general/theme")}
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.theme-title",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general/theme")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.manage-authz-title",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general/authz")}
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.manage-authz-title",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general/authz")}
+            />
 
-          {/* <PageButton
+            {/* <PageButton
             title={intl.formatMessage({
               id: "page.setting.general.link-kpelr-mobile-title",
             })}
@@ -105,82 +127,85 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
             onClick={() => navigate("/setting/general/link-keplr-mobile")}
           /> */}
 
-          {sidePanelSupported ? (
+            {sidePanelSupported ? (
+              <PageButton
+                title={
+                  <Subtitle2>
+                    {intl.formatMessage({
+                      id: "page.setting.general.side-panel-title",
+                    })}
+                  </Subtitle2>
+                }
+                paragraph={intl.formatMessage({
+                  id: "page.setting.general.side-panel-paragraph",
+                })}
+                endIcon={
+                  <Toggle
+                    isOpen={sidePanelEnabled}
+                    setIsOpen={() => {
+                      toggleSidePanelMode(!sidePanelEnabled, (res) => {
+                        setSidePanelEnabled(res);
+
+                        if (res) {
+                          uiConfigStore.setShowNewSidePanelHeaderTop(false);
+                        }
+                      });
+                    }}
+                  />
+                }
+              />
+            ) : null}
+
             <PageButton
-              title={
-                <Subtitle2>
-                  {intl.formatMessage({
-                    id: "page.setting.general.side-panel-title",
-                  })}
-                </Subtitle2>
-              }
+              title={intl.formatMessage({
+                id: "page.setting.general.show-24h-price-changes-title",
+              })}
               paragraph={intl.formatMessage({
-                id: "page.setting.general.side-panel-paragraph",
+                id: "page.setting.general.show-24h-price-changes-paragraph",
               })}
               endIcon={
                 <Toggle
-                  isOpen={sidePanelEnabled}
-                  setIsOpen={() => {
-                    toggleSidePanelMode(!sidePanelEnabled, (res) => {
-                      setSidePanelEnabled(res);
-
-                      if (res) {
-                        uiConfigStore.setShowNewSidePanelHeaderTop(false);
-                      }
-                    });
-                  }}
+                  isOpen={uiConfigStore.show24HChangesInMagePage}
+                  setIsOpen={() =>
+                    uiConfigStore.toggleShow24HChangesInMagePage()
+                  }
                 />
               }
             />
-          ) : null}
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.show-24h-price-changes-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.general.show-24h-price-changes-paragraph",
-            })}
-            endIcon={
-              <Toggle
-                isOpen={uiConfigStore.show24HChangesInMagePage}
-                setIsOpen={() => uiConfigStore.toggleShow24HChangesInMagePage()}
-              />
-            }
-          />
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.manage-non-native-chains-title",
+              })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.general.manage-non-native-chains-paragraph",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/general/delete-suggest-chain")}
+            />
 
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.manage-non-native-chains-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.general.manage-non-native-chains-paragraph",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => navigate("/setting/general/delete-suggest-chain")}
-          />
-
-          <PageButton
-            title={intl.formatMessage({
-              id: "page.setting.general.manage-chain-visibility-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "page.setting.general.manage-chain-visibility-paragraph",
-            })}
-            endIcon={<RightArrowIcon />}
-            onClick={() => {
-              if (keyRingStore.selectedKeyInfo) {
-                browser.tabs
-                  .create({
-                    url: `/register.html#?route=enable-chains&vaultId=${keyRingStore.selectedKeyInfo.id}&skipWelcome=true`,
-                  })
-                  .then(() => {
-                    window.close();
-                  });
-              }
-            }}
-          />
-        </Stack>
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.general.manage-chain-visibility-title",
+              })}
+              paragraph={intl.formatMessage({
+                id: "page.setting.general.manage-chain-visibility-paragraph",
+              })}
+              endIcon={<RightArrowIcon />}
+              onClick={() => {
+                if (keyRingStore.selectedKeyInfo) {
+                  browser.tabs
+                    .create({
+                      url: `/register.html#?route=enable-chains&vaultId=${keyRingStore.selectedKeyInfo.id}&skipWelcome=true`,
+                    })
+                    .then(() => {
+                      window.close();
+                    });
+                }
+              }}
+            />
+          </Stack>
+        </Styles.Content>
       </Box>
     </HeaderLayout>
   );
