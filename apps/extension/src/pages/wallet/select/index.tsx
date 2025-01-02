@@ -24,7 +24,6 @@ import { Stack } from "../../../components/stack";
 import { Column, Columns } from "../../../components/column";
 import { useNavigate } from "react-router";
 import { EllipsisIcon } from "../../../components/icon";
-import { Button } from "../../../components/button";
 import styled, { useTheme } from "styled-components";
 import { FloatingDropdown } from "../../../components/dropdown";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -35,6 +34,7 @@ import { defaultSpringConfig } from "../../../styles/spring";
 import { useGlobarSimpleBar } from "../../../hooks/global-simplebar";
 import { EmptyView } from "../../../components/empty-view";
 import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
+import { TokenTag } from "pages/main/components";
 
 const AnimatedBox = animated(Box);
 
@@ -42,6 +42,7 @@ const Styles = {
   Container: styled(Stack)`
     padding: 0.75rem;
   `,
+
   AddButton: styled.div`
     position: absolute;
     top: 8.125rem;
@@ -49,6 +50,19 @@ const Styles = {
   `,
   Content: styled(Stack)`
     margin-top: 1.125rem;
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
   `,
 };
 
@@ -204,6 +218,20 @@ export const WalletSelectPage: FunctionComponent = observer(() => {
     <HeaderLayout
       title={intl.formatMessage({ id: "page.wallet.title" })}
       left={<BackButton />}
+      bottomButtons={[
+        {
+          text: intl.formatMessage({ id: "page.wallet.add-wallet-button" }),
+          color: "primary",
+          size: "large",
+          type: "submit",
+        },
+      ]}
+      onSubmit={async (e) => {
+        e.preventDefault();
+        await browser.tabs.create({
+          url: "/register.html",
+        });
+      }}
     >
       <Styles.Container>
         <Box marginBottom="0.25rem">
@@ -219,18 +247,6 @@ export const WalletSelectPage: FunctionComponent = observer(() => {
             }}
           />
         </Box>
-        <Styles.AddButton>
-          <Button
-            text={intl.formatMessage({ id: "page.wallet.add-wallet-button" })}
-            size="extraSmall"
-            color="secondary"
-            onClick={async () => {
-              await browser.tabs.create({
-                url: "/register.html",
-              });
-            }}
-          />
-        </Styles.AddButton>
 
         {searchText.trim().length > 0 && keyInfos.length === 0 ? (
           <Box marginTop="6rem">
@@ -407,13 +423,8 @@ const KeyInfoList: FunctionComponent<{
   const scrollDeltaDyRef = useRef(0);
   const refDragDelta = useRef(0);
 
-  // 드래그 중에 가장 밑으로 내려가면 해당 아이템이 기존의 컨테이너 하이트를 넘으면서 scroll height를 늘려버린다.
-  // 이 부분을 처리하기 위해서 드래그가 시작되는 시점의 scroll height를 기록한다.
   const simpleBarScrollHeightRef = useRef(0);
 
-  // 마우스를 놓은 후 마지막 순간의 트랜지션 중에
-  // 드래그가 실행되는 경우가 있을 수 있다
-  // 이 경우는 처리하기가 너무 힘들기 때문에 그냥 막아버린다.
   const refIsDuringFinish = useRef(false);
 
   const handleMouseMove = (dy: number) => {
@@ -547,7 +558,6 @@ const KeyInfoList: FunctionComponent<{
                     {
                       from: simpleBarScrollRef.scrollTop,
                       onChange: (anim: any) => {
-                        // XXX: 이거 실제 파라미터랑 타입스크립트 인터페이스가 다르다...???
                         const v = anim.value != null ? anim.value : anim;
                         if (typeof v === "number") {
                           const prev = simpleBarScrollRef.scrollTop;
@@ -575,7 +585,6 @@ const KeyInfoList: FunctionComponent<{
                     {
                       from: simpleBarScrollRef.scrollTop,
                       onChange: (anim: any) => {
-                        // XXX: 이거 실제 파라미터랑 타입스크립트 인터페이스가 다르다...???
                         const v = anim.value != null ? anim.value : anim;
                         if (typeof v === "number") {
                           const prev = simpleBarScrollRef.scrollTop;
@@ -695,14 +704,13 @@ const KeyInfoList: FunctionComponent<{
       }}
     >
       <YAxis>
-        <Subtitle4
-          color={ColorPalette["gray-300"]}
+        <Subtitle2
           style={{
             paddingLeft: "0.5rem",
           }}
         >
-          {title}
-        </Subtitle4>
+          Imported by {title}
+        </Subtitle2>
         <Gutter size="0.5rem" />
         {sortedKeyInfos.map((keyInfo, i) => {
           const drag = getDrag(keyInfo.id);
@@ -945,9 +953,6 @@ const KeyringItem = observer<
         <AnimatedBox
           position="relative"
           zIndex={
-            // 아마도 css transform의 문제인지 menu가 나타날때 따로 zIndex를 설정해주지 않으면
-            // 같은 zIndex라도 밑의 item에 의해서 menu가 짤린다.
-            // 이 문제 때문에 menu가 open된 상태에서는 따로 zIndex를 준다.
             isMenuOpen
               ? 1
               : to([isDragSelected, dragY], (isDragSelected, y) => {
@@ -968,10 +973,6 @@ const KeyringItem = observer<
                 ? ColorPalette["gray-50"]
                 : ColorPalette["gray-550"];
             }
-
-            return theme.mode === "light"
-              ? ColorPalette["gray-10"]
-              : ColorPalette["gray-600"];
           })()}
           onHoverStateChange={(hover) => {
             setIsContainerHover(hover);
@@ -1060,10 +1061,18 @@ const KeyringItem = observer<
                 >
                   {keyInfo.name}
                 </Subtitle2>
+                {isSelected ? (
+                  <React.Fragment>
+                    <Gutter size="0.25rem" />
+                    <Box alignY="center" height="1px">
+                      <TokenTag text={"selected".toUpperCase()} />
+                    </Box>
+                  </React.Fragment>
+                ) : null}
               </XAxis>
               {paragraph ? (
                 <React.Fragment>
-                  <Gutter size="0.375rem" />
+                  <Gutter size="0.5rem" />
                   <Body2
                     style={{
                       color: ColorPalette["gray-300"],
