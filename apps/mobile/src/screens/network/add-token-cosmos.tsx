@@ -19,7 +19,12 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
 import { SelectTokenTypeModal } from "./select-token-type";
-import { unknownToken, MapChainIdToNetwork, avatarName } from "@owallet/common";
+import {
+  unknownToken,
+  MapChainIdToNetwork,
+  avatarName,
+  fetchRetry,
+} from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
@@ -34,6 +39,17 @@ interface FormData {
   coinGeckoId: string;
 }
 
+const getInfoToken = (info) => {
+  if (
+    !info ||
+    info === "UNKNOWN" ||
+    info === "https://i.ibb.co/vw91Zbj/Untitled-design-1.png" ||
+    info === 0
+  ) {
+    return "";
+  }
+  return info;
+};
 export const AddTokenCosmosScreen: FunctionComponent<{
   _onPressNetworkModal: Function;
 }> = observer(({ _onPressNetworkModal }) => {
@@ -90,29 +106,28 @@ export const AddTokenCosmosScreen: FunctionComponent<{
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
-  const _onPressSelectType = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-
-    modalStore.setChildren(
-      <SelectTokenTypeModal
-        selected={selectedType}
-        list={["cw20", "native"]}
-        onPress={(type) => {
-          setSelectedType(type);
-          modalStore.close();
-        }}
-      />
-    );
-  };
+  // const _onPressSelectType = () => {
+  //     modalStore.setOptions({
+  //         bottomSheetModalConfig: {
+  //             enablePanDownToClose: false,
+  //             enableOverDrag: false,
+  //         },
+  //     });
+  //
+  //     modalStore.setChildren(
+  //         <SelectTokenTypeModal
+  //             selected={selectedType}
+  //             list={["cw20", "native"]}
+  //             onPress={(type) => {
+  //                 setSelectedType(type);
+  //                 modalStore.close();
+  //             }}
+  //         />
+  //     );
+  // };
 
   const getTokenCoingeckoId = async (contractAddressData) => {
     try {
-      console.log(contractAddressData, "contractAddressData");
       if (!contractAddressData || !tokenInfo?.symbol || !tokenInfo?.decimals)
         return;
       const res = await API.getTokenInfo({
@@ -121,7 +136,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       });
       const data = res.data;
       if (data && data.imgUrl) {
-        console.log(data, "data");
         setValue("image", data.imgUrl);
         setValue("coinGeckoId", data.coingeckoId);
       } else {
@@ -139,6 +153,40 @@ export const AddTokenCosmosScreen: FunctionComponent<{
     getTokenCoingeckoId(contractAddress);
   }, [contractAddress, tokenInfo]);
 
+  useEffect(() => {
+    if (!contractAddress || selectedChain?.chainId !== "Oraichain") return;
+    const urlCoinMinimalDenom = new URLSearchParams(contractAddress || "")
+      .toString()
+      .replace("=", "");
+    fetchRetry(
+      `https://oraicommon-staging.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
+    )
+      .then((res) => {
+        const {
+          name,
+          decimals,
+          coinGeckoId,
+          contractAddress: contractData,
+          icon,
+          denom,
+        } = res || {};
+        setValue("symbol", getInfoToken(name));
+        setValue("decimals", getInfoToken(decimals ? `${decimals}` : ""));
+        setValue("name", getInfoToken(name));
+        setValue("coinGeckoId", getInfoToken(coinGeckoId));
+        // setValue("contractAddress", getInfoToken(contractData || denom));
+        setValue("image", getInfoToken(icon));
+      })
+      .catch((err) => {
+        setValue("symbol", "");
+        setValue("decimals", "");
+        setValue("name", "");
+        setValue("coinGeckoId", "");
+        // setValue("contractAddress", "");
+        setValue("image", "");
+        return;
+      });
+  }, [contractAddress, selectedChain?.chainId]);
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
   const addTokenSuccess = (currency) => {
@@ -165,9 +213,8 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       };
 
       if (
-        (data.contractAddress.startsWith("factory") ||
-          data.contractAddress.startsWith("ibc")) &&
-        selectedType !== "cw20"
+        data.contractAddress.startsWith("factory") ||
+        data.contractAddress.startsWith("ibc")
       ) {
         currency = {
           coinMinimalDenom: data.contractAddress,
@@ -252,6 +299,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
           </TouchableOpacity>
           <Controller
             control={control}
+            rules={{
+              required: "Contract Address is required",
+            }}
             render={({ field: { onChange, onBlur, value, ref } }) => {
               return (
                 <TextInput
@@ -263,7 +313,9 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   }
                   returnKeyType="next"
                   inputStyle={{
-                    borderColor: colors["neutral-border-strong"],
+                    borderColor: errors.name?.message
+                      ? colors["error-border-default"]
+                      : colors["neutral-border-strong"],
                     borderRadius: 12,
                   }}
                   style={styles.textInput}
@@ -277,7 +329,6 @@ export const AddTokenCosmosScreen: FunctionComponent<{
                   onSubmitEditing={() => {
                     submit();
                   }}
-                  error={errors.contractAddress?.message}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
@@ -288,32 +339,32 @@ export const AddTokenCosmosScreen: FunctionComponent<{
             name="contractAddress"
             defaultValue=""
           />
-          <TouchableOpacity
-            onPress={_onPressSelectType}
-            style={{
-              borderColor: colors["neutral-border-strong"],
-              borderRadius: 12,
-              borderWidth: 1,
-              padding: 16,
-              marginBottom: 12,
-            }}
-          >
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <OWText style={{ paddingRight: 4 }}>Select Type</OWText>
-              <DownArrowIcon height={10} color={colors["neutral-text-title"]} />
-            </View>
-            {selectedType ? (
-              <OWText
-                style={{
-                  fontSize: 14,
-                  color: colors["neutral-text-title"],
-                  fontWeight: "600",
-                }}
-              >
-                {selectedType.toUpperCase()}
-              </OWText>
-            ) : null}
-          </TouchableOpacity>
+          {/*<TouchableOpacity*/}
+          {/*    onPress={_onPressSelectType}*/}
+          {/*    style={{*/}
+          {/*        borderColor: colors["neutral-border-strong"],*/}
+          {/*        borderRadius: 12,*/}
+          {/*        borderWidth: 1,*/}
+          {/*        padding: 16,*/}
+          {/*        marginBottom: 12,*/}
+          {/*    }}*/}
+          {/*>*/}
+          {/*    <View style={{flexDirection: "row", alignItems: "center"}}>*/}
+          {/*        <OWText style={{paddingRight: 4}}>Select Type</OWText>*/}
+          {/*        <DownArrowIcon height={10} color={colors["neutral-text-title"]}/>*/}
+          {/*    </View>*/}
+          {/*    {selectedType ? (*/}
+          {/*        <OWText*/}
+          {/*            style={{*/}
+          {/*                fontSize: 14,*/}
+          {/*                color: colors["neutral-text-title"],*/}
+          {/*                fontWeight: "600",*/}
+          {/*            }}*/}
+          {/*        >*/}
+          {/*            {selectedType.toUpperCase()}*/}
+          {/*        </OWText>*/}
+          {/*    ) : null}*/}
+          {/*</TouchableOpacity>*/}
           <Controller
             control={control}
             rules={{
