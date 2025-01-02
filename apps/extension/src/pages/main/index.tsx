@@ -188,25 +188,55 @@ export const MainPage: FunctionComponent<{
   const stakedTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.delegations) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
+      if (uiConfigStore.currentNetwork === "all") {
+        if (bal.price) {
+          if (!result) {
+            result = bal.price;
+          } else {
+            result = result.add(bal.price);
+          }
+        }
+      } else {
+        if (bal.chainInfo.chainId === uiConfigStore.currentNetwork) {
+          if (bal.price) {
+            if (!result) {
+              result = bal.price;
+            } else {
+              result = result.add(bal.price);
+            }
+          }
         }
       }
     }
+
     for (const bal of hugeQueriesStore.unbondings) {
-      if (bal.viewToken.price) {
-        if (!result) {
-          result = bal.viewToken.price;
-        } else {
-          result = result.add(bal.viewToken.price);
+      if (uiConfigStore.currentNetwork === "all") {
+        if (bal.viewToken.price) {
+          if (!result) {
+            result = bal.viewToken.price;
+          } else {
+            result = result.add(bal.viewToken.price);
+          }
+        }
+      } else {
+        if (bal.viewToken.chainInfo.chainId === uiConfigStore.currentNetwork) {
+          if (bal.viewToken.price) {
+            if (!result) {
+              result = bal.viewToken.price;
+            } else {
+              result = result.add(bal.viewToken.price);
+            }
+          }
         }
       }
     }
     return result;
-  }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]);
+  }, [
+    hugeQueriesStore.delegations,
+    hugeQueriesStore.unbondings,
+    uiConfigStore.currentNetwork,
+  ]);
+
   const stakedTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.delegations) {
