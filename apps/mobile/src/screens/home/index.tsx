@@ -141,58 +141,63 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   //   fetchToken();
   // }, []);
   const { inject } = browserStore;
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
   useEffect(() => {
-    delay(1000).then(() => {
-      if (!inject) return;
-      // Handle foreground notifications
-      // const unsubscribeOnMessage = messaging().onMessage(
-      //     async (remoteMessage) => {
-      //       console.log("Notification in foreground:", remoteMessage);
-      //       console.log(remoteMessage.data?.url);
-      //     }
-      // );
+    if (!inject) return;
+    const unsubscribeOnNotificationOpenedApp =
+      messaging().onNotificationOpenedApp((remoteMessage) => {
+        console.log("Notification opened from background:", remoteMessage);
+        // Handle navigation or other actions here
+        if (remoteMessage.data?.url) {
+          navigation.navigate(SCREENS.STACK.MainTab, {
+            screen: SCREENS.TABS.Browser,
+            params: {
+              screen: SCREENS.DetailsBrowser,
+              params: {
+                url: remoteMessage.data?.url,
+              },
+            },
+          });
+          return;
+        }
+      });
+    // Handle notifications when app was closed
+    const checkInitialNotification = async () => {
+      const remoteMessage = await messaging().getInitialNotification();
+      if (remoteMessage) {
+        console.log("Notification opened from closed state:", remoteMessage);
+        // Handle navigation or other actions here
+        if (remoteMessage.data?.url) {
+          navigation.navigate(SCREENS.STACK.MainTab, {
+            screen: SCREENS.TABS.Browser,
+            params: {
+              screen: SCREENS.DetailsBrowser,
+              params: {
+                url: remoteMessage.data?.url,
+              },
+            },
+          });
+          return;
+        }
+      }
+    };
 
-      // Handle background notifications
-      const unsubscribeOnNotificationOpenedApp =
-        messaging().onNotificationOpenedApp((remoteMessage) => {
-          console.log("Notification opened from background:", remoteMessage);
-          // Handle navigation or other actions here
-          if (remoteMessage.data?.url) {
-            resetTo(SCREENS.TABS.Browser, {
-              url: remoteMessage.data?.url,
-            });
-            navigate(SCREENS.DetailsBrowser, {
-              url: remoteMessage.data?.url,
-            });
-          }
-        });
-    });
-
-    //
-    // // Handle notifications when app was closed
-    // const checkInitialNotification = async () => {
-    //   const remoteMessage = await messaging().getInitialNotification();
-    //   if (remoteMessage) {
-    //     console.log("Notification opened from closed state:", remoteMessage);
-    //     // Handle navigation or other actions here
-    //     if (remoteMessage.data?.url) {
-    //       resetTo(SCREENS.TABS.Browser, {
-    //         url: remoteMessage.data?.url,
-    //       });
-    //       navigate(SCREENS.DetailsBrowser, {
-    //         url: remoteMessage.data?.url,
-    //       });
-    //     }
-    //   }
-    // };
-
-    // checkInitialNotification();
+    checkInitialNotification();
     // Cleanup listeners
-    // return () => {
-    //   unsubscribeOnMessage();
-    //   unsubscribeOnNotificationOpenedApp();
-    // };
+
+    // (async ()=>{
+    //     resetTo(SCREENS.TABS.Browser, {
+    //         url: urlData,
+    //     });
+    //     await delay(100);
+    //     navigate(SCREENS.DetailsBrowser, {
+    //         url: urlData,
+    //     });
+    // })()
+    return () => {
+      // unsubscribeOnMessage();
+      unsubscribeOnNotificationOpenedApp();
+    };
   }, [inject]);
   return (
     <PageWithScrollViewInBottomTabView
