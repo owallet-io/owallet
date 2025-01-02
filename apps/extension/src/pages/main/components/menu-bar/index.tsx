@@ -9,10 +9,12 @@ import { Gutter } from "../../../../components/gutter";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
 import {
+  Body2,
   Button2,
   Caption1,
   H3,
   H5,
+  Subtitle2,
   Subtitle4,
 } from "../../../../components/typography";
 import { XAxis } from "../../../../components/axis";
@@ -30,6 +32,56 @@ import { InExtensionMessageRequester } from "@owallet/router-extension";
 import { BACKGROUND_PORT } from "@owallet/router";
 import Color from "color";
 
+const manifestData = chrome.runtime.getManifest();
+
+enum MenuEnum {
+  ADD_TOKEN = 1,
+  MANAGE_CHAINS = 2,
+  ADDR_BOOK = 3,
+  CONNECTED_DAPP = 4,
+  PREFERENCES = 5,
+  LOCK = 6,
+  ABOUT_USER = 7,
+  SIDEPANEL = 9,
+  SETTINGS = 10,
+}
+
+const dataItem = [
+  {
+    name: "Add Token",
+    icon: require("assets/svg/tdesign_add_circle.svg"),
+    id: MenuEnum.ADD_TOKEN,
+  },
+  {
+    name: "Manage Chains",
+    icon: require("assets/svg/tdesign_list.svg"),
+    id: MenuEnum.MANAGE_CHAINS,
+  },
+  {
+    name: "Contacts",
+    icon: require("assets/svg/tdesign_address_book.svg"),
+    id: MenuEnum.ADDR_BOOK,
+  },
+  {
+    name: "Lock Wallet",
+    icon: require("assets/svg/tdesign_lock_on.svg"),
+    id: MenuEnum.LOCK,
+    isBorderBottom: true,
+  },
+  {
+    name: "About us",
+    icon: require("assets/svg/tdesign_info_circle.svg"),
+    id: MenuEnum.ABOUT_USER,
+    value: `v${manifestData.version}`,
+    isBorderBottom: true,
+  },
+  // {
+  //   name: "Settings",
+  //   icon: require("assets/svg/tdesign_adjustment.svg"),
+  //   id: MenuEnum.SETTINGS,
+  // },
+];
+
 const Styles = {
   MenuItem: styled(H3)`
     color: ${(props) =>
@@ -42,6 +94,69 @@ const Styles = {
   Flex1: styled.div`
     flex: 1;
   `,
+  Title: styled(Subtitle2)`
+    color: ${(props) =>
+      props.theme.mode === "light"
+        ? ColorPalette["gray-700"]
+        : ColorPalette["gray-10"]};
+  `,
+  Paragraph: styled(Body2)`
+    color: ${ColorPalette["gray-300"]};
+  `,
+  StartIcon: styled(Body2)`
+    background-color: ${ColorPalette["gray-50"]};
+    padding: 0.55rem;
+    justify-content: center;
+    align-items: center;
+    border-radius: 999rem;
+  `,
+};
+
+interface PageButtonProps {
+  title: string | React.ReactNode;
+  paragraph?: string;
+  startIcon?: string;
+  onClick?: () => void;
+}
+
+const MenuItem: FunctionComponent<PageButtonProps> = ({
+  title,
+  paragraph,
+  startIcon,
+  onClick,
+}) => {
+  return (
+    <div
+      style={{
+        cursor: "pointer",
+      }}
+      onClick={
+        onClick &&
+        ((e) => {
+          e.preventDefault();
+          onClick();
+        })
+      }
+    >
+      <Columns sum={1} alignY="center">
+        <Column weight={1}>
+          <Stack>
+            <Columns sum={1} gutter="0.475rem" alignY="center">
+              {startIcon ? (
+                <Styles.StartIcon>
+                  <img width={16} src={startIcon} />
+                </Styles.StartIcon>
+              ) : null}
+              <Styles.Title>{title}</Styles.Title>
+              {paragraph ? (
+                <Styles.Paragraph>{paragraph}</Styles.Paragraph>
+              ) : null}
+            </Columns>
+          </Stack>
+        </Column>
+      </Columns>
+    </div>
+  );
 };
 
 export const MenuBar: FunctionComponent<{
@@ -93,6 +208,39 @@ export const MenuBar: FunctionComponent<{
     }
   }, [isOpen, showSidePanelRecommendationTooltip]);
 
+  const actionMenu = async (id) => {
+    switch (id) {
+      case MenuEnum.LOCK:
+        await keyRingStore.lock();
+        dispatchGlobalEventExceptSelf("owallet_keyring_locked");
+        break;
+      case MenuEnum.ADD_TOKEN:
+        navigate("/setting/token/list");
+        break;
+      case MenuEnum.ADDR_BOOK:
+        navigate("/setting/contacts/list");
+        break;
+
+      case MenuEnum.MANAGE_CHAINS:
+        if (keyRingStore.selectedKeyInfo) {
+          analyticsStore.logEvent("click_menu_manageChainVisibility");
+          browser.tabs
+            .create({
+              url: `/register.html#?route=enable-chains&vaultId=${keyRingStore.selectedKeyInfo.id}&skipWelcome=true`,
+            })
+            .then(() => {
+              if (!isRunningInSidePanel()) {
+                window.close();
+              } else {
+                close();
+              }
+            });
+        }
+        break;
+      default:
+    }
+  };
+
   return (
     <Box
       height="100%"
@@ -127,82 +275,28 @@ export const MenuBar: FunctionComponent<{
       <Gutter size="1.25rem" />
 
       <Stack gutter="1.5rem">
-        <Styles.MenuItem
-          onClick={(e) => {
-            e.preventDefault();
-
-            if (keyRingStore.selectedKeyInfo) {
-              analyticsStore.logEvent("click_menu_manageChainVisibility");
-              browser.tabs
-                .create({
-                  url: `/register.html#?route=enable-chains&vaultId=${keyRingStore.selectedKeyInfo.id}&skipWelcome=true`,
-                })
-                .then(() => {
-                  if (!isRunningInSidePanel()) {
-                    window.close();
-                  } else {
-                    close();
-                  }
-                });
-            }
-          }}
-        >
-          <FormattedMessage id="page.main.components.menu-bar.manage-chain-visibility-title" />
-        </Styles.MenuItem>
-
-        <Gutter size="1rem" />
-
-        <Box
-          width="9.5rem"
-          style={{
-            border: `1px solid ${
-              theme.mode === "light"
-                ? ColorPalette["gray-100"]
-                : ColorPalette["gray-400"]
-            }`,
-          }}
-        />
-
-        <Gutter size="1rem" />
-
-        <Styles.MenuItem onClick={() => navigate("/setting/contacts/list")}>
-          <FormattedMessage id="page.main.components.menu-bar.my-contacts-title" />
-        </Styles.MenuItem>
-
-        <Styles.MenuItem onClick={() => navigate("/setting/token/list")}>
-          <FormattedMessage id="page.main.components.menu-bar.add-token-title" />
-        </Styles.MenuItem>
+        {dataItem.map((item, index) => {
+          return (
+            <MenuItem
+              key={index}
+              title={item.name}
+              onClick={() => actionMenu(item.id)}
+              startIcon={item.icon}
+              paragraph={item.value}
+            />
+          );
+        })}
 
         {location.pathname !== "/setting" ? (
-          <Styles.MenuItem
+          <MenuItem
+            key={"setting"}
+            title={"Settings"}
             onClick={() => {
               navigate("/setting");
             }}
-          >
-            <FormattedMessage id="page.main.components.menu-bar.setting-title" />
-          </Styles.MenuItem>
+            startIcon={require("assets/svg/tdesign_adjustment.svg")}
+          />
         ) : null}
-        <Box
-          width="9.5rem"
-          style={{
-            border: `1px solid ${
-              theme.mode === "light"
-                ? ColorPalette["gray-100"]
-                : ColorPalette["gray-400"]
-            }`,
-          }}
-        />
-        <Styles.MenuItem
-          onClick={async (e) => {
-            e.preventDefault();
-
-            await keyRingStore.lock();
-
-            dispatchGlobalEventExceptSelf("owallet_keyring_locked");
-          }}
-        >
-          <FormattedMessage id="page.main.components.menu-bar.lock-wallet-title" />
-        </Styles.MenuItem>
       </Stack>
 
       <Styles.Flex1 />
@@ -227,37 +321,9 @@ export const MenuBar: FunctionComponent<{
                       : ColorPalette["gray-50"]
                   }
                 >
-                  Display Setting
+                  Display Configuration
                 </H5>
                 <div style={{ flex: 1 }} />
-                <svg
-                  cursor="pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-
-                    browser.tabs.create({
-                      url: "https://help.keplr.app/articles/side-panel-mode",
-                    });
-                  }}
-                  width="17"
-                  height="17"
-                  viewBox="0 0 17 17"
-                  fill="none"
-                  stroke="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M6.83594 5.51256C7.61699 4.82915 8.88332 4.82915 9.66436 5.51256C10.4454 6.19598 10.4454 7.30402 9.66436 7.98744C9.52842 8.10639 9.37778 8.20463 9.21755 8.28217C8.72043 8.52276 8.25015 8.94772 8.25015 9.5V10M14.25 8.5C14.25 11.8137 11.5637 14.5 8.25 14.5C4.93629 14.5 2.25 11.8137 2.25 8.5C2.25 5.18629 4.93629 2.5 8.25 2.5C11.5637 2.5 14.25 5.18629 14.25 8.5ZM8.25 12H8.255V12.005H8.25V12Z"
-                    stroke={
-                      theme.mode === "light"
-                        ? ColorPalette["gray-200"]
-                        : ColorPalette["gray-300"]
-                    }
-                    strokeWidth="1.66667"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
               </XAxis>
               <Gutter size="0.75rem" />
               <Columns sum={2}>
@@ -277,16 +343,6 @@ export const MenuBar: FunctionComponent<{
                     }
                     isSelected={sidePanelEnabled}
                     isSidePanel={true}
-                    img={
-                      <img
-                        src={require("../../../../public/assets/img/side-menu-side-panel.png")}
-                        alt="Turn on side classic mode"
-                        style={{
-                          aspectRatio: "172/120",
-                          height: "2.5rem",
-                        }}
-                      />
-                    }
                     text={
                       <React.Fragment>
                         <svg
@@ -324,16 +380,6 @@ export const MenuBar: FunctionComponent<{
                     }}
                     isSidePanel={false}
                     isSelected={!sidePanelEnabled}
-                    img={
-                      <img
-                        src={require("../../../../public/assets/img/side-menu-classic-mode.png")}
-                        alt="Turn on side classic mode"
-                        style={{
-                          aspectRatio: "172/120",
-                          height: "2.5rem",
-                        }}
-                      />
-                    }
                     text={
                       <React.Fragment>
                         <svg
@@ -352,7 +398,7 @@ export const MenuBar: FunctionComponent<{
                           />
                         </svg>
                         <Gutter size="0.25rem" />
-                        <Subtitle4> Classic</Subtitle4>
+                        <Subtitle4> Modal</Subtitle4>
                       </React.Fragment>
                     }
                   />
@@ -360,8 +406,6 @@ export const MenuBar: FunctionComponent<{
               </Columns>
             </Box>
           ) : null}
-
-          <Gutter size="1rem" />
 
           <Gutter size="1rem" />
 
@@ -382,7 +426,6 @@ export const MenuBar: FunctionComponent<{
             cursor="pointer"
             onClick={(e) => {
               e.preventDefault();
-
               browser.tabs.create({
                 url: "https://chains.keplr.app/",
               });
@@ -524,7 +567,6 @@ const PanelModeItem: FunctionComponent<{
   onClick: () => void;
 
   isSidePanel: boolean;
-  img: React.ReactElement;
   text: React.ReactElement;
 
   animateSidePanelRecommendationTooltip?: boolean;
@@ -533,7 +575,6 @@ const PanelModeItem: FunctionComponent<{
   onClick,
   isSidePanel,
   text,
-  img,
   animateSidePanelRecommendationTooltip,
 }) => {
   const theme = useTheme();
@@ -554,28 +595,8 @@ const PanelModeItem: FunctionComponent<{
       }}
     >
       {animateSidePanelRecommendationTooltip ? <AnimatedTooltip /> : null}
-      {isSidePanel ? (
-        <img
-          src={
-            theme.mode === "light"
-              ? require("../../../../public/assets/img/side-menu-side-panel-ribbon-light.png")
-              : require("../../../../public/assets/img/side-menu-side-panel-ribbon.png")
-          }
-          alt="Side Panel Mode is here"
-          style={{
-            position: "absolute",
-            zIndex: 1,
-            aspectRatio: "1/1",
-            width: "2.625rem",
-            top: "1px",
-            left: "1px",
-          }}
-        />
-      ) : null}
+      {isSidePanel ? <div>New</div> : <div>Classic</div>}
       <Box alignX="center">
-        <PanelModeItemStylesImageContainer isSelected={isSelected}>
-          {img}
-        </PanelModeItemStylesImageContainer>
         <Gutter size="0.5rem" />
         <PanelModeItemStylesTextContainer isSelected={isSelected}>
           <XAxis alignY="center">{text}</XAxis>

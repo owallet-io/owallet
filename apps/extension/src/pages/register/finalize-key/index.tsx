@@ -180,7 +180,7 @@ export const FinalizeKeyScene: FunctionComponent<{
           }
         }
 
-        dispatchGlobalEventExceptSelf("keplr_new_key_created", vaultId);
+        dispatchGlobalEventExceptSelf("owallet_new_key_created", vaultId);
 
         await Promise.allSettled(promises);
 

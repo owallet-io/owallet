@@ -58,7 +58,7 @@ export const StoreProvider: FunctionComponent<PropsWithChildren> = ({
     );
 
     const disposal2 = addGlobalEventListener(
-      "keplr_new_key_created",
+      "owallet_new_key_created",
       async (newKeyId: string) => {
         await stores.keyRingStore.refreshKeyRingStatus();
         if (newKeyId && stores.keyRingStore.selectedKeyInfo?.id === newKeyId) {

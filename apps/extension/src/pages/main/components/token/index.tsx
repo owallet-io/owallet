@@ -290,7 +290,8 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
                 right: -10,
                 bottom: -6,
                 borderWidth: 1,
-                borderColor: ColorPalette["black"],
+                borderColor: ColorPalette["gray-700"],
+                padding: 2,
               }}
             >
               <ChainImageFallback
