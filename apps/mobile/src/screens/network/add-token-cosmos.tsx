@@ -154,10 +154,17 @@ export const AddTokenCosmosScreen: FunctionComponent<{
   }, [contractAddress, tokenInfo]);
 
   useEffect(() => {
+    setValue("symbol", "");
+    setValue("decimals", "");
+    setValue("name", "");
+    setValue("coinGeckoId", "");
+    // setValue("contractAddress", "");
+    setValue("image", "");
     if (!contractAddress || selectedChain?.chainId !== "Oraichain") return;
     const urlCoinMinimalDenom = new URLSearchParams(contractAddress || "")
       .toString()
       .replace("=", "");
+
     fetchRetry(
       `https://oraicommon-staging.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
     )
