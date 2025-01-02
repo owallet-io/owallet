@@ -16,6 +16,7 @@ import {
   API,
   avatarName,
   ChainIdEnum,
+  fetchRetry,
   MapChainIdToNetwork,
   unknownToken,
 } from "@owallet/common";
@@ -25,7 +26,17 @@ import Web3 from "web3";
 import { Text } from "components/common/text";
 import { toast } from "react-toastify";
 import { ModalConfirm } from "pages/home/modals/modal-confirm";
-
+const getInfoToken = (info) => {
+  if (
+    !info ||
+    info === "UNKNOWN" ||
+    info === "https://i.ibb.co/vw91Zbj/Untitled-design-1.png" ||
+    info === 0
+  ) {
+    return "";
+  }
+  return info;
+};
 interface FormData {
   contractAddress: string;
   symbol: string;
@@ -109,6 +120,40 @@ export const AddTokenPage = observer(() => {
     setValue("name", tokenInfo?.name);
     getTokenCoingeckoId(contractAddress);
   }, [contractAddress, tokenInfo]);
+  useEffect(() => {
+    setValue("symbol", "");
+    setValue("decimals", "");
+    setValue("name", "");
+    setValue("coinGeckoId", "");
+    // setValue("contractAddress", "");
+    setValue("image", "");
+    if (!contractAddress || chainStore.current?.chainId !== "Oraichain") return;
+    const urlCoinMinimalDenom = new URLSearchParams(contractAddress || "")
+      .toString()
+      .replace("=", "");
+
+    fetchRetry(
+      `https://oraicommon.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
+    )
+      .then((res) => {
+        const { name, decimals, coinGeckoId, icon } = res || {};
+        setValue("symbol", getInfoToken(name));
+        setValue("decimals", getInfoToken(decimals ? `${decimals}` : ""));
+        setValue("name", getInfoToken(name));
+        setValue("coinGeckoId", getInfoToken(coinGeckoId));
+        // setValue("contractAddress", getInfoToken(contractData || denom));
+        setValue("image", getInfoToken(icon));
+      })
+      .catch((err) => {
+        setValue("symbol", "");
+        setValue("decimals", "");
+        setValue("name", "");
+        setValue("coinGeckoId", "");
+        // setValue("contractAddress", "");
+        setValue("image", "");
+        return;
+      });
+  }, [contractAddress, chainStore.current?.chainId]);
   const onSubmit = handleSubmit(async (data) => {
     let currency: CW20Currency | ERC20Currency | AppCurrency = {
       type: chainStore.current.networkType === "evm" ? "erc20" : "cw20",
