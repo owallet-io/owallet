@@ -103,44 +103,44 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }
     })();
   }, [chainStore.enabledChainIdentifiers, keyRingStore.selectedKeyInfo.id]);
-  const getFCMToken = async () => {
-    try {
-      // Request permission for notifications (iOS)
-      const authStatus = await messaging().requestPermission();
-      const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-      if (enabled) {
-        console.log("Authorization status:", authStatus);
-
-        // Get the FCM token
-        const fcmToken = await messaging().getToken();
-        if (fcmToken) {
-          console.log("FCM Token:", fcmToken);
-          return fcmToken;
-        } else {
-          console.log("Failed to get FCM token");
-        }
-      } else {
-        console.log("Notification permission not granted");
-      }
-    } catch (error) {
-      console.error("Error getting FCM token:", error);
-    }
-  };
-  useEffect(() => {
-    // Get and handle the FCM token on app start
-    const fetchToken = async () => {
-      const token = await getFCMToken();
-      console.log("Device FCM Token:", token);
-
-      // Send token to your backend server if necessary
-    };
-    fetchToken();
-  }, []);
+  // const getFCMToken = async () => {
+  //   try {
+  //     // Request permission for notifications (iOS)
+  //     const authStatus = await messaging().requestPermission();
+  //     const enabled =
+  //       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+  //       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+  //
+  //     if (enabled) {
+  //       console.log("Authorization status:", authStatus);
+  //
+  //       // Get the FCM token
+  //       const fcmToken = await messaging().getToken();
+  //       if (fcmToken) {
+  //         console.log("FCM Token:", fcmToken);
+  //         return fcmToken;
+  //       } else {
+  //         console.log("Failed to get FCM token");
+  //       }
+  //     } else {
+  //       console.log("Notification permission not granted");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error getting FCM token:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   // Get and handle the FCM token on app start
+  //   const fetchToken = async () => {
+  //     const token = await getFCMToken();
+  //     console.log("Device FCM Token:", token);
+  //
+  //     // Send token to your backend server if necessary
+  //   };
+  //   fetchToken();
+  // }, []);
   const { inject } = browserStore;
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   useEffect(() => {
     if (!inject) return;
     // Handle foreground notifications
