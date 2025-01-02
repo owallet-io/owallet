@@ -386,7 +386,6 @@ export const AvailableTabView: FunctionComponent<{
               close={() => {
                 setSearchParams((prev) => {
                   prev.delete("isTokenDetailModalOpen");
-
                   return prev;
                 });
               }}

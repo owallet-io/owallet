@@ -70,8 +70,8 @@ const LedgerGrantPage: FunctionComponent = observer(() => {
       <Box maxWidth="47.75rem">
         <img
           src={require(theme.mode === "light"
-            ? "./public/assets/img/intro-logo-light.png"
-            : "./public/assets/img/intro-logo.png")}
+            ? "./public/assets/images/logo_owallet.png"
+            : "./public/assets/images/logo_owallet.png")}
           alt="OWallet logo"
           style={{
             width: "10.625rem",

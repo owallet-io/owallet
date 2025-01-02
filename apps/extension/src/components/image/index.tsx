@@ -92,7 +92,7 @@ export const ChainImageFallback: FunctionComponent<
         src={chainInfo.chainSymbolImageUrl}
         alt={chainInfo.chainName}
         {...otherProps}
-        defaultSrc={require("../../public/assets/img/chain-icon-alt.png")}
+        defaultSrc={require("../../public/assets/images/not_found.png")}
         style={{
           borderRadius: "1000000px",
           width: size,
@@ -131,7 +131,7 @@ export const CurrencyImageFallback: FunctionComponent<
         src={currency.coinImageUrl}
         alt={currency.coinDenom}
         {...otherProps}
-        defaultSrc={require("../../public/assets/img/chain-icon-alt.png")}
+        defaultSrc={require("../../public/assets/images/not_found.png")}
         style={{
           borderRadius: "1000000px",
           width: size,
