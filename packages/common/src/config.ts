@@ -392,15 +392,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl:
             "https://assets.coingecko.com/coins/images/17980/standard/ton_symbol.png?1696517498",
         },
-        {
-          coinDenom: "RACKS",
-          coinMinimalDenom:
-            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/D7yP4ycfsRWUGYionGpi64sLF2ddZ2JXxuRAti2M7uck",
-          coinDecimals: 6,
-          coinGeckoId: "black-rack",
-          coinImageUrl:
-            "https://ipfs.io/ipfs/QmVRPsBSHpamDzcDzVL9wsbB9gr4frtNrrFF7g44Xa9FuS",
-        },
       ];
     },
     get feeCurrencies() {
