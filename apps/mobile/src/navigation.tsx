@@ -57,7 +57,7 @@ import OWButtonIcon from "@components/button/ow-button-icon";
 import { AddChainScreen } from "@screens/setting/screens/manage-chains/add-network";
 import LottieView from "lottie-react-native";
 import { metrics } from "./themes";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, fetchRetry } from "@owallet/common";
 import { ConnectLedgerScreen } from "@screens/register/connect-ledger";
 import { ConnectHardwareWalletScreen } from "@screens/register/connect-hardware";
 import { FinalizeKeyScreen } from "@screens/register/finalize-key";
@@ -67,6 +67,8 @@ import { VerifyMnemonicScreen } from "@screens/register/verify-mnemonic";
 import { RecoverMnemonicScreen } from "@screens/register/recover-mnemonic";
 import { BackupMnemonicScreen } from "@screens/register/backup-mnemonic";
 import { ManageTokenScreen } from "@screens/network/manage-tokens";
+import { InteractionManager } from "react-native";
+import { InjectedProviderUrl } from "@screens/web/config";
 
 const Stack = createStackNavigator();
 const FullScreenModal = observer(() => {
@@ -117,8 +119,16 @@ const FullScreenModal = observer(() => {
   }
 });
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, appInitStore, chainStore } = useStore();
-
+  const { keyRingStore, appInitStore, chainStore, browserStore } = useStore();
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      fetchRetry(InjectedProviderUrl, {}, true)
+        .then((res) => {
+          browserStore.update_inject(res);
+        })
+        .catch((err) => console.log(err));
+    });
+  }, []);
   const [isInit, setIsInit] = useState(true);
   if (isInit) {
     if (appInitStore.getInitApp.wallet === "osmosis") {

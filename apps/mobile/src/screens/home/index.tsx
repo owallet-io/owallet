@@ -22,7 +22,9 @@ import OWIcon from "@components/ow-icon/ow-icon";
 import { imagesNoel } from "@assets/images/noels";
 import OWText from "@components/text/ow-text";
 import OWButtonIcon from "@components/button/ow-button-icon";
-// import { NewThemeModal } from "@src/modals/theme/new-theme";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { CommonActions, useNavigation } from "@react-navigation/native";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -40,32 +42,10 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     appInitStore,
     browserStore,
     allAccountStore,
-    bitcoinAccountStore,
     keyRingStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-  // useEffect(() => {
-  //   // for (const embedChainInfo of EmbedChainInfos) {
-  //   //   const hasChain = chainStore.hasChain(embedChainInfo.chainId);
-  //   //   if (!hasChain) continue;
-  //   //   const chainInfo = chainStore.getChain(embedChainInfo.chainId);
-  //   //   chainInfo.addCurrencies(...embedChainInfo.currencies);
-  //   // }
-  //   appInitStore.selectAllNetworks(true);
-  // }, []);
-  useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      fetch(InjectedProviderUrl)
-        .then((res) => {
-          return res.text();
-        })
-        .then((res) => {
-          browserStore.update_inject(res);
-        })
-        .catch((err) => console.log(err));
-    });
-  }, []);
 
   const [isThemOpen, setThemeOpen] = useState(false);
   useEffect(() => {
@@ -80,7 +60,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       return;
     }
     priceStore.fetch();
-
     for (const chainInfo of chainStore.chainInfosInUI) {
       let account = allAccountStore.getAccount(chainInfo.chainId);
       if (account.addressDisplay === "") {
@@ -124,7 +103,93 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }
     })();
   }, [chainStore.enabledChainIdentifiers, keyRingStore.selectedKeyInfo.id]);
+  const getFCMToken = async () => {
+    try {
+      // Request permission for notifications (iOS)
+      const authStatus = await messaging().requestPermission();
+      const enabled =
+        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
+      if (enabled) {
+        console.log("Authorization status:", authStatus);
+
+        // Get the FCM token
+        const fcmToken = await messaging().getToken();
+        if (fcmToken) {
+          console.log("FCM Token:", fcmToken);
+          return fcmToken;
+        } else {
+          console.log("Failed to get FCM token");
+        }
+      } else {
+        console.log("Notification permission not granted");
+      }
+    } catch (error) {
+      console.error("Error getting FCM token:", error);
+    }
+  };
+  useEffect(() => {
+    // Get and handle the FCM token on app start
+    const fetchToken = async () => {
+      const token = await getFCMToken();
+      console.log("Device FCM Token:", token);
+
+      // Send token to your backend server if necessary
+    };
+    fetchToken();
+  }, []);
+  const { inject } = browserStore;
+  const navigation = useNavigation();
+  useEffect(() => {
+    if (!inject) return;
+    // Handle foreground notifications
+    const unsubscribeOnMessage = messaging().onMessage(
+      async (remoteMessage) => {
+        console.log("Notification in foreground:", remoteMessage);
+        console.log(remoteMessage.data?.url);
+      }
+    );
+
+    // Handle background notifications
+    const unsubscribeOnNotificationOpenedApp =
+      messaging().onNotificationOpenedApp((remoteMessage) => {
+        console.log("Notification opened from background:", remoteMessage);
+        // Handle navigation or other actions here
+        if (remoteMessage.data?.url) {
+          resetTo(SCREENS.TABS.Browser, {
+            url: remoteMessage.data?.url,
+          });
+          navigate(SCREENS.DetailsBrowser, {
+            url: remoteMessage.data?.url,
+          });
+        }
+      });
+
+    // Handle notifications when app was closed
+    const checkInitialNotification = async () => {
+      const remoteMessage = await messaging().getInitialNotification();
+      if (remoteMessage) {
+        console.log("Notification opened from closed state:", remoteMessage);
+        // Handle navigation or other actions here
+        if (remoteMessage.data?.url) {
+          resetTo(SCREENS.TABS.Browser, {
+            url: remoteMessage.data?.url,
+          });
+          navigate(SCREENS.DetailsBrowser, {
+            url: remoteMessage.data?.url,
+          });
+        }
+      }
+    };
+
+    checkInitialNotification();
+    // Cleanup listeners
+    return () => {
+      unsubscribeOnMessage();
+      unsubscribeOnNotificationOpenedApp();
+    };
+  }, [inject]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
