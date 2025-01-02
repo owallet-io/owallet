@@ -169,7 +169,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       .replace("=", "");
 
     fetchRetry(
-      `https://oraicommon-staging.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
+      `https://oraicommon.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
     )
       .then((res) => {
         const { name, decimals, coinGeckoId, icon } = res || {};
