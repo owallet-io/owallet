@@ -21,9 +21,15 @@ export const StakedTabView: FunctionComponent<{
   const delegations: ViewTokenCosmosOnly[] = useMemo(
     () =>
       hugeQueriesStore.delegations.filter((token) => {
-        return token.token.toDec().gt(new Dec(0));
+        if (uiConfigStore.currentNetwork === "all") {
+          return token.token.toDec().gt(new Dec(0));
+        } else {
+          if (token.chainInfo.chainId === uiConfigStore.currentNetwork) {
+            return token.token.toDec().gt(new Dec(0));
+          }
+        }
       }),
-    [hugeQueriesStore.delegations]
+    [hugeQueriesStore.delegations, uiConfigStore.currentNetwork]
   );
 
   const unbondings: {
@@ -33,7 +39,16 @@ export const StakedTabView: FunctionComponent<{
     () =>
       hugeQueriesStore.unbondings
         .filter((unbonding) => {
-          return unbonding.viewToken.token.toDec().gt(new Dec(0));
+          if (uiConfigStore.currentNetwork === "all") {
+            return unbonding.viewToken.token.toDec().gt(new Dec(0));
+          } else {
+            if (
+              unbonding.viewToken.chainInfo.chainId ===
+              uiConfigStore.currentNetwork
+            ) {
+              return unbonding.viewToken.token.toDec().gt(new Dec(0));
+            }
+          }
         })
         .map((unbonding) => {
           const relativeTime = formatRelativeTime(unbonding.completeTime);
@@ -46,7 +61,7 @@ export const StakedTabView: FunctionComponent<{
             ),
           };
         }),
-    [hugeQueriesStore.unbondings, intl]
+    [hugeQueriesStore.unbondings, intl, uiConfigStore.currentNetwork]
   );
 
   const TokenViewData: {
@@ -147,10 +162,9 @@ export const StakedTabView: FunctionComponent<{
         <MainEmptyView
           image={
             <img
-              src={require("../../public/assets/img/main-empty-staking.png")}
+              src={require("../../public/assets/images/img_invest.png")}
               style={{
                 width: "6.25rem",
-                height: "6.25rem",
               }}
               alt="empty staking image"
             />
