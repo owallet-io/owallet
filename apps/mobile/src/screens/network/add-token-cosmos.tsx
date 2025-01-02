@@ -162,14 +162,7 @@ export const AddTokenCosmosScreen: FunctionComponent<{
       `https://oraicommon-staging.oraidex.io/api/v1/tokens/${urlCoinMinimalDenom}`
     )
       .then((res) => {
-        const {
-          name,
-          decimals,
-          coinGeckoId,
-          contractAddress: contractData,
-          icon,
-          denom,
-        } = res || {};
+        const { name, decimals, coinGeckoId, icon } = res || {};
         setValue("symbol", getInfoToken(name));
         setValue("decimals", getInfoToken(decimals ? `${decimals}` : ""));
         setValue("name", getInfoToken(name));
