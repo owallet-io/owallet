@@ -136,18 +136,32 @@ export const MainPage: FunctionComponent<{
   const [tabStatus, setTabStatus] = React.useState<TabStatus>("available");
 
   const availableTotalPrice = useMemo(() => {
+    // Need to fill the price with the selected chain
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
-      if (bal.price) {
-        if (!result) {
-          result = bal.price;
-        } else {
-          result = result.add(bal.price);
+      if (uiConfigStore.currentNetwork === "all") {
+        if (bal.price) {
+          if (!result) {
+            result = bal.price;
+          } else {
+            result = result.add(bal.price);
+          }
+        }
+      } else {
+        if (bal.chainInfo.chainId === uiConfigStore.currentNetwork) {
+          if (bal.price) {
+            if (!result) {
+              result = bal.price;
+            } else {
+              result = result.add(bal.price);
+            }
+          }
         }
       }
     }
     return result;
-  }, [hugeQueriesStore.allKnownBalances]);
+  }, [hugeQueriesStore.allKnownBalances, uiConfigStore.currentNetwork]);
+
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {

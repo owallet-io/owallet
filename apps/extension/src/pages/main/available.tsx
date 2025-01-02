@@ -299,11 +299,10 @@ export const AvailableTabView: FunctionComponent<{
                 image={
                   <img
                     src={require(theme.mode === "light"
-                      ? "../../public/assets/img/main-empty-balance-light.png"
-                      : "../../public/assets/img/main-empty-balance.png")}
+                      ? "../../public/assets/images/img_planet.png"
+                      : "../../public/assets/images/img_planet.png")}
                     style={{
                       width: "6.25rem",
-                      height: "6.25rem",
                     }}
                     alt="empty balance image"
                   />
