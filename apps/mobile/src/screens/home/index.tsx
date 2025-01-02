@@ -25,6 +25,7 @@ import OWButtonIcon from "@components/button/ow-button-icon";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { CommonActions, useNavigation } from "@react-navigation/native";
+import { delay } from "@utils/helper";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -142,53 +143,56 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const { inject } = browserStore;
   // const navigation = useNavigation();
   useEffect(() => {
-    if (!inject) return;
-    // Handle foreground notifications
-    const unsubscribeOnMessage = messaging().onMessage(
-      async (remoteMessage) => {
-        console.log("Notification in foreground:", remoteMessage);
-        console.log(remoteMessage.data?.url);
-      }
-    );
+    delay(1000).then(() => {
+      if (!inject) return;
+      // Handle foreground notifications
+      // const unsubscribeOnMessage = messaging().onMessage(
+      //     async (remoteMessage) => {
+      //       console.log("Notification in foreground:", remoteMessage);
+      //       console.log(remoteMessage.data?.url);
+      //     }
+      // );
 
-    // Handle background notifications
-    const unsubscribeOnNotificationOpenedApp =
-      messaging().onNotificationOpenedApp((remoteMessage) => {
-        console.log("Notification opened from background:", remoteMessage);
-        // Handle navigation or other actions here
-        if (remoteMessage.data?.url) {
-          resetTo(SCREENS.TABS.Browser, {
-            url: remoteMessage.data?.url,
-          });
-          navigate(SCREENS.DetailsBrowser, {
-            url: remoteMessage.data?.url,
-          });
-        }
-      });
+      // Handle background notifications
+      const unsubscribeOnNotificationOpenedApp =
+        messaging().onNotificationOpenedApp((remoteMessage) => {
+          console.log("Notification opened from background:", remoteMessage);
+          // Handle navigation or other actions here
+          if (remoteMessage.data?.url) {
+            resetTo(SCREENS.TABS.Browser, {
+              url: remoteMessage.data?.url,
+            });
+            navigate(SCREENS.DetailsBrowser, {
+              url: remoteMessage.data?.url,
+            });
+          }
+        });
+    });
 
-    // Handle notifications when app was closed
-    const checkInitialNotification = async () => {
-      const remoteMessage = await messaging().getInitialNotification();
-      if (remoteMessage) {
-        console.log("Notification opened from closed state:", remoteMessage);
-        // Handle navigation or other actions here
-        if (remoteMessage.data?.url) {
-          resetTo(SCREENS.TABS.Browser, {
-            url: remoteMessage.data?.url,
-          });
-          navigate(SCREENS.DetailsBrowser, {
-            url: remoteMessage.data?.url,
-          });
-        }
-      }
-    };
+    //
+    // // Handle notifications when app was closed
+    // const checkInitialNotification = async () => {
+    //   const remoteMessage = await messaging().getInitialNotification();
+    //   if (remoteMessage) {
+    //     console.log("Notification opened from closed state:", remoteMessage);
+    //     // Handle navigation or other actions here
+    //     if (remoteMessage.data?.url) {
+    //       resetTo(SCREENS.TABS.Browser, {
+    //         url: remoteMessage.data?.url,
+    //       });
+    //       navigate(SCREENS.DetailsBrowser, {
+    //         url: remoteMessage.data?.url,
+    //       });
+    //     }
+    //   }
+    // };
 
-    checkInitialNotification();
+    // checkInitialNotification();
     // Cleanup listeners
-    return () => {
-      unsubscribeOnMessage();
-      unsubscribeOnNotificationOpenedApp();
-    };
+    // return () => {
+    //   unsubscribeOnMessage();
+    //   unsubscribeOnNotificationOpenedApp();
+    // };
   }, [inject]);
   return (
     <PageWithScrollViewInBottomTabView
