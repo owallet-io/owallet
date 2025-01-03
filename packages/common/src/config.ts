@@ -1249,8 +1249,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
   },
   {
-    rpc: "https://swr.xnftdata.com/rpc-proxy/",
-    rest: "https://swr.xnftdata.com/rpc-proxy/",
+    rpc: "https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ",
+    rest: "https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ",
     chainId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
     chainName: "Solana",
     bip44: {

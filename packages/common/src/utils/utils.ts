@@ -275,7 +275,8 @@ export const SOL_DEV = "solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1";
 export const SOL_MAIN = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp";
 export const CHAIN_ID_SOL = SOL_MAIN;
 export const RPC_SOL_DEV = "https://api.devnet.solana.com";
-export const RPC_SOL_MAIN = "https://swr.xnftdata.com/rpc-proxy/";
+export const RPC_SOL_MAIN =
+  "https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ";
 export const RPC_SOL = RPC_SOL_MAIN;
 export async function getOrCreateAssociatedTokenAccount(
   connection: Connection,
