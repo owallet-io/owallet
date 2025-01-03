@@ -103,21 +103,21 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
               onClick={() => navigate("/setting/contacts/list")}
             />
 
-            <PageButton
+            {/* <PageButton
               title={intl.formatMessage({
                 id: "page.setting.general.theme-title",
               })}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/general/theme")}
-            />
+            /> */}
 
-            <PageButton
+            {/* <PageButton
               title={intl.formatMessage({
                 id: "page.setting.general.manage-authz-title",
               })}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/general/authz")}
-            />
+            /> */}
 
             {/* <PageButton
             title={intl.formatMessage({
@@ -156,7 +156,7 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
               />
             ) : null}
 
-            <PageButton
+            {/* <PageButton
               title={intl.formatMessage({
                 id: "page.setting.general.show-24h-price-changes-title",
               })}
@@ -171,8 +171,8 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
                   }
                 />
               }
-            />
-
+            /> */}
+            {/* 
             <PageButton
               title={intl.formatMessage({
                 id: "page.setting.general.manage-non-native-chains-title",
@@ -182,7 +182,7 @@ export const SettingGeneralPage: FunctionComponent = observer(() => {
               })}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/general/delete-suggest-chain")}
-            />
+            /> */}
 
             <PageButton
               title={intl.formatMessage({

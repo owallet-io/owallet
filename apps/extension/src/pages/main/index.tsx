@@ -19,7 +19,10 @@ import {
 } from "./components";
 import { Stack } from "../../components/stack";
 import { CoinPretty, PricePretty } from "@owallet/unit";
-import { ArrowTopRightOnSquareIcon } from "../../components/icon";
+import {
+  ArrowDownIcon,
+  ArrowTopRightOnSquareIcon,
+} from "../../components/icon";
 import { Box } from "../../components/box";
 import { Modal } from "../../components/modal";
 import { Gutter } from "../../components/gutter";
@@ -501,11 +504,11 @@ export const MainPage: FunctionComponent<{
                   src={require("assets/images/default-avatar.png")}
                 />
                 <Gutter size="0.5rem" />
-                <Subtitle1>{name}</Subtitle1>
-                <img
-                  width={24}
-                  height={24}
-                  src={require("assets/images/tdesign_chevron_down.svg")}
+                <Subtitle1>{name} </Subtitle1>
+                <ArrowDownIcon
+                  width="1.25rem"
+                  height="1.25rem"
+                  color={ColorPalette["gray-300"]}
                 />
               </Box>
               <CopyAddress

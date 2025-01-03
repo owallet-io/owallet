@@ -9,7 +9,7 @@ import { Columns } from "../../../components/column";
 import { Box } from "../../../components/box";
 import { Tooltip } from "../../../components/tooltip";
 import { ChainImageFallback, Image } from "../../../components/image";
-import { CheckIcon, MenuIcon } from "../../../components/icon";
+import { ArrowDownIcon, CheckIcon, MenuIcon } from "../../../components/icon";
 import { ProfileButton } from "../../../layouts/header/components";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -294,12 +294,12 @@ export const MainHeaderLayout = observer<
                 )}
               </Box>
 
-              <Subtitle1>{network.toUpperCase()}</Subtitle1>
+              <Subtitle1>{network.toUpperCase()} </Subtitle1>
 
-              <img
-                width={20}
-                height={20}
-                src={require("assets/images/tdesign_chevron_down.svg")}
+              <ArrowDownIcon
+                width="1.25rem"
+                height="1.25rem"
+                color={ColorPalette["gray-300"]}
               />
             </Box>
           );
