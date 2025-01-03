@@ -34,7 +34,9 @@ export const PageButton: FunctionComponent<PageButtonProps> = ({
         <Column weight={1}>
           <Stack gutter="0.375rem">
             <Columns sum={1} gutter="0.375rem" alignY="center">
-              {startIcon ? <Box>{startIcon}</Box> : null}
+              {startIcon ? (
+                <Styles.StartIcon>{startIcon}</Styles.StartIcon>
+              ) : null}
               <Styles.Title>{title}</Styles.Title>
             </Columns>
             {paragraph ? (

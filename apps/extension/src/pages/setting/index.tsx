@@ -2,12 +2,7 @@ import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { Stack } from "../../components/stack";
 import { PageButton } from "./components";
-import {
-  SettingIcon,
-  RightArrowIcon,
-  RocketLaunchIcon,
-  KeyIcon,
-} from "../../components/icon";
+import { RightArrowIcon } from "../../components/icon";
 import { useNavigate } from "react-router";
 import { Box } from "../../components/box";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -15,6 +10,10 @@ import { MainHeaderLayout } from "../main/layouts/header";
 import { H3 } from "../../components/typography";
 import styled, { useTheme } from "styled-components";
 import { ColorPalette } from "../../styles";
+import { AddjustmentIcon } from "components/icon/adjustment";
+import { LockIcon } from "components/icon/lock";
+import { AdvancedIcon } from "components/icon/advanced";
+import { ManageListIcon } from "components/icon/manage-list";
 
 const Styles = {
   Content: styled(Stack)`
@@ -62,7 +61,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               paragraph={intl.formatMessage({
                 id: "page.setting.general-paragraph",
               })}
-              startIcon={<SettingIcon width="1rem" height="1rem" />}
+              startIcon={<AddjustmentIcon width="1rem" height="1rem" />}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/general")}
             />
@@ -72,7 +71,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               paragraph={intl.formatMessage({
                 id: "page.setting.advanced-paragraph",
               })}
-              startIcon={<RocketLaunchIcon width="1rem" height="1rem" />}
+              startIcon={<AdvancedIcon width="1rem" height="1rem" />}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/advanced")}
             />
@@ -84,7 +83,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               paragraph={intl.formatMessage({
                 id: "page.setting.security-privacy-paragraph",
               })}
-              startIcon={<KeyIcon width="1rem" height="1rem" />}
+              startIcon={<LockIcon width="1rem" height="1rem" />}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/security")}
             />
@@ -93,6 +92,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               title={intl.formatMessage({
                 id: "page.setting.manage-token-list-title",
               })}
+              startIcon={<ManageListIcon width="1rem" height="1rem" />}
               paragraph={intl.formatMessage({
                 id: "page.setting.manage-token-list-paragraph",
               })}

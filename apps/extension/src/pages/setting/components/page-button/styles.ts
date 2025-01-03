@@ -26,6 +26,16 @@ export const Styles = {
     color: ${ColorPalette["gray-300"]};
     max-width: 16.75rem;
   `,
+  StartIcon: styled.div`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? ColorPalette["gray-50"]
+        : ColorPalette["gray-100"]};
+    border-radius: 100%;
+    padding: 0.5rem 0.625rem;
+    justify-content: center;
+    align-items: center;
+  `,
   EndIcon: styled.div`
     color: ${(props) =>
       props.theme.mode === "light"
