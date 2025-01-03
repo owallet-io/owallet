@@ -28,10 +28,7 @@ export const PermissionBasicAccessPage: FunctionComponent<{
 
   const interactionInfo = useInteractionInfo({
     onUnmount: async () => {
-      await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {
-        // 뒤로가기 버튼 클릭, macOS의 뒤로가기 제스처 등으로 페이지를 벗어나는 경우에 대한 처리이므로
-        // 다음 요청으로 넘어가는 것 외에 추가적인 처리를 하지 않는다.
-      });
+      await permissionStore.rejectPermissionWithProceedNext(data.ids, () => {});
     },
   });
 
@@ -43,9 +40,10 @@ export const PermissionBasicAccessPage: FunctionComponent<{
       fixedHeight={true}
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
+          color: "danger",
           style: {
             width: "3.25rem",
           },
@@ -63,10 +61,8 @@ export const PermissionBasicAccessPage: FunctionComponent<{
                     interactionInfo.interaction &&
                     interactionInfo.interactionInternal
                   ) {
-                    // 내부 인터렉션의 경우 reject만 하고 페이지를 벗어나지 않기 때문에 페이지를 벗어나도록 한다.
                     window.history.length > 1 ? navigate(-1) : navigate("/");
                   } else {
-                    // 예상치 못한 상황이므로 홈으로 초기화한다.
                     navigate("/", { replace: true });
                   }
                 }
@@ -75,12 +71,11 @@ export const PermissionBasicAccessPage: FunctionComponent<{
           },
         },
         {
-          text: intl.formatMessage({
-            id: "button.approve",
-          }),
+          text: intl.formatMessage({ id: "button.approve" }),
+          color: "primary",
+          size: "large",
           left: !isLoading && <ApproveIcon />,
           type: "submit",
-          size: "large",
           isLoading,
         },
       ]}

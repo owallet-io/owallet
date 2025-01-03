@@ -31,7 +31,10 @@ export const StakeWithKeplrDashboardButton = styled.button`
   border-radius: 5rem;
   z-index: 0;
 
-  background: linear-gradient(90deg, #00c2ff 0%, #db00ff 100%);
+  background-color: ${(props) =>
+    props.theme.mode === "light"
+      ? ColorPalette["gray-90"]
+      : ColorPalette["gray-550"]};
 
   :hover {
     :before {

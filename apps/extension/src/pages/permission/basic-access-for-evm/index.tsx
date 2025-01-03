@@ -49,9 +49,10 @@ export const PermissionBasicAccessForEVMPage: FunctionComponent<{
       fixedHeight={true}
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
+          color: "danger",
           style: {
             width: "3.25rem",
           },
@@ -82,6 +83,7 @@ export const PermissionBasicAccessForEVMPage: FunctionComponent<{
           text: intl.formatMessage({
             id: "button.approve",
           }),
+          color: "primary",
           size: "large",
           type: "submit",
           left: !isLoading && <ApproveIcon />,

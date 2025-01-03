@@ -40,9 +40,10 @@ export const GlobalPermissionGetChainInfosPage: FunctionComponent<{
       fixedHeight={true}
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
+          color: "danger",
           style: {
             width: "3.25rem",
           },
@@ -70,9 +71,8 @@ export const GlobalPermissionGetChainInfosPage: FunctionComponent<{
           },
         },
         {
-          text: intl.formatMessage({
-            id: "button.approve",
-          }),
+          text: intl.formatMessage({ id: "button.approve" }),
+          color: "primary",
           size: "large",
           type: "submit",
           left: !isLoading && <ApproveIcon />,

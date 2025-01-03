@@ -378,7 +378,6 @@ export const EthereumSigningView: FunctionComponent<{
       }
       bottomButtons={[
         {
-          // textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
           left: <CancelIcon />,
           text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
