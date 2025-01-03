@@ -571,7 +571,24 @@ export const MainPage: FunctionComponent<{
                                 id: "page.main.chart.staked",
                               })}
                         </Subtitle3>
-                        <animated.div
+                        <div
+                          style={{
+                            cursor: "pointer",
+                            opacity: 1,
+                            marginTop: "4px",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            if (tabStatus === "available") {
+                              setTabStatus("staked" as TabStatus);
+                            } else {
+                              setTabStatus("available" as TabStatus);
+                            }
+                          }}
+                        >
+                          <DoubleSortIcon width="1rem" height="1rem" />
+                        </div>
+                        {/* <animated.div
                           style={{
                             position: "relative",
                             display: "flex",
@@ -606,7 +623,7 @@ export const MainPage: FunctionComponent<{
                           >
                             <DoubleSortIcon width="1rem" height="1rem" />
                           </Styles.PrivacyModeButton>
-                        </animated.div>
+                        </animated.div> */}
                       </XAxis>
                     </YAxis>
                   </Skeleton>

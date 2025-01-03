@@ -72,7 +72,7 @@ const Styles = {
         : ColorPalette["gray-650"]};
     padding ${({ forChange }) =>
       forChange ? "1rem 1rem 0.875rem 1rem" : "1rem 0.875rem"};
-    border-radius: 0.375rem;
+    border-radius: 0.75rem;
     margin: 0.85rem;
     border: ${({ isError }) =>
       isError
