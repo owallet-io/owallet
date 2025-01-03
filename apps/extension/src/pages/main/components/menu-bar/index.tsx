@@ -410,19 +410,6 @@ export const MenuBar: FunctionComponent<{
           <Gutter size="1rem" />
 
           <Box
-            width="6.5rem"
-            style={{
-              border: `1px solid ${
-                theme.mode === "light"
-                  ? ColorPalette["gray-100"]
-                  : ColorPalette["gray-400"]
-              }`,
-            }}
-          />
-
-          <Gutter size="1rem" />
-
-          <Box
             cursor="pointer"
             onClick={(e) => {
               e.preventDefault();
@@ -442,8 +429,8 @@ export const MenuBar: FunctionComponent<{
                 <FormattedMessage id="page.main.components.menu-bar.go-to-keplr-chain-registry" />
               </Button2>
 
-              <Gutter size="0.25rem" />
-
+              {/* <Gutter size="0.25rem" /> */}
+              {/* 
               <LinkIcon
                 width="1.125rem"
                 height="1.125rem"
@@ -452,7 +439,7 @@ export const MenuBar: FunctionComponent<{
                     ? ColorPalette["gray-200"]
                     : ColorPalette["gray-300"]
                 }
-              />
+              /> */}
             </XAxis>
           </Box>
         </Bleed>
@@ -562,10 +549,21 @@ const PanelModeItemStylesTooltip = styled.div<{
   transform-origin: 50% 95%;
 `;
 
+const TagMode = styled.div<{
+  isMounted: boolean;
+}>`
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+  background-color: ${ColorPalette["purple-10"]};
+  border: 1px solid ${ColorPalette["purple-500"]};
+  justufy-content: center;
+  align-items: center;
+`;
+
 const PanelModeItem: FunctionComponent<{
   isSelected: boolean;
   onClick: () => void;
-
   isSidePanel: boolean;
   text: React.ReactElement;
 
@@ -595,9 +593,28 @@ const PanelModeItem: FunctionComponent<{
       }}
     >
       {animateSidePanelRecommendationTooltip ? <AnimatedTooltip /> : null}
-      {isSidePanel ? <div>New</div> : <div>Classic</div>}
+      {/* {isSidePanel ? (
+        <TagMode>
+          <span
+            style={{
+              color: ColorPalette["purple-200"],
+            }}
+          >
+            New
+          </span>
+        </TagMode>
+      ) : (
+        <TagMode>
+          <span
+            style={{
+              color: ColorPalette["purple-200"],
+            }}
+          >
+            Classic
+          </span>
+        </TagMode>
+      )} */}
       <Box alignX="center">
-        <Gutter size="0.5rem" />
         <PanelModeItemStylesTextContainer isSelected={isSelected}>
           <XAxis alignY="center">{text}</XAxis>
         </PanelModeItemStylesTextContainer>
