@@ -80,7 +80,7 @@ export const SettingSecurityPage: FunctionComponent = observer(() => {
               onClick={() => navigate("/setting/security/change-password")}
             />
 
-            {uiConfigStore.platform === "firefox" ? null : (
+            {/* {uiConfigStore.platform === "firefox" ? null : (
               <PageButton
                 title={intl.formatMessage({
                   id: "page.setting.security.analytics-title",
@@ -114,7 +114,7 @@ export const SettingSecurityPage: FunctionComponent = observer(() => {
                   </Box>
                 }
               />
-            )}
+            )} */}
           </Stack>
         </Styles.Content>
       </Box>

@@ -23,7 +23,7 @@ const initOption = () => {
   const theme = localStorage.getItem("theme-option");
 
   if (!theme) {
-    return "dark";
+    return "light";
   }
 
   return theme as ThemeOption;
@@ -47,7 +47,7 @@ export const AppThemeProvider: FunctionComponent<PropsWithChildren> = ({
   const [option, _setOption] = useState<ThemeOption>(() => initOption());
   const [displayTheme, setDisplayTheme] = useState<"dark" | "light">(() => {
     if (!option) {
-      return "dark";
+      return "light";
     }
 
     if (option === "auto") {

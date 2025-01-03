@@ -154,7 +154,8 @@ export const SettingSecurityAutoLockPage: FunctionComponent = observer(() => {
         </Body2>
 
         <YAxis alignX="center">
-          <div
+          <img src={require("assets/images/img_key.png")} width={70} />
+          {/* <div
             ref={animDivRef}
             style={{
               backgroundColor:
@@ -163,7 +164,7 @@ export const SettingSecurityAutoLockPage: FunctionComponent = observer(() => {
               width: "8.5rem",
               height: "8.5rem",
             }}
-          />
+          /> */}
         </YAxis>
 
         <Gutter size="3.125rem" />

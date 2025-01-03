@@ -11,7 +11,7 @@ export class AnalyticsService {
   protected analyticsId: string = "";
 
   @observable
-  protected disabled: boolean = false;
+  protected disabled: boolean = true;
 
   constructor(
     protected readonly kvStore: KVStore,
