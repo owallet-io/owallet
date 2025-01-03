@@ -66,7 +66,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               onClick={() => navigate("/setting/general")}
             />
 
-            <PageButton
+            {/* <PageButton
               title={intl.formatMessage({ id: "page.setting.advanced-title" })}
               paragraph={intl.formatMessage({
                 id: "page.setting.advanced-paragraph",
@@ -74,6 +74,15 @@ export const SettingPage: FunctionComponent = observer(() => {
               startIcon={<AdvancedIcon width="1rem" height="1rem" />}
               endIcon={<RightArrowIcon />}
               onClick={() => navigate("/setting/advanced")}
+            /> */}
+
+            <PageButton
+              title={intl.formatMessage({
+                id: "page.setting.advanced.change-endpoints-title",
+              })}
+              startIcon={<AddjustmentIcon width="1rem" height="1rem" />}
+              endIcon={<RightArrowIcon />}
+              onClick={() => navigate("/setting/advanced/endpoint")}
             />
 
             <PageButton

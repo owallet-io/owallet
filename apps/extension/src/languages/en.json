@@ -200,9 +200,9 @@
   "page.setting.advanced-title": "Advanced",
   "page.setting.advanced-paragraph": "Developer Mode, Change Endpoints...",
   "page.setting.security-privacy-title": "Security & Privacy",
-  "page.setting.security-privacy-paragraph": "Connected Websites, Auto-Lock",
+  "page.setting.security-privacy-paragraph": "Protecting your information",
   "page.setting.manage-token-list-title": "Manage Token List",
-  "page.setting.manage-token-list-paragraph": "Only for the tokens that can be added manually via contract addresses",
+  "page.setting.manage-token-list-paragraph": "Allows users to oversee and control a list of tokens",
 
   "page.setting.advanced.developer-mode-title": "Developer Mode",
   "page.setting.advanced.developer-mode-paragraph": "Feeling techie today? :)",

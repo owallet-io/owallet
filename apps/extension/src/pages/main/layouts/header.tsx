@@ -294,8 +294,8 @@ export const MainHeaderLayout = observer<
                 )}
               </Box>
 
-              <Subtitle1>{network.toUpperCase()} </Subtitle1>
-
+              <Subtitle1>{network.toUpperCase()}</Subtitle1>
+              <Gutter size="0.5rem" />
               <ArrowDownIcon
                 width="1.25rem"
                 height="1.25rem"

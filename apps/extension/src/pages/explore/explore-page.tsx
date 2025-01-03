@@ -162,7 +162,8 @@ const Styles = {
     }};
   `,
   ListExplore: styled.div`
-    padding: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;

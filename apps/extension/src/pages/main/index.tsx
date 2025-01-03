@@ -504,7 +504,8 @@ export const MainPage: FunctionComponent<{
                   src={require("assets/images/default-avatar.png")}
                 />
                 <Gutter size="0.5rem" />
-                <Subtitle1>{name} </Subtitle1>
+                <Subtitle1>{name}</Subtitle1>
+                <Gutter size="0.5rem" />
                 <ArrowDownIcon
                   width="1.25rem"
                   height="1.25rem"
