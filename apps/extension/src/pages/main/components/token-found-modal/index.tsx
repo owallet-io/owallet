@@ -33,7 +33,7 @@ import { XAxis, YAxis } from "../../../../components/axis";
 export const TokenFoundModal: FunctionComponent<{
   close: () => void;
 }> = observer(({ close }) => {
-  const { chainStore, keyRingStore, tronAccountStore } = useStore();
+  const { chainStore, keyRingStore } = useStore();
   const intl = useIntl();
   const theme = useTheme();
 

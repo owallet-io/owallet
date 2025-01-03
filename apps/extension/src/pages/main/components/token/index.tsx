@@ -69,7 +69,7 @@ const Styles = {
         ? "0rem 0rem"
         : forChange
         ? "0.875rem 0.25rem 0.875rem 1rem"
-        : "1rem 0rem"};
+        : "0.75rem 0.275rem"};
     cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
     
     border: ${({ isError, showLeft }) =>

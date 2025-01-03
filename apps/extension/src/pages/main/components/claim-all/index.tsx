@@ -804,7 +804,7 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
                     }}
                   >
                     {uiConfigStore.hideStringIfPrivacyMode(
-                      totalPrice ? totalPrice.separator(" ").toString() : "?",
+                      totalPrice ? totalPrice.separator("").toString() : "?",
                       3
                     )}
                   </H1>
@@ -826,7 +826,7 @@ export const ClaimAll: FunctionComponent<{ isNotReady?: boolean }> = observer(
                   onClick={claimAll}
                 />
               ) : (
-                <SpecialButton
+                <Button
                   text={intl.formatMessage({
                     id: "page.main.components.claim-all.button",
                   })}

@@ -74,13 +74,18 @@ export const ColorPalette = {
   "yellow-500": "#D29C11",
   "yellow-800": "#2F2611",
 
+  "pure-white": "#fff",
   white: "#FEFEFE",
 
   "gray-10": "#F6F6F9",
   "gray-50": "#F2F2F6",
+  "gray-70": "#F5F5F7",
+  "gray-90": "#EBEDF2",
   "gray-100": "#DCDCE3",
   "gray-200": "#ABABB5",
+  "gray-250": "#EBEDF2",
   "gray-300": "#72747B",
+  "gray-350": "#C6C8CE",
   "gray-400": "#404045",
   "gray-450": "#353539",
   "gray-500": "#2E2E32",
@@ -90,6 +95,7 @@ export const ColorPalette = {
   "gray-700": "#09090A",
 
   black: "#020202",
+  "black-50": "#242325",
 
   transparent: "rgba(255,255,255,0)",
 

@@ -75,14 +75,14 @@ const buttonStyleFromColorAndMode: Record<
           }
         `,
         disabled: css`
-          background-color: ${ColorPalette["purple-200"]};
+          background-color: ${ColorPalette["gray-90"]};
 
           ::after {
             background-color: ${ColorPalette["gray-300"]};
             opacity: 0.4;
           }
 
-          ${makeTextAndSvgColor(ColorPalette["white"])}
+          ${makeTextAndSvgColor(ColorPalette["pure-white"])}
         `,
       },
     },
@@ -117,9 +117,9 @@ const buttonStyleFromColorAndMode: Record<
     light: {
       fill: {
         enabled: css`
-          background-color: ${ColorPalette["purple-50"]};
+          background-color: ${ColorPalette["gray-70"]};
 
-          ${makeTextAndSvgColor(ColorPalette["purple-400"])}
+          ${makeTextAndSvgColor(ColorPalette["black-50"])}
 
           :hover {
             ::after {
@@ -130,9 +130,8 @@ const buttonStyleFromColorAndMode: Record<
         `,
 
         disabled: css`
-          background-color: ${ColorPalette["purple-50"]};
-
-          ${makeTextAndSvgColor(ColorPalette["purple-200"])}
+          background-color: ${ColorPalette["gray-250"]};
+          ${makeTextAndSvgColor(ColorPalette["pure-white"])}
         `,
       },
     },
