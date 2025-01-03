@@ -25,7 +25,8 @@ const Styles = {
 };
 
 export const SendSelectAssetPage: FunctionComponent = observer(() => {
-  const { hugeQueriesStore, skipQueriesStore, chainStore } = useStore();
+  const { hugeQueriesStore, skipQueriesStore, chainStore, uiConfigStore } =
+    useStore();
   const navigate = useNavigate();
   const intl = useIntl();
   const theme = useTheme();
@@ -48,7 +49,10 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
 
   const searchRef = useFocusOnMount<HTMLInputElement>();
 
-  const tokens = hugeQueriesStore.getAllBalances(!hideIBCToken);
+  const tokens =
+    uiConfigStore.currentNetwork === "all"
+      ? hugeQueriesStore.getAllBalances(!hideIBCToken)
+      : hugeQueriesStore.getAllBalancesByChainId(uiConfigStore.currentNetwork);
 
   const _filteredTokens = useMemo(() => {
     const zeroDec = new Dec(0);
