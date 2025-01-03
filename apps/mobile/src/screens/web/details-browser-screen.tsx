@@ -40,9 +40,10 @@ import LottieView from "lottie-react-native";
 import { LoadingBar } from "@src/screens/web/components/loadingBar";
 // import get from 'lodash/get';
 import { tracking } from "@src/utils/tracking";
-import { navigate, popTo, popToTop } from "@src/router/root";
+import { navigate, navigationRef, popTo, popToTop } from "@src/router/root";
 import { BACKGROUND_PORT } from "@owallet/router";
 import { URLTempAllowOnMobileMsg } from "@owallet/background";
+import { StackActions } from "@react-navigation/routers";
 // import RNFS from 'react-native-fs';
 
 // export const useInjectedSourceCode = () => {
@@ -222,7 +223,7 @@ export const DetailsBrowserScreen = observer((props) => {
   }, [canGoBack, navigation]);
 
   const onHomeBrowser = () => {
-    popToTop();
+    navigation.navigate(SCREENS.TABS.Browser);
     return;
   };
   const onReload = () => {
