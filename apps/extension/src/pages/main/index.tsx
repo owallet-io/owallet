@@ -822,7 +822,7 @@ export const MainPage: FunctionComponent<{
       <Modal
         isOpen={isChangelogModalOpen}
         close={() => {
-          // setIsChangelogModalOpen(false);
+          setIsChangelogModalOpen(false);
         }}
         onCloseTransitionEnd={() => {
           uiConfigStore.changelogConfig.clearLastInfo();
