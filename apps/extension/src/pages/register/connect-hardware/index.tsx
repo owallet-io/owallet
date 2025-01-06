@@ -49,7 +49,7 @@ export const ConnectHardwareWalletScene: FunctionComponent = () => {
       </RegisterH4>
       <Box alignX="center" paddingBottom="3.125rem" paddingTop="3.125rem">
         <img
-          src={require("../../../public/assets/img/intro-hardware-wallet.png")}
+          src={require("../../../public/assets/img/ledger-nano.png")}
           style={{
             width: "10.625rem",
             height: "10.625rem",

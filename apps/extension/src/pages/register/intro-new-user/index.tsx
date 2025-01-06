@@ -83,17 +83,17 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
               </Stack>
             </Box>
 
-            <Columns sum={1} gutter="0.25rem" alignY="center">
+            {/* <Columns sum={1} gutter="0.25rem" alignY="center">
               <XAxis>
                 <ShieldIcon />
                 <ShieldIcon />
                 <ShieldIcon />
               </XAxis>
-
+              
               <Caption1 color={ColorPalette["gray-200"]}>
                 <FormattedMessage id="pages.register.intro-new-user.high-security-text" />
               </Caption1>
-            </Columns>
+            </Columns> */}
           </Box>
         </Column>
         <Box
@@ -117,7 +117,7 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
             </RegisterH4>
             <Gutter size="0.5rem" />
             <Subtitle3 color={ColorPalette["gray-200"]}>
-              <FormattedMessage id="pages.register.intro-new-user.sign-up-social-paragraph" />
+              <FormattedMessage id="pages.register.intro-existing-user.recovery-paragraph-description" />
               <br />
               <br />
             </Subtitle3>
@@ -138,7 +138,7 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
               </Stack>
             </Box>
 
-            <Columns sum={1} gutter="0.25rem" alignY="center">
+            {/* <Columns sum={1} gutter="0.25rem" alignY="center">
               <XAxis>
                 <BoltIcon />
                 <BoltIcon />
@@ -148,7 +148,7 @@ export const RegisterIntroNewUserScene: FunctionComponent = () => {
               <Caption1 color={ColorPalette["gray-200"]}>
                 <FormattedMessage id="pages.register.intro-new-user.more-convenience-text" />
               </Caption1>
-            </Columns>
+            </Columns> */}
           </Box>
         </Column>
         {/* <Column weight={1}>
