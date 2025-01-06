@@ -139,7 +139,6 @@ export const MainPage: FunctionComponent<{
   const [tabStatus, setTabStatus] = React.useState<TabStatus>("available");
 
   const availableTotalPrice = useMemo(() => {
-    // Need to fill the price with the selected chain
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
       if (uiConfigStore.currentNetwork === "all") {

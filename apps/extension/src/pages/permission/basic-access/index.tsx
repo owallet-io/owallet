@@ -44,9 +44,6 @@ export const PermissionBasicAccessPage: FunctionComponent<{
           text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
           color: "danger",
-          style: {
-            width: "3.25rem",
-          },
           onClick: async () => {
             await permissionStore.rejectPermissionWithProceedNext(
               data.ids,
