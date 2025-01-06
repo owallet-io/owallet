@@ -15,6 +15,7 @@ import {
 } from "../../../components/transition";
 import { WalletStatus } from "@owallet/stores";
 import AnimCreating from "../../../public/assets/lottie/register/creating.json";
+import SplashScreen from "../../../public/assets/lottie/register/splashscreen.json";
 import AnimCreatingLight from "../../../public/assets/lottie/register/creating-light.json";
 import lottie from "lottie-web";
 import { PlainObject } from "@owallet/background";
@@ -326,10 +327,6 @@ export const FinalizeKeyScene: FunctionComponent<{
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [candidateAddresses]);
 
-    // XXX: sceneTransition은 method마다 ref이 변한다.
-    //      onceRef이 없으면 무한루프에 빠진다.
-    //      처음에 이걸 고려 안해서 이런 문제가 생겨버렸는데
-    //      수정할 시간이 없으니 일단 대충 처리한다.
     const onceRef = useRef<boolean>(false);
     useEffect(() => {
       if (
@@ -366,8 +363,7 @@ export const FinalizeKeyScene: FunctionComponent<{
           renderer: "svg",
           loop: false,
           autoplay: true,
-          animationData:
-            theme.mode === "light" ? AnimCreatingLight : AnimCreating,
+          animationData: theme.mode === "light" ? SplashScreen : SplashScreen,
         });
 
         // When anim ends, the scene will be replaced with next scene.
@@ -392,8 +388,7 @@ export const FinalizeKeyScene: FunctionComponent<{
         <div
           ref={animContainerRef}
           style={{
-            width: "17.5rem",
-            height: "17.5rem",
+            height: "27.5rem",
           }}
         />
       </RegisterSceneBox>

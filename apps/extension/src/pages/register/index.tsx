@@ -235,7 +235,7 @@ const RegisterPageImpl: FunctionComponent = observer(() => {
             {
               name: "finalize-key",
               element: FinalizeKeyScene,
-              width: "17.5rem",
+              width: "19.5rem",
             },
             {
               name: "enable-chains",
