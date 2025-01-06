@@ -51,8 +51,8 @@
   "pages.register.components.form.name-password.password-not-match-error": "Password should match",
 
   "pages.register.intro.create-wallet-button": "Create a new wallet",
-  "pages.register.intro.import-wallet-button": "Import an existing wallet",
-  "pages.register.intro.connect-hardware-wallet-button": "Connect Hardware Wallet",
+  "pages.register.intro.import-wallet-button": "Import from Mnemonic/Private key",
+  "pages.register.intro.connect-hardware-wallet-button": "Connect Ledger Nano X/S",
 
   "pages.register.intro-new-user.title": "Welcome to OWallet",
   "pages.register.intro-new-user.paragraph": "Select the way you want to create your wallet",

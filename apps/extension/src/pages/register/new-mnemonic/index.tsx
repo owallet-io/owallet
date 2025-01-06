@@ -31,6 +31,7 @@ import { WarningBox } from "../../../components/warning-box";
 import { CopyToClipboard } from "../components/copy-to-clipboard";
 import { useIntl } from "react-intl";
 import { useTheme } from "styled-components";
+import { ColorPalette } from "src/styles";
 
 type WordsType = "12words" | "24words";
 
@@ -117,10 +118,29 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
       <Box position="relative">
         {!policyVerified ? (
           <BlurBackdrop>
-            <div
+            {/* <div
               style={{ width: "10rem", height: "10rem" }}
               ref={seedAnimDivRef}
-            />
+            /> */}
+            <Box
+              style={{
+                fontSize: 38,
+                fontWeight: "700",
+                color: ColorPalette["gray-200"],
+                padding: "1rem",
+                borderRadius: "99rem",
+                borderWidth: 2,
+                borderColor: ColorPalette["gray-200"],
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setPolicyVerified(true);
+              }}
+            >
+              {policyDelayRemaining > 0
+                ? ` ${Math.ceil(policyDelayRemaining / 1000)}`
+                : "Ready"}
+            </Box>
           </BlurBackdrop>
         ) : null}
         <Box alignX="center">

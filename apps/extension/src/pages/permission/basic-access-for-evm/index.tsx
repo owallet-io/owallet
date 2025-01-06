@@ -38,7 +38,6 @@ export const PermissionBasicAccessForEVMPage: FunctionComponent<{
 
   const isLoading = false;
 
-  // 페이지가 언마운트 되지 않고 data만 바뀌는 경우가 있어서 이렇게 처리함
   useEffect(() => {
     setCurrentChainIdForEVM(data.chainIds[0]);
   }, [data.chainIds]);
