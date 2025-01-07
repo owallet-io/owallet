@@ -66,7 +66,6 @@ export class ChainsService {
       kvStore: KVStore;
       updaterKVStore: KVStore;
     },
-    // embedChainInfos는 실행 이후에 변경되어서는 안된다.
     protected readonly embedChainInfos: ReadonlyArray<ChainInfoWithCoreTypes>,
     protected readonly suggestChainPrivilegedOrigins: string[],
     protected readonly communityChainInfoRepo: {
@@ -471,6 +470,8 @@ export class ChainsService {
         ? this.communityChainInfoRepo.alternativeURL
             .replace("{chain_identifier}", chainIdentifier)
             .replace("/cosmos/", isEvmOnlyChain ? "/evm/" : "/cosmos/")
+        : chainIdentifier === "Oraichain"
+        ? `https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
         : `https://raw.githubusercontent.com/${
             this.communityChainInfoRepo.organizationName
           }/${this.communityChainInfoRepo.repoName}/${

@@ -1,9 +1,7 @@
 import { Message } from "@owallet/router";
 import { Key, SettledResponses, TransactionType } from "@owallet/types";
 import { ROUTE } from "./constants";
-import { types } from "@oasisprotocol/client";
-import { Bech32Address } from "@owallet/cosmos";
-import { BtcAccountBase } from "@owallet/stores-btc";
+import { isBtcAddress } from "@owallet/common";
 
 export class GetBtcKeyMsg extends Message<Key> {
   public static type() {
@@ -99,7 +97,7 @@ export class RequestSignBtcMsg extends Message<string> {
 
     // Validate signer address.
     try {
-      const isValid = BtcAccountBase.isBtcAddress(this.signer);
+      const isValid = isBtcAddress(this.signer);
       if (!isValid) {
         throw new Error("Invalid BTC Address");
       }

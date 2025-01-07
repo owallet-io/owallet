@@ -1,4 +1,3 @@
-import { ChainIdEnum, EthereumEndpoint, toAmount } from "@owallet/common";
 import {
   useDelegateTxConfig,
   useGasSimulator,
@@ -7,45 +6,29 @@ import {
 import { Staking } from "@owallet/stores";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import OWCard from "@src/components/card/ow-card";
-import { AlertIcon, DownArrowIcon } from "@src/components/icon";
+import { AlertIcon } from "@src/components/icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWText from "@src/components/text/ow-text";
 import { ValidatorThumbnail } from "@src/components/thumbnail";
 import { useTheme } from "@src/themes/theme-provider";
-import {
-  capitalizedText,
-  computeTotalVotingPower,
-  formatPercentage,
-  showToast,
-} from "@src/utils/helper";
+import { showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  InteractionManager,
-} from "react-native";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { OWButton } from "../../../components/button";
-
 import { useStore } from "../../../stores";
 import { metrics, spacing, typography } from "../../../themes";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { FeeModal } from "@src/modals/fee";
-import { CoinPretty, Dec, Int } from "@owallet/unit";
-import { API } from "@src/common/api";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { tracking } from "@src/utils/tracking";
-import { makeStdTx } from "@cosmjs/amino";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
 import { goBack, navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
 import { AsyncKVStore } from "@src/common";
-import { LoadingSpinner } from "@components/spinner";
 import { FeeControl } from "@components/input/fee-control";
+import { initPrice } from "@src/screens/home/components";
+
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -58,7 +41,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  tracking(`Delegate Screen`);
+  useEffect(() => {
+    tracking(`Delegate Screen`);
+
+    return () => {};
+  }, []);
+
   const validatorAddress = route.params.validatorAddress;
   const {
     chainStore,
@@ -243,7 +231,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       },
     });
     modalStore.setChildren(
-      <FeeModal vertical={true} sendConfigs={sendConfigs} colors={colors} />
+      <FeeModal vertical={true} sendConfigs={sendConfigs} />
     );
   };
 

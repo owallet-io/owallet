@@ -124,6 +124,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           this.chainId,
           coinMinimalDenom
         );
+
         if (generator) {
           const currency = generator.value;
           runInAction(() => {
@@ -276,8 +277,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * Currency를 반환한다.
-   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
+  
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -348,7 +348,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
@@ -572,7 +571,9 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     | undefined {
     for (let i = 0; i < this.currencyRegistrars.length; i++) {
       const registrar = this.currencyRegistrars[i];
+
       const generator = registrar(chainId, coinMinimalDenom);
+
       if (generator) {
         return generator;
       }

@@ -22,7 +22,7 @@ export class AccountSharedContext {
       } catch (e) {
         responses.push({
           status: "rejected",
-          reason: e,
+          reason: e.toString(),
         });
       }
     }
@@ -59,7 +59,7 @@ export class AccountSharedContext {
       return requests.map(() => {
         return {
           status: "rejected",
-          reason: e,
+          reason: e.toString(),
         };
       });
     }

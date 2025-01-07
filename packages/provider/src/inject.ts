@@ -30,6 +30,7 @@ import {
   TransactionType,
   RequestArguments,
   TransactionBtcType,
+  ISolanaProvider,
 } from "@owallet/types";
 import {
   Result,
@@ -43,8 +44,27 @@ import Long from "long";
 import { OWalletCoreTypes } from "./core-types";
 import EventEmitter from "events";
 import { types } from "@oasisprotocol/client";
-import { ChainIdEVM } from "@owallet/common";
+import { ChainIdEVM } from "@owallet/types";
+import {
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import { encode, decode } from "bs58";
+// import {CHAIN_ID_SOL} from "@owallet/common";
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from "@solana/wallet-standard-features";
+// import {isReactNative, isWeb} from "@owallet/common";
+import { initialize } from "@oraichain/owallet-wallet-standard";
 
+// initialize(owallet.solana as any);
 export interface ProxyRequest {
   type: "proxy-request";
   id: string;
@@ -53,6 +73,7 @@ export interface ProxyRequest {
   ethereumProviderMethod?: keyof IEthereumProvider;
   oasisProviderMethod?: keyof IOasisProvider;
   tronProviderMethod?: keyof ITronProvider;
+  solanaProviderMethod?: keyof ISolanaProvider;
   bitcoinProviderMethod?: keyof IBitcoinProvider;
 }
 
@@ -81,8 +102,20 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
 }
 
 export function injectOWalletToWindow(owallet: IOWallet): void {
+  import("@oraichain/owallet-wallet-standard")
+    .then(({ initialize }) => {
+      initialize(owallet.solana as any);
+    })
+    .catch((error) => {
+      console.error(
+        "Failed to load @oraichain/owallet-wallet-standard:",
+        error
+      );
+    });
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
   defineUnwritablePropertyIfPossible(window, "keplr", owallet);
+  defineUnwritablePropertyIfPossible(window, "owalletSolana", owallet.solana);
+  defineUnwritablePropertyIfPossible(window, "bitcoin", owallet.bitcoin);
   defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
@@ -117,6 +150,8 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
  * This will use `window.postMessage` to interact with the content script.
  */
 export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
+  public isOwallet: boolean = true;
+
   static startProxy(
     owallet: IOWallet & OWalletCoreTypes,
     eventListener: {
@@ -168,6 +203,9 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
           !owallet[message.method] ||
           (message.method !== "ethereum" &&
             message.method !== "tron" &&
+            message.method !== "bitcoin" &&
+            message.method !== "oasis" &&
+            message.method !== "solana" &&
             typeof owallet[message.method] !== "function")
         ) {
           console.log(`Invalid method: ${message.method}`);
@@ -373,6 +411,33 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             const messageArgs = JSONUint8Array.unwrap(message.args);
 
             return await owallet.bitcoin[bitcoinProviderMethod](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...(typeof messageArgs === "string"
+                ? JSON.parse(messageArgs)
+                : messageArgs)
+            );
+          } else if (method === "solana") {
+            const solanaProviderMethod = message.solanaProviderMethod;
+
+            //@ts-ignore
+            if (solanaProviderMethod?.startsWith("protected")) {
+              throw new Error("Rejected");
+            }
+            if (
+              solanaProviderMethod === undefined ||
+              typeof owallet.solana[solanaProviderMethod] !== "function"
+            ) {
+              throw new Error(
+                //@ts-ignore
+                `${message?.solanaProviderMethod} is not function or invalid Oasis provider method`
+              );
+            }
+
+            const messageArgs = JSONUint8Array.unwrap(message.args);
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            return await owallet.solana[solanaProviderMethod](
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               ...(typeof messageArgs === "string"
@@ -956,6 +1021,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       signDoc,
     ]);
   }
+
   async signEthereum(
     chainId: string,
     signer: string,
@@ -969,6 +1035,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       type,
     ]);
   }
+
   async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
     return await this.requestMethod("sendEthereumTx", [chainId, tx]);
   }
@@ -988,6 +1055,11 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     this.eip6963ProviderInfo
   );
   public readonly oasis = new OasisProvider(
+    this,
+    this.eventListener,
+    this.parseMessage
+  );
+  public readonly solana = new SolanaProvider(
     this,
     this.eventListener,
     this.parseMessage
@@ -1012,6 +1084,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
   selectedAddress: string | null = null;
 
+  isOwallet = true;
   isOWallet = true;
   isMetaMask = true;
 
@@ -1039,7 +1112,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     this._initProviderState();
 
-    window.addEventListener("owallet_keystorechange", async () => {
+    window.addEventListener("keplr_keystorechange", async () => {
       if (this._currentChainId) {
         const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(
           this._currentChainId
@@ -1271,6 +1344,253 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
     })) as string;
   };
 }
+
+class SolanaProvider extends EventEmitter implements ISolanaProvider {
+  isOWallet = true;
+
+  constructor(
+    protected readonly injectedOWallet: InjectedOWallet,
+    protected readonly eventListener: {
+      addMessageListener: (fn: (e: any) => void) => void;
+      removeMessageListener: (fn: (e: any) => void) => void;
+      postMessage: (message: any) => void;
+    } = {
+      addMessageListener: (fn: (e: any) => void) =>
+        window.addEventListener("message", fn),
+      removeMessageListener: (fn: (e: any) => void) =>
+        window.removeEventListener("message", fn),
+      postMessage: (message) =>
+        window.postMessage(message, window.location.origin),
+    },
+    protected readonly parseMessage?: (message: any) => any
+  ) {
+    super();
+    window.addEventListener("keplr_keystorechange", async () => {
+      await this.connect({ onlyIfTrusted: true, reconnect: true });
+    });
+  }
+
+  protected _requestMethod = async (
+    method: keyof ISolanaProvider,
+    args: Record<string, any>
+  ): Promise<any> => {
+    const bytes = new Uint8Array(8);
+    const id: string = Array.from(crypto.getRandomValues(bytes))
+      .map((value) => {
+        return value.toString(16);
+      })
+      .join("");
+
+    const proxyMessage: ProxyRequest = {
+      type: "proxy-request",
+      id,
+      method: "solana",
+      args: JSONUint8Array.wrap(args),
+      solanaProviderMethod: method,
+    };
+
+    return new Promise((resolve, reject) => {
+      const receiveResponse = (e: any) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage
+          ? this.parseMessage(e.data)
+          : e.data;
+
+        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
+          return;
+        }
+
+        if (proxyResponse.id !== id) {
+          return;
+        }
+
+        this.eventListener.removeMessageListener(receiveResponse);
+
+        const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+        if (!result) {
+          reject(new Error("Result is null"));
+          return;
+        }
+
+        if (result.error) {
+          const error = result.error;
+          reject(new Error(error));
+          return;
+        }
+
+        resolve(result.return);
+      };
+
+      this.eventListener.addMessageListener(receiveResponse);
+
+      this.eventListener.postMessage(proxyMessage);
+    });
+  };
+
+  async getKey(chainId: string): Promise<Key> {
+    return await this._requestMethod("getKey", [chainId]);
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return await this._requestMethod("getKeysSettled", [chainIds]);
+  }
+
+  publicKey: PublicKey | null;
+  protected _isConnected: boolean;
+
+  protected _connectWallet(publicKey: string) {
+    this._isConnected = true;
+    this.publicKey = new PublicKey(publicKey);
+    this.emit("connect", { publicKey });
+  }
+
+  connect = async (options?: {
+    onlyIfTrusted?: boolean;
+    reconnect?: boolean;
+  }): Promise<any> => {
+    if (this.publicKey && !options?.reconnect) {
+      return { publicKey: this.publicKey };
+    }
+    const { publicKey } = await this._requestMethod("connect", [options]);
+    this._connectWallet(publicKey);
+    if (options?.onlyIfTrusted) {
+      this.emit("accountChanged", new PublicKey(publicKey));
+    }
+    return { publicKey: new PublicKey(publicKey) };
+  };
+  disconnect = async (): Promise<void> => {
+    this.publicKey = null;
+    this.emit("disconnect");
+  };
+
+  signTransaction = async <T extends Transaction | VersionedTransaction>(
+    tx: T,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<T> => {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const txStr = encode(tx.serialize({ requireAllSignatures: false }));
+
+    const result = await this._requestMethod("signTransaction", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        tx: txStr,
+        customConnection: connection,
+      },
+    ]);
+    const solanaRes = VersionedTransaction.deserialize(
+      decode(result.signedTx)
+    ) as T;
+    console.warn(solanaRes);
+    return solanaRes;
+  };
+
+  signIn = async (input?: SolanaSignInInput): Promise<SolanaSignInOutput> => {
+    try {
+      const response = await this._requestMethod("signIn", [input ?? {}]);
+      this._connectWallet(response.publicKey);
+      const { OWalletSolanaWalletAccount } = await import(
+        "@oraichain/owallet-wallet-standard"
+      );
+      return {
+        account: new OWalletSolanaWalletAccount({
+          address: response.publicKey,
+          publicKey: new PublicKey(response.publicKey).toBuffer(),
+        }),
+        signedMessage: decode(response.signedMessage),
+        signature: decode(response.signature),
+      };
+    } catch (e) {
+      console.error("Failed to load @oraichain/owallet-wallet-standard:", e);
+    }
+  };
+
+  signAndSendTransaction = async <T extends Transaction | VersionedTransaction>(
+    transaction: T,
+    options?: SendOptions
+  ): Promise<{ signature: TransactionSignature }> => {
+    return this.sendAndConfirm(transaction, [], options);
+  };
+
+  sendAndConfirm = async <T extends Transaction | VersionedTransaction>(
+    tx: T,
+    signers?: Signer[],
+    options?: ConfirmOptions,
+    connection?: Connection,
+    publicKey?: PublicKey
+  ): Promise<{ signature: TransactionSignature }> => {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const txStr = encode(tx.serialize({ requireAllSignatures: false }));
+    const solanaResponse = await this._requestMethod("signAndSendTransaction", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        tx: txStr,
+        signers,
+        options,
+        customConnection: connection,
+      },
+    ]);
+
+    return { signature: solanaResponse };
+  };
+
+  signMessage = async (
+    msg: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{ signature: Uint8Array }> => {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const solanaResponse = await this._requestMethod("signMessage", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        message: msg,
+      },
+    ]);
+    return { signature: solanaResponse };
+  };
+
+  signAllTransactions = async <T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<Array<T>> => {
+    if (!this.publicKey) {
+      await this.connect();
+    }
+    if (!this.publicKey) {
+      throw new Error("wallet not connected");
+    }
+    const txsStrs = txs.map((tx) =>
+      encode(tx.serialize({ requireAllSignatures: false }))
+    );
+    const signatures = await this._requestMethod("signAllTransactions", [
+      {
+        publicKey: publicKey ?? this.publicKey,
+        txs: txsStrs,
+        customConnection: connection,
+      },
+    ]);
+    const txsRs = signatures.map(({ signedTx }, i) =>
+      VersionedTransaction.deserialize(decode(signedTx))
+    );
+    return txsRs as T[];
+  };
+}
+
 class OasisProvider extends EventEmitter implements IOasisProvider {
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
@@ -1355,6 +1675,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod("getKeysSettled", [chainIds]);
   }
+
   async sign(
     chainId: string,
     signer: string,
@@ -1363,6 +1684,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
   ): Promise<types.SignatureSigned> {
     return await this._requestMethod("sign", [chainId, signer, data, type]);
   }
+
   async sendTx(
     chainId: string,
     signedTx: types.SignatureSigned
@@ -1370,6 +1692,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     return await this._requestMethod("sendTx", [chainId, signedTx]);
   }
 }
+
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
@@ -1447,25 +1770,27 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
     });
   };
 
-  async getKey(chainId: string): Promise<Key> {
+  getKey = async (chainId: string): Promise<Key> => {
     return await this._requestMethod("getKey", [chainId]);
-  }
+  };
 
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return await this._requestMethod("getKeysSettled", [chainIds]);
   }
-  async sign(
+
+  sign = async (
     chainId: string,
     signer: string,
     data: string | Uint8Array,
     type: TransactionBtcType
-  ): Promise<string> {
+  ): Promise<string> => {
     return await this._requestMethod("sign", [chainId, signer, data, type]);
-  }
-  async sendTx(chainId: string, signedTx: string): Promise<string> {
+  };
+  sendTx = async (chainId: string, signedTx: string): Promise<string> => {
     return await this._requestMethod("sendTx", [chainId, signedTx]);
-  }
+  };
 }
+
 class TronProvider extends EventEmitter implements ITronProvider {
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
@@ -1581,13 +1906,11 @@ class TronProvider extends EventEmitter implements ITronProvider {
       );
 
       return await this._requestMethod("triggerSmartContract", [
-        {
-          address,
-          functionSelector,
-          options,
-          parameters: parametersConvert,
-          issuerAddress,
-        },
+        address,
+        functionSelector,
+        options,
+        parametersConvert,
+        issuerAddress,
       ]);
     },
   };

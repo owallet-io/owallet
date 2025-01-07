@@ -24,6 +24,13 @@ export const SupportedChainFeatures = [
   "osmosis-base-fee-beta",
   "feemarket",
   "op-stack-l1-data-fee",
+  "btc",
+  "oasis",
+  "tron",
+  "not-support-staking",
+  "oasis-address",
+  "gen-address",
+  "svm",
 ];
 
 /**
@@ -217,7 +224,9 @@ export async function checkChainFeatures(
       }
     } catch (e) {
       console.log(
-        `Failed to try to fetch feature (${method.feature}): ${e.message || e}`
+        `Failed to try to fetch feature (${method.feature}): ${
+          e.message || e
+        } with rpc ${chainInfo.rpc}`
       );
     }
   }

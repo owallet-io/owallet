@@ -1,17 +1,15 @@
 import { ChainsService } from "../chains";
-import { KeyRing, KeyRingService } from "../keyring";
-
+import { KeyRingService } from "../keyring";
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import { ChainInfo, Key, TransactionType } from "@owallet/types";
-import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
+import { Key } from "@owallet/types";
+import { Bech32Address } from "@owallet/cosmos";
 import { KeyRingBtcBaseService } from "./keyring-base";
 import * as bitcoin from "bitcoinjs-lib";
 import { Buffer } from "buffer";
 import { Env } from "@owallet/router";
-import * as oasis from "@oasisprotocol/client";
 import { KeyRingCosmosService } from "../keyring-cosmos";
-import { BtcAccountBase } from "@owallet/stores-btc";
+import { isBtcAddress } from "@owallet/common";
 
 export class KeyRingBtcService {
   constructor(
@@ -36,19 +34,24 @@ export class KeyRingBtcService {
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+
     const pubKey = await this.keyRingBtcBaseService.getPubKey(chainId, vaultId);
+
     const legacyAddress = bitcoin.payments.p2pkh({
       pubkey: Buffer.from(
         pubKey.toKeyPair().getPublic().encodeCompressed("hex"),
         "hex"
       ),
     }).address;
+
     const pubKeyBip84 = await this.keyRingBtcBaseService.getPubKeyBip84(
       chainId,
       vaultId
     );
+
     const address = pubKeyBip84.getCosmosAddress();
     const bech32Address = new Bech32Address(address);
+
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
 
     return {
@@ -122,7 +125,7 @@ export class KeyRingBtcService {
     }
 
     try {
-      const isValid = BtcAccountBase.isBtcAddress(signer);
+      const isValid = isBtcAddress(signer);
       if (!isValid) {
         throw Error("Invalid Btc Address");
       }

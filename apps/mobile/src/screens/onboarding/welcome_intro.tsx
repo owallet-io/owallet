@@ -2,6 +2,9 @@ import React, { FunctionComponent } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { colors, metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 const styles = StyleSheet.create({
   img: {
@@ -35,7 +38,7 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    position: "absolute",
+    // position: "absolute",
     bottom: metrics.screenHeight > 800 ? 0.1 * -metrics.screenHeight : 0,
     alignSelf: "center",
   },
@@ -83,7 +86,9 @@ const WelcomeIntroScreen: FunctionComponent = () => {
         </View>
         <View style={styles.viewImg}>
           <Image
-            source={require("../../assets/image/img_planet.png")}
+            source={
+              eventTheme === "noel" ? imagesNoel.img_planet : images.img_planet
+            }
             fadeDuration={0}
             resizeMode="contain"
             style={styles.img}

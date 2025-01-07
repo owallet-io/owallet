@@ -1,6 +1,6 @@
 import { AppCurrency } from "@owallet/types";
 import { ChainStore, IQueriesStore } from "@owallet/stores";
-import { DenomHelper, EmbedChainInfos, KVStore } from "@owallet/common";
+import { DenomHelper, KVStore } from "@owallet/common";
 import { autorun, makeObservable, observable, runInAction, toJS } from "mobx";
 import { EthereumQueries } from "./queries";
 
@@ -120,6 +120,7 @@ export class ERC20CurrencyRegistrar {
       queries.ethereum.queryEthereumCoingeckoTokenInfo.getQueryContract(
         contractAddress
       );
+
     if (tokenInfoQuery?.symbol != null && tokenInfoQuery?.decimals != null) {
       if (!tokenInfoQuery.isFetching) {
         runInAction(() => {

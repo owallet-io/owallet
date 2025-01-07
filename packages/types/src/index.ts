@@ -15,3 +15,4 @@ export * from "./oasis";
 export * from "./btc";
 export * from "./tron";
 export * from "./txs";
+export * from "./all-network.types";

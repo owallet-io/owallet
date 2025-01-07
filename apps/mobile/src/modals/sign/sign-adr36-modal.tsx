@@ -2,7 +2,7 @@
 import { observer } from "mobx-react-lite";
 import { Box } from "../../components/box";
 import { XAxis } from "../../components/axis";
-import { Button } from "../../components/button";
+import { Button, OWButton } from "../../components/button";
 import { Gutter } from "../../components/gutter";
 import React, { useMemo, useState } from "react";
 import { useStore } from "../../stores";
@@ -19,6 +19,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import images from "@assets/images";
 import OWText from "@components/text/ow-text";
 import { ViewDataButton } from "@src/modals/sign/index";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 // import {ScrollView} from '../../components/scroll-view/common-scroll-view';
 
 export const ADR36SignModal = registerModal(
@@ -96,148 +98,152 @@ export const ADR36SignModal = registerModal(
         };
       }
     }, [isADR36WithString, signDocWrapper]);
-
+    const { colors } = useTheme();
     return (
-      <Box paddingX={12} paddingBottom={12} alignX="center" width="100%">
-        {/*<BaseModalHeader*/}
-        {/*  title={intl.formatMessage({id: 'page.sign.adr36.title'})}*/}
-        {/*/>*/}
-        <OWText size={16} weight={"700"}>
-          {intl.formatMessage({ id: "page.sign.adr36.title" })}
-        </OWText>
-        <Gutter size={16} />
+      <WrapViewModal
+        title={intl.formatMessage({ id: "page.sign.adr36.title" })}
+      >
+        <Box paddingX={12} paddingBottom={12} alignX="center" width="100%">
+          {/*<BaseModalHeader*/}
+          {/*  title={intl.formatMessage({id: 'page.sign.adr36.title'})}*/}
+          {/*/>*/}
+          <Gutter size={16} />
 
-        <Columns sum={1}>
-          <Column weight={1} />
+          <Columns sum={1}>
+            <Column weight={1} />
 
-          <ViewDataButton
-            isViewData={isViewData}
-            setIsViewData={setIsViewData}
-          />
-        </Columns>
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
+          </Columns>
 
-        <Gutter size={8} />
+          <Gutter size={8} />
 
-        <Box
-          width="100%"
-          padding={16}
-          backgroundColor={style.get("color-gray-500").color}
-          borderRadius={6}
-        >
-          <XAxis alignY="center">
-            <Image
-              style={{ width: 48, height: 48 }}
-              source={images.carbon_notification}
+          <Box
+            width="100%"
+            padding={16}
+            backgroundColor={colors["neutral-surface-bg"]}
+            borderRadius={6}
+          >
+            <XAxis alignY="center">
+              <Gutter size={12} />
+
+              <Box>
+                <OWText style={style.flatten(["h5"])}>
+                  <FormattedMessage id="page.sign.adr36.prove-account-ownership-to" />
+                </OWText>
+                <OWText style={style.flatten(["body2"])}>
+                  {signInteractionStore.waitingData?.data.origin || ""}
+                </OWText>
+              </Box>
+            </XAxis>
+          </Box>
+
+          <Gutter size={16} />
+
+          <Box
+            width="100%"
+            maxHeight={160}
+            backgroundColor={colors["neutral-surface-bg"]}
+            padding={16}
+            borderRadius={6}
+          >
+            <ScrollView>
+              <OWText style={style.flatten(["body3"])}>
+                {!isViewData
+                  ? content.value
+                  : JSON.stringify(
+                      signInteractionStore.waitingData?.data.signDocWrapper
+                        .aminoSignDoc,
+                      null,
+                      2
+                    )}
+              </OWText>
+            </ScrollView>
+          </Box>
+
+          <Gutter size={16} />
+
+          <Box
+            width="100%"
+            maxHeight={160}
+            backgroundColor={colors["neutral-surface-bg"]}
+            padding={16}
+            borderRadius={6}
+          >
+            <XAxis alignY="center">
+              <OWText style={style.flatten(["subtitle3", "flex-1"])}>
+                <FormattedMessage id="page.sign.adr36.requested-network" />
+              </OWText>
+
+              <OWText style={style.flatten(["subtitle3"])}>
+                {signInteractionStore.waitingData?.data.chainId
+                  ? chainStore.getChain(
+                      signInteractionStore.waitingData?.data.chainId
+                    ).chainName
+                  : ""}
+              </OWText>
+            </XAxis>
+          </Box>
+
+          <Gutter size={16} />
+          <XAxis>
+            <OWButton
+              size="large"
+              label={intl.formatMessage({ id: "button.reject" })}
+              type="secondary"
+              style={{ flex: 1, width: "100%" }}
+              onPress={async () => {
+                await signInteractionStore.rejectAll();
+              }}
             />
 
-            <Gutter size={12} />
+            <Gutter size={16} />
 
-            <Box>
-              <Text style={style.flatten(["h5", "color-text-high"])}>
-                <FormattedMessage id="page.sign.adr36.prove-account-ownership-to" />
-              </Text>
-              <Text style={style.flatten(["body2", "color-text-middle"])}>
-                {signInteractionStore.waitingData?.data.origin || ""}
-              </Text>
-            </Box>
+            <OWButton
+              type={"primary"}
+              size="large"
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
+              disabled={signInteractionStore.waitingData == null}
+              loading={signInteractionStore.isObsoleteInteraction(
+                signInteractionStore.waitingData?.id
+              )}
+              onPress={async () => {
+                if (signInteractionStore.waitingData) {
+                  const signDocWrapper =
+                    signInteractionStore.waitingData.data.signDocWrapper;
+
+                  if (
+                    signDocWrapper.mode !== "amino" ||
+                    !checkAndValidateADR36AminoSignDoc(
+                      signDocWrapper.aminoSignDoc,
+                      chainStore.getChain(
+                        signInteractionStore.waitingData.data.chainId
+                      ).bech32Config?.bech32PrefixAccAddr
+                    )
+                  ) {
+                    throw new Error("Invalid sign doc for adr36");
+                  }
+
+                  try {
+                    //Todo: Add Ledger Sign
+                    await signInteractionStore.approveWithProceedNext(
+                      signInteractionStore.waitingData.id,
+                      signDocWrapper,
+                      undefined,
+                      () => {}
+                    );
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+              }}
+            />
           </XAxis>
         </Box>
-
-        <Gutter size={16} />
-
-        <Box
-          width="100%"
-          maxHeight={160}
-          backgroundColor={style.get("color-gray-500").color}
-          padding={16}
-          borderRadius={6}
-        >
-          <ScrollView>
-            <Text style={style.flatten(["body3", "color-text-middle"])}>
-              {!isViewData
-                ? content.value
-                : JSON.stringify(
-                    signInteractionStore.waitingData?.data.signDocWrapper
-                      .aminoSignDoc,
-                    null,
-                    2
-                  )}
-            </Text>
-          </ScrollView>
-        </Box>
-
-        <Gutter size={16} />
-
-        <Box
-          width="100%"
-          maxHeight={160}
-          backgroundColor={style.get("color-gray-500").color}
-          padding={16}
-          borderRadius={6}
-        >
-          <XAxis alignY="center">
-            <Text
-              style={style.flatten([
-                "subtitle3",
-                "color-text-middle",
-                "flex-1",
-              ])}
-            >
-              <FormattedMessage id="page.sign.adr36.requested-network" />
-            </Text>
-
-            <Text style={style.flatten(["subtitle3", "color-text-high"])}>
-              {signInteractionStore.waitingData?.data.chainId
-                ? chainStore.getChain(
-                    signInteractionStore.waitingData?.data.chainId
-                  ).chainName
-                : ""}
-            </Text>
-          </XAxis>
-        </Box>
-
-        <Gutter size={16} />
-
-        <Button
-          size="large"
-          text="Approve"
-          containerStyle={{ width: "100%" }}
-          disabled={signInteractionStore.waitingData == null}
-          loading={signInteractionStore.isObsoleteInteraction(
-            signInteractionStore.waitingData?.id
-          )}
-          onPress={async () => {
-            if (signInteractionStore.waitingData) {
-              const signDocWrapper =
-                signInteractionStore.waitingData.data.signDocWrapper;
-
-              if (
-                signDocWrapper.mode !== "amino" ||
-                !checkAndValidateADR36AminoSignDoc(
-                  signDocWrapper.aminoSignDoc,
-                  chainStore.getChain(
-                    signInteractionStore.waitingData.data.chainId
-                  ).bech32Config?.bech32PrefixAccAddr
-                )
-              ) {
-                throw new Error("Invalid sign doc for adr36");
-              }
-
-              try {
-                //Todo: Add Ledger Sign
-                await signInteractionStore.approveWithProceedNext(
-                  signInteractionStore.waitingData.id,
-                  signDocWrapper,
-                  undefined,
-                  () => {}
-                );
-              } catch (e) {
-                console.log(e);
-              }
-            }
-          }}
-        />
-      </Box>
+      </WrapViewModal>
     );
   })
 );

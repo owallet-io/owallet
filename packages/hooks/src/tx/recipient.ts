@@ -22,7 +22,7 @@ import {
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { useState } from "react";
 import { Buffer } from "buffer/";
-import { validateICNSName } from "@owallet/common";
+import { isBase58Address, validateICNSName } from "@owallet/common";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { BtcAccountBase } from "@owallet/stores-btc";
 
@@ -430,6 +430,8 @@ export class RecipientConfig
       !!chainInfo.features?.includes("eth-address-gen") ||
       !!chainInfo.features?.includes("eth-key-sign") ||
       isEvmChain;
+
+    const isSvm = this.chainId.startsWith("solana");
     if (
       hasEthereumAddress &&
       (rawRecipient.startsWith("0x") || this._allowHexAddressOnly)
@@ -439,6 +441,15 @@ export class RecipientConfig
       } else {
         return {
           error: new InvalidHexError("Invalid hex address for chain"),
+        };
+      }
+    }
+    if (isSvm) {
+      if (isBase58Address(rawRecipient)) {
+        return {};
+      } else {
+        return {
+          error: new InvalidBech32Error("Invalid base58 address for chain"),
         };
       }
     }

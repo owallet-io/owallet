@@ -15,7 +15,7 @@ import {
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
-import { ChainIdEnum } from "@owallet/common";
+import { avatarName, ChainIdEnum, unknownToken } from "@owallet/common";
 import { Dec } from "@owallet/unit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -29,7 +29,31 @@ export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = "FAILED";
 export const SUCCESS = "SUCCESS";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
+export const eventTheme: "noel" | "owallet" | "halloween" = "noel";
+// export const getUrlImageByTheme = (theme:"noel" | "owallet" | "halloween")=>{
+//   if(theme === "noel"){
+//
+//   }
+// }
+export const oraiToken =
+  "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png";
+export const getImageFromToken = (item) => {
+  const { coinImageUrl, coinGeckoId, coinDenom } = item?.token?.currency || {};
 
+  const resolvedImageUrl =
+    !coinImageUrl ||
+    coinImageUrl.includes("missing.") ||
+    coinImageUrl === unknownToken.coinImageUrl
+      ? avatarName.replace("{name}", coinDenom || "unknown")
+      : coinGeckoId === "oraichain-token"
+      ? oraiToken
+      : coinImageUrl;
+
+  if (coinDenom === "RACKS") {
+    console.log(resolvedImageUrl, "resolvedImageUrl");
+  }
+  return resolvedImageUrl;
+};
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
@@ -161,7 +185,7 @@ export const convertArrToObject = (arr, label = `Validator`) => {
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
-  if (!inputString) return;
+  if (!inputString) return "";
   return inputString.replace(/\([^)]*\)/g, "");
 };
 export const extractDataInParentheses = (

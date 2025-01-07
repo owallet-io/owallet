@@ -15,12 +15,12 @@ import { useTheme } from "@src/themes/theme-provider";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import { PricePretty } from "@owallet/unit";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@common/constants";
 import { navigate } from "@src/router/root";
 import { useBIP44PathState } from "@screens/register/components/bip-path-44";
+import { initPrice } from "./account-box-new";
 
 export const NetworkModal: FC<{
   hideAllNetwork?: boolean;
@@ -55,7 +55,11 @@ export const NetworkModal: FC<{
   }, [appInitStore.getInitApp.hideTestnet]);
   const getApp = (chainId: string) => {
     if (!chainId) return;
+
     const chainInfo = chainStore.getChain(chainId);
+    if (chainInfo.features.includes("tron")) {
+      return "Tron";
+    }
     if (chainId.includes("eip155") || chainId.includes("inj")) {
       return "Ethereum";
     } else if (chainInfo.features.includes("btc")) {
@@ -66,7 +70,6 @@ export const NetworkModal: FC<{
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
       modalStore.close();
-      console.log(item?.chainId, "item?.chainId");
       if (!item?.chainId) {
         appInitStore.selectAllNetworks(true);
       } else {
@@ -196,7 +199,7 @@ export const NetworkModal: FC<{
               <OWIcon
                 name={"tdesignblockchain"}
                 size={20}
-                // color={colors["neutral-text-title"]}
+                color={colors["neutral-text-title"]}
               />
             ) : (
               <OWIcon

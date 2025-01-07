@@ -214,7 +214,9 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   getQueryBech32Address(bech32Address: string): ObservableQueryBalancesImplMap {
     return this.get(bech32Address) as ObservableQueryBalancesImplMap;
   }
-
+  getQueryByAddress(walletAddress: string): ObservableQueryBalancesImplMap {
+    return this.get(walletAddress) as ObservableQueryBalancesImplMap;
+  }
   getQueryEthereumHexAddress(
     ethereumHexAddress: string
   ): ObservableQueryBalancesImplMap {

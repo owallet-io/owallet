@@ -27,6 +27,9 @@ import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { ThemeModal } from "./components/theme-modal";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 export const NewSettingScreen: FunctionComponent = observer((props) => {
   const {
@@ -39,6 +42,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
     chainStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
+
+  console.log(
+    "keyRingStore?.selectedKeyInfo?.type",
+    keyRingStore?.selectedKeyInfo?.type
+  );
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -131,7 +139,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
-            source={require("../../assets/image/img_owallet.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_owallet
+                : images.img_owallet
+            }
             fadeDuration={0}
             resizeMode="contain"
           />
@@ -214,9 +226,58 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
+      style={{
+        paddingTop: 0,
+      }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <View>
+      <View
+        style={{
+          paddingTop: 20,
+        }}
+      >
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.left_top_setting_noel}
+            style={{
+              width: 45,
+              height: 18,
+              position: "absolute",
+              top: 20,
+              left: 26,
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.right_top_setting_noel}
+            style={{
+              width: 65,
+              height: 38,
+              position: "absolute",
+              top: 16,
+              right: 15,
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.center_top_setting_noel}
+            style={{
+              width: 150,
+              height: 55,
+              position: "absolute",
+              top: -9,
+              left: "30%",
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
         <OWCard
           style={{
             marginBottom: 16,
@@ -227,6 +288,20 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           <BasicSettingItem
             left={
               <View style={{ paddingRight: 12 }}>
+                {eventTheme === "noel" ? (
+                  <Image
+                    source={imagesNoel.avatar_noel}
+                    style={{
+                      width: 36,
+                      height: 26,
+                      position: "absolute",
+                      top: -13,
+                      left: -16,
+                      zIndex: 1000,
+                    }}
+                    resizeMode={"contain"}
+                  />
+                ) : null}
                 <Image
                   style={{ width: 44, height: 44, borderRadius: 44 }}
                   source={require("../../assets/images/default-avatar.png")}

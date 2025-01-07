@@ -53,7 +53,11 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  tracking(`Undelegate Screen`);
+  useEffect(() => {
+    tracking(`Undelegate Screen`);
+    return () => {};
+  }, []);
+
   const validatorAddress = route.params["validatorAddress"];
 
   const {

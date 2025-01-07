@@ -133,8 +133,6 @@ export class KeyRingEthereumService {
       },
 
       async (res: { signingData: Uint8Array; signature?: Uint8Array }) => {
-        console.log("signType", signType);
-
         const { signature, signingData } = await (async () => {
           if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
             if (!res.signature || res.signature.length === 0) {
@@ -191,8 +189,6 @@ export class KeyRingEthereumService {
                   Buffer.from(serialize(unsignedTx).replace("0x", ""), "hex"),
                   "keccak256"
                 );
-
-                console.log("signature", signature);
 
                 return {
                   signingData: res.signingData,
@@ -269,9 +265,6 @@ export class KeyRingEthereumService {
               chainId
             );
 
-            console.log("tx.data", tx.data);
-            console.log("tx.signingData", signingData);
-
             if (
               (tx.data == null || tx.data === "0x") &&
               BigInt(tx.value) > 0 &&
@@ -286,8 +279,6 @@ export class KeyRingEthereumService {
 
             return "execute-contract";
           })();
-
-          console.log("ethTxType", ethTxType);
 
           this.analyticsService.logEventIgnoreError("evm_tx_signed", {
             chainId,
@@ -330,9 +321,10 @@ export class KeyRingEthereumService {
       );
     }
 
-    const currentChainId =
+    let currentChainId =
       this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
-    console.log("currentChainId", origin, currentChainId);
+
+    console.log("currentChainId request", method, currentChainId, params);
 
     if (currentChainId == null) {
       if (method === "owallet_initProviderState") {
@@ -342,28 +334,59 @@ export class KeyRingEthereumService {
           selectedAddress: null,
         } as T;
       } else {
-        await this.permissionService.removeAllSpecificTypePermission(
-          [origin],
-          getBasicAccessPermissionType()
-        );
+        if (method !== "wallet_switchEthereumChain") {
+          await this.permissionService.removeAllSpecificTypePermission(
+            [origin],
+            getBasicAccessPermissionType()
+          );
 
-        await this.permissionInteractiveService.ensureEnabledForEVM(
-          env,
-          origin
-        );
+          await this.permissionInteractiveService.ensureEnabledForEVM(
+            env,
+            origin
+          );
 
-        return this.request<T>(
-          env,
-          origin,
-          method,
-          params,
-          providerId,
-          chainId
-        );
+          return this.request<T>(
+            env,
+            origin,
+            method,
+            params,
+            providerId,
+            chainId
+          );
+        } else {
+          const param =
+            (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
+            undefined;
+
+          if (!param?.chainId) {
+            throw new Error("Invalid parameters: must provide a chain id.");
+          }
+
+          const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
+
+          const newCurrentChainInfo =
+            this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
+          if (!newCurrentChainInfo) {
+            throw new EthereumProviderRpcError(
+              4902,
+              `Unrecognized chain ID "${param.chainId}". Try adding the chain using wallet_addEthereumChain first.`
+            );
+          }
+
+          await this.permissionService.updateCurrentChainIdForEVM(
+            env,
+            origin,
+            newCurrentChainInfo.chainId
+          );
+
+          return null;
+        }
       }
     }
 
-    console.log("method", method);
+    if (currentChainId.startsWith("0x") && !isNaN(Number(currentChainId))) {
+      currentChainId = chainId = `eip155:${parseInt(currentChainId, 16)}`;
+    }
 
     const currentChainInfo =
       this.chainsService.getChainInfoOrThrow(currentChainId);
@@ -452,8 +475,6 @@ export class KeyRingEthereumService {
             nonce: transactionCount,
           };
 
-          console.log("unsignedTx", unsignedTx);
-
           const { signingData, signature } = await this.signEthereumSelected(
             env,
             origin,
@@ -464,6 +485,8 @@ export class KeyRingEthereumService {
           );
 
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
+
+          console.log("signingTx", signingTx);
 
           const isEIP1559 =
             !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
@@ -765,11 +788,12 @@ export class KeyRingEthereumService {
           return result;
         }
         case "wallet_switchEthereumChain": {
-          console.log("params", params);
-
           const param =
             (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
             undefined;
+
+          console.log("param wallet_switchEthereumChain", param);
+
           if (!param?.chainId) {
             throw new Error("Invalid parameters: must provide a chain id.");
           }

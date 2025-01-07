@@ -68,6 +68,8 @@ export const SelectTokenModal: FunctionComponent<{
 
     const prices = appInitStore.getInitApp.prices;
 
+    console.log("data", data);
+
     const onFilter = (key, chain) => {
       if (key && chain && key !== "" && chain !== "") {
         const tmpData = [];
@@ -141,9 +143,13 @@ export const SelectTokenModal: FunctionComponent<{
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
-          const currencies = item.chainId
-            ? chainStore.getChain(item.chainId).currencies
-            : [];
+          let chainId = item.chainId;
+          if (item.chainId.startsWith("0x")) {
+            chainId = `eip155:${parseInt(item.chainId, 16)}`;
+          }
+
+          const chainInfo = chainStore.getChain(chainId);
+          const currencies = item.chainId ? chainInfo.currencies : [];
 
           const tokenIcon = find(
             tokensIcon,

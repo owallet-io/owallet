@@ -222,12 +222,17 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             {verifyingWords.map(({ index, word }, i) => {
               return (
                 <XAxis alignY="center" key={index}>
-                  <Text style={style.flatten(["subtitle2", "color-gray-100"])}>
+                  <OWText
+                    style={{
+                      ...style.flatten(["subtitle2"]),
+                      color: colors["neutral-text-title"],
+                    }}
+                  >
                     <FormattedMessage
                       id="pages.register.verify-mnemonic.verifying-box.word"
                       values={{ index: index + 1 }}
                     />
-                  </Text>
+                  </OWText>
 
                   <Gutter size={16} />
 

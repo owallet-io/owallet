@@ -148,7 +148,7 @@ export const AddressBookModal = registerModal(
               const isSelf =
                 keyRingStore.selectedKeyInfo?.id === account.vaultId;
 
-              if (!isErc20) {
+              if (!isErc20 && !isEvmChain) {
                 acc.push({
                   name: account.name,
                   address: account.bech32Address,
@@ -269,8 +269,9 @@ export const AddressBookModal = registerModal(
                         );
                       });
                     }
-
+                    console.log(datas, "datas");
                     const selfAccount = datas.find((data) => data.isSelf);
+                    console.log(selfAccount, "selfAccount");
                     const otherAccounts = datas.filter((data) => !data.isSelf);
 
                     return (

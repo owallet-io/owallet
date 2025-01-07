@@ -192,43 +192,48 @@ export const SignEthereumModal = registerModal(
     }, []);
 
     useEffect(() => {
-      if (isTxSigning && !interactionData.isInternal) {
+      if (
+        isTxSigning
+        // && !interactionData.isInternal
+      ) {
         const unsignedTx = JSON.parse(Buffer.from(message).toString("utf8"));
+        // to check if tx is from send internal
+        if (!unsignedTx.gasPrice) {
+          if (gasConfig.gas > 0) {
+            unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
 
-        if (gasConfig.gas > 0) {
-          unsignedTx.gasLimit = `0x${gasConfig.gas.toString(16)}`;
-
-          if (!unsignedTx.maxFeePerGas && !unsignedTx.gasPrice) {
-            unsignedTx.maxFeePerGas = `0x${new Int(
-              feeConfig.getFeePrimitive()[0].amount
-            )
-              .div(new Int(gasConfig.gas))
-              .toBigNumber()
-              .toString(16)}`;
+            if (!unsignedTx.maxFeePerGas && !unsignedTx.gasPrice) {
+              unsignedTx.maxFeePerGas = `0x${new Int(
+                feeConfig.getFeePrimitive()[0].amount
+              )
+                .div(new Int(gasConfig.gas))
+                .toBigNumber()
+                .toString(16)}`;
+            }
           }
-        }
 
-        if (
-          !unsignedTx.maxPriorityFeePerGas &&
-          !unsignedTx.gasPrice &&
-          maxPriorityFeePerGas
-        ) {
-          unsignedTx.maxPriorityFeePerGas =
-            unsignedTx.maxPriorityFeePerGas ?? maxPriorityFeePerGas;
-        }
+          if (
+            !unsignedTx.maxPriorityFeePerGas &&
+            !unsignedTx.gasPrice &&
+            maxPriorityFeePerGas
+          ) {
+            unsignedTx.maxPriorityFeePerGas =
+              unsignedTx.maxPriorityFeePerGas ?? maxPriorityFeePerGas;
+          }
 
-        if (
-          !unsignedTx.gasPrice &&
-          !unsignedTx.maxFeePerGas &&
-          !unsignedTx.maxPriorityFeePerGas &&
-          gasPrice
-        ) {
-          unsignedTx.gasPrice = gasPrice;
-        }
+          if (
+            !unsignedTx.gasPrice &&
+            !unsignedTx.maxFeePerGas &&
+            !unsignedTx.maxPriorityFeePerGas &&
+            gasPrice
+          ) {
+            unsignedTx.gasPrice = gasPrice;
+          }
 
-        if (!unsignedTx.maxPriorityFeePerGas) {
-          // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
-          unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei("1", "gwei");
+          if (!unsignedTx.maxPriorityFeePerGas) {
+            // set default maxPriorityFeePerGas to 1 gwei to avoid `transaction underpriced: gas tip cap 0` error
+            unsignedTx.maxPriorityFeePerGas = Web3.utils.toWei("1", "gwei");
+          }
         }
 
         setSigningDataBuff(Buffer.from(JSON.stringify(unsignedTx), "utf8"));

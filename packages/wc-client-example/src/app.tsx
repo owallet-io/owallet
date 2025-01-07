@@ -76,22 +76,6 @@ export const App: FunctionComponent = observer(() => {
         Test IBC 2
       </button>
 
-      {/* <button
-        onClick={() => {
-          const chainInfo = chainStore.chainInfos[0];
-          const account = accountStore.getAccount(chainInfo.chainId);
-
-          const data = "NDk2NDAxNmVkMWM4MDI1NjAxZWUzMDA5NjU2MGI3YzI4NTRmMGFjNjdiODA4ZjNm";
-
-          account.getOWallet().then((keplr) => {
-            keplr?.signArbitrary(chainInfo.chainId, account.bech32Address, data);
-          });
-        }}
-      >
-        Sign Abitrary
-      </button>
-     */}
-
       <button
         onClick={() => {
           accountStore

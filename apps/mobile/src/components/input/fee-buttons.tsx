@@ -223,7 +223,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               }}
             >
               <FastIconFill
-                color={colors["neutral-icon-on-light"]}
+                color={colors["neutral-text-action-on-light-bg"]}
                 size={size}
               />
             </View>

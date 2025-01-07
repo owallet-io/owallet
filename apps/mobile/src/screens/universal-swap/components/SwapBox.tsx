@@ -32,8 +32,13 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     const { colors } = useTheme();
     const { chainStore } = useStore();
     const styles = styling(colors);
-    const chainInfo = chainStore.getChain(network);
-    const chainIcon = chainIcons.find((c) => c.chainId === network);
+    let chainId = network;
+    if (network.startsWith("0x")) {
+      chainId = `eip155:${parseInt(network, 16)}`;
+    }
+
+    const chainInfo = chainStore.getChain(chainId);
+    const chainIcon = chainIcons.find((c) => c.chainId === chainId);
 
     return (
       <OWCard

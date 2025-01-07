@@ -38,7 +38,7 @@ export const NftCard = observer(() => {
 
       {nfts?.length > 0 &&
         nfts.map((it, index) => {
-          const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
+          const coinDenom = it?.chainInfo?.feeCurrencies?.[0]?.coinDenom;
           if (it?.data?.length > 0) {
             return (
               <View

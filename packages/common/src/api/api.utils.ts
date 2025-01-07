@@ -2,7 +2,7 @@ const fetchWrap = require("fetch-retry")(global.fetch);
 // Map to keep track of ongoing fetch requests by URL
 const ongoingFetches = new Map();
 
-export const fetchRetry = async (url, config = {}) => {
+export const fetchRetry = async (url, config = {}, isResText = false) => {
   // Abort any previous fetch for the same URL
   if (ongoingFetches.has(url)) {
     ongoingFetches.get(url).abort();
@@ -24,9 +24,10 @@ export const fetchRetry = async (url, config = {}) => {
     ongoingFetches.delete(url);
 
     if (response.status !== 200) return;
-
-    const jsonRes = await response.json();
-    return jsonRes;
+    if (isResText) {
+      return await response.text();
+    }
+    return await response.json();
   } catch (error) {
     if (error.name === "AbortError") {
       console.log("Fetch aborted:", url);

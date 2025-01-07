@@ -104,8 +104,6 @@ export class InteractionStore implements InteractionForegroundHandler {
 
   @action
   onInteractionDataReceived() {
-    // this.data.push(data);
-    // XXX: 로직의 간편화를 위해서 여기서 data를 직접 this.data에 넣기보다 그냥 백그라운드로부터 refesh를 선택한다.
     // no need to await.
     this.refreshData();
   }
@@ -116,10 +114,6 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   /**
-   * 웹페이지에서 어떤 API를 요청해서 extension이 켜졌을때
-   * extension에서 요청을 처리하고 바로 팝업을 닫으면
-   * 이후에 연속적인 api 요청의 경우 다시 페이지가 열려야하는데 이게 은근히 어색한 UX를 만들기 때문에
-   * 이를 대충 해결하기 위해서 approve 이후에 대충 조금 기다리고 남은 interaction이 있느냐 아니냐에 따라 다른 처리를 한다.
    * @param type
    * @param id
    * @param result
@@ -152,10 +146,6 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   /**
-   * 웹페이지에서 어떤 API를 요청해서 extension이 켜졌을때
-   * extension에서 요청을 처리하고 바로 팝업을 닫으면
-   * 이후에 연속적인 api 요청의 경우 다시 페이지가 열려야하는데 이게 은근히 어색한 UX를 만들기 때문에
-   * 이를 대충 해결하기 위해서 approve 이후에 대충 조금 기다리고 남은 interaction이 있느냐 아니냐에 따라 다른 처리를 한다.
    * @param type
    * @param id
    * @param result
@@ -217,10 +207,6 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   /**
-   * 웹페이지에서 어떤 API를 요청해서 extension이 켜졌을때
-   * extension에서 요청을 처리하고 바로 팝업을 닫으면
-   * 이후에 연속적인 api 요청의 경우 다시 페이지가 열려야하는데 이게 은근히 어색한 UX를 만들기 때문에
-   * 이를 대충 해결하기 위해서 approve 이후에 대충 조금 기다리고 남은 interaction이 있느냐 아니냐에 따라 다른 처리를 한다.
    * @param type
    * @param id
    * @param afterFn
@@ -251,10 +237,6 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   /**
-   * 웹페이지에서 어떤 API를 요청해서 extension이 켜졌을때
-   * extension에서 요청을 처리하고 바로 팝업을 닫으면
-   * 이후에 연속적인 api 요청의 경우 다시 페이지가 열려야하는데 이게 은근히 어색한 UX를 만들기 때문에
-   * 이를 대충 해결하기 위해서 approve 이후에 대충 조금 기다리고 남은 interaction이 있느냐 아니냐에 따라 다른 처리를 한다.
    * @param type
    * @param id
    * @param afterFn
@@ -324,7 +306,6 @@ export class InteractionStore implements InteractionForegroundHandler {
     }
   }
 
-  // UI에서 좀 더 편하게 쓸 수 있게 하려고 undefined도 파라미터로 허용함.
   isObsoleteInteraction(id: string | undefined): boolean {
     if (!id) {
       return false;

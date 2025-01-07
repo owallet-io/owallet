@@ -31,6 +31,7 @@ import { registerModal } from "@src/modals/base";
 import { TextInput } from "@components/input";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import CheckBox from "react-native-check-box";
 
 export const TransactionBtcFeeModal = registerModal(
   observer<{
@@ -147,12 +148,6 @@ export const TransactionBtcFeeModal = registerModal(
         >
           {!disableAutomaticFeeSet ? (
             <React.Fragment>
-              <Box
-                width={6}
-                height={6}
-                borderRadius={999}
-                backgroundColor={style.get("color-blue-400").color}
-              />
               <Gutter size={8} />
 
               <OWText
@@ -166,9 +161,15 @@ export const TransactionBtcFeeModal = registerModal(
 
               <Gutter size={8} />
 
-              <Toggle
-                on={uiConfigStore.rememberLastFeeOption}
-                onChange={(v) => uiConfigStore.setRememberLastFeeOption(v)}
+              <CheckBox
+                checkBoxColor={colors["primary-text"]}
+                checkedCheckBoxColor={colors["primary-text"]}
+                isChecked={uiConfigStore.rememberLastFeeOption}
+                onClick={(v) =>
+                  uiConfigStore.setRememberLastFeeOption(
+                    !uiConfigStore.rememberLastFeeOption
+                  )
+                }
               />
             </React.Fragment>
           ) : null}

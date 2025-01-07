@@ -1,7 +1,12 @@
-export declare enum EthSignType {
+export enum EthSignType {
   MESSAGE = "message",
   TRANSACTION = "transaction",
   EIP712 = "eip-712",
+}
+export enum ChainIdEVM {
+  Ethereum = "eip155:1",
+  BNBChain = "eip155:56",
+  TRON = "eip155:728126428",
 }
 export interface EthTxLog {
   blockNumber: number;

@@ -33,7 +33,12 @@ import { SCREENS } from "@src/common/constants";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
-  tracking(`Stake Screen`);
+  useEffect(() => {
+    tracking(`Stake Screen`);
+
+    return () => {};
+  }, []);
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const queries = queriesStore.get(chainStore.current.chainId);

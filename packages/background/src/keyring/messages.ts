@@ -624,6 +624,42 @@ export class ExportKeyRingVaultsMsg extends Message<ExportedKeyRingVault[]> {
   }
 }
 
+export class ExportKeyRingMsg extends Message<ExportedKeyRingVault> {
+  public static type() {
+    return "export-keyring";
+  }
+
+  constructor(
+    public readonly vaultId: string,
+    public readonly password: string,
+    public readonly chainId: string
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.vaultId) {
+      throw new Error("vaultId not set");
+    }
+
+    if (!this.password) {
+      throw new Error("password not set");
+    }
+
+    if (!this.chainId) {
+      throw new Error("chainId not set");
+    }
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return ExportKeyRingMsg.type();
+  }
+}
+
 export class ExportKeyRingDataMsg extends Message<Legacy.ExportKeyRingData[]> {
   public static type() {
     return "export-keyring-data";

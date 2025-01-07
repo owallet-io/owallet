@@ -1,20 +1,11 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  useGasSimulator,
-  useSendMixedIBCTransferConfig,
-  useSendOasisTxConfig,
-  useTxConfigsValidate,
-} from "@owallet/hooks";
+import { useSendOasisTxConfig, useTxConfigsValidate } from "@owallet/hooks";
 import { useStore } from "../../stores";
 import { StyleSheet, View, ScrollView } from "react-native";
-import {
-  AddressInput,
-  CurrencySelector,
-  MemoInput,
-} from "../../components/input";
+import { AddressInput, CurrencySelector } from "../../components/input";
 import { OWButton } from "../../components/button";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
@@ -22,18 +13,12 @@ import OWCard from "@src/components/card/ow-card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { NewAmountInput } from "@src/components/input/amount-input";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
-import { Buffer } from "buffer";
+import { CoinPretty } from "@owallet/unit";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWHeaderTitle } from "@components/header";
-import { AsyncKVStore } from "@src/common";
 import { useIntl } from "react-intl";
-import { BACKGROUND_PORT, Message } from "@owallet/router";
-import { SendTxAndRecordMsg } from "@owallet/background";
-import { RNMessageRequesterInternal } from "@src/router";
 import { FeeControl } from "@components/input/fee-control";
-import { showToast } from "@utils/helper";
 
 export const SendOasisScreen: FunctionComponent<{
   chainId: string;

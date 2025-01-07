@@ -52,7 +52,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  tracking(`Switch Validator Screen`);
+  useEffect(() => {
+    tracking(`Switch Validator Screen`);
+
+    return () => {};
+  }, []);
+
   const validatorAddress = route.params.validatorAddress;
   const { colors } = useTheme();
   const {

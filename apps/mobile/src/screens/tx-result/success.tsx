@@ -64,7 +64,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   >();
 
   const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId || current.chainId;
 
   const { params } = route;
   const txHash = params?.txHash;
@@ -90,12 +90,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const handleUrl = (txHash) => {
     return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
       "{txHash}",
-      chainInfo.features.includes("btc") ||
-        chainInfo.features.includes("oasis") ||
-        chainInfo.features.includes("tron") ||
-        chainId?.includes("eip155")
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash
     );
   };
   const handleOnExplorer = async () => {
@@ -213,7 +208,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               label={"Hash"}
               valueDisplay={formatContractAddress(txHash)}
               value={txHash}
-              btnCopy={false}
+              btnCopy={true}
               IconRightComponent={
                 <View>
                   <OWButtonIcon

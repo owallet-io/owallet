@@ -34,9 +34,6 @@ export const SelectNetworkModal: FunctionComponent<{
 
     const { colors } = useTheme();
     const [keyword, setKeyword] = useState("");
-    const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">(
-      "mainnet"
-    );
 
     const { chainStore, appInitStore, universalSwapStore } = useStore();
     const [chains, setChains] = useState(chainStore.chainInfosInUI);
@@ -58,8 +55,8 @@ export const SelectNetworkModal: FunctionComponent<{
       });
     }
 
-    const handleChangeNetwork = (network) => {
-      setChainFilter(network.chainId);
+    const handleChangeNetwork = (chainId) => {
+      setChainFilter(chainId);
       close();
     };
 
@@ -78,64 +75,45 @@ export const SelectNetworkModal: FunctionComponent<{
     }, {});
 
     useEffect(() => {
-      if (activeTab === "mainnet") {
-        const tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (!c.chainName.toLowerCase().includes("test")) {
-            tmpChainInfos.push(c);
-          }
-        });
-        setChains(tmpChainInfos);
-      } else {
-        const tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (c.chainName.toLowerCase().includes("test")) {
-            tmpChainInfos.push(c);
-          }
-        });
-        setChains(tmpChainInfos);
-      }
-    }, [activeTab]);
+      const tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (!c.chainName.toLowerCase().includes("test")) {
+          tmpChainInfos.push(c);
+        }
+      });
+      setChains(tmpChainInfos);
+    }, []);
 
     useEffect(() => {
-      if (activeTab === "mainnet") {
-        let tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (
-            !c.chainName.toLowerCase().includes("test") &&
-            c.chainName.toLowerCase().includes(keyword.toLowerCase())
-          ) {
-            tmpChainInfos.push(c);
-          }
-        });
+      let tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (
+          !c.chainName.toLowerCase().includes("test") &&
+          c.chainName.toLowerCase().includes(keyword.toLowerCase())
+        ) {
+          tmpChainInfos.push(c);
+        }
+      });
 
-        setChains(tmpChainInfos);
-      } else {
-        let tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (
-            c.chainName.toLowerCase().includes("test") &&
-            c.chainName.toLowerCase().includes(keyword.toLowerCase())
-          ) {
-            tmpChainInfos.push(c);
-          }
-        });
-
-        setChains(tmpChainInfos);
-      }
-    }, [keyword, activeTab]);
-
-    useEffect(() => {
-      if (chainStore.current.chainName.toLowerCase().includes("test")) {
-        setActiveTab("testnet");
-      }
-    }, [chainStore.current.chainName]);
+      setChains(tmpChainInfos);
+    }, [keyword]);
 
     const _renderItem = ({ item }) => {
       let selected = item?.chainId === selectedChainFilter;
+      let formatedChainID = item?.chainId;
+
+      if (item?.chainId.toString().startsWith("eip155")) {
+        const evmChainId = Number(item?.chainId.toString().split(":")?.[1]);
+        const hexadecimalNumber = evmChainId.toString(16);
+        formatedChainID = "0x" + hexadecimalNumber;
+        if (evmChainId === 1) {
+          // For ETH
+          formatedChainID = "0x01";
+        }
+      }
 
       const tokenListByChain = tokenList.filter(
-        (t) => t.chainId === item?.chainId
+        (t) => t.chainId === formatedChainID
       );
 
       if (tokenListByChain.length <= 0) {
@@ -145,7 +123,7 @@ export const SelectNetworkModal: FunctionComponent<{
       if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
         selected = true;
       }
-      let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+      let chainIcon = chainIcons.find((c) => c.chainId === formatedChainID);
 
       // Hardcode for Oasis because oraidex-common does not have icon yet
       if (item.chainName.toLowerCase().includes("oasis")) {
@@ -180,7 +158,7 @@ export const SelectNetworkModal: FunctionComponent<{
             backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
           }}
           onPress={() => {
-            handleChangeNetwork(item);
+            handleChangeNetwork(formatedChainID);
           }}
         >
           <View
@@ -234,10 +212,8 @@ export const SelectNetworkModal: FunctionComponent<{
                   fontWeight: "400",
                 }}
               >
-                $
-                {!item.chainId
-                  ? maskedNumber(totalUsd)
-                  : maskedNumber(chainAssets?.[item.chainId]?.sum)}
+                {`${item.balance?.toString()}`}
+                {/* ${!item.chainId ? maskedNumber(totalUsd) : maskedNumber(chainAssets?.[item.chainId]?.sum)} */}
               </Text>
             </View>
           </View>
@@ -251,7 +227,7 @@ export const SelectNetworkModal: FunctionComponent<{
               }
               id={item.chainId}
               selected={selected}
-              onPress={() => handleChangeNetwork(item)}
+              onPress={() => handleChangeNetwork(formatedChainID)}
             />
           </View>
         </TouchableOpacity>

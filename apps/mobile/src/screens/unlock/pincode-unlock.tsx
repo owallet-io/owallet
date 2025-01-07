@@ -7,13 +7,11 @@ import React, {
 } from "react";
 import {
   ActivityIndicator,
-  Alert,
   AppState,
   AppStateStatus,
   Image,
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -23,34 +21,27 @@ import { TextInput } from "../../components/input";
 import delay from "delay";
 import { useStore } from "../../stores";
 import { StackActions, useNavigation } from "@react-navigation/native";
-import {
-  AccountStore,
-  IAccountStore,
-  IChainStore,
-  WalletStatus,
-} from "@owallet/stores";
+import { IAccountStore, IChainStore, WalletStatus } from "@owallet/stores";
 import { autorun } from "mobx";
 import { metrics, spacing } from "../../themes";
 import { ProgressBar } from "../../components/progress-bar";
 import CodePush from "react-native-code-push";
-
 import { useTheme } from "@src/themes/theme-provider";
 import OWButton from "@src/components/button/OWButton";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { Text } from "@src/components/text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { showToast } from "@src/utils/helper";
-
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import NumericPad from "react-native-numeric-pad";
 import OWText from "@src/components/text/ow-text";
-
 import { tracking } from "@src/utils/tracking";
-import { navigate, resetTo } from "@src/router/root";
+import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
-import { ChainIdEnum, EmbedChainInfos } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
+
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
   tryEnabled: boolean
@@ -184,101 +175,6 @@ function DownloadCodepush({
   );
 }
 
-function PadComponent({
-  isNumericPad,
-  pinRef,
-  code,
-  showPass,
-  statusPass,
-  password,
-  isFailed,
-  setPassword,
-  tryUnlock,
-}) {
-  const { colors } = useTheme();
-  const styles = styling(colors);
-  return (
-    <>
-      {isNumericPad ? (
-        <SmoothPinCodeInput
-          ref={pinRef}
-          value={code}
-          codeLength={6}
-          cellStyle={{
-            borderWidth: 0,
-          }}
-          cellStyleFocused={{
-            borderColor: colors["neutral-surface-action"],
-          }}
-          placeholder={
-            <View
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 48,
-                backgroundColor: colors["neutral-surface-action"],
-              }}
-            />
-          }
-          mask={
-            <View
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 48,
-                opacity: 0.7,
-                backgroundColor: colors["highlight-surface-active"],
-              }}
-            />
-          }
-          maskDelay={1000}
-          password={true}
-          //   onFulfill={}
-          onBackspace={(code) => console.log(code)}
-        />
-      ) : (
-        <View
-          style={{
-            width: metrics.screenWidth,
-            paddingHorizontal: 16,
-          }}
-        >
-          <TextInput
-            accessibilityLabel="password"
-            returnKeyType="done"
-            secureTextEntry={statusPass}
-            value={password}
-            error={isFailed ? "Invalid password" : undefined}
-            onChangeText={(txt) => {
-              setPassword(txt);
-            }}
-            inputContainerStyle={{
-              width: metrics.screenWidth - 32,
-              borderWidth: 2,
-              borderColor: colors["primary-surface-default"],
-              borderRadius: 8,
-              minHeight: 56,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onSubmitEditing={tryUnlock}
-            placeholder="Enter your passcode"
-            inputRight={
-              <OWButtonIcon
-                style={styles.padIcon}
-                onPress={showPass}
-                name={statusPass ? "eye" : "eye-slash"}
-                colorIcon={colors["neutral-text-title"]}
-                sizeIcon={22}
-              />
-            }
-          />
-        </View>
-      )}
-    </>
-  );
-}
-
 export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const {
     keyRingStore,
@@ -287,7 +183,12 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     chainStore,
     appInitStore,
   } = useStore();
-  tracking(`Unlock Screen`);
+  useEffect(() => {
+    tracking(`Unlock Screen`);
+
+    return () => {};
+  }, []);
+
   const navigation = useNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -314,6 +215,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       chainStore.selectChain(ChainIdEnum.Injective);
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
+    } else {
+      appInitStore.selectAllNetworks(true);
     }
   };
 
@@ -521,6 +424,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           <ActivityIndicator size={"large"} />
         </View>
       ) : null}
+
       <View style={styles.container}>
         <View style={styles.aic}>
           <OWText

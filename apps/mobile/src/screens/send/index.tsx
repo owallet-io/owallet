@@ -10,7 +10,8 @@ import { goBack } from "@src/router/root";
 import { OWHeaderTitle } from "@components/header";
 import { DenomHelper } from "@owallet/common";
 import { capitalizedText } from "@utils/helper";
-import { SendEvmNewScreen } from "@screens/send/send-evm-new";
+import { SendEvmScreen } from "@src/screens/send/send-evm";
+import { SendSvmScreen } from "@screens/send/send-svm";
 
 export const SendScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -90,6 +91,14 @@ export const SendScreen: FunctionComponent = observer(() => {
         recipientAddress={initialRecipientAddress}
       />
     ),
+    svm: (
+      <SendSvmScreen
+        setSelectedKey={setSelectedKey}
+        chainId={chainId}
+        coinMinimalDenom={coinMinimalDenom}
+        recipientAddress={initialRecipientAddress}
+      />
+    ),
   };
   for (const feature of chainInfo.features) {
     if (sendGetters[feature]) {
@@ -98,7 +107,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   }
   if (chainId?.includes("eip155")) {
     return (
-      <SendEvmNewScreen
+      <SendEvmScreen
         setSelectedKey={setSelectedKey}
         chainId={chainId}
         coinMinimalDenom={coinMinimalDenom}

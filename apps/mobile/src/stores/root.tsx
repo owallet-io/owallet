@@ -2,6 +2,7 @@ import {
   APR_API_URL,
   CommunityChainInfoRepo,
   EmbedChainInfos,
+  urlTxHistory,
 } from "@owallet/common";
 
 import {
@@ -32,6 +33,7 @@ import {
   SignEthereumInteractionStore,
   SignInteractionStore,
   SignOasisInteractionStore,
+  SignSvmInteractionStore,
   SignTronInteractionStore,
   TokensStore,
 } from "@owallet/stores-core";
@@ -85,6 +87,7 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
 import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
+import { SvmAccountStore, SvmQueries } from "@owallet/stores-solana";
 
 // import {WebpageStore} from './webpage';
 
@@ -105,6 +108,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signSvmInteractionStore: SignSvmInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly signBtcInteractionStore: SignBtcInteractionStore;
@@ -128,7 +132,8 @@ export class RootStore {
       EthereumQueries,
       OasisQueries,
       TrxQueries,
-      BtcQueries
+      BtcQueries,
+      SvmQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -142,6 +147,7 @@ export class RootStore {
   public readonly tronAccountStore: TrxAccountStore;
 
   public readonly bitcoinAccountStore: BtcAccountStore;
+  public readonly solanaAccountStore: SvmAccountStore;
 
   public readonly allAccountStore: AllAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
@@ -150,13 +156,13 @@ export class RootStore {
   public readonly ibcCurrencyRegistrar: IBCCurrencyRegistrar;
   public readonly lsmCurrencyRegistrar: LSMCurrencyRegistrar;
   public readonly gravityBridgeCurrencyRegistrar: GravityBridgeCurrencyRegistrar;
-  public readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar;
+  // public readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar;
   // public readonly scamProposalStore: ScamProposalStore;
   public readonly modalStore: ModalStore;
   public readonly keychainStore: KeychainStore;
   public readonly walletConnectStore: WalletConnectStore;
   public readonly deepLinkStore: DeepLinkStore;
-  public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
+  // public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
   public readonly browserStore: BrowserStore;
 
   constructor() {
@@ -203,6 +209,9 @@ export class RootStore {
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(
       this.interactionStore
     );
+    this.signSvmInteractionStore = new SignSvmInteractionStore(
+      this.interactionStore
+    );
     this.signOasisInteractionStore = new SignOasisInteractionStore(
       this.interactionStore
     );
@@ -242,13 +251,13 @@ export class RootStore {
       // CosmosGovernanceQueries.use(),
       // CosmosGovernanceQueriesV1.use(),
       EthereumQueries.use({
-        coingeckoAPIBaseURL: "https://satellite.keplr.app",
-        coingeckoAPIURI:
-          "/coingecko-token-info/coins/{coingeckoChainId}/contract/{contractAddress}",
+        coingeckoAPIBaseURL: "",
+        coingeckoAPIURI: "",
       }),
       OasisQueries.use(),
       TrxQueries.use(),
-      BtcQueries.use()
+      BtcQueries.use(),
+      SvmQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -261,12 +270,12 @@ export class RootStore {
     //     this.swapUsageQueries,
     //     SwapVenue,
     // );
-    this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
-      new AsyncKVStore("store_erc20_currency_registrar"),
-      24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.erc20CurrencyRegistrar = new ERC20CurrencyRegistrar(
+    //   new AsyncKVStore("store_erc20_currency_registrar"),
+    //   24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     this.accountStore = new AccountStore(
       {
         addEventListener: (type: string, fn: () => void) => {
@@ -453,13 +462,26 @@ export class RootStore {
       this.chainStore,
       getOWalletFromWindow
     );
+    this.solanaAccountStore = new SvmAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
     this.allAccountStore = new AllAccountStore(
       this.chainStore,
       this.oasisAccountStore,
       this.accountStore,
       this.tronAccountStore,
       this.ethereumAccountStore,
-      this.bitcoinAccountStore
+      this.bitcoinAccountStore,
+      this.solanaAccountStore
     );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),
@@ -490,14 +512,14 @@ export class RootStore {
       this.priceStore
     );
 
-    this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
-      new AsyncKVStore("store_token_factory_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
-      process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.tokenFactoryRegistrar = new TokenFactoryCurrencyRegistrar(
+    //   new AsyncKVStore("store_token_factory_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   process.env["KEPLR_EXT_TOKEN_FACTORY_BASE_URL"] || "",
+    //   process.env["KEPLR_EXT_TOKEN_FACTORY_URI"] || "",
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     this.ibcCurrencyRegistrar = new IBCCurrencyRegistrar(
       new AsyncKVStore("store_ibc_curreny_registrar"),
       7 * 24 * 3600 * 1000,
@@ -505,18 +527,18 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
-    this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
-      new AsyncKVStore("store_lsm_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
-    this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegistrar(
-      new AsyncKVStore("store_gravity_bridge_currency_registrar"),
-      7 * 24 * 3600 * 1000,
-      this.chainStore,
-      this.queriesStore
-    );
+    // this.lsmCurrencyRegistrar = new LSMCurrencyRegistrar(
+    //   new AsyncKVStore("store_lsm_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
+    // this.gravityBridgeCurrencyRegistrar = new GravityBridgeCurrencyRegistrar(
+    //   new AsyncKVStore("store_gravity_bridge_currency_registrar"),
+    //   7 * 24 * 3600 * 1000,
+    //   this.chainStore,
+    //   this.queriesStore
+    // );
     // this.axelarEVMBridgeCurrencyRegistrar = new AxelarEVMBridgeCurrencyRegistrar(
     //   new AsyncKVStore('store_axelar_evm_bridge_currency_registrar'),
     //   7 * 24 * 3600 * 1000,

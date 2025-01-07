@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { View, ViewStyle } from "react-native";
 import { useStore } from "../../stores";
 import { ChainIdEnum } from "@owallet/common";
@@ -15,7 +15,12 @@ import { tracking } from "@src/utils/tracking";
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(() => {
-  tracking(`History Card`);
+  useEffect(() => {
+    tracking(`History Card`);
+
+    return () => {};
+  }, []);
+
   const { chainStore, appInitStore } = useStore();
   const { chainId } = chainStore.current;
   const heightHeader = useGetHeightHeader();

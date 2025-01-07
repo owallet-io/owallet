@@ -1,29 +1,14 @@
 import { ChainsService } from "../chains";
-import { KeyRing, KeyRingService } from "../keyring";
+import { KeyRingService } from "../keyring";
 
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import {
-  ChainInfo,
-  EthereumSignResponse,
-  EthSignType,
-  Key,
-  TransactionType,
-} from "@owallet/types";
-import {
-  domainHash,
-  EIP712MessageValidator,
-  KeyRingCosmosService,
-  messageHash,
-} from "../keyring-cosmos";
-import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
-import { PubKeySecp256k1 } from "@owallet/crypto";
-import { Vault, VaultService } from "../vault";
+import { Key, TransactionType } from "@owallet/types";
+import { KeyRingCosmosService } from "../keyring-cosmos";
+import { Bech32Address } from "@owallet/cosmos";
 import * as oasis from "@oasisprotocol/client";
 import { KeyRingOasisBaseService } from "./keyring-base";
 import { Env } from "@owallet/router";
-import { Buffer } from "buffer";
-import { TW } from "@owallet/common";
 
 export class KeyRingOasisService {
   constructor(

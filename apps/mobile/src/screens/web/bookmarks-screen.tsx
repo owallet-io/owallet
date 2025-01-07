@@ -1,12 +1,8 @@
-import React, { useState } from "react";
-import {
-  PageWithView,
-  PageWithViewInBottomTabView,
-} from "@src/components/page";
-
+import React, { useEffect } from "react";
+import { PageWithViewInBottomTabView } from "@src/components/page";
 import { observer } from "mobx-react-lite";
 import { useTheme } from "@src/themes/theme-provider";
-import { FlatList, Platform, TouchableOpacity, View } from "react-native";
+import { Platform, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { useStore } from "@src/stores";
 import OWIcon from "@src/components/ow-icon/ow-icon";
@@ -20,13 +16,17 @@ import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { metrics } from "@src/themes";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { tracking } from "@src/utils/tracking";
 
 export const BookmarksScreen = observer(() => {
-  tracking(`Bookmarks Screen`);
+  useEffect(() => {
+    tracking(`Bookmarks Screen`);
+
+    return () => {};
+  }, []);
+
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
   const onDetailBrowser = (url) => {
@@ -45,7 +45,7 @@ export const BookmarksScreen = observer(() => {
   };
   const onDelete = (uri) => {
     if (!uri) return;
-    browserStore.removeBoorkmark(uri);
+    appInitStore.removeBoorkmark(uri);
     return;
   };
 
@@ -135,9 +135,9 @@ export const BookmarksScreen = observer(() => {
         }}
       >
         <DraggableFlatList
-          data={[...(browserStore.getBookmarks || [])]}
+          data={[...(appInitStore.getBookmarks || [])]}
           onDragEnd={({ data }) => {
-            browserStore.updateBookmarks(data);
+            appInitStore.updateBookmarks(data);
             // setData(data);
           }}
           showsVerticalScrollIndicator={false}

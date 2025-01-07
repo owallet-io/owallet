@@ -2,22 +2,20 @@ import { ChainStore } from "../chain";
 import {
   CoinGeckoPriceStore,
   CosmosQueries,
-  IAccountStore,
   IChainInfoImpl,
   IQueriesStore,
+  ObservableQueryBalancesImplMap,
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { action, autorun, computed } from "mobx";
 import {
-  ChainIdEnum,
   DenomHelper,
   getOasisAddress,
   MapChainIdToNetwork,
 } from "@owallet/common";
 import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
-import { OasisAccountStore } from "@owallet/stores-oasis";
 import { AllAccountStore } from "@stores/all-account-store";
 
 export interface ViewToken {
@@ -115,7 +113,7 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       let account = this.accountStore.getAccount(chainInfo.chainId);
-      const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
+      // const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
       if (account.addressDisplay === "") {
         continue;
@@ -128,22 +126,22 @@ export class HugeQueriesStore {
       }
       for (const currency of currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        const isERC20 = denomHelper.type === "erc20";
-        const isMainCurrency =
-          mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
-        let queryBalance =
-          this.chainStore.isEvmOnlyChain(chainInfo.chainId) &&
-          (isMainCurrency || isERC20)
-            ? queries.queryBalances.getQueryEthereumHexAddress(
-                account.ethereumHexAddress
-              )
-            : queries.queryBalances.getQueryBech32Address(
-                account.bech32Address
-              );
+        // const isERC20 = denomHelper.type === 'erc20';
+        // const isMainCurrency = mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
+
+        let queryBalance: ObservableQueryBalancesImplMap;
         const isBtcLegacy = denomHelper.type === "legacy";
         if (isBtcLegacy) {
           queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
             account.btcLegacyAddress
+          );
+        } else if (chainInfo.features.includes("tron")) {
+          queryBalance = queries.queryBalances.getQueryEthereumHexAddress(
+            account.ethereumHexAddress
+          );
+        } else {
+          queryBalance = queries.queryBalances.getQueryByAddress(
+            account.addressDisplay
           );
         }
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
@@ -186,7 +184,6 @@ export class HugeQueriesStore {
                       currency.coinMinimalDenom &&
                     !currency.coinMinimalDenom.startsWith("ibc/")
                   ) {
-                    // 위의 if 문을 뒤집기(?) 귀찮아서 그냥 빈 if-else로 처리한다...
                   } else {
                     continue;
                   }

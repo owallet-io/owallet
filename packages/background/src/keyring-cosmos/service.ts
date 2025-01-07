@@ -348,8 +348,6 @@ export class KeyRingCosmosService {
     signer: string,
     signDoc: StdSignDoc
   ) {
-    // TODO: 이 기능은 ledger에서는 사용할 수 없고 어케 이 문제를 해결할지도 아직 명확하지 않음.
-
     if (!env.isInternalMsg && !this.msgPrivilegedOrigins.includes(origin)) {
       throw new Error("Permission Rejected");
     }
@@ -448,8 +446,6 @@ export class KeyRingCosmosService {
     signer: string,
     signDoc: StdSignDoc
   ) {
-    // TODO: 이 기능은 ledger에서는 사용할 수 없고 어케 이 문제를 해결할지도 아직 명확하지 않음.
-
     if (!env.isInternalMsg && !this.msgPrivilegedOrigins.includes(origin)) {
       throw new Error("Permission Rejected");
     }
@@ -718,7 +714,6 @@ export class KeyRingCosmosService {
 
         let signature: Uint8Array;
 
-        // XXX: 참고로 어차피 현재 ledger app이 direct signing을 지원하지 않는다. 그냥 일단 처리해놓은 것.
         if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
             throw new Error("Frontend should provide signature");
@@ -783,7 +778,6 @@ export class KeyRingCosmosService {
     chainId: string,
     signer: string,
     signDoc: SignDocDirectAux,
-    // preferNoSetMemo 빼고는 다 무시됨
     signOptions: Exclude<
       OWalletSignOptions,
       "preferNoSetFee" | "disableBalanceCheck"
@@ -841,7 +835,6 @@ export class KeyRingCosmosService {
 
         let signature: Uint8Array;
 
-        // XXX: 참고로 어차피 현재 ledger app이 direct signing을 지원하지 않는다. 그냥 일단 처리해놓은 것.
         if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
             throw new Error("Frontend should provide signature");
@@ -888,7 +881,6 @@ export class KeyRingCosmosService {
     chainId: string,
     signer: string,
     signDoc: SignDocDirectAux,
-    // preferNoSetMemo 빼고는 다 무시됨
     signOptions: Exclude<
       OWalletSignOptions,
       "preferNoSetFee" | "disableBalanceCheck"
@@ -1201,10 +1193,6 @@ export class KeyRingCosmosService {
       "request-sign-icns-adr36",
       interactionInfo,
       async () => {
-        // 현재로써는 ledger에서는 따로 signature를 처리해줄 필요는 없다.
-        // 왜냐하면 어차피 ledger의 cosmos app에서는 coin type이 118로 고정되어있어서 모두 같은 주소를 가지기 때문이다.
-        // 아직까지 ethereum app 등은 지원하지 않기 때문에 실제로는 ledger에 대한 처리가 없더라도 문제가 되지 않는다.
-
         const r: {
           chainId: string;
           bech32Prefix: string;
@@ -1281,7 +1269,6 @@ Salt: ${salt}`;
     );
   }
 
-  // secret wasm에서만 사용됨
   async legacySignArbitraryInternal(
     chainId: string,
     memo: string

@@ -5,33 +5,19 @@ import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { showToast } from "@src/utils/helper";
 import { observer } from "mobx-react-lite";
-import React, {
-  useRef,
-  useCallback,
-  useState,
-  useEffect,
-  FunctionComponent,
-} from "react";
+import React, { useRef, useState, useEffect, FunctionComponent } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { OWBox } from "../../../components/card";
 import { useStore } from "../../../stores";
 import { metrics, spacing } from "../../../themes";
-// import { tracking } from "@src/utils/tracking";
 import { action, makeObservable, observable } from "mobx";
-import { ChainIdHelper } from "@owallet/cosmos";
-import {
-  DenomDydx,
-  removeDataInParentheses,
-  unknownToken,
-} from "@owallet/common";
-import { ObservableQueryRewardsInner } from "@owallet/stores";
+import { removeDataInParentheses, unknownToken } from "@owallet/common";
 import {
   AminoSignResponse,
   BroadcastMode,
   FeeCurrency,
   StdSignDoc,
 } from "@owallet/types";
-import { useSendTxConfig } from "@owallet/hooks";
 import { DefaultGasPriceStep } from "@owallet/hooks";
 import {
   PrivilegeCosmosSignAminoWithdrawRewardsMsg,
@@ -72,9 +58,7 @@ const zeroDec = new Dec(0);
 export const StakeCardAll = observer(({}) => {
   const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
     useStore();
-  // const style = useStyle();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isPressingExpandButton, setIsPressingExpandButton] = useState(false);
   const intl = useIntl();
 
   const statesRef = useRef(new Map<string, ClaimAllEachState>());
@@ -204,10 +188,7 @@ export const StakeCardAll = observer(({}) => {
       const chainId = viewToken.chainInfo.chainId;
       const account = accountStore.getAccount(chainId);
 
-      if (
-        account.bech32Address === "" ||
-        viewToken.chainInfo.features.includes("not-support-staking")
-      ) {
+      if (!account.bech32Address) {
         continue;
       }
 
@@ -472,6 +453,7 @@ export const StakeCardAll = observer(({}) => {
                 .roundUp()
                 .toString(),
             };
+
             await priceStore.waitResponse();
             const averageFeePrice = priceStore.calculatePrice(
               new CoinPretty(feeCurrency, fee.amount),
@@ -574,6 +556,13 @@ export const StakeCardAll = observer(({}) => {
                 return false;
               })())
             ) {
+              console.log(
+                `(${chainId}) Skip claim rewards. Fee: ${fee.amount}${
+                  fee.denom
+                } is greater than stakable reward: ${
+                  viewToken.token.toCoin().amount
+                }${viewToken.token.toCoin().denom}`
+              );
               state.setFailedReason(
                 new Error(
                   intl.formatMessage({
@@ -629,8 +618,6 @@ export const StakeCardAll = observer(({}) => {
                   // });
                 },
                 onFulfill: (tx: any) => {
-                  // Tx가 성공한 이후에 rewards가 다시 쿼리되면서 여기서 빠지는게 의도인데...
-                  // 쿼리하는 동안 시간차가 있기 때문에 훼이크로 그냥 1초 더 기다린다.
                   setTimeout(() => {
                     state.setIsLoading(false);
                   }, 1000);
@@ -678,7 +665,6 @@ export const StakeCardAll = observer(({}) => {
       })();
     }
   };
-
   const claimAllDisabled = (() => {
     if (viewTokens.length === 0) {
       return true;
@@ -772,23 +758,28 @@ export const StakeCardAll = observer(({}) => {
                   />
                 )}
               </TouchableOpacity>
-              <OWButton
-                style={[
-                  styles["btn-claim"],
-                  {
-                    backgroundColor: colors["primary-surface-default"],
-                  },
-                ]}
-                textStyle={{
-                  fontSize: 15,
-                  fontWeight: "600",
-                  color: colors["neutral-text-action-on-dark-bg"],
-                }}
-                label="Claim all"
-                disabled={claimAllDisabled}
-                loading={claimAllIsLoading}
-                onPress={claimAll}
-              />
+              {keyRingStore?.selectedKeyInfo?.type !== "ledger" ? (
+                <OWButton
+                  style={[
+                    styles["btn-claim"],
+                    {
+                      backgroundColor: colors["primary-surface-default"],
+                    },
+                  ]}
+                  textStyle={{
+                    fontSize: 15,
+                    fontWeight: "600",
+                    color: colors["neutral-text-action-on-dark-bg"],
+                  }}
+                  label="Claim all"
+                  disabled={
+                    claimAllDisabled ||
+                    keyRingStore.selectedKeyInfo?.type === "ledger"
+                  }
+                  loading={claimAllIsLoading}
+                  onPress={claimAll}
+                />
+              ) : null}
             </View>
             <View>
               {viewTokens.map((viewToken, index) => {
@@ -835,7 +826,7 @@ const ClaimTokenItem: FunctionComponent<{
     );
 
     const validatorAddresses =
-      queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+      queryRewards.getDescendingPendingRewardValidatorAddresses(10);
 
     if (validatorAddresses.length === 0) {
       return;
@@ -860,7 +851,6 @@ const ClaimTokenItem: FunctionComponent<{
     }
 
     try {
-      setIsSimulating(false);
       await tx.send(
         {
           gas: gas.toString(),
@@ -870,30 +860,24 @@ const ClaimTokenItem: FunctionComponent<{
         {},
         {
           onBroadcasted: (txHash) => {
-            // analyticsStore.logEvent('complete_claim', {
-            //   chainId: viewToken.chainInfo.chainId,
-            //   chainName: viewToken.chainInfo.chainName,
-            // });
-            // navigation.navigate('TxPending', {
-            //   chainId,
-            //   txHash: Buffer.from(txHash).toString('hex'),
-            // });
+            showToast({
+              type: "success",
+              message: "Successfully received the reward",
+            });
           },
           onFulfill: (tx: any) => {
             if (tx.code != null && tx.code !== 0) {
               console.log(tx.log ?? tx.raw_log);
-
               showToast({
                 type: "danger",
-                message: intl.formatMessage({ id: "error.transaction-failed" }),
+                message: "Claim reward failed!",
               });
+
               return;
             }
             showToast({
               type: "success",
-              message: intl.formatMessage({
-                id: "notification.transaction-success",
-              }),
+              message: "Transaction success",
             });
           },
         }
@@ -904,7 +888,7 @@ const ClaimTokenItem: FunctionComponent<{
       }
       showToast({
         type: "danger",
-        message: intl.formatMessage({ id: "error.transaction-failed" }),
+        message: "Claim reward failed!",
       });
     } finally {
       setIsSimulating(false);
@@ -913,9 +897,8 @@ const ClaimTokenItem: FunctionComponent<{
 
   const isLoading =
     accountStore.getAccount(viewToken.chainInfo.chainId).isSendingMsg ===
-      "withdrawRewards" ||
-    state.isLoading ||
-    isSimulating;
+      "withdrawRewards" || state.isLoading;
+
   const { colors } = useTheme();
   const styles = styling(colors);
 
@@ -923,6 +906,7 @@ const ClaimTokenItem: FunctionComponent<{
   const isDisabledCompound = viewToken.chainInfo?.chainId?.includes("dydx");
 
   const _onPressCompound = async () => {
+    setIsSimulating(true);
     try {
       if (state.failedReason) {
         state.setFailedReason(undefined);
@@ -941,70 +925,88 @@ const ClaimTokenItem: FunctionComponent<{
       if (validatorAddresses.length === 0) {
         return;
       }
+
       const validatorRewards = validatorAddresses.map((validatorAddress) => {
         const rewards = queryRewards.getStakableRewardOf(validatorAddress);
         return { validatorAddress, rewards };
       });
+
+      let gas = 0;
+      let gasUsed = new Dec(0).truncate();
+      const claimTx =
+        account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+
+      // Use Promise.all to wait for all delegate transaction simulations
+      await Promise.all(
+        validatorRewards.map(async (v, i) => {
+          const delegateTx = account.cosmos.makeDelegateTx(
+            v.rewards.toDec().toString(),
+            v.validatorAddress
+          );
+          const simulatedDelegate = await delegateTx.simulate();
+          gas += simulatedDelegate.gasUsed;
+          console.log(
+            "gas of",
+            i,
+            v.validatorAddress,
+            simulatedDelegate.gasUsed
+          );
+        })
+      );
+
+      try {
+        const simulatedClaim = await claimTx.simulate();
+        gas += simulatedClaim.gasUsed;
+        console.log("gas of simulatedClaim", simulatedClaim.gasUsed);
+      } catch (e) {
+        console.log(e);
+      }
+
+      console.log("gas final", gas);
+      gasUsed = new Dec(gas * 1.5).truncate();
+
       const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(
         validatorAddresses,
         validatorRewards
       );
 
-      let gas = new Int(
-        validatorAddresses.length * 2 * defaultGasPerDelegation
-      );
-
-      try {
-        setIsSimulating(true);
-
-        const simulated = await tx.simulate();
-
-        // Gas adjustment is 1.5
-        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
-        // Use high gas adjustment to prevent failure.
-        gas = new Dec(simulated.gasUsed * 1.5).truncate();
-      } catch (e) {
-        console.log(e);
-      }
       await tx.send(
         {
-          gas: gas.toString(),
+          gas: gasUsed.toString(),
           amount: [],
         },
         "",
         {},
         {
           onBroadcasted: (txHash) => {
-            // analyticsStore.logEvent('complete_claim', {
-            //   chainId: viewToken.chainInfo.chainId,
-            //   chainName: viewToken.chainInfo.chainName,
-            // });
-            // navigation.navigate('TxPending', {
-            //   chainId,
-            //   txHash: Buffer.from(txHash).toString('hex'),
-            // });
-          },
-          onFulfill: (tx: any) => {
-            if (tx.code != null && tx.code !== 0) {
-              console.log(tx.log ?? tx.raw_log);
-
-              showToast({
-                type: "danger",
-                message: intl.formatMessage({ id: "error.transaction-failed" }),
-              });
-              return;
-            }
+            setIsSimulating(false);
             showToast({
               type: "success",
-              message: intl.formatMessage({
-                id: "notification.transaction-success",
-              }),
+              message: "Transaction submitted",
             });
+          },
+          onFulfill: (tx) => {
+            setIsSimulating(false);
+            if (tx.code != null && tx.code !== 0) {
+              showToast({
+                type: "danger",
+                message: JSON.stringify(tx.log ?? tx.raw_log),
+              });
+              return;
+            } else {
+              showToast({
+                type: "success",
+                message: intl.formatMessage({
+                  id: "notification.transaction-success",
+                }),
+              });
+            }
           },
         }
       );
     } catch (e) {
       console.error({ errorClaim: e });
+      setIsSimulating(false);
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
@@ -1014,8 +1016,11 @@ const ClaimTokenItem: FunctionComponent<{
         });
         return;
       }
+    } finally {
+      setIsSimulating(false);
     }
   };
+
   return (
     <View
       style={{
@@ -1090,11 +1095,7 @@ const ClaimTokenItem: FunctionComponent<{
             color: colors["neutral-text-title"],
           }}
           colorLoading={colors["neutral-text-title"]}
-          disabled={
-            isLoading ||
-            accountStore.getAccount(viewToken?.chainInfo.chainId)
-              .isSendingMsg === "withdrawRewardsAndDelegation"
-          }
+          disabled={isLoading || isSimulating}
           fullWidth={false}
           size={"small"}
         />
@@ -1103,7 +1104,8 @@ const ClaimTokenItem: FunctionComponent<{
           disabled={
             accountStore.getAccount(viewToken?.chainInfo.chainId)
               .isSendingMsg === "withdrawRewardsAndDelegation" ||
-            isDisabledCompound
+            isDisabledCompound ||
+            isSimulating
           }
           type="link"
           label="Compound"

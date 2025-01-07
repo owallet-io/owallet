@@ -24,12 +24,12 @@ import {
   ChainIdEnum,
   DenomDydx,
   removeDataInParentheses,
-  zeroDec,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { CopyAddressModal } from "./copy-address/copy-address-modal";
 import {
+  eventTheme,
   shortenAddress,
   shuffleArray,
   sortChainsByPrice,
@@ -44,6 +44,9 @@ import PieChart from "react-native-pie-chart";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
 import { ViewToken } from "@src/stores/huge-queries";
 import MoreModal from "./more-modal";
+import { imagesNoel } from "@assets/images/noels";
+
+const zeroDec = new Dec("0");
 export const initPrice = new PricePretty(
   {
     currency: "usd",
@@ -89,6 +92,7 @@ export const AccountBoxAll: FunctionComponent<{
     queriesStore,
     priceStore,
     allAccountStore,
+    keyRingStore,
   } = useStore();
 
   const { colors } = useTheme();
@@ -96,13 +100,16 @@ export const AccountBoxAll: FunctionComponent<{
 
   const [isOpen, setModalOpen] = useState(false);
   const [isMoreOpen, setMoreModalOpen] = useState(false);
-  const [showChart, setShowChart] = useState(true);
+  const [showChart, setShowChart] = useState(false);
   const [chainListWithBalance, setChainListWithBalance] = useState([]);
   const [series, setSeries] = useState([]);
   const [sliceColor, setSliceColor] = useState([]);
 
   const chainId = chainStore.current.chainId;
   const account = allAccountStore.getAccount(chainId);
+  const accountOrai = accountStore.hasAccount("Oraichain")
+    ? accountStore.getAccount("Oraichain")
+    : null;
 
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
@@ -175,7 +182,12 @@ export const AccountBoxAll: FunctionComponent<{
       }
     }
     return result;
-  }, [chainId, account?.addressDisplay, appInitStore.getInitApp.isAllNetworks]);
+  }, [
+    chainId,
+    hugeQueriesStore.allKnownBalances,
+    account?.addressDisplay,
+    appInitStore.getInitApp.isAllNetworks,
+  ]);
   const stakedTotalPriceByChain = useMemo(() => {
     let result: PricePretty | undefined = initPrice;
     for (const bal of hugeQueriesStore.delegations.filter(
@@ -205,6 +217,7 @@ export const AccountBoxAll: FunctionComponent<{
     hugeQueriesStore.delegations,
     chainId,
     hugeQueriesStore.unbondings,
+    hugeQueriesStore.allKnownBalances,
     account?.addressDisplay,
     appInitStore.getInitApp.isAllNetworks,
   ]);
@@ -342,7 +355,7 @@ export const AccountBoxAll: FunctionComponent<{
           style={{
             alignItems: "center",
             flexDirection: "row",
-            paddingBottom: 16,
+            paddingVertical: 8,
           }}
         >
           <Text variant="bigText" style={styles.labelTotalAmount}>
@@ -358,7 +371,9 @@ export const AccountBoxAll: FunctionComponent<{
   const renderPieChartPortfolio = () => {
     if (series.length > 0 && series[0] > 0) {
       return (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View
+          style={{ flexDirection: "row", alignItems: "center", paddingTop: 8 }}
+        >
           {series.length > 0 && series[0] > 0 ? (
             <View
               style={{
@@ -443,7 +458,7 @@ export const AccountBoxAll: FunctionComponent<{
       ?.toString();
     const stakedPercent = 100 - Number(percentAvailable || 0);
     return (
-      <View style={{ marginVertical: 16 }}>
+      <View style={{ marginVertical: 8 }}>
         <View
           style={{
             width: "100%",
@@ -486,7 +501,6 @@ export const AccountBoxAll: FunctionComponent<{
       </View>
     );
   };
-
   const renderAssetsByChain = () => {
     // if (
     //   (chainStore.current.networkType !== "cosmos" &&
@@ -502,7 +516,9 @@ export const AccountBoxAll: FunctionComponent<{
       <View
         style={{
           paddingTop: 12,
-          paddingBottom: 6,
+          paddingBottom: 8,
+          borderTopWidth: 1,
+          borderTopColor: colors["neutral-border-default"],
         }}
       >
         <View
@@ -639,7 +655,7 @@ export const AccountBoxAll: FunctionComponent<{
       </View>
     );
   };
-
+  const selectedKeyInfo = keyRingStore.selectedKeyInfo;
   return (
     <View>
       <CopyAddressModal
@@ -659,7 +675,34 @@ export const AccountBoxAll: FunctionComponent<{
         }}
       />
       <OWBox style={[styles.containerOWBox]}>
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.cloud_top_box}
+            style={{
+              width: 60,
+              height: 35,
+              position: "absolute",
+              top: -7,
+              right: "50%",
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
         <View style={styles.containerInfoAccount}>
+          {eventTheme === "noel" ? (
+            <Image
+              source={imagesNoel.avatar_noel}
+              style={{
+                width: 36,
+                height: 26,
+                position: "absolute",
+                top: -12,
+                left: -16,
+                zIndex: 1000,
+              }}
+              resizeMode={"contain"}
+            />
+          ) : null}
           <TouchableOpacity
             disabled={isLoading}
             onPress={_onPressMyWallet}
@@ -676,7 +719,9 @@ export const AccountBoxAll: FunctionComponent<{
               resizeMode="contain"
               fadeDuration={0}
             />
-            <Text style={styles.labelName}>{account?.name || "..."}</Text>
+            <Text style={styles.labelName}>
+              {selectedKeyInfo?.name || "OWallet Account"}
+            </Text>
             <DownArrowIcon
               height={15}
               color={colors["neutral-icon-on-light"]}
@@ -686,9 +731,19 @@ export const AccountBoxAll: FunctionComponent<{
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
                 onPress={() => {
-                  // startTransition(() => {
-                  //   setShowChart(!showChart);
-                  // });
+                  navigate(SCREENS.QRScreen);
+                  return;
+                }}
+                style={styles.button}
+              >
+                <OWIcon
+                  size={18}
+                  name="tdesignqrcode"
+                  color={colors["neutral-icon-on-light"]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
                   setShowChart(!showChart);
                 }}
                 style={styles.button}
@@ -711,6 +766,20 @@ export const AccountBoxAll: FunctionComponent<{
                   color={colors["neutral-icon-on-light"]}
                 />
               </TouchableOpacity>
+              {eventTheme === "noel" ? (
+                <Image
+                  source={imagesNoel.bell_light}
+                  style={{
+                    width: 25,
+                    height: 42,
+                    position: "absolute",
+                    top: 33,
+                    right: 10,
+                    zIndex: 1000,
+                  }}
+                  resizeMode={"contain"}
+                />
+              ) : null}
             </View>
           ) : (
             <OWButton
@@ -740,17 +809,7 @@ export const AccountBoxAll: FunctionComponent<{
             />
           )}
         </View>
-        <View style={styles.overview}>{renderTotalBalance()}</View>
-        {!appInitStore.getInitApp.isAllNetworks ||
-        appInitStore.getInitApp.isAllNetworks ? (
-          <View
-            style={{
-              height: 1,
-              width: "100%",
-              backgroundColor: colors["neutral-border-default"],
-            }}
-          />
-        ) : null}
+        <View>{renderTotalBalance()}</View>
         {appInitStore.getInitApp.isAllNetworks
           ? renderAvailableperStaked()
           : renderAssetsByChain()}

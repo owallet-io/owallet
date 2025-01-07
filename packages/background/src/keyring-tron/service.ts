@@ -2,17 +2,16 @@ import { ChainsService } from "../chains";
 import { KeyRingService } from "../keyring";
 import { InteractionService } from "../interaction";
 import { ChainsUIService } from "../chains-ui";
-import { Key } from "@owallet/types";
+import { ChainIdEVM, Key } from "@owallet/types";
 import { KeyRingCosmosService } from "../keyring-cosmos";
 import { KeyRingTronBaseService } from "./keyring-base";
 import {
-  ChainIdEVM,
   DEFAULT_FEE_LIMIT_TRON,
   EXTRA_FEE_LIMIT_TRON,
   getBase58Address,
   TronWebProvider,
 } from "@owallet/common";
-import { APP_PORT, Env } from "@owallet/router";
+import { Env } from "@owallet/router";
 import { Int } from "@owallet/unit";
 import { Bech32Address } from "@owallet/cosmos";
 
@@ -220,6 +219,7 @@ export class KeyRingTronService {
         chainId,
         pubKey: key.pubKey,
         data,
+        keyType: keyInfo.type,
         keyInsensitive: keyInfo.insensitive,
       },
       async (res: { signingData: Uint8Array; signature?: any }) => {

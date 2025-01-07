@@ -90,6 +90,8 @@ const handleGetTronKeysSettledMsg: (
       msg.origin
     );
 
+    console.log("handleGetTronKeysSettledMsg", msg.chainIds);
+
     return await Promise.allSettled(
       msg.chainIds.map((chainId) => service.getKeySelected(chainId))
     );

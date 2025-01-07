@@ -92,7 +92,11 @@ export class BackgroundTxService {
       }
 
       const txHash = Buffer.from(txResponse.txhash, "hex");
-      if (chainInfo?.chainId?.includes("Oraichain") && txHash) {
+      if (
+        (chainInfo?.chainId?.includes("Oraichain") ||
+          chainId?.includes("oraibridge-subnet-2")) &&
+        txHash
+      ) {
         retry(
           () => {
             return new Promise<void>(async (resolve, reject) => {

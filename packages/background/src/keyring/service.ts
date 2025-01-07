@@ -7,7 +7,7 @@ import {
   KeyRingStatus,
 } from "./types";
 import { Env, OWalletError, WEBPAGE_PORT } from "@owallet/router";
-import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
+import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainsService } from "../chains";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { KVStore } from "@owallet/common";
@@ -872,9 +872,11 @@ export class KeyRingService {
       throw new Error("Key is not from ledger");
     }
 
-    if (vault.insensitive[app]) {
-      throw new Error("App is already appended");
-    }
+    // if (vault.insensitive[app]) {
+    //   throw new Error('App is already appended');
+    // }
+
+    console.log("app", app, Buffer.from(pubKey).toString("hex"));
 
     this.vaultService.setAndMergeInsensitiveToVault("keyRing", id, {
       [app]: {
@@ -1216,6 +1218,91 @@ export class KeyRingService {
     }
   }
 
+  async exportSensitiveKeyRingData(
+    vaultId: string,
+    password: string,
+    chainId: string
+  ): Promise<ExportedKeyRingVault> {
+    if (this.vaultService.isLocked) {
+      throw new Error("KeyRing is locked");
+    }
+
+    const vault = this.vaultService.getVault("keyRing", vaultId);
+    if (!vault) {
+      throw new Error("Vault is null");
+    }
+
+    await this.vaultService.checkUserPassword(password);
+
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    const bip44HDPath = vault.insensitive["bip44Path"] as any;
+    console.log("bip44HDPath", bip44HDPath);
+
+    const coinType = chainInfo.bip44
+      ? chainInfo.bip44.coinType
+      : chainInfo.bip84
+      ? chainInfo.bip84.coinType
+      : null;
+    const keyDelivery = (() => {
+      if (coinType === 1 || coinType === 0) {
+        return 84;
+      }
+      return 44;
+    })();
+    let path = `m/${keyDelivery}'/${coinType}'/0'/0/0`;
+    if (bip44HDPath) {
+      path = `m/${keyDelivery}'/${coinType}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+    }
+    const decrypted = this.vaultService.decrypt(vault.sensitive);
+
+    const masterSeed = Mnemonic.generateMasterSeedFromMnemonic(
+      decrypted["mnemonic"] as string
+    );
+    const masterSeedText = Buffer.from(masterSeed).toString("hex");
+    const masterSeedHex = Buffer.from(masterSeedText, "hex");
+    const privKey = Mnemonic.generatePrivateKeyFromMasterSeed(
+      masterSeedHex,
+      path
+    );
+
+    const privKeySecp256k1 = new PrivKeySecp256k1(privKey);
+    const privKeyHex = Buffer.from(privKeySecp256k1.toBytes()).toString("hex");
+
+    switch (vault.insensitive["keyRingType"]) {
+      case "mnemonic": {
+        return {
+          type: "mnemonic",
+          id: vault.id,
+          insensitive: vault.insensitive,
+          privKey: privKeyHex,
+          sensitive: decrypted["mnemonic"] as string,
+          bip44HDPath: (vault.insensitive["bip44Path"] as any) ?? {
+            account: 0,
+            change: 0,
+            addressIndex: 0,
+          },
+        };
+      }
+      case "private-key": {
+        return {
+          type: "private-key",
+          id: vault.id,
+          insensitive: vault.insensitive,
+          sensitive: decrypted["privateKey"] as string,
+          privKey: decrypted["privateKey"] as string,
+          bip44HDPath: (vault.insensitive["bip44Path"] as any) ?? {
+            account: 0,
+            change: 0,
+            addressIndex: 0,
+          },
+        };
+      }
+      default: {
+        throw new Error("Unsupported keyRing type to show sensitive data");
+      }
+    }
+  }
+
   async checkUserPassword(password: string): Promise<boolean> {
     try {
       await this.vaultService.checkUserPassword(password);
@@ -1248,6 +1335,11 @@ export class KeyRingService {
           id: vault.id,
           insensitive: vault.insensitive,
           sensitive: decrypted["mnemonic"] as string,
+          bip44HDPath: (vault.insensitive["bip44Path"] as any) ?? {
+            account: 0,
+            change: 0,
+            addressIndex: 0,
+          },
         });
       }
       if (vault.insensitive["keyRingType"] === "private-key") {
@@ -1257,6 +1349,11 @@ export class KeyRingService {
           id: vault.id,
           insensitive: vault.insensitive,
           sensitive: decrypted["privateKey"] as string,
+          bip44HDPath: (vault.insensitive["bip44Path"] as any) ?? {
+            account: 0,
+            change: 0,
+            addressIndex: 0,
+          },
         });
       }
     }

@@ -42,9 +42,9 @@ export class KeyRingLedgerService {
     _coinType: number,
     chainInfo: ChainInfo
   ): PubKeySecp256k1 {
-    if (chainInfo?.features.includes("base58-address")) {
-      throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
-    }
+    // if (chainInfo?.features.includes('base58-address')) {
+    //   throw new Error(`${chainInfo.chainId} not support get pubKey from base`);
+    // }
     let app = "Cosmos";
 
     const isEthermintLike = KeyRingService.isEthermintLike(chainInfo);
@@ -79,6 +79,10 @@ export class KeyRingLedgerService {
     );
     return new PubKeySecp256k1(bytes);
   }
+
+  // simulateSignTron(transaction: any, vault: Vault, coinType: number) {
+  //   // throw new Error(`simulateSignTron not support with Ledger`);
+  // }
 
   sign(): {
     readonly r: Uint8Array;

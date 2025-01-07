@@ -230,7 +230,8 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor: colors["neutral-text-heading"],
+                                backgroundColor:
+                                  colors["neutral-surface-action"],
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}
@@ -252,7 +253,8 @@ export const PriceSettingModal: FunctionComponent<{
                                 width: 24,
                                 height: 24,
                                 borderRadius: 24,
-                                backgroundColor: colors["neutral-text-heading"],
+                                backgroundColor:
+                                  colors["neutral-surface-action"],
                                 alignItems: "center",
                                 justifyContent: "center",
                               }}

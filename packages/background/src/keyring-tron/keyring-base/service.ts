@@ -68,10 +68,6 @@ export class KeyRingTronBaseService {
     throw new Error("Unsupported keyRing vault");
   }
 
-  simulateSignTron(transaction) {
-    return "txHash";
-  }
-
   async sign(chainId: string, vaultId: string, data: string): Promise<unknown> {
     if (this.vaultService.isLocked) {
       throw new Error("KeyRing is locked");

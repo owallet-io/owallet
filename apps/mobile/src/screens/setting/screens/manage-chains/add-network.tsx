@@ -331,6 +331,7 @@ export const AddChainScreen: FunctionComponent = observer(() => {
       <OWBox
         style={{
           marginTop: 8,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <TextInput

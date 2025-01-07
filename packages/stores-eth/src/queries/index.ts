@@ -69,9 +69,9 @@ export class EthereumQueriesImpl {
     base.queryBalances.addBalanceRegistry(
       new ObservableQueryEthereumERC20BalanceRegistry(sharedContext)
     );
-    // base.queryBalances.addBalanceRegistry(
-    //   new ObservableQueryThirdpartyERC20BalanceRegistry(sharedContext)
-    // );
+    base.queryBalances.addBalanceRegistry(
+      new ObservableQueryThirdpartyERC20BalanceRegistry(sharedContext)
+    );
     base.queryBalances.addBalanceRegistry(
       new ObservableQueryEthAccountBalanceRegistry(sharedContext)
     );

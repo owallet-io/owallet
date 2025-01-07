@@ -332,7 +332,11 @@ export class CosmosAccountImpl {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
-    if (this.chainId?.includes("Oraichain") && txHash) {
+    if (
+      (this.chainId?.includes("Oraichain") ||
+        this.chainId?.includes("oraibridge-subnet-2")) &&
+      txHash
+    ) {
       retry(
         () => {
           return new Promise<void>(async (resolve, reject) => {
@@ -502,12 +506,12 @@ export class CosmosAccountImpl {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const keplr = (await this.base.getOWallet())!;
+    const owallet = (await this.base.getOWallet())!;
 
     const signedTx = await (async () => {
       if (isDirectSign) {
         return await this.createSignedTxWithDirectSign(
-          keplr,
+          owallet,
           account,
           msgs.protoMsgs,
           fee,
@@ -530,7 +534,7 @@ export class CosmosAccountImpl {
         if (eip712Signing) {
           if (chainIsInjective) {
             // Due to injective's problem, it should exist if injective with ledger.
-            // There is currently no effective way to handle this in keplr. Just set a very large number.
+            // There is currently no effective way to handle this in owallet. Just set a very large number.
             (signDocRaw as Mutable<StdSignDoc>).timeout_height =
               Number.MAX_SAFE_INTEGER.toString();
           } else {
@@ -547,14 +551,14 @@ export class CosmosAccountImpl {
         const signDoc = sortObjectByKey(signDocRaw);
 
         // Should use bind to avoid "this" problem
-        let signAmino = keplr.signAmino.bind(keplr);
+        let signAmino = owallet.signAmino.bind(owallet);
         if (signOptions?.signAmino) {
           signAmino = signOptions.signAmino;
         }
 
         // Should use bind to avoid "this" problem
         let experimentalSignEIP712CosmosTx_v0 =
-          keplr.experimentalSignEIP712CosmosTx_v0.bind(keplr);
+          owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
         if (signOptions?.experimentalSignEIP712CosmosTx_v0) {
           experimentalSignEIP712CosmosTx_v0 =
             signOptions.experimentalSignEIP712CosmosTx_v0;
@@ -674,7 +678,7 @@ export class CosmosAccountImpl {
     })();
 
     // Should use bind to avoid "this" problem
-    let sendTx = keplr.sendTx.bind(keplr);
+    let sendTx = owallet.sendTx.bind(owallet);
     if (signOptions?.sendTx) {
       sendTx = signOptions.sendTx;
     }
@@ -686,7 +690,7 @@ export class CosmosAccountImpl {
   }
 
   protected async createSignedTxWithDirectSign(
-    keplr: OWallet,
+    owallet: OWallet,
     account: BaseAccount,
     protoMsgs: Any[],
     fee: StdFee,
@@ -705,7 +709,7 @@ export class CosmosAccountImpl {
     const chainIsStratos = this.chainId.startsWith("stratos");
 
     // Should use bind to avoid "this" problem
-    let signDirect = keplr.signDirect.bind(keplr);
+    let signDirect = owallet.signDirect.bind(owallet);
     if (signOptions?.signDirect) {
       signDirect = signOptions.signDirect;
     }
@@ -1905,13 +1909,8 @@ export class CosmosAccountImpl {
         },
       };
     });
-    let totalAmount = 0;
-    // Delegate msgs
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
     const delegateMsgs = validatorRewars.map((vr) => {
-      totalAmount += Number(
-        vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
-      );
       let dec = new Dec(
         vr.rewards.shrink(true).maxDecimals(6).hideDenom(true).toString()
       );
@@ -1930,28 +1929,6 @@ export class CosmosAccountImpl {
         },
       };
     });
-
-    // const mergeMsgs = [
-    //   ...msgs.map((msg) => {
-    //     return {
-    //       typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-    //       value: MsgWithdrawDelegatorReward.encode({
-    //         delegatorAddress: msg.value.delegator_address,
-    //         validatorAddress: msg.value.validator_address,
-    //       }).finish(),
-    //     };
-    //   }),
-    //   ...delegateMsgs.map((delegateMsg) => {
-    //     return {
-    //       typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-    //       value: MsgDelegate.encode({
-    //         delegatorAddress: delegateMsg.value.delegator_address,
-    //         validatorAddress: delegateMsg.value.validator_address,
-    //         amount: delegateMsg.value.amount,
-    //       }).finish(),
-    //     };
-    //   }),
-    // ];
 
     return this.makeTx(
       "withdrawRewardsAndDelegation",

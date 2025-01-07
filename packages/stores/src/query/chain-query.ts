@@ -18,7 +18,13 @@ export class ObservableChainQuery<
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
-    super(sharedContext, chainInfo.rest, url);
+    super(
+      sharedContext,
+      chainInfo.rest.replace(/http:\/\/[^/\s]+/g, (match) => {
+        return match.replace("http://", "https://");
+      }),
+      url
+    );
 
     this._chainId = chainId;
     this.chainGetter = chainGetter;

@@ -29,7 +29,12 @@ import { SCREENS } from "@src/common/constants";
 type Sort = "APR" | "Amount Staked" | "Name";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
-  tracking(`Stake Screen`);
+  useEffect(() => {
+    tracking(`Stake Screen`);
+
+    return () => {};
+  }, []);
+
   const route = useRoute<
     RouteProp<
       Record<

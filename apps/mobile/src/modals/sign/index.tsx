@@ -26,14 +26,11 @@ import { Box } from "../../components/box";
 // import {FeeControl} from '../../components/input/fee-control';
 import { XAxis } from "../../components/axis";
 import { CloseIcon } from "../../components/icon";
-
 import { GuideBox } from "../../components/guide-box";
-
 import { handleCosmosPreSign } from "./util/handle-cosmos-sign";
 import { OWalletError } from "@owallet/router";
 import { ErrModuleLedgerSign } from "./util/ledger-types";
 import { LedgerGuideBox } from "../../components/guide-box/ledger-guide-box";
-
 import {
   ScrollView,
   TouchableWithoutFeedback,
@@ -83,7 +80,10 @@ export const SignModal = registerModal(
       chainId,
       senderConfig,
       amountConfig,
-      gasConfig
+      gasConfig,
+      {
+        additionAmountToNeedFee: false,
+      }
     );
     const memoConfig = useMemoConfig(chainStore, chainId);
 
@@ -158,7 +158,6 @@ export const SignModal = registerModal(
     useEffect(() => {
       try {
         if (
-          // 라이크코인의 요청으로 일단 얘는 스킵...
           interactionData.data.origin === "https://liker.land" ||
           interactionData.data.origin === "https://app.like.co"
         ) {
@@ -194,10 +193,6 @@ export const SignModal = registerModal(
                 return;
               }
             } else if (anyMsg.grant.authorization.spend_limit) {
-              // SendAuthorization의 경우 spend_limit를 가진다.
-              // omit 되지 않도록 옵션이 설정되어있기 때문에 비어있더라도 빈 배열을 가지고 있어서 이렇게 확인이 가능하다.
-              // 근데 사실 다른 authorization도 spend_limit를 가질 수 있으므로 이건 좀 위험한 방법이다.
-              // 근데 어차피 버그 버전을 위한거라서 그냥 이렇게 해도 될듯.
               setIsSendAuthzGrant(true);
               return;
             }
@@ -236,9 +231,6 @@ export const SignModal = registerModal(
                   grantMsg.grant.authorization.typeUrl ===
                   "/cosmos.authz.v1beta1.GenericAuthorization"
                 ) {
-                  // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
-                  //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
-                  //      일단 이렇게 처리하고 넘어간다.
                   const factory = defaultProtoCodec.unpackAnyFactory(
                     grantMsg.grant.authorization.typeUrl
                   );
@@ -364,7 +356,6 @@ export const SignModal = registerModal(
               // noop
             },
             {
-              // XXX: 단지 special button의 애니메이션을 보여주기 위해서 delay를 넣음...ㅋ;
               preDelay: 200,
             }
           );
@@ -449,9 +440,7 @@ export const SignModal = registerModal(
                 renderItem={({ item, index }) => {
                   const r = defaultRegistry.render(
                     chainId,
-                    // XXX: defaultProtoCodec가 msgs를 rendering할때 사용되었다는 엄밀한 보장은 없다.
-                    //      근데 로직상 ProtoSignDocDecoder가 defaultProtoCodec가 아닌 다른 codec을 쓰도록 만들 경우가 사실 없기 때문에
-                    //      일단 이렇게 처리하고 넘어간다.
+
                     defaultProtoCodec,
                     item
                   );
@@ -522,9 +511,9 @@ export const SignModal = registerModal(
                 titleRight={
                   <Box>
                     <CheckBox
-                      checked={isSendAuthzGrantChecked}
-                      onPress={(checked) => {
-                        setIsSendAuthzGrantChecked(checked);
+                      isChecked={isSendAuthzGrantChecked}
+                      onClick={(checked) => {
+                        setIsSendAuthzGrantChecked(!isSendAuthzGrantChecked);
                       }}
                     />
                   </Box>

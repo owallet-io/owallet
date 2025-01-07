@@ -1,40 +1,38 @@
-import { DenomHelper, SkipBaseUrl } from "@owallet/common";
+import { DenomHelper, API } from "@owallet/common";
 import { computed, makeObservable } from "mobx";
-import { CoinPretty, Int } from "@owallet/unit";
-import { AppCurrency } from "@owallet/types";
+import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
+import { AppCurrency, ResBalanceEvm } from "@owallet/types";
 import {
   BalanceRegistry,
   ChainGetter,
   IObservableQueryBalanceImpl,
-  ObservableJsonQuery,
   QueryError,
   QueryResponse,
   QuerySharedContext,
 } from "@owallet/stores";
 import { EthereumAccountBase } from "../account";
+import { Network, urlTxHistory } from "@owallet/common";
+import { ObservableQuery } from "@owallet/stores";
 
-export interface ThirdpartyERC20TokenBalance {
-  chains: Chains;
-}
-interface Denom {
-  amount: string;
-  decimals: number;
-  formatted_amount: string;
-  price?: string;
-  value_usd?: string;
-}
+const thirdparySupportedChainIdMap: Record<string, string> = {
+  "eip155:1": Network.ETHEREUM,
+  "eip155:56": Network.BINANCE_SMART_CHAIN,
+};
 
-interface Chain {
-  denoms: {
-    [denomAddress: string]: Denom;
-  };
-}
-
-interface Chains {
-  [chainId: string]: Chain;
-}
-
-export class ObservableQueryThirdpartyERC20BalancesImplParent extends ObservableJsonQuery<ThirdpartyERC20TokenBalance> {
+// interface ThirdpartyERC20TokenBalance {
+//   address: string;
+//   tokenBalances: {
+//     contractAddress: string;
+//     tokenBalance: string | null;
+//     error: {
+//       code: number;
+//       message: string;
+//     } | null;
+//   }[];
+//   // TODO: Support pagination.
+//   pageKey: string;
+// }
+export class ObservableQueryThirdpartyERC20BalancesImplParent extends ObservableQuery<ResBalanceEvm> {
   // XXX: See comments below.
   //      The reason why this field is here is that I don't know if it's mobx's bug or intention,
   //      but fetch can be executed twice by observation of parent and child by `onBecomeObserved`,
@@ -47,13 +45,11 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
     protected readonly chainGetter: ChainGetter,
     protected readonly ethereumHexAddress: string
   ) {
-    super(sharedContext, SkipBaseUrl, "/api/skip/v2/info/balances", {
-      chains: {
-        [chainId.replace("eip155:", "")]: {
-          address: ethereumHexAddress,
-        },
-      },
-    });
+    super(
+      sharedContext,
+      urlTxHistory,
+      `raw-tx-history/all/balances?network=${thirdparySupportedChainIdMap[chainId]}&address=${ethereumHexAddress}`
+    );
 
     makeObservable(this);
   }
@@ -61,28 +57,54 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
   protected override canFetch(): boolean {
     // If ethereum hex address is empty, it will always fail, so don't need to fetch it.
     return (
-      this.ethereumHexAddress.length > 0
-      // &&
-      // thirdparySupportedChainIdMap[this.chainId] != null
+      this.ethereumHexAddress.length > 0 &&
+      thirdparySupportedChainIdMap[this.chainId] != null
     );
   }
 
   protected override onReceiveResponse(
-    response: Readonly<QueryResponse<ThirdpartyERC20TokenBalance>>
+    response: Readonly<QueryResponse<ResBalanceEvm>>
   ) {
     super.onReceiveResponse(response);
-
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const tokenBalances = Object.keys(
-      response.data.chains[this.chainId.replace("eip155:", "")].denoms
+    const contractWeth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    if (!response?.data?.result) return;
+    const erc20Denoms = response.data.result.filter(
+      (tokenBalance) =>
+        tokenBalance.balance != null &&
+        Number(tokenBalance.balance) > 0 &&
+        tokenBalance.tokenAddress !== contractWeth
     );
+    if (!erc20Denoms) return;
 
-    const erc20Denoms = tokenBalances.map(
-      (tokenBalance) => `erc20:${tokenBalance}`
-    );
-    if (erc20Denoms) {
-      chainInfo.addUnknownDenoms(...erc20Denoms);
-    }
+    const tokenAddresses = erc20Denoms
+      .map(
+        ({ tokenAddress }) =>
+          `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`
+      )
+      .join(",");
+    if (!tokenAddresses) return;
+    // 4. Fetch token metadata in bulk
+    API.getMultipleTokenInfo({ tokenAddresses })
+      .then((tokenInfos) => {
+        if (!tokenInfos) return;
+        // 5. Map token metadata to currencies
+        const currencyInfo = tokenInfos
+          .filter(
+            ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null
+          )
+          .map((item) => ({
+            coinImageUrl: item.imgUrl,
+            coinDenom: item.abbr,
+            coinGeckoId: item.coingeckoId,
+            coinDecimals: item.decimal,
+            coinMinimalDenom: `erc20:${item.contractAddress}`,
+          }));
+        if (currencyInfo) {
+          chainInfo.addCurrencies(...currencyInfo);
+        }
+      })
+      .catch((e) => console.error(e, "err fetch erc20"));
   }
 }
 
@@ -107,18 +129,18 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
     }
 
     const contractAddress = this.denomHelper.denom.replace("erc20:", "");
-    const tokenBalances =
-      this.response.data.chains[this.chainId.replace("eip155:", "")].denoms;
-    console.log(
-      tokenBalances?.[contractAddress],
-      "tokenBalances?.[contractAddress]"
+    const tokenBalance = this.response.data.result.find(
+      (bal) => bal.tokenAddress === contractAddress
     );
-    const tokenBalance = tokenBalances?.[contractAddress];
-    if (!tokenBalance) {
+    if (tokenBalance?.balance == null) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-
-    return new CoinPretty(currency, new Int(BigInt(tokenBalance.amount)));
+    return new CoinPretty(
+      currency,
+      new Dec(tokenBalance.balance).mul(
+        DecUtils.getTenExponentN(currency.coinDecimals)
+      )
+    );
   }
 
   @computed
@@ -145,9 +167,7 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
     return this.parent.isStarted;
   }
 
-  get response():
-    | Readonly<QueryResponse<ThirdpartyERC20TokenBalance>>
-    | undefined {
+  get response(): Readonly<QueryResponse<ResBalanceEvm>> | undefined {
     return this.parent.response;
   }
 
@@ -212,7 +232,13 @@ export class ObservableQueryThirdpartyERC20BalanceRegistry
     const chainInfo = chainGetter.getChain(chainId);
     const isHexAddress =
       EthereumAccountBase.isEthereumHexAddressWithChecksum(address);
-    if (denomHelper.type !== "erc20" || !isHexAddress || !chainInfo.evm) {
+
+    if (
+      !Object.keys(thirdparySupportedChainIdMap).includes(chainId) ||
+      denomHelper.type !== "erc20" ||
+      !isHexAddress ||
+      !chainInfo.evm
+    ) {
       return;
     }
     const key = `${chainId}/${address}`;

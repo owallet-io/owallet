@@ -11,11 +11,7 @@ import {
 } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
-import {
-  evmTokens,
-  getEvmAddress,
-  tronToEthAddress,
-} from "@oraichain/oraidex-common";
+import { evmTokens, tronToEthAddress } from "@oraichain/oraidex-common";
 import { network, chainInfos } from "@oraichain/oraidex-common";
 import {
   cosmosTokens,
@@ -25,21 +21,21 @@ import {
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { uniqBy } from "lodash";
-import axios from "axios";
+// import axios from 'axios';
 
-export const getUtxos = async (address: string, baseUrl: string) => {
-  if (!address) throw Error("Address is not empty");
-  if (!baseUrl) throw Error("BaseUrl is not empty");
-  const { data } = await axios({
-    baseURL: baseUrl,
-    method: "get",
-    url: `/address/${address}/utxo`,
-  });
-  return data;
-};
+// export const getUtxos = async (address: string, baseUrl: string) => {
+//   if (!address) throw Error('Address is not empty');
+//   if (!baseUrl) throw Error('BaseUrl is not empty');
+//   const { data } = await axios({
+//     baseURL: baseUrl,
+//     method: 'get',
+//     url: `/address/${address}/utxo`
+//   });
+//   return data;
+// };
 
 const EVM_BALANCE_RETRY_COUNT = 2;
-const COSMOS_BALANCE_RETRY_COUNT = 4;
+// const COSMOS_BALANCE_RETRY_COUNT = 4;
 
 export type CWStargateType = {
   account: any;
@@ -52,7 +48,7 @@ export type LoadTokenParams = {
   metamaskAddress?: string;
   oraiAddress?: string;
   tronAddress?: string;
-  kwtAddress?: string;
+  injAddress?: string;
   cwStargate?: CWStargateType;
   tokenReload?: Array<any>;
   customChainInfos?: Array<any>;
@@ -62,7 +58,7 @@ type AmountDetails = { [denom: string]: string };
 async function loadNativeBalance(
   universalSwapStore: any,
   address: string,
-  tokenInfo: { chainId?: string; rpc?: string },
+  tokenInfo: { chainId: string; rpc: string },
   retryCount?: number
 ) {
   if (!address) return;
@@ -114,7 +110,7 @@ async function loadTokens(
     oraiAddress,
     metamaskAddress,
     tronAddress,
-    kwtAddress,
+    injAddress,
     cwStargate,
     tokenReload,
     customChainInfos,
@@ -133,7 +129,6 @@ async function loadTokens(
   );
 
   const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
-  console.log("och", och);
 
   if (tokenReload) {
     tokenReload.map((t) => {
@@ -145,17 +140,13 @@ async function loadTokens(
             await Promise.all([
               loadTokensCosmos(
                 universalSwapStore,
-                kwtAddress,
+                injAddress,
                 oraiAddress,
                 tokenReload
               ),
               loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
               // different cointype but also require keplr connected by checking oraiAddress
-              loadKawaiiSubnetAmount(
-                universalSwapStore,
-                kwtAddress,
-                tokenReload
-              ),
+              // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
             ]);
           }, 500);
         }
@@ -201,13 +192,13 @@ async function loadTokens(
       await Promise.all([
         loadTokensCosmos(
           universalSwapStore,
-          kwtAddress,
+          injAddress,
           oraiAddress,
           tokenReload
         ),
         loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
         // different cointype but also require keplr connected by checking oraiAddress
-        loadKawaiiSubnetAmount(universalSwapStore, kwtAddress, tokenReload),
+        // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
       ]);
     }, 500);
   }
@@ -258,11 +249,11 @@ export const genAddressCosmos = (info, address60, address118) => {
 
 async function loadTokensCosmos(
   updateAmounts: any,
-  kwtAddress: string,
+  injectiveAddress: string,
   oraiAddress: string,
   tokenReload?: Array<any>
 ) {
-  if (!kwtAddress || !oraiAddress) return;
+  if (!injectiveAddress || !oraiAddress) return;
   let cosmosInfos = chainInfos.filter(
     (chainInfo) =>
       chainInfo.networkType === "cosmos" || chainInfo.bip44.coinType === 118
@@ -279,7 +270,7 @@ async function loadTokensCosmos(
   for (const chainInfo of cosmosInfos) {
     const { cosmosAddress } = genAddressCosmos(
       chainInfo,
-      kwtAddress,
+      injectiveAddress,
       oraiAddress
     );
 
@@ -521,28 +512,22 @@ async function loadEvmAmounts(
   universalSwapStore.updateAmounts(amountDetails);
 }
 
-export async function loadKawaiiSubnetAmount(
-  universalSwapStore: any,
-  kwtAddress: string,
-  tokenReload?: any
-) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find((c) => c.chainId === "kawaii_6886-1");
-  try {
-    loadNativeBalance(universalSwapStore, kwtAddress, kawaiiInfo);
+// export async function loadKawaiiSubnetAmount(universalSwapStore: any, injAddress: string, tokenReload?: any) {
+//   if (!injAddress) return;
+//   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
+//   try {
+//     loadNativeBalance(universalSwapStore, injAddress, kawaiiInfo);
 
-    const kwtSubnetAddress = getEvmAddress(kwtAddress);
-    const kawaiiEvmInfo = chainInfos.find((c) => c.chainId === "0x1ae6");
-    //@ts-ignore
-    let amountDetails = Object.fromEntries(
-      await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload)
-    );
+//     const kwtSubnetAddress = getEvmAddress(injAddress);
+//     const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
+//     //@ts-ignore
+//     let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload));
 
-    universalSwapStore.updateAmounts(amountDetails);
-  } catch (err) {
-    console.log("loadKawaiiSubnetAmount err", err);
-  }
-}
+//     universalSwapStore.updateAmounts(amountDetails);
+//   } catch (err) {
+//     console.log('loadKawaiiSubnetAmount err', err);
+//   }
+// }
 
 export function useLoadTokens(
   universalSwapStore: any

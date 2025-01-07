@@ -569,6 +569,8 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
           message: "Failed to get response",
         };
 
+        console.log("error on fetch", this.baseURL, e.request, error);
+
         yield this.sharedContext.handleResponse(() => {
           this.setError(error);
 
@@ -586,6 +588,13 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
           data: e,
         };
 
+        console.log(
+          "error on fetch",
+          this.baseURL,
+          this._url,
+          e.request,
+          error
+        );
         yield this.sharedContext.handleResponse(() => {
           this.setError(error);
 

@@ -3,24 +3,20 @@ import {
   CosmosWallet,
   EvmWallet,
   NetworkChainId,
-  CosmosChainId,
-  TokenItemType,
   EvmResponse,
   Networks,
-  IERC20Upgradeable__factory,
   ethToTronAddress,
-  tronToEthAddress,
-  network,
 } from "@oraichain/oraidex-common";
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { OWallet, Ethereum, TronWeb } from "@owallet/types";
 import {
-  SigningStargateClient,
-  SigningStargateClientOptions,
-} from "@cosmjs/stargate";
+  IEthereumProvider,
+  ITronProvider,
+  OWallet,
+  ChainIdEVM,
+} from "@owallet/types";
 import { ethers } from "ethers";
-import { Tendermint37Client } from "@cosmjs/tendermint-rpc";
+import { DEFAULT_FEE_LIMIT_TRON, TronWebProvider } from "@owallet/common";
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -51,11 +47,11 @@ export class SwapCosmosWallet extends CosmosWallet {
   }
 }
 
+//@ts-ignore
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
-  private ethereum: Ethereum;
-  //@ts-ignore
-  private tronWeb: TronWeb;
+  private ethereum: IEthereumProvider;
+  private tronWeb: ITronProvider;
   private isTronToken: boolean;
   constructor(isTronToken: boolean) {
     super();
@@ -63,7 +59,7 @@ export class SwapEvmWallet extends EvmWallet {
     this.ethereum = window.owallet.ethereum || window.ethereum;
     this.isTronToken = isTronToken;
     //@ts-ignore
-    this.tronWeb = window.tronWeb;
+    this.tronWeb = window.owallet.tron;
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, "any");
   }
@@ -78,11 +74,12 @@ export class SwapEvmWallet extends EvmWallet {
 
   async getEthAddress(): Promise<string> {
     if (this.checkEthereum()) {
-      const [address] = await this.ethereum.request({
+      const result = await this.ethereum.request({
         method: "eth_requestAccounts",
         params: [],
+        chainId: ChainIdEVM.BNBChain,
       });
-      return address;
+      return result?.[0];
     }
   }
 
@@ -139,6 +136,20 @@ export class SwapEvmWallet extends EvmWallet {
         ethToTronAddress(issuerAddress)
       );
 
+      const tronWeb = TronWebProvider();
+
+      const triggerContract =
+        await tronWeb.transactionBuilder.triggerConstantContract(
+          address,
+          functionSelector,
+          {
+            ...options,
+            feeLimit: DEFAULT_FEE_LIMIT_TRON + Math.floor(Math.random() * 100),
+          },
+          parameters,
+          ethToTronAddress(issuerAddress)
+        );
+
       if (!transaction.result || !transaction.result.result) {
         throw new Error(
           "Unknown trigger error: " + JSON.stringify(transaction.transaction)
@@ -146,22 +157,23 @@ export class SwapEvmWallet extends EvmWallet {
       }
 
       // sign from inject tronWeb
-      const singedTransaction = (await this.tronWeb.sign(
-        transaction.transaction
-      )) as {
+      const singedTransaction = (await this.tronWeb.sign(ChainIdEVM.TRON, {
+        ...transaction.transaction,
+        energy_used: triggerContract.energy_used,
+      })) as {
         raw_data: any;
         raw_data_hex: string;
+        energy_used?: string;
         txID: string;
         visible?: boolean;
       };
 
-      const result = (await this.tronWeb.sendRawTransaction(
-        singedTransaction
-      )) as {
-        txid?: string;
-      };
-      if (result) {
-        return { transactionHash: result.txid };
+      // const result = (await this.tronWeb.sendRawTransaction(singedTransaction, ChainIdEVM.TRON)) as {
+      //   txid?: string;
+      // };
+
+      if (singedTransaction) {
+        return { transactionHash: singedTransaction.txID };
       }
     } catch (error) {
       console.log("error", error);

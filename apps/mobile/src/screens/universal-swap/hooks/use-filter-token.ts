@@ -1,4 +1,4 @@
-import { TokenItemType } from "@oraichain/oraidex-common";
+import { BTC_CONTRACT, TokenItemType } from "@oraichain/oraidex-common";
 import {
   SwapDirection,
   UniversalSwapHelper,
@@ -41,7 +41,9 @@ export const useFilterToken = (
       SwapDirection.To
     );
 
-    setFilteredToTokens(filteredToTokens);
+    setFilteredToTokens(
+      filteredToTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
 
     const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalToToken.chainId,
@@ -51,7 +53,9 @@ export const useFilterToken = (
       SwapDirection.From
     );
 
-    setFilteredFromTokens(filteredFromTokens);
+    setFilteredFromTokens(
+      filteredFromTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);

@@ -1,7 +1,7 @@
 import { ChainsService } from "../chains";
 import { Notification } from "../tx/types";
 import { Transaction } from "@owallet/types";
-import { retry, TronWebProvider } from "@owallet/common";
+import { retry } from "@owallet/common";
 
 export class BackgroundTxTronService {
   constructor(
@@ -35,11 +35,12 @@ export class BackgroundTxTronService {
         throw new Error("No Tron info chain");
       }
 
-      console.log("signedTx", signedTx);
-
-      let txHash = signedTx.transaction.txID;
-
-      console.log("txHash", txHash);
+      let txHash = "";
+      if (signedTx?.transaction?.txID) {
+        txHash = signedTx.transaction.txID;
+      } else if (typeof signedTx === "string") {
+        txHash = signedTx;
+      }
 
       if (!txHash) {
         throw new Error("No tx hash responded");

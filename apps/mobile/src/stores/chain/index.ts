@@ -172,8 +172,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     });
   }
 
-  // chain info들을 list로 보여줄때 hideInUI인 얘들은 빼고 보여줘야한다
-  // property 이름이 얘매해서 일단 이렇게 지었다.
   @computed
   get chainInfosInListUI() {
     return this.chainInfos.filter((chainInfo) => {
@@ -301,8 +299,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
 
     // Must not wait!!
     this.tryUpdateAllChainInfos();
-    // mobile은 background가 persistent하게 존재할 수 없기 때문에
-    // 체인 정보에 대한 업데이트를 UI 단에서 관리한다.
+
     setInterval(() => {
       this.tryUpdateAllChainInfos();
     }, 10 * 60 * 1000);

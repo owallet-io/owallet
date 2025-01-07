@@ -153,7 +153,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     });
   }, [chainId]);
   const handleSubmit = () => {
-    if (txConfigsValidate.interactionBlocked || name === "") {
+    if (name === "") {
       return;
     }
     if (editIndex < 0) {
@@ -178,7 +178,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       bottomGroup={
         <OWButton
           label="Save"
-          disabled={txConfigsValidate.interactionBlocked || name === ""}
+          disabled={name === ""}
           onPress={() => handleSubmit()}
           style={[
             {
@@ -227,16 +227,13 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             placeholder="Enter contact name"
           />
 
-          <AddressInput
+          <TextInput
             label=""
             topInInputContainer={
               <View style={{ paddingBottom: 4 }}>
                 <OWText>Address</OWText>
               </View>
             }
-            recipientConfig={recipientConfig}
-            memoConfig={memoConfig}
-            disableAddressBook={false}
             inputContainerStyle={styles.input}
             labelStyle={styles.addNewBookLabel}
             placeholder="Enter address"

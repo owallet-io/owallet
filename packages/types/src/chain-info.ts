@@ -70,3 +70,18 @@ export type ChainInfoWithoutEndpoints = Omit<
     readonly rpc: undefined;
   };
 };
+
+export type ChainInfoModule = "cosmos" | "starknet";
+
+export type ModularChainInfo =
+  | {
+      readonly chainId: string;
+      readonly chainName: string;
+      readonly chainSymbolImageUrl?: string;
+      readonly cosmos: ChainInfo;
+    }
+  | {
+      readonly chainId: string;
+      readonly chainName: string;
+      readonly chainSymbolImageUrl?: string;
+    };
