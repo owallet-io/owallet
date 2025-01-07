@@ -132,7 +132,9 @@
     "web3-utils": "1.7.4",
     "ws": "8.17.1",
     "webextension-polyfill": "0.10.0",
-    "@ledgerhq/hw-app-eth": "6.29.3"
+    "@ledgerhq/hw-app-eth": "6.29.3",
+    "@ton/core": "0.56.3",
+    "@ton/crypto-primitives": "2.1.0"
   },
   "browser": {
     "assert": false
