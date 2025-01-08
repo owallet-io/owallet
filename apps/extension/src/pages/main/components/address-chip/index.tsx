@@ -16,7 +16,7 @@ export const AddressChip: FunctionComponent<{
   address?: string;
   inModal?: boolean;
 }> = observer(({ chainId, address, inModal }) => {
-  const { accountStore, chainStore, tronAccountStore } = useStore();
+  const { allAccountStore, chainStore, tronAccountStore } = useStore();
 
   const [copyAddress, setCopyAddress] = useState("");
 
@@ -30,7 +30,7 @@ export const AddressChip: FunctionComponent<{
 
   const theme = useTheme();
 
-  const account = accountStore.getAccount(chainId);
+  const account = allAccountStore.getAccount(chainId);
 
   const [isHover, setIsHover] = useState(false);
   const [animCheck, setAnimCheck] = useState(false);
@@ -45,10 +45,7 @@ export const AddressChip: FunctionComponent<{
         );
         setCopyAddress(accountTron.base58Address);
       } else {
-        const finalAddress = isEVMOnlyChain
-          ? account.ethereumHexAddress
-          : account.bech32Address;
-
+        const finalAddress = account.addressDisplay;
         setCopyAddress(finalAddress);
       }
     }

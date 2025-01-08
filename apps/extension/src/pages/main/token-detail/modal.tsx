@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useRef } from "react";
+import React, { FunctionComponent, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import styled, { useTheme } from "styled-components";
 import { Box } from "../../../components/box";
@@ -7,26 +7,16 @@ import { useStore } from "../../../stores";
 import { Body1, Subtitle3 } from "../../../components/typography";
 import { ColorPalette } from "../../../styles";
 import { Gutter } from "../../../components/gutter";
-import { usePaginatedCursorQuery } from "./hook";
-import { ResMsgsHistory } from "./types";
 import SimpleBar from "simplebar-react";
-import { PaginationLimit, Relations } from "./constants";
 import SimpleBarCore from "simplebar-core";
 import { HeaderHeight } from "../../../layouts/header";
 import { useNavigate } from "react-router";
 import { TokenInfos } from "./token-info";
-import { RenderMessages } from "./messages";
 import { Modal } from "../../../components/modal";
 import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
-import { CircleButton } from "./circle-button";
-import { AddressChip, QRCodeChip } from "../components/address-chip";
+import { AddressChip } from "../components/address-chip";
 import { ReceiveModal } from "./receive-modal";
-import { StakedBalance } from "./staked-balance";
-import { MsgItemSkeleton } from "./msg-items/skeleton";
-import { Stack } from "../../../components/stack";
-import { EmptyView } from "../../../components/empty-view";
 import { DenomHelper } from "@owallet/common";
-import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainIdEVM } from "@owallet/types";
 import Color from "color";
 import { ChainImageFallback, CurrencyImageFallback } from "components/image";
@@ -96,16 +86,15 @@ export const TokenDetailModal: FunctionComponent<{
 }> = observer(({ close, chainId, coinMinimalDenom }) => {
   const {
     chainStore,
-    accountStore,
+    allAccountStore,
     queriesStore,
     priceStore,
-    price24HChangesStore,
     uiConfigStore,
   } = useStore();
 
   const theme = useTheme();
 
-  const account = accountStore.getAccount(chainId);
+  const account = allAccountStore.getAccount(chainId) as any;
   const modularChainInfo = chainStore.getModularChain(chainId);
   const chainInfo = chainStore.getChain(chainId);
   const currency = (() => {
@@ -133,27 +122,35 @@ export const TokenDetailModal: FunctionComponent<{
   })();
 
   const isIBCCurrency = "paths" in currency;
+  const isBtcLegacy = denomHelper.type === "legacy";
+  const isBTC = chainInfo.features.includes("btc");
 
   const [isReceiveOpen, setIsReceiveOpen] = React.useState(false);
 
   const balance = (() => {
     if ("cosmos" in modularChainInfo) {
       const queryBalances = queriesStore.get(chainId).queryBalances;
-      return chainStore.isEvmChain(chainId) && (isMainCurrency || isERC20)
-        ? queryBalances
-            .getQueryEthereumHexAddress(account.ethereumHexAddress)
-            .getBalance(currency)
-        : queryBalances
-            .getQueryBech32Address(account.bech32Address)
-            .getBalance(currency);
-    }
-  })();
 
-  const price24HChange = (() => {
-    if (!currency.coinGeckoId) {
-      return undefined;
+      if (!isBTC) {
+        return chainStore.isEvmChain(chainId) && (isMainCurrency || isERC20)
+          ? queryBalances
+              .getQueryEthereumHexAddress(account.ethereumHexAddress)
+              .getBalance(currency)
+          : queryBalances
+              .getQueryBech32Address(account.bech32Address)
+              .getBalance(currency);
+      } else {
+        if (isBtcLegacy) {
+          return queryBalances
+            .getQueryBtcLegacyAddress(account.btcLegacyAddress)
+            .getBalance(currency);
+        } else {
+          return queryBalances
+            .getQueryByAddress(account.addressDisplay)
+            .getBalance(currency);
+        }
+      }
     }
-    return price24HChangesStore.get24HChange(currency.coinGeckoId);
   })();
 
   const navigate = useNavigate();
@@ -275,32 +272,6 @@ export const TokenDetailModal: FunctionComponent<{
     },
   ];
 
-  const msgHistory = usePaginatedCursorQuery<ResMsgsHistory>(
-    process.env["KEPLR_EXT_TX_HISTORY_BASE_URL"],
-    () => {
-      return `/history/msgs/${
-        ChainIdHelper.parse(chainId).identifier
-      }/${(() => {
-        if ("cosmos" in modularChainInfo) {
-          return accountStore.getAccount(chainId).bech32Address;
-        }
-      })()}?relations=${Relations.join(",")}&denoms=${encodeURIComponent(
-        currency.coinMinimalDenom
-      )}&vsCurrencies=${priceStore.defaultVsCurrency}&limit=${PaginationLimit}`;
-    },
-    (_, prev) => {
-      return {
-        cursor: prev.nextCursor,
-      };
-    },
-    (res) => {
-      if (!res.nextCursor) {
-        return true;
-      }
-      return false;
-    }
-  );
-
   const simpleBarRef = useRef<SimpleBarCore>(null);
   // scroll to refresh
   const onScroll = () => {
@@ -314,7 +285,6 @@ export const TokenDetailModal: FunctionComponent<{
         rect.y + rect.height - scrollRect.y - scrollRect.height;
 
       if (remainingBottomY < scrollRect.height / 10) {
-        msgHistory.next();
       }
     }
   };
@@ -425,7 +395,14 @@ export const TokenDetailModal: FunctionComponent<{
                 <Gutter size="0.25rem" />
                 <YAxis alignX="center">
                   <XAxis alignY="center">
-                    <AddressChip chainId={chainId} />
+                    <AddressChip
+                      chainId={chainId}
+                      address={
+                        isBTC && isBtcLegacy
+                          ? account.btcLegacyAddress
+                          : account.addressDisplay
+                      }
+                    />
                     <Gutter size="0.25rem" />
                     {/* <QRCodeChip
                       onClick={() => {
@@ -590,28 +567,7 @@ export const TokenDetailModal: FunctionComponent<{
               if (price) {
                 let textDeco: "green" | undefined = undefined;
                 let text = price.roundTo(3).toString();
-                if (price24HChange) {
-                  if (
-                    price24HChange
-                      .toDec()
-                      .abs()
-                      .lte(DecUtils.getTenExponentN(-4))
-                  ) {
-                    text += " (0.00%)";
-                  } else {
-                    text += ` (${price24HChange
-                      .maxDecimals(2)
-                      .trim(false)
-                      .shrink(true)
-                      .sign(true)
-                      .inequalitySymbol(false)
-                      .toString()})`;
 
-                    if (price24HChange.toDec().gt(Dec.zero)) {
-                      textDeco = "green";
-                    }
-                  }
-                }
                 if ("originCurrency" in currency && currency.originCurrency) {
                   infos.push({
                     title: `${currency.originCurrency.coinDenom} Price`,

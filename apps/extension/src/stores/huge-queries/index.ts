@@ -165,12 +165,6 @@ export class HugeQueriesStore {
                 account.btcLegacyAddress
               );
             } else {
-              console.log(
-                "getQueryByAddress",
-                chainInfo.chainId,
-                account.addressDisplay
-              );
-
               queryBalance = queries.queryBalances.getQueryByAddress(
                 account.addressDisplay
               );
@@ -184,16 +178,6 @@ export class HugeQueriesStore {
               currency.coinMinimalDenom
             ) {
               const balance = queryBalance.stakable?.balance;
-
-              if (isBTC) {
-                console.log(
-                  "balance ",
-                  key,
-                  account.addressDisplay,
-                  balance.toString(),
-                  this.priceStore.calculatePrice(balance).toString()
-                );
-              }
 
               if (!balance) {
                 continue;

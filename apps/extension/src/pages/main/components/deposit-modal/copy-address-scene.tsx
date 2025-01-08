@@ -40,6 +40,7 @@ export const CopyAddressScene: FunctionComponent<{
   const {
     chainStore,
     accountStore,
+    allAccountStore,
     keyRingStore,
     uiConfigStore,
     analyticsStore,
@@ -98,8 +99,17 @@ export const CopyAddressScene: FunctionComponent<{
           return undefined;
         }
 
+        if (modularChainInfo.cosmos.features?.includes("btc")) {
+          const accountBTCInfo = allAccountStore.getAccount(
+            modularChainInfo.chainId
+          );
+
+          return accountBTCInfo.addressDisplay;
+        }
+
         return accountInfo.bech32Address;
       })();
+
       const ethereumAddress = (() => {
         if (!("cosmos" in modularChainInfo)) {
           return undefined;
@@ -192,6 +202,8 @@ export const CopyAddressScene: FunctionComponent<{
       }
       return 0;
     });
+
+  console.log("addresses");
 
   const [blockInteraction, setBlockInteraction] = useState(false);
 

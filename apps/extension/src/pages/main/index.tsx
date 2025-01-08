@@ -361,10 +361,6 @@ export const MainPage: FunctionComponent<{
     };
   }, [analyticsStore, search, isEnteredSearch]);
 
-  let address = allAccountStore.getAccount("bitcoin").addressDisplay;
-
-  console.log("address", address);
-
   const searchScrollAnim = useSpringValue(0, {
     config: defaultSpringConfig,
   });
