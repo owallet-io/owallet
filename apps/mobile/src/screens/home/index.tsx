@@ -193,6 +193,37 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       unsubscribeOnNotificationOpenedApp();
     };
   }, [inject]);
+  const filterUnique = (
+    source: AppCurrency[],
+    target: AppCurrency[]
+  ): AppCurrency[] => {
+    const denomsSet = new Set(target.map((item) => item.coinMinimalDenom));
+    return source.filter((item) => !denomsSet.has(item.coinMinimalDenom));
+  };
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      const oraiChain = chainStore.getChain("Oraichain");
+      if (!oraiChain?.currencies) return;
+      fetchRetry(
+        "https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json"
+      )
+        .then((res) => {
+          if (!res?.currencies) return;
+          const filtered = filterUnique(
+            oraiChain?.currencies,
+            res?.currencies || []
+          );
+          for (const currency of filtered) {
+            const key = `Oraichain/${currency?.coinMinimalDenom}`;
+            const isExits = appInitStore.isItemExits(key);
+            if (typeof isExits === "undefined") {
+              appInitStore.updateTokenState(key, true);
+            }
+          }
+        })
+        .catch((err) => console.error(err));
+    });
+  }, []);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={

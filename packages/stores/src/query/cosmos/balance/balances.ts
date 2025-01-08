@@ -58,7 +58,7 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         })
         .join(",");
       fetchRetry(
-        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+        `https://oraicommon.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       ).then((res) => {
         if (res?.length > 0) {
           const tokens = res.map((item, index) => {
