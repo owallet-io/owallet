@@ -2251,6 +2251,86 @@ export const EmbedChainInfos: (ChainInfo | ModularChainInfo)[] = [
     },
   },
   {
+    rpc: "https://blockstream.info/api",
+    rest: "https://blockstream.info/api",
+    chainId: "bitcoin",
+    chainName: "Bitcoin",
+    chainSymbolImageUrl:
+      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    bip44: {
+      coinType: 0,
+    },
+    bip84: {
+      coinType: 0,
+    },
+    stakeCurrency: {
+      coinDenom: "BTC",
+      coinMinimalDenom: "segwit:btc",
+      coinDecimals: 8,
+      coinGeckoId: "bitcoin",
+      coinImageUrl:
+        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+    },
+    bech32Config: Bech32Address.defaultBech32Config("bc"),
+    currencies: [
+      {
+        type: "legacy",
+        coinDenom: "BTC",
+        coinMinimalDenom: "legacy:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+      {
+        type: "segwit",
+        coinDenom: "BTC",
+        coinMinimalDenom: "segwit:btc",
+        coinDecimals: 8,
+        coinGeckoId: "bitcoin",
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "segwit:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+        {
+          coinDenom: "BTC",
+          coinMinimalDenom: "legacy:btc",
+          coinDecimals: 8,
+          coinGeckoId: "bitcoin",
+          coinImageUrl:
+            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          gasPriceStep: {
+            low: 144,
+            average: 18,
+            high: 1,
+          },
+        },
+      ];
+    },
+
+    features: ["gen-address", "btc", "not-support-staking"],
+    txExplorer: {
+      name: "BlockStream",
+      txUrl: "https://blockstream.info/tx/{txHash}",
+      accountUrl: "https://blockstream.info/address/{address}",
+    },
+  },
+  {
     rpc: "https://sapphire.oasis.io",
     rest: "https://sapphire.oasis.io",
     chainId: "eip155:23294",

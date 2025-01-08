@@ -35,7 +35,6 @@ export class AllAccountStore {
         this.btcAccountStore.getAccount(chainId) as BtcAccountBase,
       tron: (chainId) =>
         this.tronAccountStore.getAccount(chainId) as TrxAccountBase,
-      // Add more if needed
     };
   }
   getAccount(

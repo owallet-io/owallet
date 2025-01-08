@@ -490,7 +490,7 @@ export class RootStore {
     this.hugeQueriesStore = new HugeQueriesStore(
       this.chainStore,
       this.queriesStore,
-      this.accountStore,
+      this.allAccountStore,
       this.priceStore
     );
 

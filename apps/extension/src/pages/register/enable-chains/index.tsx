@@ -60,6 +60,7 @@ export const EnableChainsScene: FunctionComponent<{
   initialSearchValue?: string;
   fallbackEthereumLedgerApp?: boolean;
   fallbackStarknetLedgerApp?: boolean;
+  fallbackBtcLedgerApp?: boolean;
   stepPrevious: number;
   stepTotal: number;
 }> = observer(
@@ -69,6 +70,7 @@ export const EnableChainsScene: FunctionComponent<{
     isFresh,
     fallbackEthereumLedgerApp,
     fallbackStarknetLedgerApp,
+    fallbackBtcLedgerApp,
     stepPrevious,
     stepTotal,
     skipWelcome,
@@ -150,6 +152,8 @@ export const EnableChainsScene: FunctionComponent<{
               const chainInfo = chainStore.getChain(
                 modularChainInfo.cosmos.chainId
               );
+              console.log("chaichainInfo", chainInfo);
+
               if (keyRingStore.needKeyCoinTypeFinalize(vaultId, chainInfo)) {
                 promises.push(
                   (async () => {
@@ -994,6 +998,7 @@ export const EnableChainsScene: FunctionComponent<{
 
         <Gutter size="1.25rem" />
         <Box width="22.5rem" marginX="auto">
+          123
           <Button
             text={intl.formatMessage({
               id: "button.save",
@@ -1054,8 +1059,6 @@ export const EnableChainsScene: FunctionComponent<{
                     !!chainInfo.features?.includes("eth-key-sign");
 
                   if (isEthermintLike) {
-                    // 참고로 위에서 chainInfos memo로 인해서 막혀있기 때문에
-                    // 여기서 throwErrorIfEthermintWithLedgerButNotSupported 확인은 생략한다.
                     // Remove enable from enables
                     enables.splice(i, 1);
                     i--;
@@ -1084,6 +1087,27 @@ export const EnableChainsScene: FunctionComponent<{
                   disables.push(enable);
 
                   ledgerStarknetAppNeeds.push(enable);
+                }
+              }
+
+              const ledgerBtcAppNeeds: string[] = [];
+              for (let i = 0; i < enables.length; i++) {
+                if (!fallbackBtcLedgerApp) {
+                  break;
+                }
+
+                const enable = enables[i];
+
+                const chainInfo = chainStore.getChain(enable);
+                const isBtc = chainInfo.features?.includes("btc");
+
+                if (isBtc) {
+                  // enables.splice(i, 1);
+                  // i--;
+                  // // And push it disables
+                  // disables.push(enable);
+
+                  ledgerBtcAppNeeds.push(enable);
                 }
               }
 
@@ -1122,8 +1146,6 @@ export const EnableChainsScene: FunctionComponent<{
                   skipWelcome,
                 });
               } else {
-                // 어차피 bip44 coin type selection과 ethereum ledger app이 동시에 필요한 경우는 없다.
-                // (ledger에서는 coin type이 app당 할당되기 때문에...)
                 if (keyType === "ledger") {
                   if (fallbackStarknetLedgerApp) {
                     if (ledgerStarknetAppNeeds.length > 0) {
@@ -1238,6 +1260,20 @@ export const EnableChainsScene: FunctionComponent<{
                 } else {
                   replaceToWelcomePage();
                 }
+              }
+
+              try {
+                const vaultId = keyRingStore.selectedKeyInfo.id;
+                const chainIdentifier =
+                  ChainIdHelper.parse("bitcoin").identifier;
+                await chainStore.enableChainInfoInUIWithVaultId(
+                  vaultId,
+                  ...[chainIdentifier]
+                );
+
+                console.log("enabled bitcoin");
+              } catch (err) {
+                console.log("err enabled", err);
               }
             }}
           />

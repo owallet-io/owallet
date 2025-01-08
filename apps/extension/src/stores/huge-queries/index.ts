@@ -2,9 +2,9 @@ import { ChainStore } from "../chain";
 import {
   CoinGeckoPriceStore,
   CosmosQueries,
-  IAccountStore,
   IChainInfoImpl,
   IQueriesStore,
+  ObservableQueryBalancesImplMap,
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
@@ -18,6 +18,7 @@ import { computedFn } from "mobx-utils";
 import { BinarySortArray } from "./sort";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ModularChainInfo } from "@owallet/types";
+import { AllAccountStore } from "stores/all-account-store";
 
 interface ViewToken {
   chainInfo: IChainInfoImpl | ModularChainInfo;
@@ -49,7 +50,7 @@ export class HugeQueriesStore {
   constructor(
     protected readonly chainStore: ChainStore,
     protected readonly queriesStore: IQueriesStore<CosmosQueries>,
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AllAccountStore,
     protected readonly priceStore: CoinGeckoPriceStore
   ) {
     let balanceDisposal: (() => void) | undefined;
@@ -117,17 +118,19 @@ export class HugeQueriesStore {
 
   @action
   protected updateBalances() {
+    // Need to check btc here
     const keysUsed = new Map<string, boolean>();
     const prevKeyMap = new Map(this.balanceBinarySort.indexForKeyMap());
 
     for (const modularChainInfo of this.chainStore.modularChainInfosInUI) {
-      const account = this.accountStore.getAccount(modularChainInfo.chainId);
+      const account = this.accountStore.getAccount(
+        modularChainInfo.chainId
+      ) as any;
       if ("cosmos" in modularChainInfo) {
         const chainInfo = this.chainStore.getChain(modularChainInfo.chainId);
-
+        const isBTC = chainInfo.features.includes("btc");
         const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
-
-        if (account.bech32Address === "") {
+        if (!isBTC && account.bech32Address === "") {
           continue;
         }
         const queries = this.queriesStore.get(chainInfo.chainId);
@@ -136,20 +139,43 @@ export class HugeQueriesStore {
         if (chainInfo.stakeCurrency) {
           currencies.push(chainInfo.stakeCurrency);
         }
+
         for (const currency of currencies) {
           const denomHelper = new DenomHelper(currency.coinMinimalDenom);
           const isERC20 = denomHelper.type === "erc20";
           const isMainCurrency =
             mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
-          const queryBalance =
-            this.chainStore.isEvmChain(chainInfo.chainId) &&
-            (isMainCurrency || isERC20)
-              ? queries.queryBalances.getQueryEthereumHexAddress(
-                  account.ethereumHexAddress
-                )
-              : queries.queryBalances.getQueryBech32Address(
-                  account.bech32Address
-                );
+          let queryBalance: ObservableQueryBalancesImplMap;
+
+          if (!isBTC) {
+            queryBalance =
+              this.chainStore.isEvmChain(chainInfo.chainId) &&
+              (isMainCurrency || isERC20)
+                ? queries.queryBalances.getQueryEthereumHexAddress(
+                    account.ethereumHexAddress
+                  )
+                : queries.queryBalances.getQueryBech32Address(
+                    account.bech32Address
+                  );
+          } else {
+            const isBtcLegacy = denomHelper.type === "legacy";
+
+            if (isBtcLegacy) {
+              queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
+                account.btcLegacyAddress
+              );
+            } else {
+              console.log(
+                "getQueryByAddress",
+                chainInfo.chainId,
+                account.addressDisplay
+              );
+
+              queryBalance = queries.queryBalances.getQueryByAddress(
+                account.addressDisplay
+              );
+            }
+          }
 
           const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
           if (!keysUsed.get(key)) {
@@ -158,14 +184,20 @@ export class HugeQueriesStore {
               currency.coinMinimalDenom
             ) {
               const balance = queryBalance.stakable?.balance;
+
+              if (isBTC) {
+                console.log(
+                  "balance ",
+                  key,
+                  account.addressDisplay,
+                  balance.toString(),
+                  this.priceStore.calculatePrice(balance).toString()
+                );
+              }
+
               if (!balance) {
                 continue;
               }
-              // If the balance is zero, don't show it.
-              // 다시 제로 일때 보여주기 위해서 아래코드를 주석처리함
-              // if (balance.toDec().equals(HugeQueriesStore.zeroDec)) {
-              //   continue;
-              // }
 
               keysUsed.set(key, true);
               prevKeyMap.delete(key);
@@ -198,7 +230,6 @@ export class HugeQueriesStore {
                         currency.coinMinimalDenom &&
                       !currency.coinMinimalDenom.startsWith("ibc/")
                     ) {
-                      // 위의 if 문을 뒤집기(?) 귀찮아서 그냥 빈 if-else로 처리한다...
                     } else {
                       continue;
                     }

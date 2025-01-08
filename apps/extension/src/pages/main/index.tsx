@@ -123,6 +123,7 @@ export const MainPage: FunctionComponent<{
     uiConfigStore,
     keyRingStore,
     priceStore,
+    allAccountStore,
   } = useStore();
 
   const isNotReady = useIsNotReady();
@@ -359,6 +360,10 @@ export const MainPage: FunctionComponent<{
       clearTimeout(handler);
     };
   }, [analyticsStore, search, isEnteredSearch]);
+
+  let address = allAccountStore.getAccount("bitcoin").addressDisplay;
+
+  console.log("address", address);
 
   const searchScrollAnim = useSpringValue(0, {
     config: defaultSpringConfig,

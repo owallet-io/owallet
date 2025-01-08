@@ -232,11 +232,17 @@ export class TokenScanService {
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    console.log("chainInfo", chainInfo);
+
     if (chainInfo.hideInUI) {
       return;
     }
 
     if (this.chainsUIService.isEnabled(vaultId, chainId)) {
+      return;
+    }
+
+    if (chainInfo.features.includes("btc")) {
       return;
     }
 

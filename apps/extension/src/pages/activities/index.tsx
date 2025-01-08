@@ -254,7 +254,7 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
     hugeQueriesStore,
     chainStore,
     priceStore,
-    keyRingStore,
+    uiConfigStore,
   } = useStore();
 
   const allArr = hugeQueriesStore.getAllAddrByChain;
