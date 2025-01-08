@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useLayoutEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import {
+  IBtcFeeConfig,
   IFeeConfig,
   IGasConfig,
   IGasSimulator,
@@ -24,10 +25,11 @@ import { UIConfigStore } from "../../../stores/ui-config";
 import { IChainStore, IQueriesStore } from "@owallet/stores";
 import { Tooltip } from "../../tooltip";
 import { EthereumAccountBase } from "@owallet/stores-eth";
+import { TransactionBTCFeeModal } from "./modal-btc";
 
 export const useFeeOptionSelectionOnInit = (
   uiConfigStore: UIConfigStore,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -65,7 +67,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
   chainStore: IChainStore,
   queriesStore: IQueriesStore,
   senderConfig: ISenderConfig,
-  feeConfig: IFeeConfig,
+  feeConfig: IFeeConfig | IBtcFeeConfig,
   disableAutomaticFeeSet: boolean | undefined
 ) => {
   useLayoutEffect(() => {
@@ -166,7 +168,7 @@ export const useAutoFeeCurrencySelectionOnInit = (
 
 export const FeeControl: FunctionComponent<{
   senderConfig: ISenderConfig;
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
 
@@ -207,6 +209,8 @@ export const FeeControl: FunctionComponent<{
     );
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const chainInfo = chainStore.getChain(feeConfig.chainId);
+    const isBtc = chainInfo.features.includes("btc");
 
     const isShowingEstimatedFee = isForEVMTx && !!gasSimulator?.gasEstimated;
 
@@ -483,15 +487,27 @@ export const FeeControl: FunctionComponent<{
           maxHeight="95vh"
           close={() => setIsModalOpen(false)}
         >
-          <TransactionFeeModal
-            close={() => setIsModalOpen(false)}
-            senderConfig={senderConfig}
-            feeConfig={feeConfig}
-            gasConfig={gasConfig}
-            gasSimulator={gasSimulator}
-            disableAutomaticFeeSet={disableAutomaticFeeSet}
-            isForEVMTx={isForEVMTx}
-          />
+          {isBtc ? (
+            <TransactionBTCFeeModal
+              close={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig}
+              gasConfig={gasConfig}
+              gasSimulator={gasSimulator}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
+              isForEVMTx={isForEVMTx}
+            />
+          ) : (
+            <TransactionFeeModal
+              close={() => setIsModalOpen(false)}
+              senderConfig={senderConfig}
+              feeConfig={feeConfig as IFeeConfig}
+              gasConfig={gasConfig}
+              gasSimulator={gasSimulator}
+              disableAutomaticFeeSet={disableAutomaticFeeSet}
+              isForEVMTx={isForEVMTx}
+            />
+          )}
         </Modal>
       </Box>
     );

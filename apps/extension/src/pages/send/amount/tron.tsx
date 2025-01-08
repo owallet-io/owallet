@@ -413,7 +413,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
       bottomButtons={[
         {
           disabled: txConfigsValidate.interactionBlocked || !!checkSendMySelft,
-          text: intl.formatMessage({ id: "button.next" }),
+          text: intl.formatMessage({ id: "page.send.type.send" }),
           color: "primary",
           size: "large",
           type: "submit",

@@ -44,7 +44,7 @@ export type RecipientInputProps = (
   | RecipientInputWithoutAddressBookProps
 ) & {
   bottom?: React.ReactNode;
-  customCondition: string;
+  customCondition?: string;
 };
 
 function numOfCharacter(str: string, c: string): number {

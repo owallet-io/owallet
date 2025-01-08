@@ -49,11 +49,11 @@ const Styles = {
   `,
 };
 
-export const TransactionFeeModal: FunctionComponent<{
+export const TransactionBTCFeeModal: FunctionComponent<{
   close: () => void;
 
   senderConfig: ISenderConfig;
-  feeConfig: IFeeConfig;
+  feeConfig: IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
   disableAutomaticFeeSet?: boolean;
@@ -66,32 +66,10 @@ export const TransactionFeeModal: FunctionComponent<{
     gasConfig,
     gasSimulator,
     disableAutomaticFeeSet,
-    isForEVMTx,
   }) => {
     const { queriesStore, uiConfigStore, priceStore } = useStore();
     const intl = useIntl();
     const theme = useTheme();
-
-    const isGasSimulatorUsable = (() => {
-      if (!gasSimulator) {
-        return false;
-      }
-
-      if (
-        gasSimulator.gasEstimated == null &&
-        gasSimulator.uiProperties.error
-      ) {
-        return false;
-      }
-
-      return true;
-    })();
-    const isGasSimulatorEnabled = (() => {
-      if (!isGasSimulatorUsable) {
-        return false;
-      }
-      return gasSimulator?.enabled;
-    })();
 
     useEffect(() => {
       if (uiConfigStore.rememberLastFeeOption) {
@@ -110,17 +88,13 @@ export const TransactionFeeModal: FunctionComponent<{
       .join(",");
     const prevFeeConfigType = useRef(feeConfig.type);
     const prevFeeConfigCurrency = useRef(feeConfigCurrencyString);
-    const prevGasConfigGas = useRef(gasConfig.gas);
-    const prevGasSimulatorEnabled = useRef(isGasSimulatorEnabled);
     const lastShowChangesAppliedTimeout = useRef<NodeJS.Timeout | undefined>(
       undefined
     );
     useEffect(() => {
       if (
         prevFeeConfigType.current !== feeConfig.type ||
-        prevFeeConfigCurrency.current !== feeConfigCurrencyString ||
-        prevGasConfigGas.current !== gasConfig.gas ||
-        prevGasSimulatorEnabled.current !== isGasSimulatorEnabled
+        prevFeeConfigCurrency.current !== feeConfigCurrencyString
       ) {
         if (lastShowChangesAppliedTimeout.current) {
           clearTimeout(lastShowChangesAppliedTimeout.current);
@@ -135,16 +109,7 @@ export const TransactionFeeModal: FunctionComponent<{
 
       prevFeeConfigType.current = feeConfig.type;
       prevFeeConfigCurrency.current = feeConfigCurrencyString;
-      prevGasConfigGas.current = gasConfig.gas;
-      prevGasSimulatorEnabled.current = isGasSimulatorEnabled;
-    }, [
-      feeConfig.type,
-      feeConfigCurrencyString,
-      gasConfig.gas,
-      isGasSimulatorEnabled,
-    ]);
-
-    const isShowingMaxFee = isForEVMTx && !!gasSimulator?.gasEstimated;
+    }, [feeConfig.type, feeConfigCurrencyString]);
 
     return (
       <Styles.Container>
@@ -208,69 +173,8 @@ export const TransactionFeeModal: FunctionComponent<{
               feeConfig={feeConfig}
               gasConfig={gasConfig}
               gasSimulator={gasSimulator}
-              isForEVMTx={isForEVMTx}
             />
           </Stack>
-
-          {isShowingMaxFee && (
-            <React.Fragment>
-              <Gutter size="0.5rem" />
-              <XAxis>
-                <Body3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-400"]
-                      : ColorPalette["gray-100"]
-                  }
-                >
-                  <b>
-                    <FormattedMessage id="components.input.fee-control.modal.max-fee" />
-                  </b>
-                  {`: ${feeConfig.fees[0]
-                    .maxDecimals(6)
-                    .inequalitySymbol(true)
-                    .trim(true)
-                    .shrink(true)
-                    .hideIBCMetadata(true)
-                    .toString()}`}
-                </Body3>
-                <Body3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-300"]
-                      : ColorPalette["gray-300"]
-                  }
-                  style={{
-                    whiteSpace: "pre-wrap",
-                  }}
-                >
-                  {` ${(() => {
-                    let total: PricePretty | undefined;
-                    let hasUnknown = false;
-                    const maxFee = feeConfig.fees[0];
-                    if (!maxFee.currency.coinGeckoId) {
-                      hasUnknown = true;
-                    } else {
-                      const price = priceStore.calculatePrice(maxFee);
-                      if (price) {
-                        if (!total) {
-                          total = price;
-                        } else {
-                          total = total.add(price);
-                        }
-                      }
-                    }
-
-                    if (hasUnknown || !total) {
-                      return "";
-                    }
-                    return `(${total.toString()})`;
-                  })()}`}
-                </Body3>
-              </XAxis>
-              <Gutter size="1rem" />
-            </React.Fragment>
-          )}
 
           <Dropdown
             label={intl.formatMessage({
@@ -351,68 +255,6 @@ export const TransactionFeeModal: FunctionComponent<{
               }
             }
           })()}
-
-          {isGasSimulatorEnabled ? (
-            <TextInput
-              label={intl.formatMessage({
-                id: "components.input.fee-control.modal.gas-adjustment-label",
-              })}
-              value={gasSimulator?.gasAdjustmentValue}
-              onChange={(e) => {
-                e.preventDefault();
-
-                gasSimulator?.setGasAdjustmentValue(e.target.value);
-              }}
-              rightLabel={
-                isGasSimulatorUsable && gasSimulator ? (
-                  <Box marginBottom="0.375rem">
-                    <XAxis alignY="center">
-                      <Subtitle3 color={ColorPalette["gray-200"]}>
-                        <FormattedMessage id="components.input.fee-control.modal.auto-title" />
-                      </Subtitle3>
-                      <Gutter size="0.5rem" />
-                      <Toggle
-                        isOpen={gasSimulator.enabled}
-                        setIsOpen={(isOpen) => {
-                          gasSimulator?.setEnabled(isOpen);
-                        }}
-                      />
-                    </XAxis>
-                  </Box>
-                ) : null
-              }
-            />
-          ) : (
-            <TextInput
-              label={intl.formatMessage({
-                id: "components.input.fee-control.modal.gas-amount-label",
-              })}
-              value={gasConfig.value}
-              onChange={(e) => {
-                e.preventDefault();
-
-                gasConfig.setValue(e.target.value);
-              }}
-              rightLabel={
-                isGasSimulatorUsable && gasSimulator ? (
-                  <Box marginBottom="0.375rem">
-                    <XAxis alignY="center">
-                      <Subtitle3 color={ColorPalette["gray-200"]}>
-                        <FormattedMessage id="components.input.fee-control.modal.auto-title" />
-                      </Subtitle3>
-                      <Gutter size="0.5rem" />
-                      <Toggle
-                        isOpen={gasSimulator.enabled}
-                        setIsOpen={(isOpen) => {
-                          gasSimulator?.setEnabled(isOpen);
-                        }}
-                      />
-                    </XAxis>
-                  </Box>
-                ) : null
-              }
-            />
-          )}
 
           {disableAutomaticFeeSet ? (
             <GuideBox
@@ -498,7 +340,7 @@ const FeeSelectorStyle = {
 };
 
 const FeeSelector: FunctionComponent<{
-  feeConfig: IFeeConfig;
+  feeConfig: IBtcFeeConfig;
   gasConfig?: IGasConfig;
   gasSimulator?: IGasSimulator;
   isForEVMTx?: boolean;

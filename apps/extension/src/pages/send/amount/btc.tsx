@@ -15,6 +15,7 @@ import { useStore } from "../../../stores";
 import {
   InvalidTronAddressError,
   useGasSimulator,
+  useSendBtcTxConfig,
   useSendMixedIBCTransferConfig,
   useTxConfigsValidate,
 } from "@owallet/hooks";
@@ -35,6 +36,7 @@ import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-stri
 import { isRunningInSidePanel } from "../../../utils";
 import { CustomRecipientInput } from "../../../components/input/reciepient-input/custom-input";
 import Color from "color";
+import { TransactionBtcType } from "@owallet/types";
 
 const Styles = {
   Flex1: styled.div`
@@ -72,14 +74,8 @@ const Styles = {
 };
 
 export const SendBtcPage: FunctionComponent = observer(() => {
-  const {
-    analyticsStore,
-    accountStore,
-    ethereumAccountStore,
-    tronAccountStore,
-    chainStore,
-    queriesStore,
-  } = useStore();
+  const { analyticsStore, bitcoinAccountStore, chainStore, queriesStore } =
+    useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 
   const [searchParams] = useSearchParams();
@@ -89,21 +85,13 @@ export const SendBtcPage: FunctionComponent = observer(() => {
 
   const initialChainId = searchParams.get("chainId");
   const initialCoinMinimalDenom = searchParams.get("coinMinimalDenom");
-  const contractAddress =
-    initialCoinMinimalDenom.split(":").length > 1
-      ? initialCoinMinimalDenom.split(":")[1]
-      : null;
 
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);
-  const isEvmChain = chainStore.isEvmChain(chainId);
-  const isEVMOnlyChain = chainStore.isEvmOnlyChain(chainId);
 
   const coinMinimalDenom =
     initialCoinMinimalDenom ||
     chainStore.getChain(chainId).currencies[0].coinMinimalDenom;
-  const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
-  const isErc20 = new DenomHelper(currency.coinMinimalDenom).type === "erc20";
 
   useEffect(() => {
     if (addressRef.current) {
@@ -114,278 +102,102 @@ export const SendBtcPage: FunctionComponent = observer(() => {
   useEffect(() => {
     if (!initialChainId || !initialCoinMinimalDenom) {
       navigate(
-        `/send/select-asset?navigateReplace=true&navigateTo=${encodeURIComponent(
-          "/send?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
+        `/send-btc/select-asset?navigateReplace=true&navigateTo=${encodeURIComponent(
+          "/send-btc?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
         )}`
       );
     }
   }, [navigate, initialChainId, initialCoinMinimalDenom]);
 
-  const [isEvmTx, setIsEvmTx] = useState(isErc20 || isEVMOnlyChain);
+  const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
 
-  const account = accountStore.getAccount(chainId);
-  const ethereumAccount = ethereumAccountStore.getAccount(chainId);
-  const tronAccount = tronAccountStore.getAccount(chainId);
-
+  const account = bitcoinAccountStore.getAccount(chainId);
   const queryBalances = queriesStore.get(chainId).queryBalances;
-  const sender = isEvmTx ? account.ethereumHexAddress : account.bech32Address;
-  const balance = isEvmTx
-    ? queryBalances.getQueryEthereumHexAddress(sender).getBalance(currency)
-    : queryBalances.getQueryBech32Address(sender).getBalance(currency);
+  const denomHelper = new DenomHelper(coinMinimalDenom);
+  const sender =
+    denomHelper.type === "legacy"
+      ? account.btcLegacyAddress
+      : account.bech32Address;
+  const balance = queryBalances
+    .getQueryBech32Address(sender)
+    .getBalance(currency);
 
-  const sendConfigs = useSendMixedIBCTransferConfig(
+  const sendConfigs = useSendBtcTxConfig(
     chainStore,
     queriesStore,
     chainId,
-    sender,
-    isEvmTx ? 21000 : 300000,
-    false,
-    {
-      allowHexAddressToBech32Address:
-        !isEvmChain &&
-        !isEvmTx &&
-        !chainStore.getChain(chainId).chainId.startsWith("injective"),
-      allowHexAddressOnly: isEvmTx,
-      icns: ICNSInfo,
-      ens: ENSInfo,
-      computeTerraClassicTax: true,
-    }
+    sender
   );
+
   sendConfigs.amountConfig.setCurrency(currency);
 
-  const checkSendMySelft =
-    sendConfigs.recipientConfig.recipient?.trim() === tronAccount.base58Address
-      ? new InvalidTronAddressError("Cannot transfer TRX to the same account")
-      : null;
-  const gasSimulatorKey = useMemo(() => {
-    const txType: "evm" | "cosmos" = isEvmTx ? "evm" : "cosmos";
+  const txConfigsValidate = useTxConfigsValidate({
+    ...sendConfigs,
+  });
 
-    if (sendConfigs.amountConfig.currency) {
-      const denomHelper = new DenomHelper(
-        sendConfigs.amountConfig.currency.coinMinimalDenom
-      );
-
-      if (denomHelper.type !== "native") {
-        if (denomHelper.type === "erc20") {
-          // XXX: This logic causes gas simulation to run even if `gasSimulatorKey` is the same, it needs to be figured out why.
-          const amountHexDigits = BigInt(
-            sendConfigs.amountConfig.amount[0].toCoin().amount
-          ).toString(16).length;
-          return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}/${amountHexDigits}`;
+  const submitSend = async () => {
+    if (!txConfigsValidate.interactionBlocked) {
+      try {
+        account.setIsSendingTx(true);
+        const unsignedTx = account.makeSendTokenTx({
+          currency: sendConfigs.amountConfig.amount[0].currency,
+          amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
+          to: sendConfigs.recipientConfig.recipient,
+          memo: sendConfigs.memoConfig.memo,
+          sender,
+        });
+        await account.sendTx(
+          sender,
+          unsignedTx,
+          denomHelper.type === "legacy"
+            ? TransactionBtcType.Legacy
+            : TransactionBtcType.Bech32,
+          {
+            onBroadcasted: (txHash) => {
+              account.setIsSendingTx(false);
+            },
+            onFulfill: (txReceipt) => {
+              queryBalances
+                .getQueryBech32Address(account.bech32Address)
+                .balances.forEach((balance) => {
+                  if (
+                    balance.currency.coinMinimalDenom === coinMinimalDenom ||
+                    sendConfigs.feeConfig.fees.some(
+                      (fee) =>
+                        fee.currency.coinMinimalDenom ===
+                        balance.currency.coinMinimalDenom
+                    )
+                  ) {
+                    balance.fetch();
+                  }
+                });
+            },
+          }
+        );
+      } catch (e) {
+        account.setIsSendingTx(false);
+        notification.show(
+          "failed",
+          intl.formatMessage({ id: "error.transaction-failed" }),
+          ""
+        );
+        if (e?.message === "Request rejected") {
+          return;
         }
-
-        if (denomHelper.type === "cw20") {
-          // Probably, the gas can be different per cw20 according to how the contract implemented.
-          return `${txType}/${denomHelper.type}/${denomHelper.contractAddress}`;
-        }
-
-        return `${txType}/${denomHelper.type}`;
       }
     }
-
-    return `${txType}/native`;
-  }, [
-    isEvmTx,
-    sendConfigs.amountConfig.amount,
-    sendConfigs.amountConfig.currency,
-  ]);
-
-  const gasSimulator = useGasSimulator(
-    new ExtensionKVStore("gas-simulator.main.send"),
-    chainStore,
-    chainId,
-    sendConfigs.gasConfig,
-    sendConfigs.feeConfig,
-    gasSimulatorKey,
-    () => {
-      if (!sendConfigs.amountConfig.currency) {
-        throw new Error("Send currency not set");
-      }
-
-      // Prefer not to use the gas config or fee config,
-      // because gas simulator can change the gas config and fee config from the result of reaction,
-      // and it can make repeated reaction.
-      if (
-        sendConfigs.amountConfig.uiProperties.loadingState ===
-          "loading-block" ||
-        sendConfigs.amountConfig.uiProperties.error != null ||
-        sendConfigs.recipientConfig.uiProperties.loadingState ===
-          "loading-block" ||
-        sendConfigs.recipientConfig.uiProperties.error != null
-      ) {
-        throw new Error("Not ready to simulate tx");
-      }
-
-      const denomHelper = new DenomHelper(
-        sendConfigs.amountConfig.currency.coinMinimalDenom
-      );
-      // I don't know why, but simulation does not work for secret20
-      if (denomHelper.type === "secret20") {
-        throw new Error("Simulating secret wasm not supported");
-      }
-
-      if (isEvmTx) {
-        return {
-          simulate: () =>
-            ethereumAccount.simulateGasForSendTokenTx({
-              currency: sendConfigs.amountConfig.amount[0].currency,
-              amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-              sender: sendConfigs.senderConfig.sender,
-              recipient: sendConfigs.recipientConfig.recipient,
-            }),
-        };
-      }
-
-      return account.makeSendTokenTx(
-        sendConfigs.amountConfig.amount[0].toDec().toString(),
-        sendConfigs.amountConfig.amount[0].currency,
-        sendConfigs.recipientConfig.recipient
-      );
-    }
-  );
+  };
 
   const currentFeeCurrencyCoinMinimalDenom =
     sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
-  useEffect(() => {
-    const chainInfo = chainStore.getChain(chainId);
-    if (chainInfo.hasFeature("feemarket")) {
-      if (
-        currentFeeCurrencyCoinMinimalDenom !==
-        chainInfo.currencies[0].coinMinimalDenom
-      ) {
-        gasSimulator.setGasAdjustmentValue("2");
-      } else {
-        gasSimulator.setGasAdjustmentValue("1.6");
-      }
-    }
-  }, [chainId, chainStore, gasSimulator, currentFeeCurrencyCoinMinimalDenom]);
-
-  useEffect(() => {
-    if (isEvmChain) {
-      const sendingDenomHelper = new DenomHelper(
-        sendConfigs.amountConfig.currency.coinMinimalDenom
-      );
-      const isERC20 = sendingDenomHelper.type === "erc20";
-      const isSendingNativeToken =
-        sendingDenomHelper.type === "native" &&
-        (chainInfo.stakeCurrency?.coinMinimalDenom ??
-          chainInfo.currencies[0].coinMinimalDenom) ===
-          sendingDenomHelper.denom;
-      const newIsEvmTx =
-        isEVMOnlyChain ||
-        (sendConfigs.recipientConfig.isRecipientEthereumHexAddress &&
-          (isERC20 || isSendingNativeToken));
-
-      const newSenderAddress = newIsEvmTx
-        ? account.ethereumHexAddress
-        : account.bech32Address;
-
-      sendConfigs.senderConfig.setValue(newSenderAddress);
-      setIsEvmTx(newIsEvmTx);
-      ethereumAccount.setIsSendingTx(false);
-    }
-  }, [
-    account,
-    ethereumAccount,
-    isEvmChain,
-    isEVMOnlyChain,
-    sendConfigs.amountConfig.currency.coinMinimalDenom,
-    sendConfigs.recipientConfig.isRecipientEthereumHexAddress,
-    sendConfigs.senderConfig,
-    chainInfo.stakeCurrency?.coinMinimalDenom,
-    chainInfo.currencies,
-  ]);
-
-  useEffect(() => {
-    (async () => {
-      if (chainInfo.features.includes("op-stack-l1-data-fee")) {
-        const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } =
-          sendConfigs.feeConfig.getEIP1559TxFees(sendConfigs.feeConfig.type);
-
-        const { to, gasLimit, value, data, chainId } =
-          ethereumAccount.makeSendTokenTx({
-            currency: sendConfigs.amountConfig.amount[0].currency,
-            amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-            to: sendConfigs.recipientConfig.recipient,
-            gasLimit: sendConfigs.gasConfig.gas,
-            maxFeePerGas: maxFeePerGas?.toString(),
-            maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
-            gasPrice: gasPrice?.toString(),
-          });
-
-        const l1DataFee = await ethereumAccount.simulateOpStackL1Fee({
-          to,
-          gasLimit,
-          value,
-          data,
-          chainId,
-        });
-        sendConfigs.feeConfig.setL1DataFee(new Dec(BigInt(l1DataFee)));
-      }
-    })();
-  }, [
-    chainInfo.features,
-    ethereumAccount,
-    sendConfigs.amountConfig.amount,
-    sendConfigs.feeConfig,
-    sendConfigs.gasConfig.gas,
-    sendConfigs.recipientConfig.recipient,
-  ]);
-
-  useEffect(() => {
-    if (isEvmTx) {
-      const intervalId = setInterval(() => {
-        sendConfigs.feeConfig.refreshEIP1559TxFees();
-      }, 12000);
-
-      return () => clearInterval(intervalId);
-    }
-  }, [isEvmTx, sendConfigs.feeConfig]);
-
-  useEffect(() => {
-    // To simulate secretwasm, we need to include the signature in the tx.
-    // With the current structure, this approach is not possible.
-    if (
-      sendConfigs.amountConfig.currency &&
-      new DenomHelper(sendConfigs.amountConfig.currency.coinMinimalDenom)
-        .type === "secret20"
-    ) {
-      gasSimulator.forceDisable(
-        new Error(
-          intl.formatMessage({ id: "error.simulating-secret-20-not-supported" })
-        )
-      );
-      sendConfigs.gasConfig.setValue(250000);
-    } else {
-      gasSimulator.forceDisable(false);
-      gasSimulator.setEnabled(true);
-    }
-  }, [
-    gasSimulator,
-    intl,
-    sendConfigs.amountConfig.currency,
-    sendConfigs.gasConfig,
-  ]);
-
-  useTxConfigsQueryString(chainId, {
-    ...sendConfigs,
-    gasSimulator,
-  });
-
-  // Ignore validatation for recipientConfig for Tron
-  const configValidate = { ...sendConfigs };
-  delete configValidate.recipientConfig;
-
-  const txConfigsValidate = useTxConfigsValidate({
-    ...configValidate,
-    gasSimulator,
-  });
 
   const isDetachedMode = searchParams.get("detached") === "true";
 
+  const loadingSend = account.isSendingTx;
+
   return (
     <HeaderLayout
-      title={intl.formatMessage({ id: "page.send.amount.title" }) + " Tron"}
+      title={intl.formatMessage({ id: "page.send.amount.title" }) + " BTC"}
       displayFlex={true}
       fixedMinHeight={true}
       left={<BackButton />}
@@ -396,7 +208,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
             cursor="pointer"
             onClick={async (e) => {
               e.preventDefault();
-
+              submitSend();
               analyticsStore.logEvent("click_popOutButton");
               const url = window.location.href + "&detached=true";
 
@@ -410,98 +222,16 @@ export const SendBtcPage: FunctionComponent = observer(() => {
       }
       bottomButtons={[
         {
-          disabled: txConfigsValidate.interactionBlocked || !!checkSendMySelft,
-          text: intl.formatMessage({ id: "button.next" }) + "BTC",
+          disabled: loadingSend || txConfigsValidate.interactionBlocked,
+          text: intl.formatMessage({ id: "page.send.type.send" }) + " BTC",
           color: "primary",
           size: "large",
           type: "submit",
-          isLoading: isEvmTx
-            ? ethereumAccount.isSendingTx
-            : accountStore.getAccount(chainId).isSendingMsg === "send",
+          isLoading: loadingSend,
         },
       ]}
       onSubmit={async (e) => {
         e.preventDefault();
-
-        if (!txConfigsValidate.interactionBlocked) {
-          try {
-            if (isEvmTx) {
-              ethereumAccount.setIsSendingTx(true);
-
-              const unsignedTx = tronAccount.makeSendTokenTx({
-                address: tronAccount.base58Address,
-                currency: sendConfigs.amountConfig.amount[0].currency,
-                amount: sendConfigs.amountConfig.amount[0]
-                  .toDec()
-                  .mul(
-                    new Dec(
-                      10 **
-                        sendConfigs.amountConfig.amount[0].currency.coinDecimals
-                    )
-                  )
-                  .round()
-                  .toString(),
-                recipient: sendConfigs.recipientConfig.recipient,
-                contractAddress,
-              });
-
-              await tronAccount.sendTx(unsignedTx, {
-                onBroadcasted: (txHash) => {
-                  tronAccount.setIsSendingTx(false);
-                  // Do some thing with txHash
-                },
-                onFulfill: (txReceipt) => {
-                  queryBalances
-                    .getQueryEthereumHexAddress(sender)
-                    .balances.forEach((balance) => {
-                      if (
-                        balance.currency.coinMinimalDenom ===
-                          coinMinimalDenom ||
-                        sendConfigs.feeConfig.fees.some(
-                          (fee) =>
-                            fee.currency.coinMinimalDenom ===
-                            balance.currency.coinMinimalDenom
-                        )
-                      ) {
-                        balance.fetch();
-                      }
-                    });
-                },
-              });
-              ethereumAccount.setIsSendingTx(false);
-            }
-            if (!isDetachedMode) {
-              navigate("/", {
-                replace: true,
-              });
-            } else {
-              window.close();
-            }
-          } catch (e) {
-            console.log("error on Send Tron", e);
-            if (e?.message === "Request rejected") {
-              return;
-            }
-
-            if (isEvmTx) {
-              ethereumAccount.setIsSendingTx(false);
-            }
-
-            notification.show(
-              "failed",
-              intl.formatMessage({ id: "error.transaction-failed" }),
-              ""
-            );
-            if (!isDetachedMode) {
-              navigate("/", {
-                replace: true,
-              });
-            } else {
-              await new Promise((resolve) => setTimeout(resolve, 2000));
-              window.close();
-            }
-          }
-        }
       }}
     >
       <Box
@@ -543,7 +273,6 @@ export const SendBtcPage: FunctionComponent = observer(() => {
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               currency={sendConfigs.amountConfig.currency}
-              customCondition={checkSendMySelft?.message}
             />
           </Styles.Container>
           <Styles.Container>
@@ -564,13 +293,11 @@ export const SendBtcPage: FunctionComponent = observer(() => {
 
           <Styles.Flex1 />
           <Gutter size="0" />
-
           <FeeControl
             senderConfig={sendConfigs.senderConfig}
             feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-            gasSimulator={gasSimulator}
-            isForEVMTx={isEvmTx}
+            gasConfig={null}
+            gasSimulator={null}
           />
         </Stack>
       </Box>
