@@ -31,7 +31,7 @@ import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 import { useNotification } from "../../../hooks/notification";
 import { AddressChip } from "pages/main/components/address-chip";
 
-export const TronSigningView: FunctionComponent<{
+export const BTCSigningView: FunctionComponent<{
   interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
 }> = observer(({ interactionData }) => {
   const {

@@ -24,6 +24,7 @@
     "@floating-ui/react": "^0.26.28",
     "@floating-ui/react-dom": "^2.1.2",
     "@fortawesome/fontawesome-free": "^5.11.2",
+    "@ledgerhq/hw-app-btc": "6.27.1",
     "@ledgerhq/hw-app-eth": "6.29.3",
     "@ledgerhq/hw-app-trx": "6.29.3",
     "@owallet/analytics": "^0.9.14",
