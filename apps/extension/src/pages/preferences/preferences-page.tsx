@@ -18,11 +18,11 @@ const dataPreferences = [
     name: "Language",
     icon: require("assets/svg/ow_translate-1.svg"),
   },
-  {
-    id: MenuEnum.CURRENCY,
-    name: "Currency",
-    icon: require("assets/svg/ow_currency-exchange.svg"),
-  },
+  // {
+  //   id: MenuEnum.CURRENCY,
+  //   name: "Currency",
+  //   icon: require("assets/svg/ow_currency-exchange.svg"),
+  // },
 ];
 export const PreferencesPage = observer(() => {
   const { priceStore } = useStore();
