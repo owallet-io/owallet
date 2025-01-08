@@ -44,6 +44,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     allAccountStore,
     keyRingStore,
+    geckoTerminalStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -61,6 +62,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       return;
     }
     priceStore.fetch();
+    geckoTerminalStore.fetch();
     for (const chainInfo of chainStore.chainInfosInUI) {
       let account = allAccountStore.getAccount(chainInfo.chainId);
       if (account.addressDisplay === "") {
