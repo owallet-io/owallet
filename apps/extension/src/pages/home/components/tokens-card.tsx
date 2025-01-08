@@ -98,9 +98,7 @@ const TokenItem: FC<{
   //   [item?.token?.currency, item?.token?.amount]
   // );
   const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const price24h = priceStore.getPrice24hChange(
-    item?.token?.currency?.coinGeckoId
-  );
+  const price24h = priceStore.getPrice24hChange(item?.token?.currency);
   return (
     <div
       style={{ cursor: "pointer" }}

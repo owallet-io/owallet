@@ -1,6 +1,10 @@
 import { ChainStore } from "./chain";
 import {
   AmplitudeApiKey,
+  CoinGeckoAPIEndPoint,
+  CoinGeckoGetPrice,
+  CoinGeckoTerminalAPIEndPoint,
+  CoinGeckoTerminalGetPrice,
   EmbedChainInfos,
   ExtensionKVStore,
   FiatCurrencies,
@@ -25,6 +29,7 @@ import {
   getBitcoinFromWindow,
   getSolanaFromWindow,
   QueriesWrappedSvm,
+  CoinGeckoTerminalPriceStore,
 } from "@owallet/stores";
 import {
   ExtensionRouter,
@@ -60,6 +65,7 @@ export class RootStore {
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore;
+  public readonly geckoTerminalStore: CoinGeckoTerminalPriceStore;
   public readonly hugeQueriesStore: HugeQueriesStore;
   public readonly hugeQueriesNewStore: HugeQueriesStore;
 
@@ -261,6 +267,30 @@ export class RootStore {
     //   }
     // );
 
+    // this.priceStore = new CoinGeckoPriceStore(
+    //   new ExtensionKVStore("store_prices"),
+    //   FiatCurrencies.reduce<{
+    //     [vsCurrency: string]: FiatCurrency;
+    //   }>((obj, fiat) => {
+    //     obj[fiat.currency] = fiat;
+    //     return obj;
+    //   }, {}),
+    //   "usd"
+    // );
+    this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
+      new ExtensionKVStore("store_test_prices"),
+      FiatCurrencies.reduce<{
+        [vsCurrency: string]: FiatCurrency;
+      }>((obj, fiat) => {
+        obj[fiat.currency] = fiat;
+        return obj;
+      }, {}),
+      "usd",
+      {
+        baseURL: CoinGeckoTerminalAPIEndPoint,
+        uri: CoinGeckoTerminalGetPrice,
+      }
+    );
     this.priceStore = new CoinGeckoPriceStore(
       new ExtensionKVStore("store_prices"),
       FiatCurrencies.reduce<{
@@ -269,7 +299,12 @@ export class RootStore {
         obj[fiat.currency] = fiat;
         return obj;
       }, {}),
-      "usd"
+      "usd",
+      {
+        baseURL: CoinGeckoAPIEndPoint,
+        uri: "/simple/price",
+      },
+      this.geckoTerminalStore
     );
 
     // this.tokensStore = new TokensStore(

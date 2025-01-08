@@ -84,7 +84,9 @@ export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
 };
 
 export const AdditonalIntlMessages: IntlMessages = {};
-
+export const CoinGeckoTerminalAPIEndPoint =
+  "https://api.geckoterminal.com/api/v2";
+export const CoinGeckoTerminalGetPrice = "networks/solana/tokens/multi";
 // coingecko api for both evm and cosmos based networks
 export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 export const MarketAPIEndPoint = "https://price.market.orai.io";
