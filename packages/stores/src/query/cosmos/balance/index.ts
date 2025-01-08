@@ -1,6 +1,7 @@
 import {
   API,
   DenomHelper,
+  fetchRetry,
   KVStore,
   MapChainIdToNetwork,
 } from "@owallet/common";
@@ -115,47 +116,124 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
       yield super.fetch();
     }
   }
+
   protected override onReceiveResponse(
     response: Readonly<QueryResponse<Balances>>
   ) {
     super.onReceiveResponse(response);
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
+    if (this.chainId === "Oraichain") {
+      const allTokensAddress = response.data.balances
+        .filter(
+          (token) =>
+            !!chainInfo.findCurrency(token.denom) === false &&
+            MapChainIdToNetwork[chainInfo.chainId]
+        )
+        .map((coin) => {
+          return `${new URLSearchParams(coin.denom)
+            .toString()
+            .replace("=", "")}`;
+        })
+        .join(",");
 
-    const allTokensAddress = response.data.balances
-      .filter(
-        (token) =>
-          MapChainIdToNetwork[chainInfo.chainId] &&
-          !!chainInfo.findCurrency(token.denom) === false &&
-          MapChainIdToNetwork[chainInfo.chainId]
+      console.log(allTokensAddress, "allTokensAddress");
+      console.log(
+        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`,
+        "url"
+      );
+      fetchRetry(
+        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       )
-      .map((coin) => {
-        const str = `${
-          MapChainIdToNetwork[chainInfo.chainId]
-        }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
-        return str;
-      });
-    if (allTokensAddress?.length === 0) return;
-    API.getMultipleTokenInfo({
-      tokenAddresses: allTokensAddress.join(","),
-    }).then((tokenInfos) => {
-      if (!tokenInfos) return;
-      const infoTokens = tokenInfos
-        .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
-        .map((tokeninfo) => {
-          const infoToken = {
-            coinImageUrl: tokeninfo.imgUrl,
-            coinDenom: tokeninfo.abbr,
-            coinGeckoId: tokeninfo.coingeckoId,
-            coinDecimals: tokeninfo.decimal,
-            coinMinimalDenom: tokeninfo.denom,
-          };
-          return infoToken;
+        .then((res) => {
+          if (res?.length > 0) {
+            const tokens = res.map((item, index) => {
+              const { name, decimals, coinGeckoId, icon, denom } = item || {};
+              return {
+                coinImageUrl: icon,
+                coinDenom: name,
+                coinGeckoId: coinGeckoId,
+                coinDecimals: decimals,
+                coinMinimalDenom: denom,
+              };
+            });
+            //@ts-ignore
+            chainInfo.addCurrencies(...tokens);
+          }
+        })
+        .catch((err) => {
+          console.error(err, "Err");
+          const allTokensAddress = response.data.balances
+            .filter(
+              (token) =>
+                !!chainInfo.findCurrency(token.denom) === false &&
+                MapChainIdToNetwork[chainInfo.chainId]
+            )
+            .map((coin) => {
+              const str = `${
+                MapChainIdToNetwork[chainInfo.chainId]
+              }%2B${new URLSearchParams(coin.denom)
+                .toString()
+                .replace("=", "")}`;
+              return str;
+            });
+          if (allTokensAddress?.length === 0) return;
+          API.getMultipleTokenInfo({
+            tokenAddresses: allTokensAddress.join(","),
+          }).then((tokenInfos) => {
+            if (!tokenInfos) return;
+            const infoTokens = tokenInfos
+              .filter(
+                (token) => !!chainInfo.findCurrency(token.denom) === false
+              )
+              .map((tokeninfo) => {
+                const infoToken = {
+                  coinImageUrl: tokeninfo.imgUrl,
+                  coinDenom: tokeninfo.abbr,
+                  coinGeckoId: tokeninfo.coingeckoId,
+                  coinDecimals: tokeninfo.decimal,
+                  coinMinimalDenom: tokeninfo.denom,
+                };
+                return infoToken;
+              });
+            //@ts-ignore
+            chainInfo.addCurrencies(...infoTokens);
+          });
         });
-      //@ts-ignore
-      chainInfo.addCurrencies(...infoTokens);
-    });
-
+    } else {
+      const allTokensAddress = response.data.balances
+        .filter(
+          (token) =>
+            !!chainInfo.findCurrency(token.denom) === false &&
+            MapChainIdToNetwork[chainInfo.chainId]
+        )
+        .map((coin) => {
+          const str = `${
+            MapChainIdToNetwork[chainInfo.chainId]
+          }%2B${new URLSearchParams(coin.denom).toString().replace("=", "")}`;
+          return str;
+        });
+      if (allTokensAddress?.length === 0) return;
+      API.getMultipleTokenInfo({
+        tokenAddresses: allTokensAddress.join(","),
+      }).then((tokenInfos) => {
+        if (!tokenInfos) return;
+        const infoTokens = tokenInfos
+          .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
+          .map((tokeninfo) => {
+            const infoToken = {
+              coinImageUrl: tokeninfo.imgUrl,
+              coinDenom: tokeninfo.abbr,
+              coinGeckoId: tokeninfo.coingeckoId,
+              coinDecimals: tokeninfo.decimal,
+              coinMinimalDenom: tokeninfo.denom,
+            };
+            return infoToken;
+          });
+        //@ts-ignore
+        chainInfo.addCurrencies(...infoTokens);
+      });
+    }
     const denoms = response.data.balances.map((coin) => coin.denom);
     chainInfo.addUnknownCurrencies(...denoms);
   }
