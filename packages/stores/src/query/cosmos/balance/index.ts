@@ -137,7 +137,7 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
         })
         .join(",");
       fetchRetry(
-        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+        `https://oraicommon.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       )
         .then((res) => {
           if (res?.length > 0) {
