@@ -136,12 +136,6 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
             .replace("=", "")}`;
         })
         .join(",");
-
-      console.log(allTokensAddress, "allTokensAddress");
-      console.log(
-        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`,
-        "url"
-      );
       fetchRetry(
         `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       )
