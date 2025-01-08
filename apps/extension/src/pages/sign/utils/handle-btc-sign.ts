@@ -46,7 +46,10 @@ export const handleBTCPreSignByLedger = async (
     addressIndex: number;
   };
 
-  const publicKey = Buffer.from((appData["Tron"] as any)["pubKey"], "hex");
+  const publicKey = Buffer.from(
+    (appData[`Bitcoin${keyDerivation}`] as any)["pubKey"],
+    "hex"
+  );
   if (publicKey.length === 0) {
     throw new Error("Invalid ledger app data");
   }
