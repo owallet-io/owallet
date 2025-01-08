@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from "react";
 import {
+  IBtcFeeConfig,
   IFeeConfig,
   IGasConfig,
   IGasSimulator,
@@ -18,7 +19,7 @@ import { VerticalResizeTransition } from "../../../../components/transition";
 import { FormattedMessage, useIntl } from "react-intl";
 
 export const FeeSummary: FunctionComponent<{
-  feeConfig: IFeeConfig;
+  feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
   isForEVMTx?: boolean;

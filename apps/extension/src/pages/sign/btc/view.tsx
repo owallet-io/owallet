@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
-import { SignTronInteractionStore } from "@owallet/stores-core";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { SignBtcInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
 import { Body2, Subtitle3 } from "../../../components/typography";
@@ -13,32 +13,48 @@ import { OWalletError } from "@owallet/router";
 import { ErrModuleLedgerSign } from "../utils/ledger-types";
 import { Buffer } from "buffer/";
 import { LedgerGuideBox } from "../components/ledger-guide-box";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import SimpleBar from "simplebar-react";
 import { Gutter } from "../../../components/gutter";
-import { useUnmount } from "../../../hooks/use-unmount";
-import { useGetFeeTron, useSendTronTxConfig } from "@owallet/hooks";
-import { handleExternalInteractionWithNoProceedNext } from "../../../utils";
+import accumulative from "coinselect/accumulative";
 import {
-  DEFAULT_FEE_LIMIT_TRON,
-  toDisplay,
-  TronWebProvider,
-} from "@owallet/common";
+  useAmountConfig,
+  useBtcFeeConfig,
+  useMemoConfig,
+  useRecipientConfig,
+  useSenderConfig,
+  useTxConfigsValidate,
+} from "@owallet/hooks";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
-import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 import { useNotification } from "../../../hooks/notification";
 import { AddressChip } from "pages/main/components/address-chip";
+import { UnsignedBtcTransaction } from "@owallet/types";
+import {
+  Utxos,
+  UtxosWithNonWitness,
+  UtxosWithWitness,
+} from "@owallet/stores-btc/build/queries/types";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { compileMemo } from "@owallet/common";
+import * as bitcoin from "bitcoinjs-lib";
+import { Dec, DecUtils } from "@owallet/unit";
+import { getAddressInfo } from "bitcoin-address-validation";
+import { PubKeySecp256k1 } from "@owallet/crypto";
+import { handleBTCPreSignByLedger } from "../utils/handle-btc-sign";
+import { useUnmount } from "hooks/use-unmount";
+import { FeeSummary } from "../components/fee-summary";
+import { FeeControl } from "components/input/fee-control";
 
 export const BTCSigningView: FunctionComponent<{
-  interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
+  interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
 }> = observer(({ interactionData }) => {
   const {
     chainStore,
     uiConfigStore,
-    signTronInteractionStore,
-    tronAccountStore,
+    signBtcInteractionStore,
+    bitcoinAccountStore,
     queriesStore,
     keyRingStore,
   } = useStore();
@@ -48,7 +64,7 @@ export const BTCSigningView: FunctionComponent<{
 
   const interactionInfo = useInteractionInfo({
     onUnmount: async () => {
-      await signTronInteractionStore.rejectWithProceedNext(
+      await signBtcInteractionStore.rejectWithProceedNext(
         interactionData.id,
         () => {}
       );
@@ -56,56 +72,165 @@ export const BTCSigningView: FunctionComponent<{
   });
 
   const { chainId } = interactionData.data;
-
-  const [loading, setLoading] = useState(false);
-
-  const account = tronAccountStore.getAccount(chainId);
-  const addressToFetch = account.ethereumHexAddress;
-  const data = JSON.parse(interactionData?.data?.data);
-
-  const parsedData = typeof data === "string" ? JSON.parse(data) : data;
+  const [isViewData, setIsViewData] = useState(true);
   const chainInfo = chainStore.getChain(chainId);
-  const queries = queriesStore.get(chainId);
-  const sendConfigs = useSendTronTxConfig(
-    chainStore,
-    queriesStore,
-    chainId,
-    addressToFetch,
-    1
-  );
-
-  if (!parsedData.raw_data_hex) {
-    const currency = chainInfo.forceFindCurrency(parsedData.coinMinimalDenom);
-    sendConfigs.amountConfig.setCurrency(currency);
-    sendConfigs.recipientConfig.setValue(parsedData.recipient || "");
-    const displayAmount = toDisplay(
-      parsedData.amount,
-      chainInfo.stakeCurrency.coinDecimals
-    );
-    sendConfigs.amountConfig.setValue(displayAmount.toString());
-  }
-
-  const feeResult = useGetFeeTron(
-    account.base58Address,
-    sendConfigs.amountConfig,
-    sendConfigs.recipientConfig,
-    queries.tron,
-    chainInfo,
-    keyRingStore.selectedKeyInfo.id,
-    keyRingStore,
-    parsedData.raw_data_hex ? parsedData : null
-  );
-
-  const signingDataText = useMemo(() => {
-    return JSON.stringify(parsedData);
-  }, [parsedData]);
-
-  const [isViewData, setIsViewData] = useState(false);
-
+  const signer = interactionData.data.signer;
+  const utxos = queriesStore
+    .get(chainId)
+    .bitcoin.queryBtcUtxos.getQueryBtcAddress(signer).utxos;
+  const [utxosData, setUtxosData] = useState([]);
+  const [utxosWithHex, setUtxosWithHex] = useState([]);
+  const [inputs, setInputs] = useState([]);
+  const [outputs, setOutputs] = useState([]);
+  const accountBtc = bitcoinAccountStore.getAccount(chainId);
   const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
   const [ledgerInteractingError, setLedgerInteractingError] = useState<
     Error | undefined
   >(undefined);
+
+  useEffect(() => {
+    if (!utxos || !signer) return;
+    (async () => {
+      const info = getAddressInfo(signer);
+      if (!info.bech32) {
+        const utxosNonWitness = await fetchUxtosNonWitness(utxos);
+        setUtxosData(utxosNonWitness);
+      } else {
+        const utxosWitness = getUxtosWitness(utxos);
+        setUtxosData(utxosWitness);
+      }
+      if (interactionData.data.keyType === "ledger") {
+        const utxosNonWitness = await fetchUxtosWithHex(utxos);
+        setUtxosWithHex(utxosNonWitness);
+      }
+    })();
+  }, [utxos, signer]);
+  const getInputsAndOutput = () => {
+    const targetOutputs = [];
+    if (!utxosData?.length)
+      return {
+        inputs: [],
+        outputs: [],
+      };
+    const compiledMemo = memoConfig.memo ? compileMemo(memoConfig.memo) : null;
+    const amountData = new Dec(amountConfig.amountNotSubFee || 0).mul(
+      DecUtils.getTenExponentN(feeConfig.fees?.[0].currency.coinDecimals)
+    );
+    const feeRate = feeConfig.getGasPriceForFeeCurrency(
+      feeConfig.fees?.[0].currency,
+      uiConfigStore.lastFeeOption || "average"
+    );
+    targetOutputs.push({
+      address: recipientConfig.recipient,
+      value: Number(amountData.roundUp().toString()),
+    });
+    if (compiledMemo) {
+      targetOutputs.push({ script: compiledMemo, value: 0 });
+    }
+    const { inputs, outputs } = accumulative(
+      utxosData,
+      targetOutputs,
+      Number(feeRate.roundUp().toString())
+    );
+    setInputs(inputs);
+    setOutputs(outputs);
+    return { inputs, outputs };
+  };
+  const fetchUxtosNonWitness = async (
+    utxos: Utxos[]
+  ): Promise<UtxosWithNonWitness[]> => {
+    return Promise.all(
+      utxos.map(async (item) => {
+        try {
+          // Fetch the nonWitnessUtxo data (assuming the response contains the raw transaction hex as a string)
+          const res = await simpleFetch<string>(
+            chainInfo.rest,
+            `/tx/${item.txid}/hex`
+          );
+          return {
+            ...item,
+            nonWitnessUtxo: res.data, // Convert the raw hex to Buffer
+          };
+        } catch (error) {
+          console.error(`Error fetching UTXO for txId: ${item.txid}`, error);
+          return {
+            ...item,
+            nonWitnessUtxo: null,
+          };
+        }
+      })
+    );
+  };
+  const fetchUxtosWithHex = async (
+    utxos: Utxos[]
+  ): Promise<UtxosWithNonWitness[]> => {
+    return Promise.all(
+      utxos.map(async (item) => {
+        try {
+          // Fetch the nonWitnessUtxo data (assuming the response contains the raw transaction hex as a string)
+          const res = await simpleFetch<string>(
+            chainInfo.rest,
+            `/tx/${item.txid}/hex`
+          );
+          return {
+            ...item,
+            hex: res.data, // Convert the raw hex to Buffer
+          };
+        } catch (error) {
+          console.error(`Error fetching UTXO for txId: ${item.txid}`, error);
+          return {
+            ...item,
+            hex: null,
+          };
+        }
+      })
+    );
+  };
+  const getUxtosWitness = (utxos: Utxos[]): UtxosWithWitness[] => {
+    const pubKey = new PubKeySecp256k1(accountBtc.pubKey);
+    const p2wpkh = bitcoin.payments.p2wpkh({
+      //@ts-ignore
+      pubkey: Buffer.from(
+        pubKey.toKeyPair().getPublic().encodeCompressed("hex"),
+        "hex"
+      ),
+    });
+    return utxos.map((item) => {
+      return {
+        ...item,
+        witnessUtxo: {
+          script: p2wpkh.output,
+          value: item.value,
+        },
+      };
+    });
+  };
+
+  const senderConfig = useSenderConfig(chainStore, chainId, signer);
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    senderConfig
+  );
+  const recipientConfig = useRecipientConfig(chainStore, chainId);
+  const memoConfig = useMemoConfig(chainStore, chainId);
+  const feeConfig = useBtcFeeConfig(
+    chainStore,
+    queriesStore,
+    chainId,
+    senderConfig,
+    amountConfig,
+    recipientConfig,
+    memoConfig
+  );
+  const txConfigsValidate = useTxConfigsValidate({
+    senderConfig,
+    gasConfig: null,
+    amountConfig,
+    feeConfig,
+    memoConfig,
+  });
 
   const [unmountPromise] = useState(() => {
     let resolver: () => void;
@@ -125,87 +250,74 @@ export const BTCSigningView: FunctionComponent<{
 
   const [isUnknownContractExecution, setIsUnknownContractExecution] =
     useState(false);
-
+  const buttonDisabled = txConfigsValidate.interactionBlocked;
   const isLoading = isLedgerInteracting;
 
+  useEffect(() => {
+    const data = interactionData.data;
+    const unsignedTx: UnsignedBtcTransaction = JSON.parse(
+      Buffer.from(data.message).toString()
+    );
+    if (unsignedTx) {
+      const { coinMinimalDenom, amount, to } = unsignedTx;
+      recipientConfig.setValue(to);
+      const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
+      amountConfig.setCurrency(currency);
+      amountConfig.setValue(amount);
+      feeConfig.setFee({
+        type: uiConfigStore.lastFeeOption || "average",
+        currency: currency,
+      });
+      if (!utxosData?.length) return;
+      getInputsAndOutput();
+    }
+  }, [chainInfo.currencies, feeConfig, interactionData.data, utxosData]);
+
+  const signingDataText = useMemo(() => {
+    return JSON.stringify(
+      JSON.parse(Buffer.from(interactionData.data.message).toString()),
+      null,
+      2
+    );
+  }, [interactionData.data]);
   const approve = async () => {
     try {
+      if (!inputs?.length || !outputs?.length) return;
       let signature;
-      let transaction;
-
       if (interactionData.data.keyType === "ledger") {
-        const tronWeb = TronWebProvider(chainInfo.rpc);
+        if (!utxosWithHex?.length) return;
         setIsLedgerInteracting(true);
         setLedgerInteractingError(undefined);
-        if (parsedData?.contractAddress) {
-          transaction = (
-            await tronWeb.transactionBuilder.triggerSmartContract(
-              parsedData?.contractAddress,
-              "transfer(address,uint256)",
-              {
-                callValue: 0,
-                feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
-                userFeePercentage: 100,
-                shouldPollResponse: false,
-              },
-              [
-                { type: "address", value: parsedData.recipient },
-                { type: "uint256", value: parsedData.amount },
-              ],
-              parsedData.address
-            )
-          ).transaction;
-        } else {
-          transaction = await tronWeb.transactionBuilder.sendTrx(
-            parsedData.recipient,
-            parsedData.amount,
-            parsedData.address
-          );
-        }
-        signature = await handleTronPreSignByLedger(
+        const info = getAddressInfo(signer);
+        signature = await handleBTCPreSignByLedger(
           interactionData,
-          transaction.raw_data_hex,
+          Buffer.from(signingDataText),
+          info.bech32 ? "84" : "44",
+          utxosWithHex,
+          inputs,
+          outputs,
           {
             useWebHID: uiConfigStore.useWebHIDLedger,
           }
         );
-
-        transaction.signature = [signature];
-
-        await tronWeb.trx.sendRawTransaction(transaction);
       }
 
-      await signTronInteractionStore.approveWithProceedNext(
+      await signBtcInteractionStore.approveWithProceedNext(
         interactionData.id,
-        interactionData.data.keyType === "ledger"
-          ? JSON.stringify(transaction)
-          : Buffer.from(signingDataText),
+        Buffer.from(signingDataText),
+        inputs,
+        outputs,
+        // TODO: Ledger support
         signature,
-        async (proceedNext) => {
-          if (!proceedNext) {
-            if (
-              interactionInfo.interaction &&
-              !interactionInfo.interactionInternal
-            ) {
-              handleExternalInteractionWithNoProceedNext();
-            }
-          }
-
-          if (
-            interactionInfo.interaction &&
-            interactionInfo.interactionInternal
-          ) {
-            await unmountPromise.promise;
-          }
+        async () => {
+          // noop
+        },
+        {
+          preDelay: 200,
         }
       );
     } catch (e) {
       console.log(e);
-      notification.show(
-        "failed",
-        intl.formatMessage({ id: "error.transaction-failed" }),
-        ""
-      );
       if (e instanceof OWalletError) {
         if (e.module === ErrModuleLedgerSign) {
           setLedgerInteractingError(e);
@@ -219,7 +331,6 @@ export const BTCSigningView: FunctionComponent<{
       setIsLedgerInteracting(false);
     }
   };
-
   return (
     <HeaderLayout
       title={intl.formatMessage({
@@ -240,7 +351,7 @@ export const BTCSigningView: FunctionComponent<{
           size: "large",
           color: "danger",
           onClick: async () => {
-            await signTronInteractionStore.rejectWithProceedNext(
+            await signBtcInteractionStore.rejectWithProceedNext(
               interactionData.id,
               () => {}
             );
@@ -252,6 +363,7 @@ export const BTCSigningView: FunctionComponent<{
           size: "large",
           left: !isLoading && <ApproveIcon />,
           isLoading,
+          disabled: buttonDisabled,
           onClick: async () => {
             approve();
           },
@@ -383,23 +495,22 @@ export const BTCSigningView: FunctionComponent<{
                     textUnderlineOffset: "0.2rem",
                   }}
                 >
-                  {
-                    <FormattedMessage
-                      id="components.input.fee-control.fee"
-                      values={{
-                        assets: ` ${
-                          toDisplay(
-                            feeResult?.feeTrx?.amount,
-                            chainInfo.stakeCurrency.coinDecimals
-                          ) ?? 0
-                        } 
-                    ${
-                      feeResult?.feeTrx?.denom?.toUpperCase() ??
-                      chainInfo.feeCurrencies[0].coinDenom
-                    }`,
-                      }}
-                    />
-                  }
+                  {(() => {
+                    if (interactionData.isInternal) {
+                      return (
+                        <FeeSummary feeConfig={feeConfig} gasConfig={null} />
+                      );
+                    }
+
+                    return (
+                      <FeeControl
+                        feeConfig={feeConfig}
+                        senderConfig={senderConfig}
+                        gasConfig={null}
+                        gasSimulator={null}
+                      />
+                    );
+                  })()}
                 </Body2>
                 <Body2
                   color={

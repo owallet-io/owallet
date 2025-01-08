@@ -5,21 +5,21 @@ import { useInteractionInfo } from "../../../hooks";
 import { BTCSigningView } from "./view";
 import { Splash } from "../../../components/splash";
 
-export const SignTronTxPage: FunctionComponent = observer(() => {
-  const { signTronInteractionStore } = useStore();
+export const SignBtcTxPage: FunctionComponent = observer(() => {
+  const { signBtcInteractionStore } = useStore();
 
   useInteractionInfo({
     onWindowClose: () => {
-      signTronInteractionStore.rejectAll();
+      signBtcInteractionStore.rejectAll();
     },
   });
 
   return (
     <React.Fragment>
-      {signTronInteractionStore.waitingData ? (
+      {signBtcInteractionStore.waitingData ? (
         <BTCSigningView
-          key={signTronInteractionStore.waitingData.id}
-          interactionData={signTronInteractionStore.waitingData}
+          key={signBtcInteractionStore.waitingData.id}
+          interactionData={signBtcInteractionStore.waitingData}
         />
       ) : (
         <Splash />

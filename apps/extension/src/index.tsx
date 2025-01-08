@@ -96,6 +96,7 @@ import { SendTronPage } from "./pages/send/amount/tron";
 import { SignTronTxPage } from "./pages/sign/tron";
 import { ExplorePage } from "pages/explore/explore-page";
 import { SendBtcPage } from "pages/send/amount/btc";
+import { SignBtcTxPage } from "pages/sign/btc";
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -458,6 +459,7 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
                 element={<SignCosmosICNSPage />}
               />
               <Route path="/sign-ethereum" element={<SignEthereumTxPage />} />
+              <Route path="/sign-btc" element={<SignBtcTxPage />} />
               <Route path="/sign-tron" element={<SignTronTxPage />} />
 
               <Route path="/wallet/select" element={<WalletSelectPage />} />
