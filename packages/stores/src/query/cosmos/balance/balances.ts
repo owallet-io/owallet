@@ -1,4 +1,4 @@
-import { DenomHelper } from "@owallet/common";
+import { DenomHelper, fetchRetry } from "@owallet/common";
 import {
   QueryError,
   QueryResponse,
@@ -48,8 +48,36 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
     super.onReceiveResponse(response);
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const denoms = response.data.balances.map((coin) => coin.denom);
-    chainInfo.addUnknownDenoms(...denoms);
+    if (this.chainId === "Oraichain") {
+      const allTokensAddress = response.data.balances
+        .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
+        .map((coin) => {
+          return `${new URLSearchParams(coin.denom)
+            .toString()
+            .replace("=", "")}`;
+        })
+        .join(",");
+      fetchRetry(
+        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+      ).then((res) => {
+        if (res?.length > 0) {
+          const tokens = res.map((item, index) => {
+            const { name, decimals, coinGeckoId, icon, denom } = item || {};
+            return {
+              coinImageUrl: icon,
+              coinDenom: name,
+              coinGeckoId: coinGeckoId,
+              coinDecimals: decimals,
+              coinMinimalDenom: denom,
+            };
+          });
+          chainInfo.addCurrencies(...tokens);
+        }
+      });
+    } else {
+      const denoms = response.data.balances.map((coin) => coin.denom);
+      chainInfo.addUnknownDenoms(...denoms);
+    }
   }
 }
 
@@ -90,15 +118,19 @@ export class ObservableQueryCosmosBalancesImpl
   get error(): Readonly<QueryError<unknown>> | undefined {
     return this.parent.error;
   }
+
   get isFetching(): boolean {
     return this.parent.isFetching;
   }
+
   get isObserved(): boolean {
     return this.parent.isObserved;
   }
+
   get isStarted(): boolean {
     return this.parent.isStarted;
   }
+
   get response(): Readonly<QueryResponse<Balances>> | undefined {
     return this.parent.response;
   }

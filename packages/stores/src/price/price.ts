@@ -246,7 +246,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     currency: AppCurrency,
     vsCurrency?: string
   ): number | undefined {
-    const { coinMinimalDenom } = currency || {};
+    const { coinMinimalDenom, coinGeckoId } = currency || {};
     const formatContract =
       "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/";
     if (
@@ -262,8 +262,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
         vsCurrency
       );
     }
-    const coinId = currency.coinGeckoId;
-    if (!coinId) return undefined;
+    if (!coinGeckoId) return undefined;
+
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
     }
@@ -272,13 +272,13 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    this.updateURL([coinId], [vsCurrency]);
+    this.updateURL([coinGeckoId], [vsCurrency]);
 
     if (!this.response) {
       return undefined;
     }
 
-    const coinPrices24h = this.response.data[coinId];
+    const coinPrices24h = this.response.data[coinGeckoId];
     if (!coinPrices24h) {
       return undefined;
     }

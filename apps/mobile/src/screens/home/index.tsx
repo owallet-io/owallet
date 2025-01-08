@@ -26,6 +26,8 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { delay } from "@utils/helper";
+import { fetchRetry } from "@owallet/common";
+import { AppCurrency } from "@owallet/types";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -185,17 +187,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     };
 
     checkInitialNotification();
-    // Cleanup listeners
 
-    // (async ()=>{
-    //     resetTo(SCREENS.TABS.Browser, {
-    //         url: urlData,
-    //     });
-    //     await delay(100);
-    //     navigate(SCREENS.DetailsBrowser, {
-    //         url: urlData,
-    //     });
-    // })()
     return () => {
       // unsubscribeOnMessage();
       unsubscribeOnNotificationOpenedApp();

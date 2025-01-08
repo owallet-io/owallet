@@ -487,20 +487,6 @@ export class RootStore {
       this.bitcoinAccountStore,
       this.solanaAccountStore
     );
-    // this.priceStore = new CoinGeckoTerminalPriceStore(
-    //     new AsyncKVStore("store_prices_gecko_terminal"),
-    //     FiatCurrencies.reduce<{
-    //         [vsCurrency: string]: FiatCurrency;
-    //     }>((obj, fiat) => {
-    //         obj[fiat.currency] = fiat;
-    //         return obj;
-    //     }, {}),
-    //     "usd",
-    //     {
-    //         baseURL: CoinGeckoTerminalAPIEndPoint,
-    //         uri: CoinGeckoTerminalGetPrice,
-    //     }
-    // );
     this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
       new AsyncKVStore("store_test_prices"),
       FiatCurrencies.reduce<{

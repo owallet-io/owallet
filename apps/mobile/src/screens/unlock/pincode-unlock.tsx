@@ -40,7 +40,7 @@ import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, fetchRetry } from "@owallet/common";
 
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
@@ -216,12 +216,42 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
     } else {
-      appInitStore.selectAllNetworks(true);
+      // chainStore.selectChain(ChainIdEnum.Oraichain);
+      // await chainStore.saveLastViewChainId();
+      // appInitStore.selectAllNetworks(false);
+      // appInitStore.selectAllNetworks(true);
     }
   };
-
+  const filterUnique = (
+    source: AppCurrency[],
+    target: AppCurrency[]
+  ): AppCurrency[] => {
+    const denomsSet = new Set(target.map((item) => item.coinMinimalDenom));
+    return source.filter((item) => !denomsSet.has(item.coinMinimalDenom));
+  };
   useEffect(() => {
     selectChain();
+    const oraiChain = chainStore.getChain("Oraichain");
+    console.log(oraiChain?.currencies, "oraiChain?.currencies");
+    if (!oraiChain?.currencies) return;
+    fetchRetry(
+      "https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json"
+    )
+      .then((res) => {
+        if (!res?.currencies) return;
+        const filtered = filterUnique(
+          oraiChain?.currencies,
+          res?.currencies || []
+        );
+        for (const currency of filtered) {
+          const key = `Oraichain/${currency?.coinMinimalDenom}`;
+          const isExits = appInitStore.isItemExits(key);
+          if (typeof isExits === "undefined") {
+            appInitStore.updateTokenState(key, true);
+          }
+        }
+      })
+      .catch((err) => console.error(err));
   }, [appInitStore.getInitApp.wallet]);
 
   const autoBiometryStatus = useAutoBiomtric(
