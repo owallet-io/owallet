@@ -175,16 +175,21 @@ export const SendBtcPage: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
+        console.log("error on send btc", e);
         account.setIsSendingTx(false);
         notification.show(
           "failed",
           intl.formatMessage({ id: "error.transaction-failed" }),
           ""
         );
-        if (e?.message === "Request rejected") {
-          return;
-        }
+        history.back();
       }
+    } else {
+      notification.show(
+        "failed",
+        intl.formatMessage({ id: "error.transaction-failed" }),
+        ""
+      );
     }
   };
 
@@ -208,10 +213,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
             cursor="pointer"
             onClick={async (e) => {
               e.preventDefault();
-              submitSend();
-              analyticsStore.logEvent("click_popOutButton");
               const url = window.location.href + "&detached=true";
-
               await openPopupWindow(url, undefined);
               window.close();
             }}
@@ -232,6 +234,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
       ]}
       onSubmit={async (e) => {
         e.preventDefault();
+        submitSend();
       }}
     >
       <Box
