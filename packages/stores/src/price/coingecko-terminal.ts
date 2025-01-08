@@ -258,7 +258,6 @@ export class CoinGeckoTerminalPriceStore extends ObservableQuery<CoinGeckoTermin
     const poolId = this.response.data?.data.find(
       (item) => item?.attributes?.address === coinId
     )?.relationships?.top_pools?.data?.[0]?.id;
-    console.log(poolId, "poolId");
     const coinPrices24h = this.response.data?.included.find(
       (item) => item?.id === poolId
     );
