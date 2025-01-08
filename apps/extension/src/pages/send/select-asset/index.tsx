@@ -105,6 +105,11 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
     if (modularChainInfo.chainId === ChainIdEVM.TRON) {
       return "/send-tron";
     } else if (
+      "cosmos" in modularChainInfo &&
+      modularChainInfo.cosmos.features.includes("btc")
+    ) {
+      return "/send-btc";
+    } else if (
       "starknet" in modularChainInfo &&
       modularChainInfo.starknet != null
     ) {

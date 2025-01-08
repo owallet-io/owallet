@@ -20,7 +20,6 @@ import {
 } from "@owallet/hooks";
 import { useNavigate } from "react-router";
 import { TokenAmountInput } from "../../../components/input";
-
 import { Box } from "../../../components/box";
 import { YAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
@@ -31,7 +30,6 @@ import { ENSInfo, ICNSInfo } from "../../../config.ui";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { ColorPalette } from "../../../styles";
 import { openPopupWindow } from "@owallet/popup";
-
 import { useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
 import { isRunningInSidePanel } from "../../../utils";
@@ -73,7 +71,7 @@ const Styles = {
   `,
 };
 
-export const SendTronPage: FunctionComponent = observer(() => {
+export const SendBtcPage: FunctionComponent = observer(() => {
   const {
     analyticsStore,
     accountStore,
@@ -413,7 +411,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
       bottomButtons={[
         {
           disabled: txConfigsValidate.interactionBlocked || !!checkSendMySelft,
-          text: intl.formatMessage({ id: "button.next" }),
+          text: intl.formatMessage({ id: "button.next" }) + "BTC",
           color: "primary",
           size: "large",
           type: "submit",

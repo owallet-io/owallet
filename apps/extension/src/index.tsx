@@ -95,6 +95,7 @@ import {
 import { SendTronPage } from "./pages/send/amount/tron";
 import { SignTronTxPage } from "./pages/sign/tron";
 import { ExplorePage } from "pages/explore/explore-page";
+import { SendBtcPage } from "pages/send/amount/btc";
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -366,6 +367,7 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               />
               <Route path="/send" element={<SendAmountPage />} />
               <Route path="/send-tron" element={<SendTronPage />} />
+              <Route path="/send-btc" element={<SendBtcPage />} />
               <Route path="/send-oasis" element={<SendAmountPage />} />
               <Route path="/send-btc" element={<SendAmountPage />} />
               <Route

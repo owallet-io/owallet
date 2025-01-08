@@ -264,6 +264,12 @@ export const TokenDetailModal: FunctionComponent<{
             );
             return;
           }
+          if (modularChainInfo.cosmos.features.includes("btc")) {
+            navigate(
+              `/send-btc?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}&contractAddress=${coinMinimalDenom}`
+            );
+            return;
+          }
           navigate(
             `/send?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
           );

@@ -44,14 +44,14 @@ export type RecipientInputProps = (
   | RecipientInputWithoutAddressBookProps
 ) & {
   bottom?: React.ReactNode;
-  checkSendMySelft: string;
+  customCondition: string;
 };
 
 function numOfCharacter(str: string, c: string): number {
   return str.split(c).length - 1;
 }
 
-export const TronRecipientInput = observer<
+export const CustomRecipientInput = observer<
   RecipientInputProps,
   HTMLInputElement
 >(
@@ -59,7 +59,7 @@ export const TronRecipientInput = observer<
     const { analyticsStore } = useStore();
     const intl = useIntl();
     const theme = useTheme();
-    const { recipientConfig, memoConfig, checkSendMySelft } = props;
+    const { recipientConfig, memoConfig, customCondition } = props;
 
     const [isAddressBookModalOpen, setIsAddressBookModalOpen] =
       React.useState(false);
@@ -186,8 +186,8 @@ export const TronRecipientInput = observer<
               return;
             }
 
-            if (checkSendMySelft) {
-              return checkSendMySelft;
+            if (customCondition) {
+              return customCondition;
             }
 
             if (err) {
