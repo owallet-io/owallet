@@ -209,17 +209,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const selectChain = async () => {
     if (appInitStore.getInitApp.wallet === "osmosis") {
       chainStore.selectChain(ChainIdEnum.Osmosis);
-      // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
     } else if (appInitStore.getInitApp.wallet === "injective") {
       chainStore.selectChain(ChainIdEnum.Injective);
-      // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
-    } else {
-      // chainStore.selectChain(ChainIdEnum.Oraichain);
-      // await chainStore.saveLastViewChainId();
-      // appInitStore.selectAllNetworks(false);
-      // appInitStore.selectAllNetworks(true);
     }
   };
 

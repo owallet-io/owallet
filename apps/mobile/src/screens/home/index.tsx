@@ -200,9 +200,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     const denomsSet = new Set(target.map((item) => item.coinMinimalDenom));
     return source.filter((item) => !denomsSet.has(item.coinMinimalDenom));
   };
+  const oraiChain = chainStore.getChain("Oraichain");
   useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
-      const oraiChain = chainStore.getChain("Oraichain");
       if (!oraiChain?.currencies) return;
       fetchRetry(
         "https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json"
@@ -223,7 +223,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         })
         .catch((err) => console.error(err));
     });
-  }, []);
+  }, [oraiChain?.currencies]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
