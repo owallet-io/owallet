@@ -24,8 +24,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && node ./src/scripts/create-sentry-properties.js",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 3.1.25 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 3.1.25 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 3.1.28 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 3.1.28 --output-dir build",
     "images": "node ./src/scripts/generate-images.js",
     "images-noels": "node ./src/scripts/generate-images-noel.js",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest ios"
