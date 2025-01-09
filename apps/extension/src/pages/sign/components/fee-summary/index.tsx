@@ -58,7 +58,7 @@ export const FeeSummary: FunctionComponent<{
                 : ColorPalette["gray-200"]
             }
           >
-            <FormattedMessage id="page.sign.components.fee-summary.fee" />
+            <FormattedMessage id="page.sign.components.fee-summary.fee" />:
           </Subtitle3>
 
           <div style={{ flex: 1 }} />

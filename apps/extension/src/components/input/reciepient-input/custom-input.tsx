@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import {
   EmptyAddressError,
   IMemoConfig,
+  InvalidHexError,
   IRecipientConfig,
   IRecipientConfigWithENS,
   IRecipientConfigWithICNS,
@@ -183,6 +184,10 @@ export const CustomRecipientInput = observer<
             const err = uiProperties.error || uiProperties.warning;
 
             if (err instanceof EmptyAddressError) {
+              return;
+            }
+
+            if (err instanceof InvalidHexError) {
               return;
             }
 

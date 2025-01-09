@@ -810,6 +810,7 @@ export const SendAmountPage: FunctionComponent = observer(() => {
             }
 
             console.log(e);
+            history.back();
             notification.show(
               "failed",
               intl.formatMessage({ id: "error.transaction-failed" }),
