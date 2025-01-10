@@ -5,6 +5,7 @@ import {
   // HDPath,
   // KeyDerivationTypeEnum,
   ChainInfoWithoutEndpoints,
+  ChainIdEVM,
 } from "@owallet/types";
 
 import { ChainIdEnum, Network, TRON_ID } from "./constants";
@@ -129,6 +130,9 @@ export const extractDataInParentheses = (
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,
   [ChainIdEnum.Ethereum]: Network.ETHEREUM,
+  [ChainIdEVM.BNBChain]: Network.BINANCE_SMART_CHAIN,
+  [ChainIdEVM.Ethereum]: Network.ETHEREUM,
+  [ChainIdEVM.TRON]: Network.TRON,
   [ChainIdEnum.Bitcoin]: Network.BITCOIN,
   [ChainIdEnum.Oasis]: Network.MAINNET,
   [ChainIdEnum.OasisEmerald]: Network.EMERALD,
@@ -145,14 +149,15 @@ export const MapChainIdToNetwork = {
   [ChainIdEnum.SEI]: Network.SEI,
   [ChainIdEnum.NEUTRON]: Network.NEUTRON,
 };
+
 export const MapNetworkToChainId = {
-  [Network.BINANCE_SMART_CHAIN]: ChainIdEnum.BNBChain,
-  [Network.ETHEREUM]: ChainIdEnum.Ethereum,
+  [Network.BINANCE_SMART_CHAIN]: ChainIdEVM.BNBChain,
+  [Network.ETHEREUM]: ChainIdEVM.Ethereum,
   [Network.BITCOIN]: ChainIdEnum.Bitcoin,
   [Network.MAINNET]: ChainIdEnum.Oasis,
   [Network.EMERALD]: ChainIdEnum.OasisEmerald,
   [Network.SAPPHIRE]: ChainIdEnum.OasisSapphire,
-  [Network.TRON]: ChainIdEnum.TRON,
+  [Network.TRON]: ChainIdEVM.TRON,
   [Network.ORAICHAIN]: ChainIdEnum.Oraichain,
   [Network.OSMOSIS]: ChainIdEnum.Osmosis,
   [Network.COSMOSHUB]: ChainIdEnum.CosmosHub,
