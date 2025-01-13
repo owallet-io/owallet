@@ -311,6 +311,7 @@ export const BTCSigningView: FunctionComponent<{
         signature,
         async () => {
           // noop
+          console.log("success");
         },
         {
           preDelay: 200,
