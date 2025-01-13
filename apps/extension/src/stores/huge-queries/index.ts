@@ -188,7 +188,7 @@ export class HugeQueriesStore {
               this.balanceBinarySort.pushAndSort(key, {
                 chainInfo,
                 token: balance,
-                price: currency.coinGeckoId
+                price: currency.coinMinimalDenom
                   ? this.priceStore.calculatePrice(balance)
                   : undefined,
                 isFetching: queryBalance.stakable.isFetching,
@@ -225,7 +225,7 @@ export class HugeQueriesStore {
                 this.balanceBinarySort.pushAndSort(key, {
                   chainInfo,
                   token: balance.balance,
-                  price: currency.coinGeckoId
+                  price: currency.coinMinimalDenom
                     ? this.priceStore.calculatePrice(balance.balance)
                     : undefined,
                   isFetching: balance.isFetching,
@@ -318,7 +318,7 @@ export class HugeQueriesStore {
         }
 
         // If currency has coinGeckoId, hide the low price tokens (under $1)
-        if (viewToken.token.currency.coinGeckoId != null) {
+        if (viewToken.token.currency.coinMinimalDenom != null) {
           return (
             this.priceStore
               .calculatePrice(viewToken.token, "usd")

@@ -193,7 +193,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
 
     const pricePretty = priceStore.calculatePrice(viewToken.token);
     const price24h = priceStore.getPrice24hChange(
-      viewToken.token.currency.coinGeckoId
+      viewToken.token.currency
     );
 
     const isIBC = useMemo(() => {
