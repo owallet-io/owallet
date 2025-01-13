@@ -319,7 +319,7 @@ export class PermissionService {
 
       this.checkPermission(
         env,
-        currentChainId,
+        chainId,
         getBasicAccessPermissionType(),
         origin
       );
@@ -621,6 +621,12 @@ export class PermissionService {
 
   getCurrentChainIdForEVM(origin: string): string | undefined {
     const currentChainId = this.currentChainIdForEVMByOriginMap.get(origin);
+    console.log(
+      "getCurrentChainIdForEVM",
+      currentChainId,
+      origin,
+      this.hasPermission(currentChainId, getBasicAccessPermissionType(), origin)
+    );
 
     if (
       currentChainId &&

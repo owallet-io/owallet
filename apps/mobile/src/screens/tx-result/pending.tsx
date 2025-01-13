@@ -42,6 +42,8 @@ import ItemReceivedToken from "@screens/transactions/components/item-received-to
 import { useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import OWText from "@components/text/ow-text";
+import { confirmTransaction } from "@owallet/provider";
+import { Connection } from "@solana/web3.js";
 enum EthTxStatus {
   Success = "0x1",
   Failure = "0x0",
@@ -137,6 +139,34 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         );
         return;
       }
+      if (chainInfo.chainId.includes("solana") && txHash) {
+        (async () => {
+          try {
+            const connection = new Connection(chainInfo.rpc, "confirmed");
+            console.log(txHash, "txHash");
+            await confirmTransaction(connection, txHash, "confirmed");
+            isPendingGoToResult.current = true;
+            navigation.dispatch(
+              StackActions.replace(SCREENS.TxSuccessResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              })
+            );
+          } catch (e) {
+            console.log(e, "Err svm");
+            isPendingGoToResult.current = true;
+            navigation.dispatch(
+              StackActions.replace(SCREENS.TxFailedResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              })
+            );
+          }
+        })();
+      }
+
       if (chainInfo.features.includes("btc") && txHash) {
         retry(
           () => {
@@ -383,12 +413,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const handleUrl = (txHash) => {
     return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
       "{txHash}",
-      chainInfo.features.includes("btc") ||
-        chainInfo.features.includes("oasis") ||
-        chainInfo.features.includes("tron") ||
-        chainId?.includes("eip155")
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash
     );
   };
   const handleOnExplorer = async () => {

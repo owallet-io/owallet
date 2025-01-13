@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Image, ImageSourcePropType, StyleSheet } from "react-native";
+import { ImageSourcePropType, StyleSheet } from "react-native";
+
 import Icon, { IconProps } from "./icomoon";
+import FastImage, { FastImageProps } from "react-native-fast-image";
 export interface IOWIconProps extends IconProps {
   type?: "images";
   source?: ImageSourcePropType;
@@ -14,7 +16,7 @@ const OWIcon = ({
   ...props
 }: IOWIconProps) => {
   const [imageDefault, setImageDefault] = useState(
-    "https://assets.coingecko.com/coins/images/12931/standard/orai.png?1696512718"
+    "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png"
   );
   const [isErrorLoad, setIsErrorLoad] = useState(false);
   useEffect(() => {
@@ -22,7 +24,8 @@ const OWIcon = ({
   }, [props.source?.uri]);
   if (type == "images")
     return (
-      <Image
+      //@ts-ignore
+      <FastImage
         style={{
           width: props.size,
           height: props.size,

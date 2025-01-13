@@ -9,7 +9,7 @@ import * as bitcoin from "bitcoinjs-lib";
 import { Buffer } from "buffer";
 import { Env } from "@owallet/router";
 import { KeyRingCosmosService } from "../keyring-cosmos";
-import { BtcAccountBase } from "@owallet/stores-btc";
+import { isBtcAddress } from "@owallet/common";
 
 export class KeyRingBtcService {
   constructor(
@@ -125,7 +125,7 @@ export class KeyRingBtcService {
     }
 
     try {
-      const isValid = BtcAccountBase.isBtcAddress(signer);
+      const isValid = isBtcAddress(signer);
       if (!isValid) {
         throw Error("Invalid Btc Address");
       }

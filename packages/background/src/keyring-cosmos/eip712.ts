@@ -58,7 +58,7 @@ export const EIP712DomainTypeValidator = Joi.array()
     })
   )
   .unique()
-  .min(1)
+  .min(0)
   .custom((value) => {
     // Sort by name
     const domainFieldNames: Array<string> = [

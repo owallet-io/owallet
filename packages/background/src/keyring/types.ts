@@ -2,6 +2,7 @@ import { PlainObject, Vault } from "../vault";
 import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainInfo, TransactionType } from "@owallet/types";
 import { types } from "@oasisprotocol/client";
+import { PublicKey } from "@solana/web3.js";
 
 export type KeyRingStatus = "empty" | "locked" | "unlocked";
 
@@ -82,6 +83,27 @@ export interface KeyRingBtc {
     inputs: any,
     outputs: any,
     signType: "legacy" | "bech32",
+    chainInfo: ChainInfo
+  ): string | Promise<string>;
+}
+export interface KeyRingSvm {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PublicKey | Promise<PublicKey>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: string,
     chainInfo: ChainInfo
   ): string | Promise<string>;
 }

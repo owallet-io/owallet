@@ -80,7 +80,10 @@ export const SignModal = registerModal(
       chainId,
       senderConfig,
       amountConfig,
-      gasConfig
+      gasConfig,
+      {
+        additionAmountToNeedFee: false,
+      }
     );
     const memoConfig = useMemoConfig(chainStore, chainId);
 

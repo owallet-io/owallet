@@ -181,7 +181,7 @@ export const SendEvmScreen: FunctionComponent<{
         const isERC20 = sendingDenomHelper.type === "erc20";
         const isSendingNativeToken =
           sendingDenomHelper.type === "native" &&
-          (chainInfo.stakeCurrency?.coinMinimalDenom ??
+          (chainInfo.feeCurrencies?.[0]?.coinMinimalDenom ??
             chainInfo.currencies[0].coinMinimalDenom) ===
             sendingDenomHelper.denom;
         const newIsEvmTx =
@@ -205,7 +205,7 @@ export const SendEvmScreen: FunctionComponent<{
       sendConfigs.amountConfig.currency.coinMinimalDenom,
       sendConfigs.recipientConfig.isRecipientEthereumHexAddress,
       sendConfigs.senderConfig,
-      chainInfo.stakeCurrency?.coinMinimalDenom,
+      chainInfo.feeCurrencies?.[0]?.coinMinimalDenom,
       chainInfo.currencies,
     ]);
 

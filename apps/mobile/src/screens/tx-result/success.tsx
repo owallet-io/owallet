@@ -88,25 +88,13 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     ];
   }, [chainId]);
   const handleUrl = (txHash) => {
-    return (
-      chainInfo.txExplorer ||
-      txExplorer ||
-      chainInfo.raw.txExplorer
-    )?.txUrl.replace(
+    return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
       "{txHash}",
-      chainInfo.features.includes("btc") ||
-        chainInfo.features.includes("oasis") ||
-        chainInfo.features.includes("tron") ||
-        chainId?.includes("eip155")
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
+      txHash
     );
   };
   const handleOnExplorer = async () => {
-    if (
-      (chainInfo?.txExplorer || txExplorer || chainInfo?.raw.txExplorer) &&
-      txHash
-    ) {
+    if ((chainInfo?.txExplorer || txExplorer) && txHash) {
       const url = handleUrl(txHash);
       await openLink(url);
     }

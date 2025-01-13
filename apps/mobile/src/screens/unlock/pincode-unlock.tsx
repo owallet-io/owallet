@@ -215,6 +215,8 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
       chainStore.selectChain(ChainIdEnum.Injective);
       // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
+    } else {
+      appInitStore.selectAllNetworks(true);
     }
   };
 
@@ -422,6 +424,7 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
           <ActivityIndicator size={"large"} />
         </View>
       ) : null}
+
       <View style={styles.container}>
         <View style={styles.aic}>
           <OWText

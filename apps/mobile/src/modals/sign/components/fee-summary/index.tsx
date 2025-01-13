@@ -51,7 +51,7 @@ export const FeeSummary: FunctionComponent<{
             const chainInfo = chainStore.getChain(feeConfig.chainId);
             return [
               new CoinPretty(
-                chainInfo.stakeCurrency || chainInfo.currencies[0],
+                chainInfo.feeCurrencies[0] || chainInfo.currencies[0],
                 new Dec(0)
               ),
             ];

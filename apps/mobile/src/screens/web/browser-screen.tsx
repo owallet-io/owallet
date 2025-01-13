@@ -33,7 +33,7 @@ export const BrowserScreen = observer(() => {
   }, []);
 
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
 
@@ -126,7 +126,7 @@ export const BrowserScreen = observer(() => {
   return (
     <PageWithViewInBottomTabView
       style={{
-        backgroundColor: colors["neutral-surface-action"],
+        // backgroundColor: colors["neutral-surface-action"],
         flexGrow: 1,
       }}
     >
@@ -204,7 +204,7 @@ export const BrowserScreen = observer(() => {
           paddingBottom: 0,
         }}
       >
-        {[...(browserStore.getBookmarks || [])].length > 0 ? (
+        {[...(appInitStore.getBookmarks || [])].length > 0 ? (
           <View style={{}}>
             <View
               style={{
@@ -260,8 +260,9 @@ export const BrowserScreen = observer(() => {
                 style={{
                   paddingBottom: 16,
                 }}
+                keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
-                data={[...(browserStore.getBookmarks || [])]}
+                data={[...(appInitStore.getBookmarks || [])]}
                 renderItem={({ item, index }) => {
                   return (
                     <TouchableOpacity

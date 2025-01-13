@@ -81,6 +81,7 @@ export const SCREENS = {
   DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   ManageChain: "ManageChain",
+  ManageToken: "ManageToken",
   AddChain: "AddChain",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
@@ -311,7 +312,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.ManageChain]: {
     title: "Select Chains",
   },
-
+  [SCREENS.ManageToken]: {
+    title: "Manage token",
+  },
   [SCREENS.AddAddressBook]: {
     title: "Add new contact",
   },

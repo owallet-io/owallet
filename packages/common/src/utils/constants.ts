@@ -1,5 +1,3 @@
-import { Dec } from "@owallet/unit";
-
 export const EVMOS_NETWORKS = ["kawaii_6886-1"];
 export const EXTRA_FEE_LIMIT_TRON = 50_000_000;
 export const DEFAULT_FEE_LIMIT_TRON = 150_000_000;
@@ -9,7 +7,6 @@ export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
 import { Network as NetworkTatum } from "@tatumio/tatum";
-export const zeroDec = new Dec(0);
 export enum NetworkEnum {
   Cosmos = "cosmos",
   Evm = "evm",
@@ -61,16 +58,16 @@ export enum ChainIdEnum {
   OraiBTCBridge = "oraibtc-mainnet-1",
   KawaiiCosmos = "kawaii_6886-1",
   KawaiiEvm = "0x1ae6",
-  Ethereum = "0x01",
+  Ethereum = "eip155:1",
   CosmosHub = "cosmoshub-4",
   Osmosis = "osmosis-1",
   Juno = "juno-1",
-  BNBChain = "0x38",
+  BNBChain = "eip155:56",
   BNBChainTestNet = "0x61",
-  TRON = "0x2b6653dc",
+  TRON = "eip155:728126428",
   Oasis = "oasis-1",
-  OasisSapphire = "0x5afe",
-  OasisEmerald = "0xa516",
+  OasisSapphire = "eip155:23294",
+  OasisEmerald = "eip155:42262",
   BitcoinTestnet = "bitcoinTestnet",
   Bitcoin = "bitcoin",
   Injective = "injective-1",

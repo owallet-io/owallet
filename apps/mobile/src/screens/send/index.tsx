@@ -11,6 +11,7 @@ import { OWHeaderTitle } from "@components/header";
 import { DenomHelper } from "@owallet/common";
 import { capitalizedText } from "@utils/helper";
 import { SendEvmScreen } from "@src/screens/send/send-evm";
+import { SendSvmScreen } from "@screens/send/send-svm";
 
 export const SendScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -84,6 +85,14 @@ export const SendScreen: FunctionComponent = observer(() => {
     ),
     btc: (
       <SendBtcScreen
+        setSelectedKey={setSelectedKey}
+        chainId={chainId}
+        coinMinimalDenom={coinMinimalDenom}
+        recipientAddress={initialRecipientAddress}
+      />
+    ),
+    svm: (
+      <SendSvmScreen
         setSelectedKey={setSelectedKey}
         chainId={chainId}
         coinMinimalDenom={coinMinimalDenom}

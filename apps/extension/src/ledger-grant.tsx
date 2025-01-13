@@ -39,7 +39,7 @@ import { OWallet } from "@owallet/provider";
 configure({
   enforceActions: "always", // Make mobx to strict mode.
 });
-
+//@ts-ignore
 window.owallet = new OWallet(
   manifest.version,
   "core",

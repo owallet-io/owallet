@@ -26,7 +26,7 @@ export const BookmarksScreen = observer(() => {
   }, []);
 
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
   const onDetailBrowser = (url) => {
@@ -45,7 +45,7 @@ export const BookmarksScreen = observer(() => {
   };
   const onDelete = (uri) => {
     if (!uri) return;
-    browserStore.removeBoorkmark(uri);
+    appInitStore.removeBoorkmark(uri);
     return;
   };
 
@@ -135,9 +135,9 @@ export const BookmarksScreen = observer(() => {
         }}
       >
         <DraggableFlatList
-          data={[...(browserStore.getBookmarks || [])]}
+          data={[...(appInitStore.getBookmarks || [])]}
           onDragEnd={({ data }) => {
-            browserStore.updateBookmarks(data);
+            appInitStore.updateBookmarks(data);
             // setData(data);
           }}
           showsVerticalScrollIndicator={false}

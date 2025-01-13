@@ -109,7 +109,8 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
       )}
       {keyStore?.type !== "ledger" &&
         !appInitStore.getInitApp.isAllNetworks &&
-        chainStore.current.chainId !== ChainIdEnum.Oasis && (
+        chainStore.current.chainId !== ChainIdEnum.Oasis &&
+        !chainStore.current.chainId.startsWith("solana") && (
           <BasicSettingItem
             icon="md_key"
             paragraph={"Reveal Private Key"}

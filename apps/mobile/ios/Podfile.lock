@@ -722,6 +722,9 @@ PODS:
     - FirebaseCoreExtension (= 10.17.0)
     - React-Core
     - RNFBApp
+  - RNFlashList (1.7.2):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - RNFS (2.20.0):
     - React-Core
   - RNGestureHandler (2.20.0):
@@ -868,6 +871,7 @@ DEPENDENCIES:
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNInAppBrowser (from `../node_modules/react-native-inappbrowser-reborn`)
@@ -1056,6 +1060,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNFlashList:
+    :path: "../node_modules/@shopify/flash-list"
   RNFS:
     :path: "../node_modules/react-native-fs"
   RNGestureHandler:
@@ -1184,6 +1190,7 @@ SPEC CHECKSUMS:
   RNFBAnalytics: 312ce6c780c94b48a8622cfa5dcc8e3234e3851b
   RNFBApp: 5a16a735bad57ca29ee44757bde7e654c5bc8f60
   RNFBMessaging: d1727030c98a9dcc7cd44e2fd29398acb6531cba
+  RNFlashList: 6c2a9e447b143b4cd6f0f9cdd6e5ff9b0d52bab4
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: fc9b83c69a222770e07bef8a6f6c47d9ebfcd336
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
@@ -1194,7 +1201,7 @@ SPEC CHECKSUMS:
   RNReanimated: e71a1d6bb6427f45ea57c5e23f99030129b6db62
   RNScreens: bea7b9767050d69e4b9da14639cdd5c8f5a37881
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
-  RNSentry: cb7a8c8529832736cf800632de745e7fd65ad6b9
+  RNSentry: f186a719ac9ecda5c9813072f6d5d142b0b23928
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
@@ -1207,4 +1214,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: d256aeea1a742e35ad1c6756d5ae100f56f4dbd6
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.12.1

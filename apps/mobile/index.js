@@ -20,9 +20,6 @@ const config = {
 };
 if (!__DEV__) {
   firebase.initializeApp(config);
-  // messaging().setBackgroundMessageHandler(async remoteMessage => {
-  //   console.log('remoteMessage background', remoteMessage);
-  // });
 
   const onMessageReceivedInBackground = async () => {
     messaging().setBackgroundMessageHandler(async remoteMessage => {

@@ -184,8 +184,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (appInitStore.getInitApp.wallet === "osmosis") {
       setFromNetwork(ChainIdEnum.Osmosis);
+      setSwapTokens(["uosmo", "usdt"]);
     } else if (appInitStore.getInitApp.wallet === "injective") {
       setFromNetwork(ChainIdEnum.Injective);
+      setSwapTokens(["inj", "usdt"]);
     }
   }, [appInitStore.getInitApp.wallet]);
 
@@ -210,7 +212,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const originalFromToken = tokenMap[fromTokenDenom];
   const originalToToken = tokenMap[toTokenDenom];
 
-  const isFromBTC = originalFromToken.coinGeckoId === "bitcoin";
+  const isFromBTC = originalFromToken?.coinGeckoId === "bitcoin";
+
   const INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT = 0.00001;
   let INIT_AMOUNT = 1;
   if (isFromBTC) INIT_AMOUNT = INIT_SIMULATE_NOUGHT_POINT_OH_ONE_AMOUNT;

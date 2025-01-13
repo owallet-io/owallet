@@ -16,12 +16,14 @@ import { SignOasisModal } from "@src/modals/sign/sign-oasis";
 import { SignBtcModal } from "@src/modals/sign/sign-btc";
 import { BasicAccessEVMModal } from "@src/modals/permission/basic-access-evm";
 import { SignTronModal } from "../../modals/sign/sign-tron";
+import { SignSvmModal } from "@src/modals/sign/sign-svm";
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
       signInteractionStore,
       signEthereumInteractionStore,
+      signSvmInteractionStore,
       signOasisInteractionStore,
       signBtcInteractionStore,
       signTronInteractionStore,
@@ -98,6 +100,18 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               );
             }}
             interactionData={signTronInteractionStore.waitingData}
+          />
+        ) : null}
+        {signSvmInteractionStore.waitingData ? (
+          <SignSvmModal
+            isOpen={true}
+            close={() => {
+              signSvmInteractionStore.rejectWithProceedNext(
+                signSvmInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signSvmInteractionStore.waitingData}
           />
         ) : null}
         {signEthereumInteractionStore.waitingData ? (

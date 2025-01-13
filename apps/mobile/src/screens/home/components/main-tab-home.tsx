@@ -44,6 +44,7 @@ export const MainTabHome: FC<{}> = observer(() => {
               style={[
                 {
                   flex: 1,
+                  borderRadius: 0,
                 },
                 activeTab.id === item.id ? styles.active : styles.inactive,
               ]}

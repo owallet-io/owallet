@@ -40,9 +40,10 @@ import LottieView from "lottie-react-native";
 import { LoadingBar } from "@src/screens/web/components/loadingBar";
 // import get from 'lodash/get';
 import { tracking } from "@src/utils/tracking";
-import { navigate, popTo, popToTop } from "@src/router/root";
+import { navigate, navigationRef, popTo, popToTop } from "@src/router/root";
 import { BACKGROUND_PORT } from "@owallet/router";
 import { URLTempAllowOnMobileMsg } from "@owallet/background";
+import { StackActions } from "@react-navigation/routers";
 // import RNFS from 'react-native-fs';
 
 // export const useInjectedSourceCode = () => {
@@ -74,7 +75,7 @@ export const DetailsBrowserScreen = observer((props) => {
   const [canGoForward, setCanGoForward] = useState(false);
   const isFocused = useIsFocused();
   const navigation = useNavigation();
-  const { keyRingStore, chainStore, browserStore } = useStore();
+  const { keyRingStore, chainStore, browserStore, appInitStore } = useStore();
   const route = useRoute();
   const [useProperty, setUseProperty] = useState({
     percent: 0, //range:  0 - 1
@@ -91,40 +92,11 @@ export const DetailsBrowserScreen = observer((props) => {
   });
   const { inject } = browserStore;
   const sourceCode = inject;
-  // const sourceCode = useInjectedSourceCode();
-
-  console.log("sourceCode", sourceCode?.length);
-
-  // const [owallet] = useState(
-  //   () =>
-  //     new OWallet(
-  //       `${name}-${version}`,
-  //       "core",
-  //       new RNMessageRequesterExternal(() => {
-  //         if (!webviewRef.current) {
-  //           throw new Error("Webview not initialized yet");
-  //         }
-  //
-  //         if (!currentURL) {
-  //           throw new Error("Current URL is empty");
-  //         }
-  //
-  //         return {
-  //           url: currentURL,
-  //           origin: new URL(currentURL).origin,
-  //         };
-  //       })
-  //     )
-  // );
-  // const [eventEmitter] = useState(() => new EventEmitter());
-
-  //@ts-ignore
-  // console.log('window.owallet', window.owallet);
-
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       eventEmitter.emit("message", event.nativeEvent);
-
+      // console.log(event.nativeEvent.data,"event.nativeEvent.data");
+      console.log(event.nativeEvent, "event.nativeEvent");
       const data: { message: string; origin: string } = JSON.parse(
         event.nativeEvent.data
       );
@@ -159,109 +131,12 @@ export const DetailsBrowserScreen = observer((props) => {
     },
     [eventEmitter, currentURL]
   );
-
-  // const [bitcoin] = useState(
-  //   () =>
-  //     new Bitcoin(
-  //       version,
-  //       "core",
-  //       new RNMessageRequesterExternal(() => {
-  //         if (!webviewRef.current) {
-  //           throw new Error("Webview not initialized yet");
-  //         }
-  //
-  //         if (!currentURL) {
-  //           throw new Error("Current URL is empty");
-  //         }
-  //
-  //         return {
-  //           url: currentURL,
-  //           origin: new URL(currentURL).origin,
-  //         };
-  //       })
-  //     )
-  // );
-  //
-  // const [ethereum] = useState(
-  //   () =>
-  //     new Ethereum(
-  //       DeviceInfo.getVersion(),
-  //       "core",
-  //       chainStore.current.chainId,
-  //       new RNMessageRequesterExternal(() => {
-  //         if (!webviewRef.current) {
-  //           throw new Error("Webview not initialized yet");
-  //         }
-  //
-  //         if (!currentURL) {
-  //           throw new Error("Current URL is empty");
-  //         }
-  //
-  //         return {
-  //           url: currentURL,
-  //           origin: new URL(currentURL).origin,
-  //         };
-  //       })
-  //     )
-  // );
-  //
-  // const [tronWeb] = useState(
-  //   () =>
-  //     new TronWeb(
-  //       version,
-  //       "core",
-  //       chainStore.current.chainId,
-  //       new RNMessageRequesterExternal(() => {
-  //         if (!webviewRef.current) {
-  //           throw new Error("Webview not initialized yet");
-  //         }
-  //
-  //         if (!currentURL) {
-  //           throw new Error("Current URL is empty");
-  //         }
-  //
-  //         return {
-  //           url: currentURL,
-  //           origin: new URL(currentURL).origin,
-  //         };
-  //       })
-  //     )
-  // );
-  // const eventListener = {
-  //   addMessageListener: (fn: any) => {
-  //     eventEmitter.addListener("message", fn);
-  //   },
-  //   postMessage: (message: any) => {
-  //     webviewRef.current?.injectJavaScript(
-  //       `
-  //           window.postMessage(${JSON.stringify(
-  //             message
-  //           )}, window.location.origin);
-  //           true; // note: this is required, or you'll sometimes get silent failures
-  //         `
-  //     );
-  //   },
-  // };
-  // Start proxy for webview
-  // useEffect(() => {
-  //   RNInjectedOWallet.startProxy(
-  //     owallet,
-  //     eventListener,
-  //     RNInjectedOWallet.parseWebviewMessage
-  //   );
-  // }, [eventEmitter, owallet]);
   useEffect(() => {
     const unlisten = RNInjectedOWallet.startProxy(
       new OWallet(
         version,
         "core",
         new RNMessageRequesterExternal(() => {
-          // const url = (() => {
-          //   return recentUrl.current.startsWith('http://') ||
-          //   recentUrl.current.startsWith('https://')
-          //       ? recentUrl.current
-          //       : uri;
-          // })();
           return {
             url: currentURL,
             origin: new URL(currentURL).origin,
@@ -293,45 +168,18 @@ export const DetailsBrowserScreen = observer((props) => {
       unlisten();
     };
   }, [chainStore, currentURL, eventEmitter]);
-
-  // useEffect(() => {
-  //   RNInjectedBitcoin.startProxy(
-  //     bitcoin,
-  //     eventListener,
-  //     RNInjectedBitcoin.parseWebviewMessage
-  //   );
-  // }, [eventEmitter, bitcoin]);
-  // useEffect(() => {
-  //   RNInjectedEthereum.startProxy(
-  //     ethereum,
-  //     eventListener,
-  //     RNInjectedEthereum.parseWebviewMessage
-  //   );
-  // }, [eventEmitter, ethereum]);
-  //
-  // useEffect(() => {
-  //   RNInjectedTronWeb.startProxy(
-  //     tronWeb,
-  //     eventListener,
-  //     RNInjectedTronWeb.parseWebviewMessage
-  //   );
-  // }, [eventEmitter, tronWeb]);
-  // useEffect(() => {
-  //   const keyStoreChangedListener = () => {
-  //     webviewRef.current?.injectJavaScript(
-  //       `
-  //           window.dispatchEvent(new Event("keplr_keystorechange"));
-  //           true; // note: this is required, or you'll sometimes get silent failures
-  //         `
-  //     );
-  //   };
-  //
-  //   keyRingStore.addKeyStoreChangedListener(keyStoreChangedListener);
-  //
-  //   return () => {
-  //     keyRingStore.removeKeyStoreChangedListener(keyStoreChangedListener);
-  //   };
-  // }, [keyRingStore]);
+  const vConsoleScript = `
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://unpkg.com/vconsole@latest/dist/vconsole.min.js';
+    script.onload = function() {
+      var vConsole = new VConsole();
+      console.log('vConsole is ready');
+    };
+    document.body.appendChild(script);
+  })();
+  true;
+`;
   useEffect(() => {
     // Handle the hardware back button on the android.
     const backHandler = () => {
@@ -375,7 +223,7 @@ export const DetailsBrowserScreen = observer((props) => {
   }, [canGoBack, navigation]);
 
   const onHomeBrowser = () => {
-    popToTop();
+    navigation.navigate(SCREENS.TABS.Browser);
     return;
   };
   const onReload = () => {
@@ -392,12 +240,12 @@ export const DetailsBrowserScreen = observer((props) => {
 
   const onAddBookMark = (bookmark) => {
     if (!bookmark) return;
-    browserStore.addBoorkmark(bookmark);
+    appInitStore.addBoorkmark(bookmark);
     return;
   };
   const isActiveBoorkmark = (uri) => {
     if (!uri) return false;
-    const isActive = browserStore.getBookmarks.findIndex(
+    const isActive = appInitStore.getBookmarks.findIndex(
       (item) => item?.uri === uri
     );
     return isActive !== -1 ? true : false;
@@ -459,6 +307,7 @@ export const DetailsBrowserScreen = observer((props) => {
       color: colors["error-border-default"],
     }));
   };
+
   return (
     <PageWithViewInBottomTabView
       style={{
@@ -581,6 +430,8 @@ export const DetailsBrowserScreen = observer((props) => {
               <WebView
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
+                //enable if support for debug webview
+                // injectedJavaScript={vConsoleScript}
                 // style={visible && percent < 1 ? { flex: 0, height: 0, opacity: 0 } : {}}
                 cacheEnabled={false}
                 incognito={true}

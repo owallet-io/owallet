@@ -23,7 +23,7 @@ export class BackgroundTxTronService {
   ): Promise<string> {
     if (!options.silent) {
       this.notification.create({
-        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        iconRelativeUrl: "assets/logo-256.png",
         title: "Tx is pending...",
         message: "Wait a second",
       });
@@ -88,7 +88,7 @@ export class BackgroundTxTronService {
   private static processTxResultNotification(notification: Notification): void {
     try {
       notification.create({
-        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        iconRelativeUrl: "assets/logo-256.png",
         title: "Tx succeeds",
         message: "Congratulations!",
       });
@@ -104,7 +104,7 @@ export class BackgroundTxTronService {
     const message = e.message;
 
     notification.create({
-      iconRelativeUrl: "assets/orai_wallet_logo.png",
+      iconRelativeUrl: "assets/logo-256.png",
       title: "Tx failed",
       message,
     });
