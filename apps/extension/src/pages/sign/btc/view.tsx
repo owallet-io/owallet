@@ -311,12 +311,18 @@ export const BTCSigningView: FunctionComponent<{
         signature,
         async () => {
           // noop
+          notification.show(
+            "success",
+            intl.formatMessage({
+              id: "notification.transaction-success",
+            }),
+            ""
+          );
         },
         {
           preDelay: 200,
         }
       );
-      history.back();
     } catch (e) {
       console.log(e);
       if (e instanceof OWalletError) {
