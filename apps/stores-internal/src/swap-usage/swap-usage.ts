@@ -1,11 +1,19 @@
-import { HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { computed, makeObservable } from 'mobx';
-import { ChainIdHelper } from '@owallet/cosmos';
+import {
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { computed, makeObservable } from "mobx";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export type SwapUsageResponse = string[];
 
 export class ObservableQuerySwapUsageInner extends ObservableQuery<SwapUsageResponse> {
-  constructor(sharedContext: QuerySharedContext, baseURL: string, chainIdentifier: string) {
+  constructor(
+    sharedContext: QuerySharedContext,
+    baseURL: string,
+    chainIdentifier: string
+  ) {
     super(sharedContext, baseURL, `/swap-usage/denoms/${chainIdentifier}`);
 
     makeObservable(this);
@@ -35,9 +43,16 @@ export class ObservableQuerySwapUsageInner extends ObservableQuery<SwapUsageResp
 }
 
 export class ObservableQuerySwapUsage extends HasMapStore<ObservableQuerySwapUsageInner> {
-  constructor(protected readonly sharedContext: QuerySharedContext, protected readonly baseURL: string) {
-    super(str => {
-      return new ObservableQuerySwapUsageInner(this.sharedContext, baseURL, str);
+  constructor(
+    protected readonly sharedContext: QuerySharedContext,
+    protected readonly baseURL: string
+  ) {
+    super((str) => {
+      return new ObservableQuerySwapUsageInner(
+        this.sharedContext,
+        baseURL,
+        str
+      );
     });
   }
 

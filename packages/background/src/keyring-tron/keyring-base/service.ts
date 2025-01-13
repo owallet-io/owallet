@@ -1,10 +1,10 @@
-import { Vault, VaultService } from '../../vault';
-import { KeyRing, KeyRingTron } from '../../keyring';
-import { makeObservable } from 'mobx';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { ChainInfo } from '@owallet/types';
-import { ChainsService } from '../../chains';
-import { PubKeySecp256k1 } from '@owallet/crypto';
+import { Vault, VaultService } from "../../vault";
+import { KeyRing, KeyRingTron } from "../../keyring";
+import { makeObservable } from "mobx";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { ChainInfo } from "@owallet/types";
+import { ChainsService } from "../../chains";
+import { PubKeySecp256k1 } from "@owallet/crypto";
 
 export class KeyRingTronBaseService {
   constructor(
@@ -21,17 +21,19 @@ export class KeyRingTronBaseService {
 
   getPubKey(chainId: string, vaultId: string): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
-      throw new Error('KeyRing is locked');
+      throw new Error("KeyRing is locked");
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
 
-    const vault = this.vaultService.getVault('keyRing', vaultId);
+    const vault = this.vaultService.getVault("keyRing", vaultId);
     if (!vault) {
-      throw new Error('Vault is null');
+      throw new Error("Vault is null");
     }
 
-    const coinTypeTag = `keyRing-${ChainIdHelper.parse(chainId).identifier}-coinType`;
+    const coinTypeTag = `keyRing-${
+      ChainIdHelper.parse(chainId).identifier
+    }-coinType`;
 
     const coinType = (() => {
       if (vault.insensitive[coinTypeTag]) {
@@ -43,9 +45,13 @@ export class KeyRingTronBaseService {
 
     return this.getPubKeyWithVault(vault, coinType, chainInfo);
   }
-  getPubKeyWithVault(vault: Vault, coinType: number, chainInfo: ChainInfo): Promise<PubKeySecp256k1> {
+  getPubKeyWithVault(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {
-      throw new Error('KeyRing is locked');
+      throw new Error("KeyRing is locked");
     }
 
     const keyRing = this.getVaultKeyRing(vault);
@@ -54,27 +60,29 @@ export class KeyRingTronBaseService {
   }
   protected getVaultKeyRing(vault: Vault): KeyRingTron {
     for (const keyRing of this.keyRings) {
-      if (vault.insensitive['keyRingType'] === keyRing.supportedKeyRingType()) {
+      if (vault.insensitive["keyRingType"] === keyRing.supportedKeyRingType()) {
         return keyRing;
       }
     }
 
-    throw new Error('Unsupported keyRing vault');
+    throw new Error("Unsupported keyRing vault");
   }
 
   async sign(chainId: string, vaultId: string, data: string): Promise<unknown> {
     if (this.vaultService.isLocked) {
-      throw new Error('KeyRing is locked');
+      throw new Error("KeyRing is locked");
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
 
-    const vault = this.vaultService.getVault('keyRing', vaultId);
+    const vault = this.vaultService.getVault("keyRing", vaultId);
     if (!vault) {
-      throw new Error('Vault is null');
+      throw new Error("Vault is null");
     }
 
-    const coinTypeTag = `keyRing-${ChainIdHelper.parse(chainId).identifier}-coinType`;
+    const coinTypeTag = `keyRing-${
+      ChainIdHelper.parse(chainId).identifier
+    }-coinType`;
 
     const coinType = (() => {
       if (vault.insensitive[coinTypeTag]) {
@@ -84,14 +92,24 @@ export class KeyRingTronBaseService {
       return chainInfo.bip44.coinType;
     })();
 
-    const signature = await this.signWithVault(vault, coinType, data, chainInfo);
+    const signature = await this.signWithVault(
+      vault,
+      coinType,
+      data,
+      chainInfo
+    );
 
     return signature;
   }
 
-  async signWithVault(vault: Vault, coinType: number, data: string, chainInfo: ChainInfo): Promise<unknown> {
+  async signWithVault(
+    vault: Vault,
+    coinType: number,
+    data: string,
+    chainInfo: ChainInfo
+  ): Promise<unknown> {
     if (this.vaultService.isLocked) {
-      throw new Error('KeyRing is locked');
+      throw new Error("KeyRing is locked");
     }
 
     const keyRing = this.getVaultKeyRing(vault);

@@ -1,7 +1,11 @@
-import { ChainGetter, ObservableChainQueryMap, QuerySharedContext } from '@owallet/stores';
-import { ObservableChainQuery } from '@owallet/stores';
-import { Int } from '@owallet/unit';
-import { computed, makeObservable } from 'mobx';
+import {
+  ChainGetter,
+  ObservableChainQueryMap,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { ObservableChainQuery } from "@owallet/stores";
+import { Int } from "@owallet/unit";
+import { computed, makeObservable } from "mobx";
 
 export interface WithPriceToken {
   amount: string;
@@ -125,7 +129,12 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
     chainGetter: ChainGetter,
     protected readonly walletAddress: string
   ) {
-    super(sharedContext, chainId, chainGetter, `/api/accountv2?address=${walletAddress}`);
+    super(
+      sharedContext,
+      chainId,
+      chainGetter,
+      `/api/accountv2?address=${walletAddress}`
+    );
     makeObservable(this);
   }
 
@@ -150,7 +159,9 @@ export class ObservableQueryAccountTronInner extends ObservableChainQuery<AuthAc
     if (!this.response?.data?.bandwidth) {
       return new Int(0);
     }
-    return new Int(this.response.data.bandwidth.netLimit).add(new Int(this.response.data.bandwidth.freeNetLimit));
+    return new Int(this.response.data.bandwidth.netLimit).add(
+      new Int(this.response.data.bandwidth.freeNetLimit)
+    );
   }
 
   @computed
@@ -186,14 +197,21 @@ export class ObservableQueryAccountTron extends ObservableChainQueryMap<AuthAcco
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter
   ) {
-    super(sharedContext, chainId, chainGetter, walletAddress => {
-      return new ObservableQueryAccountTronInner(this.sharedContext, this.chainId, this.chainGetter, walletAddress);
+    super(sharedContext, chainId, chainGetter, (walletAddress) => {
+      return new ObservableQueryAccountTronInner(
+        this.sharedContext,
+        this.chainId,
+        this.chainGetter,
+        walletAddress
+      );
     });
   }
 
-  getQueryWalletAddress(walletAddress: string): ObservableQueryAccountTronInner {
-    console.log('walletAddress', walletAddress);
-    console.log('walletAddress getttt', this.get(walletAddress));
+  getQueryWalletAddress(
+    walletAddress: string
+  ): ObservableQueryAccountTronInner {
+    console.log("walletAddress", walletAddress);
+    console.log("walletAddress getttt", this.get(walletAddress));
 
     return this.get(walletAddress) as ObservableQueryAccountTronInner;
   }

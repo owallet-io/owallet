@@ -1,5 +1,5 @@
-import Transport from '@ledgerhq/hw-transport';
-import { OWalletError } from '@owallet/router';
+import Transport from "@ledgerhq/hw-transport";
+import { OWalletError } from "@owallet/router";
 import {
   ErrCodeDeviceLocked,
   ErrFailedGetPublicKey,
@@ -7,41 +7,46 @@ import {
   ErrFailedSign,
   ErrModuleLedgerSign,
   ErrPublicKeyUnmatched,
-  ErrSignRejected
-} from './ledger-types';
-import Trx from '@ledgerhq/hw-app-trx';
-import { PubKeySecp256k1 } from '@owallet/crypto';
-import { LedgerUtils } from '@utils/ledger';
-import { SignTronInteractionStore } from '@owallet/stores-core';
+  ErrSignRejected,
+} from "./ledger-types";
+import Trx from "@ledgerhq/hw-app-trx";
+import { PubKeySecp256k1 } from "@owallet/crypto";
+import { LedgerUtils } from "@utils/ledger";
+import { SignTronInteractionStore } from "@owallet/stores-core";
 
 export const handleTronPreSignByLedger = async (
-  interactionData: NonNullable<SignTronInteractionStore['waitingData']>,
+  interactionData: NonNullable<SignTronInteractionStore["waitingData"]>,
   signingMessage: string,
   getTransport: () => Promise<Transport>
 ): Promise<string | undefined> => {
   const appData = interactionData.data.keyInsensitive;
   if (!appData) {
-    throw new Error('Invalid ledger app data');
+    throw new Error("Invalid ledger app data");
   }
-  if (typeof appData !== 'object') {
-    throw new Error('Invalid ledger app data');
+  if (typeof appData !== "object") {
+    throw new Error("Invalid ledger app data");
   }
-  if (!appData['bip44Path'] || typeof appData['bip44Path'] !== 'object') {
-    throw new Error('Invalid ledger app data');
+  if (!appData["bip44Path"] || typeof appData["bip44Path"] !== "object") {
+    throw new Error("Invalid ledger app data");
   }
 
-  const bip44Path = appData['bip44Path'] as {
+  const bip44Path = appData["bip44Path"] as {
     account: number;
     change: number;
     addressIndex: number;
   };
 
-  const publicKey = Buffer.from((appData['Tron'] as any)['pubKey'], 'hex');
+  const publicKey = Buffer.from((appData["Tron"] as any)["pubKey"], "hex");
   if (publicKey.length === 0) {
-    throw new Error('Invalid ledger app data');
+    throw new Error("Invalid ledger app data");
   }
 
-  return connectAndSignTrxWithLedger(getTransport, publicKey, bip44Path, signingMessage);
+  return connectAndSignTrxWithLedger(
+    getTransport,
+    publicKey,
+    bip44Path,
+    signingMessage
+  );
 };
 
 export const connectAndSignTrxWithLedger = async (
@@ -58,7 +63,11 @@ export const connectAndSignTrxWithLedger = async (
   try {
     transport = await getTransport();
   } catch (e) {
-    throw new OWalletError(ErrModuleLedgerSign, ErrFailedInit, 'Failed to init transport');
+    throw new OWalletError(
+      ErrModuleLedgerSign,
+      ErrFailedInit,
+      "Failed to init transport"
+    );
   }
 
   let trxApp = new Trx(transport);
@@ -67,12 +76,16 @@ export const connectAndSignTrxWithLedger = async (
     await trxApp.getAddress(`m/44'/195'/'0/0/0`);
   } catch (e) {
     // Device is locked
-    if (e?.message.includes('(0x6b0c)')) {
-      throw new OWalletError(ErrModuleLedgerSign, ErrCodeDeviceLocked, 'Device is locked');
+    if (e?.message.includes("(0x6b0c)")) {
+      throw new OWalletError(
+        ErrModuleLedgerSign,
+        ErrCodeDeviceLocked,
+        "Device is locked"
+      );
     } else if (
       // User is in home sceen or other app.
-      e?.message.includes('(0x6511)') ||
-      e?.message.includes('(0x6e00)')
+      e?.message.includes("(0x6511)") ||
+      e?.message.includes("(0x6e00)")
     ) {
       // Do nothing
     } else {
@@ -82,10 +95,10 @@ export const connectAndSignTrxWithLedger = async (
     }
   }
 
-  transport = await LedgerUtils.tryAppOpen(transport, 'Tron');
+  transport = await LedgerUtils.tryAppOpen(transport, "Tron");
   trxApp = new Trx(transport);
 
-  console.log('trxApp', trxApp);
+  console.log("trxApp", trxApp);
 
   try {
     let pubKey: PubKeySecp256k1;
@@ -94,16 +107,25 @@ export const connectAndSignTrxWithLedger = async (
         `m/44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
       );
 
-      pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, 'hex'));
+      pubKey = new PubKeySecp256k1(Buffer.from(res.publicKey, "hex"));
     } catch (e) {
-      throw new OWalletError(ErrModuleLedgerSign, ErrFailedGetPublicKey, e.message || e.toString());
+      throw new OWalletError(
+        ErrModuleLedgerSign,
+        ErrFailedGetPublicKey,
+        e.message || e.toString()
+      );
     }
 
     if (
-      Buffer.from(new PubKeySecp256k1(expectedPubKey).toBytes()).toString('hex') !==
-      Buffer.from(pubKey.toBytes()).toString('hex')
+      Buffer.from(new PubKeySecp256k1(expectedPubKey).toBytes()).toString(
+        "hex"
+      ) !== Buffer.from(pubKey.toBytes()).toString("hex")
     ) {
-      throw new OWalletError(ErrModuleLedgerSign, ErrPublicKeyUnmatched, 'Public key unmatched');
+      throw new OWalletError(
+        ErrModuleLedgerSign,
+        ErrPublicKeyUnmatched,
+        "Public key unmatched"
+      );
     }
 
     try {
@@ -115,12 +137,20 @@ export const connectAndSignTrxWithLedger = async (
 
       return trxSignature;
     } catch (e) {
-      if (e?.message.includes('(0x6985)')) {
-        throw new OWalletError(ErrModuleLedgerSign, ErrSignRejected, 'User rejected signing');
+      if (e?.message.includes("(0x6985)")) {
+        throw new OWalletError(
+          ErrModuleLedgerSign,
+          ErrSignRejected,
+          "User rejected signing"
+        );
       }
-      console.log(' e.message', e.message, e.toString());
+      console.log(" e.message", e.message, e.toString());
 
-      throw new OWalletError(ErrModuleLedgerSign, ErrFailedSign, e.message || e.toString());
+      throw new OWalletError(
+        ErrModuleLedgerSign,
+        ErrFailedSign,
+        e.message || e.toString()
+      );
     }
   } finally {
     await transport.close();

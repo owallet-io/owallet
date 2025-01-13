@@ -1,6 +1,6 @@
-import {useRef} from 'react';
-import {InteractionManager, TextInput} from 'react-native';
-import {useEffectOnce} from './use-effect-once';
+import { useRef } from "react";
+import { InteractionManager, TextInput } from "react-native";
+import { useEffectOnce } from "./use-effect-once";
 
 export const useFocusAfterRouting = <Ref extends TextInput>() => {
   const ref = useRef<Ref>(null);

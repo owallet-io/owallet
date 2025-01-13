@@ -1,10 +1,14 @@
-import { HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { AssetsResponse } from './types';
-import { computed, makeObservable } from 'mobx';
-import Joi from 'joi';
-import { InternalChainStore } from '../internal';
-import { SwapUsageQueries } from '../swap-usage';
-import { simpleFetch } from '@owallet/simple-fetch';
+import {
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { AssetsResponse } from "./types";
+import { computed, makeObservable } from "mobx";
+import Joi from "joi";
+import { InternalChainStore } from "../internal";
+import { SwapUsageQueries } from "../swap-usage";
+import { simpleFetch } from "@owallet/simple-fetch";
 
 const Schema = Joi.object<AssetsResponse>({
   chain_to_assets_map: Joi.object().pattern(
@@ -15,11 +19,11 @@ const Schema = Joi.object<AssetsResponse>({
           denom: Joi.string().required(),
           chain_id: Joi.string().required(),
           origin_denom: Joi.string().required(),
-          origin_chain_id: Joi.string().required()
+          origin_chain_id: Joi.string().required(),
         }).unknown(true)
-      )
+      ),
     }).unknown(true)
-  )
+  ),
 }).unknown(true);
 
 export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> {
@@ -30,7 +34,11 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
     skipURL: string,
     public readonly chainId: string
   ) {
-    super(sharedContext, skipURL, `/v1/fungible/assets?chain_id=${chainId}&native_only=false`);
+    super(
+      sharedContext,
+      skipURL,
+      `/v1/fungible/assets?chain_id=${chainId}&native_only=false`
+    );
 
     makeObservable(this);
   }
@@ -42,7 +50,11 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
     originDenom: string;
     originChainId: string;
   }[] {
-    if (!this.response || !this.response.data || !this.response.data.chain_to_assets_map) {
+    if (
+      !this.response ||
+      !this.response.data ||
+      !this.response.data.chain_to_assets_map
+    ) {
       return [];
     }
 
@@ -55,7 +67,8 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
       return [];
     }
 
-    const assetsInResponse = this.response.data.chain_to_assets_map[chainInfo.chainId];
+    const assetsInResponse =
+      this.response.data.chain_to_assets_map[chainInfo.chainId];
     if (assetsInResponse) {
       const res: {
         denom: string;
@@ -65,14 +78,17 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
       }[] = [];
 
       for (const asset of assetsInResponse.assets) {
-        if (this.chainStore.hasChain(asset.chain_id) && this.chainStore.hasChain(asset.origin_chain_id)) {
+        if (
+          this.chainStore.hasChain(asset.chain_id) &&
+          this.chainStore.hasChain(asset.origin_chain_id)
+        ) {
           // IBC asset일 경우 그냥 넣는다.
-          if (asset.denom.startsWith('ibc/')) {
+          if (asset.denom.startsWith("ibc/")) {
             res.push({
               denom: asset.denom,
               chainId: asset.chain_id,
               originDenom: asset.origin_denom,
-              originChainId: asset.origin_chain_id
+              originChainId: asset.origin_chain_id,
             });
             // IBC asset이 아니라면 알고있는 currency만 넣는다.
           } else if (chainInfo.findCurrencyWithoutReaction(asset.denom)) {
@@ -80,7 +96,7 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
               denom: asset.denom,
               chainId: asset.chain_id,
               originDenom: asset.origin_denom,
-              originChainId: asset.origin_chain_id
+              originChainId: asset.origin_chain_id,
             });
           }
         }
@@ -99,7 +115,11 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
     originDenom: string;
     originChainId: string;
   }[] {
-    if (!this.response || !this.response.data || !this.response.data.chain_to_assets_map) {
+    if (
+      !this.response ||
+      !this.response.data ||
+      !this.response.data.chain_to_assets_map
+    ) {
       return [];
     }
 
@@ -112,7 +132,8 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
       return [];
     }
 
-    const assetsInResponse = this.response.data.chain_to_assets_map[chainInfo.chainId];
+    const assetsInResponse =
+      this.response.data.chain_to_assets_map[chainInfo.chainId];
     if (assetsInResponse) {
       const res: {
         denom: string;
@@ -122,18 +143,25 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
       }[] = [];
 
       for (const asset of assetsInResponse.assets) {
-        if (this.chainStore.hasChain(asset.chain_id) && this.chainStore.hasChain(asset.origin_chain_id)) {
-          if (!this.swapUsageQueries.querySwapUsage.getSwapUsage(this.chainId).isSwappable(asset.denom)) {
+        if (
+          this.chainStore.hasChain(asset.chain_id) &&
+          this.chainStore.hasChain(asset.origin_chain_id)
+        ) {
+          if (
+            !this.swapUsageQueries.querySwapUsage
+              .getSwapUsage(this.chainId)
+              .isSwappable(asset.denom)
+          ) {
             continue;
           }
 
           // IBC asset일 경우 그냥 넣는다.
-          if (asset.denom.startsWith('ibc/')) {
+          if (asset.denom.startsWith("ibc/")) {
             res.push({
               denom: asset.denom,
               chainId: asset.chain_id,
               originDenom: asset.origin_denom,
-              originChainId: asset.origin_chain_id
+              originChainId: asset.origin_chain_id,
             });
             // IBC asset이 아니라면 알고있는 currency만 넣는다.
           } else if (chainInfo.findCurrencyWithoutReaction(asset.denom)) {
@@ -141,7 +169,7 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
               denom: asset.denom,
               chainId: asset.chain_id,
               originDenom: asset.origin_denom,
-              originChainId: asset.origin_chain_id
+              originChainId: asset.origin_chain_id,
             });
           }
         }
@@ -161,28 +189,31 @@ export class ObservableQueryAssetsInner extends ObservableQuery<AssetsResponse> 
       headers: {
         ...(() => {
           const res: { authorization?: string } = {};
-          if (process.env['SKIP_API_KEY']) {
-            res.authorization = process.env['SKIP_API_KEY'];
+          if (process.env["SKIP_API_KEY"]) {
+            res.authorization = process.env["SKIP_API_KEY"];
           }
 
           return res;
-        })()
-      }
+        })(),
+      },
     });
     const result = {
       headers: _result.headers,
-      data: _result.data
+      data: _result.data,
     };
 
     const validated = Schema.validate(result.data);
     if (validated.error) {
-      console.log('Failed to validate assets from source response', validated.error);
+      console.log(
+        "Failed to validate assets from source response",
+        validated.error
+      );
       throw validated.error;
     }
 
     return {
       headers: result.headers,
-      data: validated.value
+      data: validated.value,
     };
   }
 }
@@ -194,7 +225,7 @@ export class ObservableQueryAssets extends HasMapStore<ObservableQueryAssetsInne
     protected readonly swapUsageQueries: SwapUsageQueries,
     protected readonly skipURL: string
   ) {
-    super(chainId => {
+    super((chainId) => {
       return new ObservableQueryAssetsInner(
         this.sharedContext,
         this.chainStore,

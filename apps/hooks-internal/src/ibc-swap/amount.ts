@@ -1,6 +1,6 @@
-import { AmountConfig, ISenderConfig, UIProperties } from '@owallet/hooks';
-import { AppCurrency } from '@owallet/types';
-import { CoinPretty, Dec, Int, RatePretty } from '@owallet/unit';
+import { AmountConfig, ISenderConfig, UIProperties } from "@owallet/hooks";
+import { AppCurrency } from "@owallet/types";
+import { CoinPretty, Dec, Int, RatePretty } from "@owallet/unit";
 import {
   ChainGetter,
   CosmosAccount,
@@ -8,11 +8,16 @@ import {
   IAccountStoreWithInjects,
   IQueriesStore,
   MakeTxResponse,
-  WalletStatus
-} from '@owallet/stores';
-import { useState } from 'react';
-import { action, makeObservable, observable, override } from 'mobx';
-import { MsgsDirectResponse, RouteResponse, SkipQueries, ObservableQueryIBCSwapInner } from '@owallet/stores-internal';
+  WalletStatus,
+} from "@owallet/stores";
+import { useState } from "react";
+import { action, makeObservable, observable, override } from "mobx";
+import {
+  MsgsDirectResponse,
+  RouteResponse,
+  SkipQueries,
+  ObservableQueryIBCSwapInner,
+} from "@owallet/stores-internal";
 
 export class IBCSwapAmountConfig extends AmountConfig {
   @observable
@@ -25,7 +30,9 @@ export class IBCSwapAmountConfig extends AmountConfig {
   constructor(
     chainGetter: ChainGetter,
     queriesStore: IQueriesStore,
-    protected readonly accountStore: IAccountStoreWithInjects<[CosmosAccount, CosmwasmAccount]>,
+    protected readonly accountStore: IAccountStoreWithInjects<
+      [CosmosAccount, CosmwasmAccount]
+    >,
     protected readonly skipQueries: SkipQueries,
     initialChainId: string,
     senderConfig: ISenderConfig,
@@ -45,7 +52,7 @@ export class IBCSwapAmountConfig extends AmountConfig {
   get outAmount(): CoinPretty {
     const queryIBCSwap = this.getQueryIBCSwap();
     if (!queryIBCSwap) {
-      return new CoinPretty(this.outCurrency, '0');
+      return new CoinPretty(this.outCurrency, "0");
     }
     return queryIBCSwap.getQueryRoute().outAmount;
   }
@@ -88,7 +95,7 @@ export class IBCSwapAmountConfig extends AmountConfig {
   get swapFee(): CoinPretty[] {
     const queryIBCSwap = this.getQueryIBCSwap();
     if (!queryIBCSwap) {
-      return [new CoinPretty(this.outCurrency, '0')];
+      return [new CoinPretty(this.outCurrency, "0")];
     }
 
     return queryIBCSwap.getQueryRoute().swapFee;
@@ -109,22 +116,22 @@ export class IBCSwapAmountConfig extends AmountConfig {
     return false;
   }
 
-  get type(): 'swap' | 'transfer' | 'not-ready' {
+  get type(): "swap" | "transfer" | "not-ready" {
     const queryIBCSwap = this.getQueryIBCSwap();
     if (!queryIBCSwap) {
-      return 'not-ready';
+      return "not-ready";
     }
 
     const res = queryIBCSwap.getQueryRoute().response;
     if (!res) {
-      return 'not-ready';
+      return "not-ready";
     }
 
     if (res.data.does_swap === false) {
-      return 'transfer';
+      return "transfer";
     }
 
-    return 'swap';
+    return "swap";
   }
 
   async getTx(
@@ -134,18 +141,20 @@ export class IBCSwapAmountConfig extends AmountConfig {
   ): Promise<MakeTxResponse> {
     const queryIBCSwap = this.getQueryIBCSwap();
     if (!queryIBCSwap) {
-      throw new Error('Query IBC Swap is not initialized');
+      throw new Error("Query IBC Swap is not initialized");
     }
 
     await queryIBCSwap.getQueryRoute().waitFreshResponse();
     const queryRouteResponse = queryIBCSwap.getQueryRoute().response;
     if (!queryRouteResponse) {
-      throw new Error('Failed to fetch route');
+      throw new Error("Failed to fetch route");
     }
 
     const chainIdsToAddresses: Record<string, string> = {};
     const sourceAccount = this.accountStore.getAccount(this.chainId);
-    const swapAccount = this.accountStore.getAccount(queryIBCSwap.swapVenue.chainId);
+    const swapAccount = this.accountStore.getAccount(
+      queryIBCSwap.swapVenue.chainId
+    );
     const destinationChainIds = queryRouteResponse.data.chain_ids;
     if (sourceAccount.walletStatus === WalletStatus.NotInit) {
       await sourceAccount.init();
@@ -154,30 +163,35 @@ export class IBCSwapAmountConfig extends AmountConfig {
       await swapAccount.init();
     }
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
       if (destinationAccount.walletStatus === WalletStatus.NotInit) {
         await destinationAccount.init();
       }
     }
 
     if (!sourceAccount.bech32Address) {
-      throw new Error('Source account is not set');
+      throw new Error("Source account is not set");
     }
     if (!swapAccount.bech32Address) {
-      throw new Error('Swap account is not set');
+      throw new Error("Swap account is not set");
     }
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
       if (!destinationAccount.bech32Address) {
-        throw new Error('Destination account is not set');
+        throw new Error("Destination account is not set");
       }
     }
 
     chainIdsToAddresses[this.chainId] = sourceAccount.bech32Address;
-    chainIdsToAddresses[queryIBCSwap.swapVenue.chainId] = swapAccount.bech32Address;
+    chainIdsToAddresses[queryIBCSwap.swapVenue.chainId] =
+      swapAccount.bech32Address;
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
-      chainIdsToAddresses[destinationChainId] = destinationAccount.bech32Address;
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
+      chainIdsToAddresses[destinationChainId] =
+        destinationAccount.bech32Address;
     }
 
     const queryMsgsDirect = queryIBCSwap.getQueryMsgsDirect(
@@ -191,9 +205,12 @@ export class IBCSwapAmountConfig extends AmountConfig {
       throw new Error(queryMsgsDirect.error.message);
     }
 
-    const tx = this.getTxIfReady(slippageTolerancePercent, affiliateFeeReceiver);
+    const tx = this.getTxIfReady(
+      slippageTolerancePercent,
+      affiliateFeeReceiver
+    );
     if (!tx) {
-      throw new Error('Tx is not ready');
+      throw new Error("Tx is not ready");
     }
 
     if (priorOutAmount) {
@@ -206,20 +223,32 @@ export class IBCSwapAmountConfig extends AmountConfig {
         throw new Error("Can't happen: queryMsgsDirect is not ready");
       }
 
-      const currentAmountOut = new Int(queryMsgsDirect.response.data.route.amount_out);
+      const currentAmountOut = new Int(
+        queryMsgsDirect.response.data.route.amount_out
+      );
 
       if (
         currentAmountOut.lt(priorOutAmount) &&
-        currentAmountOut.sub(priorOutAmount).abs().toDec().quo(priorOutAmount.toDec()).gte(new Dec(0.01))
+        currentAmountOut
+          .sub(priorOutAmount)
+          .abs()
+          .toDec()
+          .quo(priorOutAmount.toDec())
+          .gte(new Dec(0.01))
       ) {
-        throw new Error('Price change has been detected while building your transaction. Please try again');
+        throw new Error(
+          "Price change has been detected while building your transaction. Please try again"
+        );
       }
     }
 
     return tx;
   }
 
-  getTxIfReady(slippageTolerancePercent: number, affiliateFeeReceiver: string): MakeTxResponse | undefined {
+  getTxIfReady(
+    slippageTolerancePercent: number,
+    affiliateFeeReceiver: string
+  ): MakeTxResponse | undefined {
     if (!this.currency) {
       return;
     }
@@ -244,7 +273,9 @@ export class IBCSwapAmountConfig extends AmountConfig {
 
     const chainIdsToAddresses: Record<string, string> = {};
     const sourceAccount = this.accountStore.getAccount(this.chainId);
-    const swapAccount = this.accountStore.getAccount(queryIBCSwap.swapVenue.chainId);
+    const swapAccount = this.accountStore.getAccount(
+      queryIBCSwap.swapVenue.chainId
+    );
     const destinationChainIds = queryRouteResponse.data.chain_ids;
 
     if (sourceAccount.walletStatus === WalletStatus.NotInit) {
@@ -254,7 +285,8 @@ export class IBCSwapAmountConfig extends AmountConfig {
       swapAccount.init();
     }
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
       if (destinationAccount.walletStatus === WalletStatus.NotInit) {
         destinationAccount.init();
       }
@@ -267,17 +299,21 @@ export class IBCSwapAmountConfig extends AmountConfig {
       return;
     }
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
       if (!destinationAccount.bech32Address) {
         return;
       }
     }
 
     chainIdsToAddresses[this.chainId] = sourceAccount.bech32Address;
-    chainIdsToAddresses[queryIBCSwap.swapVenue.chainId] = swapAccount.bech32Address;
+    chainIdsToAddresses[queryIBCSwap.swapVenue.chainId] =
+      swapAccount.bech32Address;
     for (const destinationChainId of destinationChainIds) {
-      const destinationAccount = this.accountStore.getAccount(destinationChainId);
-      chainIdsToAddresses[destinationChainId] = destinationAccount.bech32Address;
+      const destinationAccount =
+        this.accountStore.getAccount(destinationChainId);
+      chainIdsToAddresses[destinationChainId] =
+        destinationAccount.bech32Address;
     }
 
     const queryMsgsDirect = queryIBCSwap.getQueryMsgsDirect(
@@ -290,38 +326,38 @@ export class IBCSwapAmountConfig extends AmountConfig {
       return;
     }
 
-    if (msg.type === 'MsgTransfer') {
+    if (msg.type === "MsgTransfer") {
       const tx = sourceAccount.cosmos.makeIBCTransferTx(
         {
           portId: msg.sourcePort,
           channelId: msg.sourceChannel,
-          counterpartyChainId: msg.counterpartyChainId
+          counterpartyChainId: msg.counterpartyChainId,
         },
         this.amount[0].toDec().toString(),
         this.amount[0].currency,
         msg.receiver,
         msg.memo
       );
-      tx.ui.overrideType('ibc-swap');
+      tx.ui.overrideType("ibc-swap");
       return tx;
-    } else if (msg.type === 'MsgExecuteContract') {
+    } else if (msg.type === "MsgExecuteContract") {
       const tx = sourceAccount.cosmwasm.makeExecuteContractTx(
-        'unknown',
+        "unknown",
         msg.contract,
         msg.msg,
-        msg.funds.map(fund => fund.toCoin())
+        msg.funds.map((fund) => fund.toCoin())
       );
-      tx.ui.overrideType('ibc-swap');
+      tx.ui.overrideType("ibc-swap");
       return tx;
     }
   }
 
   // /route query의 결과와 /msgs_direct query의 결과를 비교하기 위한 키를 생성한다.
   createSwapRouteKeyFromRouteResponse(response: RouteResponse): string {
-    let key = '';
+    let key = "";
 
     for (const operation of response.operations) {
-      if ('swap' in operation) {
+      if ("swap" in operation) {
         for (const swapOperation of operation.swap.swap_in.swap_operations) {
           key += `/${swapOperation.pool}/${swapOperation.denom_in}/${swapOperation.denom_out}`;
         }
@@ -332,11 +368,13 @@ export class IBCSwapAmountConfig extends AmountConfig {
   }
 
   // /route query의 결과와 /msgs_direct query의 결과를 비교하기 위한 키를 생성한다.
-  createSwapRouteKeyFromMsgsDirectResponse(response: MsgsDirectResponse): string {
-    let key = '';
+  createSwapRouteKeyFromMsgsDirectResponse(
+    response: MsgsDirectResponse
+  ): string {
+    let key = "";
 
     for (const msg of response.msgs) {
-      if (msg.msg_type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
+      if (msg.msg_type_url === "/ibc.applications.transfer.v1.MsgTransfer") {
         const memo = JSON.parse(msg.msg).memo;
         if (memo) {
           const obj = JSON.parse(memo);
@@ -362,7 +400,10 @@ export class IBCSwapAmountConfig extends AmountConfig {
                 }
 
                 if (forward.next) {
-                  const obj = typeof forward.next === 'string' ? JSON.parse(forward.next) : forward.next;
+                  const obj =
+                    typeof forward.next === "string"
+                      ? JSON.parse(forward.next)
+                      : forward.next;
 
                   if (obj.forward) {
                     forward = obj.forward;
@@ -379,15 +420,17 @@ export class IBCSwapAmountConfig extends AmountConfig {
           }
 
           for (const wasm of wasms) {
-            for (const operation of wasm.msg.swap_and_action.user_swap.swap_exact_asset_in.operations) {
+            for (const operation of wasm.msg.swap_and_action.user_swap
+              .swap_exact_asset_in.operations) {
               key += `/${operation.pool}/${operation.denom_in}/${operation.denom_out}`;
             }
           }
         }
       }
-      if (msg.msg_type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+      if (msg.msg_type_url === "/cosmwasm.wasm.v1.MsgExecuteContract") {
         const obj = JSON.parse(msg.msg);
-        for (const operation of obj.msg.swap_and_action.user_swap.swap_exact_asset_in.operations) {
+        for (const operation of obj.msg.swap_and_action.user_swap
+          .swap_exact_asset_in.operations) {
           key += `/${operation.pool}/${operation.denom_in}/${operation.denom_out}`;
         }
       }
@@ -407,14 +450,14 @@ export class IBCSwapAmountConfig extends AmountConfig {
     if (!queryIBCSwap) {
       return {
         ...prev,
-        error: new Error('Query IBC Swap is not initialized')
+        error: new Error("Query IBC Swap is not initialized"),
       };
     }
 
     if (queryIBCSwap.getQueryRoute().isFetching) {
       return {
         ...prev,
-        loadingState: 'loading-block'
+        loadingState: "loading-block",
       };
     }
 
@@ -422,47 +465,62 @@ export class IBCSwapAmountConfig extends AmountConfig {
     if (routeError) {
       return {
         ...prev,
-        error: new Error(routeError.message)
+        error: new Error(routeError.message),
       };
     }
 
     if (
       this.amount.length > 0 &&
-      this.amount[0].currency.coinMinimalDenom === this.outAmount.currency.coinMinimalDenom &&
+      this.amount[0].currency.coinMinimalDenom ===
+        this.outAmount.currency.coinMinimalDenom &&
       this.chainGetter.getChain(this.chainId).chainIdentifier ===
         this.chainGetter.getChain(this.outChainId).chainIdentifier
     ) {
       return {
         ...prev,
-        error: new Error('In and out currency is same')
+        error: new Error("In and out currency is same"),
       };
     }
 
     if (this.amount.length > 0) {
-      if (!this.skipQueries.queryIBCSwap.isSwappableCurrency(this.chainId, this.amount[0].currency)) {
+      if (
+        !this.skipQueries.queryIBCSwap.isSwappableCurrency(
+          this.chainId,
+          this.amount[0].currency
+        )
+      ) {
         return {
           ...prev,
-          error: new Error('The currency you are swapping from is currently not supported')
+          error: new Error(
+            "The currency you are swapping from is currently not supported"
+          ),
         };
       }
     }
 
-    if (!this.skipQueries.queryIBCSwap.isSwapDestinationOrAlternatives(this.outChainId, this.outAmount.currency)) {
+    if (
+      !this.skipQueries.queryIBCSwap.isSwapDestinationOrAlternatives(
+        this.outChainId,
+        this.outAmount.currency
+      )
+    ) {
       return {
         ...prev,
-        error: new Error('The currency you are swapping to is currently not supported')
+        error: new Error(
+          "The currency you are swapping to is currently not supported"
+        ),
       };
     }
 
     if (queryIBCSwap.getQueryRoute().response?.data.txs_required !== 1) {
       return {
         ...prev,
-        error: new Error("Swap can't be executed with ibc pfm")
+        error: new Error("Swap can't be executed with ibc pfm"),
       };
     }
 
     return {
-      ...prev
+      ...prev,
     };
   }
 

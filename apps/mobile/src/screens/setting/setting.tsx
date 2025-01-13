@@ -1,40 +1,57 @@
-import React, { FunctionComponent, useEffect, useMemo } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { BasicSettingItem, renderFlag } from './components';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import { Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useStore } from '../../stores';
-import { metrics } from '../../themes';
-import { CountryModal } from './components/country-modal';
-import { SettingBiometricLockItem } from './items/biometric-lock';
-import { SettingRemoveAccountItem } from './items/remove-account';
-import { SettingViewPrivateDataItem } from './items/view-private-data';
-import { canShowPrivateData } from './screens/view-private-data';
-import OWText from '@src/components/text/ow-text';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import OWCard from '@src/components/card/ow-card';
-import { Bech32Address } from '@owallet/cosmos';
-import { ChainIdEnum } from '@oraichain/oraidex-common';
-import Rate, { AndroidMarket } from 'react-native-rate';
-import { SettingSwitchHideTestnet } from './items/hide-testnet';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
-import { ThemeModal } from './components/theme-modal';
+import React, { FunctionComponent, useEffect, useMemo } from "react";
+import { PageWithScrollViewInBottomTabView } from "../../components/page";
+import { BasicSettingItem, renderFlag } from "./components";
+import { useTheme } from "@src/themes/theme-provider";
+import { observer } from "mobx-react-lite";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useStore } from "../../stores";
+import { metrics } from "../../themes";
+import { CountryModal } from "./components/country-modal";
+import { SettingBiometricLockItem } from "./items/biometric-lock";
+import { SettingRemoveAccountItem } from "./items/remove-account";
+import { SettingViewPrivateDataItem } from "./items/view-private-data";
+import { canShowPrivateData } from "./screens/view-private-data";
+import OWText from "@src/components/text/ow-text";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import OWCard from "@src/components/card/ow-card";
+import { Bech32Address } from "@owallet/cosmos";
+import { ChainIdEnum } from "@oraichain/oraidex-common";
+import Rate, { AndroidMarket } from "react-native-rate";
+import { SettingSwitchHideTestnet } from "./items/hide-testnet";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { ThemeModal } from "./components/theme-modal";
 
-export const NewSettingScreen: FunctionComponent = observer(props => {
-  const { keychainStore, keyRingStore, priceStore, modalStore, accountStore, appInitStore, chainStore } = useStore();
+export const NewSettingScreen: FunctionComponent = observer((props) => {
+  const {
+    keychainStore,
+    keyRingStore,
+    priceStore,
+    modalStore,
+    accountStore,
+    appInitStore,
+    chainStore,
+  } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  console.log('keyRingStore?.selectedKeyInfo?.type', keyRingStore?.selectedKeyInfo?.type);
+  console.log(
+    "keyRingStore?.selectedKeyInfo?.type",
+    keyRingStore?.selectedKeyInfo?.type
+  );
 
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
+    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase()
+        label: key.toUpperCase(),
       };
     });
   }, [priceStore.supportedVsCurrencies]);
@@ -46,8 +63,8 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
 
     modalStore.setChildren(
@@ -56,7 +73,7 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
         current: priceStore.defaultVsCurrency,
         priceStore,
         modalStore,
-        colors
+        colors,
       })
     );
   };
@@ -65,15 +82,15 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
 
     modalStore.setChildren(
       ThemeModal({
         modalStore,
         appInitStore,
-        colors
+        colors,
       })
     );
   };
@@ -88,17 +105,18 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
 
   const onRatingApp = () => {
     const options = {
-      AppleAppID: 'id1626035069',
-      GooglePackageName: 'com.io.owallet',
+      AppleAppID: "id1626035069",
+      GooglePackageName: "com.io.owallet",
       preferredAndroidMarket: AndroidMarket.Google,
-      preferInApp: Platform.OS === 'android' ? false : true,
+      preferInApp: Platform.OS === "android" ? false : true,
       openAppStoreIfInAppFails: true,
-      fallbackPlatformURL: 'https://play.google.com/store/apps/details?id=com.io.owallet'
+      fallbackPlatformURL:
+        "https://play.google.com/store/apps/details?id=com.io.owallet",
     };
     Rate.rate(options, (success, errorMessage) => {
       if (success) {
         // this technically only tells us if the user successfully went to the Review Page. Whether they actually did anything, we do not know.
-        console.log('success', success);
+        console.log("success", success);
       }
       if (errorMessage) {
         // errorMessage comes from the native code. Useful for debugging, but probably not for users to view
@@ -112,13 +130,13 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
       <OWCard
         style={{
           marginBottom: 16,
-          backgroundColor: colors['neutral-surface-card']
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
-        <View style={{ alignItems: 'center' }}>
+        <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
-            source={require('../../assets/image/img_owallet.png')}
+            source={require("../../assets/image/img_owallet.png")}
             fadeDuration={0}
             resizeMode="contain"
           />
@@ -126,15 +144,20 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
           <OWText style={{ paddingTop: 8 }} size={16} weight="600">
             Enjoying the App?
           </OWText>
-          <OWText style={{ paddingTop: 8 }} color={colors['neutral-text-body']} size={14} weight="500">
+          <OWText
+            style={{ paddingTop: 8 }}
+            color={colors["neutral-text-body"]}
+            size={14}
+            weight="500"
+          >
             Do you enjoy your experience with Owallet?
           </OWText>
           <View
             style={{
-              flexDirection: 'row',
+              flexDirection: "row",
               marginTop: 8,
-              justifyContent: 'space-evenly',
-              width: '100%'
+              justifyContent: "space-evenly",
+              width: "100%",
             }}
           >
             <TouchableOpacity
@@ -142,14 +165,23 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
               style={{
                 borderWidth: 1,
                 borderRadius: 12,
-                borderColor: colors['neutral-border-default'],
+                borderColor: colors["neutral-border-default"],
                 padding: 16,
-                alignItems: 'center',
-                width: metrics.screenWidth / 3
+                alignItems: "center",
+                width: metrics.screenWidth / 3,
               }}
             >
-              <OWIcon name="tdesign_despise" color={colors['neutral-text-body']} size={32} />
-              <OWText style={{ paddingTop: 8 }} color={colors['neutral-text-body']} size={16} weight="600">
+              <OWIcon
+                name="tdesign_despise"
+                color={colors["neutral-text-body"]}
+                size={32}
+              />
+              <OWText
+                style={{ paddingTop: 8 }}
+                color={colors["neutral-text-body"]}
+                size={16}
+                weight="600"
+              >
                 Nah
               </OWText>
             </TouchableOpacity>
@@ -158,14 +190,23 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
               style={{
                 borderWidth: 1,
                 borderRadius: 12,
-                borderColor: colors['neutral-border-default'],
+                borderColor: colors["neutral-border-default"],
                 padding: 16,
-                alignItems: 'center',
-                width: metrics.screenWidth / 3
+                alignItems: "center",
+                width: metrics.screenWidth / 3,
               }}
             >
-              <OWIcon name="tdesign_excited" color={colors['neutral-text-body']} size={32} />
-              <OWText style={{ paddingTop: 8 }} color={colors['neutral-text-body']} size={16} weight="600">
+              <OWIcon
+                name="tdesign_excited"
+                color={colors["neutral-text-body"]}
+                size={32}
+              />
+              <OWText
+                style={{ paddingTop: 8 }}
+                color={colors["neutral-text-body"]}
+                size={16}
+                weight="600"
+              >
                 I love it!
               </OWText>
             </TouchableOpacity>
@@ -178,13 +219,13 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
-      backgroundColor={colors['neutral-surface-bg']}
+      backgroundColor={colors["neutral-surface-bg"]}
     >
       <View>
         <OWCard
           style={{
             marginBottom: 16,
-            backgroundColor: colors['neutral-surface-card']
+            backgroundColor: colors["neutral-surface-card"],
           }}
           type="normal"
         >
@@ -193,27 +234,38 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
               <View style={{ paddingRight: 12 }}>
                 <Image
                   style={{ width: 44, height: 44, borderRadius: 44 }}
-                  source={require('../../assets/images/default-avatar.png')}
+                  source={require("../../assets/images/default-avatar.png")}
                   fadeDuration={0}
                   resizeMode="contain"
                 />
               </View>
             }
             icon="owallet"
-            paragraph={selectedKeyInfo ? selectedKeyInfo.name || 'OWallet Account' : 'No Account'}
-            subtitle={Bech32Address.shortenAddress(accountOrai.bech32Address, 24)}
+            paragraph={
+              selectedKeyInfo
+                ? selectedKeyInfo.name || "OWallet Account"
+                : "No Account"
+            }
+            subtitle={Bech32Address.shortenAddress(
+              accountOrai.bech32Address,
+              24
+            )}
             onPress={() => navigate(SCREENS.SettingSelectAccount)}
           />
           <View style={styles.border} />
-          {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? <SettingBiometricLockItem /> : null}
-          {canShowPrivateData(keyRingStore?.selectedKeyInfo?.type) && <SettingViewPrivateDataItem />}
+          {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
+            <SettingBiometricLockItem />
+          ) : null}
+          {canShowPrivateData(keyRingStore?.selectedKeyInfo?.type) && (
+            <SettingViewPrivateDataItem />
+          )}
           <SettingRemoveAccountItem />
         </OWCard>
 
         <OWCard
           style={{
             marginBottom: 16,
-            backgroundColor: colors['neutral-surface-card']
+            backgroundColor: colors["neutral-surface-card"],
           }}
           type="normal"
         >
@@ -225,12 +277,16 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
             right={
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <OWIcon color={colors['neutral-text-title']} name="chevron_right" size={16} />
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
               </View>
             }
           />
@@ -243,16 +299,24 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
             right={
               <View
                 style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 {renderFlag(priceStore.defaultVsCurrency, 20)}
-                <OWText style={{ paddingHorizontal: 8 }} weight="600" color={colors['neutral-text-body']}>
+                <OWText
+                  style={{ paddingHorizontal: 8 }}
+                  weight="600"
+                  color={colors["neutral-text-body"]}
+                >
                   {priceStore.defaultVsCurrency.toUpperCase()}
                 </OWText>
-                <OWIcon color={colors['neutral-text-title']} name="chevron_right" size={16} />
+                <OWIcon
+                  color={colors["neutral-text-title"]}
+                  name="chevron_right"
+                  size={16}
+                />
               </View>
             }
           />
@@ -284,15 +348,15 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
           style={{
             marginBottom: 16,
             paddingBottom: 0,
-            backgroundColor: colors['neutral-surface-card']
+            backgroundColor: colors["neutral-surface-card"],
           }}
           type="normal"
         >
           <BasicSettingItem
-            typeLeftIcon={'images'}
-            source={require('../../assets/image/logo_owallet.png')}
+            typeLeftIcon={"images"}
+            source={require("../../assets/image/logo_owallet.png")}
             containerStyle={{
-              marginVertical: -16
+              marginVertical: -16,
             }}
             icon="owallet"
             paragraph="About OWallet"
@@ -309,25 +373,25 @@ export const NewSettingScreen: FunctionComponent = observer(props => {
 const styling = (colors: object) =>
   StyleSheet.create({
     itemWrapper: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       borderRadius: 12,
       paddingHorizontal: 16,
       marginHorizontal: 16,
       paddingVertical: 8,
-      backgroundColor: colors['neutral-surface-card'],
-      marginBottom: 16
+      backgroundColor: colors["neutral-surface-card"],
+      marginBottom: 16,
     },
     border: {
       height: 1,
-      backgroundColor: colors['neutral-border-default'],
-      marginBottom: 16
+      backgroundColor: colors["neutral-border-default"],
+      marginBottom: 16,
     },
     icon: {
       borderRadius: 99,
       marginRight: 16,
-      backgroundColor: colors['neutral-surface-action'],
-      padding: 16
-    }
+      backgroundColor: colors["neutral-surface-action"],
+      padding: 16,
+    },
   });

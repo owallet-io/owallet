@@ -1,4 +1,4 @@
-import { UnionToIntersection } from 'utility-types';
+import { UnionToIntersection } from "utility-types";
 
 export interface IObject {
   [key: string]: any;
@@ -12,7 +12,9 @@ export interface IObject {
  *
  * Functionify<[number, string], number> = (n:number, s:string) => number
  */
-export type Functionify<Params extends Array<any>, Return> = (...p: Params) => Return;
+export type Functionify<Params extends Array<any>, Return> = (
+  ...p: Params
+) => Return;
 /**
  * Make the tuple of functions that accept `Base` tuple `Params` as parameter and return `Injects` respectively.
  * The passed `Base` parameter is merged from `Base` by chaining.
@@ -33,7 +35,10 @@ export type ChainedFunctionifyTuple<
   Params extends Array<any>,
   Injects extends Array<any>
 > = Injects extends [infer Head, ...infer Tail]
-  ? [Functionify<[Base, ...Params], Head>, ...ChainedFunctionifyTuple<Base & Head, Params, Tail>]
+  ? [
+      Functionify<[Base, ...Params], Head>,
+      ...ChainedFunctionifyTuple<Base & Head, Params, Tail>
+    ]
   : [];
 
 /**

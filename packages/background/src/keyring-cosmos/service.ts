@@ -1,5 +1,5 @@
-import { ChainsService } from '../chains';
-import { KeyRingService } from '../keyring';
+import { ChainsService } from "../chains";
+import { KeyRingService } from "../keyring";
 import {
   AminoSignResponse,
   ChainInfo,
@@ -8,9 +8,9 @@ import {
   OWalletSignOptions,
   Key,
   StdSignature,
-  StdSignDoc
-} from '@owallet/types';
-import { APP_PORT, Env, OWalletError } from '@owallet/router';
+  StdSignDoc,
+} from "@owallet/types";
+import { APP_PORT, Env, OWalletError } from "@owallet/router";
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
@@ -18,17 +18,21 @@ import {
   encodeSecp256k1Signature,
   makeADR36AminoSignDoc,
   serializeSignDoc,
-  verifyADR36AminoSignDoc
-} from '@owallet/cosmos';
-import { escapeHTML, sortObjectByKey } from '@owallet/common';
-import { trimAminoSignDoc } from './amino-sign-doc';
-import { InteractionService } from '../interaction';
-import { Buffer } from 'buffer/';
-import { SignDoc, SignDocDirectAux, TxBody } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
-import Long from 'long';
-import { PubKeySecp256k1 } from '@owallet/crypto';
-import { AnalyticsService } from '../analytics';
-import { ChainsUIService } from '../chains-ui';
+  verifyADR36AminoSignDoc,
+} from "@owallet/cosmos";
+import { escapeHTML, sortObjectByKey } from "@owallet/common";
+import { trimAminoSignDoc } from "./amino-sign-doc";
+import { InteractionService } from "../interaction";
+import { Buffer } from "buffer/";
+import {
+  SignDoc,
+  SignDocDirectAux,
+  TxBody,
+} from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import Long from "long";
+import { PubKeySecp256k1 } from "@owallet/crypto";
+import { AnalyticsService } from "../analytics";
+import { ChainsUIService } from "../chains-ui";
 
 export class KeyRingCosmosService {
   constructor(
@@ -43,11 +47,13 @@ export class KeyRingCosmosService {
   async init() {
     // TODO: ?
 
-    this.chainsService.addChainSuggestedHandler(this.onChainSuggested.bind(this));
+    this.chainsService.addChainSuggestedHandler(
+      this.onChainSuggested.bind(this)
+    );
   }
 
   async onChainSuggested(chainInfo: ChainInfo): Promise<void> {
-    if (this.keyRingService.keyRingStatus !== 'unlocked') {
+    if (this.keyRingService.keyRingStatus !== "unlocked") {
       return;
     }
 
@@ -58,10 +64,22 @@ export class KeyRingCosmosService {
         // if we can select the coin type at this point, select it.
         // (In fact, the only thing this function is useful for now is keystone.
         //  If a suggested chain has a coin type which is not supported on keystone and requires a coin type other than 118, it is immediately set to 118)
-        if (this.keyRingService.needKeyCoinTypeFinalize(selectedVaultId, chainInfo.chainId)) {
-          const candidates = await this.computeNotFinalizedKeyAddresses(selectedVaultId, chainInfo.chainId);
+        if (
+          this.keyRingService.needKeyCoinTypeFinalize(
+            selectedVaultId,
+            chainInfo.chainId
+          )
+        ) {
+          const candidates = await this.computeNotFinalizedKeyAddresses(
+            selectedVaultId,
+            chainInfo.chainId
+          );
           if (candidates.length === 1) {
-            this.keyRingService.finalizeKeyCoinType(selectedVaultId, chainInfo.chainId, candidates[0].coinType);
+            this.keyRingService.finalizeKeyCoinType(
+              selectedVaultId,
+              chainInfo.chainId,
+              candidates[0].coinType
+            );
           }
         }
       }
@@ -77,8 +95,10 @@ export class KeyRingCosmosService {
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    if (chainInfo.features.includes('gen-address')) {
-      throw new Error(`${chainInfo.chainId} not support getKey from keyring cosmos base`);
+    if (chainInfo.features.includes("gen-address")) {
+      throw new Error(
+        `${chainInfo.chainId} not support getKey from keyring cosmos base`
+      );
     }
     const pubKey = await this.keyRingService.getPubKey(chainId, vaultId);
 
@@ -87,11 +107,13 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     const address = (() => {
@@ -106,13 +128,15 @@ export class KeyRingCosmosService {
 
     return {
       name: this.keyRingService.getKeyRingName(vaultId),
-      algo: isEthermintLike ? 'ethsecp256k1' : 'secp256k1',
+      algo: isEthermintLike ? "ethsecp256k1" : "secp256k1",
       pubKey: pubKey.toBytes(),
       address,
-      bech32Address: bech32Address.toBech32(chainInfo.bech32Config?.bech32PrefixAccAddr ?? ''),
+      bech32Address: bech32Address.toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      ),
       ethereumHexAddress: bech32Address.toHex(true),
-      isNanoLedger: keyInfo.type === 'ledger',
-      isKeystone: keyInfo.type === 'keystone'
+      isNanoLedger: keyInfo.type === "ledger",
+      isKeystone: keyInfo.type === "keystone",
     };
   }
 
@@ -129,7 +153,7 @@ export class KeyRingCosmosService {
     const coinTypes = [chainInfo.bip44.coinType];
 
     if (chainInfo.alternativeBIP44s) {
-      coinTypes.push(...chainInfo.alternativeBIP44s.map(alt => alt.coinType));
+      coinTypes.push(...chainInfo.alternativeBIP44s.map((alt) => alt.coinType));
     }
 
     const isEthermintLike = KeyRingService.isEthermintLike(chainInfo);
@@ -142,7 +166,11 @@ export class KeyRingCosmosService {
     for (const coinType of coinTypes) {
       let pubKey: PubKeySecp256k1;
       try {
-        pubKey = await this.keyRingService.getPubKeyWithNotFinalizedCoinType(chainId, vaultId, coinType);
+        pubKey = await this.keyRingService.getPubKeyWithNotFinalizedCoinType(
+          chainId,
+          vaultId,
+          coinType
+        );
       } catch (e) {
         console.log(e);
         continue;
@@ -160,7 +188,9 @@ export class KeyRingCosmosService {
 
       res.push({
         coinType,
-        bech32Address: bech32Address.toBech32(chainInfo.bech32Config?.bech32PrefixAccAddr ?? '')
+        bech32Address: bech32Address.toBech32(
+          chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+        ),
       });
     }
 
@@ -203,32 +233,39 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     signDoc = {
       ...signDoc,
-      memo: escapeHTML(signDoc.memo)
+      memo: escapeHTML(signDoc.memo),
     };
 
     signDoc = trimAminoSignDoc(signDoc);
     signDoc = sortObjectByKey(signDoc);
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
-    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix);
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
     if (isADR36SignDoc) {
       if (signDoc.msgs[0].value.signer !== signer) {
-        throw new Error('Unmatched signer in sign doc');
+        throw new Error("Unmatched signer in sign doc");
       }
       return await this.signAminoADR36(
         env,
@@ -236,41 +273,41 @@ export class KeyRingCosmosService {
         vaultId,
         chainId,
         signer,
-        Buffer.from(signDoc.msgs[0].value.data, 'base64'),
+        Buffer.from(signDoc.msgs[0].value.data, "base64"),
         {
-          isADR36WithString: false
+          isADR36WithString: false,
         }
       );
     }
 
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos',
-      'request-sign-cosmos',
+      "/sign-cosmos",
+      "request-sign-cosmos",
       {
         origin,
         chainId,
-        mode: 'amino',
+        mode: "amino",
         signDoc,
         signer,
         pubKey: key.pubKey,
         signOptions,
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { newSignDoc: StdSignDoc; signature?: Uint8Array }) => {
         let newSignDoc = res.newSignDoc;
 
         newSignDoc = {
           ...newSignDoc,
-          memo: escapeHTML(newSignDoc.memo)
+          memo: escapeHTML(newSignDoc.memo),
         };
 
         let signature: Uint8Array;
 
-        if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
+        if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
-            throw new Error('Frontend should provide signature');
+            throw new Error("Frontend should provide signature");
           }
           signature = res.signature;
         } else {
@@ -278,25 +315,27 @@ export class KeyRingCosmosService {
             chainId,
             vaultId,
             serializeSignDoc(newSignDoc),
-            isEthermintLike ? 'keccak256' : 'sha256'
+            isEthermintLike ? "keccak256" : "sha256"
           );
           signature = new Uint8Array([..._sig.r, ..._sig.s]);
         }
 
-        const msgTypes = newSignDoc.msgs.filter(msg => msg.type).map(msg => msg.type);
+        const msgTypes = newSignDoc.msgs
+          .filter((msg) => msg.type)
+          .map((msg) => msg.type);
 
-        this.analyticsService.logEventIgnoreError('tx_signed', {
+        this.analyticsService.logEventIgnoreError("tx_signed", {
           chainId,
           isInternal: env.isInternalMsg,
           origin,
-          signMode: 'amino',
+          signMode: "amino",
           msgTypes,
-          isADR36SignDoc: false
+          isADR36SignDoc: false,
         });
 
         return {
           signed: newSignDoc,
-          signature: encodeSecp256k1Signature(key.pubKey, signature)
+          signature: encodeSecp256k1Signature(key.pubKey, signature),
         };
       }
     );
@@ -310,7 +349,7 @@ export class KeyRingCosmosService {
     signDoc: StdSignDoc
   ) {
     if (!env.isInternalMsg && !this.msgPrivilegedOrigins.includes(origin)) {
-      throw new Error('Permission Rejected');
+      throw new Error("Permission Rejected");
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
@@ -324,46 +363,53 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     signDoc = {
       ...signDoc,
-      memo: escapeHTML(signDoc.memo)
+      memo: escapeHTML(signDoc.memo),
     };
 
     signDoc = trimAminoSignDoc(signDoc);
     signDoc = sortObjectByKey(signDoc);
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
-    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix);
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
     if (isADR36SignDoc) {
       throw new Error("Can't use ADR-36 sign doc");
     }
 
     if (!signDoc.msgs || signDoc.msgs.length === 0) {
-      throw new Error('No msgs');
+      throw new Error("No msgs");
     }
 
     for (const msg of signDoc.msgs) {
       // Some chains modify types for obscure reasons. For now, treat it like this:
-      const i = msg.type.indexOf('/');
+      const i = msg.type.indexOf("/");
       if (i < 0) {
-        throw new Error('Invalid msg type');
+        throw new Error("Invalid msg type");
       }
       const action = msg.type.slice(i + 1);
-      if (action !== 'MsgWithdrawDelegationReward') {
-        throw new Error('Invalid msg type');
+      if (action !== "MsgWithdrawDelegationReward") {
+        throw new Error("Invalid msg type");
       }
     }
 
@@ -372,30 +418,36 @@ export class KeyRingCosmosService {
         chainId,
         vaultId,
         serializeSignDoc(signDoc),
-        isEthermintLike ? 'keccak256' : 'sha256'
+        isEthermintLike ? "keccak256" : "sha256"
       );
       const signature = new Uint8Array([..._sig.r, ..._sig.s]);
 
-      this.analyticsService.logEventIgnoreError('tx_signed', {
+      this.analyticsService.logEventIgnoreError("tx_signed", {
         chainId,
         isInternal: env.isInternalMsg,
         origin,
-        signMode: 'amino',
-        privileged: 'withdrawRewards'
+        signMode: "amino",
+        privileged: "withdrawRewards",
       });
 
       return {
         signed: signDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature)
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
-  async privilegeSignAminoDelegate(env: Env, origin: string, chainId: string, signer: string, signDoc: StdSignDoc) {
+  async privilegeSignAminoDelegate(
+    env: Env,
+    origin: string,
+    chainId: string,
+    signer: string,
+    signDoc: StdSignDoc
+  ) {
     if (!env.isInternalMsg && !this.msgPrivilegedOrigins.includes(origin)) {
-      throw new Error('Permission Rejected');
+      throw new Error("Permission Rejected");
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
@@ -409,46 +461,53 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     signDoc = {
       ...signDoc,
-      memo: escapeHTML(signDoc.memo)
+      memo: escapeHTML(signDoc.memo),
     };
 
     signDoc = trimAminoSignDoc(signDoc);
     signDoc = sortObjectByKey(signDoc);
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
-    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix);
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
     if (isADR36SignDoc) {
       throw new Error("Can't use ADR-36 sign doc");
     }
 
     if (!signDoc.msgs || signDoc.msgs.length === 0) {
-      throw new Error('No msgs');
+      throw new Error("No msgs");
     }
 
     for (const msg of signDoc.msgs) {
       // Some chains modify types for obscure reasons. For now, treat it like this:
-      const i = msg.type.indexOf('/');
+      const i = msg.type.indexOf("/");
       if (i < 0) {
-        throw new Error('Invalid msg type');
+        throw new Error("Invalid msg type");
       }
       const action = msg.type.slice(i + 1);
-      if (action !== 'MsgDelegate') {
-        throw new Error('Invalid msg type');
+      if (action !== "MsgDelegate") {
+        throw new Error("Invalid msg type");
       }
     }
 
@@ -457,24 +516,24 @@ export class KeyRingCosmosService {
         chainId,
         vaultId,
         serializeSignDoc(signDoc),
-        isEthermintLike ? 'keccak256' : 'sha256'
+        isEthermintLike ? "keccak256" : "sha256"
       );
       const signature = new Uint8Array([..._sig.r, ..._sig.s]);
 
-      this.analyticsService.logEventIgnoreError('tx_signed', {
+      this.analyticsService.logEventIgnoreError("tx_signed", {
         chainId,
         isInternal: env.isInternalMsg,
         origin,
-        signMode: 'amino',
-        privileged: 'delegate'
+        signMode: "amino",
+        privileged: "delegate",
       });
 
       return {
         signed: signDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature)
+        signature: encodeSecp256k1Signature(key.pubKey, signature),
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
     }
   }
 
@@ -520,48 +579,52 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
     const signDoc = makeADR36AminoSignDoc(signer, data);
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos-adr36',
-      'request-sign-cosmos',
+      "/sign-cosmos-adr36",
+      "request-sign-cosmos",
       {
         origin,
         chainId,
-        mode: 'amino',
+        mode: "amino",
         signDoc,
         signer,
         pubKey: key.pubKey,
         signOptions,
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { newSignDoc: StdSignDoc; signature?: Uint8Array }) => {
         const newSignDoc = res.newSignDoc;
 
         if (!checkAndValidateADR36AminoSignDoc(newSignDoc)) {
-          throw new Error('Invalid ADR36 sign doc delivered from view');
+          throw new Error("Invalid ADR36 sign doc delivered from view");
         }
 
         let signature: Uint8Array;
 
-        if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
+        if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
-            throw new Error('Frontend should provide signature');
+            throw new Error("Frontend should provide signature");
           }
           signature = res.signature;
         } else {
@@ -569,25 +632,27 @@ export class KeyRingCosmosService {
             chainId,
             vaultId,
             serializeSignDoc(newSignDoc),
-            isEthermintLike ? 'keccak256' : 'sha256'
+            isEthermintLike ? "keccak256" : "sha256"
           );
           signature = new Uint8Array([..._sig.r, ..._sig.s]);
         }
 
-        const msgTypes = newSignDoc.msgs.filter(msg => msg.type).map(msg => msg.type);
+        const msgTypes = newSignDoc.msgs
+          .filter((msg) => msg.type)
+          .map((msg) => msg.type);
 
-        this.analyticsService.logEventIgnoreError('tx_signed', {
+        this.analyticsService.logEventIgnoreError("tx_signed", {
           chainId,
           isInternal: env.isInternalMsg,
           origin,
-          signMode: 'amino',
+          signMode: "amino",
           msgTypes,
-          isADR36SignDoc: true
+          isADR36SignDoc: true,
         });
 
         return {
           signed: newSignDoc,
-          signature: encodeSecp256k1Signature(key.pubKey, signature)
+          signature: encodeSecp256k1Signature(key.pubKey, signature),
         };
       }
     );
@@ -610,34 +675,38 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
-    console.log(SignDoc.encode(signDoc).finish(), 'encode');
+    console.log(SignDoc.encode(signDoc).finish(), "encode");
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos',
-      'request-sign-cosmos',
+      "/sign-cosmos",
+      "request-sign-cosmos",
       {
         origin,
         chainId,
-        mode: 'direct',
+        mode: "direct",
         signDocBytes: SignDoc.encode(signDoc).finish(),
         signer,
         pubKey: key.pubKey,
         signOptions,
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { newSignDocBytes: Uint8Array; signature?: Uint8Array }) => {
         const newSignDocBytes = res.newSignDocBytes;
@@ -645,9 +714,9 @@ export class KeyRingCosmosService {
 
         let signature: Uint8Array;
 
-        if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
+        if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
-            throw new Error('Frontend should provide signature');
+            throw new Error("Frontend should provide signature");
           }
           signature = res.signature;
         } else {
@@ -655,27 +724,29 @@ export class KeyRingCosmosService {
             chainId,
             vaultId,
             newSignDocBytes,
-            isEthermintLike ? 'keccak256' : 'sha256'
+            isEthermintLike ? "keccak256" : "sha256"
           );
           signature = new Uint8Array([..._sig.r, ..._sig.s]);
         }
 
-        const msgTypes = TxBody.decode(newSignDoc.bodyBytes).messages.map(msg => msg.typeUrl);
+        const msgTypes = TxBody.decode(newSignDoc.bodyBytes).messages.map(
+          (msg) => msg.typeUrl
+        );
 
-        this.analyticsService.logEventIgnoreError('tx_signed', {
+        this.analyticsService.logEventIgnoreError("tx_signed", {
           chainId,
           isInternal: env.isInternalMsg,
           origin,
-          signMode: 'direct',
-          msgTypes
+          signMode: "direct",
+          msgTypes,
         });
 
         return {
           signed: {
             ...newSignDoc,
-            accountNumber: Long.fromString(newSignDoc.accountNumber)
+            accountNumber: Long.fromString(newSignDoc.accountNumber),
           },
-          signature: encodeSecp256k1Signature(key.pubKey, signature)
+          signature: encodeSecp256k1Signature(key.pubKey, signature),
         };
       }
     );
@@ -707,7 +778,10 @@ export class KeyRingCosmosService {
     chainId: string,
     signer: string,
     signDoc: SignDocDirectAux,
-    signOptions: Exclude<OWalletSignOptions, 'preferNoSetFee' | 'disableBalanceCheck'>
+    signOptions: Exclude<
+      OWalletSignOptions,
+      "preferNoSetFee" | "disableBalanceCheck"
+    >
   ): Promise<DirectAuxSignResponse> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
@@ -717,28 +791,32 @@ export class KeyRingCosmosService {
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
 
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos',
-      'request-sign-cosmos',
+      "/sign-cosmos",
+      "request-sign-cosmos",
       {
         origin,
         chainId,
-        mode: 'direct',
+        mode: "direct",
         signDocBytes: SignDocDirectAux.encode(signDoc).finish(),
         isDirectAux: true,
         signer,
@@ -746,10 +824,10 @@ export class KeyRingCosmosService {
         signOptions: {
           preferNoSetMemo: signOptions.preferNoSetMemo,
           disableBalanceCheck: true,
-          preferNoSetFee: true
+          preferNoSetFee: true,
         },
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { newSignDocBytes: Uint8Array; signature?: Uint8Array }) => {
         const newSignDocBytes = res.newSignDocBytes;
@@ -757,9 +835,9 @@ export class KeyRingCosmosService {
 
         let signature: Uint8Array;
 
-        if (keyInfo.type === 'ledger' || keyInfo.type === 'keystone') {
+        if (keyInfo.type === "ledger" || keyInfo.type === "keystone") {
           if (!res.signature || res.signature.length === 0) {
-            throw new Error('Frontend should provide signature');
+            throw new Error("Frontend should provide signature");
           }
           signature = res.signature;
         } else {
@@ -767,29 +845,31 @@ export class KeyRingCosmosService {
             chainId,
             vaultId,
             newSignDocBytes,
-            isEthermintLike ? 'keccak256' : 'sha256'
+            isEthermintLike ? "keccak256" : "sha256"
           );
           signature = new Uint8Array([..._sig.r, ..._sig.s]);
         }
 
-        const msgTypes = TxBody.decode(newSignDoc.bodyBytes).messages.map(msg => msg.typeUrl);
+        const msgTypes = TxBody.decode(newSignDoc.bodyBytes).messages.map(
+          (msg) => msg.typeUrl
+        );
 
-        this.analyticsService.logEventIgnoreError('tx_signed', {
+        this.analyticsService.logEventIgnoreError("tx_signed", {
           chainId,
           isInternal: env.isInternalMsg,
           origin,
-          signMode: 'direct',
+          signMode: "direct",
           isDirectAux: true,
-          msgTypes
+          msgTypes,
         });
 
         return {
           signed: {
             ...newSignDoc,
             accountNumber: Long.fromString(newSignDoc.accountNumber),
-            sequence: Long.fromString(newSignDoc.sequence)
+            sequence: Long.fromString(newSignDoc.sequence),
           },
-          signature: encodeSecp256k1Signature(key.pubKey, signature)
+          signature: encodeSecp256k1Signature(key.pubKey, signature),
         };
       }
     );
@@ -801,7 +881,10 @@ export class KeyRingCosmosService {
     chainId: string,
     signer: string,
     signDoc: SignDocDirectAux,
-    signOptions: Exclude<OWalletSignOptions, 'preferNoSetFee' | 'disableBalanceCheck'>
+    signOptions: Exclude<
+      OWalletSignOptions,
+      "preferNoSetFee" | "disableBalanceCheck"
+    >
   ): Promise<DirectAuxSignResponse> {
     return await this.signDirectAux(
       env,
@@ -820,7 +903,13 @@ export class KeyRingCosmosService {
     data: Uint8Array,
     signature: StdSignature
   ): Promise<boolean> {
-    return await this.verifyAminoADR36(this.keyRingService.selectedVaultId, chainId, signer, data, signature);
+    return await this.verifyAminoADR36(
+      this.keyRingService.selectedVaultId,
+      chainId,
+      signer,
+      data,
+      signature
+    );
   }
 
   async verifyAminoADR36(
@@ -834,16 +923,18 @@ export class KeyRingCosmosService {
     const isEthermintLike = KeyRingService.isEthermintLike(chainInfo);
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = chainInfo.bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix = chainInfo.bech32Config?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
-    if (signature.pub_key.type !== 'tendermint/PubKeySecp256k1') {
+    if (signature.pub_key.type !== "tendermint/PubKeySecp256k1") {
       throw new Error(`Unsupported type of pub key: ${signature.pub_key.type}`);
     }
-    if (Buffer.from(key.pubKey).toString('base64') !== signature.pub_key.value) {
-      throw new Error('Pub key unmatched');
+    if (
+      Buffer.from(key.pubKey).toString("base64") !== signature.pub_key.value
+    ) {
+      throw new Error("Pub key unmatched");
     }
 
     const signDoc = makeADR36AminoSignDoc(signer, data);
@@ -851,9 +942,9 @@ export class KeyRingCosmosService {
     return verifyADR36AminoSignDoc(
       bech32Prefix,
       signDoc,
-      Buffer.from(signature.pub_key.value, 'base64'),
-      Buffer.from(signature.signature, 'base64'),
-      isEthermintLike ? 'ethsecp256k1' : 'secp256k1'
+      Buffer.from(signature.pub_key.value, "base64"),
+      Buffer.from(signature.signature, "base64"),
+      isEthermintLike ? "ethsecp256k1" : "secp256k1"
     );
   }
 
@@ -903,73 +994,79 @@ export class KeyRingCosmosService {
     const isEthermintLike = KeyRingService.isEthermintLike(chainInfo);
 
     if (!isEthermintLike) {
-      throw new Error('This feature is only usable on cosmos-sdk evm chain');
+      throw new Error("This feature is only usable on cosmos-sdk evm chain");
     }
 
     const keyInfo = this.keyRingService.getKeyInfo(vaultId);
     if (!keyInfo) {
-      throw new Error('Null key info');
+      throw new Error("Null key info");
     }
 
-    if (keyInfo.type !== 'ledger') {
-      throw new Error('This feature is only usable on ledger ethereum app');
+    if (keyInfo.type !== "ledger") {
+      throw new Error("This feature is only usable on ledger ethereum app");
     }
 
-    if (isEthermintLike && keyInfo.type === 'ledger') {
-      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(chainId);
+    if (isEthermintLike && keyInfo.type === "ledger") {
+      KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+        chainId
+      );
     }
 
     signDoc = {
       ...signDoc,
-      memo: escapeHTML(signDoc.memo)
+      memo: escapeHTML(signDoc.memo),
     };
 
     signDoc = trimAminoSignDoc(signDoc);
     signDoc = sortObjectByKey(signDoc);
 
     const key = await this.getKey(vaultId, chainId);
-    const bech32Prefix = this.chainsService.getChainInfoOrThrow(chainId).bech32Config?.bech32PrefixAccAddr ?? '';
+    const bech32Prefix =
+      this.chainsService.getChainInfoOrThrow(chainId).bech32Config
+        ?.bech32PrefixAccAddr ?? "";
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
-      throw new Error('Signer mismatched');
+      throw new Error("Signer mismatched");
     }
-    console.log('sign eip712');
+    console.log("sign eip712");
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos',
-      'request-sign-cosmos',
+      "/sign-cosmos",
+      "request-sign-cosmos",
       {
         origin,
         chainId,
-        mode: 'amino',
+        mode: "amino",
         signDoc,
         signer,
         pubKey: key.pubKey,
         signOptions,
         eip712,
         keyType: keyInfo.type,
-        keyInsensitive: keyInfo.insensitive
+        keyInsensitive: keyInfo.insensitive,
       },
       async (res: { newSignDoc: StdSignDoc; signature?: Uint8Array }) => {
         let newSignDoc = res.newSignDoc;
 
         newSignDoc = {
           ...newSignDoc,
-          memo: escapeHTML(newSignDoc.memo)
+          memo: escapeHTML(newSignDoc.memo),
         };
 
         if (!res.signature || res.signature.length === 0) {
-          throw new Error('Frontend should provide signature');
+          throw new Error("Frontend should provide signature");
         }
 
-        const msgTypes = newSignDoc.msgs.filter(msg => msg.type).map(msg => msg.type);
+        const msgTypes = newSignDoc.msgs
+          .filter((msg) => msg.type)
+          .map((msg) => msg.type);
 
-        this.analyticsService.logEventIgnoreError('tx_signed', {
+        this.analyticsService.logEventIgnoreError("tx_signed", {
           chainId,
           isInternal: env.isInternalMsg,
           origin,
-          ethSignType: 'eip-712',
-          msgTypes
+          ethSignType: "eip-712",
+          msgTypes,
         });
 
         return {
@@ -977,8 +1074,8 @@ export class KeyRingCosmosService {
           signature: {
             pub_key: encodeSecp256k1Pubkey(key.pubKey),
             // Return eth signature (r | s | v) 65 bytes.
-            signature: Buffer.from(res.signature).toString('base64')
-          }
+            signature: Buffer.from(res.signature).toString("base64"),
+          },
         };
       }
     );
@@ -997,7 +1094,7 @@ export class KeyRingCosmosService {
       chainId: string;
       bech32Prefix: string;
       bech32Address: string;
-      addressHash: 'cosmos' | 'ethereum';
+      addressHash: "cosmos" | "ethereum";
       pubKey: Uint8Array;
       signatureSalt: number;
       signature: Uint8Array;
@@ -1029,7 +1126,7 @@ export class KeyRingCosmosService {
       chainId: string;
       bech32Prefix: string;
       bech32Address: string;
-      addressHash: 'cosmos' | 'ethereum';
+      addressHash: "cosmos" | "ethereum";
       pubKey: Uint8Array;
       signatureSalt: number;
       signature: Uint8Array;
@@ -1045,7 +1142,7 @@ export class KeyRingCosmosService {
         bech32Prefix: string;
         bech32Address: string;
         pubKey: Uint8Array;
-      }[]
+      }[],
     };
 
     {
@@ -1055,13 +1152,20 @@ export class KeyRingCosmosService {
         throw new Error("Can't sign for hidden chain");
       }
 
-      Bech32Address.validate(contractAddress, chainInfo.bech32Config?.bech32PrefixAccAddr);
+      Bech32Address.validate(
+        contractAddress,
+        chainInfo.bech32Config?.bech32PrefixAccAddr
+      );
 
       const key = await this.getKey(vaultId, chainId);
-      const bech32Address = new Bech32Address(key.address).toBech32(chainInfo.bech32Config?.bech32PrefixAccAddr ?? '');
+      const bech32Address = new Bech32Address(key.address).toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      );
 
       if (bech32Address !== owner) {
-        throw new Error(`Unmatched owner: (expected: ${bech32Address}, actual: ${owner})`);
+        throw new Error(
+          `Unmatched owner: (expected: ${bech32Address}, actual: ${owner})`
+        );
       }
     }
     const salt = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
@@ -1071,27 +1175,29 @@ export class KeyRingCosmosService {
 
       const key = await this.getKey(vaultId, chainId);
 
-      const bech32Address = new Bech32Address(key.address).toBech32(chainInfo.bech32Config?.bech32PrefixAccAddr ?? '');
+      const bech32Address = new Bech32Address(key.address).toBech32(
+        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+      );
 
       interactionInfo.accountInfos.push({
         chainId: chainInfo.chainId,
-        bech32Prefix: chainInfo.bech32Config?.bech32PrefixAccAddr ?? '',
+        bech32Prefix: chainInfo.bech32Config?.bech32PrefixAccAddr ?? "",
         bech32Address: bech32Address,
-        pubKey: key.pubKey
+        pubKey: key.pubKey,
       });
     }
 
     return await this.interactionService.waitApproveV2(
       env,
-      '/sign-cosmos-icns',
-      'request-sign-icns-adr36',
+      "/sign-cosmos-icns",
+      "request-sign-icns-adr36",
       interactionInfo,
       async () => {
         const r: {
           chainId: string;
           bech32Prefix: string;
           bech32Address: string;
-          addressHash: 'cosmos' | 'ethereum';
+          addressHash: "cosmos" | "ethereum";
           pubKey: Uint8Array;
           signatureSalt: number;
           signature: Uint8Array;
@@ -1103,7 +1209,10 @@ export class KeyRingCosmosService {
             this.chainsService.getChainInfoOrThrow(accountInfo.chainId)
           );
 
-          if (ownerBech32.toHex(false) !== Bech32Address.fromBech32(accountInfo.bech32Address).toHex(false)) {
+          if (
+            ownerBech32.toHex(false) !==
+            Bech32Address.fromBech32(accountInfo.bech32Address).toHex(false)
+          ) {
             // When only the address is different with owner, the signature is necessary.
             const data = `The following is the information for ICNS registration for ${username}.${accountInfo.bech32Prefix}.
 
@@ -1112,13 +1221,16 @@ Contract Address: ${contractAddress}
 Owner: ${owner}
 Salt: ${salt}`;
 
-            const signDoc = makeADR36AminoSignDoc(accountInfo.bech32Address, data);
+            const signDoc = makeADR36AminoSignDoc(
+              accountInfo.bech32Address,
+              data
+            );
 
             const _sig = await this.keyRingService.sign(
               accountInfo.chainId,
               vaultId,
               serializeSignDoc(signDoc),
-              isEthermintLike ? 'keccak256' : 'sha256'
+              isEthermintLike ? "keccak256" : "sha256"
             );
             const signature = new Uint8Array([..._sig.r, ..._sig.s]);
 
@@ -1126,28 +1238,28 @@ Salt: ${salt}`;
               chainId: accountInfo.chainId,
               bech32Prefix: accountInfo.bech32Prefix,
               bech32Address: accountInfo.bech32Address,
-              addressHash: isEthermintLike ? 'ethereum' : 'cosmos',
+              addressHash: isEthermintLike ? "ethereum" : "cosmos",
               pubKey: new PubKeySecp256k1(accountInfo.pubKey).toBytes(
                 // Should return uncompressed format if ethereum.
                 // Else return as compressed format.
                 isEthermintLike
               ),
               signatureSalt: salt,
-              signature
+              signature,
             });
           } else {
             r.push({
               chainId: accountInfo.chainId,
               bech32Prefix: accountInfo.bech32Prefix,
               bech32Address: accountInfo.bech32Address,
-              addressHash: isEthermintLike ? 'ethereum' : 'cosmos',
+              addressHash: isEthermintLike ? "ethereum" : "cosmos",
               pubKey: new PubKeySecp256k1(accountInfo.pubKey).toBytes(
                 // Should return uncompressed format if ethereum.
                 // Else return as compressed format.
                 isEthermintLike
               ),
               signatureSalt: 0,
-              signature: new Uint8Array(0)
+              signature: new Uint8Array(0),
             });
           }
         }
@@ -1157,7 +1269,10 @@ Salt: ${salt}`;
     );
   }
 
-  async legacySignArbitraryInternal(chainId: string, memo: string): Promise<Uint8Array> {
+  async legacySignArbitraryInternal(
+    chainId: string,
+    memo: string
+  ): Promise<Uint8Array> {
     const _sig = await this.keyRingService.sign(
       chainId,
       this.keyRingService.selectedVaultId,
@@ -1168,10 +1283,10 @@ Salt: ${salt}`;
           fee: [],
           memo: memo,
           msgs: [],
-          sequence: 0
+          sequence: 0,
         })
       ),
-      'sha256'
+      "sha256"
     );
     return new Uint8Array([..._sig.r, ..._sig.s]);
   }
@@ -1187,14 +1302,17 @@ Salt: ${salt}`;
   > {
     const chainInfo = this.chainsService.getChainInfo(chainId);
     if (!chainInfo) {
-      throw new Error('ChainInfo not found');
+      throw new Error("ChainInfo not found");
     }
 
     if (!bech32Address) {
-      throw new Error('Bech32Address is empty');
+      throw new Error("Bech32Address is empty");
     }
 
-    Bech32Address.validate(bech32Address, chainInfo.bech32Config?.bech32PrefixAccAddr);
+    Bech32Address.validate(
+      bech32Address,
+      chainInfo.bech32Config?.bech32PrefixAccAddr
+    );
 
     const changedVaults = new Set<string>();
 
@@ -1213,8 +1331,14 @@ Salt: ${salt}`;
           continue;
         }
         if (key.bech32Address === bech32Address) {
-          if (this.keyRingService.needKeyCoinTypeFinalize(keyInfo.id, chainId)) {
-            this.keyRingService.finalizeKeyCoinType(keyInfo.id, chainId, chainInfo.bip44.coinType);
+          if (
+            this.keyRingService.needKeyCoinTypeFinalize(keyInfo.id, chainId)
+          ) {
+            this.keyRingService.finalizeKeyCoinType(
+              keyInfo.id,
+              chainId,
+              chainInfo.bip44.coinType
+            );
           }
           this.chainsUIService.enableChain(keyInfo.id, chainId);
 
@@ -1231,7 +1355,8 @@ Salt: ${salt}`;
     for (const changedVault of changedVaults) {
       res.push({
         vaultId: changedVault,
-        newEnabledChains: this.chainsUIService.enabledChainIdentifiersForVault(changedVault)
+        newEnabledChains:
+          this.chainsUIService.enabledChainIdentifiersForVault(changedVault),
       });
     }
 
@@ -1243,18 +1368,24 @@ Salt: ${salt}`;
   //      They make unnecessary and silly minor changes to ethermint spec.
   //      Thus, there is a probability that it will potentially not work on other chains and they blame us.
   //      So, block them explicitly for now.
-  public static throwErrorIfEthermintWithLedgerButNotSupported(chainId: string) {
+  public static throwErrorIfEthermintWithLedgerButNotSupported(
+    chainId: string
+  ) {
     if (
-      !chainId.startsWith('evmos_') &&
-      !chainId.startsWith('injective') &&
-      !chainId.startsWith('dymension_') &&
-      !chainId.startsWith('nim_') &&
-      !chainId.startsWith('dimension_') &&
-      !chainId.startsWith('zetachain_') &&
-      !chainId.startsWith('eip155:') &&
-      !chainId.startsWith('bitcoin')
+      !chainId.startsWith("evmos_") &&
+      !chainId.startsWith("injective") &&
+      !chainId.startsWith("dymension_") &&
+      !chainId.startsWith("nim_") &&
+      !chainId.startsWith("dimension_") &&
+      !chainId.startsWith("zetachain_") &&
+      !chainId.startsWith("eip155:") &&
+      !chainId.startsWith("bitcoin")
     ) {
-      throw new OWalletError('keyring', 152, 'Ledger is unsupported for this chain');
+      throw new OWalletError(
+        "keyring",
+        152,
+        "Ledger is unsupported for this chain"
+      );
     }
   }
 }
