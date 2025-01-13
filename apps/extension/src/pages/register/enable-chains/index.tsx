@@ -998,7 +998,6 @@ export const EnableChainsScene: FunctionComponent<{
 
         <Gutter size="1.25rem" />
         <Box width="22.5rem" marginX="auto">
-          123
           <Button
             text={intl.formatMessage({
               id: "button.save",
@@ -1270,8 +1269,6 @@ export const EnableChainsScene: FunctionComponent<{
                   vaultId,
                   ...[chainIdentifier]
                 );
-
-                console.log("enabled bitcoin");
               } catch (err) {
                 console.log("err enabled", err);
               }

@@ -155,6 +155,51 @@ export const TransactionFeeModal: FunctionComponent<{
         </Box>
 
         <Stack gutter="0.75rem">
+          <Dropdown
+            label={intl.formatMessage({
+              id: "components.input.fee-control.modal.fee-token-dropdown-label",
+            })}
+            menuContainerMaxHeight="10rem"
+            items={feeConfig.selectableFeeCurrencies
+              .filter((cur, i) => {
+                if (i === 0) {
+                  return true;
+                }
+
+                const balance = queriesStore
+                  .get(feeConfig.chainId)
+                  .queryBalances.getQueryBech32Address(senderConfig.sender)
+                  .getBalanceFromCurrency(cur);
+
+                return balance.toDec().gt(new Dec(0));
+              })
+              .map((cur) => {
+                return {
+                  key: cur.coinMinimalDenom,
+                  label: cur.coinDenom,
+                };
+              })}
+            selectedItemKey={feeConfig.fees[0]?.currency.coinMinimalDenom}
+            onSelect={(key) => {
+              const currency = feeConfig.selectableFeeCurrencies.find(
+                (cur) => cur.coinMinimalDenom === key
+              );
+              if (currency) {
+                if (feeConfig.type !== "manual") {
+                  feeConfig.setFee({
+                    type: feeConfig.type,
+                    currency: currency,
+                  });
+                } else {
+                  feeConfig.setFee({
+                    type: "average",
+                    currency: currency,
+                  });
+                }
+              }
+            }}
+            size="large"
+          />
           <Stack gutter="0.375rem">
             <Box marginLeft="0.5rem">
               <XAxis alignY="center">
@@ -271,52 +316,6 @@ export const TransactionFeeModal: FunctionComponent<{
               <Gutter size="1rem" />
             </React.Fragment>
           )}
-
-          <Dropdown
-            label={intl.formatMessage({
-              id: "components.input.fee-control.modal.fee-token-dropdown-label",
-            })}
-            menuContainerMaxHeight="10rem"
-            items={feeConfig.selectableFeeCurrencies
-              .filter((cur, i) => {
-                if (i === 0) {
-                  return true;
-                }
-
-                const balance = queriesStore
-                  .get(feeConfig.chainId)
-                  .queryBalances.getQueryBech32Address(senderConfig.sender)
-                  .getBalanceFromCurrency(cur);
-
-                return balance.toDec().gt(new Dec(0));
-              })
-              .map((cur) => {
-                return {
-                  key: cur.coinMinimalDenom,
-                  label: cur.coinDenom,
-                };
-              })}
-            selectedItemKey={feeConfig.fees[0]?.currency.coinMinimalDenom}
-            onSelect={(key) => {
-              const currency = feeConfig.selectableFeeCurrencies.find(
-                (cur) => cur.coinMinimalDenom === key
-              );
-              if (currency) {
-                if (feeConfig.type !== "manual") {
-                  feeConfig.setFee({
-                    type: feeConfig.type,
-                    currency: currency,
-                  });
-                } else {
-                  feeConfig.setFee({
-                    type: "average",
-                    currency: currency,
-                  });
-                }
-              }
-            }}
-            size="large"
-          />
 
           {(() => {
             if (gasSimulator) {
@@ -464,9 +463,9 @@ const FeeSelectorStyle = {
 
     background-color: ${({ selected, theme }) =>
       selected
-        ? ColorPalette["purple-400"]
+        ? ColorPalette["purple-500"]
         : theme.mode === "light"
-        ? ColorPalette["purple-50"]
+        ? ColorPalette["gray-10"]
         : ColorPalette["gray-500"]};
   `,
   Title: styled(H5)<{ selected: boolean }>`
@@ -476,7 +475,7 @@ const FeeSelectorStyle = {
           ? ColorPalette["gray-50"]
           : ColorPalette["gray-50"]
         : theme.mode === "light"
-        ? ColorPalette["purple-400"]
+        ? ColorPalette["gray-400"]
         : ColorPalette["gray-50"]};
   `,
   Price: styled(Caption2)<{ selected: boolean }>`
@@ -484,16 +483,16 @@ const FeeSelectorStyle = {
     margin-top: 0.25rem;
     color: ${({ selected, theme }) =>
       selected
-        ? ColorPalette["purple-200"]
+        ? ColorPalette["white"]
         : theme.mode === "light"
-        ? ColorPalette["purple-500"]
+        ? ColorPalette["gray-500"]
         : ColorPalette["gray-300"]};
   `,
   Amount: styled(Caption1)<{ selected: boolean }>`
     white-space: nowrap;
     margin-top: 0.25rem;
     color: ${({ selected }) =>
-      selected ? ColorPalette["purple-100"] : ColorPalette["gray-200"]};
+      selected ? ColorPalette["white"] : ColorPalette["gray-200"]};
   `,
 };
 
@@ -505,6 +504,35 @@ const FeeSelector: FunctionComponent<{
 }> = observer(({ feeConfig, gasConfig, gasSimulator, isForEVMTx }) => {
   const { priceStore } = useStore();
   const theme = useTheme();
+
+  const renderIconTypeFee = (label: string) => {
+    switch (label) {
+      case "low":
+        return (
+          <img
+            style={{ width: 30, height: 30, borderRadius: 44, margin: 4 }}
+            src={require("assets/img/slow.svg")}
+            alt={label}
+          />
+        );
+      case "average":
+        return (
+          <img
+            style={{ width: 30, height: 30, borderRadius: 44, margin: 4 }}
+            src={require("assets/img/average.svg")}
+            alt={label}
+          />
+        );
+      case "high":
+        return (
+          <img
+            style={{ width: 30, height: 30, borderRadius: 44, margin: 4 }}
+            src={require("assets/img/fast.svg")}
+            alt={label}
+          />
+        );
+    }
+  };
 
   const feeCurrency =
     feeConfig.fees.length > 0
@@ -541,6 +569,7 @@ const FeeSelector: FunctionComponent<{
             <FeeSelectorStyle.Title selected={feeConfig.type === "low"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.low" />
             </FeeSelectorStyle.Title>
+            {renderIconTypeFee("low")}
             {feeCurrency.coinGeckoId ? (
               <FeeSelectorStyle.Price selected={feeConfig.type === "low"}>
                 {priceStore
@@ -601,6 +630,7 @@ const FeeSelector: FunctionComponent<{
             <FeeSelectorStyle.Title selected={feeConfig.type === "average"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.average" />
             </FeeSelectorStyle.Title>
+            {renderIconTypeFee("average")}
             {feeCurrency.coinGeckoId ? (
               <FeeSelectorStyle.Price selected={feeConfig.type === "average"}>
                 {priceStore
@@ -669,6 +699,7 @@ const FeeSelector: FunctionComponent<{
             <FeeSelectorStyle.Title selected={feeConfig.type === "high"}>
               <FormattedMessage id="components.input.fee-control.modal.fee-selector.high" />
             </FeeSelectorStyle.Title>
+            {renderIconTypeFee("high")}
             {feeCurrency.coinGeckoId ? (
               <FeeSelectorStyle.Price selected={feeConfig.type === "high"}>
                 {priceStore

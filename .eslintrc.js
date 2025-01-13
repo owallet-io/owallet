@@ -1,13 +1,17 @@
 module.exports = {
   parser: "@typescript-eslint/parser",
-  extends: ["plugin:@typescript-eslint/recommended", "plugin:react/recommended", "plugin:import/typescript"],
+  extends: [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:import/typescript",
+  ],
   plugins: ["react-hooks", "unicorn", "import"],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   rules: {
     "react/prop-types": "off",
@@ -24,32 +28,36 @@ module.exports = {
     "unicorn/filename-case": [
       "error",
       {
-        case: "kebabCase"
-      }
+        case: "kebabCase",
+      },
     ],
     "import/no-extraneous-dependencies": [
       "error",
       {
-        devDependencies: ["**/*.spec.ts", "**/*.spec.js", "**/webpack.config.js"]
-      }
+        devDependencies: [
+          "**/*.spec.ts",
+          "**/*.spec.js",
+          "**/webpack.config.js",
+        ],
+      },
     ],
-      "import/no-default-export": "error",
+    "import/no-default-export": "error",
     "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
-      "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": [
-        "warn",
-        {
-          vars: "all",
-          varsIgnorePattern: "^_",
-          args: "after-used",
-          argsIgnorePattern: "^_"
-        }
-      ],
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }]
-    },
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        vars: "all",
+        varsIgnorePattern: "^_",
+        args: "after-used",
+        argsIgnorePattern: "^_",
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+  },
   settings: {
     react: {
-      version: "detect"
-    }
-  }
+      version: "detect",
+    },
+  },
 };

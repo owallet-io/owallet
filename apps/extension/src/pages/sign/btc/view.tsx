@@ -46,6 +46,8 @@ import { handleBTCPreSignByLedger } from "../utils/handle-btc-sign";
 import { useUnmount } from "hooks/use-unmount";
 import { FeeSummary } from "../components/fee-summary";
 import { FeeControl } from "components/input/fee-control";
+import { handleExternalInteractionWithNoProceedNext } from "src/utils";
+import { useNavigate } from "react-router";
 
 export const BTCSigningView: FunctionComponent<{
   interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
@@ -70,6 +72,7 @@ export const BTCSigningView: FunctionComponent<{
       );
     },
   });
+  const navigate = useNavigate();
 
   const { chainId } = interactionData.data;
   const [isViewData, setIsViewData] = useState(true);
@@ -311,7 +314,13 @@ export const BTCSigningView: FunctionComponent<{
         signature,
         async () => {
           // noop
-          console.log("success");
+          notification.show(
+            "success",
+            intl.formatMessage({
+              id: "notification.transaction-success",
+            }),
+            ""
+          );
         },
         {
           preDelay: 200,
@@ -330,6 +339,7 @@ export const BTCSigningView: FunctionComponent<{
       }
     } finally {
       setIsLedgerInteracting(false);
+      history.back();
     }
   };
   return (
@@ -354,7 +364,23 @@ export const BTCSigningView: FunctionComponent<{
           onClick: async () => {
             await signBtcInteractionStore.rejectWithProceedNext(
               interactionData.id,
-              () => {}
+              async (proceedNext) => {
+                if (!proceedNext) {
+                  if (
+                    interactionInfo.interaction &&
+                    !interactionInfo.interactionInternal
+                  ) {
+                    handleExternalInteractionWithNoProceedNext();
+                  } else if (
+                    interactionInfo.interaction &&
+                    interactionInfo.interactionInternal
+                  ) {
+                    window.history.length > 1 ? navigate(-1) : navigate("/");
+                  } else {
+                    navigate("/", { replace: true });
+                  }
+                }
+              }
             );
           },
         },

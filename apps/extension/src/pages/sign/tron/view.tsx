@@ -30,6 +30,7 @@ import { MessageItem } from "../components/message-item";
 import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 import { useNotification } from "../../../hooks/notification";
 import { AddressChip } from "pages/main/components/address-chip";
+import { useNavigate } from "react-router";
 
 export const TronSigningView: FunctionComponent<{
   interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
@@ -45,6 +46,7 @@ export const TronSigningView: FunctionComponent<{
   const intl = useIntl();
   const theme = useTheme();
   const notification = useNotification();
+  const navigate = useNavigate();
 
   const interactionInfo = useInteractionInfo({
     onUnmount: async () => {
@@ -216,6 +218,7 @@ export const TronSigningView: FunctionComponent<{
         setLedgerInteractingError(undefined);
       }
     } finally {
+      history.back();
       setIsLedgerInteracting(false);
     }
   };
@@ -242,7 +245,23 @@ export const TronSigningView: FunctionComponent<{
           onClick: async () => {
             await signTronInteractionStore.rejectWithProceedNext(
               interactionData.id,
-              () => {}
+              async (proceedNext) => {
+                if (!proceedNext) {
+                  if (
+                    interactionInfo.interaction &&
+                    !interactionInfo.interactionInternal
+                  ) {
+                    handleExternalInteractionWithNoProceedNext();
+                  } else if (
+                    interactionInfo.interaction &&
+                    interactionInfo.interactionInternal
+                  ) {
+                    window.history.length > 1 ? navigate(-1) : navigate("/");
+                  } else {
+                    navigate("/", { replace: true });
+                  }
+                }
+              }
             );
           },
         },
