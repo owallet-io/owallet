@@ -50,36 +50,36 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
 
   const { colors } = useTheme();
   const styles = styling(colors);
-  const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
-      return {
-        key,
-        label: key.toUpperCase(),
-      };
-    });
-  }, [priceStore.supportedVsCurrencies]);
+  // const currencyItems = useMemo(() => {
+  //   return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
+  //     return {
+  //       key,
+  //       label: key.toUpperCase(),
+  //     };
+  //   });
+  // }, [priceStore.supportedVsCurrencies]);
   // const selected = keyRingStore.multiKeyStoreInfo.find(
   //   (keyStore) => keyStore.selected
   // );
   const selectedKeyInfo = keyRingStore.selectedKeyInfo;
-  const _onPressCountryModal = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-
-    modalStore.setChildren(
-      CountryModal({
-        data: currencyItems,
-        current: priceStore.defaultVsCurrency,
-        priceStore,
-        modalStore,
-        colors,
-      })
-    );
-  };
+  // const _onPressCountryModal = () => {
+  //   modalStore.setOptions({
+  //     bottomSheetModalConfig: {
+  //       enablePanDownToClose: false,
+  //       enableOverDrag: false,
+  //     },
+  //   });
+  //
+  //   modalStore.setChildren(
+  //     CountryModal({
+  //       data: currencyItems,
+  //       current: priceStore.defaultVsCurrency,
+  //       priceStore,
+  //       modalStore,
+  //       colors,
+  //     })
+  //   );
+  // };
 
   const _onPressThemeModal = () => {
     modalStore.setOptions({
@@ -362,34 +362,34 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           />
           {/* <SettingSwitchModeItem /> */}
 
-          <BasicSettingItem
-            icon="tdesign_money"
-            paragraph="Currency"
-            onPress={_onPressCountryModal}
-            right={
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {renderFlag(priceStore.defaultVsCurrency, 20)}
-                <OWText
-                  style={{ paddingHorizontal: 8 }}
-                  weight="600"
-                  color={colors["neutral-text-body"]}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </OWText>
-                <OWIcon
-                  color={colors["neutral-text-title"]}
-                  name="chevron_right"
-                  size={16}
-                />
-              </View>
-            }
-          />
+          {/*<BasicSettingItem*/}
+          {/*  icon="tdesign_money"*/}
+          {/*  paragraph="Currency"*/}
+          {/*  onPress={_onPressCountryModal}*/}
+          {/*  right={*/}
+          {/*    <View*/}
+          {/*      style={{*/}
+          {/*        flexDirection: "row",*/}
+          {/*        alignItems: "center",*/}
+          {/*        justifyContent: "center",*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      {renderFlag(priceStore.defaultVsCurrency, 20)}*/}
+          {/*      <OWText*/}
+          {/*        style={{ paddingHorizontal: 8 }}*/}
+          {/*        weight="600"*/}
+          {/*        color={colors["neutral-text-body"]}*/}
+          {/*      >*/}
+          {/*        {priceStore.defaultVsCurrency.toUpperCase()}*/}
+          {/*      </OWText>*/}
+          {/*      <OWIcon*/}
+          {/*        color={colors["neutral-text-title"]}*/}
+          {/*        name="chevron_right"*/}
+          {/*        size={16}*/}
+          {/*      />*/}
+          {/*    </View>*/}
+          {/*  }*/}
+          {/*/>*/}
           <BasicSettingItem
             icon="tdesign_book"
             paragraph="Address book"

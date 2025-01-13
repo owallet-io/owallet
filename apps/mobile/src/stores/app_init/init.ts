@@ -112,6 +112,9 @@ export class AppInit {
   isItemUpdated(itemId) {
     return this.stateTokenMap.get(itemId) || false;
   }
+  isItemExits(itemId): boolean | undefined {
+    return this.stateTokenMap.get(itemId);
+  }
   @computed
   get getInitApp() {
     return this.initApp;

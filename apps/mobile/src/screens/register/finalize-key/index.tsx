@@ -28,6 +28,7 @@ import { PageWithView } from "@components/page";
 import { useTheme } from "@src/themes/theme-provider";
 import { Text } from "@components/text";
 import { SCREENS } from "@common/constants";
+import { DenomHelper } from "@owallet/common";
 
 const SimpleProgressBar: FunctionComponent<{
   progress: number;
@@ -71,6 +72,7 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
     queriesStore,
     keyRingStore,
     priceStore,
+    geckoTerminalStore,
   } = useStore();
   const route =
     useRoute<RouteProp<RootStackParamList, "Register.FinalizeKey">>();
@@ -316,14 +318,26 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           const chainInfo = chainStore.getChain(candidateAddress.chainId);
           const targetCurrency =
             chainInfo.stakeCurrency || chainInfo.currencies[0];
-          if (targetCurrency.coinGeckoId) {
+          const { coinMinimalDenom } = targetCurrency;
+          const formatContract =
+            "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/";
+          if (
+            (coinMinimalDenom?.startsWith(formatContract) &&
+              coinMinimalDenom.replace(formatContract, "").length > 10) ||
+            coinMinimalDenom?.startsWith("spl")
+          ) {
+            const { contractAddress } = new DenomHelper(coinMinimalDenom);
+            geckoTerminalStore.getPrice(
+              contractAddress || coinMinimalDenom.replace(formatContract, "")
+            );
+          } else if (targetCurrency.coinGeckoId) {
             priceStore.getPrice(targetCurrency.coinGeckoId);
           }
         }
 
         // Try to make sure that prices are fresh.
+        promises.push(geckoTerminalStore.waitFreshResponse());
         promises.push(priceStore.waitFreshResponse());
-
         if (promises.length >= 10) {
           let once = false;
           setTimeout(() => {
