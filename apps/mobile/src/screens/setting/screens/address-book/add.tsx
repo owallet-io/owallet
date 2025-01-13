@@ -1,61 +1,69 @@
-import { EthereumEndpoint } from '@owallet/common';
+import { EthereumEndpoint } from "@owallet/common";
 // import {
 //   AddressBookConfig,
 //   useMemoConfig,
 //   useRecipientConfig,
 // } from "@owallet/hooks";
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { OWBox } from '@src/components/card';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { PageWithBottom } from '@src/components/page/page-with-bottom';
-import OWText from '@src/components/text/ow-text';
-import { useTheme } from '@src/themes/theme-provider';
-import { showToast } from '@src/utils/helper';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { OWButton } from '../../../../components/button';
-import { AddressInput, MemoInput, TextInput } from '../../../../components/input';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { OWBox } from "@src/components/card";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import OWText from "@src/components/text/ow-text";
+import { useTheme } from "@src/themes/theme-provider";
+import { showToast } from "@src/utils/helper";
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { OWButton } from "../../../../components/button";
+import {
+  AddressInput,
+  MemoInput,
+  TextInput,
+} from "../../../../components/input";
 
-import { useStore } from '../../../../stores';
-import { metrics, spacing } from '../../../../themes';
-import { goBack, navigate, RootStackParamList } from '@src/router/root';
-import { useMemoConfig, useRecipientConfig, useTxConfigsValidate } from '@owallet/hooks';
-import { useFocusAfterRouting } from '@hooks/use-focus';
-import { useIntl } from 'react-intl';
-import { useStyle } from '@src/styles';
-import { OWHeaderTitle } from '@components/header';
+import { useStore } from "../../../../stores";
+import { metrics, spacing } from "../../../../themes";
+import { goBack, navigate, RootStackParamList } from "@src/router/root";
+import {
+  useMemoConfig,
+  useRecipientConfig,
+  useTxConfigsValidate,
+} from "@owallet/hooks";
+import { useFocusAfterRouting } from "@hooks/use-focus";
+import { useIntl } from "react-intl";
+import { useStyle } from "@src/styles";
+import { OWHeaderTitle } from "@components/header";
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     addNewBookRoot: {
-      backgroundColor: colors['background'],
+      backgroundColor: colors["background"],
       // marginTop: spacing['24'],
-      paddingHorizontal: spacing['20'],
-      paddingVertical: spacing['24'],
-      borderRadius: spacing['24']
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      borderRadius: spacing["24"],
     },
     addNewBookLabel: {
       fontSize: 16,
-      fontWeight: '700',
-      color: colors['label'],
-      lineHeight: 22
+      fontWeight: "700",
+      color: colors["label"],
+      lineHeight: 22,
     },
     addNewBookInput: {
-      borderTopLeftRadius: spacing['8'],
-      borderTopRightRadius: spacing['8'],
-      borderBottomLeftRadius: spacing['8'],
-      borderBottomRightRadius: spacing['8'],
-      color: colors['sub-text'],
-      backgroundColor: colors['neutral-surface-bg2'],
-      borderWidth: 0
+      borderTopLeftRadius: spacing["8"],
+      borderTopRightRadius: spacing["8"],
+      borderBottomLeftRadius: spacing["8"],
+      borderBottomRightRadius: spacing["8"],
+      color: colors["sub-text"],
+      backgroundColor: colors["neutral-surface-bg2"],
+      borderWidth: 0,
     },
     input: {
-      borderColor: colors['neutral-border-strong'],
-      borderRadius: 12
+      borderColor: colors["neutral-border-strong"],
+      borderRadius: 12,
     },
-    textInput: { fontWeight: '600', paddingLeft: 4, fontSize: 15 }
+    textInput: { fontWeight: "600", paddingLeft: 4, fontSize: 15 },
   });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
@@ -63,18 +71,21 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const labelRef = useFocusAfterRouting();
   const navigate = useNavigation();
   const { colors } = useTheme();
-  const route = useRoute<RouteProp<RootStackParamList, 'Setting.General.ContactAdd'>>();
+  const route =
+    useRoute<RouteProp<RootStackParamList, "Setting.General.ContactAdd">>();
   const intl = useIntl();
 
   const [chainId, setChainId] = useState(chainStore.chainInfosInUI[0].chainId);
   // If edit mode, this will be equal or greater than 0.
   const [editIndex, setEditIndex] = useState(-1);
 
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   const recipientConfig = useRecipientConfig(chainStore, chainId, {
-    allowHexAddressToBech32Address: !chainStore.getChain(chainId).chainId.startsWith('injective'),
-    icns: uiConfigStore.icnsInfo
+    allowHexAddressToBech32Address: !chainStore
+      .getChain(chainId)
+      .chainId.startsWith("injective"),
+    icns: uiConfigStore.icnsInfo,
   });
   const memoConfig = useMemoConfig(chainStore, chainId);
 
@@ -86,8 +97,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     navigate.setOptions({
       title:
         editIndex < 0
-          ? intl.formatMessage({ id: 'page.setting.contacts.add.add-title' })
-          : intl.formatMessage({ id: 'page.setting.contacts.add.edit-title' })
+          ? intl.formatMessage({ id: "page.setting.contacts.add.add-title" })
+          : intl.formatMessage({ id: "page.setting.contacts.add.edit-title" }),
     });
   }, [editIndex, intl, navigate]);
 
@@ -100,10 +111,11 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     recipientConfig.setChain(paramChainId);
     memoConfig.setChain(paramChainId);
 
-    if (typeof paramEditIndex !== 'undefined') {
+    if (typeof paramEditIndex !== "undefined") {
       const index = paramEditIndex;
       // const index = Number.parseInt(paramEditIndex, 10);
-      const addressBook = uiConfigStore.addressBookConfig.getAddressBook(paramChainId);
+      const addressBook =
+        uiConfigStore.addressBookConfig.getAddressBook(paramChainId);
       if (addressBook.length > index) {
         setEditIndex(index);
         const data = addressBook[index];
@@ -115,34 +127,46 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     }
 
     setEditIndex(-1);
-  }, [intl, memoConfig, paramChainId, paramEditIndex, recipientConfig, uiConfigStore.addressBookConfig]);
+  }, [
+    intl,
+    memoConfig,
+    paramChainId,
+    paramEditIndex,
+    recipientConfig,
+    uiConfigStore.addressBookConfig,
+  ]);
 
   const txConfigsValidate = useTxConfigsValidate({
     recipientConfig,
-    memoConfig
+    memoConfig,
   });
   const navigation = useNavigation();
   const chainInfo = chainStore.getChain(chainId);
   useEffect(() => {
     navigation.setOptions({
-      headerTitle: () => <OWHeaderTitle title={'Add new contact'} subTitle={chainInfo?.chainName} />
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Add new contact"}
+          subTitle={chainInfo?.chainName}
+        />
+      ),
     });
   }, [chainId]);
   const handleSubmit = () => {
-    if (name === '') {
+    if (name === "") {
       return;
     }
     if (editIndex < 0) {
       uiConfigStore.addressBookConfig.addAddressBook(chainId, {
         name,
         address: recipientConfig.value,
-        memo: memoConfig.value
+        memo: memoConfig.value,
       });
     } else {
       uiConfigStore.addressBookConfig.setAddressBookAt(chainId, editIndex, {
         name,
         address: recipientConfig.value,
-        memo: memoConfig.value
+        memo: memoConfig.value,
       });
     }
 
@@ -154,25 +178,28 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       bottomGroup={
         <OWButton
           label="Save"
-          disabled={name === ''}
+          disabled={name === ""}
           onPress={() => handleSubmit()}
           style={[
             {
               width: metrics.screenWidth - 32,
               marginTop: 20,
-              borderRadius: 999
-            }
+              borderRadius: 999,
+            },
           ]}
           textStyle={{
             fontSize: 14,
-            fontWeight: '600',
-            color: colors['neutral-text-action-on-dark-bg']
+            fontWeight: "600",
+            color: colors["neutral-text-action-on-dark-bg"],
           }}
         />
       }
     >
-      <ScrollView contentContainerStyle={{ height: metrics.screenHeight }} showsVerticalScrollIndicator={false}>
-        <OWBox style={{ backgroundColor: colors['neutral-surface-card'] }}>
+      <ScrollView
+        contentContainerStyle={{ height: metrics.screenHeight }}
+        showsVerticalScrollIndicator={false}
+      >
+        <OWBox style={{ backgroundColor: colors["neutral-surface-card"] }}>
           <TextInput
             label=""
             topInInputContainer={
@@ -184,10 +211,16 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             onSubmitEditing={() => {}}
             inputStyle={styles.input}
             style={styles.textInput}
-            inputLeft={<OWIcon size={22} name="tdesign_book" color={colors['neutral-icon-on-light']} />}
+            inputLeft={
+              <OWIcon
+                size={22}
+                name="tdesign_book"
+                color={colors["neutral-icon-on-light"]}
+              />
+            }
             ref={labelRef}
             value={name}
-            onChange={e => {
+            onChange={(e) => {
               e.preventDefault();
               setName(e.nativeEvent.text);
             }}
@@ -206,7 +239,11 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             placeholder="Enter address"
             inputLeft={
               <View style={{ paddingRight: 6 }}>
-                <OWIcon size={22} name="wallet" color={colors['neutral-icon-on-light']} />
+                <OWIcon
+                  size={22}
+                  name="wallet"
+                  color={colors["neutral-icon-on-light"]}
+                />
               </View>
             }
             inputRight={
@@ -236,7 +273,11 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             }
             inputLeft={
               <View style={{ paddingRight: 6 }}>
-                <OWIcon size={22} name="tdesign_mail" color={colors['neutral-icon-on-light']} />
+                <OWIcon
+                  size={22}
+                  name="tdesign_mail"
+                  color={colors["neutral-icon-on-light"]}
+                />
               </View>
             }
             inputContainerStyle={styles.input}

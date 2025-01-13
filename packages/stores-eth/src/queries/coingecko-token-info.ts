@@ -1,7 +1,13 @@
-import { ChainGetter, HasMapStore, ObservableQuery, QueryResponse, QuerySharedContext } from '@owallet/stores';
-import { makeObservable } from 'mobx';
-import { ITokenInfoRes } from '@owallet/types';
-import { Network } from '@owallet/common';
+import {
+  ChainGetter,
+  HasMapStore,
+  ObservableQuery,
+  QueryResponse,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { makeObservable } from "mobx";
+import { ITokenInfoRes } from "@owallet/types";
+import { Network } from "@owallet/common";
 export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITokenInfoRes> {
   constructor(
     sharedContext: QuerySharedContext,
@@ -13,7 +19,9 @@ export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITok
     super(
       sharedContext,
       coingeckoAPIBaseURL,
-      coingeckoAPIURI.replace('{coingeckoChainId}', coingeckoChainId).replace('{contractAddress}', contractAddress)
+      coingeckoAPIURI
+        .replace("{coingeckoChainId}", coingeckoChainId)
+        .replace("{contractAddress}", contractAddress)
     );
 
     makeObservable(this);
@@ -36,7 +44,9 @@ export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITok
   }
 }
 
-export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<ObservableQueryCoingeckoTokenInfoInner | undefined> {
+export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
+  ObservableQueryCoingeckoTokenInfoInner | undefined
+> {
   constructor(
     protected readonly sharedContext: QuerySharedContext,
     protected readonly chainId: string,
@@ -59,16 +69,18 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<ObservableQue
     });
   }
 
-  getQueryContract(contractAddress: string): ObservableQueryCoingeckoTokenInfoInner | undefined {
+  getQueryContract(
+    contractAddress: string
+  ): ObservableQueryCoingeckoTokenInfoInner | undefined {
     return this.get(contractAddress) as ObservableQueryCoingeckoTokenInfoInner;
   }
 }
 
 const coingeckoChainIdMap: Record<string, string> = {
-  'eip155:1': Network.ETHEREUM,
-  'eip155:56': Network.BINANCE_SMART_CHAIN,
-  'eip155:10': 'optimistic-ethereum',
-  'eip155:137': 'polygon-pos',
-  'eip155:8453': 'base',
-  'eip155:42161': 'arbitrum-one'
+  "eip155:1": Network.ETHEREUM,
+  "eip155:56": Network.BINANCE_SMART_CHAIN,
+  "eip155:10": "optimistic-ethereum",
+  "eip155:137": "polygon-pos",
+  "eip155:8453": "base",
+  "eip155:42161": "arbitrum-one",
 };

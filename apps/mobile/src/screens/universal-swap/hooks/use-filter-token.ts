@@ -1,6 +1,9 @@
-import { BTC_CONTRACT, TokenItemType } from '@oraichain/oraidex-common';
-import { SwapDirection, UniversalSwapHelper } from '@oraichain/oraidex-universal-swap';
-import { useEffect, useState } from 'react';
+import { BTC_CONTRACT, TokenItemType } from "@oraichain/oraidex-common";
+import {
+  SwapDirection,
+  UniversalSwapHelper,
+} from "@oraichain/oraidex-universal-swap";
+import { useEffect, useState } from "react";
 
 /**
  * Simulate token fee between fromToken & toToken
@@ -22,8 +25,12 @@ export const useFilterToken = (
   fromTokenDenom: string,
   toTokenDenom: string
 ) => {
-  const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
-  const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
+  const [filteredToTokens, setFilteredToTokens] = useState(
+    [] as TokenItemType[]
+  );
+  const [filteredFromTokens, setFilteredFromTokens] = useState(
+    [] as TokenItemType[]
+  );
 
   useEffect(() => {
     const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
@@ -34,7 +41,9 @@ export const useFilterToken = (
       SwapDirection.To
     );
 
-    setFilteredToTokens(filteredToTokens.filter(fi => fi?.contractAddress !== BTC_CONTRACT));
+    setFilteredToTokens(
+      filteredToTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
 
     const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
       originalToToken.chainId,
@@ -44,7 +53,9 @@ export const useFilterToken = (
       SwapDirection.From
     );
 
-    setFilteredFromTokens(filteredFromTokens.filter(fi => fi?.contractAddress !== BTC_CONTRACT));
+    setFilteredFromTokens(
+      filteredFromTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);

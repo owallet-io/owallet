@@ -1,3 +1,4 @@
+//@ts-nocheck
 import {
   ChainInfo,
   EthSignType,
@@ -25,6 +26,7 @@ import {
   ITronProvider,
   TransactionType,
   TransactionBtcType,
+  ISolanaProvider,
 } from "@owallet/types";
 import {
   BACKGROUND_PORT,
@@ -42,6 +44,30 @@ import { OWalletCoreTypes } from "./core-types";
 import EventEmitter from "events";
 import { ChainIdEVM, TW } from "@owallet/types";
 import { types } from "@oasisprotocol/client";
+import {
+  Commitment,
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
+// import {
+//     confirmTransaction,
+//     deserializeTransaction,
+//     isVersionedTransaction,
+// } from "@owallet/common";
+import { encode, decode } from "bs58";
+import { SolanaSignInInput } from "@solana/wallet-standard-features";
+import {
+  CHAIN_ID_SOL,
+  confirmTransaction,
+  deserializeTransaction,
+  isVersionedTransaction,
+  RPC_SOL,
+} from "./utils";
 
 export class OWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -558,6 +584,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       }, 100);
     });
   }
+
   async sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string> {
     await this.enable(chainId);
 
@@ -572,6 +599,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       }
     );
   }
+
   async signEthereum(
     chainId: string,
     signer: string,
@@ -998,13 +1026,14 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
       {}
     );
   }
+
   async protectedTryOpenSidePanelIfEnabled(
     ignoreGestureFailure: boolean = false
   ): Promise<void> {
     let isInContentScript = false;
     if (
       typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
+      (window as any).__owallet_content_script === true
     ) {
       isInContentScript = true;
     }
@@ -1272,7 +1301,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
   public readonly oasis = new OasisProvider(this, this.requester);
   public readonly tron = new TronProvider(this, this.requester);
   public readonly bitcoin = new BitcoinProvider(this, this.requester);
+  public readonly solana = new SolanaProvider(this, this.requester);
 }
+
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
   chainId: string | null = null;
   selectedAddress: string | null = null;
@@ -1412,6 +1443,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }, 100);
     });
   }
+
   async getKey(chainId: string): Promise<Key> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1453,6 +1485,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }
     );
   }
+
   async sign(
     chainId: string,
     signer: string,
@@ -1484,6 +1517,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       }, 100);
     });
   }
+
   async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
     return new Promise((resolve, reject) => {
       let f = false;
@@ -1508,6 +1542,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     });
   }
 }
+
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   constructor(
     protected readonly owallet: OWallet,
@@ -1563,6 +1598,7 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       }, 100);
     });
   }
+
   async sendTx(chainId: string, signedTx: string): Promise<string> {
     await this.owallet.enable(chainId);
 
@@ -1577,6 +1613,7 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       }
     );
   }
+
   async sign(
     chainId: string,
     signer: string,
@@ -1609,6 +1646,318 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
     });
   }
 }
+
+class SolanaProvider extends EventEmitter implements ISolanaProvider {
+  private connection: Connection;
+  publicKey: PublicKey | null;
+
+  constructor(
+    protected readonly owallet: OWallet,
+    protected readonly requester: MessageRequester
+  ) {
+    super();
+
+    this.connection = new Connection(RPC_SOL, "confirmed");
+  }
+
+  async getKey(chainId: string): Promise<Key> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "get-svm-key",
+        {
+          chainId,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>> {
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "get-svm-keys-settled",
+        {
+          chainIds,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  async connect(options?: {
+    onlyIfTrusted?: boolean;
+    reconnect?: boolean;
+  }): Promise<{ publicKey: PublicKey }> {
+    const chainId = CHAIN_ID_SOL;
+    return new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "connect-svm",
+        {
+          chainId,
+          silent: options?.onlyIfTrusted,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+  }
+
+  public async signAllTransactions<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    txs: T[];
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+  }): Promise<T[]> {
+    const publicKey = request.publicKey;
+
+    const txStrs = await Promise.all(
+      request.txs.map(async (tx) => {
+        const txDecoded = deserializeTransaction(tx);
+        const preparedTx = await this.prepareTransaction({
+          publicKey: request.publicKey,
+          tx: txDecoded,
+          signers: request.signers,
+          customConnection: request.customConnection,
+          commitment: request.commitment,
+        });
+        return encode(preparedTx.serialize({ requireAllSignatures: false }));
+      })
+    );
+    const signatures = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-all-transaction-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: publicKey,
+        txs: txStrs,
+      }
+    );
+    if (!signatures) {
+      throw Error("Transaction Rejected");
+    }
+
+    return signatures;
+  }
+
+  public async signAndSendTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    const options = request.options;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+    const finality = commitment === "finalized" ? "finalized" : "confirmed";
+
+    const signature = await this.send({
+      ...request,
+      options: {
+        commitment: "confirmed",
+        preflightCommitment: "confirmed",
+        ...request.options,
+      },
+    });
+    await confirmTransaction(this.connection, signature, finality);
+    return signature;
+  }
+
+  public async send<T extends Transaction | VersionedTransaction>(request: {
+    publicKey: PublicKey;
+    tx: T;
+    customConnection?: Connection;
+    signers?: Signer[];
+    options?: SendOptions | ConfirmOptions;
+  }): Promise<string> {
+    // const tx = request.tx;
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
+    const signers = request.signers;
+    const publicKey = request.publicKey;
+    const options = request.options;
+    const connection = request.customConnection ?? this.connection;
+    const commitment =
+      options && "commitment" in options ? options.commitment : undefined;
+
+    const result = await this.signTransaction({
+      tx,
+      signers,
+      publicKey,
+      customConnection: request.customConnection,
+      commitment,
+    });
+    const signedTx = VersionedTransaction.deserialize(
+      //@ts-ignore
+      decode(result.signedTx)
+    ) as T;
+    const serializedTransaction = signedTx.serialize();
+    return connection.sendRawTransaction(serializedTransaction, options);
+  }
+
+  public async signIn(input?: SolanaSignInInput): Promise<{
+    signedMessage: string;
+    signature: string;
+    publicKey: string;
+    connectionUrl: string;
+  }> {
+    if (!input) throw Error("Transaction Rejected");
+    const result = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-in-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        inputs: input,
+      }
+    );
+    if (!result) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
+
+  async disconnect(): Promise<void> {
+    //TODO: need handle
+    return;
+  }
+
+  public async signTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    customConnection?: Connection;
+    commitment?: Commitment;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    console.log(request, "tx core");
+    const tx =
+      typeof request.tx === "string"
+        ? deserializeTransaction(request.tx)
+        : request.tx;
+    const preparedTx = await this.prepareTransaction({
+      ...request,
+      tx,
+    });
+    const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
+    const result = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-transaction-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: publicKey,
+        tx: txStr,
+      }
+    );
+    if (!result?.signature || !result?.signedTx) {
+      throw Error("Transaction Rejected");
+    }
+    return result;
+  }
+
+  public async signMessage(request: {
+    publicKey: PublicKey;
+    message: Uint8Array;
+  }): Promise<Uint8Array> {
+    const svmResponse = await sendSimpleMessage(
+      this.requester,
+      BACKGROUND_PORT,
+      "keyring-svm",
+      "request-sign-message-svm",
+      {
+        chainId: CHAIN_ID_SOL,
+        signer: request.publicKey,
+        message: encode(request.message),
+      }
+    );
+    return decode(svmResponse.signedMessage);
+  }
+
+  private async prepareTransaction<
+    T extends Transaction | VersionedTransaction
+  >(request: {
+    publicKey: PublicKey;
+    tx: T;
+    signers?: Signer[];
+    commitment?: Commitment;
+    customConnection?: Connection;
+  }): Promise<T> {
+    const publicKey = request.publicKey;
+    const signers = request.signers;
+    const connection = request.customConnection ?? this.connection;
+    const commitment = request.commitment;
+    const tx = request.tx;
+    if (!isVersionedTransaction(tx)) {
+      if (signers) {
+        signers.forEach((s: Signer) => {
+          tx.partialSign(s);
+        });
+      }
+      if (!tx.feePayer) {
+        tx.feePayer = publicKey;
+      }
+      if (!tx.recentBlockhash) {
+        const { blockhash } = await connection.getLatestBlockhash(commitment);
+        tx.recentBlockhash = blockhash;
+      }
+    } else {
+      if (signers) {
+        tx.sign(signers);
+      }
+    }
+    return tx;
+  }
+}
+
 class TronProvider extends EventEmitter implements ITronProvider {
   constructor(
     protected readonly owallet: OWallet,

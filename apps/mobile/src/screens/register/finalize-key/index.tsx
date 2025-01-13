@@ -64,8 +64,14 @@ const SimpleProgressBar: FunctionComponent<{
 };
 
 export const FinalizeKeyScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, keyRingStore, priceStore } =
-    useStore();
+  const {
+    chainStore,
+    appInitStore,
+    accountStore,
+    queriesStore,
+    keyRingStore,
+    priceStore,
+  } = useStore();
   const route =
     useRoute<RouteProp<RootStackParamList, "Register.FinalizeKey">>();
   const {
@@ -112,6 +118,7 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
   const [count, setCount] = useState(0);
   const unmounted = useRef(false);
   useEffect(() => {
+    appInitStore.selectAllNetworks(true);
     return () => {
       unmounted.current = true;
     };
@@ -375,6 +382,7 @@ export const FinalizeKeyScreen: FunctionComponent = observer(() => {
           vaultId,
           ...chainsEnable
         );
+
         resetTo(SCREENS.STACK.MainTab);
       })();
     }

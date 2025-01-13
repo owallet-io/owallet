@@ -20,7 +20,6 @@ export const HighFeeWarning: FunctionComponent<{
       style={style.flatten([
         "padding-18",
         "border-radius-8",
-        "background-color-gray-500",
         "border-width-1",
         checked ? "border-color-gray-500" : "border-color-blue-400",
       ])}

@@ -4,6 +4,7 @@ import {
   CosmosQueries,
   IChainInfoImpl,
   IQueriesStore,
+  ObservableQueryBalancesImplMap,
   QueryError,
 } from "@owallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
@@ -112,7 +113,7 @@ export class HugeQueriesStore {
 
     for (const chainInfo of this.chainStore.chainInfosInUI) {
       let account = this.accountStore.getAccount(chainInfo.chainId);
-      const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
+      // const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
 
       if (account.addressDisplay === "") {
         continue;
@@ -125,23 +126,22 @@ export class HugeQueriesStore {
       }
       for (const currency of currencies) {
         const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-        const isERC20 = denomHelper.type === "erc20";
-        const isMainCurrency =
-          mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
+        // const isERC20 = denomHelper.type === 'erc20';
+        // const isMainCurrency = mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
 
-        let queryBalance =
-          this.chainStore.isEvmOnlyChain(chainInfo.chainId) &&
-          (isMainCurrency || isERC20)
-            ? queries.queryBalances.getQueryEthereumHexAddress(
-                account.ethereumHexAddress
-              )
-            : queries.queryBalances.getQueryBech32Address(
-                account.bech32Address
-              );
+        let queryBalance: ObservableQueryBalancesImplMap;
         const isBtcLegacy = denomHelper.type === "legacy";
         if (isBtcLegacy) {
           queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
             account.btcLegacyAddress
+          );
+        } else if (chainInfo.features.includes("tron")) {
+          queryBalance = queries.queryBalances.getQueryEthereumHexAddress(
+            account.ethereumHexAddress
+          );
+        } else {
+          queryBalance = queries.queryBalances.getQueryByAddress(
+            account.addressDisplay
           );
         }
         const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
@@ -241,7 +241,6 @@ export class HugeQueriesStore {
       });
     }
   );
-
   getAllBalancesByChainId = computedFn(
     (chainId: string): ReadonlyArray<ViewToken> => {
       if (!chainId) return;

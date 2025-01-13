@@ -1,7 +1,11 @@
 import React, { FunctionComponent } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { colors, metrics, spacing } from "../../themes";
+import { metrics, spacing } from "../../themes";
 import OWText from "@src/components/text/ow-text";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
+import { useTheme } from "@src/themes/theme-provider";
 
 const styles = StyleSheet.create({
   img: {
@@ -36,7 +40,7 @@ const styles = StyleSheet.create({
   },
   content: {
     alignItems: "center",
-    position: "absolute",
+    // position: "absolute",
     bottom: metrics.screenHeight > 800 ? 0.1 * -metrics.screenHeight : 0,
     alignSelf: "center",
   },
@@ -49,6 +53,7 @@ const styles = StyleSheet.create({
 });
 
 const ManageIntroScreen: FunctionComponent = () => {
+  const { colors } = useTheme();
   return (
     <View style={styles.container}>
       <View style={styles.containerCheck}>
@@ -84,7 +89,11 @@ const ManageIntroScreen: FunctionComponent = () => {
         </View>
         <View style={styles.viewImg}>
           <Image
-            source={require("../../assets/image/img_leverage.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_leverage
+                : images.img_leverage
+            }
             fadeDuration={0}
             resizeMode="contain"
             style={styles.img}

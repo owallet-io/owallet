@@ -775,8 +775,7 @@ export class RecentSendHistoryService {
                                 if (assetsText.length > 0) {
                                   // Notify user
                                   this.notification.create({
-                                    iconRelativeUrl:
-                                      "assets/orai_wallet_logo.png",
+                                    iconRelativeUrl: "assets/logo-256.png",
                                     title: "IBC Swap Succeeded",
                                     message: `${assetsText.join(
                                       ", "
@@ -808,8 +807,7 @@ export class RecentSendHistoryService {
                               if (assetsText.length > 0) {
                                 // Notify user
                                 this.notification.create({
-                                  iconRelativeUrl:
-                                    "assets/orai_wallet_logo.png",
+                                  iconRelativeUrl: "assets/logo-256.png",
                                   title: "IBC Transfer Succeeded",
                                   message: `${assetsText.join(", ")} sent to ${
                                     chainInfo.chainName

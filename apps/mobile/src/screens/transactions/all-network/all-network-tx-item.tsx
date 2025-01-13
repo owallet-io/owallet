@@ -1,6 +1,10 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React, { FC } from "react";
-import { formatContractAddress, maskedNumber } from "@src/utils/helper";
+import {
+  formatContractAddress,
+  maskedNumber,
+  oraiToken,
+} from "@src/utils/helper";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
 import { Text } from "@src/components/text";
@@ -19,6 +23,8 @@ const getCurrencyImage = (currency) => {
     !currency?.coinImageUrl ||
     currency?.coinImageUrl?.includes("missing.svg")
     ? unknownToken.coinImageUrl
+    : currency?.coinGeckoId === "oraichain-token"
+    ? oraiToken
     : currency?.coinImageUrl;
 };
 

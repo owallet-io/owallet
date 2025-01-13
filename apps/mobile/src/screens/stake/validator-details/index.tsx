@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect } from 'react';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { observer } from 'mobx-react-lite';
-import { StyleSheet, View } from 'react-native';
-import { spacing } from '../../../themes';
-import { ValidatorDetailsCard } from './validator-details-card';
-import { useTheme } from '@src/themes/theme-provider';
-import { tracking } from '@src/utils/tracking';
+import React, { FunctionComponent, useEffect } from "react";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { observer } from "mobx-react-lite";
+import { StyleSheet, View } from "react-native";
+import { spacing } from "../../../themes";
+import { ValidatorDetailsCard } from "./validator-details-card";
+import { useTheme } from "@src/themes/theme-provider";
+import { tracking } from "@src/utils/tracking";
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -34,7 +34,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
     <View>
       <ValidatorDetailsCard
         containerStyle={{
-          ...styles.containerCard
+          ...styles.containerCard,
         }}
         validatorAddress={validatorAddress}
         apr={apr}
@@ -46,9 +46,9 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
 
 const styles = StyleSheet.create({
   containerCard: {
-    borderRadius: spacing['24'],
-    paddingVertical: spacing['20'],
-    paddingHorizontal: spacing['24'],
-    marginTop: spacing['16']
-  }
+    borderRadius: spacing["24"],
+    paddingVertical: spacing["20"],
+    paddingHorizontal: spacing["24"],
+    marginTop: spacing["16"],
+  },
 });

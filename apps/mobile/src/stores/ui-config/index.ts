@@ -57,8 +57,8 @@ export class UIConfigStore {
   @observable
   protected _options: UIConfigOptions = {
     isDeveloperMode: false,
-    hideLowBalance: false,
-    rememberLastFeeOption: false,
+    hideLowBalance: true,
+    rememberLastFeeOption: true,
     lastFeeOption: false,
     show24HChangesInMagePage: true,
 

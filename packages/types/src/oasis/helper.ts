@@ -1,6 +1,6 @@
 export type StringifiedBigInt = string & PreserveAliasName;
 // eslint-disable-next-line @typescript-eslint/ban-types
-interface PreserveAliasName extends String {}
+type PreserveAliasName = String;
 
 export enum TransactionType {
   StakingTransfer = "staking.Transfer",

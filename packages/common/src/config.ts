@@ -1,7 +1,25 @@
-import { Bech32Address } from "@owallet/cosmos";
 import { ChainInfo, Currency } from "@owallet/types";
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
 import { FiatCurrency } from "@owallet/types";
+
+export function defaultBech32Config(
+  mainPrefix: string,
+  validatorPrefix: string = "val",
+  consensusPrefix: string = "cons",
+  publicPrefix: string = "pub",
+  operatorPrefix: string = "oper"
+) {
+  return {
+    bech32PrefixAccAddr: mainPrefix,
+    bech32PrefixAccPub: mainPrefix + publicPrefix,
+    bech32PrefixValAddr: mainPrefix + validatorPrefix + operatorPrefix,
+    bech32PrefixValPub:
+      mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
+    bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
+    bech32PrefixConsPub:
+      mainPrefix + validatorPrefix + consensusPrefix + publicPrefix,
+  };
+}
 
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint =
@@ -183,17 +201,17 @@ export const EmbedChainInfos: ChainInfo[] = [
     chainSymbolImageUrl:
       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     walletUrl:
-      NODE_ENV === "production"
+      process.env.NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     walletUrlForStaking:
-      NODE_ENV === "production"
+      process.env.NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("orai"),
+    bech32Config: defaultBech32Config("orai"),
     currencies: [
       {
         coinDenom: "ORAI",
@@ -241,15 +259,15 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/39102/standard/hamster-removebg-preview.png?1720514486",
       },
-      {
-        coinDenom: "CAT",
-        coinMinimalDenom:
-          "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
-        coinDecimals: 6,
-        coinGeckoId: "simon-s-cat",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
-      },
+      // {
+      //   coinDenom: "CAT",
+      //   coinMinimalDenom:
+      //     "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/extCAT",
+      //   coinDecimals: 6,
+      //   coinGeckoId: "simon-s-cat",
+      //   coinImageUrl:
+      //     "https://assets.coingecko.com/coins/images/39765/standard/Simon's_Cat_Logo.png?1724017505",
+      // },
       {
         type: "cw20",
         coinDenom: "SCORAI",
@@ -285,14 +303,6 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinGeckoId: "bitcoin",
         coinImageUrl:
           "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-      },
-      {
-        coinDenom: "BTC V2",
-        coinMinimalDenom:
-          "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/obtc",
-        coinDecimals: 14,
-        coinGeckoId: "bitcoin",
-        coinImageUrl: "https://i.ibb.co/NVP6CDZ/images-removebg-preview.png",
       },
       {
         type: "cw20",
@@ -378,248 +388,60 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     txExplorer: {
       name: "Oraiscan",
-      txUrl: "https://scan.orai.io/txs/{txHash}",
-      accountUrl: "https://scan.orai.io/account/{address}",
+      txUrl: "https://scanium.io/Oraichain/tx/{txHash}",
+      accountUrl: "https://scanium.io/account/{address}",
     },
   },
   {
-    rpc: "https://sapphire.oasis.io",
-    rest: "https://sapphire.oasis.io",
-    grpc: "https://grpc.oasis.dev",
-    chainId: "oasis-1",
-    chainName: "Oasis Mainnet",
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+    rpc: "https://swr.xnftdata.com/rpc-proxy/",
+    rest: "https://swr.xnftdata.com/rpc-proxy/",
+    chainId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    chainName: "Solana",
+    bip44: {
+      coinType: 501,
+    },
     stakeCurrency: {
-      coinDenom: "ROSE",
-      coinMinimalDenom: "rose",
+      coinDenom: "SOL",
+      coinMinimalDenom: "sol",
       coinDecimals: 9,
-      coinGeckoId: "oasis-network",
+      coinGeckoId: "solana",
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+        "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
     },
+    chainSymbolImageUrl:
+      "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png",
     currencies: [
       {
-        coinDenom: "ROSE",
-        coinMinimalDenom: "rose",
+        coinDenom: "SOL",
+        coinMinimalDenom: "sol",
         coinDecimals: 9,
-        coinGeckoId: "oasis-network",
+        coinGeckoId: "solana",
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-      },
-    ],
-    bip44: {
-      coinType: 474,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("oasis"),
-    feeCurrencies: [
-      {
-        coinDenom: "ROSE",
-        coinMinimalDenom: "rose",
-        coinDecimals: 9,
-        coinGeckoId: "oasis-network",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-        gasPriceStep: {
-          high: 0,
-          low: 0,
-          average: 0,
-        },
-      },
-    ],
-    features: ["oasis", "gen-address", "not-support-staking"],
-    txExplorer: {
-      name: "Oasis scan",
-      txUrl: "https://www.oasisscan.com/transactions/{txHash}",
-      accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
-    },
-  },
-  {
-    chainId: "oraibtc-mainnet-1",
-    chainName: "OraiBTC Bridge",
-    rpc: "https://btc.rpc.orai.io",
-    rest: "https://btc.lcd.orai.io",
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    stakeCurrency: {
-      coinDenom: "ORAIBTC",
-      coinMinimalDenom: "uoraibtc",
-      coinDecimals: 6,
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
-    // List of all coin/tokens used in this chain.
-    get currencies() {
-      return [this.stakeCurrency];
-    },
-    get feeCurrencies() {
-      return [
-        {
-          ...this.stakeCurrency,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-        },
-      ];
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
-    txExplorer: {
-      name: "Scanium",
-      txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
-    },
-  },
-  {
-    rpc: "https://blockstream.info/api",
-    rest: "https://blockstream.info/api",
-    chainId: "bitcoin",
-    chainName: "Bitcoin",
-    chainSymbolImageUrl:
-      "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-    bip44: {
-      coinType: 0,
-    },
-    bip84: {
-      coinType: 0,
-    },
-    stakeCurrency: {
-      coinDenom: "BTC",
-      coinMinimalDenom: "btc",
-      coinDecimals: 8,
-      coinGeckoId: "bitcoin",
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-    },
-    bech32Config: Bech32Address.defaultBech32Config("bc"),
-    currencies: [
-      {
-        type: "legacy",
-        coinDenom: "BTC",
-        coinMinimalDenom: "legacy:btc",
-        coinDecimals: 8,
-        coinGeckoId: "bitcoin",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-      },
-      {
-        type: "segwit",
-        coinDenom: "BTC",
-        coinMinimalDenom: "segwit:btc",
-        coinDecimals: 8,
-        coinGeckoId: "bitcoin",
-        coinImageUrl:
-          "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+          "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
       },
     ],
     get feeCurrencies() {
       return [
         {
-          coinDenom: "BTC",
-          coinMinimalDenom: "segwit:btc",
-          coinDecimals: 8,
-          coinGeckoId: "bitcoin",
+          coinDenom: "SOL",
+          coinMinimalDenom: "sol",
+          coinDecimals: 9,
+          coinGeckoId: "solana",
           coinImageUrl:
-            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
           gasPriceStep: {
-            low: 144,
-            average: 18,
-            high: 1,
-          },
-        },
-        {
-          type: "legacy",
-          coinDenom: "BTC",
-          coinMinimalDenom: "legacy:btc",
-          coinDecimals: 8,
-          coinGeckoId: "bitcoin",
-          coinImageUrl:
-            "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-          gasPriceStep: {
-            low: 144,
-            average: 18,
-            high: 1,
+            low: 1,
+            average: 1.25,
+            high: 1.5,
           },
         },
       ];
     },
-
-    features: ["gen-address", "btc", "not-support-staking"],
+    features: ["gen-address", "svm", "not-support-staking"],
     txExplorer: {
-      name: "BlockStream",
-      txUrl: "https://blockstream.info/tx/{txHash}",
-      accountUrl: "https://blockstream.info/address/{address}",
-    },
-  },
-  {
-    chainId: "oraibridge-subnet-2",
-    chainName: "OraiBridge",
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    rpc: "https://bridge-v2.rpc.orai.io",
-    rest: "https://bridge-v2.lcd.orai.io",
-    stakeCurrency: {
-      coinDenom: "ORAIB",
-      coinMinimalDenom: "uoraib",
-      coinDecimals: 6,
-      coinImageUrl:
-        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("oraib"),
-    // List of all coin/tokens used in this chain.
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: "BEP20 ORAI",
-          coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
-          coinDecimals: 18,
-          coinGeckoId: "oraichain-token",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
-        },
-        {
-          coinDenom: "BEP20 AIRI",
-          coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
-          coinDecimals: 18,
-          coinGeckoId: "airight",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
-        },
-        {
-          coinDenom: "BEP20 USDT",
-          coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
-          coinDecimals: 18,
-          coinGeckoId: "tether",
-          coinImageUrl:
-            "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
-        },
-      ];
-    },
-    get feeCurrencies() {
-      return [
-        {
-          ...this.stakeCurrency,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-        },
-      ];
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
-    txExplorer: {
-      name: "Orai Bridge Scan",
-      txUrl: "https://scan.bridge.orai.io/txs/{txHash}",
-      accountUrl: "https://scan.bridge.orai.io/account/{address}",
+      name: "Sol Explorer",
+      txUrl: "https://solscan.io/tx/{txHash}",
+      accountUrl: "https://solscan.io/address/{address}",
     },
   },
   {
@@ -691,95 +513,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       accountUrl: "https://tronscan.org/#/address/{address}",
     },
   },
-  {
-    rpc: "https://sapphire.oasis.io",
-    rest: "https://sapphire.oasis.io",
-    chainId: "eip155:23294",
-    evm: {
-      websocket: "wss://sapphire.oasis.io/ws",
-      rpc: "https://sapphire.oasis.io",
-      chainId: 23294,
-    },
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-    chainName: "Oasis Sapphire",
-    bip44: {
-      coinType: 60,
-    },
-    stakeCurrency: {
-      coinDenom: "ROSE",
-      coinMinimalDenom: "rose",
-      coinDecimals: 18,
-      coinGeckoId: "oasis-network",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-    },
-    currencies: [
-      {
-        coinDenom: "ROSE",
-        coinMinimalDenom: "rose",
-        coinDecimals: 18,
-        coinGeckoId: "oasis-network",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
 
-    features: ["not-support-staking", "oasis-address"],
-    txExplorer: {
-      name: "Oasis Saphire Scan",
-      txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
-      accountUrl:
-        "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
-    },
-  },
-  {
-    rpc: "https://emerald.oasis.dev",
-    rest: "https://emerald.oasis.dev",
-    chainId: "eip155:42262",
-    chainSymbolImageUrl:
-      "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-    chainName: "Oasis Emerald",
-    evm: {
-      websocket: "wss://emerald.oasis.io/ws",
-      rpc: "https://emerald.oasis.dev",
-      chainId: 42262,
-    },
-    bip44: {
-      coinType: 60,
-    },
-    stakeCurrency: {
-      coinDenom: "ROSE",
-      coinMinimalDenom: "rose",
-      coinDecimals: 18,
-      coinGeckoId: "oasis-network",
-      coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-    },
-    currencies: [
-      {
-        coinDenom: "ROSE",
-        coinMinimalDenom: "rose",
-        coinDecimals: 18,
-        coinGeckoId: "oasis-network",
-        coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
-      },
-    ],
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-
-    features: ["not-support-staking", "oasis-address"],
-    txExplorer: {
-      name: "Oasis Emerald Scan",
-      txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
-      accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
-    },
-  },
   {
     rpc: "https://evm-1.keplr.app",
     rest: "https://evm-1.keplr.app",
@@ -914,17 +648,17 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinGeckoId: "cosmos",
     },
     walletUrl:
-      NODE_ENV === "production"
+      process.env.NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     walletUrlForStaking:
-      NODE_ENV === "production"
+      process.env.NODE_ENV === "production"
         ? "https://wallet.keplr.app/chains/cosmos-hub"
         : "http://localhost:8080/chains/cosmos-hub",
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: defaultBech32Config("cosmos"),
     currencies: [
       {
         coinDenom: "ATOM",
@@ -954,10 +688,16 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: "osmosis",
     },
-    walletUrl: "https://app.osmosis.zone",
-    walletUrlForStaking: "https://wallet.keplr.app/chains/osmosis",
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://app.osmosis.zone"
+        : "https://app.osmosis.zone",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/osmosis"
+        : "http://localhost:8080/chains/osmosis",
     bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("osmo"),
+    bech32Config: defaultBech32Config("osmo"),
     currencies: [
       {
         coinDenom: "OSMO",
@@ -993,47 +733,392 @@ export const EmbedChainInfos: ChainInfo[] = [
       "osmosis-txfees",
     ],
   },
+  // {
+  //   rpc: "https://sapphire.oasis.io",
+  //   rest: "https://sapphire.oasis.io",
+  //   grpc: "https://grpc.oasis.dev",
+  //   chainId: "oasis-1",
+  //   chainName: "Oasis Mainnet",
+  //   chainSymbolImageUrl:
+  //     "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   stakeCurrency: {
+  //     coinDenom: "ROSE",
+  //     coinMinimalDenom: "rose",
+  //     coinDecimals: 9,
+  //     coinGeckoId: "oasis-network",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   },
+  //   currencies: [
+  //     {
+  //       coinDenom: "ROSE",
+  //       coinMinimalDenom: "rose",
+  //       coinDecimals: 9,
+  //       coinGeckoId: "oasis-network",
+  //       coinImageUrl:
+  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //     },
+  //   ],
+  //   bip44: {
+  //     coinType: 474,
+  //   },
+  //   bech32Config: defaultBech32Config("oasis"),
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: "ROSE",
+  //       coinMinimalDenom: "rose",
+  //       coinDecimals: 9,
+  //       coinGeckoId: "oasis-network",
+  //       coinImageUrl:
+  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //       gasPriceStep: {
+  //         high: 0,
+  //         low: 0,
+  //         average: 0,
+  //       },
+  //     },
+  //   ],
+  //   features: ["oasis", "gen-address", "not-support-staking"],
+  //   txExplorer: {
+  //     name: "Oasis scan",
+  //     txUrl: "https://www.oasisscan.com/transactions/{txHash}",
+  //     accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
+  //   },
+  // },
+  // {
+  //   chainId: "oraibtc-mainnet-1",
+  //   chainName: "OraiBTC Bridge",
+  //   rpc: "https://btc.rpc.orai.io",
+  //   rest: "https://btc.lcd.orai.io",
+  //   chainSymbolImageUrl:
+  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+  //   stakeCurrency: {
+  //     coinDenom: "ORAIBTC",
+  //     coinMinimalDenom: "uoraibtc",
+  //     coinDecimals: 6,
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //   },
+  //   walletUrl:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://wallet.keplr.app/chains/akash"
+  //       : "http://localhost:8080/chains/akash",
+  //   walletUrlForStaking:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://wallet.keplr.app/chains/akash"
+  //       : "http://localhost:8080/chains/akash",
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: defaultBech32Config("oraibtc"),
+  //   // List of all coin/tokens used in this chain.
+  //   get currencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //   get feeCurrencies() {
+  //     return [
+  //       {
+  //         ...this.stakeCurrency,
+  //         gasPriceStep: {
+  //           low: 0,
+  //           average: 0,
+  //           high: 0,
+  //         },
+  //       },
+  //     ];
+  //   },
+  //   features: ["stargate", "ibc-transfer", "cosmwasm"],
+  //   txExplorer: {
+  //     name: "Scanium",
+  //     txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
+  //   },
+  // },
+  // {
+  //   rpc: "https://blockstream.info/api",
+  //   rest: "https://blockstream.info/api",
+  //   chainId: "bitcoin",
+  //   chainName: "Bitcoin",
+  //   chainSymbolImageUrl:
+  //     "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //   bip44: {
+  //     coinType: 0,
+  //   },
+  //   bip84: {
+  //     coinType: 0,
+  //   },
+  //   stakeCurrency: {
+  //     coinDenom: "BTC",
+  //     coinMinimalDenom: "btc",
+  //     coinDecimals: 8,
+  //     coinGeckoId: "bitcoin",
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //   },
+  //   bech32Config: defaultBech32Config("bc"),
+  //   currencies: [
+  //     {
+  //       type: "legacy",
+  //       coinDenom: "BTC",
+  //       coinMinimalDenom: "legacy:btc",
+  //       coinDecimals: 8,
+  //       coinGeckoId: "bitcoin",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //     },
+  //     {
+  //       type: "segwit",
+  //       coinDenom: "BTC",
+  //       coinMinimalDenom: "segwit:btc",
+  //       coinDecimals: 8,
+  //       coinGeckoId: "bitcoin",
+  //       coinImageUrl:
+  //         "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return [
+  //       {
+  //         coinDenom: "BTC",
+  //         coinMinimalDenom: "segwit:btc",
+  //         coinDecimals: 8,
+  //         coinGeckoId: "bitcoin",
+  //         coinImageUrl:
+  //           "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //         gasPriceStep: {
+  //           low: 144,
+  //           average: 18,
+  //           high: 1,
+  //         },
+  //       },
+  //       {
+  //         type: "legacy",
+  //         coinDenom: "BTC",
+  //         coinMinimalDenom: "legacy:btc",
+  //         coinDecimals: 8,
+  //         coinGeckoId: "bitcoin",
+  //         coinImageUrl:
+  //           "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //         gasPriceStep: {
+  //           low: 144,
+  //           average: 18,
+  //           high: 1,
+  //         },
+  //       },
+  //     ];
+  //   },
+  //
+  //   features: ["gen-address", "btc", "not-support-staking"],
+  //   txExplorer: {
+  //     name: "BlockStream",
+  //     txUrl: "https://blockstream.info/tx/{txHash}",
+  //     accountUrl: "https://blockstream.info/address/{address}",
+  //   },
+  // },
   {
-    rpc: "https://rpc-stargaze.keplr.app",
-    rest: "https://lcd-stargaze.keplr.app",
-    chainId: "stargaze-1",
-    chainName: "Stargaze",
+    chainId: "oraibridge-subnet-2",
+    chainName: "OraiBridge",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+    rpc: "https://bridge-v2.rpc.orai.io",
+    rest: "https://bridge-v2.lcd.orai.io",
     stakeCurrency: {
-      coinDenom: "STARS",
-      coinMinimalDenom: "ustars",
+      coinDenom: "ORAIB",
+      coinMinimalDenom: "uoraib",
       coinDecimals: 6,
-      coinGeckoId: "stargaze",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
     },
-    walletUrl:
-      NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/stargaze"
-        : "http://localhost:8080/chains/stargaze",
-    walletUrlForStaking:
-      NODE_ENV === "production"
-        ? "https://wallet.keplr.app/chains/stargaze"
-        : "http://localhost:8080/chains/stargaze",
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("stars"),
-    currencies: [
-      {
-        coinDenom: "STARS",
-        coinMinimalDenom: "ustars",
-        coinDecimals: 6,
-        coinGeckoId: "stargaze",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "STARS",
-        coinMinimalDenom: "ustars",
-        coinDecimals: 6,
-        coinGeckoId: "stargaze",
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
+    bech32Config: defaultBech32Config("oraib"),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: "BEP20 ORAI",
+          coinMinimalDenom: "oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0",
+          coinDecimals: 18,
+          coinGeckoId: "oraichain-token",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
+        },
+        {
+          coinDenom: "BEP20 AIRI",
+          coinMinimalDenom: "oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F",
+          coinDecimals: 18,
+          coinGeckoId: "airight",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/refs/heads/master/oraichain/images/airi.png",
+        },
+        {
+          coinDenom: "BEP20 USDT",
+          coinMinimalDenom: "oraib0x55d398326f99059fF775485246999027B3197955",
+          coinDecimals: 18,
+          coinGeckoId: "tether",
+          coinImageUrl:
+            "https://s2.coinmarketcap.com/static/img/coins/64x64/825.png",
+        },
+      ];
+    },
+    get feeCurrencies() {
+      return [
+        {
+          ...this.stakeCurrency,
+          gasPriceStep: {
+            low: 0,
+            average: 0,
+            high: 0,
+          },
+        },
+      ];
+    },
+    features: ["stargate", "ibc-transfer", "cosmwasm"],
+    txExplorer: {
+      name: "Orai Bridge Scan",
+      txUrl: "https://scanium.io/OraiBridge/tx/{txHash}",
+      accountUrl: "https://scanium.io/OraiBridge/account/{address}",
+    },
   },
+  // {
+  //   rpc: "https://sapphire.oasis.io",
+  //   rest: "https://sapphire.oasis.io",
+  //   chainId: "eip155:23294",
+  //   evm: {
+  //     websocket: "wss://sapphire.oasis.io/ws",
+  //     rpc: "https://sapphire.oasis.io",
+  //     chainId: 23294,
+  //   },
+  //   chainSymbolImageUrl:
+  //     "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   chainName: "Oasis Sapphire",
+  //   bip44: {
+  //     coinType: 60,
+  //   },
+  //   stakeCurrency: {
+  //     coinDenom: "ROSE",
+  //     coinMinimalDenom: "rose",
+  //     coinDecimals: 18,
+  //     coinGeckoId: "oasis-network",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   },
+  //   currencies: [
+  //     {
+  //       coinDenom: "ROSE",
+  //       coinMinimalDenom: "rose",
+  //       coinDecimals: 18,
+  //       coinGeckoId: "oasis-network",
+  //       coinImageUrl:
+  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //
+  //   features: ["not-support-staking", "oasis-address"],
+  //   txExplorer: {
+  //     name: "Oasis Saphire Scan",
+  //     txUrl: "https://explorer.oasis.io/mainnet/sapphire/tx/{txHash}",
+  //     accountUrl:
+  //       "https://explorer.oasis.io/mainnet/sapphire/address/{address}",
+  //   },
+  // },
+  // {
+  //   rpc: "https://emerald.oasis.dev",
+  //   rest: "https://emerald.oasis.dev",
+  //   chainId: "eip155:42262",
+  //   chainSymbolImageUrl:
+  //     "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   chainName: "Oasis Emerald",
+  //   evm: {
+  //     websocket: "wss://emerald.oasis.io/ws",
+  //     rpc: "https://emerald.oasis.dev",
+  //     chainId: 42262,
+  //   },
+  //   walletUrl:
+  //       process.env.NODE_ENV === "production"
+  //           ? "https://wallet.keplr.app/chains/juno"
+  //           : "http://localhost:8080/chains/juno",
+  //   walletUrlForStaking:
+  //       process.env.NODE_ENV === "production"
+  //           ? "https://wallet.keplr.app/chains/juno"
+  //           : "http://localhost:8080/chains/juno",
+  //   bip44: {
+  //     coinType: 60,
+  //   },
+  //   stakeCurrency: {
+  //     coinDenom: "ROSE",
+  //     coinMinimalDenom: "rose",
+  //     coinDecimals: 18,
+  //     coinGeckoId: "oasis-network",
+  //     coinImageUrl:
+  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //   },
+  //   currencies: [
+  //     {
+  //       coinDenom: "ROSE",
+  //       coinMinimalDenom: "rose",
+  //       coinDecimals: 18,
+  //       coinGeckoId: "oasis-network",
+  //       coinImageUrl:
+  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7653.png",
+  //     },
+  //   ],
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //
+  //   features: ["not-support-staking", "oasis-address"],
+  //   txExplorer: {
+  //     name: "Oasis Emerald Scan",
+  //     txUrl: "https://explorer.oasis.io/mainnet/emerald/tx/{txHash}",
+  //     accountUrl: "https://explorer.oasis.io/mainnet/emerald/address/{address}",
+  //   },
+  // },
+  // {
+  //   rpc: "https://rpc-stargaze.keplr.app",
+  //   rest: "https://lcd-stargaze.keplr.app",
+  //   chainId: "stargaze-1",
+  //   chainName: "Stargaze",
+  //   stakeCurrency: {
+  //     coinDenom: "STARS",
+  //     coinMinimalDenom: "ustars",
+  //     coinDecimals: 6,
+  //     coinGeckoId: "stargaze",
+  //   },
+  //   walletUrl:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://wallet.keplr.app/chains/stargaze"
+  //       : "http://localhost:8080/chains/stargaze",
+  //   walletUrlForStaking:
+  //     process.env.NODE_ENV === "production"
+  //       ? "https://wallet.keplr.app/chains/stargaze"
+  //       : "http://localhost:8080/chains/stargaze",
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: defaultBech32Config("stars"),
+  //   currencies: [
+  //     {
+  //       coinDenom: "STARS",
+  //       coinMinimalDenom: "ustars",
+  //       coinDecimals: 6,
+  //       coinGeckoId: "stargaze",
+  //     },
+  //   ],
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: "STARS",
+  //       coinMinimalDenom: "ustars",
+  //       coinDecimals: 6,
+  //       coinGeckoId: "stargaze",
+  //     },
+  //   ],
+  //   features: ["ibc-transfer", "ibc-go"],
+  // },
   {
     rpc: "https://rpc-injective.keplr.app",
     rest: "https://lcd-injective.keplr.app",
@@ -1045,12 +1130,18 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: "injective-protocol",
     },
-    walletUrl: "https://wallet.keplr.app/chains/injective",
-    walletUrlForStaking: "https://wallet.keplr.app/chains/injective",
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/injective"
+        : "http://localhost:8080/chains/injective",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/chains/injective"
+        : "http://localhost:8080/chains/injective",
     bip44: {
       coinType: 60,
     },
-    bech32Config: Bech32Address.defaultBech32Config("inj"),
+    bech32Config: defaultBech32Config("inj"),
     currencies: [
       {
         coinDenom: "INJ",
@@ -1135,7 +1226,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("neutaro"),
+    bech32Config: defaultBech32Config("neutaro"),
     currencies: [
       {
         coinDenom: "NTMPI",
@@ -1169,429 +1260,47 @@ export const EmbedChainInfos: ChainInfo[] = [
       "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Neutaro/chain.png",
     txExplorer: {
       name: "Neutaro",
-      txUrl: "https://nms1.neutaro.tech/Neutaro/tx/{txHash}",
+      txUrl: "https://explorer.neutaro.io/Neutaro/tx/{txHash}",
       //TODO: Not found account explorer for neutaro
       accountUrl: "https://nms1.neutaro.tech/account/{address}",
     },
   },
   // {
-  //   rpc: "https://rpc-secret.keplr.app",
-  //   rest: "https://lcd-secret.keplr.app",
-  //   chainId: "secret-4",
-  //   chainName: "Secret Network",
+  //   rpc: "https://rpc-dydx.keplr.app",
+  //   rest: "https://lcd-dydx.keplr.app",
+  //   chainId: "dydx-mainnet-1",
+  //   chainName: "dYdX",
   //   stakeCurrency: {
-  //     coinDenom: "SCRT",
-  //     coinMinimalDenom: "uscrt",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "secret",
-  //   },
-  //   walletUrl:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/secret-network"
-  //       : "http://localhost:8080/chains/secret-network",
-  //   walletUrlForStaking:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/secret-network"
-  //       : "http://localhost:8080/chains/secret-network",
-  //   bip44: {
-  //     coinType: 529,
-  //   },
-  //   alternativeBIP44s: [
-  //     {
-  //       coinType: 118,
-  //     },
-  //   ],
-  //   bech32Config: Bech32Address.defaultBech32Config("secret"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "SCRT",
-  //       coinMinimalDenom: "uscrt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "secret",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "SCRT",
-  //       coinMinimalDenom: "uscrt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "secret",
-  //       gasPriceStep: {
-  //         low: 0.2,
-  //         average: 0.25,
-  //         high: 0.3,
-  //       },
-  //     },
-  //   ],
-  //   features: ["secretwasm", "ibc-go", "ibc-transfer"],
-  // },
-  // {
-  //   rpc: "https://rpc-akash.keplr.app",
-  //   rest: "https://lcd-akash.keplr.app",
-  //   chainId: "akashnet-2",
-  //   chainName: "Akash",
-  //   stakeCurrency: {
-  //     coinDenom: "AKT",
-  //     coinMinimalDenom: "uakt",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "akash-network",
-  //   },
-  //   walletUrl:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/akash"
-  //       : "http://localhost:8080/chains/akash",
-  //   walletUrlForStaking:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/akash"
-  //       : "http://localhost:8080/chains/akash",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("akash"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "AKT",
-  //       coinMinimalDenom: "uakt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "akash-network",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "AKT",
-  //       coinMinimalDenom: "uakt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "akash-network",
-  //     },
-  //   ],
-  //   features: ["ibc-transfer"],
-  // },
-  // {
-  //   rpc: "https://rpc-persistence.keplr.app",
-  //   rest: "https://lcd-persistence.keplr.app",
-  //   chainId: "core-1",
-  //   chainName: "Persistence",
-  //   stakeCurrency: {
-  //     coinDenom: "XPRT",
-  //     coinMinimalDenom: "uxprt",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "persistence",
-  //   },
-  //   walletUrl:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/persistence"
-  //       : "http://localhost:8080/chains/persistence",
-  //   walletUrlForStaking:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/persistence"
-  //       : "http://localhost:8080/chains/persistence",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   alternativeBIP44s: [
-  //     {
-  //       coinType: 750,
-  //     },
-  //   ],
-  //   bech32Config: Bech32Address.defaultBech32Config("persistence"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "XPRT",
-  //       coinMinimalDenom: "uxprt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "persistence",
-  //     },
-  //     {
-  //       coinDenom: "STKATOM",
-  //       coinMinimalDenom: "stk/uatom",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "XPRT",
-  //       coinMinimalDenom: "uxprt",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "persistence",
-  //       gasPriceStep: {
-  //         low: 0,
-  //         average: 0.025,
-  //         high: 0.04,
-  //       },
-  //     },
-  //   ],
-  //   features: ["ibc-transfer", "ibc-go"],
-  // },
-  // {
-  //   rpc: "https://rpc-agoric.keplr.app",
-  //   rest: "https://lcd-agoric.keplr.app",
-  //   chainId: "agoric-3",
-  //   chainName: "Agoric",
-  //   stakeCurrency: {
-  //     coinDenom: "BLD",
-  //     coinMinimalDenom: "ubld",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "agoric",
-  //   },
-  //   walletUrl:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/agoric"
-  //       : "http://localhost:8080/chains/agoric",
-  //   walletUrlForStaking:
-  //     NODE_ENV === "production"
-  //       ? "https://wallet.keplr.app/chains/agoric"
-  //       : "http://localhost:8080/chains/agoric",
-  //   bip44: {
-  //     coinType: 564,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("agoric"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "BLD",
-  //       coinMinimalDenom: "ubld",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "agoric",
-  //     },
-  //     {
-  //       coinDenom: "IST",
-  //       coinMinimalDenom: "uist",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "BLD",
-  //       coinMinimalDenom: "ubld",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "agoric",
-  //       gasPriceStep: {
-  //         low: 0.012,
-  //         average: 0.024,
-  //         high: 0.071,
-  //       },
-  //     },
-  //     {
-  //       coinDenom: "IST",
-  //       coinMinimalDenom: "uist",
-  //       coinDecimals: 6,
-  //       gasPriceStep: {
-  //         low: 0.0034,
-  //         average: 0.007,
-  //         high: 0.02,
-  //       },
-  //     },
-  //   ],
-  //   features: ["ibc-go"],
-  // },
-  // {
-  //   rpc: "https://rpc-juno.keplr.app",
-  //   rest: "https://lcd-juno.keplr.app",
-  //   chainId: "juno-1",
-  //   chainName: "Juno",
-  //   stakeCurrency: {
-  //     coinDenom: "JUNO",
-  //     coinMinimalDenom: "ujuno",
-  //     coinDecimals: 6,
-  //     coinGeckoId: "juno-network",
-  //   },
-  //   walletUrl:
-  //       NODE_ENV === "production"
-  //           ? "https://wallet.keplr.app/chains/juno"
-  //           : "http://localhost:8080/chains/juno",
-  //   walletUrlForStaking:
-  //       NODE_ENV === "production"
-  //           ? "https://wallet.keplr.app/chains/juno"
-  //           : "http://localhost:8080/chains/juno",
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("juno"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "JUNO",
-  //       coinMinimalDenom: "ujuno",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "juno-network",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "JUNO",
-  //       coinMinimalDenom: "ujuno",
-  //       coinDecimals: 6,
-  //       coinGeckoId: "juno-network",
-  //       gasPriceStep: {
-  //         low: 0.001,
-  //         average: 0.0025,
-  //         high: 0.004,
-  //       },
-  //     },
-  //     {
-  //       coinDenom: "ATOM",
-  //       coinMinimalDenom:
-  //           "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
-  //       coinDecimals: 6,
-  //       gasPriceStep: {
-  //         low: 0.001 * 0.33,
-  //         average: 0.0025 * 0.33,
-  //         high: 0.004 * 0.33,
-  //       },
-  //     },
-  //   ],
-  //   features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
-  // },
-  // {
-  //   rpc: "https://rpc-neutron.keplr.app",
-  //   rest: "https://lcd-neutron.keplr.app",
-  //   chainId: "neutron-1",
-  //   chainName: "Neutron",
-  //   stakeCurrency: {
-  //     coinDenom: "STAKE",
-  //     coinMinimalDenom: "ustake",
-  //     coinDecimals: 6,
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "neutron",
-  //     bech32PrefixAccPub: "neutronpub",
-  //     bech32PrefixValAddr: "neutronvaloper",
-  //     bech32PrefixValPub: "neutronvaloperpub",
-  //     bech32PrefixConsAddr: "neutronvalcons",
-  //     bech32PrefixConsPub: "neutronvalconspub",
-  //   },
-  //   currencies: [
-  //     {
-  //       coinDenom: "NTRN",
-  //       coinMinimalDenom: "untrn",
-  //       coinDecimals: 6,
-  //     },
-  //     {
-  //       coinDenom: "STAKE",
-  //       coinMinimalDenom: "ustake",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "NTRN",
-  //       coinMinimalDenom: "untrn",
-  //       coinDecimals: 6,
-  //     },
-  //   ],
-  //   features: [],
-  // },
-  {
-    rpc: "https://rpc-dydx.keplr.app",
-    rest: "https://lcd-dydx.keplr.app",
-    chainId: "dydx-mainnet-1",
-    chainName: "dYdX",
-    stakeCurrency: {
-      coinDenom: "DYDX",
-      coinDecimals: 18,
-      coinMinimalDenom: "adydx",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: {
-      bech32PrefixAccAddr: "dydx",
-      bech32PrefixAccPub: "dydxpub",
-      bech32PrefixValAddr: "dydxvaloper",
-      bech32PrefixValPub: "dydxvaloperpub",
-      bech32PrefixConsAddr: "dydxvalcons",
-      bech32PrefixConsPub: "dydxvalconspub",
-    },
-    currencies: [
-      {
-        coinDenom: "DYDX",
-        coinDecimals: 18,
-        coinMinimalDenom: "adydx",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "DYDX",
-        coinDecimals: 18,
-        coinMinimalDenom: "adydx",
-      },
-    ],
-    features: [],
-  },
-  // {
-  //   rpc: "https://rpc-celestia.keplr.app",
-  //   rest: "https://lcd-celestia.keplr.app",
-  //   chainId: "celestia",
-  //   chainName: "Celestia",
-  //   stakeCurrency: {
-  //     coinDenom: "TIA",
-  //     coinDecimals: 6,
-  //     coinMinimalDenom: "utia",
-  //   },
-  //   bip44: {
-  //     coinType: 118,
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("celestia"),
-  //   currencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "TIA",
-  //       coinDecimals: 6,
-  //       coinMinimalDenom: "utia",
-  //     },
-  //   ],
-  //   features: [],
-  // },
-  // {
-  //   chainId: "dymension_1100-1",
-  //   chainName: "Dymension",
-  //   rpc: "https://rpc-dymension.keplr.app",
-  //   rest: "https://lcd-dymension.keplr.app",
-  //   currencies: [
-  //     {
-  //       coinMinimalDenom: "adym",
-  //       coinDenom: "DYM",
-  //       coinDecimals: 18,
-  //       coinImageUrl:
-  //         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dymension_1100/chain.png",
-  //     },
-  //   ],
-  //   bip44: {
-  //     coinType: 60,
-  //   },
-  //   bech32Config: {
-  //     bech32PrefixAccAddr: "dym",
-  //     bech32PrefixAccPub: "dympub",
-  //     bech32PrefixValAddr: "dymvaloper",
-  //     bech32PrefixValPub: "dymvaloperpub",
-  //     bech32PrefixConsAddr: "dymvalcons",
-  //     bech32PrefixConsPub: "dymvalconspub",
-  //   },
-  //   stakeCurrency: {
-  //     coinMinimalDenom: "adym",
-  //     coinDenom: "DYM",
+  //     coinDenom: "DYDX",
   //     coinDecimals: 18,
+  //     coinMinimalDenom: "adydx",
   //   },
-  //   feeCurrencies: [
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: {
+  //     bech32PrefixAccAddr: "dydx",
+  //     bech32PrefixAccPub: "dydxpub",
+  //     bech32PrefixValAddr: "dydxvaloper",
+  //     bech32PrefixValPub: "dydxvaloperpub",
+  //     bech32PrefixConsAddr: "dydxvalcons",
+  //     bech32PrefixConsPub: "dydxvalconspub",
+  //   },
+  //   currencies: [
   //     {
-  //       coinMinimalDenom: "adym",
-  //       coinDenom: "DYM",
+  //       coinDenom: "DYDX",
   //       coinDecimals: 18,
-  //       gasPriceStep: {
-  //         average: 20000000000,
-  //         high: 20000000000,
-  //         low: 20000000000,
-  //       },
+  //       coinMinimalDenom: "adydx",
   //     },
   //   ],
-  //   features: ["eth-address-gen", "eth-key-sign"],
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: "DYDX",
+  //       coinDecimals: 18,
+  //       coinMinimalDenom: "adydx",
+  //     },
+  //   ],
+  //   features: [],
   // },
 ];
 
@@ -1600,12 +1309,12 @@ export const ChainIdentifierToTxExplorerMap: Record<
   { name: string; txUrl: string } | undefined
 > = {
   cosmoshub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/cosmos/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/cosmos/tx/{txHash}",
   },
   Oraichain: {
     name: "Oraiscan",
-    txUrl: "https://scan.orai.io/txs/{txHash}",
+    txUrl: "https://scanium.io/Oraichain/tx/{txHash}",
   },
   Neutaro: {
     name: "Neutaro",
@@ -1613,136 +1322,136 @@ export const ChainIdentifierToTxExplorerMap: Record<
   },
 
   osmosis: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/osmosis/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/osmosis/tx/{txHash}",
   },
   secret: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/secret/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/secret/tx/{txHash}",
   },
   akashnet: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/akash/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/akash/tx/{txHash}",
   },
   mars: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/mars-protocol/txs/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/mars-protocol/txs/{txHash}",
   },
   "crypto-org-chain-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/crypto-org/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/crypto-org/tx/{txHash}",
   },
   "shentu-2.2": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/shentu/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/shentu/tx/{txHash}",
   },
   irishub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/iris/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/iris/tx/{txHash}",
   },
   regen: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/regen/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/regen/tx/{txHash}",
   },
   core: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/persistence/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/persistence/tx/{txHash}",
   },
   sentinelhub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/sentinel/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/sentinel/tx/{txHash}",
   },
   juno: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/juno/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/juno/tx/{txHash}",
   },
   stargaze: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/stargaze/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/stargaze/tx/{txHash}",
   },
   "axelar-dojo": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/axelar/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/axelar/tx/{txHash}",
   },
   sommelier: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/sommelier/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/sommelier/tx/{txHash}",
   },
   umee: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/umee/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/umee/tx/{txHash}",
   },
   "gravity-bridge": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/gravity-bridge/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/gravity-bridge/tx/{txHash}",
   },
   "tgrade-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/tgrade/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/tgrade/tx/{txHash}",
   },
   stride: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/stride/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/stride/tx/{txHash}",
   },
   evmos_9001: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/evmos/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/evmos/tx/{txHash}",
   },
   injective: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/injective/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/injective/tx/{txHash}",
   },
   kava_2222: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/kava/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/kava/tx/{txHash}",
   },
   quicksilver: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/quicksilver/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/quicksilver/tx/{txHash}",
   },
   phoenix: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/terra/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/terra/tx/{txHash}",
   },
   quasar: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/quasar/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/quasar/tx/{txHash}",
   },
   noble: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/noble/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/noble/tx/{txHash}",
   },
   omniflixhub: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/omniflix/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/omniflix/tx/{txHash}",
   },
   kyve: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/kyve/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/kyve/tx/{txHash}",
   },
   neutron: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/neutron/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/neutron/tx/{txHash}",
   },
   "likecoin-mainnet": {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/likecoin/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/likecoin/tx/{txHash}",
   },
   passage: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/passage/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/passage/tx/{txHash}",
   },
   dymension_1100: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/dymension/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/dymension/tx/{txHash}",
   },
   chihuahua: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/chihuahua/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/chihuahua/tx/{txHash}",
   },
   dimension_37: {
-    name: "Mintscan",
-    txUrl: "https://www.mintscan.io/xpla/tx/{txHash}",
+    name: "Scanium",
+    txUrl: "https://scanium.io/xpla/tx/{txHash}",
   },
 };
 
@@ -1755,6 +1464,7 @@ export const PrivilegedOrigins: string[] = [
   "https://scan.orai.io",
   "https://multisig.orai.io",
   "https://develop-v3.beta-oraidex.pages.dev",
+  "http://192.168.10.152:3000",
 ];
 
 export const CommunityChainInfoRepo = {

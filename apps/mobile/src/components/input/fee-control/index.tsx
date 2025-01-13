@@ -169,7 +169,8 @@ export const FeeControl: FunctionComponent<{
   feeConfig: IFeeConfig | IBtcFeeConfig;
   gasConfig: IGasConfig;
   gasSimulator?: IGasSimulator;
-
+  showDenom?: boolean;
+  disableSelectFee?: boolean;
   disableAutomaticFeeSet?: boolean;
 }> = observer(
   ({
@@ -178,6 +179,8 @@ export const FeeControl: FunctionComponent<{
     gasConfig,
     gasSimulator,
     disableAutomaticFeeSet,
+    showDenom,
+    disableSelectFee = false,
   }) => {
     const { queriesStore, priceStore, chainStore, uiConfigStore } = useStore();
     const intl = useIntl();
@@ -229,6 +232,7 @@ export const FeeControl: FunctionComponent<{
           <TouchableOpacity
             style={{ flexDirection: "row", alignItems: "center" }}
             onPress={() => setIsModalOpen(true)}
+            disabled={disableSelectFee}
           >
             <View
               style={{
@@ -251,12 +255,18 @@ export const FeeControl: FunctionComponent<{
                 size={16}
               >
                 {(() => {
-                  let total: PricePretty | undefined;
+                  let total: PricePretty | undefined | CoinPretty;
                   let hasUnknown = false;
                   for (const fee of feeConfig.fees) {
                     if (!fee.currency.coinGeckoId) {
                       hasUnknown = true;
                       break;
+                    } else if (showDenom) {
+                      if (!total) {
+                        total = fee;
+                      } else {
+                        total = total.add(fee);
+                      }
                     } else {
                       const price = priceStore.calculatePrice(fee);
                       if (price) {
@@ -272,6 +282,9 @@ export const FeeControl: FunctionComponent<{
                   if (hasUnknown || !total) {
                     return "-";
                   }
+                  if (total instanceof CoinPretty) {
+                    return `${total.trim(true).toString()}`;
+                  }
                   return `${total.toString()}`;
                 })()}
               </OWText>
@@ -282,12 +295,12 @@ export const FeeControl: FunctionComponent<{
                 size={14}
                 color={colors["background-btn-primary"]}
               />
-            ) : (
+            ) : !disableSelectFee ? (
               <DownArrowIcon
                 height={14}
                 color={colors["primary-text-action"]}
               />
-            )}
+            ) : null}
           </TouchableOpacity>
 
           {isBtc ? (

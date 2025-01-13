@@ -1,9 +1,14 @@
-import { ChainGetter, HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { MsgsDirectResponse } from './types';
-import { simpleFetch } from '@owallet/simple-fetch';
-import { computed, makeObservable } from 'mobx';
-import { CoinPretty } from '@owallet/unit';
-import Joi from 'joi';
+import {
+  ChainGetter,
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { MsgsDirectResponse } from "./types";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { computed, makeObservable } from "mobx";
+import { CoinPretty } from "@owallet/unit";
+import Joi from "joi";
 
 const Schema = Joi.object<MsgsDirectResponse>({
   msgs: Joi.array()
@@ -12,10 +17,10 @@ const Schema = Joi.object<MsgsDirectResponse>({
         chain_id: Joi.string().required(),
         path: Joi.array().items(Joi.string()).required(),
         msg: Joi.string().required(),
-        msg_type_url: Joi.string().required()
+        msg_type_url: Joi.string().required(),
       }).unknown(true)
     )
-    .required()
+    .required(),
 }).unknown(true);
 
 export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectResponse> {
@@ -37,7 +42,7 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
       readonly chainId: string;
     }
   ) {
-    super(sharedContext, skipURL, '/v1/fungible/msgs_direct');
+    super(sharedContext, skipURL, "/v1/fungible/msgs_direct");
 
     makeObservable(this);
   }
@@ -45,7 +50,7 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
   @computed
   get msg():
     | {
-        type: 'MsgTransfer';
+        type: "MsgTransfer";
         receiver: string;
         sourcePort: string;
         sourceChannel: string;
@@ -55,7 +60,7 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
         memo: string;
       }
     | {
-        type: 'MsgExecuteContract';
+        type: "MsgExecuteContract";
         funds: CoinPretty[];
         contract: string;
         msg: object;
@@ -75,48 +80,57 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
 
     const msg = this.response.data.msgs[0];
     if (
-      msg.msg_type_url !== '/ibc.applications.transfer.v1.MsgTransfer' &&
-      msg.msg_type_url !== '/cosmwasm.wasm.v1.MsgExecuteContract'
+      msg.msg_type_url !== "/ibc.applications.transfer.v1.MsgTransfer" &&
+      msg.msg_type_url !== "/cosmwasm.wasm.v1.MsgExecuteContract"
     ) {
       return;
     }
 
     const chainMsg = JSON.parse(msg.msg);
-    if (msg.msg_type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+    if (msg.msg_type_url === "/cosmwasm.wasm.v1.MsgExecuteContract") {
       return {
-        type: 'MsgExecuteContract',
+        type: "MsgExecuteContract",
         funds: chainMsg.funds.map((fund: { denom: string; amount: string }) => {
-          return new CoinPretty(this.chainGetter.getChain(msg.chain_id).forceFindCurrency(fund.denom), fund.amount);
+          return new CoinPretty(
+            this.chainGetter
+              .getChain(msg.chain_id)
+              .forceFindCurrency(fund.denom),
+            fund.amount
+          );
         }),
         contract: chainMsg.contract,
-        msg: chainMsg.msg
+        msg: chainMsg.msg,
       };
-    } else if (msg.msg_type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
+    } else if (
+      msg.msg_type_url === "/ibc.applications.transfer.v1.MsgTransfer"
+    ) {
       if (msg.path.length < 2) {
         return;
       }
 
       return {
-        type: 'MsgTransfer',
+        type: "MsgTransfer",
         receiver: chainMsg.receiver,
         sourcePort: chainMsg.source_port,
         sourceChannel: chainMsg.source_channel,
         counterpartyChainId: msg.path[1],
         timeoutTimestamp: chainMsg.timeout_timestamp,
         token: new CoinPretty(
-          this.chainGetter.getChain(msg.chain_id).forceFindCurrency(chainMsg.token.denom),
+          this.chainGetter
+            .getChain(msg.chain_id)
+            .forceFindCurrency(chainMsg.token.denom),
           chainMsg.token.amount
         ),
-        memo: chainMsg.memo
+        memo: chainMsg.memo,
       };
     }
 
-    throw new Error('Unknown error');
+    throw new Error("Unknown error");
   }
 
   getMsgOrThrow():
     | {
-        type: 'MsgTransfer';
+        type: "MsgTransfer";
         receiver: string;
         sourcePort: string;
         sourceChannel: string;
@@ -125,21 +139,21 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
         memo: string;
       }
     | {
-        type: 'MsgExecuteContract';
+        type: "MsgExecuteContract";
         funds: CoinPretty[];
         contract: string;
         msg: object;
       } {
     if (!this.response) {
-      throw new Error('Response is empty');
+      throw new Error("Response is empty");
     }
 
     if (this.response.data.msgs.length === 0) {
-      throw new Error('Msgs is empty');
+      throw new Error("Msgs is empty");
     }
 
     if (this.response.data.msgs.length >= 2) {
-      throw new Error('Msgs is too many');
+      throw new Error("Msgs is too many");
     }
 
     const msg = this.msg;
@@ -153,57 +167,64 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: MsgsDirectResponse }> {
-    const _result = await simpleFetch<MsgsDirectResponse>(this.baseURL, this.url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(() => {
-          const res: { authorization?: string } = {};
-          if (process.env['SKIP_API_KEY']) {
-            res.authorization = process.env['SKIP_API_KEY'];
-          }
+    const _result = await simpleFetch<MsgsDirectResponse>(
+      this.baseURL,
+      this.url,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(() => {
+            const res: { authorization?: string } = {};
+            if (process.env["SKIP_API_KEY"]) {
+              res.authorization = process.env["SKIP_API_KEY"];
+            }
 
-          return res;
-        })()
-      },
-      body: JSON.stringify({
-        source_asset_denom: this.amountInDenom,
-        source_asset_chain_id: this.sourceAssetChainId,
-        dest_asset_denom: this.destAssetDenom,
-        dest_asset_chain_id: this.destAssetChainId,
-        amount_in: this.amountInAmount,
-        chain_ids_to_addresses: this.chainIdsToAddresses,
-        slippage_tolerance_percent: this.slippageTolerancePercent.toString(),
-        affiliates:
-          this.affiliateFeeBps > 0
-            ? [
-                {
-                  basis_points_fee: this.affiliateFeeBps.toString(),
-                  address: this.affiliateFeeReceiver
-                }
-              ]
-            : [],
-        swap_venue: {
-          name: this.swapVenue.name,
-          chain_id: this.swapVenue.chainId
-        }
-      }),
-      signal: abortController.signal
-    });
+            return res;
+          })(),
+        },
+        body: JSON.stringify({
+          source_asset_denom: this.amountInDenom,
+          source_asset_chain_id: this.sourceAssetChainId,
+          dest_asset_denom: this.destAssetDenom,
+          dest_asset_chain_id: this.destAssetChainId,
+          amount_in: this.amountInAmount,
+          chain_ids_to_addresses: this.chainIdsToAddresses,
+          slippage_tolerance_percent: this.slippageTolerancePercent.toString(),
+          affiliates:
+            this.affiliateFeeBps > 0
+              ? [
+                  {
+                    basis_points_fee: this.affiliateFeeBps.toString(),
+                    address: this.affiliateFeeReceiver,
+                  },
+                ]
+              : [],
+          swap_venue: {
+            name: this.swapVenue.name,
+            chain_id: this.swapVenue.chainId,
+          },
+        }),
+        signal: abortController.signal,
+      }
+    );
     const result = {
       headers: _result.headers,
-      data: _result.data
+      data: _result.data,
     };
 
     const validated = Schema.validate(result.data);
     if (validated.error) {
-      console.log('Failed to validate assets from source response', validated.error);
+      console.log(
+        "Failed to validate assets from source response",
+        validated.error
+      );
       throw validated.error;
     }
 
     return {
       headers: result.headers,
-      data: validated.value
+      data: validated.value,
     };
   }
 
@@ -220,8 +241,8 @@ export class ObservableQueryMsgsDirectInner extends ObservableQuery<MsgsDirectRe
       affiliateFeeReceiver: this.affiliateFeeReceiver,
       swap_venue: {
         name: this.swapVenue.name,
-        chain_id: this.swapVenue.chainId
-      }
+        chain_id: this.swapVenue.chainId,
+      },
     })}`;
   }
 }
@@ -232,7 +253,7 @@ export class ObservableQueryMsgsDirect extends HasMapStore<ObservableQueryMsgsDi
     protected readonly chainGetter: ChainGetter,
     protected readonly skipURL: string
   ) {
-    super(str => {
+    super((str) => {
       const parsed = JSON.parse(str);
       return new ObservableQueryMsgsDirectInner(
         this.sharedContext,
@@ -277,7 +298,7 @@ export class ObservableQueryMsgsDirect extends HasMapStore<ObservableQueryMsgsDi
       slippageTolerancePercent,
       affiliateFeeBps,
       affiliateFeeReceiver,
-      swapVenue
+      swapVenue,
     });
     return this.get(str);
   }
