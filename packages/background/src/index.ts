@@ -11,7 +11,6 @@ import * as BackgroundTxEthereum from "./tx-ethereum/internal";
 import * as BackgroundTxOasis from "./tx-oasis/internal";
 import * as BackgroundTxBtc from "./tx-btc/internal";
 import * as BackgroundTxTron from "./tx-tron/internal";
-import * as BackgroundTxBtc from "./tx-btc/internal";
 import * as TokenCW20 from "./token-cw20/internal";
 import * as TokenERC20 from "./token-erc20/internal";
 import * as Interaction from "./interaction/internal";
@@ -206,10 +205,7 @@ export function init(
     chainsService,
     notification
   );
-  const backgroundTxTronService = new BackgroundTxTron.BackgroundTxTronService(
-    chainsService,
-    notification
-  );
+
   const phishingListService = new PhishingList.PhishingListService(
     {
       blockListUrl:
