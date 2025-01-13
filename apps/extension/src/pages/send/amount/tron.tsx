@@ -20,7 +20,6 @@ import {
 } from "@owallet/hooks";
 import { useNavigate } from "react-router";
 import { TokenAmountInput } from "../../../components/input";
-
 import { Box } from "../../../components/box";
 import { YAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
@@ -31,7 +30,6 @@ import { ENSInfo, ICNSInfo } from "../../../config.ui";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { ColorPalette } from "../../../styles";
 import { openPopupWindow } from "@owallet/popup";
-
 import { useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
 import { isRunningInSidePanel } from "../../../utils";
@@ -77,7 +75,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
   const {
     analyticsStore,
     accountStore,
-    ethereumAccountStore,
     tronAccountStore,
     chainStore,
     queriesStore,
@@ -126,7 +123,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
   const [isEvmTx, setIsEvmTx] = useState(isErc20 || isEVMOnlyChain);
 
   const account = accountStore.getAccount(chainId);
-  const ethereumAccount = ethereumAccountStore.getAccount(chainId);
   const tronAccount = tronAccountStore.getAccount(chainId);
 
   const queryBalances = queriesStore.get(chainId).queryBalances;
@@ -226,18 +222,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
         throw new Error("Simulating secret wasm not supported");
       }
 
-      if (isEvmTx) {
-        return {
-          simulate: () =>
-            ethereumAccount.simulateGasForSendTokenTx({
-              currency: sendConfigs.amountConfig.amount[0].currency,
-              amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-              sender: sendConfigs.senderConfig.sender,
-              recipient: sendConfigs.recipientConfig.recipient,
-            }),
-        };
-      }
-
       return account.makeSendTokenTx(
         sendConfigs.amountConfig.amount[0].toDec().toString(),
         sendConfigs.amountConfig.amount[0].currency,
@@ -284,11 +268,11 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
       sendConfigs.senderConfig.setValue(newSenderAddress);
       setIsEvmTx(newIsEvmTx);
-      ethereumAccount.setIsSendingTx(false);
+      tronAccount.setIsSendingTx(false);
     }
   }, [
     account,
-    ethereumAccount,
+    tronAccount,
     isEvmChain,
     isEVMOnlyChain,
     sendConfigs.amountConfig.currency.coinMinimalDenom,
@@ -296,42 +280,6 @@ export const SendTronPage: FunctionComponent = observer(() => {
     sendConfigs.senderConfig,
     chainInfo.stakeCurrency?.coinMinimalDenom,
     chainInfo.currencies,
-  ]);
-
-  useEffect(() => {
-    (async () => {
-      if (chainInfo.features.includes("op-stack-l1-data-fee")) {
-        const { maxFeePerGas, maxPriorityFeePerGas, gasPrice } =
-          sendConfigs.feeConfig.getEIP1559TxFees(sendConfigs.feeConfig.type);
-
-        const { to, gasLimit, value, data, chainId } =
-          ethereumAccount.makeSendTokenTx({
-            currency: sendConfigs.amountConfig.amount[0].currency,
-            amount: sendConfigs.amountConfig.amount[0].toDec().toString(),
-            to: sendConfigs.recipientConfig.recipient,
-            gasLimit: sendConfigs.gasConfig.gas,
-            maxFeePerGas: maxFeePerGas?.toString(),
-            maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
-            gasPrice: gasPrice?.toString(),
-          });
-
-        const l1DataFee = await ethereumAccount.simulateOpStackL1Fee({
-          to,
-          gasLimit,
-          value,
-          data,
-          chainId,
-        });
-        sendConfigs.feeConfig.setL1DataFee(new Dec(BigInt(l1DataFee)));
-      }
-    })();
-  }, [
-    chainInfo.features,
-    ethereumAccount,
-    sendConfigs.amountConfig.amount,
-    sendConfigs.feeConfig,
-    sendConfigs.gasConfig.gas,
-    sendConfigs.recipientConfig.recipient,
   ]);
 
   useEffect(() => {
@@ -412,13 +360,16 @@ export const SendTronPage: FunctionComponent = observer(() => {
       }
       bottomButtons={[
         {
-          disabled: txConfigsValidate.interactionBlocked || !!checkSendMySelft,
+          disabled:
+            txConfigsValidate.interactionBlocked ||
+            !!checkSendMySelft ||
+            sendConfigs.recipientConfig.recipient === "",
           text: intl.formatMessage({ id: "page.send.type.send" }),
           color: "primary",
           size: "large",
           type: "submit",
           isLoading: isEvmTx
-            ? ethereumAccount.isSendingTx
+            ? tronAccount.isSendingTx
             : accountStore.getAccount(chainId).isSendingMsg === "send",
         },
       ]}
@@ -428,7 +379,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
         if (!txConfigsValidate.interactionBlocked) {
           try {
             if (isEvmTx) {
-              ethereumAccount.setIsSendingTx(true);
+              tronAccount.setIsSendingTx(true);
 
               const unsignedTx = tronAccount.makeSendTokenTx({
                 address: tronAccount.base58Address,
@@ -470,7 +421,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
                     });
                 },
               });
-              ethereumAccount.setIsSendingTx(false);
+              tronAccount.setIsSendingTx(false);
             }
             if (!isDetachedMode) {
               navigate("/", {
@@ -486,7 +437,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
             }
 
             if (isEvmTx) {
-              ethereumAccount.setIsSendingTx(false);
+              tronAccount.setIsSendingTx(false);
             }
             history.back();
             notification.show(
