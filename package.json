@@ -44,16 +44,21 @@
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/cw-simulate": "^2.8.76",
     "@oraichain/ethereum-multicall": "^1.0.2",
+    "@oraichain/oraidex-common": "^1.1.44",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/oraidex-universal-swap": "^1.1.22",
     "@oraichain/owallet-wallet-standard": "0.1.1",
+    "@oraichain/tonbridge-sdk": "^1.4.2",
+    "@orbs-network/ton-access": "^2.3.3",
     "@solana/spl-memo": "0.2.5",
     "@solana/spl-token": "0.3.5",
     "@solana/wallet-standard-chains": "1.1.0",
     "@solana/wallet-standard-features": "1.2.0",
     "@solana/wallet-standard-util": "1.1.1",
     "@solana/web3.js": "1.98.0",
+    "@ton/core": "0.56.3",
+    "@ton/crypto-primitives": "2.1.0",
     "@types/jest": "29.5.3",
     "@types/node": "^16.6.2",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
@@ -141,9 +146,8 @@
     "ws": "8.17.1",
     "webextension-polyfill": "0.10.0",
     "@ledgerhq/hw-app-eth": "6.29.3",
-    "@ton/core": "0.56.3",
-    "@ton/crypto-primitives": "2.1.0",
-    "@oraichain/oraidex-common": "1.1.32"
+    "@oraichain/oraidex-common": "1.1.44",
+    "@oraichain/oraidex-universal-swap": "1.1.26"
   },
   "browser": {
     "assert": false

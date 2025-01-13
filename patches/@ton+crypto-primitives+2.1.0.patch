@@ -1,0 +1,35 @@
+diff --git a/node_modules/@ton/crypto-primitives/dist/native/getSecureRandom.js b/node_modules/@ton/crypto-primitives/dist/native/getSecureRandom.js
+index b769fd9..7a2e889 100644
+--- a/node_modules/@ton/crypto-primitives/dist/native/getSecureRandom.js
++++ b/node_modules/@ton/crypto-primitives/dist/native/getSecureRandom.js
+@@ -8,9 +8,10 @@
+  */
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.getSecureRandomWords = exports.getSecureRandomBytes = void 0;
+-const getRandomBytes = require('expo-crypto').getRandomBytes;
+ function getSecureRandomBytes(size) {
+-    return Buffer.from(getRandomBytes(size));
++    const randomBytes = new Uint8Array(size);
++    window.crypto.getRandomValues(randomBytes);
++    return randomBytes;
+ }
+ exports.getSecureRandomBytes = getSecureRandomBytes;
+ function getSecureRandomWords(size) {
+diff --git a/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js b/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
+index fe73339..0b47864 100644
+--- a/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
++++ b/node_modules/@ton/crypto-primitives/dist/native/pbkdf2_sha512.js
+@@ -11,8 +11,10 @@ exports.pbkdf2_sha512 = void 0;
+ async function pbkdf2_sha512(key, salt, iterations, keyLen) {
+     const keyBuffer = typeof key === 'string' ? Buffer.from(key, 'utf-8') : key;
+     const saltBuffer = typeof salt === 'string' ? Buffer.from(salt, 'utf-8') : salt;
+-    let pbkdf2 = require('react-native-fast-pbkdf2').default;
+-    let res = await pbkdf2.derive(keyBuffer.toString('base64'), saltBuffer.toString('base64'), iterations, keyLen, 'sha-512');
+-    return Buffer.from(res, 'base64');
++    let pbkdf2 = require('pbkdf2').default;
++    // Derive the key using pbkdf2
++    const derivedKey = pbkdf2.pbkdf2Sync(keyBuffer, saltBuffer, iterations, keyLen, 'sha512');
++
++    return derivedKey; // Returns a Buffer
+ }
+ exports.pbkdf2_sha512 = pbkdf2_sha512;
