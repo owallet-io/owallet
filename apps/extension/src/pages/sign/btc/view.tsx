@@ -316,6 +316,7 @@ export const BTCSigningView: FunctionComponent<{
           preDelay: 200,
         }
       );
+      history.back();
     } catch (e) {
       console.log(e);
       if (e instanceof OWalletError) {
@@ -329,6 +330,7 @@ export const BTCSigningView: FunctionComponent<{
       }
     } finally {
       setIsLedgerInteracting(false);
+      history.back();
     }
   };
   return (
