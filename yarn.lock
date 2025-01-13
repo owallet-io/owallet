@@ -2049,25 +2049,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/cosmwasm-stargate@npm:0.31.3, @cosmjs/cosmwasm-stargate@npm:^0.31.0":
-  version: 0.31.3
-  resolution: "@cosmjs/cosmwasm-stargate@npm:0.31.3"
-  dependencies:
-    "@cosmjs/amino": ^0.31.3
-    "@cosmjs/crypto": ^0.31.3
-    "@cosmjs/encoding": ^0.31.3
-    "@cosmjs/math": ^0.31.3
-    "@cosmjs/proto-signing": ^0.31.3
-    "@cosmjs/stargate": ^0.31.3
-    "@cosmjs/tendermint-rpc": ^0.31.3
-    "@cosmjs/utils": ^0.31.3
-    cosmjs-types: ^0.8.0
-    long: ^4.0.0
-    pako: ^2.0.2
-  checksum: 7f5a4c809fb3b54fa70887a2e7cf2bc9c2a460891a1cd01f6721f8dbe43efa0d6611b642c2e3601c779295008dbe922e8a9985ffecc3bca55533fb43d83d000d
-  languageName: node
-  linkType: hard
-
 "@cosmjs/cosmwasm-stargate@npm:0.32.4, @cosmjs/cosmwasm-stargate@npm:^0.32.4":
   version: 0.32.4
   resolution: "@cosmjs/cosmwasm-stargate@npm:0.32.4"
@@ -2083,6 +2064,25 @@ __metadata:
     cosmjs-types: ^0.9.0
     pako: ^2.0.2
   checksum: 6304fd6af2ed7c0ce1135331bf90fef5911f5466b548231bda20d7764f07dc1af2d4e97e7598b1695237b83404f46a030995d5303a72498a4830771f3e6399d4
+  languageName: node
+  linkType: hard
+
+"@cosmjs/cosmwasm-stargate@npm:^0.31.0":
+  version: 0.31.3
+  resolution: "@cosmjs/cosmwasm-stargate@npm:0.31.3"
+  dependencies:
+    "@cosmjs/amino": ^0.31.3
+    "@cosmjs/crypto": ^0.31.3
+    "@cosmjs/encoding": ^0.31.3
+    "@cosmjs/math": ^0.31.3
+    "@cosmjs/proto-signing": ^0.31.3
+    "@cosmjs/stargate": ^0.31.3
+    "@cosmjs/tendermint-rpc": ^0.31.3
+    "@cosmjs/utils": ^0.31.3
+    cosmjs-types: ^0.8.0
+    long: ^4.0.0
+    pako: ^2.0.2
+  checksum: 7f5a4c809fb3b54fa70887a2e7cf2bc9c2a460891a1cd01f6721f8dbe43efa0d6611b642c2e3601c779295008dbe922e8a9985ffecc3bca55533fb43d83d000d
   languageName: node
   linkType: hard
 
@@ -5032,6 +5032,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@keplr-wallet/types@npm:0.12.141":
+  version: 0.12.141
+  resolution: "@keplr-wallet/types@npm:0.12.141"
+  dependencies:
+    long: ^4.0.0
+  peerDependencies:
+    starknet: ^6
+  checksum: db8c5e48eb1cfbe4fc12b9ffc6fa4f6342d77f0b6f6fd6b672ee80837ee606df971c2fcd1ccdb89663f77312ba18d9d4ac45d43ed0256cc0777658fa162b2bb0
+  languageName: node
+  linkType: hard
+
 "@keplr-wallet/types@npm:0.12.159":
   version: 0.12.159
   resolution: "@keplr-wallet/types@npm:0.12.159"
@@ -6090,19 +6101,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/common@npm:^1.0.3":
-  version: 1.0.7
-  resolution: "@oraichain/common@npm:1.0.7"
+"@oraichain/common@npm:^1.2.4":
+  version: 1.2.8
+  resolution: "@oraichain/common@npm:1.2.8"
   dependencies:
-    "@cosmjs/cosmwasm-stargate": 0.31.3
-    "@cosmjs/tendermint-rpc": ^0.31.3
+    "@keplr-wallet/types": 0.12.141
     axios: 0.21.4
     axios-extensions: 3.1.6
     bech32: ^1.1.4
-    cosmjs-types: ^0.8.0
+    cosmjs-types: ^0.9.0
     ethers: ^5.5.1
     lodash: ^4.17.21
-  checksum: d832e06be009476c91e60318f95751a36a1dc7f0a6ed7844ee06d0ca0ac1f81211c749218d2ff560f8fd07ed2c9c0fc28ca140f6932f1b7ab4ed5179197d20bf
+  checksum: 6744dbc6f2fa080ba847b0c29865fd0a1f035e35b5aebc2f386c55b0e44cae9952ada84c5ecf41b12add6e13743789a4ec003c7aeba0355c21466ae9dcfe820f
   languageName: node
   linkType: hard
 
@@ -6157,9 +6167,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:1.1.32":
-  version: 1.1.32
-  resolution: "@oraichain/oraidex-common@npm:1.1.32"
+"@oraichain/oraidex-common@npm:1.1.44":
+  version: 1.1.44
+  resolution: "@oraichain/oraidex-common@npm:1.1.44"
   dependencies:
     "@cosmjs/amino": ^0.32.4
     "@cosmjs/cosmwasm-stargate": ^0.32.4
@@ -6171,13 +6181,16 @@ __metadata:
     "@injectivelabs/sdk-ts": 1.12.1
     "@keplr-wallet/types": ^0.11.38
     "@oraichain/oraidex-contracts-sdk": latest
+    "@ton/core": 0.56.3
+    "@ton/crypto": 3.3.0
+    "@ton/ton": 14.0.0
     axios: 1.7.2
     axios-extensions: 3.1.7
     bignumber.js: ^9.1.2
     cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: f8737f6b99043b4777c89769f6aa073819e68bdf6992d746f2556c2080118a3f99e5a18a5985b737b3ae5c49c82d80ab1f4eabbaa7dfb3aeadfa77135a1529f5
+  checksum: a4b09fa4a33380c4f8cb102f9fc4b73001aba07f7988f25212e7b6774a5823ce4642637c02cd816f01588d9660fa59d0833ad45056f50b60fb8728b7b99d4434
   languageName: node
   linkType: hard
 
@@ -6195,19 +6208,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:^1.1.22":
-  version: 1.1.22
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.22"
+"@oraichain/oraidex-universal-swap@npm:1.1.26":
+  version: 1.1.26
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.26"
   dependencies:
-    "@oraichain/common": ^1.0.3
+    "@oraichain/common": ^1.2.4
     "@oraichain/oraidex-common": ^1.1.27
     "@oraichain/oraidex-contracts-sdk": ^1.0.49
     "@oraichain/osor-api-contracts-sdk": ^1.0.2
     bech32: 1.1.4
+    cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
-  checksum: 0bff305e5494161b0418b1817ac4793e9bfddb4fb7a060a4c8feac59e883e2f450a0f913ec4383d4e5a0d147faa1d13ffe4d858aea18dbc9b51ea5b1268690b8
+  checksum: a6d4df2cc9b43b6598e340200b9356908d4634ca926f10ce0417d408946f173ada2a1bc275785fbea7c22a051875725f7c626b837b1cbe92174303ceafb81b37
   languageName: node
   linkType: hard
 
@@ -9628,7 +9642,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ton/ton@npm:^14.0.0":
+"@ton/crypto@npm:3.3.0":
+  version: 3.3.0
+  resolution: "@ton/crypto@npm:3.3.0"
+  dependencies:
+    "@ton/crypto-primitives": 2.1.0
+    jssha: 3.2.0
+    tweetnacl: 1.0.3
+  checksum: e25036de9850b284dac53ef51dbf00ce63f9d451b2a3a2720d91e9f5b3d6b335e045510cd38d99cce8095b468ad312da76f607ca99a5b66d1b5059c9844b4098
+  languageName: node
+  linkType: hard
+
+"@ton/ton@npm:14.0.0, @ton/ton@npm:^14.0.0":
   version: 14.0.0
   resolution: "@ton/ton@npm:14.0.0"
   dependencies:
@@ -25051,15 +25076,6 @@ __metadata:
     "@noble/secp256k1": ^2.1.0
     "@oasisprotocol/client": ^1.0.0
     "@oasisprotocol/client-rt": ^1.0.0
-    "@oraichain/common-contracts-build": ^1.0.35
-    "@oraichain/common-contracts-sdk": ^1.0.31
-    "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.32
-    "@oraichain/oraidex-contracts-build": ^1.0.22
-    "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.22
-    "@oraichain/tonbridge-sdk": ^1.4.2
-    "@orbs-network/ton-access": ^2.3.3
     "@owallet/stores-btc": "*"
     "@owallet/stores-oasis": "*"
     "@owallet/stores-solana": "*"
@@ -25160,7 +25176,6 @@ __metadata:
     react-native-draggable-flatlist: 4.0.1
     react-native-error-boundary: ^1.2.4
     react-native-fast-image: 8.6.3
-    react-native-fast-pbkdf2: ^0.3.1
     react-native-flash-message: 0.4.2
     react-native-fresh-refresh: ^2.1.1
     react-native-fs: ^2.20.0
@@ -26581,10 +26596,13 @@ __metadata:
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
     "@oraichain/ethereum-multicall": ^1.0.2
+    "@oraichain/oraidex-common": ^1.1.44
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.22
     "@oraichain/owallet-wallet-standard": 0.1.1
+    "@oraichain/tonbridge-sdk": ^1.4.2
+    "@orbs-network/ton-access": ^2.3.3
     "@solana/spl-memo": 0.2.5
     "@solana/spl-token": 0.3.5
     "@solana/wallet-standard-chains": 1.1.0
@@ -28775,16 +28793,6 @@ __metadata:
     react: ^17 || ^18
     react-native: ">=0.60.0"
   checksum: 29289cb6b2eae0983c8922b22e2d9de3be07322bb7991c5def19f95eadefaedb0e308ff0b38cc1d0444e8bd4fe94a7621a99a2d3d9298100bcb60b3144677234
-  languageName: node
-  linkType: hard
-
-"react-native-fast-pbkdf2@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "react-native-fast-pbkdf2@npm:0.3.1"
-  peerDependencies:
-    react: "*"
-    react-native: "*"
-  checksum: f592fb5b55e4840b3143a6b33041ee7725658e45f8e973d57f5332832d7c7b1b2d75d0966a8c893cc307d1c04a608ffa9113604cc16537e73124ce200016e656
   languageName: node
   linkType: hard
 
@@ -32822,17 +32830,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tweetnacl@npm:1.0.3, tweetnacl@npm:^1.0.1, tweetnacl@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "tweetnacl@npm:1.0.3"
+  checksum: e4a57cac188f0c53f24c7a33279e223618a2bfb5fea426231991652a13247bea06b081fd745d71291fcae0f4428d29beba1b984b1f1ce6f66b06a6d1ab90645c
+  languageName: node
+  linkType: hard
+
 "tweetnacl@npm:^0.14.3, tweetnacl@npm:~0.14.0":
   version: 0.14.5
   resolution: "tweetnacl@npm:0.14.5"
   checksum: 6061daba1724f59473d99a7bb82e13f211cdf6e31315510ae9656fefd4779851cb927adad90f3b488c8ed77c106adc0421ea8055f6f976ff21b27c5c4e918487
-  languageName: node
-  linkType: hard
-
-"tweetnacl@npm:^1.0.1, tweetnacl@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "tweetnacl@npm:1.0.3"
-  checksum: e4a57cac188f0c53f24c7a33279e223618a2bfb5fea426231991652a13247bea06b081fd745d71291fcae0f4428d29beba1b984b1f1ce6f66b06a6d1ab90645c
   languageName: node
   linkType: hard
 
