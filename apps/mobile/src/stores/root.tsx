@@ -488,7 +488,7 @@ export class RootStore {
       this.solanaAccountStore
     );
     this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
-      new AsyncKVStore("store_test_prices"),
+      new AsyncKVStore("store_gecko_prices"),
       FiatCurrencies.reduce<{
         [vsCurrency: string]: FiatCurrency;
       }>((obj, fiat) => {
