@@ -22,9 +22,10 @@ export function defaultBech32Config(
 }
 
 export const MarketAPIEndPoint = "https://price.market.orai.io";
-export const CoinGeckoAPIEndPoint =
-  process.env["KEPLR_EXT_COINGECKO_ENDPOINT"] ||
-  "https://api.coingecko.com/api/v3";
+export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
+export const CoinGeckoTerminalAPIEndPoint =
+  "https://api.geckoterminal.com/api/v2";
+
 export const unknownToken: Currency = {
   coinDecimals: 6,
   coinImageUrl: "https://img.icons8.com/pulsar-gradient/96/help.png",
@@ -33,8 +34,8 @@ export const unknownToken: Currency = {
   coinDenom: "UNKNOWN",
 };
 export const SkipBaseUrl = "https://go.skip.build";
-export const CoinGeckoGetPrice =
-  process.env["KEPLR_EXT_COINGECKO_GETPRICE"] || "/simple/price";
+export const CoinGeckoGetPrice = "/simple/price";
+export const CoinGeckoTerminalGetPrice = "networks/solana/tokens/multi";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
 export const AutoFetchingAssetsInterval = 15 * 1000; // 15sec
@@ -1447,7 +1448,7 @@ export const PrivilegedOrigins: string[] = [
   "https://scan.orai.io",
   "https://multisig.orai.io",
   "https://develop-v3.beta-oraidex.pages.dev",
-  "http://192.168.10.152:3000",
+  "https://app.orchai.io",
 ];
 
 export const CommunityChainInfoRepo = {

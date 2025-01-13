@@ -11,7 +11,7 @@ import {
 } from "./types";
 import { KVStore } from "@owallet/common";
 import { ChainsService } from "../chains";
-import { ChainInfo } from "@owallet/types";
+import { ChainIdEVM, ChainInfo } from "@owallet/types";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { migrate } from "./migrate";
 import { computedFn } from "mobx-utils";
@@ -620,7 +620,7 @@ export class PermissionService {
       this.currentChainIdForEVMByOriginMap.delete(origin);
       return;
     }
-
+    if (!currentChainId) return ChainIdEVM.Ethereum;
     return currentChainId;
   }
 

@@ -40,7 +40,7 @@ import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
-import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEnum, fetchRetry } from "@owallet/common";
 
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
@@ -209,14 +209,10 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
   const selectChain = async () => {
     if (appInitStore.getInitApp.wallet === "osmosis") {
       chainStore.selectChain(ChainIdEnum.Osmosis);
-      // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
     } else if (appInitStore.getInitApp.wallet === "injective") {
       chainStore.selectChain(ChainIdEnum.Injective);
-      // await chainStore.saveLastViewChainId();
       appInitStore.selectAllNetworks(false);
-    } else {
-      appInitStore.selectAllNetworks(true);
     }
   };
 

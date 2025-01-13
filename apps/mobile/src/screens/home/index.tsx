@@ -26,6 +26,8 @@ import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { delay } from "@utils/helper";
+import { fetchRetry } from "@owallet/common";
+import { AppCurrency } from "@owallet/types";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -44,6 +46,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     browserStore,
     allAccountStore,
     keyRingStore,
+    geckoTerminalStore,
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -61,6 +64,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       return;
     }
     priceStore.fetch();
+    geckoTerminalStore.fetch();
     for (const chainInfo of chainStore.chainInfosInUI) {
       let account = allAccountStore.getAccount(chainInfo.chainId);
       if (account.addressDisplay === "") {
@@ -183,22 +187,43 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     };
 
     checkInitialNotification();
-    // Cleanup listeners
 
-    // (async ()=>{
-    //     resetTo(SCREENS.TABS.Browser, {
-    //         url: urlData,
-    //     });
-    //     await delay(100);
-    //     navigate(SCREENS.DetailsBrowser, {
-    //         url: urlData,
-    //     });
-    // })()
     return () => {
       // unsubscribeOnMessage();
       unsubscribeOnNotificationOpenedApp();
     };
   }, [inject]);
+  const filterUnique = (
+    source: AppCurrency[],
+    target: AppCurrency[]
+  ): AppCurrency[] => {
+    const denomsSet = new Set(target.map((item) => item.coinMinimalDenom));
+    return source.filter((item) => !denomsSet.has(item.coinMinimalDenom));
+  };
+  const oraiChain = chainStore.getChain("Oraichain");
+  useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      if (!oraiChain?.currencies) return;
+      fetchRetry(
+        "https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json"
+      )
+        .then((res) => {
+          if (!res?.currencies) return;
+          const filtered = filterUnique(
+            oraiChain?.currencies,
+            res?.currencies || []
+          );
+          for (const currency of filtered) {
+            const key = `Oraichain/${currency?.coinMinimalDenom}`;
+            const isExits = appInitStore.isItemExits(key);
+            if (typeof isExits === "undefined") {
+              appInitStore.updateTokenState(key, true);
+            }
+          }
+        })
+        .catch((err) => console.error(err));
+    });
+  }, [oraiChain?.currencies]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={

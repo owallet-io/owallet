@@ -1,5 +1,7 @@
 import {
   APR_API_URL,
+  CoinGeckoTerminalAPIEndPoint,
+  CoinGeckoTerminalGetPrice,
   CommunityChainInfoRepo,
   EmbedChainInfos,
   urlTxHistory,
@@ -88,6 +90,7 @@ import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
 import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
 import { SvmAccountStore, SvmQueries } from "@owallet/stores-solana";
+import { CoinGeckoTerminalPriceStore } from "@owallet/stores";
 
 // import {WebpageStore} from './webpage';
 
@@ -100,6 +103,7 @@ export class RootStore {
 
   public readonly hugeQueriesStore: HugeQueriesStore;
   public readonly priceStore: CoinGeckoPriceStore;
+  public readonly geckoTerminalStore: CoinGeckoTerminalPriceStore;
   // public readonly price24HChangesStore: Price24HChangesStore;
   public readonly tokensStore: TokensStore;
   public readonly appInitStore: AppInit;
@@ -483,6 +487,20 @@ export class RootStore {
       this.bitcoinAccountStore,
       this.solanaAccountStore
     );
+    this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
+      new AsyncKVStore("store_test_prices"),
+      FiatCurrencies.reduce<{
+        [vsCurrency: string]: FiatCurrency;
+      }>((obj, fiat) => {
+        obj[fiat.currency] = fiat;
+        return obj;
+      }, {}),
+      "usd",
+      {
+        baseURL: CoinGeckoTerminalAPIEndPoint,
+        uri: CoinGeckoTerminalGetPrice,
+      }
+    );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),
       FiatCurrencies.reduce<{
@@ -495,8 +513,10 @@ export class RootStore {
       {
         baseURL: CoinGeckoAPIEndPoint,
         uri: CoinGeckoGetPrice,
-      }
+      },
+      this.geckoTerminalStore
     );
+
     // this.price24HChangesStore = new Price24HChangesStore(
     //     new AsyncKVStore('store_prices_changes_24h'),
     //     {
