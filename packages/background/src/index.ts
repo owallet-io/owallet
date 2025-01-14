@@ -201,10 +201,6 @@ export function init(
     );
   const backgroundTxOasisService =
     new BackgroundTxOasis.BackgroundTxOasisService(chainsService, notification);
-  const backgroundTxBtcService = new BackgroundTxBtc.BackgroundTxBtcService(
-    chainsService,
-    notification
-  );
 
   const phishingListService = new PhishingList.PhishingListService(
     {
@@ -388,11 +384,6 @@ export function init(
     backgroundTxOasisService,
     permissionInteractiveService
   );
-  BackgroundTxBtc.init(
-    router,
-    backgroundTxBtcService,
-    permissionInteractiveService
-  );
   BackgroundTxTron.init(
     router,
     backgroundTxTronService,
@@ -463,7 +454,6 @@ export function init(
       await backgroundTxService.init();
       await backgroundTxEthereumService.init();
       await backgroundTxOasisService.init();
-      await backgroundTxBtcService.init();
       await backgroundTxTronService.init();
       await backgroundTxBitcoinService.init();
       await phishingListService.init();

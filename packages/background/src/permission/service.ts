@@ -639,7 +639,6 @@ export class PermissionService {
       this.currentChainIdForEVMByOriginMap.delete(origin);
       return;
     }
-    if (!currentChainId) return ChainIdEVM.Ethereum;
     return currentChainId;
   }
 
