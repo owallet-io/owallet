@@ -1,0 +1,13 @@
+diff --git a/node_modules/@ton/core/dist/boc/utils/paddedBits.js b/node_modules/@ton/core/dist/boc/utils/paddedBits.js
+index 5b1d282..7e898e5 100644
+--- a/node_modules/@ton/core/dist/boc/utils/paddedBits.js
++++ b/node_modules/@ton/core/dist/boc/utils/paddedBits.js
+@@ -24,7 +24,7 @@ function bitsToPaddedBuffer(bits) {
+             builder.writeBit(0);
+         }
+     }
+-    return builder.buffer();
++    return Buffer.from(builder.buffer());
+ }
+ exports.bitsToPaddedBuffer = bitsToPaddedBuffer;
+ function paddedBufferToBits(buff) {

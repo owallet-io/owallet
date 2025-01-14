@@ -56,8 +56,14 @@ class ClaimAllEachState {
 const zeroDec = new Dec(0);
 
 export const StakeCardAll = observer(({}) => {
-  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    keyRingStore,
+    geckoTerminalStore,
+  } = useStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const intl = useIntl();
 

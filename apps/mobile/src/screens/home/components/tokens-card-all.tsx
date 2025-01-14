@@ -253,8 +253,8 @@ const TokenItem: FC<{
     });
     return;
   };
-  const price24h = item.token?.currency?.coinGeckoId
-    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+  const price24h = item.token?.currency?.coinMinimalDenom
+    ? priceStore.getPrice24hChange(item.token.currency)
     : 0;
 
   return (

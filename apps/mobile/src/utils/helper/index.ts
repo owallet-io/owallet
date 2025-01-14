@@ -48,10 +48,6 @@ export const getImageFromToken = (item) => {
       : coinGeckoId === "oraichain-token"
       ? oraiToken
       : coinImageUrl;
-
-  if (coinDenom === "RACKS") {
-    console.log(resolvedImageUrl, "resolvedImageUrl");
-  }
   return resolvedImageUrl;
 };
 export const TRC20_LIST = [
