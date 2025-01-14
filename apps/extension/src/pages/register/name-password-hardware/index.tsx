@@ -121,12 +121,12 @@ export const RegisterNamePasswordHardwareScene: FunctionComponent<{
                 </Box>
               </VerticalCollapseTransition>
               <VerticalCollapseTransition collapsed={!isBIP44CardOpen}>
-                <SetBip44PathCard
+                {/* <SetBip44PathCard
                   state={bip44PathState}
                   onClose={() => {
                     setIsBIP44CardOpen(false);
                   }}
-                />
+                /> */}
               </VerticalCollapseTransition>
               <Gutter size="1.25rem" />
             </React.Fragment>
