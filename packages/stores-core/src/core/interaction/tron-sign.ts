@@ -1,6 +1,6 @@
-import { InteractionStore } from './interaction';
-import { computed, makeObservable } from 'mobx';
-import { PlainObject } from '@owallet/background';
+import { InteractionStore } from "./interaction";
+import { computed, makeObservable } from "mobx";
+import { PlainObject } from "@owallet/background";
 
 export type SignTronInteractionData = {
   origin: string;
@@ -17,7 +17,9 @@ export class SignTronInteractionStore {
   }
 
   get waitingDatas() {
-    return this.interactionStore.getAllData<SignTronInteractionData>('request-sign-tron');
+    return this.interactionStore.getAllData<SignTronInteractionData>(
+      "request-sign-tron"
+    );
   }
 
   @computed
@@ -44,19 +46,22 @@ export class SignTronInteractionStore {
       id,
       {
         signingData,
-        signature
+        signature,
       },
       afterFn,
       options
     );
   }
 
-  async rejectWithProceedNext(id: string, afterFn: (proceedNext: boolean) => void | Promise<void>) {
+  async rejectWithProceedNext(
+    id: string,
+    afterFn: (proceedNext: boolean) => void | Promise<void>
+  ) {
     await this.interactionStore.rejectWithProceedNext(id, afterFn);
   }
 
   async rejectAll() {
-    await this.interactionStore.rejectAll('request-sign-tron');
+    await this.interactionStore.rejectAll("request-sign-tron");
   }
 
   isObsoleteInteraction(id: string | undefined): boolean {

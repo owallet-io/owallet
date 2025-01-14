@@ -1,8 +1,19 @@
-import { ChainGetter, CosmosAccount, CosmwasmAccount, IAccountStoreWithInjects, IQueriesStore } from '@owallet/stores';
-import { useFeeConfig, useGasConfig, useMemoConfig, useSenderConfig } from '@owallet/hooks';
-import { useIBCSwapAmountConfig } from './amount';
-import { SkipQueries } from '@owallet/stores-internal';
-import { AppCurrency } from '@owallet/types';
+import {
+  ChainGetter,
+  CosmosAccount,
+  CosmwasmAccount,
+  IAccountStoreWithInjects,
+  IQueriesStore,
+} from "@owallet/stores";
+import {
+  useFeeConfig,
+  useGasConfig,
+  useMemoConfig,
+  useSenderConfig,
+} from "@owallet/hooks";
+import { useIBCSwapAmountConfig } from "./amount";
+import { SkipQueries } from "@owallet/stores-internal";
+import { AppCurrency } from "@owallet/types";
 
 export const useIBCSwapConfig = (
   chainGetter: ChainGetter,
@@ -31,7 +42,14 @@ export const useIBCSwapConfig = (
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
   const gasConfig = useGasConfig(chainGetter, chainId, initialGas);
-  const feeConfig = useFeeConfig(chainGetter, queriesStore, chainId, senderConfig, amountConfig, gasConfig);
+  const feeConfig = useFeeConfig(
+    chainGetter,
+    queriesStore,
+    chainId,
+    senderConfig,
+    amountConfig,
+    gasConfig
+  );
 
   amountConfig.setFeeConfig(feeConfig);
 
@@ -40,6 +58,6 @@ export const useIBCSwapConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    senderConfig
+    senderConfig,
   };
 };

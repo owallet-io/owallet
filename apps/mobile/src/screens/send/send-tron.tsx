@@ -134,9 +134,8 @@ export const SendTronScreen: FunctionComponent<{
     const submitSend = async () => {
       try {
         account.setIsSendingTx(true);
-
+        //@ts-ignore
         const contractAddress =
-          //@ts-ignore
           sendConfigs.amountConfig.currency?.contractAddress;
 
         const unsignedTx = account.makeSendTokenTx({
@@ -161,6 +160,13 @@ export const SendTronScreen: FunctionComponent<{
             navigate(SCREENS.TxPendingResult, {
               chainId,
               txHash,
+              data: {
+                amount: sendConfigs.amountConfig.amount[0],
+                fee: sendConfigs.feeConfig.fees[0],
+                type: "send",
+                from: sender,
+                to: sendConfigs.recipientConfig.recipient,
+              },
             });
           },
           onFulfill: (txReceipt) => {
@@ -368,6 +374,7 @@ export const SendTronScreen: FunctionComponent<{
                     ) ?? 0}{" "}
                     {feeTrx?.denom?.toUpperCase() ??
                       chainInfo.feeCurrencies[0].coinDenom}
+                    {/* {priceStore.calculatePrice(sendConfigs.feeConfig.fee)?.toString()}{' '} */}
                   </OWText>
                 </TouchableOpacity>
               </View>

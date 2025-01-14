@@ -1,10 +1,10 @@
-import { ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { ResPrice24hChanges } from './types';
-import { KVStore } from '@owallet/common';
-import { autorun, makeObservable } from 'mobx';
-import { makeURL } from '@owallet/simple-fetch';
-import { Dec, RatePretty } from '@owallet/unit';
-import { computedFn } from 'mobx-utils';
+import { ObservableQuery, QuerySharedContext } from "@owallet/stores";
+import { ResPrice24hChanges } from "./types";
+import { KVStore } from "@owallet/common";
+import { autorun, makeObservable } from "mobx";
+import { makeURL } from "@owallet/simple-fetch";
+import { Dec, RatePretty } from "@owallet/unit";
+import { computedFn } from "mobx-utils";
 
 class Throttler {
   protected fns: (() => void)[] = [];
@@ -51,13 +51,17 @@ class SortedSetStorage {
   protected isRestored: boolean = false;
 
   protected kvStore: KVStore;
-  protected storeKey: string = '';
+  protected storeKey: string = "";
 
   protected throttler: Throttler;
 
-  constructor(kvStore: KVStore, storeKey: string, throttleDuration: number = 0) {
+  constructor(
+    kvStore: KVStore,
+    storeKey: string,
+    throttleDuration: number = 0
+  ) {
     if (!storeKey) {
-      throw new Error('Empty store key');
+      throw new Error("Empty store key");
     }
 
     this.kvStore = kvStore;
@@ -122,7 +126,7 @@ class SortedSetStorage {
   async save(): Promise<void> {
     await this.kvStore.set(
       this.storeKey,
-      this.array.filter(value => !this.restored[value])
+      this.array.filter((value) => !this.restored[value])
     );
   }
 
@@ -166,7 +170,7 @@ export class Price24HChangesStore extends ObservableQuery<ResPrice24hChanges> {
   ) {
     super(
       new QuerySharedContext(kvStore, {
-        responseDebounceMs: 0
+        responseDebounceMs: 0,
       }),
       options.baseURL,
       options.uri
@@ -177,7 +181,11 @@ export class Price24HChangesStore extends ObservableQuery<ResPrice24hChanges> {
 
     const throttleDuration = options.throttleDuration ?? 250;
 
-    this._coinIds = new SortedSetStorage(kvStore, '__coin_ids', throttleDuration);
+    this._coinIds = new SortedSetStorage(
+      kvStore,
+      "__coin_ids",
+      throttleDuration
+    );
 
     this._throttler = new Throttler(throttleDuration);
 
@@ -215,7 +223,7 @@ export class Price24HChangesStore extends ObservableQuery<ResPrice24hChanges> {
       return;
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposal = autorun(() => {
         if (this.isInitialized) {
           resolve();
@@ -240,7 +248,7 @@ export class Price24HChangesStore extends ObservableQuery<ResPrice24hChanges> {
     const coinIdsUpdated = this._coinIds.add(...coinIds);
 
     if (coinIdsUpdated || forceSetUrl) {
-      const url = `${this._optionUri}?ids=${this._coinIds.values.join(',')}`;
+      const url = `${this._optionUri}?ids=${this._coinIds.values.join(",")}`;
 
       if (!this._isInitialized) {
         this.setUrl(url);
@@ -253,7 +261,7 @@ export class Price24HChangesStore extends ObservableQuery<ResPrice24hChanges> {
   protected override getCacheKey(): string {
     // Because the uri of the coingecko would be changed according to the coin ids and vsCurrencies.
     // Therefore, just using the uri as the cache key is not useful.
-    return '';
+    return "";
     return makeURL(this.baseURL, this._optionUri);
   }
 

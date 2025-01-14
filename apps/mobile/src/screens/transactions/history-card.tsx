@@ -1,13 +1,16 @@
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect } from 'react';
-import { View, ViewStyle } from 'react-native';
-import { useStore } from '../../stores';
-import { ChainIdEnum } from '@owallet/common';
-import { metrics } from '@src/themes';
-import { useGetHeightHeader } from '@src/hooks';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { mappingChainIdToHistoryScreen, typeTxEnum } from '@src/screens/transactions/tx-helper';
-import { tracking } from '@src/utils/tracking';
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect } from "react";
+import { View, ViewStyle } from "react-native";
+import { useStore } from "../../stores";
+import { ChainIdEnum } from "@owallet/common";
+import { metrics } from "@src/themes";
+import { useGetHeightHeader } from "@src/hooks";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import {
+  mappingChainIdToHistoryScreen,
+  typeTxEnum,
+} from "@src/screens/transactions/tx-helper";
+import { tracking } from "@src/utils/tracking";
 
 export const HistoryCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -23,7 +26,7 @@ export const HistoryCard: FunctionComponent<{
   const heightHeader = useGetHeightHeader();
   const heightBottom = useBottomTabBarHeight();
   const containerStyle = {
-    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2
+    minHeight: (metrics.screenHeight - (heightHeader + heightBottom + 100)) / 2,
   };
   return (
     <View style={containerStyle}>

@@ -85,13 +85,10 @@ export const BtcDetailTx: FunctionComponent = observer((props) => {
   if (!detail) return <OWEmpty />;
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item?.network]);
   const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      txHash.toLowerCase()
-    );
+    return chainInfo.txExplorer.txUrl.replace("{txHash}", txHash.toLowerCase());
   };
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && detail.hash) {
+    if (chainInfo.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
       await openLink(url);
     }

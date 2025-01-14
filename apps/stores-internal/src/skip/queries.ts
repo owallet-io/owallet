@@ -1,14 +1,14 @@
-import { QuerySharedContext } from '@owallet/stores';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQueryAssetsFromSource } from './assets-from-source';
-import { ObservableQueryRoute } from './route';
-import { ObservableQueryChains } from './chains';
-import { ObservableQueryIbcPfmTransfer } from './ibc-pfm-transfer';
-import { ObservableQueryAssets } from './assets';
-import { ObservableQueryIbcSwap } from './ibc-swap';
-import { ObservableQueryMsgsDirect } from './msgs-direct';
-import { InternalChainStore } from '../internal';
-import { SwapUsageQueries } from '../swap-usage';
+import { QuerySharedContext } from "@owallet/stores";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryAssetsFromSource } from "./assets-from-source";
+import { ObservableQueryRoute } from "./route";
+import { ObservableQueryChains } from "./chains";
+import { ObservableQueryIbcPfmTransfer } from "./ibc-pfm-transfer";
+import { ObservableQueryAssets } from "./assets";
+import { ObservableQueryIbcSwap } from "./ibc-swap";
+import { ObservableQueryMsgsDirect } from "./msgs-direct";
+import { InternalChainStore } from "../internal";
+import { SwapUsageQueries } from "../swap-usage";
 
 export class SkipQueries {
   public readonly queryChains: DeepReadonly<ObservableQueryChains>;
@@ -30,16 +30,33 @@ export class SkipQueries {
       chainId: string;
     }
   ) {
-    this.queryChains = new ObservableQueryChains(sharedContext, chainStore, 'https://api.skip.money');
-    this.queryAssets = new ObservableQueryAssets(sharedContext, chainStore, swapUsageQueries, 'https://api.skip.money');
+    this.queryChains = new ObservableQueryChains(
+      sharedContext,
+      chainStore,
+      "https://api.skip.money"
+    );
+    this.queryAssets = new ObservableQueryAssets(
+      sharedContext,
+      chainStore,
+      swapUsageQueries,
+      "https://api.skip.money"
+    );
     this.queryAssetsFromSource = new ObservableQueryAssetsFromSource(
       sharedContext,
       chainStore,
-      'https://api.skip.money'
+      "https://api.skip.money"
     );
-    this.queryRoute = new ObservableQueryRoute(sharedContext, chainStore, 'https://api.skip.money');
+    this.queryRoute = new ObservableQueryRoute(
+      sharedContext,
+      chainStore,
+      "https://api.skip.money"
+    );
 
-    this.queryMsgsDirect = new ObservableQueryMsgsDirect(sharedContext, chainStore, 'https://api.skip.money');
+    this.queryMsgsDirect = new ObservableQueryMsgsDirect(
+      sharedContext,
+      chainStore,
+      "https://api.skip.money"
+    );
 
     this.queryIBCPacketForwardingTransfer = new ObservableQueryIbcPfmTransfer(
       chainStore,

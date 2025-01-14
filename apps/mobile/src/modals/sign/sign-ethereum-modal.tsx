@@ -7,8 +7,10 @@ import { useStyle } from "../../styles";
 import {
   useAmountConfig,
   useFeeConfig,
+  useGasConfig,
   useGasSimulator,
   useSenderConfig,
+  useTxConfigsValidate,
   useZeroAllowedGasConfig,
 } from "@owallet/hooks";
 import { Column, Columns } from "../../components/column";
@@ -29,9 +31,11 @@ import { OWButton } from "@components/button";
 import OWText from "@components/text/ow-text";
 import OWIcon from "@components/ow-icon/ow-icon";
 import { AsyncKVStore } from "@src/common";
+// import { EthSignType } from '@owallet/types';
 import Web3 from "web3";
 import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import OWButtonGroup from "@components/button/OWButtonGroup";
 import { FeeControl } from "@components/input/fee-control";
 import { OWalletError } from "@owallet/router";
 import { LedgerGuideBox } from "@components/guide-box/ledger-guide-box";

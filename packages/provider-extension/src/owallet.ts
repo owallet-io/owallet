@@ -593,12 +593,7 @@ const waitDocumentReady = (): Promise<void> => {
 };
 
 class EthereumProvider extends EventEmitter implements IEthereumProvider {
-  protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo = {
-    uuid: crypto.randomUUID(),
-    name: "OWallet",
-    rdns: "io.owallet",
-    icon: `data:image/png;base64,${OWalletLogoBase64}`,
-  };
+  protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo;
 
   // It must be in the hexadecimal format used in EVM-based chains, not the format used in Tendermint nodes.
   chainId: string | null = null;

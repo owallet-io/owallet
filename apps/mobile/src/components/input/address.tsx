@@ -15,6 +15,7 @@ import {
   View,
   ViewStyle,
   TouchableOpacity,
+  Clipboard,
 } from "react-native";
 import { TextInput } from "./input";
 import { ObservableEnsFetcher } from "@owallet/ens";
@@ -23,6 +24,9 @@ import { useStyle } from "../../styles";
 import { NoteIcon } from "../icon";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import OWIcon from "@components/ow-icon/ow-icon";
+import OWText from "@components/text/ow-text";
+import { OWButton } from "@components/button";
 
 const styles = StyleSheet.create({
   absolute: {
@@ -133,29 +137,28 @@ export const AddressInput: FunctionComponent<{
         inputRight={
           disableAddressBook ? null : (
             <View
-              style={style.flatten([
-                "height-1",
-                "overflow-visible",
-                "justify-center",
-              ])}
+            // style={style.flatten([
+            //   "height-1",
+            //   "overflow-visible",
+            //   "justify-center",
+            // ])}
             >
               {inputRight ? (
                 inputRight
               ) : (
-                <TouchableOpacity
-                  style={style.flatten(["padding-4"])}
-                  onPress={() => {
-                    navigate(SCREENS.AddressBook, {
-                      recipientConfig,
-                      memoConfig,
-                    });
+                <OWButton
+                  onPress={async () => {
+                    const text = await Clipboard.getString();
+                    if (text) {
+                      recipientConfig.setValue(text.replace(/\s/g, ""));
+                    }
                   }}
-                >
-                  <NoteIcon
-                    color={colors ? colors["neutral-icon-on-light"] : "#7C00DB"}
-                    height={18}
-                  />
-                </TouchableOpacity>
+                  type={"link"}
+                  size={"small"}
+                  label={"Paste"}
+                  fullWidth={false}
+                  style={style.flatten(["padding-4"])}
+                />
               )}
             </View>
           )

@@ -101,6 +101,9 @@ export const TextInput = React.forwardRef<
         <View style={style.flatten(["flex-row", "items-center"])}>
           {props.inputLeft}
           <ElementTextInput
+            importantForAutofill={"no"}
+            autoCorrect={true}
+            autoComplete="off"
             multiline={props.multiline ?? false}
             style={[
               StyleSheet.flatten([

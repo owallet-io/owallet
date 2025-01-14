@@ -96,6 +96,8 @@ export class ChainSuggestStore {
             ? this.communityChainInfoRepo.alternativeURL
                 .replace("{chain_identifier}", chainIdentifier)
                 .replace("/cosmos/", isEvmOnlyChain ? "/evm/" : "/cosmos/")
+            : chainIdentifier === "Oraichain"
+            ? `https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
             : `https://raw.githubusercontent.com/${
                 this.communityChainInfoRepo.organizationName
               }/${this.communityChainInfoRepo.repoName}/${

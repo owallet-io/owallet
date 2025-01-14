@@ -1,5 +1,7 @@
 import {
   APR_API_URL,
+  CoinGeckoTerminalAPIEndPoint,
+  CoinGeckoTerminalGetPrice,
   CommunityChainInfoRepo,
   EmbedChainInfos,
 } from "@owallet/common";
@@ -30,6 +32,7 @@ import {
   SignEthereumInteractionStore,
   SignInteractionStore,
   SignOasisInteractionStore,
+  SignSvmInteractionStore,
   SignTronInteractionStore,
   TokensStore,
 } from "@owallet/stores-core";
@@ -68,6 +71,8 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { BtcAccountStore, BtcQueries } from "@owallet/stores-btc";
 import { AllAccountStore } from "@stores/all-account-store";
 import { SignBtcInteractionStore } from "@owallet/stores-core/build/core/interaction/btc-sign";
+import { SvmAccountStore, SvmQueries } from "@owallet/stores-solana";
+import { CoinGeckoTerminalPriceStore } from "@owallet/stores";
 
 export class RootStore {
   public readonly keyRingStore: KeyRingStore;
@@ -78,6 +83,7 @@ export class RootStore {
 
   public readonly hugeQueriesStore: HugeQueriesStore;
   public readonly priceStore: CoinGeckoPriceStore;
+  public readonly geckoTerminalStore: CoinGeckoTerminalPriceStore;
   // public readonly price24HChangesStore: Price24HChangesStore;
   public readonly tokensStore: TokensStore;
   public readonly appInitStore: AppInit;
@@ -86,6 +92,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signSvmInteractionStore: SignSvmInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly signBtcInteractionStore: SignBtcInteractionStore;
@@ -107,7 +114,8 @@ export class RootStore {
       EthereumQueries,
       OasisQueries,
       TrxQueries,
-      BtcQueries
+      BtcQueries,
+      SvmQueries
     ]
   >;
   // public readonly swapUsageQueries: SwapUsageQueries;
@@ -121,6 +129,7 @@ export class RootStore {
   public readonly tronAccountStore: TrxAccountStore;
 
   public readonly bitcoinAccountStore: BtcAccountStore;
+  public readonly solanaAccountStore: SvmAccountStore;
 
   public readonly allAccountStore: AllAccountStore;
   // public readonly uiConfigStore: UIConfigStore;
@@ -182,6 +191,9 @@ export class RootStore {
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(
       this.interactionStore
     );
+    this.signSvmInteractionStore = new SignSvmInteractionStore(
+      this.interactionStore
+    );
     this.signOasisInteractionStore = new SignOasisInteractionStore(
       this.interactionStore
     );
@@ -227,7 +239,8 @@ export class RootStore {
       }),
       OasisQueries.use(),
       TrxQueries.use(),
-      BtcQueries.use()
+      BtcQueries.use(),
+      SvmQueries.use()
     );
     this.browserStore = new BrowserStore();
     // this.swapUsageQueries = new SwapUsageQueries(
@@ -432,13 +445,40 @@ export class RootStore {
       this.chainStore,
       getOWalletFromWindow
     );
+    this.solanaAccountStore = new SvmAccountStore(
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      getOWalletFromWindow
+    );
     this.allAccountStore = new AllAccountStore(
       this.chainStore,
       this.oasisAccountStore,
       this.accountStore,
       this.tronAccountStore,
       this.ethereumAccountStore,
-      this.bitcoinAccountStore
+      this.bitcoinAccountStore,
+      this.solanaAccountStore
+    );
+    this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
+      new AsyncKVStore("store_gecko_prices"),
+      FiatCurrencies.reduce<{
+        [vsCurrency: string]: FiatCurrency;
+      }>((obj, fiat) => {
+        obj[fiat.currency] = fiat;
+        return obj;
+      }, {}),
+      "usd",
+      {
+        baseURL: CoinGeckoTerminalAPIEndPoint,
+        uri: CoinGeckoTerminalGetPrice,
+      }
     );
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore("store_prices"),
@@ -452,8 +492,10 @@ export class RootStore {
       {
         baseURL: CoinGeckoAPIEndPoint,
         uri: CoinGeckoGetPrice,
-      }
+      },
+      this.geckoTerminalStore
     );
+
     // this.price24HChangesStore = new Price24HChangesStore(
     //     new AsyncKVStore('store_prices_changes_24h'),
     //     {

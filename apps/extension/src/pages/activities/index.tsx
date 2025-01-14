@@ -20,6 +20,7 @@ import {
   convertObjChainAddressToString,
   formatAddress,
   getTimeMilliSeconds,
+  MapChainIdToNetwork,
   MapNetworkToChainId,
   unknownToken,
 } from "@owallet/common";
@@ -255,11 +256,11 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
     chainStore,
     priceStore,
     uiConfigStore,
+    allAccountStore,
   } = useStore();
 
-  const allArr = hugeQueriesStore.getAllAddrByChain;
-  const account = accountStore.getAccount(ChainIdEnum.Oraichain);
   const isNotReady = useIsNotReady();
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);
   const getWalletHistory = async (addrByNetworks) => {
@@ -278,10 +279,27 @@ export const ActivitiesPage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     setHistories([]);
+    console.log("uiConfigStore.currentNetwork", uiConfigStore.currentNetwork);
+
+    const mapChainNetwork = MapChainIdToNetwork[uiConfigStore.currentNetwork];
+
+    console.log("mapChainNetwork", mapChainNetwork);
+    console.log("uiConfigStore.currentNetwork", uiConfigStore.currentNetwork);
+
+    const account =
+      uiConfigStore.currentNetwork !== "all"
+        ? allAccountStore.getAccount(uiConfigStore.currentNetwork)
+        : null;
+
+    const allArr = account
+      ? {
+          [mapChainNetwork]: account.addressDisplay,
+        }
+      : hugeQueriesStore.getAllAddrByChain;
     const allAddress = convertObjChainAddressToString(allArr);
     if (!allAddress) return;
     getWalletHistory(allAddress);
-  }, [account.bech32Address]);
+  }, [accountOrai.bech32Address, uiConfigStore.currentNetwork]);
 
   const theme = useTheme();
 

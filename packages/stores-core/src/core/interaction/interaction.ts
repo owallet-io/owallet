@@ -1,4 +1,4 @@
-import { Router, MessageRequester, BACKGROUND_PORT } from '@owallet/router';
+import { Router, MessageRequester, BACKGROUND_PORT } from "@owallet/router";
 import {
   InteractionForegroundHandler,
   interactionForegroundInit,
@@ -8,10 +8,17 @@ import {
   ApproveInteractionV2Msg,
   RejectInteractionMsg,
   RejectInteractionV2Msg,
-  GetInteractionWaitingDataArrayMsg
-} from '@owallet/background';
-import { action, observable, makeObservable, flow, toJS, runInAction } from 'mobx';
-import { computedFn } from 'mobx-utils';
+  GetInteractionWaitingDataArrayMsg,
+} from "@owallet/background";
+import {
+  action,
+  observable,
+  makeObservable,
+  flow,
+  toJS,
+  runInAction,
+} from "mobx";
+import { computedFn } from "mobx-utils";
 
 export class InteractionStore implements InteractionForegroundHandler {
   @observable
@@ -24,9 +31,16 @@ export class InteractionStore implements InteractionForegroundHandler {
   constructor(
     protected readonly router: Router,
     protected readonly msgRequester: MessageRequester,
-    protected readonly afterInteraction?: (next: (InteractionWaitingData & { uri: string }) | undefined) => void,
-    protected readonly onDataReceived?: (data: InteractionWaitingData[]) => Promise<InteractionWaitingData[]>,
-    protected readonly onDataChanged?: (old: InteractionWaitingData[], fresh: InteractionWaitingData[]) => void,
+    protected readonly afterInteraction?: (
+      next: (InteractionWaitingData & { uri: string }) | undefined
+    ) => void,
+    protected readonly onDataReceived?: (
+      data: InteractionWaitingData[]
+    ) => Promise<InteractionWaitingData[]>,
+    protected readonly onDataChanged?: (
+      old: InteractionWaitingData[],
+      fresh: InteractionWaitingData[]
+    ) => void,
     protected readonly pingHandler?: (
       windowId: number | undefined,
       ignoreWindowIdAndForcePing: boolean
@@ -53,12 +67,15 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   protected async refreshData(): Promise<void> {
-    const prevKey = this.data.map(d => d.id).join('/');
-    let data = await this.msgRequester.sendMessage(BACKGROUND_PORT, new GetInteractionWaitingDataArrayMsg());
+    const prevKey = this.data.map((d) => d.id).join("/");
+    let data = await this.msgRequester.sendMessage(
+      BACKGROUND_PORT,
+      new GetInteractionWaitingDataArrayMsg()
+    );
     if (this.onDataReceived) {
       data = await this.onDataReceived(data);
     }
-    const newKey = data.map(d => d.id).join('/');
+    const newKey = data.map((d) => d.id).join("/");
     if (prevKey !== newKey) {
       const prev = this.data.slice();
       runInAction(() => {
@@ -71,13 +88,19 @@ export class InteractionStore implements InteractionForegroundHandler {
     }
   }
 
-  getAllData = computedFn(<T = unknown>(type: string): InteractionWaitingData<T>[] => {
-    return toJS(this.data.filter(d => d.type === type)) as InteractionWaitingData<T>[];
-  });
+  getAllData = computedFn(
+    <T = unknown>(type: string): InteractionWaitingData<T>[] => {
+      return toJS(
+        this.data.filter((d) => d.type === type)
+      ) as InteractionWaitingData<T>[];
+    }
+  );
 
-  getData = computedFn(<T = unknown>(id: string): InteractionWaitingData<T> | undefined => {
-    return this.data.find(d => d.id === id) as InteractionWaitingData<T>;
-  });
+  getData = computedFn(
+    <T = unknown>(id: string): InteractionWaitingData<T> | undefined => {
+      return this.data.find((d) => d.id === id) as InteractionWaitingData<T>;
+    }
+  );
 
   @action
   onInteractionDataReceived() {
@@ -97,14 +120,21 @@ export class InteractionStore implements InteractionForegroundHandler {
    * @param afterFn
    */
   @flow
-  *approveWithProceedNext(id: string, result: unknown, afterFn: (proceedNext: boolean) => void | Promise<void>) {
+  *approveWithProceedNext(
+    id: string,
+    result: unknown,
+    afterFn: (proceedNext: boolean) => void | Promise<void>
+  ) {
     const d = this.getData(id);
     if (!d || this.isObsoleteInteraction(id)) {
       return;
     }
 
     this.markAsObsolete(id);
-    yield this.msgRequester.sendMessage(BACKGROUND_PORT, new ApproveInteractionMsg(id, result));
+    yield this.msgRequester.sendMessage(
+      BACKGROUND_PORT,
+      new ApproveInteractionMsg(id, result)
+    );
     yield this.delay(100);
     yield afterFn(this.hasOtherData(id));
     this.removeData(id);
@@ -131,7 +161,7 @@ export class InteractionStore implements InteractionForegroundHandler {
       postDelay?: number;
     } = {}
   ) {
-    if (typeof ids === 'string') {
+    if (typeof ids === "string") {
       ids = [ids];
     }
 
@@ -149,12 +179,17 @@ export class InteractionStore implements InteractionForegroundHandler {
     }
 
     if (options.preDelay && options.preDelay > 0) {
-      yield new Promise(resolve => setTimeout(resolve, options.preDelay));
+      yield new Promise((resolve) => setTimeout(resolve, options.preDelay));
     }
 
     const promises: Promise<unknown>[] = [];
     for (const id of fresh) {
-      promises.push(this.msgRequester.sendMessage(BACKGROUND_PORT, new ApproveInteractionV2Msg(id, result)));
+      promises.push(
+        this.msgRequester.sendMessage(
+          BACKGROUND_PORT,
+          new ApproveInteractionV2Msg(id, result)
+        )
+      );
     }
 
     yield Promise.all(promises);
@@ -177,14 +212,20 @@ export class InteractionStore implements InteractionForegroundHandler {
    * @param afterFn
    */
   @flow
-  *rejectWithProceedNext(id: string, afterFn: (proceedNext: boolean) => void | Promise<void>) {
+  *rejectWithProceedNext(
+    id: string,
+    afterFn: (proceedNext: boolean) => void | Promise<void>
+  ) {
     const d = this.getData(id);
     if (!d || this.isObsoleteInteraction(id)) {
       return;
     }
 
     this.markAsObsolete(id);
-    yield this.msgRequester.sendMessage(BACKGROUND_PORT, new RejectInteractionMsg(id));
+    yield this.msgRequester.sendMessage(
+      BACKGROUND_PORT,
+      new RejectInteractionMsg(id)
+    );
     yield this.delay(100);
     yield afterFn(this.hasOtherData(id));
     this.removeData(id);
@@ -201,8 +242,11 @@ export class InteractionStore implements InteractionForegroundHandler {
    * @param afterFn
    */
   @flow
-  *rejectWithProceedNextV2(ids: string | string[], afterFn: (proceedNext: boolean) => void | Promise<void>) {
-    if (typeof ids === 'string') {
+  *rejectWithProceedNextV2(
+    ids: string | string[],
+    afterFn: (proceedNext: boolean) => void | Promise<void>
+  ) {
+    if (typeof ids === "string") {
       ids = [ids];
     }
 
@@ -221,7 +265,12 @@ export class InteractionStore implements InteractionForegroundHandler {
 
     const promises: Promise<unknown>[] = [];
     for (const id of fresh) {
-      promises.push(this.msgRequester.sendMessage(BACKGROUND_PORT, new RejectInteractionV2Msg(id)));
+      promises.push(
+        this.msgRequester.sendMessage(
+          BACKGROUND_PORT,
+          new RejectInteractionV2Msg(id)
+        )
+      );
     }
 
     yield Promise.all(promises);
@@ -237,7 +286,7 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   protected delay(ms: number): Promise<void> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
@@ -249,7 +298,10 @@ export class InteractionStore implements InteractionForegroundHandler {
       if (this.isObsoleteInteraction(d.id)) {
         continue;
       }
-      yield this.msgRequester.sendMessage(BACKGROUND_PORT, new RejectInteractionMsg(d.id));
+      yield this.msgRequester.sendMessage(
+        BACKGROUND_PORT,
+        new RejectInteractionMsg(d.id)
+      );
       this.removeData(d.id);
     }
   }
@@ -263,12 +315,12 @@ export class InteractionStore implements InteractionForegroundHandler {
 
   @action
   protected removeData(ids: string | string[]) {
-    if (typeof ids === 'string') {
+    if (typeof ids === "string") {
       ids = [ids];
     }
 
     for (const id of ids) {
-      this.data = this.data.filter(d => d.id !== id);
+      this.data = this.data.filter((d) => d.id !== id);
       this.obsoleteData.delete(id);
     }
   }
@@ -281,11 +333,11 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   protected hasOtherData(ids: string | string[]): boolean {
-    if (typeof ids === 'string') {
+    if (typeof ids === "string") {
       ids = [ids];
     }
 
-    const find = this.data.find(data => {
+    const find = this.data.find((data) => {
       return !ids.includes(data.id);
     });
     return !!find;

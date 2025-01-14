@@ -4,6 +4,10 @@ const bip39 = require("bip39");
 const bip32 = require("bip32");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bs58check = require("bs58check");
+import { Keypair } from "@solana/web3.js";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import { HDKey } from "micro-ed25519-hdkey";
 
 import { Buffer } from "buffer/";
 
@@ -106,5 +110,10 @@ export class Mnemonic {
       throw new Error("null keyPair");
     }
     return keyPair;
+  }
+  static generateWalletSolanaFromSeed(mnemonic: string): Keypair {
+    const seed = bip39.mnemonicToSeedSync(mnemonic, "");
+    const hd = HDKey.fromMasterSeed(seed.toString("hex"));
+    return Keypair.fromSeed(hd.derive(`m/44'/501'/0'/0'`).privateKey);
   }
 }

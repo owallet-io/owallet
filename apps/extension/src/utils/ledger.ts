@@ -1,14 +1,14 @@
-import Transport from '@ledgerhq/hw-transport';
-import { CosmosApp, getAppInfo } from '@owallet/ledger-cosmos';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import Transport from "@ledgerhq/hw-transport";
+import { CosmosApp, getAppInfo } from "@owallet/ledger-cosmos";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportWebHID from "@ledgerhq/hw-transport-webhid";
 
 export const LedgerUtils = {
   tryAppOpen: async (transport: Transport, app: string): Promise<Transport> => {
     let isAppOpened = false;
     try {
       const appInfo = await getAppInfo(transport);
-      if (appInfo.error_message === 'No errors' && appInfo.app_name === app) {
+      if (appInfo.error_message === "No errors" && appInfo.app_name === app) {
         isAppOpened = true;
       }
     } catch (e) {
@@ -32,12 +32,15 @@ export const LedgerUtils = {
           }
 
           const appInfo = await getAppInfo(transport);
-          if (appInfo.error_message === 'No errors' && appInfo.app_name === app) {
+          if (
+            appInfo.error_message === "No errors" &&
+            appInfo.app_name === app
+          ) {
             break;
           }
 
           i++;
-          await new Promise(resolve => setTimeout(resolve, 200));
+          await new Promise((resolve) => setTimeout(resolve, 200));
         }
       }
     } catch {
@@ -45,5 +48,5 @@ export const LedgerUtils = {
     }
 
     return transport;
-  }
+  },
 };

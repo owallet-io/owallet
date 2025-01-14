@@ -16,6 +16,8 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
+    "@keplr-wallet/cosmos": "0.12.159",
+    "@keplr-wallet/unit": "0.12.159",
     "@owallet/crypto": "*",
     "@owallet/types": "*",
     "bitcoin-address-validation": "2.2.3",

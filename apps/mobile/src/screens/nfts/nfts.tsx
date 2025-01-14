@@ -122,7 +122,9 @@ const NftsStargazeScreen: FC<{
   const [refreshing, setRefreshing] = useState(false);
   const nfts = (data?.tokens?.tokens || [])
     .filter((item, index) => item?.media?.type === "image")
-    .map((nft, index) => processDataStargazeNft(nft, chainInfo.stakeCurrency));
+    .map((nft, index) =>
+      processDataStargazeNft(nft, chainInfo.feeCurrencies?.[0])
+    );
   const onEndReached = async () => {
     try {
       setLoadMore(true);

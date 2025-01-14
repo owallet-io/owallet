@@ -20,7 +20,7 @@ export class AsyncKVStore implements KVStore {
   async set<T = unknown>(key: string, data: T | null): Promise<void> {
     const k = this.prefix() + "/" + key;
 
-    if (data === null) {
+    if (data === null || data === undefined) {
       await AsyncStorage.removeItem(k);
     }
 

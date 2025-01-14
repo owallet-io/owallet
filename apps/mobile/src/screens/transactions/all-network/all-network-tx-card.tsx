@@ -34,6 +34,7 @@ export const AllNetworkTxCard: FunctionComponent<{
   const account = allAccountStore.getAccount(chainId);
   const accountOrai = allAccountStore.getAccount(ChainIdEnum.Oraichain);
   const address = account.addressDisplay;
+
   const chainInfo = chainStore.getChain(chainId);
   const allArr = appInitStore.getInitApp.isAllNetworks
     ? hugeQueriesStore.getAllAddrByChain

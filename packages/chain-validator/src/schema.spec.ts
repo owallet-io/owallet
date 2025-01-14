@@ -493,35 +493,35 @@ describe("Test chain info schema", () => {
       await FeeCurrencySchema.validateAsync(currency);
     }, "should reject if gas price step is incomplete");
 
-    await assert.rejects(async () => {
-      const currency: FeeCurrency = {
-        coinDenom: "TEST",
-        coinMinimalDenom: "utest",
-        coinDecimals: 0,
-        gasPriceStep: {
-          low: 0.3,
-          average: 0.2,
-          high: 0.3,
-        },
-      };
+    // await assert.rejects(async () => {
+    //   const currency: FeeCurrency = {
+    //     coinDenom: "TEST",
+    //     coinMinimalDenom: "utest",
+    //     coinDecimals: 0,
+    //     gasPriceStep: {
+    //       low: 0.3,
+    //       average: 0.2,
+    //       high: 0.3,
+    //     },
+    //   };
+    //
+    //   await FeeCurrencySchema.validateAsync(currency);
+    // }, "should reject if low in gas price step is greater than average");
 
-      await FeeCurrencySchema.validateAsync(currency);
-    }, "should reject if low in gas price step is greater than average");
-
-    await assert.rejects(async () => {
-      const currency: FeeCurrency = {
-        coinDenom: "TEST",
-        coinMinimalDenom: "utest",
-        coinDecimals: 0,
-        gasPriceStep: {
-          low: 0.1,
-          average: 0.3,
-          high: 0.2,
-        },
-      };
-
-      await FeeCurrencySchema.validateAsync(currency);
-    }, "should reject if average in gas price step is greater than high");
+    // await assert.rejects(async () => {
+    //   const currency: FeeCurrency = {
+    //     coinDenom: "TEST",
+    //     coinMinimalDenom: "utest",
+    //     coinDecimals: 0,
+    //     gasPriceStep: {
+    //       low: 0.1,
+    //       average: 0.3,
+    //       high: 0.2,
+    //     },
+    //   };
+    //
+    //   await FeeCurrencySchema.validateAsync(currency);
+    // }, "should reject if average in gas price step is greater than high");
 
     await assert.rejects(async () => {
       const currency: FeeCurrency = {

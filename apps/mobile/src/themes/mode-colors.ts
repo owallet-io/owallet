@@ -233,6 +233,7 @@ const modeColors = {
   "neutral-border-brutal": ["#323133", "#FFF"],
   "neutral-border-strong": ["#6A6B71", "#242325"],
   "neutral-border-bold": ["#909298", "#242325"],
+  "neutral-border-active": ["#FBFBFB", "#242325"],
   "neutral-border-disable": ["#242325", "#F5F5F7"],
   "neutral-text-heading": ["#EBEDF2", "#242325"],
   "neutral-text-title": ["#F5F5F7", "#242325"],
@@ -258,12 +259,13 @@ const modeColors = {
   "highlight-surface-active": ["#A3CE1A", "#90B51B"],
   "highlight-text-title": ["#CAEB60", "#46580B"],
   // IV.Error
-  "error-surface-subtle": ["#700B00", "#FFEDEB"],
+  "error-surface-subtle": ["#3A1C18", "#FFEDEB"],
   "error-surface-active": ["#A81100", "#FFACA3"],
   "error-surface-default": ["#E01600", "#A81100"],
   "error-surface-pressed": ["#FF5947", "#E01600"],
   "error-border-disable": ["#700B00", "#FFD6D1"],
   "error-border-default": ["#E01600", "#A81100"],
+  "error-border-subtle": ["#5F2F2A", "#FFD6D1"],
   "error-border-pressed": ["#FF5947", "#E01600"],
   "error-text-action": ["#FF5947", "#E01600"],
   "error-text-body": ["#FF5947", "#E01600"],
@@ -278,15 +280,16 @@ const modeColors = {
   "warning-text-action": ["#F29900", "#F29900"],
   "warning-text-body": ["#F29900", "#F29900"],
   // VI.Success
-  "success-surface-subtle": ["#007018", "#ECFEEE"],
+  "success-surface-subtle": ["#203124", "#ECFEEE"],
   "success-surface-active": ["#007018", "#D3FDD7"],
   "success-surface-default": ["#00AD26", "#007018"],
   "success-surface-pressed": ["#39DD47", "#00AD26"],
   "success-border-disable": ["#007018", "#D3FDD7"],
   "success-border-default": ["#00AD26", "#007018"],
+  "success-border-subtle": ["#2C4332", "#CBEBCE"],
   "success-border-pressed": ["#39DD47", "#00AD26"],
   "success-text-action": ["#00AD26", "#00AD26"],
-  "success-text-body": ["#00AD26", "#00AD26"],
+  "success-text-body": ["#55E475", "#00AD26"],
 };
 
 //item 1:Dark, item 2: Light

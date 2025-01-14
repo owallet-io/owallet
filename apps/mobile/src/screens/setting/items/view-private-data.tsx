@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { BasicSettingItem } from '../components';
-import { useStore } from '../../../stores';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
-import { showToast } from '@src/utils/helper';
-import { PincodeModal } from '@src/screens/pincode/pincode-modal';
-import { ChainIdEnum } from '@owallet/common';
-import { PrivKeyConfirmModal } from '../components/privkey-confirm-modal';
+import React, { FunctionComponent, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { BasicSettingItem } from "../components";
+import { useStore } from "../../../stores";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { showToast } from "@src/utils/helper";
+import { PincodeModal } from "@src/screens/pincode/pincode-modal";
+import { ChainIdEnum } from "@owallet/common";
+import { PrivKeyConfirmModal } from "../components/privkey-confirm-modal";
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -24,36 +24,46 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
   const onVerifyPincode = async (passcode, isPrivateKey) => {
     modalStore.close();
     try {
-      const privateData = await keyRingStore.exportKeyRing(keyStore.id, passcode, chainStore.current.chainId);
+      const privateData = await keyRingStore.exportKeyRing(
+        keyStore.id,
+        passcode,
+        chainStore.current.chainId
+      );
 
       navigate(SCREENS.SettingBackupMnemonic, {
-        privateData: keyStore.type === 'private-key' || isPrivateKey ? privateData.privKey : privateData.sensitive,
-        privateDataType: keyStore.type === 'private-key' || isPrivateKey ? 'private-key' : 'mnemonic'
+        privateData:
+          keyStore.type === "private-key" || isPrivateKey
+            ? privateData.privKey
+            : privateData.sensitive,
+        privateDataType:
+          keyStore.type === "private-key" || isPrivateKey
+            ? "private-key"
+            : "mnemonic",
       });
 
       modalStore.close();
     } catch (err) {
       showToast({
-        message: 'Invalid passcode',
-        type: 'danger'
+        message: "Invalid passcode",
+        type: "danger",
       });
     }
   };
 
-  const _onPressPincodeModal = isPrivateKey => {
+  const _onPressPincodeModal = (isPrivateKey) => {
     setKeyringLoading(true);
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
     modalStore.setChildren(
       <PincodeModal
-        onVerifyPincode={pass => onVerifyPincode(pass, isPrivateKey)}
+        onVerifyPincode={(pass) => onVerifyPincode(pass, isPrivateKey)}
         onGoBack={onGoBack}
-        label={'Enter your passcode'}
-        subLabel={'Enter your passcode to reveal secret phrase'}
+        label={"Enter your passcode"}
+        subLabel={"Enter your passcode to reveal secret phrase"}
       />
     );
     setTimeout(() => {
@@ -65,8 +75,8 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
     modalStore.setOptions({
       bottomSheetModalConfig: {
         enablePanDownToClose: false,
-        enableOverDrag: false
-      }
+        enableOverDrag: false,
+      },
     });
     modalStore.setChildren(
       <PrivKeyConfirmModal
@@ -86,10 +96,10 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-      {keyStore?.type !== 'ledger' && (
+      {keyStore?.type !== "ledger" && (
         <BasicSettingItem
           icon="tdesignlink"
-          paragraph={'Reveal secret phrase'}
+          paragraph={"Reveal secret phrase"}
           onPress={() => {
             if (!isKeyringLoading) {
               _onPressPincodeModal(false);
@@ -97,12 +107,13 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           }}
         />
       )}
-      {keyStore?.type !== 'ledger' &&
+      {keyStore?.type !== "ledger" &&
         !appInitStore.getInitApp.isAllNetworks &&
-        chainStore.current.chainId !== ChainIdEnum.Oasis && (
+        chainStore.current.chainId !== ChainIdEnum.Oasis &&
+        !chainStore.current.chainId.startsWith("solana") && (
           <BasicSettingItem
             icon="md_key"
-            paragraph={'Reveal Private Key'}
+            paragraph={"Reveal Private Key"}
             onPress={() => {
               _onPressExportPrivkeyModal();
             }}

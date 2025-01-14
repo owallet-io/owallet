@@ -498,8 +498,6 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         local: false,
         timestamp: Date.now(),
       };
-      // console.log('response data', this.baseURL, data);
-
       // Should not wait.
       this.saveResponse(response);
 
@@ -591,7 +589,7 @@ export abstract class ObservableQuery<T = unknown, E = unknown>
         };
 
         console.log(
-          "QueryError on fetch",
+          "error on fetch",
           this.baseURL,
           this._url,
           e.request,

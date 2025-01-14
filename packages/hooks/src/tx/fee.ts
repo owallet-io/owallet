@@ -553,9 +553,19 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     (feeCurrency: FeeCurrency, feeType: FeeType) => {
       const gas = this.gasConfig.gas;
       const gasPrice = this.getGasPriceForFeeCurrency(feeCurrency, feeType);
+
+      console.log("gasPrice222", gas, gasPrice.toString());
+
       const feeAmount = gasPrice
         .mul(new Dec(gas))
         .add(this.l1DataFee ?? new Dec(0));
+
+      console.log(
+        "feeAmount 2",
+        feeAmount.toString(),
+        feeAmount.roundUp().toString(),
+        this.l1DataFee
+      );
 
       return new CoinPretty(feeCurrency, feeAmount.roundUp()).maxDecimals(
         feeCurrency.coinDecimals
@@ -671,6 +681,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           const gasPrice = gasPrices.find(
             (gasPrice) => gasPrice.denom === feeCurrency.coinMinimalDenom
           );
+
+          console.log("gasPrice111 ", gasPrice);
+
           if (gasPrice) {
             let multiplication = {
               low: 1.1,
@@ -763,10 +776,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       console.log("feeType", feeType);
 
       const ethereumQueries = this.queriesStore.get(this.chainId).ethereum;
-      console.log(
-        "this.canEIP1559TxFeesAndReady()",
-        this.canEIP1559TxFeesAndReady()
-      );
 
       if (ethereumQueries && this.canEIP1559TxFeesAndReady()) {
         const feeHistory =
@@ -849,9 +858,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
               BigInt(maxPriorityFeePerGas)
             );
             const maxFeePerGas = baseFeePerGasDec.add(maxPriorityFeePerGasDec);
-
-            console.log("maxPriorityFeePerGasDec", maxPriorityFeePerGasDec);
-            console.log("maxFeePerGas", maxFeePerGas);
 
             return {
               maxPriorityFeePerGas: maxPriorityFeePerGasDec.truncateDec(),
@@ -1096,8 +1102,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         }
       }
     }
-
-    // TODO: 여기서 terra classic 관련 무슨 처리를 해야하는데 나중에 하자...
 
     const amount = this.amountConfig.amount;
 

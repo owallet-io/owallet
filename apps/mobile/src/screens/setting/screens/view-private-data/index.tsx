@@ -1,29 +1,34 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { OWBox } from '@src/components/card';
-import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
-import React, { FunctionComponent, useEffect } from 'react';
-import { StyleSheet, View, Clipboard } from 'react-native';
-import { OWButton } from '../../../../components/button';
-import { CheckIcon, CopyFillIcon } from '../../../../components/icon';
-import { WordChip } from '../../../../components/mnemonic';
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { OWBox } from "@src/components/card";
+import { Text } from "@src/components/text";
+import { useTheme } from "@src/themes/theme-provider";
+import React, { FunctionComponent, useEffect } from "react";
+import { StyleSheet, View, Clipboard } from "react-native";
+import { OWButton } from "../../../../components/button";
+import { CheckIcon, CopyFillIcon } from "../../../../components/icon";
+import { WordChip } from "../../../../components/mnemonic";
 
-import { useSimpleTimer } from '../../../../hooks';
-import { useStyle } from '../../../../styles';
-import { spacing, typography } from '../../../../themes';
-import { PageWithScrollView } from '@src/components/page';
+import { useSimpleTimer } from "../../../../hooks";
+import { useStyle } from "../../../../styles";
+import { spacing, typography } from "../../../../themes";
+import { PageWithScrollView } from "@src/components/page";
 
-export const getPrivateDataTitle = (keyRingType: string, capitalize?: boolean) => {
+export const getPrivateDataTitle = (
+  keyRingType: string,
+  capitalize?: boolean
+) => {
   if (capitalize) {
-    return `View ${keyRingType === 'mnemonic' ? 'Mnemonic Seed' : 'Private Key'}`;
+    return `View ${
+      keyRingType === "mnemonic" ? "Mnemonic Seed" : "Private Key"
+    }`;
   }
 
-  return `View ${keyRingType === 'mnemonic' ? 'mnemonic seed' : 'private key'}`;
+  return `View ${keyRingType === "mnemonic" ? "mnemonic seed" : "private key"}`;
 };
 
 export const canShowPrivateData = (keyRingType: string): boolean => {
   if (!keyRingType) return false;
-  return keyRingType === 'mnemonic' || keyRingType === 'private-key';
+  return keyRingType === "mnemonic" || keyRingType === "private-key";
 };
 
 export const ViewPrivateDataScreen: FunctionComponent = () => {
@@ -45,7 +50,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
-      title: getPrivateDataTitle(route.params.privateDataType, true)
+      title: getPrivateDataTitle(route.params.privateDataType, true),
     });
   }, [navigation, route.params.privateDataType]);
 
@@ -54,26 +59,33 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
   const privateData = route.params.privateData;
   const privateDataType = route.params.privateDataType;
 
-  const words = privateData.split(' ');
+  const words = privateData.split(" ");
   const { colors } = useTheme();
   return (
     <PageWithScrollView>
       <OWBox>
         <View
           style={[
-            styles.containerMnemonicWord
+            styles.containerMnemonicWord,
             // { backgroundColor: colors['background-item-list'] }
           ]}
         >
-          {privateDataType === 'mnemonic' ? (
+          {privateDataType === "mnemonic" ? (
             words.map((word, i) => {
-              return <WordChip key={i.toString()} index={i + 1} word={word} colors={colors} />;
+              return (
+                <WordChip
+                  key={i.toString()}
+                  index={i + 1}
+                  word={word}
+                  colors={colors}
+                />
+              );
             })
           ) : (
             <Text
               style={{
-                ...typography['h6'],
-                marginBottom: spacing['30']
+                ...typography["h6"],
+                marginBottom: spacing["30"],
               }}
             >
               {words}
@@ -83,12 +95,18 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
         <OWButton
           size="medium"
           onPress={() => {
-            Clipboard.setString(words.join(' ').trim());
+            Clipboard.setString(words.join(" ").trim());
             setTimer(2000);
           }}
           label="Copy to Clipboard"
           textStyle={styles.textStyle}
-          icon={isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['white']} />}
+          icon={
+            isTimedOut ? (
+              <CheckIcon />
+            ) : (
+              <CopyFillIcon color={colors["white"]} />
+            )
+          }
         />
       </OWBox>
     </PageWithScrollView>
@@ -97,26 +115,26 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
 
 const styles = StyleSheet.create({
   containerMnemonicWord: {
-    flexDirection: 'row',
+    flexDirection: "row",
 
-    borderRadius: spacing['24'],
-    padding: spacing['20'],
-    marginBottom: spacing['20'],
-    flexWrap: 'wrap'
+    borderRadius: spacing["24"],
+    padding: spacing["20"],
+    marginBottom: spacing["20"],
+    flexWrap: "wrap",
   },
   textStyle: {
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   containerBtn: {
-    borderRadius: spacing['8'],
-    paddingVertical: spacing['16'],
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
+    borderRadius: spacing["8"],
+    paddingVertical: spacing["16"],
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   textBtn: {
     ...typography.h6,
-    fontWeight: '700',
-    marginLeft: spacing['8']
-  }
+    fontWeight: "700",
+    marginLeft: spacing["8"],
+  },
 });

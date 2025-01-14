@@ -1,8 +1,15 @@
-import { AnalyticsClient } from '@owallet/analytics';
-import { simpleFetch } from '@owallet/simple-fetch';
-import { action, autorun, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { KVStore } from '@owallet/common';
-import { Buffer } from 'buffer/';
+import { AnalyticsClient } from "@owallet/analytics";
+import { simpleFetch } from "@owallet/simple-fetch";
+import {
+  action,
+  autorun,
+  makeObservable,
+  observable,
+  runInAction,
+  toJS,
+} from "mobx";
+import { KVStore } from "@owallet/common";
+import { Buffer } from "buffer/";
 
 // https://developer.chrome.com/docs/extensions/mv3/tut_analytics/
 export class ExtensionAnalyticsClient implements AnalyticsClient {
@@ -10,11 +17,11 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
   protected isInitialized: boolean = false;
 
   @observable
-  protected _userId: string = '';
+  protected _userId: string = "";
   @observable.ref
   protected _userProperties: any = {};
   @observable
-  protected _sessionId: string = '';
+  protected _sessionId: string = "";
   @observable
   protected _sessionIdTimestamp: number = 0;
 
@@ -32,9 +39,9 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
 
   protected async init() {
     // Disable on firefox
-    if (typeof browser.runtime.getBrowserInfo === 'function') {
+    if (typeof browser.runtime.getBrowserInfo === "function") {
       const browserInfo = await browser.runtime.getBrowserInfo();
-      if (browserInfo.name === 'Firefox') {
+      if (browserInfo.name === "Firefox") {
         this.isFirefox = true;
         runInAction(() => {
           this.isInitialized = true;
@@ -43,25 +50,27 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
       }
     }
 
-    const userId = await this.kvStore.get<string>('user_id');
+    const userId = await this.kvStore.get<string>("user_id");
     if (userId) {
       runInAction(() => {
         this._userId = userId;
       });
     }
-    const userProperties = await this.kvStore.get<any>('user_properties');
+    const userProperties = await this.kvStore.get<any>("user_properties");
     if (userProperties) {
       runInAction(() => {
         this._userProperties = userProperties;
       });
     }
-    const sessionId = await this.kvStore.get<string>('session_id');
+    const sessionId = await this.kvStore.get<string>("session_id");
     if (sessionId) {
       runInAction(() => {
         this._sessionId = sessionId;
       });
     }
-    const sessionIdTimestamp = await this.kvStore.get<number>('session_id_timestamp');
+    const sessionIdTimestamp = await this.kvStore.get<number>(
+      "session_id_timestamp"
+    );
     if (sessionIdTimestamp) {
       runInAction(() => {
         this._sessionIdTimestamp = sessionIdTimestamp;
@@ -69,19 +78,19 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
     }
 
     autorun(() => {
-      this.kvStore.set('user_id', this._userId);
+      this.kvStore.set("user_id", this._userId);
     });
 
     autorun(() => {
-      this.kvStore.set('user_properties', toJS(this._userProperties));
+      this.kvStore.set("user_properties", toJS(this._userProperties));
     });
 
     autorun(() => {
-      this.kvStore.set('session_id', this._sessionId);
+      this.kvStore.set("session_id", this._sessionId);
     });
 
     autorun(() => {
-      this.kvStore.set('session_id_timestamp', this._sessionIdTimestamp);
+      this.kvStore.set("session_id_timestamp", this._sessionIdTimestamp);
     });
 
     runInAction(() => {
@@ -101,7 +110,7 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
 
     if (!this.isInitialized) {
       let disposal: (() => void) | undefined;
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         disposal = autorun(() => {
           if (this.isInitialized) {
             resolve();
@@ -115,7 +124,7 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
 
     if (!this._userId) {
       let disposal: (() => void) | undefined;
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         disposal = autorun(() => {
           if (this._userId) {
             resolve();
@@ -131,7 +140,11 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
   getAndUpdateSessionId(): string {
     const now = Date.now();
     // session duration is 15 minutes.
-    if (this._sessionId && this._sessionIdTimestamp && now - this._sessionIdTimestamp < 15 * 60 * 1000) {
+    if (
+      this._sessionId &&
+      this._sessionIdTimestamp &&
+      now - this._sessionIdTimestamp < 15 * 60 * 1000
+    ) {
       runInAction(() => {
         this._sessionIdTimestamp = now;
       });
@@ -139,7 +152,7 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
     } else {
       const bz = new Uint8Array(12);
       crypto.getRandomValues(bz);
-      const sessionId = Buffer.from(bz).toString('hex');
+      const sessionId = Buffer.from(bz).toString("hex");
       runInAction(() => {
         this._sessionId = sessionId;
         this._sessionIdTimestamp = now;
@@ -174,9 +187,9 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
         `https://www.google-analytics.com`,
         `/mp/collect?measurement_id=${this.measurementId}&api_secret=${this.apiKey}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             client_id: this._userId,
@@ -187,27 +200,33 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
                 params: {
                   ...eventProperties,
                   session_id: this.getAndUpdateSessionId(),
-                  engagement_time_msec: 100
-                }
-              }
+                  engagement_time_msec: 100,
+                },
+              },
             ],
             user_properties: (() => {
               const res: Record<
                 string,
                 {
-                  value: string | number | boolean | Array<string | number> | undefined | null;
+                  value:
+                    | string
+                    | number
+                    | boolean
+                    | Array<string | number>
+                    | undefined
+                    | null;
                 }
               > = {};
               for (const key in this._userProperties) {
                 res[key] = {
-                  value: this._userProperties[key]
+                  value: this._userProperties[key],
                 };
               }
               return res;
-            })()
-          })
+            })(),
+          }),
         }
-      ).catch(e => {
+      ).catch((e) => {
         console.log(e);
       });
     });
@@ -222,7 +241,7 @@ export class ExtensionAnalyticsClient implements AnalyticsClient {
 
     this._userProperties = {
       ...this._userProperties,
-      ...properties
+      ...properties,
     };
   }
 }

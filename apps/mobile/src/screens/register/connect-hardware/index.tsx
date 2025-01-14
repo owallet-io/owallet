@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
 import { useStyle } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
-import {  useBIP44PathState } from "../components/bip-path-44";
+import { useBIP44PathState } from "../components/bip-path-44";
 import { InteractionManager, StyleSheet, Text, View } from "react-native";
 import { App } from "@owallet/ledger-cosmos";
 import { RectButton } from "../../../components/rect-button";

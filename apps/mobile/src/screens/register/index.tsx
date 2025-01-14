@@ -20,6 +20,9 @@ import { SCREENS } from "@src/common/constants";
 import OwButtonIcon from "@components/button/ow-button-icon";
 import { PageWithScrollView } from "@components/page";
 import { SafeAreaView } from "react-native-safe-area-context";
+import images from "@assets/images";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
 
 export const RegisterIntroScreen: FunctionComponent = observer((props) => {
   const { keyRingStore } = useStore();
@@ -96,7 +99,11 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
         </View>
         <View style={styles.logo_owallet}>
           <Image
-            source={require("../../assets/image/img_owallet.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_owallet
+                : images.img_owallet
+            }
             fadeDuration={0}
             resizeMode="contain"
             style={styles.img}

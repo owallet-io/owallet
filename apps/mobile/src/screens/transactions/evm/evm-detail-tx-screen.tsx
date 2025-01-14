@@ -93,20 +93,17 @@ export const EvmDetailTx: FunctionComponent = observer((props) => {
   const chainInfo = chainStore.getChain(MapNetworkToChainId[item.network]);
   const handleUrl = (txHash) => {
     // const chainInfo = chainStore.getChain(detail.chainId);
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      txHash.toLowerCase()
-    );
+    return chainInfo.txExplorer.txUrl.replace("{txHash}", txHash.toLowerCase());
   };
   const handleOnExplorer = async () => {
-    if (chainInfo.raw.txExplorer && detail.hash) {
+    if (chainInfo.txExplorer && detail.hash) {
       const url = handleUrl(detail.hash);
       await openLink(url);
     }
   };
 
   const fee = new CoinPretty(
-    chainInfo.stakeCurrency,
+    chainInfo.feeCurrencies[0],
     new Int(Number(detail.gasPrice)).mul(new Int(detail.gasUsed))
   );
   const amountRaw = item?.amount?.[0] || 0;

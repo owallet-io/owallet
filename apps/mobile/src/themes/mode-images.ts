@@ -1,4 +1,6 @@
 import images from "@src/assets/images";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
 
 //item 1:Dark, item 2: Light
 const modeImages = {
@@ -25,9 +27,13 @@ const modeImages = {
   crash_empty: [images.launch_dark, images.launch],
   money_empty: [images.img_money, images.img_money],
   list_empty: [images.empty_dark, images.empty],
-  btn_center_bottom_tab: [images.push_inactive_dark, images.push_inactive],
+  btn_center_bottom_tab: [
+    eventTheme === "noel" ? imagesNoel.dark_noel_swap : images.dark_swap,
+    eventTheme === "noel" ? imagesNoel.light_noel_swap : images.light_swap,
+  ],
   scroll_to_top: [images.scroll_top_dark, images.scroll_top],
 };
+
 const typeImagesTheme = () => modeImages;
 type TypeTheme = { [P in keyof ReturnType<typeof typeImagesTheme>]: any };
 

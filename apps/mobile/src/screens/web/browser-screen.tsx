@@ -1,25 +1,28 @@
-import { Clipboard, FlatList, useWindowDimensions, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { TabBar, TabView } from 'react-native-tab-view';
-import OWText from '@src/components/text/ow-text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TextInput } from '@src/components/input';
-import { RightArrowIcon } from '@src/components/icon';
-import { OWButton } from '@src/components/button';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { observer } from 'mobx-react-lite';
-import { renderScene } from '@src/screens/web/routes';
-import { useTheme } from '@src/themes/theme-provider';
-import { getFavicon, getNameBookmark } from '@src/screens/web/helper/browser-helper';
-import { navigate } from '@src/router/root';
-import { SCREENS } from '@src/common/constants';
-import { checkValidDomain, showToast } from '@src/utils/helper';
-import { useStore } from '@src/stores';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { tracking } from '@src/utils/tracking';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { PageWithViewInBottomTabView } from '@src/components/page';
+import { Clipboard, FlatList, useWindowDimensions, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { TabBar, TabView } from "react-native-tab-view";
+import OWText from "@src/components/text/ow-text";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { TextInput } from "@src/components/input";
+import { RightArrowIcon } from "@src/components/icon";
+import { OWButton } from "@src/components/button";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { observer } from "mobx-react-lite";
+import { renderScene } from "@src/screens/web/routes";
+import { useTheme } from "@src/themes/theme-provider";
+import {
+  getFavicon,
+  getNameBookmark,
+} from "@src/screens/web/helper/browser-helper";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { checkValidDomain, showToast } from "@src/utils/helper";
+import { useStore } from "@src/stores";
+import OWButtonIcon from "@src/components/button/ow-button-icon";
+import { tracking } from "@src/utils/tracking";
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { PageWithViewInBottomTabView } from "@src/components/page";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
@@ -30,66 +33,68 @@ export const BrowserScreen = observer(() => {
   }, []);
 
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
 
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'all', title: 'All' },
-    { key: 'defi', title: 'DeFi' },
+    { key: "all", title: "All" },
+    { key: "defi", title: "DeFi" },
     // { key: "ai", title: "AI" },
-    { key: 'explorer', title: 'Explorer' }
+    { key: "explorer", title: "Explorer" },
   ]);
 
-  const renderTabBar = props => (
+  const renderTabBar = (props) => (
     <TabBar
       {...props}
-      indicatorStyle={{ backgroundColor: colors['primary-surface-default'] }}
-      style={{ backgroundColor: colors['neutral-surface-card'], height: 50 }}
+      indicatorStyle={{ backgroundColor: colors["primary-surface-default"] }}
+      style={{ backgroundColor: colors["neutral-surface-card"], height: 50 }}
       labelStyle={{
         fontSize: 16,
-        fontWeight: '600'
+        fontWeight: "600",
       }}
-      renderLabel={({ route, focused, color }) => <OWText style={{ color, fontSize: 16 }}>{route.title}</OWText>}
+      renderLabel={({ route, focused, color }) => (
+        <OWText style={{ color, fontSize: 16 }}>{route.title}</OWText>
+      )}
       // scrollEnabled={true}
-      activeColor={colors['primary-surface-default']}
-      inactiveColor={colors['neutral-text-body']}
+      activeColor={colors["primary-surface-default"]}
+      inactiveColor={colors["neutral-text-body"]}
     />
   );
-  const onDetailBrowser = url => {
+  const onDetailBrowser = (url) => {
     if (!sourceCode) {
       showToast({
-        type: 'danger',
-        message: 'Not connected! Please try again.'
+        type: "danger",
+        message: "Not connected! Please try again.",
       });
       return;
     }
     if (!url) return;
     navigate(SCREENS.DetailsBrowser, {
-      url: url
+      url: url,
     });
     return;
   };
   const { top } = useSafeAreaInsets();
-  const onHandleUrl = uri => {
+  const onHandleUrl = (uri) => {
     const url = uri?.toLowerCase();
     if (!url) return;
     let link: string;
     if (checkValidDomain(url)) {
-      link = url?.indexOf('http') >= 0 ? url : 'https://' + url;
+      link = url?.indexOf("http") >= 0 ? url : "https://" + url;
     } else {
       link = `https://www.google.com/search?q=${url}`;
     }
     if (!sourceCode) {
       showToast({
-        type: 'danger',
-        message: 'Not connected! Please try again.'
+        type: "danger",
+        message: "Not connected! Please try again.",
       });
       return;
     }
     navigate(SCREENS.DetailsBrowser, {
-      url: link
+      url: link,
     });
     return;
   };
@@ -97,9 +102,9 @@ export const BrowserScreen = observer(() => {
     navigate(SCREENS.BookMarks);
     return;
   };
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const onClear = () => {
-    setUrl('');
+    setUrl("");
   };
   const onPasteAndGo = async () => {
     const text = await Clipboard.getString();
@@ -107,13 +112,13 @@ export const BrowserScreen = observer(() => {
       setUrl(text);
       if (!sourceCode) {
         showToast({
-          type: 'danger',
-          message: 'Not connected! Please try again.'
+          type: "danger",
+          message: "Not connected! Please try again.",
         });
         return;
       }
       navigate(SCREENS.DetailsBrowser, {
-        url: text
+        url: text,
       });
       return;
     }
@@ -121,67 +126,71 @@ export const BrowserScreen = observer(() => {
   return (
     <PageWithViewInBottomTabView
       style={{
-        backgroundColor: colors['neutral-surface-action'],
-        flexGrow: 1
+        // backgroundColor: colors["neutral-surface-action"],
+        flexGrow: 1,
       }}
     >
       <TextInput
         inputLeft={
           <View
             style={{
-              paddingRight: 8
+              paddingRight: 8,
             }}
           >
-            <OWIcon color={colors['neutral-text-title']} name={'tdesignsearch'} size={20} />
+            <OWIcon
+              color={colors["neutral-text-title"]}
+              name={"tdesignsearch"}
+              size={20}
+            />
           </View>
         }
         autoCapitalize="none"
         autoCorrect={false}
-        onSubmitEditing={e => onHandleUrl(e.nativeEvent.text)}
-        placeholder={'Search URL'}
-        placeholderTextColor={colors['neutral-text-body']}
+        onSubmitEditing={(e) => onHandleUrl(e.nativeEvent.text)}
+        placeholder={"Search URL"}
+        placeholderTextColor={colors["neutral-text-body"]}
         inputStyle={{
-          backgroundColor: colors['neutral-surface-action'],
+          backgroundColor: colors["neutral-surface-action"],
           borderWidth: 0,
           borderRadius: 999,
-          paddingVertical: 7
+          paddingVertical: 7,
         }}
         containerStyle={{
           paddingHorizontal: 16,
           paddingTop: 16 + (top || 0),
-          backgroundColor: colors['neutral-surface-card']
+          backgroundColor: colors["neutral-surface-card"],
         }}
-        returnKeyType={'next'}
+        returnKeyType={"next"}
         defaultValue={url}
-        onChangeText={txt => setUrl(txt.toLowerCase())}
+        onChangeText={(txt) => setUrl(txt.toLowerCase())}
         inputRight={
           <>
             <OWButton
               onPress={onPasteAndGo}
-              size={'small'}
+              size={"small"}
               style={{
-                backgroundColor: colors['neutral-surface-action3'],
+                backgroundColor: colors["neutral-surface-action3"],
                 borderRadius: 99,
                 paddingHorizontal: 10,
-                paddingVertical: 5
+                paddingVertical: 5,
                 // height: 20
               }}
               textStyle={{
-                color: colors['neutral-text-title'],
-                fontWeight: '600',
-                fontSize: 13
+                color: colors["neutral-text-title"],
+                fontWeight: "600",
+                fontSize: 13,
               }}
               fullWidth={false}
               disabled={!sourceCode}
               loading={!sourceCode}
-              colorLoading={colors['neutral-text-title']}
-              label={'Paste & Go'}
+              colorLoading={colors["neutral-text-title"]}
+              label={"Paste & Go"}
             />
             {url?.length > 0 && (
               <OWButtonIcon
                 fullWidth={false}
-                colorIcon={colors['neutral-text-title']}
-                name={'tdesignclose'}
+                colorIcon={colors["neutral-text-title"]}
+                name={"tdesignclose"}
                 sizeIcon={20}
                 onPress={onClear}
               />
@@ -192,84 +201,92 @@ export const BrowserScreen = observer(() => {
       <View
         style={{
           padding: 16,
-          paddingBottom: 0
+          paddingBottom: 0,
         }}
       >
-        {[...(browserStore.getBookmarks || [])].length > 0 ? (
+        {[...(appInitStore.getBookmarks || [])].length > 0 ? (
           <View style={{}}>
             <View
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 16
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 16,
               }}
             >
-              <OWText size={16} weight={'600'}>
+              <OWText size={16} weight={"600"}>
                 Bookmarks
               </OWText>
               <OWButton
-                label={'View all'}
-                type={'link'}
+                label={"View all"}
+                type={"link"}
                 onPress={onBookmarks}
                 fullWidth={false}
-                size={'medium'}
+                size={"medium"}
                 textStyle={{
-                  fontWeight: '600',
+                  fontWeight: "600",
                   fontSize: 14,
-                  color: colors['primary-surface-default']
+                  color: colors["primary-surface-default"],
                 }}
                 iconRight={
                   <View
                     style={{
-                      paddingLeft: 10
+                      paddingLeft: 10,
                     }}
                   >
-                    <RightArrowIcon color={colors['primary-surface-default']} height={14} />
+                    <RightArrowIcon
+                      color={colors["primary-surface-default"]}
+                      height={14}
+                    />
                   </View>
                 }
               />
             </View>
             {!inject ? (
               <SkeletonPlaceholder
-                highlightColor={colors['skeleton']}
-                backgroundColor={colors['neutral-surface-card-brutal']}
+                highlightColor={colors["skeleton"]}
+                backgroundColor={colors["neutral-surface-card-brutal"]}
                 borderRadius={12}
               >
-                <SkeletonPlaceholder.Item width={'100%'} marginBottom={8} height={65}></SkeletonPlaceholder.Item>
+                <SkeletonPlaceholder.Item
+                  width={"100%"}
+                  marginBottom={8}
+                  height={65}
+                ></SkeletonPlaceholder.Item>
               </SkeletonPlaceholder>
             ) : (
               <FlatList
                 horizontal={true}
                 style={{
-                  paddingBottom: 16
+                  paddingBottom: 16,
                 }}
+                keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
-                data={[...(browserStore.getBookmarks || [])]}
+                data={[...(appInitStore.getBookmarks || [])]}
                 renderItem={({ item, index }) => {
                   return (
                     <TouchableOpacity
                       onPress={() => onDetailBrowser(item?.uri)}
                       style={{
-                        alignItems: 'center',
-                        marginHorizontal: 16
+                        alignItems: "center",
+                        marginHorizontal: 16,
                       }}
                     >
                       <OWIcon
                         size={30}
-                        type={'images'}
+                        type={"images"}
                         source={{
-                          uri: getFavicon(item?.uri)
+                          uri: getFavicon(item?.uri),
                         }}
                         style={{ borderRadius: 999 }}
                       />
                       <OWText
                         style={{
-                          paddingTop: 3
+                          paddingTop: 3,
                         }}
-                        color={colors['neutral-text-title']}
+                        color={colors["neutral-text-title"]}
                         size={14}
-                        weight={'400'}
+                        weight={"400"}
                       >
                         {getNameBookmark(item?.name ? item?.name : item?.uri)}
                       </OWText>
@@ -283,13 +300,13 @@ export const BrowserScreen = observer(() => {
       </View>
       <View
         style={{
-          backgroundColor: colors['neutral-surface-card'],
+          backgroundColor: colors["neutral-surface-card"],
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
-          padding: 16
+          padding: 16,
         }}
       >
-        <OWText size={22} weight={'700'}>
+        <OWText size={22} weight={"700"}>
           Oraichain Apps
         </OWText>
       </View>
@@ -301,7 +318,7 @@ export const BrowserScreen = observer(() => {
         renderTabBar={renderTabBar}
         initialLayout={{ width: layout.width }}
         style={{
-          flex: 1
+          flex: 1,
         }}
       />
     </PageWithViewInBottomTabView>

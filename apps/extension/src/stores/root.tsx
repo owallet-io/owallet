@@ -27,7 +27,7 @@ import {
   ICNSQueries,
   AgoricQueries,
   LSMCurrencyRegistrar,
-  TokenFactoryCurrencyRegistrar,
+  TokenFactoryCurrencyRegistrar, CoinGeckoTerminalPriceStore,
 } from "@owallet/stores";
 import { IBCChannelStore, IBCCurrencyRegistrar } from "@owallet/stores-ibc";
 import {
@@ -54,7 +54,7 @@ import {
   EthereumAccountStore,
   ERC20CurrencyRegistrar,
 } from "@owallet/stores-eth";
-import { ExtensionKVStore } from "@owallet/common";
+import {CoinGeckoTerminalAPIEndPoint, CoinGeckoTerminalGetPrice, ExtensionKVStore} from "@owallet/common";
 import {
   ContentScriptEnv,
   ContentScriptGuards,
@@ -149,7 +149,7 @@ export class RootStore {
   public readonly hugeQueriesStore: HugeQueriesStore;
 
   public readonly tokensStore: TokensStore;
-
+  public readonly geckoTerminalStore: CoinGeckoTerminalPriceStore;
   public readonly tokenFactoryRegistrar: TokenFactoryCurrencyRegistrar;
   public readonly ibcCurrencyRegistrar: IBCCurrencyRegistrar;
   public readonly lsmCurrencyRegistrar: LSMCurrencyRegistrar;
@@ -464,7 +464,20 @@ export class RootStore {
       this.ethereumAccountStore,
       this.bitcoinAccountStore
     );
-
+    this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
+        new ExtensionKVStore("store_gecko_prices"),
+        FiatCurrencies.reduce<{
+          [vsCurrency: string]: FiatCurrency;
+        }>((obj, fiat) => {
+          obj[fiat.currency] = fiat;
+          return obj;
+        }, {}),
+        "usd",
+        {
+          baseURL: CoinGeckoTerminalAPIEndPoint,
+          uri: CoinGeckoTerminalGetPrice,
+        }
+    );
     this.priceStore = new CoinGeckoPriceStore(
       new ExtensionKVStore("store_prices"),
       FiatCurrencies.reduce<{
@@ -477,7 +490,8 @@ export class RootStore {
       {
         baseURL: CoinGeckoAPIEndPoint,
         uri: CoinGeckoGetPrice,
-      }
+      },
+        this.geckoTerminalStore
     );
     this.price24HChangesStore = new Price24HChangesStore(
       new ExtensionKVStore("store_prices_changes_24h"),

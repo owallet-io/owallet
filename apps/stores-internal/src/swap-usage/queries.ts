@@ -1,6 +1,6 @@
-import { QuerySharedContext } from '@owallet/stores';
-import { DeepReadonly } from 'utility-types';
-import { ObservableQuerySwapUsage } from './swap-usage';
+import { QuerySharedContext } from "@owallet/stores";
+import { DeepReadonly } from "utility-types";
+import { ObservableQuerySwapUsage } from "./swap-usage";
 
 export class SwapUsageQueries {
   public readonly querySwapUsage: DeepReadonly<ObservableQuerySwapUsage>;

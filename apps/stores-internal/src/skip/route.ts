@@ -1,9 +1,14 @@
-import { ChainGetter, HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { RouteResponse } from './types';
-import { simpleFetch } from '@owallet/simple-fetch';
-import { computed, makeObservable } from 'mobx';
-import { CoinPretty, Dec, RatePretty } from '@owallet/unit';
-import Joi from 'joi';
+import {
+  ChainGetter,
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { RouteResponse } from "./types";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { computed, makeObservable } from "mobx";
+import { CoinPretty, Dec, RatePretty } from "@owallet/unit";
+import Joi from "joi";
 
 const Schema = Joi.object<RouteResponse>({
   source_asset_denom: Joi.string().required(),
@@ -19,7 +24,7 @@ const Schema = Joi.object<RouteResponse>({
           swap_in: Joi.object({
             swap_venue: Joi.object({
               name: Joi.string().required(),
-              chain_id: Joi.string().required()
+              chain_id: Joi.string().required(),
             })
               .unknown(true)
               .required(),
@@ -28,17 +33,17 @@ const Schema = Joi.object<RouteResponse>({
                 Joi.object({
                   pool: Joi.string().required(),
                   denom_in: Joi.string().required(),
-                  denom_out: Joi.string().required()
+                  denom_out: Joi.string().required(),
                 }).unknown(true)
               )
               .required(),
             swap_amount_in: Joi.string().required(),
-            price_impact_percent: Joi.string()
+            price_impact_percent: Joi.string(),
           }).unknown(true),
-          estimated_affiliate_fee: Joi.string().required()
+          estimated_affiliate_fee: Joi.string().required(),
         })
           .required()
-          .unknown(true)
+          .unknown(true),
       }).unknown(true),
       Joi.object({
         transfer: Joi.object({
@@ -47,10 +52,10 @@ const Schema = Joi.object<RouteResponse>({
           chain_id: Joi.string().required(),
           pfm_enabled: Joi.boolean(),
           dest_denom: Joi.string().required(),
-          supports_memo: Joi.boolean()
+          supports_memo: Joi.boolean(),
         })
           .required()
-          .unknown(true)
+          .unknown(true),
       }).unknown(true)
     )
     .required(),
@@ -59,10 +64,10 @@ const Schema = Joi.object<RouteResponse>({
   estimated_amount_out: Joi.string(),
   swap_venue: Joi.object({
     name: Joi.string().required(),
-    chain_id: Joi.string().required()
+    chain_id: Joi.string().required(),
   }).unknown(true),
   swap_price_impact_percent: Joi.string(),
-  txs_required: Joi.number().required()
+  txs_required: Joi.number().required(),
 }).unknown(true);
 
 export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
@@ -81,13 +86,13 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
       readonly chainId: string;
     }
   ) {
-    super(sharedContext, skipURL, '/v1/fungible/route');
+    super(sharedContext, skipURL, "/v1/fungible/route");
 
     makeObservable(this);
   }
 
   protected override canFetch(): boolean {
-    if (!this.sourceAmount || this.sourceAmount === '0') {
+    if (!this.sourceAmount || this.sourceAmount === "0") {
       return false;
     }
     return super.canFetch();
@@ -96,11 +101,18 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
   @computed
   get outAmount(): CoinPretty {
     if (!this.response) {
-      return new CoinPretty(this.chainGetter.getChain(this.destChainId).forceFindCurrency(this.destDenom), '0');
+      return new CoinPretty(
+        this.chainGetter
+          .getChain(this.destChainId)
+          .forceFindCurrency(this.destDenom),
+        "0"
+      );
     }
 
     return new CoinPretty(
-      this.chainGetter.getChain(this.destChainId).forceFindCurrency(this.destDenom),
+      this.chainGetter
+        .getChain(this.destChainId)
+        .forceFindCurrency(this.destDenom),
       this.response.data.amount_out
     );
   }
@@ -108,7 +120,14 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
   @computed
   get swapFee(): CoinPretty[] {
     if (!this.response) {
-      return [new CoinPretty(this.chainGetter.getChain(this.destChainId).forceFindCurrency(this.destDenom), '0')];
+      return [
+        new CoinPretty(
+          this.chainGetter
+            .getChain(this.destChainId)
+            .forceFindCurrency(this.destDenom),
+          "0"
+        ),
+      ];
     }
 
     const estimatedAffiliateFees: {
@@ -116,11 +135,11 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
       venueChainId: string;
     }[] = [];
     for (const operation of this.response.data.operations) {
-      if ('swap' in operation) {
+      if ("swap" in operation) {
         estimatedAffiliateFees.push({
           fee: operation.swap.estimated_affiliate_fee,
           // QUESTION: swap_out이 생기면...?
-          venueChainId: operation.swap.swap_in.swap_venue.chain_id
+          venueChainId: operation.swap.swap_in.swap_venue.chain_id,
         });
       }
     }
@@ -135,7 +154,10 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
       const amount = split[1];
       const denom = split[3];
 
-      return new CoinPretty(this.chainGetter.getChain(venueChainId).forceFindCurrency(denom), amount);
+      return new CoinPretty(
+        this.chainGetter.getChain(venueChainId).forceFindCurrency(denom),
+        amount
+      );
     });
   }
 
@@ -145,24 +167,28 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
       return undefined;
     }
 
-    return new RatePretty(new Dec(this.response.data.swap_price_impact_percent).quoTruncate(new Dec(100)));
+    return new RatePretty(
+      new Dec(this.response.data.swap_price_impact_percent).quoTruncate(
+        new Dec(100)
+      )
+    );
   }
 
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: RouteResponse }> {
     const _result = await simpleFetch<RouteResponse>(this.baseURL, this.url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
         ...(() => {
           const res: { authorization?: string } = {};
-          if (process.env['SKIP_API_KEY']) {
-            res.authorization = process.env['SKIP_API_KEY'];
+          if (process.env["SKIP_API_KEY"]) {
+            res.authorization = process.env["SKIP_API_KEY"];
           }
 
           return res;
-        })()
+        })(),
       },
       body: JSON.stringify({
         amount_in: this.sourceAmount,
@@ -173,25 +199,28 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
         cumulative_affiliate_fee_bps: this.affiliateFeeBps.toString(),
         swap_venue: {
           name: this.swapVenue.name,
-          chain_id: this.swapVenue.chainId
-        }
+          chain_id: this.swapVenue.chainId,
+        },
       }),
-      signal: abortController.signal
+      signal: abortController.signal,
     });
     const result = {
       headers: _result.headers,
-      data: _result.data
+      data: _result.data,
     };
 
     const validated = Schema.validate(result.data);
     if (validated.error) {
-      console.log('Failed to validate assets from source response', validated.error);
+      console.log(
+        "Failed to validate assets from source response",
+        validated.error
+      );
       throw validated.error;
     }
 
     return {
       headers: result.headers,
-      data: validated.value
+      data: validated.value,
     };
   }
 
@@ -205,8 +234,8 @@ export class ObservableQueryRouteInner extends ObservableQuery<RouteResponse> {
       affiliateFeeBps: this.affiliateFeeBps,
       swap_venue: {
         name: this.swapVenue.name,
-        chain_id: this.swapVenue.chainId
-      }
+        chain_id: this.swapVenue.chainId,
+      },
     })}`;
   }
 }
@@ -217,7 +246,7 @@ export class ObservableQueryRoute extends HasMapStore<ObservableQueryRouteInner>
     protected readonly chainGetter: ChainGetter,
     protected readonly skipURL: string
   ) {
-    super(str => {
+    super((str) => {
       const parsed = JSON.parse(str);
       return new ObservableQueryRouteInner(
         this.sharedContext,
@@ -252,7 +281,7 @@ export class ObservableQueryRoute extends HasMapStore<ObservableQueryRouteInner>
       destChainId,
       destDenom,
       affiliateFeeBps,
-      swapVenue
+      swapVenue,
     });
     return this.get(str);
   }

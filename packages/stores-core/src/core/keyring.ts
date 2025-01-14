@@ -242,7 +242,6 @@ export class KeyRingStore {
     password: string | undefined
   ) {
     const msg = new NewLedgerKeyMsg(pubKey, app, bip44HDPath, name, password);
-
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );

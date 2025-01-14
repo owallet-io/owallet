@@ -85,6 +85,7 @@ export const EarningCardNew = observer(({}) => {
   const intl = useIntl();
   const _onPressCompound = async () => {
     try {
+      const chainId = chainStore.current.chainId;
       const account = accountStore.getAccount(chainId);
 
       const queries = queriesStore.get(chainId);
@@ -97,62 +98,80 @@ export const EarningCardNew = observer(({}) => {
       if (validatorAddresses.length === 0) {
         return;
       }
+
       const validatorRewards = validatorAddresses.map((validatorAddress) => {
         const rewards = queryRewards.getStakableRewardOf(validatorAddress);
         return { validatorAddress, rewards };
       });
+
+      let gas = 0;
+      let gasUsed = new Dec(0).truncate();
+      const claimTx =
+        account.cosmos.makeWithdrawDelegationRewardTx(validatorAddresses);
+
+      // Use Promise.all to wait for all delegate transaction simulations
+      await Promise.all(
+        validatorRewards.map(async (v, i) => {
+          const delegateTx = account.cosmos.makeDelegateTx(
+            v.rewards.toDec().toString(),
+            v.validatorAddress
+          );
+          const simulatedDelegate = await delegateTx.simulate();
+          gas += simulatedDelegate.gasUsed;
+          console.log(
+            "gas of",
+            i,
+            v.validatorAddress,
+            simulatedDelegate.gasUsed
+          );
+        })
+      );
+
+      try {
+        const simulatedClaim = await claimTx.simulate();
+        gas += simulatedClaim.gasUsed;
+        console.log("gas of simulatedClaim", simulatedClaim.gasUsed);
+      } catch (e) {
+        console.log(e);
+      }
+
+      console.log("gas final", gas);
+      gasUsed = new Dec(gas * 1.5).truncate();
+
       const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(
         validatorAddresses,
         validatorRewards
       );
 
-      let gas = new Int(
-        validatorAddresses.length * 2 * defaultGasPerDelegation
-      );
-
-      try {
-        const simulated = await tx.simulate();
-        // Gas adjustment is 1.5
-        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
-        // Use high gas adjustment to prevent failure.
-        gas = new Dec(simulated.gasUsed * 1.5).truncate();
-      } catch (e) {
-        console.log(e);
-      }
       await tx.send(
         {
-          gas: gas.toString(),
+          gas: gasUsed.toString(),
           amount: [],
         },
         "",
         {},
         {
           onBroadcasted: (txHash) => {
-            // analyticsStore.logEvent('complete_claim', {
-            //   chainId: viewToken.chainInfo.chainId,
-            //   chainName: viewToken.chainInfo.chainName,
-            // });
-            // navigation.navigate('TxPending', {
-            //   chainId,
-            //   txHash: Buffer.from(txHash).toString('hex'),
-            // });
-          },
-          onFulfill: (tx: any) => {
-            if (tx.code != null && tx.code !== 0) {
-              console.log(tx.log ?? tx.raw_log);
-
-              showToast({
-                type: "danger",
-                message: intl.formatMessage({ id: "error.transaction-failed" }),
-              });
-              return;
-            }
             showToast({
               type: "success",
-              message: intl.formatMessage({
-                id: "notification.transaction-success",
-              }),
+              message: "Transaction submitted",
             });
+          },
+          onFulfill: (tx) => {
+            if (tx.code != null && tx.code !== 0) {
+              showToast({
+                type: "danger",
+                message: JSON.stringify(tx.log ?? tx.raw_log),
+              });
+              return;
+            } else {
+              showToast({
+                type: "success",
+                message: intl.formatMessage({
+                  id: "notification.transaction-success",
+                }),
+              });
+            }
           },
         }
       );
@@ -167,8 +186,10 @@ export const EarningCardNew = observer(({}) => {
         });
         return;
       }
+    } finally {
     }
   };
+
   const _onPressClaim = async () => {
     try {
       const validatorAddresses =

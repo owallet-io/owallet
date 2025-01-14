@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { SignInteractionStore } from '@owallet/stores-core';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useStyle } from '../../styles';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { SignInteractionStore } from "@owallet/stores-core";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../stores";
+import { FormattedMessage, useIntl } from "react-intl";
+import { useStyle } from "../../styles";
 import {
   useFeeConfig,
   useMemoConfig,
@@ -11,47 +11,51 @@ import {
   useSignDocAmountConfig,
   useSignDocHelper,
   useTxConfigsValidate,
-  useZeroAllowedGasConfig
-} from '@owallet/hooks';
-import { unescapeHTML } from '@owallet/common';
-import { CoinPretty, Dec, Int } from '@owallet/unit';
-import { MsgGrant } from '@owallet/proto-types/cosmos/authz/v1beta1/tx';
-import { defaultProtoCodec } from '@owallet/cosmos';
-import { GenericAuthorization } from '@owallet/stores/build/query/cosmos/authz/types';
+  useZeroAllowedGasConfig,
+} from "@owallet/hooks";
+import { unescapeHTML } from "@owallet/common";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
+import { MsgGrant } from "@owallet/proto-types/cosmos/authz/v1beta1/tx";
+import { defaultProtoCodec } from "@owallet/cosmos";
+import { GenericAuthorization } from "@owallet/stores/build/query/cosmos/authz/types";
 // import {BaseModalHeader} from '../../components/modal';
-import { Column, Columns } from '../../components/column';
-import { FlatList, Text } from 'react-native';
-import { Gutter } from '../../components/gutter';
-import { Box } from '../../components/box';
+import { Column, Columns } from "../../components/column";
+import { FlatList, Text } from "react-native";
+import { Gutter } from "../../components/gutter";
+import { Box } from "../../components/box";
 // import {FeeControl} from '../../components/input/fee-control';
-import { XAxis } from '../../components/axis';
-import { CloseIcon } from '../../components/icon';
-import { GuideBox } from '../../components/guide-box';
-import { handleCosmosPreSign } from './util/handle-cosmos-sign';
-import { OWalletError } from '@owallet/router';
-import { ErrModuleLedgerSign } from './util/ledger-types';
-import { LedgerGuideBox } from '../../components/guide-box/ledger-guide-box';
-import { ScrollView, TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { FeeSummary } from './components/fee-summary';
-import { HighFeeWarning } from './components/high-fee-warning';
-import { defaultRegistry } from '@src/modals/sign/cosmos/message-registry';
-import OWText from '@components/text/ow-text';
-import { useLedgerBLE } from '@src/providers/ledger-ble';
-import { registerModal } from '@src/modals/base';
-import { MessageItem } from '@src/modals/sign/cosmos/message-item';
-import { MemoInput } from '@components/input';
-import CheckBox from 'react-native-check-box';
-import { OWButton } from '@components/button';
-import OWIcon from '@components/ow-icon/ow-icon';
-import { FeeControl } from '@components/input/fee-control';
-import WrapViewModal from '@src/modals/wrap/wrap-view-modal';
-import { useTheme } from '@src/themes/theme-provider';
+import { XAxis } from "../../components/axis";
+import { CloseIcon } from "../../components/icon";
+import { GuideBox } from "../../components/guide-box";
+import { handleCosmosPreSign } from "./util/handle-cosmos-sign";
+import { OWalletError } from "@owallet/router";
+import { ErrModuleLedgerSign } from "./util/ledger-types";
+import { LedgerGuideBox } from "../../components/guide-box/ledger-guide-box";
+import {
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
+import { FeeSummary } from "./components/fee-summary";
+import { HighFeeWarning } from "./components/high-fee-warning";
+import { defaultRegistry } from "@src/modals/sign/cosmos/message-registry";
+import OWText from "@components/text/ow-text";
+import { useLedgerBLE } from "@src/providers/ledger-ble";
+import { registerModal } from "@src/modals/base";
+import { MessageItem } from "@src/modals/sign/cosmos/message-item";
+import { MemoInput } from "@components/input";
+import CheckBox from "react-native-check-box";
+import { OWButton } from "@components/button";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { FeeControl } from "@components/input/fee-control";
+import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const SignModal = registerModal(
   observer<{
-    interactionData: NonNullable<SignInteractionStore['waitingData']>;
+    interactionData: NonNullable<SignInteractionStore["waitingData"]>;
   }>(({ interactionData }) => {
-    const { chainStore, signInteractionStore, queriesStore, priceStore } = useStore();
+    const { chainStore, signInteractionStore, queriesStore, priceStore } =
+      useStore();
 
     const intl = useIntl();
     const style = useStyle();
@@ -65,8 +69,22 @@ export const SignModal = registerModal(
     // There are services that sometimes use invalid tx to sign arbitrary data on the sign page.
     // In this case, there is no obligation to deal with it, but 0 gas is favorably allowed.
     const gasConfig = useZeroAllowedGasConfig(chainStore, chainId, 0);
-    const amountConfig = useSignDocAmountConfig(chainStore, chainId, senderConfig);
-    const feeConfig = useFeeConfig(chainStore, queriesStore, chainId, senderConfig, amountConfig, gasConfig);
+    const amountConfig = useSignDocAmountConfig(
+      chainStore,
+      chainId,
+      senderConfig
+    );
+    const feeConfig = useFeeConfig(
+      chainStore,
+      queriesStore,
+      chainId,
+      senderConfig,
+      amountConfig,
+      gasConfig,
+      {
+        additionAmountToNeedFee: false,
+      }
+    );
     const memoConfig = useMemoConfig(chainStore, chainId);
 
     const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
@@ -76,12 +94,12 @@ export const SignModal = registerModal(
       const data = interactionData.data;
       if (data.chainId !== data.signDocWrapper.chainId) {
         // Validate the requested chain id and the chain id in the sign doc are same.
-        throw new Error('Chain id unmatched');
+        throw new Error("Chain id unmatched");
       }
       signDocHelper.setSignDocWrapper(data.signDocWrapper);
       gasConfig.setValue(data.signDocWrapper.gas);
       let memo = data.signDocWrapper.memo;
-      if (data.signDocWrapper.mode === 'amino') {
+      if (data.signDocWrapper.mode === "amino") {
         // For amino-json sign doc, the memo is escaped by default behavior of golang's json marshaller.
         // For normal users, show the escaped characters with unescaped form.
         // Make sure that the actual sign doc's memo should be escaped.
@@ -89,29 +107,50 @@ export const SignModal = registerModal(
         memo = unescapeHTML(memo);
       }
       memoConfig.setValue(memo);
-      if (data.signOptions.preferNoSetFee || data.signDocWrapper.fees.length >= 2) {
+      if (
+        data.signOptions.preferNoSetFee ||
+        data.signDocWrapper.fees.length >= 2
+      ) {
         feeConfig.setFee(
-          data.signDocWrapper.fees.map(fee => {
-            const currency = chainStore.getChain(data.chainId).forceFindCurrency(fee.denom);
+          data.signDocWrapper.fees.map((fee) => {
+            const currency = chainStore
+              .getChain(data.chainId)
+              .forceFindCurrency(fee.denom);
             return new CoinPretty(currency, new Int(fee.amount));
           })
         );
       }
-      amountConfig.setDisableBalanceCheck(!!data.signOptions.disableBalanceCheck);
+      amountConfig.setDisableBalanceCheck(
+        !!data.signOptions.disableBalanceCheck
+      );
       feeConfig.setDisableBalanceCheck(!!data.signOptions.disableBalanceCheck);
 
       // We can't check the fee balance if the payer is not the signer.
-      if (data.signDocWrapper.payer && data.signDocWrapper.payer !== data.signer) {
+      if (
+        data.signDocWrapper.payer &&
+        data.signDocWrapper.payer !== data.signer
+      ) {
         feeConfig.setDisableBalanceCheck(true);
       }
       // We can't check the fee balance if the granter is not the signer.
-      if (data.signDocWrapper.granter && data.signDocWrapper.granter !== data.signer) {
+      if (
+        data.signDocWrapper.granter &&
+        data.signDocWrapper.granter !== data.signer
+      ) {
         feeConfig.setDisableBalanceCheck(true);
       }
-    }, [amountConfig, chainStore, feeConfig, gasConfig, interactionData.data, memoConfig, signDocHelper]);
+    }, [
+      amountConfig,
+      chainStore,
+      feeConfig,
+      gasConfig,
+      interactionData.data,
+      memoConfig,
+      signDocHelper,
+    ]);
 
     const msgs = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode === 'amino'
+      ? signDocHelper.signDocWrapper.mode === "amino"
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
@@ -119,32 +158,36 @@ export const SignModal = registerModal(
     useEffect(() => {
       try {
         if (
-          interactionData.data.origin === 'https://liker.land' ||
-          interactionData.data.origin === 'https://app.like.co'
+          interactionData.data.origin === "https://liker.land" ||
+          interactionData.data.origin === "https://app.like.co"
         ) {
           return;
         }
 
         const msgs = signDocHelper.signDocWrapper
-          ? signDocHelper.signDocWrapper.mode === 'amino'
+          ? signDocHelper.signDocWrapper.mode === "amino"
             ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
             : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
           : [];
 
         for (const msg of msgs) {
           const anyMsg = msg as any;
-          if (anyMsg.type == null && anyMsg.grant && anyMsg.grant.authorization) {
+          if (
+            anyMsg.type == null &&
+            anyMsg.grant &&
+            anyMsg.grant.authorization
+          ) {
             // cosmos-sdk has bug that amino codec is not applied to authorization properly.
             // This is the workaround for this bug.
             if (anyMsg.grant.authorization.msg) {
               const innerType = anyMsg.grant.authorization.msg;
               if (
-                innerType === '/cosmos.bank.v1beta1.MsgSend' ||
-                innerType === '/cosmos.bank.v1beta1.MsgMultiSend' ||
-                innerType === '/ibc.applications.transfer.v1.MsgTransfer' ||
-                innerType === '/cosmos.authz.v1beta1.MsgGrant' ||
-                innerType === '/cosmos.staking.v1beta1.MsgTokenizeShares' ||
-                innerType === '/cosmos.staking.v1beta1.MsgEnableTokenizeShares'
+                innerType === "/cosmos.bank.v1beta1.MsgSend" ||
+                innerType === "/cosmos.bank.v1beta1.MsgMultiSend" ||
+                innerType === "/ibc.applications.transfer.v1.MsgTransfer" ||
+                innerType === "/cosmos.authz.v1beta1.MsgGrant" ||
+                innerType === "/cosmos.staking.v1beta1.MsgTokenizeShares" ||
+                innerType === "/cosmos.staking.v1beta1.MsgEnableTokenizeShares"
               ) {
                 setIsSendAuthzGrant(true);
                 return;
@@ -153,48 +196,68 @@ export const SignModal = registerModal(
               setIsSendAuthzGrant(true);
               return;
             }
-          } else if ('type' in msg) {
-            if (msg.type === 'cosmos-sdk/MsgGrant') {
-              if (msg.value.grant.authorization.type === 'cosmos-sdk/GenericAuthorization') {
+          } else if ("type" in msg) {
+            if (msg.type === "cosmos-sdk/MsgGrant") {
+              if (
+                msg.value.grant.authorization.type ===
+                "cosmos-sdk/GenericAuthorization"
+              ) {
                 const innerType = msg.value.grant.authorization.value.msg;
                 if (
-                  innerType === '/cosmos.bank.v1beta1.MsgSend' ||
-                  innerType === '/cosmos.bank.v1beta1.MsgMultiSend' ||
-                  innerType === '/ibc.applications.transfer.v1.MsgTransfer' ||
-                  innerType === '/cosmos.authz.v1beta1.MsgGrant' ||
-                  innerType === '/cosmos.staking.v1beta1.MsgTokenizeShares' ||
-                  innerType === '/cosmos.staking.v1beta1.MsgEnableTokenizeShares'
+                  innerType === "/cosmos.bank.v1beta1.MsgSend" ||
+                  innerType === "/cosmos.bank.v1beta1.MsgMultiSend" ||
+                  innerType === "/ibc.applications.transfer.v1.MsgTransfer" ||
+                  innerType === "/cosmos.authz.v1beta1.MsgGrant" ||
+                  innerType === "/cosmos.staking.v1beta1.MsgTokenizeShares" ||
+                  innerType ===
+                    "/cosmos.staking.v1beta1.MsgEnableTokenizeShares"
                 ) {
                   setIsSendAuthzGrant(true);
                   return;
                 }
-              } else if (msg.value.grant.authorization.type === 'cosmos-sdk/SendAuthorization') {
+              } else if (
+                msg.value.grant.authorization.type ===
+                "cosmos-sdk/SendAuthorization"
+              ) {
                 setIsSendAuthzGrant(true);
                 return;
               }
             }
-          } else if ('unpacked' in msg) {
-            if (msg.typeUrl === '/cosmos.authz.v1beta1.MsgGrant') {
+          } else if ("unpacked" in msg) {
+            if (msg.typeUrl === "/cosmos.authz.v1beta1.MsgGrant") {
               const grantMsg = msg.unpacked as MsgGrant;
               if (grantMsg.grant && grantMsg.grant.authorization) {
-                if (grantMsg.grant.authorization.typeUrl === '/cosmos.authz.v1beta1.GenericAuthorization') {
-                  const factory = defaultProtoCodec.unpackAnyFactory(grantMsg.grant.authorization.typeUrl);
+                if (
+                  grantMsg.grant.authorization.typeUrl ===
+                  "/cosmos.authz.v1beta1.GenericAuthorization"
+                ) {
+                  const factory = defaultProtoCodec.unpackAnyFactory(
+                    grantMsg.grant.authorization.typeUrl
+                  );
                   if (factory) {
-                    const genericAuth = factory.decode(grantMsg.grant.authorization.value) as GenericAuthorization;
+                    const genericAuth = factory.decode(
+                      grantMsg.grant.authorization.value
+                    ) as GenericAuthorization;
 
                     if (
-                      genericAuth.msg === '/cosmos.bank.v1beta1.MsgSend' ||
-                      genericAuth.msg === '/cosmos.bank.v1beta1.MsgMultiSend' ||
-                      genericAuth.msg === '/ibc.applications.transfer.v1.MsgTransfer' ||
-                      genericAuth.msg === '/cosmos.authz.v1beta1.MsgGrant' ||
-                      genericAuth.msg === '/cosmos.staking.v1beta1.MsgTokenizeShares' ||
-                      genericAuth.msg === '/cosmos.staking.v1beta1.MsgEnableTokenizeShares'
+                      genericAuth.msg === "/cosmos.bank.v1beta1.MsgSend" ||
+                      genericAuth.msg === "/cosmos.bank.v1beta1.MsgMultiSend" ||
+                      genericAuth.msg ===
+                        "/ibc.applications.transfer.v1.MsgTransfer" ||
+                      genericAuth.msg === "/cosmos.authz.v1beta1.MsgGrant" ||
+                      genericAuth.msg ===
+                        "/cosmos.staking.v1beta1.MsgTokenizeShares" ||
+                      genericAuth.msg ===
+                        "/cosmos.staking.v1beta1.MsgEnableTokenizeShares"
                     ) {
                       setIsSendAuthzGrant(true);
                       return;
                     }
                   }
-                } else if (grantMsg.grant.authorization.typeUrl === '/cosmos.bank.v1beta1.SendAuthorization') {
+                } else if (
+                  grantMsg.grant.authorization.typeUrl ===
+                  "/cosmos.bank.v1beta1.SendAuthorization"
+                ) {
                   setIsSendAuthzGrant(true);
                   return;
                 }
@@ -203,19 +266,20 @@ export const SignModal = registerModal(
           }
         }
       } catch (e) {
-        console.log('Failed to check during authz grant send check', e);
+        console.log("Failed to check during authz grant send check", e);
       }
 
       setIsSendAuthzGrant(false);
     }, [interactionData.data.origin, signDocHelper.signDocWrapper]);
-    const [isSendAuthzGrantChecked, setIsSendAuthzGrantChecked] = useState(false);
+    const [isSendAuthzGrantChecked, setIsSendAuthzGrantChecked] =
+      useState(false);
 
     const txConfigsValidate = useTxConfigsValidate({
       senderConfig,
       gasConfig,
       amountConfig,
       feeConfig,
-      memoConfig
+      memoConfig,
     });
 
     const preferNoSetFee = (() => {
@@ -228,18 +292,27 @@ export const SignModal = registerModal(
 
     const preferNoSetMemo = interactionData.data.signOptions.preferNoSetMemo;
 
-    const isLedgerAndDirect = interactionData.data.keyType === 'ledger' && interactionData.data.mode === 'direct';
+    const isLedgerAndDirect =
+      interactionData.data.keyType === "ledger" &&
+      interactionData.data.mode === "direct";
 
     const [isLedgerInteracting, setIsLedgerInteracting] = useState(false);
-    const [ledgerInteractingError, setLedgerInteractingError] = useState<Error | undefined>(undefined);
+    const [ledgerInteractingError, setLedgerInteractingError] = useState<
+      Error | undefined
+    >(undefined);
 
     const isHighFee = (() => {
       if (feeConfig.fees) {
         let sumPrice = new Dec(0);
         for (const fee of feeConfig.fees) {
-          const currency = chainStore.getChain(chainId).findCurrency(fee.currency.coinMinimalDenom);
+          const currency = chainStore
+            .getChain(chainId)
+            .findCurrency(fee.currency.coinMinimalDenom);
           if (currency && currency.coinGeckoId) {
-            const price = priceStore.calculatePrice(new CoinPretty(currency, fee.toCoin().amount), 'usd');
+            const price = priceStore.calculatePrice(
+              new CoinPretty(currency, fee.toCoin().amount),
+              "usd"
+            );
             if (price) {
               sumPrice = sumPrice.add(price.toDec());
             }
@@ -263,7 +336,7 @@ export const SignModal = registerModal(
 
     const approve = async () => {
       if (signDocHelper.signDocWrapper) {
-        if (interactionData.data.keyType === 'ledger') {
+        if (interactionData.data.keyType === "ledger") {
           setIsLedgerInteracting(true);
           setLedgerInteractingError(undefined);
         }
@@ -283,7 +356,7 @@ export const SignModal = registerModal(
               // noop
             },
             {
-              preDelay: 200
+              preDelay: 200,
             }
           );
         } catch (e) {
@@ -305,15 +378,17 @@ export const SignModal = registerModal(
     };
     const { colors } = useTheme();
     return (
-      <WrapViewModal title={intl.formatMessage({ id: 'page.sign.cosmos.tx.title' })}>
-        <Box style={style.flatten(['padding-12', 'padding-top-0'])}>
+      <WrapViewModal
+        title={intl.formatMessage({ id: "page.sign.cosmos.tx.title" })}
+      >
+        <Box style={style.flatten(["padding-12", "padding-top-0"])}>
           <Gutter size={24} />
 
           <Columns sum={1} alignY="center">
             <OWText
               style={{
-                ...style.flatten(['h5']),
-                color: colors['neutral-text-body']
+                ...style.flatten(["h5"]),
+                color: colors["neutral-text-body"],
               }}
             >
               {msgs.length}
@@ -323,8 +398,8 @@ export const SignModal = registerModal(
 
             <OWText
               style={{
-                ...style.flatten(['h5']),
-                color: colors['neutral-text-body']
+                ...style.flatten(["h5"]),
+                color: colors["neutral-text-body"],
               }}
             >
               <FormattedMessage id="page.sign.cosmos.tx.messages" />
@@ -332,19 +407,33 @@ export const SignModal = registerModal(
 
             <Column weight={1} />
 
-            <ViewDataButton isViewData={isViewData} setIsViewData={setIsViewData} />
+            <ViewDataButton
+              isViewData={isViewData}
+              setIsViewData={setIsViewData}
+            />
           </Columns>
 
           <Gutter size={8} />
 
           {isViewData ? (
-            <Box maxHeight={128} backgroundColor={colors['neutral-surface-bg']} padding={12} borderRadius={6}>
+            <Box
+              maxHeight={128}
+              backgroundColor={colors["neutral-surface-bg"]}
+              padding={12}
+              borderRadius={6}
+            >
               <ScrollView persistentScrollbar={true}>
-                <OWText style={style.flatten(['body3'])}>{JSON.stringify(signDocHelper.signDocJson, null, 2)}</OWText>
+                <OWText style={style.flatten(["body3"])}>
+                  {JSON.stringify(signDocHelper.signDocJson, null, 2)}
+                </OWText>
               </ScrollView>
             </Box>
           ) : (
-            <Box maxHeight={240} backgroundColor={colors['neutral-surface-bg']} borderRadius={6}>
+            <Box
+              maxHeight={240}
+              backgroundColor={colors["neutral-surface-bg"]}
+              borderRadius={6}
+            >
               <FlatList
                 // isGestureFlatList={true}
                 data={[...msgs]}
@@ -356,7 +445,14 @@ export const SignModal = registerModal(
                     item
                   );
 
-                  return <MessageItem key={index} icon={r.icon} title={r.title} content={r.content} />;
+                  return (
+                    <MessageItem
+                      key={index}
+                      icon={r.icon}
+                      title={r.title}
+                      content={r.content}
+                    />
+                  );
                 }}
                 ItemSeparatorComponent={Divider}
               />
@@ -368,7 +464,11 @@ export const SignModal = registerModal(
           {preferNoSetMemo ? (
             <ReadonlyMemo memo={memoConfig.memo} />
           ) : (
-            <MemoInput label={'Memo'} isBottomSheet={true} memoConfig={memoConfig} />
+            <MemoInput
+              label={"Memo"}
+              isBottomSheet={true}
+              memoConfig={memoConfig}
+            />
           )}
 
           {/*<Gutter size={60} />*/}
@@ -392,7 +492,10 @@ export const SignModal = registerModal(
 
           {isHighFee ? (
             <React.Fragment>
-              <HighFeeWarning checked={isHighFeeApproved} onChange={v => setIsHighFeeApproved(v)} />
+              <HighFeeWarning
+                checked={isHighFeeApproved}
+                onChange={(v) => setIsHighFeeApproved(v)}
+              />
 
               <Gutter size={12} />
             </React.Fragment>
@@ -403,13 +506,13 @@ export const SignModal = registerModal(
               <GuideBox
                 color="warning"
                 title={intl.formatMessage({
-                  id: 'page.sign.cosmos.tx.authz-send-grant.warning-title'
+                  id: "page.sign.cosmos.tx.authz-send-grant.warning-title",
                 })}
                 titleRight={
                   <Box>
                     <CheckBox
                       isChecked={isSendAuthzGrantChecked}
-                      onClick={checked => {
+                      onClick={(checked) => {
                         setIsSendAuthzGrantChecked(!isSendAuthzGrantChecked);
                       }}
                     />
@@ -426,10 +529,10 @@ export const SignModal = registerModal(
               <GuideBox
                 color="warning"
                 title={intl.formatMessage({
-                  id: 'page.sign.cosmos.tx.warning-title'
+                  id: "page.sign.cosmos.tx.warning-title",
                 })}
                 paragraph={intl.formatMessage({
-                  id: 'page.sign.cosmos.tx.warning-paragraph'
+                  id: "page.sign.cosmos.tx.warning-paragraph",
                 })}
               />
 
@@ -442,7 +545,9 @@ export const SignModal = registerModal(
               <LedgerGuideBox
                 data={{
                   keyInsensitive: interactionData.data.keyInsensitive,
-                  isEthereum: 'eip712' in interactionData.data && interactionData.data.eip712 != null
+                  isEthereum:
+                    "eip712" in interactionData.data &&
+                    interactionData.data.eip712 != null,
                 }}
                 isLedgerInteracting={isLedgerInteracting}
                 ledgerInteractingError={ledgerInteractingError}
@@ -455,24 +560,35 @@ export const SignModal = registerModal(
           <XAxis>
             <OWButton
               size="large"
-              label={intl.formatMessage({ id: 'button.reject' })}
+              label={intl.formatMessage({ id: "button.reject" })}
               type="secondary"
-              disabled={signInteractionStore.isObsoleteInteraction(interactionData.id) || isLedgerInteracting}
-              style={{ flex: 1, width: '100%' }}
+              disabled={
+                signInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
+              }
+              style={{ flex: 1, width: "100%" }}
               onPress={async () => {
-                await signInteractionStore.rejectWithProceedNext(interactionData.id, () => {});
+                await signInteractionStore.rejectWithProceedNext(
+                  interactionData.id,
+                  () => {}
+                );
               }}
             />
 
             <Gutter size={16} />
 
             <OWButton
-              type={'primary'}
+              type={"primary"}
               size="large"
-              loading={signInteractionStore.isObsoleteInteraction(interactionData.id) || isLedgerInteracting}
+              loading={
+                signInteractionStore.isObsoleteInteraction(
+                  interactionData.id
+                ) || isLedgerInteracting
+              }
               disabled={buttonDisabled}
-              label={intl.formatMessage({ id: 'button.approve' })}
-              style={{ flex: 1, width: '100%' }}
+              label={intl.formatMessage({ id: "button.approve" })}
+              style={{ flex: 1, width: "100%" }}
               onPress={approve}
             />
           </XAxis>
@@ -485,7 +601,13 @@ export const SignModal = registerModal(
 const Divider = () => {
   const style = useStyle();
   const { colors } = useTheme();
-  return <Box height={1} marginX={12} backgroundColor={colors['neutral-border-default']} />;
+  return (
+    <Box
+      height={1}
+      marginX={12}
+      backgroundColor={colors["neutral-border-default"]}
+    />
+  );
 };
 
 export const ViewDataButton: FunctionComponent<{
@@ -501,20 +623,20 @@ export const ViewDataButton: FunctionComponent<{
       }}
     >
       <XAxis alignY="center">
-        <OWText style={style.flatten(['text-button2'])}>
+        <OWText style={style.flatten(["text-button2"])}>
           <FormattedMessage id="page.sign.cosmos.tx.view-data-button" />
         </OWText>
 
         <Gutter size={4} />
 
         {isViewData ? (
-          <CloseIcon size={12} color={'red'} />
+          <CloseIcon size={12} color={"red"} />
         ) : (
           // <CodeBracketIcon
           //     size={12}
           //     color={style.get('color-gray-100').color}
           // />
-          <OWIcon name={'tdesignbrackets'} size={12} color={'red'} />
+          <OWIcon name={"tdesignbrackets"} size={12} color={"red"} />
         )}
       </XAxis>
     </TouchableWithoutFeedback>
@@ -529,20 +651,22 @@ export const ReadonlyMemo: FunctionComponent<{
   return (
     <Box
       // backgroundColor={style.get("color-gray-500").color}
-      backgroundColor={colors['neutral-surface-bg']}
+      backgroundColor={colors["neutral-surface-bg"]}
       borderRadius={6}
       padding={16}
     >
       <XAxis alignY="center">
-        <OWText style={style.flatten(['subtitle3'])}>Memo</OWText>
+        <OWText style={style.flatten(["subtitle3"])}>Memo</OWText>
         <OWText
           style={{
             flex: 1,
-            color: colors['neutral-text-body'],
-            textAlign: 'right'
+            color: colors["neutral-text-body"],
+            textAlign: "right",
           }}
         >
-          {memo || <FormattedMessage id="page.sign.cosmos.tx.readonly-memo.empty" />}
+          {memo || (
+            <FormattedMessage id="page.sign.cosmos.tx.readonly-memo.empty" />
+          )}
         </OWText>
       </XAxis>
     </Box>

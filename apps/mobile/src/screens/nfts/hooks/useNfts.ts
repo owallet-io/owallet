@@ -21,6 +21,7 @@ import {
   MulticallQueryClient,
 } from "@oraichain/common-contracts-sdk";
 import { useEffect, useState } from "react";
+
 export enum TALIS_COLLECTIONS {
   HONORAIS = "HONORAIS",
   LAST_SAMORAIS = "LAST_SAMORAIS",
@@ -28,12 +29,15 @@ export enum TALIS_COLLECTIONS {
   RUGLEO_POORDS = "RUGLEO_POORDS",
   KRANIA_ORCHA = "KRANIA_ORCHA",
 }
+
 export enum ECOSYSTEM_NFT_CHAIN {
   TALIS = "TALIS",
   AIRIGHT = "AIRIGHT",
   STARGAZE = "STARGAZE",
 }
+
 export const LIMIT_TALIS_CW721 = 1000;
+
 export interface ITalisCW721 {
   title: string;
   description: string;
@@ -53,22 +57,28 @@ export interface ITalisCW721 {
   media: string;
   tags: any[];
 }
+
 interface Nfts {
   chainInfo: ChainInfo;
   data: IItemNft[];
   count: number;
 }
+
 interface DataHandle {
   total: number;
   data: IItemNft[];
 }
+
 export const useNfts = (
   chainStore: ChainStore,
   accountStore: AccountStore<any>,
   isAllNetworks
 ): Nfts[] => {
   const chainInfoOrai = chainStore.getChain(ChainIdEnum.Oraichain);
-  const chainInfoStargaze = chainStore.getChain(ChainIdEnum.Stargaze);
+  const hasChainStargaze = chainStore.hasChain(ChainIdEnum.Stargaze);
+  const chainInfoStargaze = hasChainStargaze
+    ? chainStore.getChain(ChainIdEnum.Stargaze)
+    : undefined;
 
   const handleNftsForOraichain = (): DataHandle => {
     const { currencies } = chainInfoOrai;
@@ -215,7 +225,9 @@ export const useNfts = (
       TALIS_NFT_CONTRACT.KraniaOrcha
     ),
     // [ECOSYSTEM_NFT_CHAIN.AIRIGHT]: handleNftsForOraichain(),
-    [ECOSYSTEM_NFT_CHAIN.STARGAZE]: handleNftsForStargaze(),
+    [ECOSYSTEM_NFT_CHAIN.STARGAZE]: hasChainStargaze
+      ? handleNftsForStargaze()
+      : undefined,
   };
   const mapTitle = {
     [ECOSYSTEM_NFT_CHAIN.TALIS]: "Talis",

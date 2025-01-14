@@ -11,7 +11,7 @@ const useSize = ({ size }): IMapStyle => {
     case "small":
       sizeStyle = {
         btn: {
-          borderRadius: 8,
+          borderRadius: 32,
           height: 32,
         },
         text: {
@@ -23,7 +23,7 @@ const useSize = ({ size }): IMapStyle => {
     case "medium":
       sizeStyle = {
         btn: {
-          borderRadius: 12,
+          borderRadius: 32,
           height: 40,
         },
         text: {
@@ -35,7 +35,7 @@ const useSize = ({ size }): IMapStyle => {
     case "large":
       sizeStyle = {
         btn: {
-          borderRadius: 8,
+          borderRadius: 32,
           height: 48,
         },
         text: {
@@ -47,7 +47,7 @@ const useSize = ({ size }): IMapStyle => {
     case "default":
       sizeStyle = {
         btn: {
-          borderRadius: 8,
+          borderRadius: 32,
           height: 48,
         },
         text: {

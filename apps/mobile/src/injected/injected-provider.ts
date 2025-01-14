@@ -1,5 +1,6 @@
 import { InjectedOWallet } from "@owallet/provider";
 import { OWalletMode } from "@owallet/types";
+import { OWalletLogoBase64 } from "@owallet/provider-extension/build/constants";
 
 export class RNInjectedOWallet extends InjectedOWallet {
   static parseWebviewMessage(message: any): any {
@@ -28,7 +29,13 @@ export class RNInjectedOWallet extends InjectedOWallet {
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
         },
       },
-      RNInjectedOWallet.parseWebviewMessage
+      RNInjectedOWallet.parseWebviewMessage,
+      {
+        uuid: crypto.randomUUID(),
+        name: "OWallet",
+        rdns: "io.owallet",
+        icon: `data:image/png;base64,${OWalletLogoBase64}`,
+      }
     );
   }
 }

@@ -1,10 +1,14 @@
-import { HasMapStore, ObservableQuery, QuerySharedContext } from '@owallet/stores';
-import { AssetsFromSourceResponse } from './types';
-import { simpleFetch } from '@owallet/simple-fetch';
-import { computed, makeObservable } from 'mobx';
-import { ChainIdHelper } from '@owallet/cosmos';
-import Joi from 'joi';
-import { InternalChainStore } from '../internal';
+import {
+  HasMapStore,
+  ObservableQuery,
+  QuerySharedContext,
+} from "@owallet/stores";
+import { AssetsFromSourceResponse } from "./types";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { computed, makeObservable } from "mobx";
+import { ChainIdHelper } from "@owallet/cosmos";
+import Joi from "joi";
+import { InternalChainStore } from "../internal";
 
 const Schema = Joi.object<AssetsFromSourceResponse>({
   dest_assets: Joi.object()
@@ -17,11 +21,11 @@ const Schema = Joi.object<AssetsFromSourceResponse>({
             denom: Joi.string(),
             chain_id: Joi.string(),
             origin_denom: Joi.string(),
-            origin_chain_id: Joi.string()
+            origin_chain_id: Joi.string(),
           }).unknown(true)
-        )
+        ),
       }).unknown(true)
-    )
+    ),
 }).unknown(true);
 
 export class ObservableQueryAssetsFromSourceInner extends ObservableQuery<AssetsFromSourceResponse> {
@@ -32,7 +36,7 @@ export class ObservableQueryAssetsFromSourceInner extends ObservableQuery<Assets
     public readonly chainId: string,
     public readonly denom: string
   ) {
-    super(sharedContext, skipURL, '/v1/fungible/assets_from_source');
+    super(sharedContext, skipURL, "/v1/fungible/assets_from_source");
 
     makeObservable(this);
   }
@@ -50,7 +54,11 @@ export class ObservableQueryAssetsFromSourceInner extends ObservableQuery<Assets
         }
       | undefined;
   } {
-    if (!this.response || !this.response.data || !this.response.data.dest_assets) {
+    if (
+      !this.response ||
+      !this.response.data ||
+      !this.response.data.dest_assets
+    ) {
       return {};
     }
 
@@ -72,28 +80,34 @@ export class ObservableQueryAssetsFromSourceInner extends ObservableQuery<Assets
           continue;
         }
 
-        if (this.chainStore.getChain(key).chainIdentifier === ChainIdHelper.parse(this.chainId).identifier) {
+        if (
+          this.chainStore.getChain(key).chainIdentifier ===
+          ChainIdHelper.parse(this.chainId).identifier
+        ) {
           continue;
         }
 
         const d = this.response.data.dest_assets[key];
         if (d) {
           const assets = d.assets
-            .filter(asset => {
-              return this.chainStore.hasChain(asset.chain_id) && this.chainStore.hasChain(asset.origin_chain_id);
+            .filter((asset) => {
+              return (
+                this.chainStore.hasChain(asset.chain_id) &&
+                this.chainStore.hasChain(asset.origin_chain_id)
+              );
             })
-            .map(asset => {
+            .map((asset) => {
               return {
                 denom: asset.denom,
                 chainId: asset.chain_id,
                 originDenom: asset.origin_denom,
-                originChainId: asset.origin_chain_id
+                originChainId: asset.origin_chain_id,
               };
             });
 
           if (assets.length > 0) {
             result[key] = {
-              assets
+              assets,
             };
           }
         }
@@ -106,39 +120,46 @@ export class ObservableQueryAssetsFromSourceInner extends ObservableQuery<Assets
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: AssetsFromSourceResponse }> {
-    const _result = await simpleFetch<AssetsFromSourceResponse>(this.baseURL, this.url, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        ...(() => {
-          const res: { authorization?: string } = {};
-          if (process.env['SKIP_API_KEY']) {
-            res.authorization = process.env['SKIP_API_KEY'];
-          }
+    const _result = await simpleFetch<AssetsFromSourceResponse>(
+      this.baseURL,
+      this.url,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          ...(() => {
+            const res: { authorization?: string } = {};
+            if (process.env["SKIP_API_KEY"]) {
+              res.authorization = process.env["SKIP_API_KEY"];
+            }
 
-          return res;
-        })()
-      },
-      body: JSON.stringify({
-        source_asset_chain_id: this.chainId,
-        source_asset_denom: this.denom
-      }),
-      signal: abortController.signal
-    });
+            return res;
+          })(),
+        },
+        body: JSON.stringify({
+          source_asset_chain_id: this.chainId,
+          source_asset_denom: this.denom,
+        }),
+        signal: abortController.signal,
+      }
+    );
     const result = {
       headers: _result.headers,
-      data: _result.data
+      data: _result.data,
     };
 
     const validated = Schema.validate(result.data);
     if (validated.error) {
-      console.log('Failed to validate assets from source response', validated.error);
+      console.log(
+        "Failed to validate assets from source response",
+        validated.error
+      );
       throw validated.error;
     }
 
     return {
       headers: result.headers,
-      data: validated.value
+      data: validated.value,
     };
   }
 
@@ -153,7 +174,7 @@ export class ObservableQueryAssetsFromSource extends HasMapStore<ObservableQuery
     protected readonly chainStore: InternalChainStore,
     protected readonly skipURL: string
   ) {
-    super(str => {
+    super((str) => {
       const parsed = JSON.parse(str);
       return new ObservableQueryAssetsFromSourceInner(
         this.sharedContext,
@@ -165,10 +186,13 @@ export class ObservableQueryAssetsFromSource extends HasMapStore<ObservableQuery
     });
   }
 
-  getSourceAsset(chainId: string, denom: string): ObservableQueryAssetsFromSourceInner {
+  getSourceAsset(
+    chainId: string,
+    denom: string
+  ): ObservableQueryAssetsFromSourceInner {
     const str = JSON.stringify({
       chainId,
-      denom
+      denom,
     });
     return this.get(str);
   }

@@ -214,15 +214,15 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
                           );
                           return;
                         }
-                        notification.show(
-                          "success",
-                          intl.formatMessage({
-                            id: "notification.transaction-success",
-                          }),
-                          ""
-                        );
                       },
                     }
+                  );
+                  notification.show(
+                    "success",
+                    intl.formatMessage({
+                      id: "notification.transaction-success",
+                    }),
+                    ""
                   );
                 } catch (e) {
                   if (e.message === "Request rejected") {

@@ -20,6 +20,7 @@ import images from "@assets/images";
 import OWText from "@components/text/ow-text";
 import { ViewDataButton } from "@src/modals/sign/index";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { useTheme } from "@src/themes/theme-provider";
 // import {ScrollView} from '../../components/scroll-view/common-scroll-view';
 
 export const ADR36SignModal = registerModal(
@@ -97,7 +98,7 @@ export const ADR36SignModal = registerModal(
         };
       }
     }, [isADR36WithString, signDocWrapper]);
-
+    const { colors } = useTheme();
     return (
       <WrapViewModal
         title={intl.formatMessage({ id: "page.sign.adr36.title" })}
@@ -122,7 +123,7 @@ export const ADR36SignModal = registerModal(
           <Box
             width="100%"
             padding={16}
-            backgroundColor={style.get("color-gray-500").color}
+            backgroundColor={colors["neutral-surface-bg"]}
             borderRadius={6}
           >
             <XAxis alignY="center">
@@ -144,7 +145,7 @@ export const ADR36SignModal = registerModal(
           <Box
             width="100%"
             maxHeight={160}
-            backgroundColor={style.get("color-gray-500").color}
+            backgroundColor={colors["neutral-surface-bg"]}
             padding={16}
             borderRadius={6}
           >
@@ -167,7 +168,7 @@ export const ADR36SignModal = registerModal(
           <Box
             width="100%"
             maxHeight={160}
-            backgroundColor={style.get("color-gray-500").color}
+            backgroundColor={colors["neutral-surface-bg"]}
             padding={16}
             borderRadius={6}
           >
