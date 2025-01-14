@@ -160,7 +160,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         {permissionStore.waitingGlobalPermissionData ? (
           <GlobalPermissionModal
             isOpen={true}
-            close={async () => {
+            setIsOpen={async () => {
               await permissionStore.rejectGlobalPermissionAll();
             }}
           />
@@ -174,7 +174,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
                   return (
                     <WalletConnectAccessModal
                       isOpen={true}
-                      close={async () =>
+                      setIsOpen={async () =>
                         await permissionStore.rejectPermissionWithProceedNext(
                           data.ids,
                           () => {}
@@ -191,7 +191,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               return (
                 <BasicAccessModal
                   isOpen={true}
-                  close={async () =>
+                  setIsOpen={async () =>
                     await permissionStore.rejectPermissionWithProceedNext(
                       data.ids,
                       () => {}
@@ -208,7 +208,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
           <ADR36SignModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            setIsOpen={() => signInteractionStore.rejectAll()}
           />
         ) : null}
         {mergedDataForEVM
@@ -218,7 +218,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               return (
                 <BasicAccessEVMModal
                   isOpen={true}
-                  close={async () =>
+                  setIsOpen={async () =>
                     await permissionStore.rejectPermissionWithProceedNext(
                       data.ids,
                       () => {}
@@ -235,7 +235,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         {chainSuggestStore.waitingSuggestedChainInfo ? (
           <SuggestChainModal
             isOpen={true}
-            close={async () => {
+            setIsOpen={async () => {
               await chainSuggestStore.rejectAll();
             }}
           />

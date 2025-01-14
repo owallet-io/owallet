@@ -18,11 +18,12 @@ import { OWButton } from "@components/button";
 import { registerModal } from "@src/modals/base";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 // import * as ExpoImage from 'expo-image';
 // import {Box} from '../box';
 // import {registerCardModal} from './card';
 
-export const WalletConnectAccessModal = registerModal(
+export const WalletConnectAccessModal = registerCardModal(
   observer<{
     data: {
       ids: string[];

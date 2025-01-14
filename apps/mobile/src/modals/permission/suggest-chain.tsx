@@ -37,9 +37,10 @@ import { Skeleton } from "@components/skeleton";
 import OWText from "@components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 // import {WCMessageRequester} from '../../stores/wallet-connect/msg-requester.ts';
 
-export const SuggestChainModal = registerModal(
+export const SuggestChainModal = registerCardModal(
   observer(() => {
     const { chainSuggestStore } = useStore();
 

@@ -1448,7 +1448,6 @@ export const PrivilegedOrigins: string[] = [
   "https://scan.orai.io",
   "https://multisig.orai.io",
   "https://develop-v3.beta-oraidex.pages.dev",
-  "https://app.orchai.io",
 ];
 
 export const CommunityChainInfoRepo = {

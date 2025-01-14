@@ -15,6 +15,7 @@ import images from "@assets/images";
 import { OWButton } from "@components/button";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 // import {XAxis} from '../axis';
 // import {Button} from '../button';
 // import {Gutter} from '../gutter';
@@ -23,7 +24,7 @@ import { useTheme } from "@src/themes/theme-provider";
 // import * as ExpoImage from 'expo-image';
 // import {GuideBox} from '../guide-box';
 
-export const GlobalPermissionModal = registerModal(
+export const GlobalPermissionModal = registerCardModal(
   observer<{
     isOpen: boolean;
     // setIsOpen: (isOpen: boolean) => void;

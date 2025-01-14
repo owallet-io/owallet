@@ -5,6 +5,7 @@ import { OWTextProps } from "@src/components/text/ow-text";
 import { useTheme } from "@src/themes/theme-provider";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
+import { Box } from "@components/box";
 
 interface IWrapViewModal extends ViewProps {
   title?: string;
@@ -34,15 +35,15 @@ const WrapViewModal: FC<IWrapViewModal> = ({
   const ContainerElement = disabledScrollView ? View : ScrollView;
   return (
     <View
-      style={[
-        {
-          flex: 1,
-          paddingHorizontal: 16,
-          backgroundColor: colors["neutral-surface-card"],
-          borderRadius: 12,
-        },
-        containerStyle,
-      ]}
+    // style={[
+    //   {
+    //     flex: 1,
+    //     paddingHorizontal: 16,
+    //     backgroundColor: colors["neutral-surface-card"],
+    //     borderRadius: 12,
+    //   },
+    //   containerStyle,
+    // ]}
     >
       {typeof title === "function" ? (
         TitleComponent
@@ -80,21 +81,28 @@ const WrapViewModal: FC<IWrapViewModal> = ({
           {subTitle}
         </Text>
       )}
-      <ContainerElement
-        {...props}
-        showsVerticalScrollIndicator={false}
-        keyboardDismissMode={"interactive"}
-        style={[
-          {
-            backgroundColor: colors["neutral-surface-card"],
-            flex: 1,
-            paddingBottom: 16 + (bottom || 0),
-          },
-          style,
-        ]}
+      {/*<ContainerElement*/}
+      {/*  {...props}*/}
+      {/*  showsVerticalScrollIndicator={false}*/}
+      {/*  keyboardDismissMode={"interactive"}*/}
+      {/*  style={[*/}
+      {/*    {*/}
+      {/*      backgroundColor: colors["neutral-surface-card"],*/}
+      {/*      flex: 1,*/}
+      {/*      paddingBottom: 16 + (bottom || 0),*/}
+      {/*    },*/}
+      {/*    style,*/}
+      {/*  ]}*/}
+      {/*>*/}
+      {/*  {props.children}*/}
+      {/*</ContainerElement>*/}
+      <Box
+        backgroundColor={colors["neutral-surface-card"]}
+        paddingX={12}
+        paddingBottom={12}
       >
         {props.children}
-      </ContainerElement>
+      </Box>
       {buttonBottom ? buttonBottom : null}
     </View>
   );
