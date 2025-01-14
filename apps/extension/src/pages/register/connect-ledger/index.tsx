@@ -28,20 +28,21 @@ import { useConfirm } from "../../../hooks/confirm";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
 import { GuideBox } from "../../../components/guide-box";
+import Trx from "@ledgerhq/hw-app-trx";
+import Btc from "@ledgerhq/hw-app-btc";
 
 type Step = "unknown" | "connected" | "app";
 
 export const ConnectLedgerScene: FunctionComponent<{
   name: string;
   password: string;
-  app: App | "Ethereum" | "Tron";
+  app: App | "Ethereum" | "Starknet" | "Tron" | "Bitcoin";
   bip44Path: {
     account: number;
     change: number;
     addressIndex: number;
   };
 
-  // append mode일 경우 위의 name, password는 안쓰인다. 대충 빈 문자열 넣으면 된다.
   appendModeInfo?: {
     vaultId: string;
     afterEnableChains: string[];
@@ -65,11 +66,11 @@ export const ConnectLedgerScene: FunctionComponent<{
     if (
       !Object.keys(AppHRP).includes(propApp) &&
       propApp !== "Ethereum" &&
+      propApp !== "Bitcoin" &&
       propApp !== "Tron"
     ) {
       throw new Error(`Unsupported app: ${propApp}`);
     }
-
     const sceneTransition = useSceneTransition();
 
     const header = useRegisterHeader();
@@ -102,7 +103,7 @@ export const ConnectLedgerScene: FunctionComponent<{
       try {
         transport =
           // XXX: Use WebHID for Starknet because WebUSB doesn't work for Starknet app.
-          uiConfigStore.useWebHIDLedger || propApp === "Tron"
+          uiConfigStore.useWebHIDLedger || propApp === "Starknet"
             ? await TransportWebHID.create()
             : await TransportWebUSB.create();
       } catch (e) {
@@ -147,7 +148,6 @@ export const ConnectLedgerScene: FunctionComponent<{
           );
           if (res.error_message === "No errors") {
             setStep("app");
-
             if (appendModeInfo) {
               await keyRingStore.appendLedgerKeyApp(
                 appendModeInfo.vaultId,
@@ -233,16 +233,30 @@ export const ConnectLedgerScene: FunctionComponent<{
                 ...appendModeInfo.afterEnableChains
               );
 
-              sceneTransition.push("enable-chains", {
-                vaultId: appendModeInfo.vaultId,
-                keyType: "ledger",
-                candidateAddresses: [],
-                isFresh: false,
-                skipWelcome: true,
-                fallbackStarknetLedgerApp: true,
+              sceneTransition.push("connect-ledger", {
+                name: "",
+                password: "",
+                app: "Bitcoin",
+                bip44Path,
+
+                appendModeInfo: {
+                  vaultId: appendModeInfo.vaultId,
+                  afterEnableChains: appendModeInfo.afterEnableChains,
+                },
                 stepPrevious: stepPrevious,
                 stepTotal: stepTotal,
               });
+
+              // sceneTransition.push("enable-chains", {
+              //   vaultId: appendModeInfo.vaultId,
+              //   keyType: "ledger",
+              //   candidateAddresses: [],
+              //   isFresh: false,
+              //   skipWelcome: true,
+              //   fallbackStarknetLedgerApp: true,
+              //   stepPrevious: stepPrevious,
+              //   stepTotal: stepTotal,
+              // });
               // navigate("/welcome", {
               //   replace: true,
               // });
@@ -254,6 +268,213 @@ export const ConnectLedgerScene: FunctionComponent<{
                   pubKey: pubKey.toBytes(),
                   app: propApp,
                   bip44Path,
+                },
+                stepPrevious: stepPrevious + 1,
+                stepTotal: stepTotal,
+              });
+            }
+          } catch (e) {
+            console.log(e);
+            setStep("connected");
+          }
+
+          await transport.close();
+
+          setIsLoading(false);
+
+          return;
+        }
+
+        case "Tron": {
+          let trxApp = new Trx(transport);
+
+          // Ensure that the keplr can connect to ethereum app on ledger.
+          // getAppConfiguration() works even if the ledger is on screen saver mode.
+          // To detect the screen saver mode, we should request the address before using.
+          try {
+            await trxApp.getAddress(`m/44'/195'/'0/0/0`);
+          } catch (e) {
+            // Device is locked or user is in home sceen or other app.
+            if (
+              e?.message.includes("(0x6b0c)") ||
+              e?.message.includes("(0x6511)") ||
+              e?.message.includes("(0x6e00)")
+            ) {
+              setStep("connected");
+            } else {
+              console.log(e);
+              setStep("unknown");
+              await transport.close();
+
+              setIsLoading(false);
+              return;
+            }
+          }
+
+          await LedgerUtils.tryAppOpen(transport, propApp);
+          trxApp = new Trx(transport);
+
+          try {
+            const res = await trxApp.getAddress(
+              `m/44'/195'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
+            );
+
+            const pubKey = new PubKeySecp256k1(
+              Buffer.from(res.publicKey, "hex")
+            );
+
+            setStep("app");
+
+            if (appendModeInfo) {
+              await keyRingStore.appendLedgerKeyApp(
+                appendModeInfo.vaultId,
+                pubKey.toBytes(true),
+                propApp
+              );
+              await chainStore.enableChainInfoInUI(
+                ...appendModeInfo.afterEnableChains
+              );
+
+              sceneTransition.push("enable-chains", {
+                vaultId: appendModeInfo.vaultId,
+                keyType: "ledger",
+                candidateAddresses: [],
+                isFresh: false,
+                skipWelcome: true,
+                fallbackStarknetLedgerApp: true,
+                stepPrevious: stepPrevious,
+                stepTotal: stepTotal,
+              });
+              navigate("/welcome", {
+                replace: true,
+              });
+            } else {
+              sceneTransition.replaceAll("finalize-key", {
+                name,
+                password,
+                ledger: {
+                  pubKey: pubKey.toBytes(),
+                  app: propApp,
+                  bip44Path,
+                },
+                stepPrevious: stepPrevious + 1,
+                stepTotal: stepTotal,
+              });
+            }
+          } catch (e) {
+            console.log(e);
+            setStep("connected");
+          }
+
+          await transport.close();
+
+          setIsLoading(false);
+
+          return;
+        }
+        case "Bitcoin": {
+          let btcApp = new Btc(transport);
+          try {
+            await btcApp.getWalletPublicKey("84'/0'/'0/0/0");
+            await btcApp.getWalletPublicKey("44'/0'/'0/0/0");
+          } catch (e) {
+            console.log(e, "err2");
+            // Device is locked or user is in home sceen or other app.
+            if (
+              e?.message.includes("(0x6b0c)") ||
+              e?.message.includes("(0x6511)") ||
+              e?.message.includes("(0x6e00)")
+            ) {
+              setStep("connected");
+            } else {
+              console.log(e);
+              setStep("unknown");
+              await transport.close();
+
+              setIsLoading(false);
+              return;
+            }
+          }
+
+          transport = await LedgerUtils.tryAppOpen(transport, propApp);
+          btcApp = new Btc(transport);
+
+          try {
+            const res = await btcApp.getWalletPublicKey(
+              `84'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+              {
+                format: "bech32",
+                verify: false,
+              }
+            );
+            const res44 = await btcApp.getWalletPublicKey(
+              `44'/0'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`,
+              {
+                format: "legacy",
+                verify: false,
+              }
+            );
+            const pubKey = new PubKeySecp256k1(
+              Buffer.from(res.publicKey, "hex")
+            );
+            const pubKey44 = new PubKeySecp256k1(
+              Buffer.from(res44.publicKey, "hex")
+            );
+
+            setStep("app");
+
+            if (appendModeInfo) {
+              await keyRingStore.appendLedgerKeyApp(
+                appendModeInfo.vaultId,
+                pubKey.toBytes(true),
+                `${propApp}84`
+              );
+              await keyRingStore.appendLedgerKeyApp(
+                appendModeInfo.vaultId,
+                pubKey44.toBytes(true),
+                `${propApp}44`
+              );
+              await chainStore.enableChainInfoInUI(
+                ...appendModeInfo.afterEnableChains
+              );
+
+              sceneTransition.push("connect-ledger", {
+                name: "",
+                password: "",
+                app: "Tron",
+                bip44Path,
+
+                appendModeInfo: {
+                  vaultId: appendModeInfo.vaultId,
+                  afterEnableChains: appendModeInfo.afterEnableChains,
+                },
+                stepPrevious: stepPrevious,
+                stepTotal: stepTotal,
+              });
+
+              // sceneTransition.push("enable-chains", {
+              //   vaultId: appendModeInfo.vaultId,
+              //   keyType: "ledger",
+              //   candidateAddresses: [],
+              //   isFresh: false,
+              //   skipWelcome: true,
+              //   fallbackStarknetLedgerApp: true,
+              //   stepPrevious: stepPrevious,
+              //   stepTotal: stepTotal,
+              // });
+              // navigate("/welcome", {
+              //   replace: true,
+              // });
+            } else {
+              sceneTransition.replaceAll("finalize-key", {
+                name,
+                password,
+                ledger: {
+                  pubKey: pubKey.toBytes(),
+                  pubKey44: pubKey44.toBytes(),
+                  bip44Path,
+                  app: `${propApp}84`,
+                  app44: `${propApp}44`,
                 },
                 stepPrevious: stepPrevious + 1,
                 stepTotal: stepTotal,
@@ -306,7 +527,7 @@ export const ConnectLedgerScene: FunctionComponent<{
                     case "Secret":
                       return <SecretIcon />;
                     case "Tron":
-                      return <StarknetIcon />;
+                      return <CosmosIcon />;
                     default:
                       return <CosmosIcon />;
                   }
@@ -318,7 +539,7 @@ export const ConnectLedgerScene: FunctionComponent<{
           />
         </Stack>
 
-        {propApp !== "Tron" && (
+        {propApp !== "Starknet" && (
           <Fragment>
             <Gutter size="1.25rem" />
             <YAxis alignX="center">
@@ -359,7 +580,7 @@ export const ConnectLedgerScene: FunctionComponent<{
 
         <Gutter size="1.25rem" />
 
-        {propApp === "Tron" && (
+        {propApp === "Starknet" && (
           <GuideBox
             title="The custom derivation path set in the previous step does not apply to Starknet App accounts."
             backgroundColor={

@@ -61,6 +61,7 @@ export const EnableChainsScene: FunctionComponent<{
   fallbackEthereumLedgerApp?: boolean;
   fallbackStarknetLedgerApp?: boolean;
   fallbackBtcLedgerApp?: boolean;
+  fallbackTrxLedgerApp?: boolean;
   stepPrevious: number;
   stepTotal: number;
 }> = observer(
@@ -71,6 +72,7 @@ export const EnableChainsScene: FunctionComponent<{
     fallbackEthereumLedgerApp,
     fallbackStarknetLedgerApp,
     fallbackBtcLedgerApp,
+    fallbackTrxLedgerApp,
     stepPrevious,
     stepTotal,
     skipWelcome,
@@ -152,7 +154,6 @@ export const EnableChainsScene: FunctionComponent<{
               const chainInfo = chainStore.getChain(
                 modularChainInfo.cosmos.chainId
               );
-              console.log("chaichainInfo", chainInfo);
 
               if (keyRingStore.needKeyCoinTypeFinalize(vaultId, chainInfo)) {
                 promises.push(
@@ -179,7 +180,6 @@ export const EnableChainsScene: FunctionComponent<{
                   const accountTron = tronAccountStore.getAccount(
                     chainInfo.chainId
                   );
-                  console.log("accountTron", accountTron.base58Address);
                 }
                 const account = accountStore.getAccount(chainInfo.chainId);
                 promises.push(
@@ -471,14 +471,38 @@ export const EnableChainsScene: FunctionComponent<{
               }
             }
 
+            if (fallbackBtcLedgerApp) {
+              try {
+                KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+                  chainInfo.chainId
+                );
+                return true;
+              } catch {
+                return false;
+              }
+            }
+
+            if (fallbackTrxLedgerApp) {
+              try {
+                KeyRingCosmosService.throwErrorIfEthermintWithLedgerButNotSupported(
+                  chainInfo.chainId
+                );
+                return true;
+              } catch {
+                return false;
+              }
+            }
+
             if (fallbackStarknetLedgerApp) {
               return false;
             }
 
             return true;
-          } else if ("starknet" in modularChainInfo) {
-            return fallbackStarknetLedgerApp;
-          } else {
+          }
+          // else if ("starknet" in modularChainInfo) {
+          //   return fallbackStarknetLedgerApp;
+          // }
+          else {
             return false;
           }
         });
@@ -632,11 +656,7 @@ export const EnableChainsScene: FunctionComponent<{
                   "eth-key-sign"
                 ));
 
-            if (fallbackStarknetLedgerApp) {
-              if ("starknet" in enabledModularChainInfo) {
-                numSelected++;
-              }
-            } else if (fallbackEthereumLedgerApp) {
+            if (fallbackEthereumLedgerApp) {
               if (isEthereumAppNeed) {
                 numSelected++;
               }
@@ -805,13 +825,6 @@ export const EnableChainsScene: FunctionComponent<{
                       );
                       return (
                         chainInfo.stakeCurrency || chainInfo.currencies[0]
-                      ).coinDenom
-                        .toLowerCase()
-                        .includes(trimSearchLowerCase);
-                    } else if ("starknet" in modularChainInfo) {
-                      return (
-                        modularChainInfo.starknet.currencies[0] ||
-                        modularChainInfo.starknet.currencies[1]
                       ).coinDenom
                         .toLowerCase()
                         .includes(trimSearchLowerCase);
@@ -1101,12 +1114,33 @@ export const EnableChainsScene: FunctionComponent<{
                 const isBtc = chainInfo.features?.includes("btc");
 
                 if (isBtc) {
-                  // enables.splice(i, 1);
-                  // i--;
-                  // // And push it disables
-                  // disables.push(enable);
+                  enables.splice(i, 1);
+                  i--;
+                  // And push it disables
+                  disables.push(enable);
 
                   ledgerBtcAppNeeds.push(enable);
+                }
+              }
+
+              const ledgerTrxAppNeeds: string[] = [];
+              for (let i = 0; i < enables.length; i++) {
+                if (!fallbackTrxLedgerApp) {
+                  break;
+                }
+
+                const enable = enables[i];
+
+                const chainInfo = chainStore.getChain(enable);
+                const isTron = chainInfo.features?.includes("tron");
+
+                if (isTron) {
+                  enables.splice(i, 1);
+                  i--;
+                  // And push it disables
+                  disables.push(enable);
+
+                  ledgerTrxAppNeeds.push(enable);
                 }
               }
 
@@ -1146,48 +1180,7 @@ export const EnableChainsScene: FunctionComponent<{
                 });
               } else {
                 if (keyType === "ledger") {
-                  if (fallbackStarknetLedgerApp) {
-                    if (ledgerStarknetAppNeeds.length > 0) {
-                      const keyInfo = keyRingStore.keyInfos.find(
-                        (keyInfo) => keyInfo.id === vaultId
-                      );
-
-                      if (!keyInfo) {
-                        throw new Error("KeyInfo not found");
-                      }
-                      if (keyInfo.insensitive["Starknet"]) {
-                        await chainStore.enableChainInfoInUI(
-                          ...ledgerStarknetAppNeeds
-                        );
-                        dispatchGlobalEventExceptSelf(
-                          "owallet_enabled_chain_changed",
-                          keyInfo.id
-                        );
-                        replaceToWelcomePage();
-                      } else {
-                        const bip44Path = keyInfo.insensitive["bip44Path"];
-                        if (!bip44Path) {
-                          throw new Error("bip44Path not found");
-                        }
-
-                        sceneTransition.push("connect-ledger", {
-                          name: "",
-                          password: "",
-                          app: "Starknet",
-                          bip44Path,
-
-                          appendModeInfo: {
-                            vaultId,
-                            afterEnableChains: ledgerStarknetAppNeeds,
-                          },
-                          stepPrevious: stepPrevious,
-                          stepTotal: stepTotal,
-                        });
-                      }
-                    } else {
-                      replaceToWelcomePage();
-                    }
-                  } else if (fallbackEthereumLedgerApp) {
+                  if (fallbackEthereumLedgerApp) {
                     if (ledgerEthereumAppNeeds.length > 0) {
                       const keyInfo = keyRingStore.keyInfos.find(
                         (keyInfo) => keyInfo.id === vaultId
@@ -1203,16 +1196,35 @@ export const EnableChainsScene: FunctionComponent<{
                           "owallet_enabled_chain_changed",
                           keyInfo.id
                         );
-                        sceneTransition.push("enable-chains", {
-                          vaultId,
-                          keyType,
-                          candidateAddresses: [],
-                          isFresh: false,
-                          skipWelcome,
-                          fallbackStarknetLedgerApp: true,
-                          stepPrevious: stepPrevious + 1,
+
+                        const bip44Path = keyInfo.insensitive["bip44Path"];
+                        if (!bip44Path) {
+                          throw new Error("bip44Path not found");
+                        }
+                        sceneTransition.push("connect-ledger", {
+                          name: "",
+                          password: "",
+                          app: "Bitcoin",
+                          bip44Path,
+
+                          appendModeInfo: {
+                            vaultId,
+                            afterEnableChains: ledgerBtcAppNeeds,
+                          },
+                          stepPrevious: stepPrevious,
                           stepTotal: stepTotal,
                         });
+
+                        // sceneTransition.push("enable-chains", {
+                        //   vaultId,
+                        //   keyType,
+                        //   candidateAddresses: [],
+                        //   isFresh: false,
+                        //   skipWelcome,
+                        //   fallbackBtcLedgerApp: true,
+                        //   stepPrevious: stepPrevious + 1,
+                        //   stepTotal: stepTotal,
+                        // });
                       } else {
                         const bip44Path = keyInfo.insensitive["bip44Path"];
                         if (!bip44Path) {
@@ -1239,7 +1251,138 @@ export const EnableChainsScene: FunctionComponent<{
                         candidateAddresses: [],
                         isFresh: false,
                         skipWelcome,
-                        fallbackStarknetLedgerApp: true,
+                        fallbackStarknetLedgerApp: false,
+                        stepPrevious: stepPrevious + 1,
+                        stepTotal: stepTotal,
+                      });
+                    }
+                  } else if (fallbackBtcLedgerApp) {
+                    if (ledgerBtcAppNeeds.length > 0) {
+                      const keyInfo = keyRingStore.keyInfos.find(
+                        (keyInfo) => keyInfo.id === vaultId
+                      );
+                      if (!keyInfo) {
+                        throw new Error("KeyInfo not found");
+                      }
+                      if (keyInfo.insensitive["Bitcoin"]) {
+                        await chainStore.enableChainInfoInUI(
+                          ...ledgerBtcAppNeeds
+                        );
+                        dispatchGlobalEventExceptSelf(
+                          "owallet_enabled_chain_changed",
+                          keyInfo.id
+                        );
+
+                        const bip44Path = keyInfo.insensitive["bip44Path"];
+                        if (!bip44Path) {
+                          throw new Error("bip44Path not found");
+                        }
+                        sceneTransition.push("connect-ledger", {
+                          name: "",
+                          password: "",
+                          app: "Tron",
+                          bip44Path,
+                          appendModeInfo: {
+                            vaultId,
+                            afterEnableChains: ledgerTrxAppNeeds,
+                          },
+                          stepPrevious: stepPrevious,
+                          stepTotal: stepTotal,
+                        });
+
+                        // sceneTransition.push("enable-chains", {
+                        //   vaultId,
+                        //   keyType,
+                        //   candidateAddresses: [],
+                        //   isFresh: false,
+                        //   skipWelcome,
+                        //   fallbackStarknetLedgerApp: false,
+                        //   stepPrevious: stepPrevious + 1,
+                        //   stepTotal: stepTotal,
+                        // });
+                      } else {
+                        const bip44Path = keyInfo.insensitive["bip44Path"];
+                        if (!bip44Path) {
+                          throw new Error("bip44Path not found");
+                        }
+                        sceneTransition.push("connect-ledger", {
+                          name: "",
+                          password: "",
+                          app: "Bitcoin",
+                          bip44Path,
+
+                          appendModeInfo: {
+                            vaultId,
+                            afterEnableChains: ledgerBtcAppNeeds,
+                          },
+                          stepPrevious: stepPrevious,
+                          stepTotal: stepTotal,
+                        });
+                      }
+                    } else {
+                      sceneTransition.push("enable-chains", {
+                        vaultId,
+                        keyType,
+                        candidateAddresses: [],
+                        isFresh: false,
+                        skipWelcome,
+                        fallbackTrxLedgerApp: true,
+                        stepPrevious: stepPrevious + 1,
+                        stepTotal: stepTotal,
+                      });
+                    }
+                  } else if (fallbackTrxLedgerApp) {
+                    if (ledgerTrxAppNeeds.length > 0) {
+                      const keyInfo = keyRingStore.keyInfos.find(
+                        (keyInfo) => keyInfo.id === vaultId
+                      );
+                      if (!keyInfo) {
+                        throw new Error("KeyInfo not found");
+                      }
+                      if (keyInfo.insensitive["Tron"]) {
+                        await chainStore.enableChainInfoInUI(
+                          ...ledgerTrxAppNeeds
+                        );
+                        dispatchGlobalEventExceptSelf(
+                          "owallet_enabled_chain_changed",
+                          keyInfo.id
+                        );
+                        // sceneTransition.push("enable-chains", {
+                        //   vaultId,
+                        //   keyType,
+                        //   candidateAddresses: [],
+                        //   isFresh: false,
+                        //   skipWelcome,
+                        //   fallbackStarknetLedgerApp: false,
+                        //   stepPrevious: stepPrevious + 1,
+                        //   stepTotal: stepTotal,
+                        // });
+                      } else {
+                        const bip44Path = keyInfo.insensitive["bip44Path"];
+                        if (!bip44Path) {
+                          throw new Error("bip44Path not found");
+                        }
+                        sceneTransition.push("connect-ledger", {
+                          name: "",
+                          password: "",
+                          app: "Tron",
+                          bip44Path,
+                          appendModeInfo: {
+                            vaultId,
+                            afterEnableChains: ledgerTrxAppNeeds,
+                          },
+                          stepPrevious: stepPrevious,
+                          stepTotal: stepTotal,
+                        });
+                      }
+                    } else {
+                      sceneTransition.push("enable-chains", {
+                        vaultId,
+                        keyType,
+                        candidateAddresses: [],
+                        isFresh: false,
+                        skipWelcome,
+                        fallbackStarknetLedgerApp: false,
                         stepPrevious: stepPrevious + 1,
                         stepTotal: stepTotal,
                       });
@@ -1274,30 +1417,15 @@ export const EnableChainsScene: FunctionComponent<{
               }
             }}
           />
-          {fallbackEthereumLedgerApp || fallbackStarknetLedgerApp ? (
-            <React.Fragment>
-              <Gutter size="0.75rem" />
-              <TextButton
-                text={intl.formatMessage({
-                  id: "pages.register.enable-chains.skip-button",
-                })}
-                onClick={() =>
-                  fallbackEthereumLedgerApp
-                    ? sceneTransition.push("enable-chains", {
-                        vaultId,
-                        keyType: "ledger",
-                        candidateAddresses: [],
-                        isFresh: false,
-                        skipWelcome: true,
-                        fallbackStarknetLedgerApp: true,
-                        stepPrevious: stepPrevious + 1,
-                        stepTotal: stepTotal,
-                      })
-                    : replaceToWelcomePage()
-                }
-              />
-            </React.Fragment>
-          ) : null}
+          <React.Fragment>
+            <Gutter size="0.75rem" />
+            <TextButton
+              text={intl.formatMessage({
+                id: "pages.register.enable-chains.skip-button",
+              })}
+              onClick={() => replaceToWelcomePage()}
+            />
+          </React.Fragment>
         </Box>
       </RegisterSceneBox>
     );
@@ -1362,7 +1490,6 @@ const ChainItem: FunctionComponent<{
             <YAxis>
               <Subtitle2>
                 {(() => {
-                  // Noble의 경우만 약간 특수하게 표시해줌
                   if (chainIdentifier === "noble") {
                     return `${modularChainInfo.chainName} (USDC)`;
                   }
