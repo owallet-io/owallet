@@ -272,6 +272,10 @@ export class SvmAccountBase {
     //   transaction.serialize({requireAllSignatures:true})
     // );
     // const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
+    const txStr = encode(
+      transaction.serialize({ requireAllSignatures: false })
+    );
+    const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
     const simulationResult = await connection.simulateTransaction(transaction);
     if (!simulationResult.value.unitsConsumed)
       throw new Error("Unable to estimate the fee");
@@ -280,7 +284,9 @@ export class SvmAccountBase {
     const units = unitsConsumed.lte(DefaultUnitLimit)
       ? DefaultUnitLimit
       : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
-    const microLamports = new Dec(50000);
+    const microLamports = new Dec(
+      dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
+    );
 
     transaction.add(
       // Request a specific number of compute units
@@ -305,7 +311,6 @@ export class SvmAccountBase {
     }
   ) {
     try {
-      console.log(this.chainId, "this.chainId");
       const chainInfo = this.chainGetter.getChain(this.chainId);
       if (!this.chainId.startsWith("solana")) {
         throw new Error("No Svm info provided");
@@ -323,7 +328,6 @@ export class SvmAccountBase {
         //@ts-ignore
         decode(result.signedTx)
       ) as Transaction;
-      console.log(signedTx, "signedTx");
       const serializedTransaction = signedTx.serialize();
 
       const signature = await connection.sendRawTransaction(
