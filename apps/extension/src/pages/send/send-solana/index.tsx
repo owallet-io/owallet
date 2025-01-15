@@ -223,11 +223,11 @@ export const SendSolanaPage: FunctionComponent<{
         const { blockhash } = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockhash;
         transaction.feePayer = fromPublicKey;
-        // const txStr = encode(
-        //   transaction.serialize({ requireAllSignatures: false })
-        // );
-        // const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
-        // console.log(dynamicMicroLamports, "dynamicMicroLamports");
+        const txStr = encode(
+          transaction.serialize({ requireAllSignatures: false })
+        );
+        const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
+        console.log(dynamicMicroLamports, "dynamicMicroLamports");
         const message = transaction.compileMessage();
         const feeInLamports = await connection.getFeeForMessage(message);
         if (feeInLamports === null) {
@@ -243,7 +243,9 @@ export const SendSolanaPage: FunctionComponent<{
         const units = unitsConsumed.lte(DefaultUnitLimit)
           ? DefaultUnitLimit
           : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
-        const microLamports = new Dec(50000);
+        const microLamports = new Dec(
+          dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
+        );
 
         transaction.add(
           // Request a specific number of compute units
