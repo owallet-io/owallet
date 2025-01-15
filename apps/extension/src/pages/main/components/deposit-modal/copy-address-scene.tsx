@@ -203,8 +203,6 @@ export const CopyAddressScene: FunctionComponent<{
       return 0;
     });
 
-  console.log("addresses");
-
   const [blockInteraction, setBlockInteraction] = useState(false);
 
   return (

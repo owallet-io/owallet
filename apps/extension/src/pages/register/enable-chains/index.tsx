@@ -342,6 +342,20 @@ export const EnableChainsScene: FunctionComponent<{
           }
 
           if (
+            chainStore.chainInfos.find(
+              (c) => c.chainIdentifier === "eip155:728126428"
+            )
+          ) {
+            enabledChainIdentifiers.push("eip155:728126428");
+          }
+
+          if (
+            chainStore.chainInfos.find((c) => c.chainIdentifier === "bitcoin")
+          ) {
+            enabledChainIdentifiers.push("bitcoin");
+          }
+
+          if (
             chainStore.chainInfos.find((c) => c.chainIdentifier === "eip155:1")
           ) {
             enabledChainIdentifiers.push("eip155:1");
@@ -782,6 +796,10 @@ export const EnableChainsScene: FunctionComponent<{
               const blockInteraction =
                 enabledChainIdentifiers.length <= 1 && enabled;
 
+              const isForcedSelected =
+                modularChainInfo.chainId === "bitcoin" ||
+                modularChainInfo.chainId === "eip155:728126428";
+
               return (
                 <ChainItem
                   key={chainIdentifier}
@@ -791,6 +809,9 @@ export const EnableChainsScene: FunctionComponent<{
                   blockInteraction={blockInteraction}
                   isFresh={isFresh ?? false}
                   onClick={() => {
+                    if (isForcedSelected) {
+                      return;
+                    }
                     if (enabledChainIdentifierMap.get(chainIdentifier)) {
                       setEnabledChainIdentifiers(
                         enabledChainIdentifiers.filter(
