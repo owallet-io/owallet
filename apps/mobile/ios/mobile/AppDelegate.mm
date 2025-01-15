@@ -7,7 +7,6 @@
 #import <AppCenterReactNative.h>
 #import <AppCenterReactNativeAnalytics.h>
 #import <AppCenterReactNativeCrashes.h>
-#import <RNBranch/RNBranch.h>
 @implementation AppDelegate
 
 
@@ -18,7 +17,6 @@
   [AppCenterReactNativeAnalytics registerWithInitiallyEnabled:true];
   [AppCenterReactNativeCrashes registerWithAutomaticProcessing];
   [FIRApp configure];
-  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
   self.moduleName = @"mobile";
   // You can add your custom initial props in the dictionary below.
   // They will be passed down to the ViewController used by React Native.
@@ -27,13 +25,11 @@
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-  [RNBranch application:app openURL:url options:options];
   [RCTLinkingManager application:app openURL:url options:options];
   return YES;
 }
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-  [RNBranch continueUserActivity:userActivity];
   return YES;
 }
 
