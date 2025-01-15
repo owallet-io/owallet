@@ -24,20 +24,10 @@ import ErrorBoundary from "react-native-error-boundary";
 import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
-import branch, { BranchEvent, BranchEventParams } from "react-native-branch";
 import { LedgerBLEProvider } from "@src/providers/ledger-ble";
 import { ModalBaseProvider } from "@src/modals/v2/provider";
 
 const queryClient = new QueryClient();
-// Call `setRequestMetadata` before `subscribe`
-branch.subscribe({
-  onOpenStart: (params) => {
-    console.log("Subscribed to branch successfully!!" + params);
-  },
-  onOpenComplete: (params2) => {
-    console.log("Subscribed to branch successfully!!", params2);
-  },
-});
 
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
