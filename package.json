@@ -47,7 +47,7 @@
     "@oraichain/oraidex-common": "^1.1.44",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
-    "@oraichain/oraidex-universal-swap": "^1.1.22",
+    "@oraichain/oraidex-universal-swap": "^1.1.27-beta.1",
     "@oraichain/owallet-wallet-standard": "0.1.1",
     "@oraichain/tonbridge-sdk": "^1.4.2",
     "@orbs-network/ton-access": "^2.3.3",
@@ -147,7 +147,7 @@
     "webextension-polyfill": "0.10.0",
     "@ledgerhq/hw-app-eth": "6.29.3",
     "@oraichain/oraidex-common": "1.1.44",
-    "@oraichain/oraidex-universal-swap": "1.1.26"
+    "@oraichain/oraidex-universal-swap": "1.1.27-beta.1"
   },
   "browser": {
     "assert": false

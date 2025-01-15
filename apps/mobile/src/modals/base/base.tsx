@@ -68,7 +68,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       return;
     }
 
-    bottomSheetModalRef.current?.forceClose();
+    bottomSheetModalRef.current?.close();
     handleDismiss();
   }, [isOpen]);
 

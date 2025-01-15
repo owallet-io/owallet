@@ -26,6 +26,7 @@ import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
 import branch, { BranchEvent, BranchEventParams } from "react-native-branch";
 import { LedgerBLEProvider } from "@src/providers/ledger-ble";
+import { ModalBaseProvider } from "@src/modals/v2/provider";
 
 const queryClient = new QueryClient();
 // Call `setRequestMetadata` before `subscribe`
@@ -80,19 +81,21 @@ export const App = () => {
                 <AppIntlProvider>
                   <LedgerBLEProvider>
                     <SafeAreaProvider>
-                      <ModalsProvider>
-                        <PopupRootProvider>
-                          <LoadingScreenProvider>
-                            <ConfirmModalProvider>
-                              <InteractionModalsProivder>
-                                <QueryClientProvider client={queryClient}>
-                                  <AppNavigation />
-                                </QueryClientProvider>
-                              </InteractionModalsProivder>
-                            </ConfirmModalProvider>
-                          </LoadingScreenProvider>
-                        </PopupRootProvider>
-                      </ModalsProvider>
+                      <ModalBaseProvider>
+                        <ModalsProvider>
+                          <PopupRootProvider>
+                            <LoadingScreenProvider>
+                              <ConfirmModalProvider>
+                                <InteractionModalsProivder>
+                                  <QueryClientProvider client={queryClient}>
+                                    <AppNavigation />
+                                  </QueryClientProvider>
+                                </InteractionModalsProivder>
+                              </ConfirmModalProvider>
+                            </LoadingScreenProvider>
+                          </PopupRootProvider>
+                        </ModalsProvider>
+                      </ModalBaseProvider>
                     </SafeAreaProvider>
                   </LedgerBLEProvider>
                 </AppIntlProvider>

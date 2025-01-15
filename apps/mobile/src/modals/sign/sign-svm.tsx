@@ -201,7 +201,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
 import { FeeSummary } from "./components/fee-summary";
-import { CoinPretty, Dec } from "@owallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
 import { Buffer } from "buffer/";
 import { registerModal } from "@src/modals/base";
 import { defaultRegistry } from "@src/modals/sign/cosmos/message-registry";
@@ -216,26 +216,45 @@ import { TransactionType } from "@owallet/types";
 import { UnsignedOasisTransaction } from "@owallet/stores-oasis";
 import { useTheme } from "@src/themes/theme-provider";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
-import { Connection } from "@solana/web3.js";
-import { deserializeTransaction, getSimulationTxSolana } from "@owallet/common";
+import {
+  ComputeBudgetProgram,
+  Connection,
+  PublicKey,
+  Transaction,
+  TransactionInstruction,
+  TransactionMessage,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import {
+  deserializeTransaction,
+  getSimulationTxSolana,
+  _getPriorityFeeSolana,
+} from "@owallet/common";
 import { defaultProtoCodec } from "@owallet/cosmos";
 import { MessageItem } from "@src/modals/sign/cosmos/message-item";
 import { HighFeeWarning } from "@src/modals/sign/components/high-fee-warning";
 import ItemDivided from "@screens/transactions/components/item-divided";
 import { GuideBox } from "@components/guide-box";
+import { encode } from "bs58";
 
 export const SignSvmModal = registerModal(
   observer<{
     interactionData: NonNullable<SignSvmInteractionStore["waitingData"]>;
   }>(({ interactionData }) => {
-    const { chainStore, signSvmInteractionStore, queriesStore } = useStore();
+    const {
+      chainStore,
+      signSvmInteractionStore,
+      queriesStore,
+      solanaAccountStore,
+    } = useStore();
     const [simulationData, setSimulationData] = useState();
     const intl = useIntl();
     const style = useStyle();
 
     const [isViewData, setIsViewData] = useState(false);
-
+    const [txStrData, setTxStrData] = useState("");
     const chainId = interactionData.data.chainId;
+    const accountInfo = solanaAccountStore.getAccount(chainId);
     const chainInfo = chainStore.getChain(chainId);
     const signer = interactionData.data.signer;
 
@@ -298,7 +317,7 @@ export const SignSvmModal = registerModal(
       try {
         await signSvmInteractionStore.approveWithProceedNext(
           interactionData.id,
-          interactionData.data.message as string,
+          txStrData || (interactionData.data.message as string),
           // TODO: Ledger support
           undefined,
           async () => {
@@ -320,44 +339,234 @@ export const SignSvmModal = registerModal(
         if (data?.message) {
           try {
             const connection = new Connection(chainInfo.rpc, "confirmed");
-            const transferInstruction = deserializeTransaction(
+            const transferDecoded = deserializeTransaction(
               data?.message as string
-            ).message as any;
+            );
+            const msgTransfer = transferDecoded.message as any;
+            // (async () => {
+            //   try {
+            //     const feeInLamports = await connection.getFeeForMessage(
+            //       transferInstruction
+            //     );
+            //     if (!feeInLamports?.value) return;
+            //     const baseFee = new Dec(feeInLamports.value || 0);
+            //     const fee = [
+            //       {
+            //         amount: baseFee.roundUp().toString(),
+            //         currency: feeConfig.chainInfo.feeCurrencies[0],
+            //       },
+            //     ];
+            //     feeConfig.setManualFee(fee);
+            //
+            //     const result = await getSimulationTxSolana(
+            //       [data.message as string],
+            //       chainInfo.chainId.replace("solana:", ""),
+            //       data.signer,
+            //       data.origin
+            //     );
+            //     console.log(result, "result");
+            //     // if (!result.simulation) return;
+            //     if (!result) {
+            //       setSimulationData({
+            //         status: "ERROR",
+            //         error_details: {
+            //           message: "Network request failed",
+            //         },
+            //       });
+            //       return;
+            //     }
+            //     setSimulationData(result);
+            //   } catch (e) {
+            //     console.log(e, "eeerrr");
+            //     setSimulationData({
+            //       status: "ERROR",
+            //       error_details: {
+            //         message: e?.message || JSON.stringify(e),
+            //       },
+            //     });
+            //   }
+            // })();
             (async () => {
               try {
                 const feeInLamports = await connection.getFeeForMessage(
-                  transferInstruction
+                  //@ts-ignore
+                  msgTransfer
                 );
                 if (!feeInLamports?.value) return;
-                const baseFee = new Dec(feeInLamports.value || 0);
-                const fee = [
-                  {
-                    amount: baseFee.roundUp().toString(),
-                    currency: feeConfig.chainInfo.feeCurrencies[0],
-                  },
-                ];
-                feeConfig.setManualFee(fee);
-
-                const result = await getSimulationTxSolana(
-                  [data.message as string],
-                  chainInfo.chainId.replace("solana:", ""),
-                  data.signer,
-                  data.origin
+                const dynamicMicroLamports = await _getPriorityFeeSolana(
+                  // @ts-ignore
+                  data?.message
                 );
-                console.log(result, "result");
-                // if (!result.simulation) return;
-                if (!result) {
-                  setSimulationData({
-                    status: "ERROR",
-                    error_details: {
-                      message: " Network request failed",
+                const simulationResult = await connection.simulateTransaction(
+                  transferDecoded
+                );
+                if (typeof simulationResult.value.unitsConsumed !== "number")
+                  throw new Error("Unable to estimate the fee");
+                const DefaultUnitLimit = new Dec(200_000);
+                const unitsConsumed = new Dec(
+                  simulationResult.value.unitsConsumed
+                );
+                const units = unitsConsumed.lte(DefaultUnitLimit)
+                  ? DefaultUnitLimit
+                  : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
+                const microLamports = new Dec(
+                  dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
+                );
+
+                const baseFeeOrigin = new Dec(10000);
+                const PriorityFee = units
+                  .mul(microLamports)
+                  .quoTruncate(DecUtils.getTenExponentNInPrecisionRange(6));
+                const feeEstimate = baseFeeOrigin.add(PriorityFee);
+                const baseFee = new Dec(feeInLamports.value || 0);
+                if (baseFee.lt(baseFeeOrigin)) {
+                  // Decode the instructions
+                  const instructions = msgTransfer.compiledInstructions.map(
+                    (instruction) => {
+                      // console.log(accountKeys[2], "accountKeys[index]");
+                      const keys = instruction.accountKeyIndexes.map(
+                        (index) => ({
+                          pubkey:
+                            typeof msgTransfer.staticAccountKeys[index] ===
+                            "string"
+                              ? new PublicKey(
+                                  msgTransfer.staticAccountKeys[index]
+                                )
+                              : msgTransfer.staticAccountKeys[index],
+                          //@ts-ignore
+                          isSigner: msgTransfer.isAccountSigner(index), // Check if it's a signer
+                          //@ts-ignore
+                          isWritable: msgTransfer.isAccountWritable(index), // Check if it's writable
+                        })
+                      );
+
+                      return new TransactionInstruction({
+                        keys,
+                        programId:
+                          msgTransfer.staticAccountKeys[
+                            instruction.programIdIndex
+                          ],
+                        // @ts-ignore
+                        data: Buffer.from(instruction.data),
+                      });
+                    }
+                  );
+                  const blockhash = (await connection.getLatestBlockhash())
+                    .blockhash;
+                  let transaction: VersionedTransaction | Transaction;
+                  const uniqueInstructions = instructions.filter(
+                    (instruction) =>
+                      !instruction.programId.equals(
+                        ComputeBudgetProgram.programId
+                      )
+                  );
+                  if ((transferDecoded as any)?.version === "legacy") {
+                    const messageV0 = new TransactionMessage({
+                      recentBlockhash: blockhash,
+                      instructions: [
+                        ...uniqueInstructions,
+                        ComputeBudgetProgram.setComputeUnitLimit({
+                          units: Number(units.roundUp().toString()), // Convert units to an integer
+                        }),
+                        ComputeBudgetProgram.setComputeUnitPrice({
+                          microLamports: Number(
+                            microLamports.roundUp().toString()
+                          ), // Set priority fee per compute unit in micro-lamports
+                        }),
+                      ],
+                      // @ts-ignore
+                      payerKey: new PublicKey(accountInfo.base58Address),
+                    }).compileToLegacyMessage();
+                    transaction = new VersionedTransaction(messageV0);
+                  } else {
+                    const messageV0 = new TransactionMessage({
+                      recentBlockhash: blockhash,
+                      instructions: [
+                        ...uniqueInstructions,
+                        ComputeBudgetProgram.setComputeUnitLimit({
+                          units: Number(units.roundUp().toString()), // Convert units to an integer
+                        }),
+                        ComputeBudgetProgram.setComputeUnitPrice({
+                          microLamports: Number(
+                            microLamports.roundUp().toString()
+                          ), // Set priority fee per compute unit in micro-lamports
+                        }),
+                      ],
+                      // @ts-ignore
+                      payerKey: new PublicKey(accountInfo.base58Address),
+                    }).compileToV0Message();
+                    transaction = new VersionedTransaction(messageV0);
+                  }
+                  const feeInLamportsFinal = await connection.getFeeForMessage(
+                    //@ts-ignore
+                    transaction?.message
+                  );
+
+                  let fee = [
+                    {
+                      amount: feeEstimate.roundUp().toString(),
+                      currency: feeConfig.chainInfo.feeCurrencies[0],
                     },
-                  });
-                  return;
+                  ];
+                  if (feeInLamportsFinal.value > 0) {
+                    const baseFeeNew = new Dec(feeInLamportsFinal.value || 0);
+                    fee = [
+                      {
+                        amount: baseFeeNew.roundUp().toString(),
+                        currency: feeConfig.chainInfo.feeCurrencies[0],
+                      },
+                    ];
+                  }
+                  feeConfig.setManualFee(fee);
+                  setTxStrData(encode(transaction.serialize()));
+                  const result = await getSimulationTxSolana(
+                    [encode(transaction.serialize())],
+                    chainInfo.chainId.replace("solana:", ""),
+                    accountInfo.base58Address,
+                    data.origin
+                  );
+
+                  if (!result) {
+                    setSimulationData({
+                      status: "ERROR",
+                      error_details: {
+                        message: "Network request failed",
+                      },
+                    });
+                    return;
+                  }
+                  setSimulationData(result);
+                } else {
+                  console.log(
+                    baseFee.roundUp().toString(),
+                    "baseFee.roundUp().toString()"
+                  );
+                  const fee = [
+                    {
+                      amount: baseFee.roundUp().toString(),
+                      currency: feeConfig.chainInfo.feeCurrencies[0],
+                    },
+                  ];
+                  feeConfig.setManualFee(fee);
+                  const result = await getSimulationTxSolana(
+                    [data.message as string],
+                    chainInfo.chainId.replace("solana:", ""),
+                    accountInfo.base58Address,
+                    data.origin
+                  );
+                  if (!result) {
+                    setSimulationData({
+                      status: "ERROR",
+                      error_details: {
+                        message: "Network request failed",
+                      },
+                    });
+                    return;
+                  }
+                  setSimulationData(result);
                 }
-                setSimulationData(result);
               } catch (e) {
-                console.log(e, "eeerrr");
+                setTxStrData(undefined);
                 setSimulationData({
                   status: "ERROR",
                   error_details: {
@@ -471,7 +680,7 @@ export const SignSvmModal = registerModal(
                             .toString();
                         }
                         return `${(item.out || item.in).value} ${
-                          item.asset.symbol
+                          item.asset.symbol || "SOL"
                         }`;
                       })();
                       if (valueCheck && valueCheck.lte(new Dec(0))) return;
@@ -553,7 +762,7 @@ export const SignSvmModal = registerModal(
             <OWButton
               type={"primary"}
               size="large"
-              // disabled={buttonDisabled}
+              disabled={!!simulationData === false}
               label={intl.formatMessage({ id: "button.approve" })}
               style={{ flex: 1, width: "100%" }}
               onPress={approve}

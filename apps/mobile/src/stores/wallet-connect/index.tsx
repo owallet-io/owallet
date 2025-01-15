@@ -192,8 +192,6 @@ export class WalletConnectStore {
         }
         if (this.sessionProposalResolverMap.has(topic)) {
           runInAction(() => {
-            // 엄밀하게 말하면 확신할 수 있는건 아니지만
-            // 이미 pairing된 uri로 wc 요청이 들어오면 request 처리일 확률이 높음.
             this._isPendingWcCallFromDeepLinkClient = true;
           });
           // Already requested. Do nothing.

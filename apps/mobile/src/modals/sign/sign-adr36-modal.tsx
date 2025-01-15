@@ -21,9 +21,10 @@ import OWText from "@components/text/ow-text";
 import { ViewDataButton } from "@src/modals/sign/index";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 // import {ScrollView} from '../../components/scroll-view/common-scroll-view';
 
-export const ADR36SignModal = registerModal(
+export const ADR36SignModal = registerCardModal(
   observer<{
     isOpen: boolean;
     // close: (isOpen: boolean) => void;

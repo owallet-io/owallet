@@ -15,8 +15,9 @@ import images from "@assets/images";
 import OWText from "@components/text/ow-text";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 
-export const BasicAccessEVMModal = registerModal(
+export const BasicAccessEVMModal = registerCardModal(
   observer<{
     isOpen: boolean;
     // close: (isOpen: boolean) => void;
