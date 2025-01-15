@@ -70,13 +70,13 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     queriesStore,
     priceStore,
   } = useStore();
-  const [txStrData, setTxStrData] = useState();
+  const [txStrData, setTxStrData] = useState("");
 
   const history = useHistory();
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
   });
-  const [simulationData, setSimulationData] = useState<any>();
+  const [simulationData, setSimulationData] = useState<any>(null);
 
   const [dataSetting, setDataSetting] = useState(false);
   const dataRef = useRef();
@@ -189,10 +189,6 @@ export const SignSvmPage: FunctionComponent = observer(() => {
               const blockhash = (await connection.getLatestBlockhash())
                 .blockhash;
               let transaction: VersionedTransaction | Transaction;
-              console.log(
-                (transferDecoded as any)?.version,
-                "isVersionedTransactionNew(transferDecoded)"
-              );
               if ((transferDecoded as any)?.version === "legacy") {
                 const legacyTransaction = new Transaction({
                   recentBlockhash: blockhash,
@@ -244,7 +240,10 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                 data.data.msgOrigin
               );
 
-              if (!result?.simulation) return;
+              if (!result?.simulation) {
+                setSimulationData(undefined);
+                return;
+              }
               setSimulationData(result.simulation);
             } else {
               const fee = {
@@ -258,12 +257,16 @@ export const SignSvmPage: FunctionComponent = observer(() => {
                 accountInfo.base58Address,
                 data.data.msgOrigin
               );
-              if (!result?.simulation) return;
+              if (!result?.simulation) {
+                setSimulationData(undefined);
+                return;
+              }
               setSimulationData(result.simulation);
             }
           })();
         } catch (e) {
           setTxStrData(undefined);
+          setSimulationData(undefined);
           console.log(e, "errr deserializeTransaction");
         }
       }
@@ -351,7 +354,7 @@ export const SignSvmPage: FunctionComponent = observer(() => {
     if (!isLoaded) {
       return true;
     }
-
+    if (simulationData === null) return true;
     // if (!dataSign) {
     //     return true;
     // }
