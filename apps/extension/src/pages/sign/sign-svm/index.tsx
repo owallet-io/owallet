@@ -56,6 +56,7 @@ enum Tab {
   Details,
   Data,
 }
+
 const SvmDetailsTabWithErrorBoundary = withErrorBoundary(SvmDetailsTab);
 const SvmDetailsSendWithErrorBoundary = withErrorBoundary(SvmDetailsSend);
 
@@ -132,11 +133,12 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       //@ts-ignore
       const txStr: string = data.data.data?.tx;
       if (txStr) {
-        try {
-          const connection = new Connection(chainInfo.rpc, "confirmed");
-          const transferDecoded = deserializeTransaction(txStr);
-          const msgTransfer = transferDecoded.message as MessageV0;
-          (async () => {
+        const connection = new Connection(chainInfo.rpc, "confirmed");
+        const transferDecoded = deserializeTransaction(txStr);
+        const msgTransfer = transferDecoded.message as MessageV0;
+
+        (async () => {
+          try {
             const feeInLamports = await connection.getFeeForMessage(
               //@ts-ignore
               msgTransfer
@@ -158,21 +160,23 @@ export const SignSvmPage: FunctionComponent = observer(() => {
             const microLamports = new Dec(
               dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
             );
-            // const accountKeys = msgTransfer.staticAccountKeys.map((key) => key.toBase58());
 
-            const baseFeeOrigin = new Dec(50000);
+            const baseFeeOrigin = new Dec(10000);
             const PriorityFee = units
               .mul(microLamports)
               .quoTruncate(DecUtils.getTenExponentNInPrecisionRange(6));
             const feeEstimate = baseFeeOrigin.add(PriorityFee);
             const baseFee = new Dec(feeInLamports.value || 0);
-            if (feeEstimate.gte(baseFee)) {
+            if (baseFee.lt(baseFeeOrigin)) {
               // Decode the instructions
               const instructions = msgTransfer.compiledInstructions.map(
                 (instruction) => {
                   // console.log(accountKeys[2], "accountKeys[index]");
                   const keys = instruction.accountKeyIndexes.map((index) => ({
-                    pubkey: msgTransfer.staticAccountKeys[index],
+                    pubkey:
+                      typeof msgTransfer.staticAccountKeys[index] === "string"
+                        ? new PublicKey(msgTransfer.staticAccountKeys[index])
+                        : msgTransfer.staticAccountKeys[index],
                     //@ts-ignore
                     isSigner: msgTransfer.isAccountSigner(index), // Check if it's a signer
                     //@ts-ignore
@@ -189,48 +193,58 @@ export const SignSvmPage: FunctionComponent = observer(() => {
               const blockhash = (await connection.getLatestBlockhash())
                 .blockhash;
               let transaction: VersionedTransaction | Transaction;
+              const uniqueInstructions = instructions.filter(
+                (instruction) =>
+                  !instruction.programId.equals(ComputeBudgetProgram.programId)
+              );
               if ((transferDecoded as any)?.version === "legacy") {
-                const legacyTransaction = new Transaction({
-                  recentBlockhash: blockhash,
-                  feePayer: new PublicKey(accountInfo.base58Address),
-                });
-
-                // Add ComputeBudget instructions
-                legacyTransaction.add(
-                  ComputeBudgetProgram.setComputeUnitLimit({
-                    units: Number(units.roundUp().toString()), // Convert units to an integer
-                  }),
-                  ComputeBudgetProgram.setComputeUnitPrice({
-                    microLamports: Number(microLamports.roundUp().toString()), // Set priority fee in micro-lamports
-                  })
-                );
-
-                // Add the extracted instructions
-                instructions.forEach((instruction) =>
-                  legacyTransaction.add(instruction)
-                );
-                transaction = legacyTransaction;
-              } else {
                 const messageV0 = new TransactionMessage({
                   recentBlockhash: blockhash,
                   instructions: [
+                    ...uniqueInstructions,
                     ComputeBudgetProgram.setComputeUnitLimit({
                       units: Number(units.roundUp().toString()), // Convert units to an integer
                     }),
                     ComputeBudgetProgram.setComputeUnitPrice({
                       microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
                     }),
-                    ...instructions,
+                  ],
+                  // @ts-ignore
+                  payerKey: new PublicKey(accountInfo.base58Address),
+                }).compileToLegacyMessage();
+                transaction = new VersionedTransaction(messageV0);
+              } else {
+                const messageV0 = new TransactionMessage({
+                  recentBlockhash: blockhash,
+                  instructions: [
+                    ...uniqueInstructions,
+                    ComputeBudgetProgram.setComputeUnitLimit({
+                      units: Number(units.roundUp().toString()), // Convert units to an integer
+                    }),
+                    ComputeBudgetProgram.setComputeUnitPrice({
+                      microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
+                    }),
                   ],
                   // @ts-ignore
                   payerKey: new PublicKey(accountInfo.base58Address),
                 }).compileToV0Message();
                 transaction = new VersionedTransaction(messageV0);
               }
-              const fee = {
+              const feeInLamportsFinal = await connection.getFeeForMessage(
+                //@ts-ignore
+                transaction?.message
+              );
+              let fee = {
                 amount: feeEstimate.roundUp().toString(),
                 denom: feeConfig.feeCurrency.coinMinimalDenom,
               } as CoinPrimitive;
+              if (feeInLamportsFinal.value > 0) {
+                const baseFee = new Dec(feeInLamportsFinal.value || 0);
+                fee = {
+                  amount: baseFee.roundUp().toString(),
+                  denom: feeConfig.feeCurrency.coinMinimalDenom,
+                } as CoinPrimitive;
+              }
               feeConfig.setManualFee(fee);
               setTxStrData(encode(transaction.serialize()));
               const result = await getSimulationTxSolana(
@@ -263,12 +277,12 @@ export const SignSvmPage: FunctionComponent = observer(() => {
               }
               setSimulationData(result.simulation);
             }
-          })();
-        } catch (e) {
-          setTxStrData(undefined);
-          setSimulationData(undefined);
-          console.log(e, "errr deserializeTransaction");
-        }
+          } catch (e) {
+            setTxStrData(undefined);
+            setSimulationData(undefined);
+            console.log(e, "errr deserializeTransaction");
+          }
+        })();
       }
 
       chainStore.selectChain(data.data.chainId);
@@ -350,11 +364,17 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       </div>
     );
   };
+  console.log(
+    (data?.data?.data as any)?.unsignedTx,
+    simulationData,
+    "(data.data?.data as any)?.unsignedTx"
+  );
   const approveIsDisabled = (() => {
     if (!isLoaded) {
       return true;
     }
-    if (simulationData === null) return true;
+    if (simulationData === null && !(data.data?.data as any)?.unsignedTx)
+      return true;
     // if (!dataSign) {
     //     return true;
     // }
@@ -384,9 +404,9 @@ export const SignSvmPage: FunctionComponent = observer(() => {
       </div>
       {
         /*
-                                                 Show the informations of tx when the sign data is delivered.
-                                                 If sign data not delivered yet, show the spinner alternatively.
-                                                 */
+                                                         Show the informations of tx when the sign data is delivered.
+                                                         If sign data not delivered yet, show the spinner alternatively.
+                                                         */
         isLoaded ? (
           <div className={style.container}>
             <div
