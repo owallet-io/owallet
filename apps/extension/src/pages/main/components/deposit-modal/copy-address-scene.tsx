@@ -380,17 +380,25 @@ export const CopyAddressScene: FunctionComponent<{
                       </XAxis>
                     </YAxis>
 
-                    <div
-                      style={{
-                        flex: 1,
-                      }}
-                    />
-
                     <Gutter size="0.5rem" />
                   </XAxis>
                 </Box>
 
-                <Gutter size="0.38rem" />
+                <Box
+                  style={{
+                    opacity: 1,
+
+                    color: (() => {
+                      return theme.mode === "light"
+                        ? ColorPalette["yellow-500"]
+                        : ColorPalette["gray-300"];
+                    })(),
+                  }}
+                >
+                  <StarIcon width="1.25rem" height="1.25rem" />
+                </Box>
+
+                <Gutter size="0.75rem" />
               </XAxis>
             </Box>
           )}
