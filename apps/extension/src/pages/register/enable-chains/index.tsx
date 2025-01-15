@@ -14,7 +14,7 @@ import {
   useSceneEvents,
   useSceneTransition,
 } from "../../../components/transition";
-import { ModularChainInfo } from "@owallet/types";
+import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Box } from "../../../components/box";
 import { Column, Columns } from "../../../components/column";
@@ -44,6 +44,7 @@ import SimpleBar from "simplebar-react";
 import { useTheme } from "styled-components";
 import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
 import { VerticalCollapseTransition } from "../../../components/transition/vertical-collapse";
+import { ChainIdEnum } from "@owallet/common";
 
 export const EnableChainsScene: FunctionComponent<{
   vaultId: string;
@@ -343,16 +344,18 @@ export const EnableChainsScene: FunctionComponent<{
 
           if (
             chainStore.chainInfos.find(
-              (c) => c.chainIdentifier === "eip155:728126428"
+              (c) => c.chainIdentifier === ChainIdEVM.TRON
             )
           ) {
-            enabledChainIdentifiers.push("eip155:728126428");
+            enabledChainIdentifiers.push(ChainIdEVM.TRON);
           }
 
           if (
-            chainStore.chainInfos.find((c) => c.chainIdentifier === "bitcoin")
+            chainStore.chainInfos.find(
+              (c) => c.chainIdentifier === ChainIdEnum.Bitcoin
+            )
           ) {
-            enabledChainIdentifiers.push("bitcoin");
+            enabledChainIdentifiers.push(ChainIdEnum.Bitcoin);
           }
 
           if (
@@ -797,8 +800,8 @@ export const EnableChainsScene: FunctionComponent<{
                 enabledChainIdentifiers.length <= 1 && enabled;
 
               const isForcedSelected =
-                modularChainInfo.chainId === "bitcoin" ||
-                modularChainInfo.chainId === "eip155:728126428";
+                modularChainInfo.chainId === ChainIdEnum.Bitcoin ||
+                modularChainInfo.chainId === ChainIdEVM.TRON;
 
               return (
                 <ChainItem
