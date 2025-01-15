@@ -47,7 +47,7 @@
     "@oraichain/oraidex-common": "^1.1.44",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
-    "@oraichain/oraidex-universal-swap": "^1.1.27-beta.1",
+    "@oraichain/oraidex-universal-swap": "^1.1.27",
     "@oraichain/owallet-wallet-standard": "0.1.1",
     "@oraichain/tonbridge-sdk": "^1.4.2",
     "@orbs-network/ton-access": "^2.3.3",
@@ -148,7 +148,7 @@
     "@ton/core": "0.56.3",
     "@ton/crypto-primitives": "2.1.0",
     "@oraichain/oraidex-common": "1.1.44",
-    "@oraichain/oraidex-universal-swap": "1.1.27-beta.1"
+    "@oraichain/oraidex-universal-swap": "1.1.27"
   },
   "browser": {
     "assert": false
