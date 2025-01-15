@@ -48,8 +48,12 @@ import { VerticalCollapseTransition } from "../../../components/transition/verti
 import { GuideBox } from "../../../components/guide-box";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { amountToAmbiguousAverage, isRunningInSidePanel } from "../../../utils";
-import { EthTxStatus } from "@owallet/types";
 import Color from "color";
+
+enum EthTxStatus {
+  Success = "0x1",
+  Failure = "0x0",
+}
 
 const Styles = {
   Flex1: styled.div`
@@ -643,6 +647,13 @@ export const SendAmountPage: FunctionComponent = observer(() => {
                         throw new Error("Invalid message type");
                       }
                     }
+                    notification.show(
+                      "success",
+                      intl.formatMessage({
+                        id: "notification.transaction-submmited",
+                      }),
+                      ""
+                    );
                     return await new InExtensionMessageRequester().sendMessage(
                       BACKGROUND_PORT,
                       msg
