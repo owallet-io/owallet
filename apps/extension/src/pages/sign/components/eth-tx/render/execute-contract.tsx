@@ -126,8 +126,8 @@ const EthExecuteContractTxPretty: React.FunctionComponent<{
             <Subtitle4
               color={
                 theme.mode === "light"
-                  ? ColorPalette["gray-400"]
-                  : ColorPalette["gray-200"]
+                  ? ColorPalette["purple-500"]
+                  : ColorPalette["purple-200"]
               }
             >
               <FormattedMessage id="page.sign.ethereum.transaction.execute-contract.function" />

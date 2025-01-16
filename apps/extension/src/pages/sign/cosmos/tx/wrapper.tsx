@@ -16,7 +16,6 @@ export const SignCosmosTxPage: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      {/* CosmosTxView의 주석을 꼭 읽으셈 */}
       {signInteractionStore.waitingData ? (
         <CosmosTxView
           key={signInteractionStore.waitingData.id}

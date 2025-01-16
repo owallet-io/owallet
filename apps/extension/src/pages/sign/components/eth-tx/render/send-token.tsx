@@ -14,6 +14,7 @@ import { Columns } from "../../../../../components/column";
 import { Stack } from "../../../../../components/stack";
 import { useTheme } from "styled-components";
 import { FormattedMessage } from "react-intl";
+import { ArrowDownIcon, ArrowDropDownIcon } from "components/icon";
 
 export const EthSendTokenTx: IEthTxRenderer = {
   process(chainId, unsignedTx) {
@@ -151,7 +152,7 @@ export const EthSendTokenTxPretty: React.FunctionComponent<{
     <React.Fragment>
       <Box
         padding="0.25rem 0.625rem"
-        backgroundColor={ColorPalette["gray-400"]}
+        backgroundColor={ColorPalette["purple-600"]}
         borderRadius="20rem"
         width="fit-content"
       >
@@ -163,26 +164,7 @@ export const EthSendTokenTxPretty: React.FunctionComponent<{
       <Gutter size="0.75rem" />
 
       <Columns sum={1} gutter="1.125rem" alignY="center">
-        <Stack alignX="center" gutter="0.375rem">
-          <Box
-            backgroundColor={ColorPalette["gray-300"]}
-            borderRadius="20rem"
-            width="0.5rem"
-            height="0.5rem"
-          />
-          <Box
-            backgroundColor={ColorPalette["gray-300"]}
-            width="1px"
-            height="3rem"
-          />
-          <Box
-            backgroundColor={ColorPalette["gray-300"]}
-            borderRadius="20rem"
-            width="0.5rem"
-            height="0.5rem"
-          />
-        </Stack>
-        <Stack gutter="1.625rem">
+        <Stack gutter="0.25rem">
           <Stack gutter="0.25rem">
             <Subtitle4
               color={
@@ -200,6 +182,20 @@ export const EthSendTokenTxPretty: React.FunctionComponent<{
                   : ColorPalette["white"]
               }
             >{`${sender.slice(0, 10)}...${sender.slice(-8)}`}</Body1>
+          </Stack>
+          <Stack alignX="center" gutter={"0rem"}>
+            <Box
+              backgroundColor={ColorPalette["gray-300"]}
+              borderRadius="20rem"
+              width="0.5rem"
+              height="0.5rem"
+            />
+            <Box
+              backgroundColor={ColorPalette["gray-300"]}
+              width="1px"
+              height="3rem"
+            />
+            <ArrowDownIcon width="1.25rem" height="1.25rem" />
           </Stack>
           <Stack gutter="0.25rem">
             <Subtitle4

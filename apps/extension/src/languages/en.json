@@ -415,7 +415,7 @@
   "page.permission.requesting-connection-title": "Requesting Connection",
   "page.permission.paragraph": "By approving this request, the website will:{br}• Get the list of all chain on your OWallet Wallet",
 
-  "page.sign.cosmos.tx.title": "Approve Transaction",
+  "page.sign.cosmos.tx.title": "Confirm Transaction",
   "page.sign.cosmos.tx.messages": "Messages",
   "page.sign.cosmos.tx.authz-send-grant.warning-title": "You are allowing another account to transfer assets from your wallet for the specified period of time. Beware of scammers and approve with caution.",
   "page.sign.cosmos.tx.warning-title": "Incompatible Signing Requested",
@@ -435,7 +435,7 @@
 
   "page.sign.ethereum.title": "Sign Ethereum",
   "page.sign.ethereum.requested-network": "on {network}",
-  "page.sign.ethereum.transaction.title": "Approve Transaction",
+  "page.sign.ethereum.transaction.title": "Confirm Transaction",
   "page.sign.ethereum.transaction.summary": "Transaction Summary",
   "page.sign.ethereum.transaction.send.title": "Send Token",
   "page.sign.ethereum.transaction.send.from": "From",
