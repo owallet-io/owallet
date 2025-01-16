@@ -697,13 +697,14 @@ export const EnableChainsScene: FunctionComponent<{
     ]);
 
     const replaceToWelcomePage = () => {
-      if (skipWelcome) {
-        window.close();
-      } else {
-        navigate("/welcome", {
-          replace: true,
-        });
-      }
+      window.close();
+      // if (skipWelcome) {
+      //   window.close();
+      // } else {
+      //   navigate("/welcome", {
+      //     replace: true,
+      //   });
+      // }
     };
 
     const enabledChainIdentifiersInPage = useMemo(() => {

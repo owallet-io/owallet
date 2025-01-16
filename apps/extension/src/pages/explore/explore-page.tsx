@@ -4,9 +4,8 @@ import { limitString } from "@owallet/common";
 import { MainHeaderLayout } from "../main/layouts/header";
 import { Box } from "../../components/box";
 import { Stack } from "../../components/stack";
-import styled, { css, useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { ColorPalette } from "../../styles";
-import Color from "color";
 
 const types = [
   {

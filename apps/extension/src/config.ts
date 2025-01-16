@@ -2986,15 +2986,6 @@ export const EmbedChainInfos: (ChainInfo | ModularChainInfo)[] = [
   },
 ];
 
-// The origins that are able to pass any permission that external webpages can have.
-// export const PrivilegedOrigins: string[] = [
-//   "https://wallet.keplr.app",
-//   "https://validator.keplr.app",
-//   "https://chains.keplr.app",
-//   "https://testnet.keplr.app",
-//   "https://multisig.keplr.app",
-// ];
-
 export const PrivilegedOrigins: string[] = [
   "https://app.oraidex.io",
   "https://futures.oraidex.io",
