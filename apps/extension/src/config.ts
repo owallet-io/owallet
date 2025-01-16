@@ -3001,6 +3001,7 @@ export const PrivilegedOrigins: string[] = [
   "https://orderbook.oraidex.io",
   "https://hub.orai.io",
   "https://scan.orai.io",
+  "https://scanium.io",
   "https://multisig.orai.io",
   "https://develop-v3.beta-oraidex.pages.dev",
 ];
