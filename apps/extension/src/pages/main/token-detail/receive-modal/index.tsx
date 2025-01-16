@@ -11,28 +11,28 @@ import { ChainImageFallback } from "../../../../components/image";
 import { AddressChip } from "../../components/address-chip";
 import { Button } from "../../../../components/button";
 import QRCode from "qrcode";
+import {BtcAccountBase} from "@owallet/stores-btc";
 
 export const ReceiveModal: FunctionComponent<{
   chainId: string;
+  coinMinimalDenom:string;
   close: () => void;
-}> = observer(({ chainId, close }) => {
-  const { chainStore, accountStore } = useStore();
+}> = observer(({ chainId, close,coinMinimalDenom }) => {
+  const { chainStore, allAccountStore } = useStore();
 
   const theme = useTheme();
   const qrCodeRef = useRef<HTMLCanvasElement>(null);
 
   const modularChainInfo = chainStore.getModularChain(chainId);
-  const account = accountStore.getAccount(chainId);
+  const account = allAccountStore.getAccount(chainId);
 
   useEffect(() => {
-    const isEVMOnlyChain =
-      "cosmos" in modularChainInfo &&
-      modularChainInfo.cosmos != null &&
-      chainStore.isEvmOnlyChain(chainId);
+    // const isEVMOnlyChain =
+    //   "cosmos" in modularChainInfo &&
+    //   modularChainInfo.cosmos != null &&
+    //   chainStore.isEvmOnlyChain(chainId);
 
-    const address = isEVMOnlyChain
-      ? account.ethereumHexAddress
-      : account.bech32Address;
+    const address = coinMinimalDenom.startsWith("legacy") && chainId === "bitcoin"?(account as BtcAccountBase).btcLegacyAddress :account.addressDisplay;
 
     if (qrCodeRef.current && address) {
       QRCode.toCanvas(qrCodeRef.current, address, {
@@ -93,7 +93,7 @@ export const ReceiveModal: FunctionComponent<{
         </Box>
 
         <Gutter size="1.25rem" />
-        <AddressChip chainId={chainId} inModal={true} />
+        <AddressChip address={coinMinimalDenom.startsWith("legacy") && chainId === "bitcoin"?(account as BtcAccountBase).btcLegacyAddress :account.addressDisplay} chainId={chainId} inModal={true} />
         <Gutter size="1.25rem" />
       </Box>
 
