@@ -1164,50 +1164,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.style.fontFamily = "SpaceGrotesk-SemiBold";
               button.style.fontWeight = "600";
 
-              // button.style.cursor = "pointer";
               button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // if (isLightMode) {
-              //   button.style.boxShadow =
-              //     "0px 0px 15.5px 0px rgba(0, 0, 0, 0.20)";
-              // }
-              // button.addEventListener("mouseover", () => {
-              //   button.style.background = isLightMode ? "#F2F2F6" : "#242428";
-              // });
-              // button.addEventListener("mouseout", () => {
-              //   button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
-              // });
-
-              // const megaphoneWrapper = document.createElement("div");
-              // megaphoneWrapper.style.boxSizing = "border-box";
-              // megaphoneWrapper.style.display = "flex";
-              // megaphoneWrapper.style.position = "absolute";
-              // megaphoneWrapper.style.left = "-10px";
-              // megaphoneWrapper.style.top = "-10px";
-              // megaphoneWrapper.style.padding = "6.5px 6px 5.5px";
-              // megaphoneWrapper.style.borderRadius = "255px";
-              // megaphoneWrapper.style.background = "#FC8441";
-              //
-              // const megaphone = document.createElement("img");
-              // const megaphoneUrl = chrome.runtime.getURL(
-              //   "/assets/megaphone.svg"
-              // );
-              // megaphone.src = megaphoneUrl;
-              // megaphone.style.width = "1.25rem";
-              // megaphone.style.height = "1.25rem";
-              // megaphone.style.animation = "tada 1s infinite";
-              // megaphoneWrapper.appendChild(megaphone);
-
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
-              arrowTop.innerHTML = `
-                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
-                    }"/>
-                </svg>
-              `;
 
               const owalletLogoWrap = document.createElement("div");
               owalletLogoWrap.style.boxSizing = "border-box";
