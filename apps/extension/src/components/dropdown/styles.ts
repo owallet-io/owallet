@@ -103,7 +103,7 @@ export const Styles = {
         : "margin-bottom: 0.375rem"};
 
     z-index: 1;
-
+    padding: 0rem 0.5rem;
     color: ${(props) =>
       props.theme.mode === "light"
         ? ColorPalette["gray-300"]
@@ -120,7 +120,7 @@ export const Styles = {
 
     background-color: ${(props) =>
       props.theme.mode === "light"
-        ? ColorPalette["gray-50"]
+        ? ColorPalette["white"]
         : ColorPalette["gray-600"]};
 
     ${({ isOpen }) => {
@@ -163,7 +163,7 @@ export const Styles = {
 
     height: 2.875rem;
 
-    padding: 0 1.5rem;
+    padding: 0rem 1rem;
 
     color: ${(props) =>
       props.theme.mode === "light"
@@ -173,9 +173,10 @@ export const Styles = {
     :hover {
       background-color: ${(props) =>
         props.theme.mode === "light"
-          ? ColorPalette["gray-100"]
+          ? ColorPalette["gray-90"]
           : ColorPalette["gray-500"]};
     }
+    border-bottom: 1px solid #dcdce3;
 
     cursor: pointer;
     user-select: none;

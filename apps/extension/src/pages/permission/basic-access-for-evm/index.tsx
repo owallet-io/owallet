@@ -157,7 +157,7 @@ export const PermissionBasicAccessForEVMPage: FunctionComponent<{
                 }
                 style={{ paddingLeft: "0.5rem", paddingBottom: "0.5rem" }}
               >
-                Connect
+                Connect to
               </Body2>
               <Dropdown
                 items={chainStore.chainInfos
@@ -184,11 +184,8 @@ export const PermissionBasicAccessForEVMPage: FunctionComponent<{
                   textAlign: "center",
                 }}
               >
-                {"You are connecting to an EVM compatible chain."}
-                <br />
-                <br />
                 {
-                  "Please select from the dropdown which chain you'd like to connect for the application."
+                  "Kindly choose from the dropdown menu the blockchain you wish to link to for the decentralized applications (dApps)."
                 }
               </Body2>
             </Box>
