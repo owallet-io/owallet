@@ -1433,9 +1433,11 @@ export const EnableChainsScene: FunctionComponent<{
                 const vaultId = keyRingStore.selectedKeyInfo.id;
                 const chainIdentifier =
                   ChainIdHelper.parse("bitcoin").identifier;
+                const chainIdentifierSolana =
+                    ChainIdHelper.parse("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp").identifier;
                 await chainStore.enableChainInfoInUIWithVaultId(
                   vaultId,
-                  ...[chainIdentifier]
+                  ...[chainIdentifier,chainIdentifierSolana]
                 );
               } catch (err) {
                 console.log("err enabled", err);

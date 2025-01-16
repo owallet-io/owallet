@@ -583,6 +583,58 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["not-support-staking"],
   },
   {
+    rpc: "https://swr.xnftdata.com/rpc-proxy/",
+    rest: "https://swr.xnftdata.com/rpc-proxy/",
+    chainId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
+    chainName: "Solana",
+    bip44: {
+      coinType: 501,
+    },
+    stakeCurrency: {
+      coinDenom: "SOL",
+      coinMinimalDenom: "sol",
+      coinDecimals: 9,
+      coinGeckoId: "solana",
+      coinImageUrl:
+          "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+    },
+    chainSymbolImageUrl:
+        "https://upload.wikimedia.org/wikipedia/en/b/b9/Solana_logo.png",
+    currencies: [
+      {
+        coinDenom: "SOL",
+        coinMinimalDenom: "sol",
+        coinDecimals: 9,
+        coinGeckoId: "solana",
+        coinImageUrl:
+            "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+      },
+    ],
+    get feeCurrencies() {
+      return [
+        {
+          coinDenom: "SOL",
+          coinMinimalDenom: "sol",
+          coinDecimals: 9,
+          coinGeckoId: "solana",
+          coinImageUrl:
+              "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
+          gasPriceStep: {
+            low: 1,
+            average: 1.25,
+            high: 1.5,
+          },
+        },
+      ];
+    },
+    features: ["gen-address", "svm", "not-support-staking"],
+    txExplorer: {
+      name: "Sol Explorer",
+      txUrl: "https://solscan.io/tx/{txHash}",
+      accountUrl: "https://solscan.io/address/{address}",
+    },
+  },
+  {
     rpc: "https://evm-56.keplr.app",
     rest: "https://evm-56.keplr.app",
     evm: {
