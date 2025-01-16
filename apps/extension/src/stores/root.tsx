@@ -82,7 +82,7 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
 
 import { AllAccountStore } from "./all-account-store";
-import {SvmAccountStore} from "@owallet/stores-solana";
+import {SvmAccountStore, SvmQueries} from "@owallet/stores-solana";
 
 let _sidePanelWindowId: number | undefined;
 async function getSidePanelWindowId(): Promise<number | undefined> {
@@ -129,7 +129,8 @@ export class RootStore {
       EthereumQueries,
       OasisQueries,
       TrxQueries,
-      BtcQueries
+      BtcQueries,
+        SvmQueries
     ]
   >;
   public readonly swapUsageQueries: SwapUsageQueries;
@@ -305,7 +306,8 @@ export class RootStore {
       }),
       OasisQueries.use(),
       TrxQueries.use(),
-      BtcQueries.use()
+      BtcQueries.use(),
+        SvmQueries.use()
     );
     this.swapUsageQueries = new SwapUsageQueries(
       this.queriesStore.sharedContext,
