@@ -15,6 +15,8 @@ import { handleExternalInteractionWithNoProceedNext } from "../../../utils";
 import SimpleBar from "simplebar-react";
 import { useNavigate } from "react-router";
 import { ApproveIcon, CancelIcon } from "../../../components/button";
+import { BNB_ID, ETH_ID, TRON_ID } from "@owallet/common";
+import { MapChainIdEVM } from "helpers/constant";
 
 export const PermissionBasicAccessPage: FunctionComponent<{
   data: {
@@ -142,10 +144,19 @@ export const PermissionBasicAccessPage: FunctionComponent<{
           <Box>
             {data.chainIds.map((chainId, index) => {
               const chainInfo = (() => {
+                let formatedChainId = chainId;
+                if (
+                  chainId === TRON_ID ||
+                  chainId === ETH_ID ||
+                  chainId === BNB_ID
+                ) {
+                  formatedChainId = MapChainIdEVM[chainId];
+                }
+
                 try {
-                  return chainStore.getChain(chainId);
+                  return chainStore.getChain(formatedChainId);
                 } catch (e) {
-                  return chainStore.getModularChain(chainId);
+                  return chainStore.getModularChain(formatedChainId);
                 }
               })();
 

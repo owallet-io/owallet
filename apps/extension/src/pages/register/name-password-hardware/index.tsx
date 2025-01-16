@@ -103,7 +103,7 @@ export const RegisterNamePasswordHardwareScene: FunctionComponent<{
                 }}
               />
               <Gutter size="1.625rem" />
-              <VerticalCollapseTransition
+              {/* <VerticalCollapseTransition
                 width="100%"
                 collapsed={isBIP44CardOpen}
               >
@@ -119,7 +119,7 @@ export const RegisterNamePasswordHardwareScene: FunctionComponent<{
                     }}
                   />
                 </Box>
-              </VerticalCollapseTransition>
+              </VerticalCollapseTransition> */}
               <VerticalCollapseTransition collapsed={!isBIP44CardOpen}>
                 <SetBip44PathCard
                   state={bip44PathState}

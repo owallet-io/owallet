@@ -8,7 +8,6 @@ import {
 import { action, flow, makeObservable, observable } from "mobx";
 import { AccountBtcSharedContext } from "./context";
 import { validate } from "bitcoin-address-validation";
-import { DenomHelper } from "@owallet/common";
 
 export class BtcAccountBase {
   @observable

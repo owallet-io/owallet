@@ -473,6 +473,13 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
         continue;
       }
 
+      const isForcedSelected =
+        chainInfo.features.includes("btc") ||
+        chainInfo.features.includes("tron");
+
+      if (isForcedSelected) {
+        enabledChainIdentifiers.push(chainInfo.chainIdentifier);
+      }
       // If the chain is not enabled, check that the account exists.
       // If the account exists, turn on the chain.
       for (const bech32Address of candidateAddress.bech32Addresses) {
@@ -987,6 +994,10 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
             const blockInteraction =
               enabledChainIdentifiers.length <= 1 && enabled;
 
+            const isForcedSelected =
+              chainInfo.features.includes("btc") ||
+              chainInfo.features.includes("tron");
+
             return (
               <React.Fragment key={chainInfo.chainId}>
                 <ChainItem
@@ -996,6 +1007,9 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
                   blockInteraction={blockInteraction}
                   isFresh={isFresh || account.bech32Address === ""}
                   onClick={() => {
+                    if (isForcedSelected) {
+                      return;
+                    }
                     if (
                       enabledChainIdentifierMap.get(chainInfo.chainIdentifier)
                     ) {

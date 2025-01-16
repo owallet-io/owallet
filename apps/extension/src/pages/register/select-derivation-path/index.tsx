@@ -87,13 +87,14 @@ export const SelectDerivationPathScene: FunctionComponent<{
         totalCount,
       });
     } else {
-      if (skipWelcome) {
-        window.close();
-      } else {
-        navigate("/welcome", {
-          replace: true,
-        });
-      }
+      window.close();
+      // if (skipWelcome) {
+      //   window.close();
+      // } else {
+      //   navigate("/welcome", {
+      //     replace: true,
+      //   });
+      // }
     }
   };
   const goToNext = useRef(_goToNext);

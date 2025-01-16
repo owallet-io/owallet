@@ -48,8 +48,12 @@ import { VerticalCollapseTransition } from "../../../components/transition/verti
 import { GuideBox } from "../../../components/guide-box";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { amountToAmbiguousAverage, isRunningInSidePanel } from "../../../utils";
-import { EthTxStatus } from "@owallet/types";
 import Color from "color";
+
+enum EthTxStatus {
+  Success = "0x1",
+  Failure = "0x0",
+}
 
 const Styles = {
   Flex1: styled.div`
@@ -481,23 +485,22 @@ export const SendAmountPage: FunctionComponent = observer(() => {
       fixedMinHeight={true}
       left={<BackButton />}
       right={
-        isDetachedMode || isRunningInSidePanel() ? null : (
-          <Box
-            paddingRight="1rem"
-            cursor="pointer"
-            onClick={async (e) => {
-              e.preventDefault();
-
-              analyticsStore.logEvent("click_popOutButton");
-              const url = window.location.href + "&detached=true";
-
-              await openPopupWindow(url, undefined);
-              window.close();
-            }}
-          >
-            <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
-          </Box>
-        )
+        null
+        // isDetachedMode || isRunningInSidePanel() ? null : (
+        //   <Box
+        //     paddingRight="1rem"
+        //     cursor="pointer"
+        //     onClick={async (e) => {
+        //       e.preventDefault();
+        //       analyticsStore.logEvent("click_popOutButton");
+        //       const url = window.location.href + "&detached=true";
+        //       await openPopupWindow(url, undefined);
+        //       window.close();
+        //     }}
+        //   >
+        //     <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
+        //   </Box>
+        // )
       }
       bottomButtons={[
         {
@@ -643,6 +646,13 @@ export const SendAmountPage: FunctionComponent = observer(() => {
                         throw new Error("Invalid message type");
                       }
                     }
+                    notification.show(
+                      "success",
+                      intl.formatMessage({
+                        id: "notification.transaction-submmited",
+                      }),
+                      ""
+                    );
                     return await new InExtensionMessageRequester().sendMessage(
                       BACKGROUND_PORT,
                       msg

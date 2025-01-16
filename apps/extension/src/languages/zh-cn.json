@@ -118,7 +118,7 @@
   "pages.register.back-up-private-key.import-button": "导入",
 
   "pages.register.connect-ledger.title": "请连接你的硬件钱包",
-  "pages.register.connect-ledger.paragraph": "OWallet 支援 Cosmos 應用程式鏈、所有 EVM 相容鏈，包括 Ethereum、Injective 和 Evmos，以及 Starknet。Ledger connection 會引導您依序瀏覽 Cosmos、EVM 和 Starknet。",
+  "pages.register.connect-ledger.paragraph": "OWallet 支援 Cosmos 應用程式鏈、所有 EVM 相容鏈，包括 Ethereum、Injective 和 Evmos，以及 Tron connection 會引導您依序瀏覽 Cosmos、EVM 和 Tron",
   "pages.register.connect-ledger.step-text": "步骤 {step}",
   "pages.register.connect-ledger.connect-ledger-step-paragraph": "连接并解锁你的Ledger。",
   "pages.register.connect-ledger.open-app-step-paragraph": "在你的Ledger设备上打开{app}应用。",
@@ -628,6 +628,7 @@
   "text-button.select-all": "全选",
 
   "notification.transaction-success": "交易成功",
+  "notification.transaction-submmited": "Transaction Submmited",
 
   "hooks.confirm.cancel-button": "取消",
   "hooks.confirm.yes-button": "是的"

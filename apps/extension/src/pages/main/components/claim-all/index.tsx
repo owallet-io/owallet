@@ -1140,6 +1140,9 @@ const ClaimTokenItem: FunctionComponent<{
                 ""
               );
             }
+            navigate("/", {
+              replace: true,
+            });
           },
         }
       );
@@ -1150,6 +1153,9 @@ const ClaimTokenItem: FunctionComponent<{
         notification.show("failed", JSON.stringify(e?.message), "");
         return;
       }
+      navigate("/", {
+        replace: true,
+      });
     }
   };
 

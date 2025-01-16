@@ -7,8 +7,6 @@ require("./public/assets/orai_wallet_logo.png");
 require("./public/assets/icon/icon-16.png");
 require("./public/assets/icon/icon-48.png");
 require("./public/assets/icon/icon-128.png");
-require("./public/assets/logo-beta-256.png");
-require("./public/assets/img/locked-keplr-logo-128.png");
 require("./public/assets/icon-click-cursor.png");
 
 import React, {

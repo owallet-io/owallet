@@ -15,7 +15,7 @@ export const EthTxBase: FunctionComponent<{
 
   return (
     <Columns sum={1}>
-      <Box
+      {/* <Box
         width="2.75rem"
         minWidth="2.75rem"
         height="2.75rem"
@@ -23,7 +23,7 @@ export const EthTxBase: FunctionComponent<{
         alignY="center"
       >
         {icon}
-      </Box>
+      </Box> */}
 
       <Gutter size="0.5rem" />
 

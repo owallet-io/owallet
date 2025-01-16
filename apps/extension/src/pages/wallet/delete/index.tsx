@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { HeaderLayout } from "../../../layouts/header";
 import { BackButton } from "../../../layouts/header/components";
@@ -12,11 +12,10 @@ import { useStore } from "../../../stores";
 import { useSearchParams, Link } from "react-router-dom";
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-import lottie from "lottie-web";
-import AnimSeed from "../../../public/assets/lottie/wallet/delete.json";
 import { YAxis } from "../../../components/axis";
 import { FormattedMessage, useIntl } from "react-intl";
 import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
+import { Box } from "components/box";
 
 const Styles = {
   Container: styled(Stack)`
@@ -69,24 +68,8 @@ export const WalletDeletePage: FunctionComponent = observer(() => {
     },
   });
 
-  const animDivRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     setFocus("password");
-
-    if (animDivRef.current) {
-      const anim = lottie.loadAnimation({
-        container: animDivRef.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        animationData: AnimSeed,
-      });
-
-      return () => {
-        anim.destroy();
-      };
-    }
   }, [setFocus]);
 
   return (
@@ -155,15 +138,9 @@ export const WalletDeletePage: FunctionComponent = observer(() => {
           return null;
         })()}
 
-        <YAxis alignX="center">
-          <div
-            ref={animDivRef}
-            style={{
-              width: "10.5rem",
-              height: "10.5rem",
-            }}
-          />
-        </YAxis>
+        <Box alignX="center" alignY="center" style={{ flex: 1, padding: 60 }}>
+          <img width={120} src={require("assets/images/img_delete.png")} />
+        </Box>
 
         <Styles.Paragraph>
           <FormattedMessage id="page.wallet.delete.paragraph" />

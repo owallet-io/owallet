@@ -42,7 +42,7 @@
   "pages.register.components.bip-44-path.paragraph-unfamiliar": "If you're unfamiliar with this feature, skip or undo this step -> <reset>Reset Settings</reset>",
   "pages.register.components.bip-44-path.hd-path-subtitle": "HD Derivation Path",
   "pages.register.components.form.name-password.wallet-name-label": "Wallet Name",
-  "pages.register.components.form.name-password.wallet-name-placeholder": "e.g. Trading, NFT Vault, Investment",
+  "pages.register.components.form.name-password.wallet-name-placeholder": "e.g. OWallet, Investment, NFT",
   "pages.register.components.form.name-password.password-label": "Create OWallet Password",
   "pages.register.components.form.name-password.password-placeholder": "At least 8 characters in length",
   "pages.register.components.form.name-password.confirm-password-label": "Confirm OWallet Password",
@@ -87,9 +87,9 @@
   "pages.register.new-mnemonic.12-words-tab": "12 words",
   "pages.register.new-mnemonic.24-words-tab": "24 words",
   "pages.register.new-mnemonic.recovery-warning-box-title": "DO NOT share your recovery phrase with ANYONE.",
-  "pages.register.new-mnemonic.recovery-warning-box-paragraph": "Anyone with your recovery phrase can have full control over your assets. Please stay vigilant against phishing attacks at all times.",
+  "pages.register.new-mnemonic.recovery-warning-box-paragraph": "Having possession of your recovery phrase grants complete authority over your assets. Remain constantly alert to prevent falling victim to phishing attempts.",
   "pages.register.new-mnemonic.back-up-warning-box-title": "Back up the phrase safely.",
-  "pages.register.new-mnemonic.back-up-warning-box-paragraph": "You will never be able to restore your account without your recovery phrase.",
+  "pages.register.new-mnemonic.back-up-warning-box-paragraph": "Without your recovery phrase, it will be impossible to recover your account.",
   "pages.register.new-mnemonic.agree-button": "I understood. Show my phrase.",
 
   "pages.register.verify-mnemonic.title": "Verify Your Recovery Phrase",
@@ -112,8 +112,8 @@
   "pages.register.name-password-hardware.connect-to-keystone-QR": "QR",
 
   "pages.register.recover-mnemonic.title": "Import Existing Wallet",
-  "pages.register.recover-mnemonic.paragraph-1": "Enter your recovery phrase here to restore your wallet. Or click on any blank and paste the entire phrase.",
-  "pages.register.recover-mnemonic.paragraph-2": "Enter the phrase in the right order without capitalization, punctuation symbols, or spaces.",
+  "pages.register.recover-mnemonic.paragraph-1": "Input your recovery phrase here to recover your wallet. Alternatively, select any empty space and paste the complete phrase.",
+  "pages.register.recover-mnemonic.paragraph-2": "Input the phrase in correct sequence without using capital letters, punctuation marks, or spaces.",
   "pages.register.recover-mnemonic.12-words-tab": "12 words",
   "pages.register.recover-mnemonic.24-words-tab": "24 words",
   "pages.register.recover-mnemonic.private-key-tab": "Private key",
@@ -126,7 +126,7 @@
   "pages.register.back-up-private-key.import-button": "Got it",
 
   "pages.register.connect-ledger.title": "Please connect your Hardware wallet",
-  "pages.register.connect-ledger.paragraph": "OWallet supports Cosmos app chains, all EVM compatible chains including Ethereum, Injective and Evmos, and Starknet. Ledger connection will guide you through Cosmos, EVM, and Starknet in order.",
+  "pages.register.connect-ledger.paragraph": "OWallet supports Cosmos app chains, all EVM compatible chains including Ethereum, Injective and Evmos, Bitcoin and Tron. Ledger connection will guide you through Cosmos, EVM, Bitcoin and Tron in order.",
   "pages.register.connect-ledger.step-text": "Step {step}",
   "pages.register.connect-ledger.connect-ledger-step-paragraph": "Connect and unlock your Ledger.",
   "pages.register.connect-ledger.open-app-step-paragraph": "Open the {app} app on your Ledger device.",
@@ -156,7 +156,7 @@
   "pages.register.connect-keystone.usb.step-2": "Ensure your Keystone 3 Pro is on the homepage.",
 
   "pages.register.enable-chains.title": "Select Chains",
-  "pages.register.enable-chains.paragraph": "Don’t worry, you can change your selections anytime in the Manage Chain Visibility in the sidebar menu.",
+  "pages.register.enable-chains.paragraph": "Don’t worry, you can change your selections anytime in the Manage Chains in the sidebar menu.",
   "pages.register.enable-chains.search-input-placeholder": "Search networks",
   "pages.register.enable-chains.chain-selected-count": "{numSelected} chain(s) selected",
   "pages.register.enable-chains.skip-button": "Skip",
@@ -214,7 +214,7 @@
   "page.setting.advanced.endpoint.reset-button": "Reset",
   "page.setting.advanced.endpoint.guide-title": "Experimental Feature",
   "page.setting.advanced.endpoint.guide-paragraph": "Please get in touch with the endpoint providers to address any issues that may arise from changes to the endpoint(s).{br}{br}Restart OWallet to apply changes.",
-  "page.setting.advanced.endpoint.lava-link-button": "Let's fall in Lava 🌋🧡",
+  "page.setting.advanced.endpoint.lava-link-button": "Let's fall in Lava",
 
   "page.setting.general.language-title": "Language",
   "page.setting.general.currency-title": "Currency",
@@ -231,11 +231,11 @@
   "page.setting.general.manage-chain-visibility-title": "Manage Chain Visibility",
   "page.setting.general.manage-chain-visibility-paragraph": "Select chains (and their assets) to be displayed on your current account",
 
-  "page.setting.general.language.automatic-title": "Automatic (Browser default)",
+  "page.setting.general.language.automatic-title": "Auto",
 
   "page.setting.general.theme.dark-mode": "Dark Mode",
   "page.setting.general.theme.light-mode": "Light Mode",
-  "page.setting.general.theme.auto": "Automatic (System)",
+  "page.setting.general.theme.auto": "Auto",
 
   "page.setting.general.authz.empty-subject": "Authz",
   "page.setting.general.authz.grant-view.grantee-authorized": "You authorized {grantee}",
@@ -415,7 +415,7 @@
   "page.permission.requesting-connection-title": "Requesting Connection",
   "page.permission.paragraph": "By approving this request, the website will:{br}• Get the list of all chain on your OWallet Wallet",
 
-  "page.sign.cosmos.tx.title": "Approve Transaction",
+  "page.sign.cosmos.tx.title": "Confirm Transaction",
   "page.sign.cosmos.tx.messages": "Messages",
   "page.sign.cosmos.tx.authz-send-grant.warning-title": "You are allowing another account to transfer assets from your wallet for the specified period of time. Beware of scammers and approve with caution.",
   "page.sign.cosmos.tx.warning-title": "Incompatible Signing Requested",
@@ -424,7 +424,7 @@
   "page.sign.cosmos.tx.view-data-button": "View data",
   "page.sign.cosmos.tx.high-fee-warning": "The transaction fee is unusually high.{br}I confirm and agree to proceed, nevertheless.",
   "page.sign.cosmos.icns.title": "Request Registration",
-  "page.sign.cosmos.lava.guide.title": "🌋 Using Lava Endpoints",
+  "page.sign.cosmos.lava.guide.title": "Using Lava Endpoints",
   "page.sign.cosmos.lava.guide.paragraph": "You are currently using endpoints provided Lava.",
 
   "page.sign.adr36.title": "Prove Ownership",
@@ -435,7 +435,7 @@
 
   "page.sign.ethereum.title": "Sign Ethereum",
   "page.sign.ethereum.requested-network": "on {network}",
-  "page.sign.ethereum.transaction.title": "Approve Transaction",
+  "page.sign.ethereum.transaction.title": "Confirm Transaction",
   "page.sign.ethereum.transaction.summary": "Transaction Summary",
   "page.sign.ethereum.transaction.send.title": "Send Token",
   "page.sign.ethereum.transaction.send.from": "From",
@@ -448,7 +448,7 @@
 
   "page.sign.starknet.tx.calls": "Calls",
 
-  "page.sign.components.fee-summary.fee": "Tx Fee",
+  "page.sign.components.fee-summary.fee": "Estimated Fee",
 
   "page.sign.components.messages.agoric.provision.title": "Provision Smart Wallet",
   "page.sign.components.messages.agoric.provision.message": "Provision a smart wallet for address <b>{address}</b>",
@@ -631,7 +631,7 @@
   "components.input.amount-input.max-button": "Max",
   "components.input.memo-input.memo-label": "Memo",
   "components.input.memo-input.optional-placeholder": "Optional",
-  "components.input.fee-control.fee": "Tx Fee: {assets}",
+  "components.input.fee-control.fee": "Estimated Fee: {assets}",
   "components.input.fee-control.max-fee": "Max Fee: {assets}",
   "components.input.fee-control.error.insufficient-fee": "Insufficient balance to cover the fees",
   "components.input.fee-control.tooltip.external-fee-set": "Transaction fee was set by website",
@@ -681,6 +681,7 @@
   "text-button.select-all": "Select All",
 
   "notification.transaction-success": "Transaction Success",
+  "notification.transaction-submmited": "Transaction Submmited",
 
   "hooks.confirm.cancel-button": "Cancel",
   "hooks.confirm.yes-button": "Yes"

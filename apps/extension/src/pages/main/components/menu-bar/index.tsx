@@ -414,7 +414,8 @@ export const MenuBar: FunctionComponent<{
             onClick={(e) => {
               e.preventDefault();
               browser.tabs.create({
-                url: "https://chains.keplr.app/",
+                // url: "https://chains.keplr.app/",
+                url: "https://github.com/owallet-io/keplr-chain-registry/",
               });
             }}
           >

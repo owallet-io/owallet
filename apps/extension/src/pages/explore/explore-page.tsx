@@ -4,9 +4,8 @@ import { limitString } from "@owallet/common";
 import { MainHeaderLayout } from "../main/layouts/header";
 import { Box } from "../../components/box";
 import { Stack } from "../../components/stack";
-import styled, { css, useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { ColorPalette } from "../../styles";
-import Color from "color";
 
 const types = [
   {
@@ -33,7 +32,7 @@ export const explorerData = [
     logo: images.dapps_scan_logo,
     title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/" + ref,
+    url: "https://scanium.io/" + ref,
   },
 ];
 export const aiData = [

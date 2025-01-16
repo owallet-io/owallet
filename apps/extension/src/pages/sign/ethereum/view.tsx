@@ -527,11 +527,11 @@ export const EthereumSigningView: FunctionComponent<{
             }}
           >
             <XAxis alignY="center">
-              <Image
+              {/* <Image
                 alt="sign-custom-image"
                 src={require("../../../public/assets/img/sign-adr36.png")}
                 style={{ width: "3rem", height: "3rem" }}
-              />
+              /> */}
               <Gutter size="0.75rem" />
               <YAxis>
                 <H5
@@ -541,7 +541,7 @@ export const EthereumSigningView: FunctionComponent<{
                       : ColorPalette["gray-10"]
                   }
                 >
-                  <FormattedMessage id="Prove account ownership to" />
+                  <FormattedMessage id="Verify ownership to" />
                 </H5>
                 <Gutter size="2px" />
                 <Body3
@@ -563,7 +563,7 @@ export const EthereumSigningView: FunctionComponent<{
         {isTxSigning && (
           <Box marginBottom="0.5rem">
             <Columns sum={1} alignY="center">
-              <XAxis>
+              <XAxis alignY="center">
                 <H5
                   style={{
                     color:
@@ -572,10 +572,26 @@ export const EthereumSigningView: FunctionComponent<{
                         : ColorPalette["gray-50"],
                   }}
                 >
-                  <FormattedMessage
-                    id={"page.sign.ethereum.transaction.summary"}
-                  />
+                  <FormattedMessage id="page.sign.cosmos.tx.messages" />:
                 </H5>
+                <Box
+                  style={{
+                    padding: "0.25rem 0.35rem",
+                    borderRadius: "0.35rem",
+                    backgroundColor: ColorPalette["purple-700"],
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: "0.35rem",
+                  }}
+                >
+                  <H5
+                    style={{
+                      color: ColorPalette["white"],
+                    }}
+                  >
+                    {1}
+                  </H5>
+                </Box>
               </XAxis>
               <Column weight={1} />
 
@@ -642,10 +658,13 @@ export const EthereumSigningView: FunctionComponent<{
                         ) as UnsignedTransaction
                       );
 
+                      console.log("icon", icon);
+                      console.log("icon", title);
+
                       if (icon !== undefined && title !== undefined) {
                         return (
                           <EthTxBase
-                            icon={icon}
+                            icon={null}
                             title={title}
                             content={content}
                           />

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef } from "react";
 import { Styles } from "./styles";
 import { DropdownProps } from "./types";
 import { Column, Columns } from "../column";
-import { ArrowDropDownIcon } from "../icon";
+import { ArrowDownIcon } from "../icon";
 import { Label } from "../input";
 import { Box } from "../box";
 
@@ -130,7 +130,7 @@ export const Dropdown: FunctionComponent<DropdownProps> = ({
               transform: direction === "up" ? "scaleY(-1)" : undefined,
             }}
           >
-            <ArrowDropDownIcon width="1.25rem" height="1.25rem" />
+            <ArrowDownIcon width="1.25rem" height="1.25rem" />
           </Box>
         </Columns>
       </Styles.SelectedContainer>

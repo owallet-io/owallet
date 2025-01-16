@@ -18,18 +18,15 @@ import OWText from "@src/components/text/ow-text";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { useTheme } from "@src/themes/theme-provider";
 import { DownArrowIcon } from "@src/components/icon";
-import { SelectTokenTypeModal } from "./select-token-type";
 import {
   unknownToken,
   MapChainIdToNetwork,
   avatarName,
   fetchRetry,
-  ChainIdEnum,
 } from "@owallet/common";
 import { tracking } from "@src/utils/tracking";
 import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { PrivKeyConfirmModal } from "@screens/setting/components/privkey-confirm-modal";
 import { AddTokenConfirmModal } from "@screens/setting/components/add-token-confirm-modal";
 
 interface FormData {

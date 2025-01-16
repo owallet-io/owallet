@@ -340,23 +340,24 @@ export const SendTronPage: FunctionComponent = observer(() => {
       fixedMinHeight={true}
       left={<BackButton />}
       right={
-        isDetachedMode || isRunningInSidePanel() ? null : (
-          <Box
-            paddingRight="1rem"
-            cursor="pointer"
-            onClick={async (e) => {
-              e.preventDefault();
+        null
+        // isDetachedMode || isRunningInSidePanel() ? null : (
+        //   <Box
+        //     paddingRight="1rem"
+        //     cursor="pointer"
+        //     onClick={async (e) => {
+        //       e.preventDefault();
 
-              analyticsStore.logEvent("click_popOutButton");
-              const url = window.location.href + "&detached=true";
+        //       analyticsStore.logEvent("click_popOutButton");
+        //       const url = window.location.href + "&detached=true";
 
-              await openPopupWindow(url, undefined);
-              window.close();
-            }}
-          >
-            <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
-          </Box>
-        )
+        //       await openPopupWindow(url, undefined);
+        //       window.close();
+        //     }}
+        //   >
+        //     <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
+        //   </Box>
+        // )
       }
       bottomButtons={[
         {
