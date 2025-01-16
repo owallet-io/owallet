@@ -11,7 +11,6 @@ import { useSearchParams } from "react-router-dom";
 import { Box } from "../../../components/box";
 import { Gutter } from "../../../components/gutter";
 import lottie from "lottie-web";
-import AniMnemonic from "../../../public/assets/lottie/wallet/mnemonic.json";
 import { useNavigate } from "react-router";
 import { FormattedMessage, useIntl } from "react-intl";
 import styled, { useTheme } from "styled-components";
@@ -35,8 +34,6 @@ export const WalletShowSensitivePage: FunctionComponent = observer(() => {
   const intl = useIntl();
   const theme = useTheme();
 
-  const animDivRef = useRef<HTMLDivElement | null>(null);
-
   const vaultId = searchParams.get("id");
 
   const {
@@ -55,20 +52,6 @@ export const WalletShowSensitivePage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     setFocus("password");
-
-    if (animDivRef.current) {
-      const anim = lottie.loadAnimation({
-        container: animDivRef.current,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-        animationData: AniMnemonic,
-      });
-
-      return () => {
-        anim.destroy();
-      };
-    }
   }, [setFocus]);
 
   return (
@@ -143,17 +126,12 @@ export const WalletShowSensitivePage: FunctionComponent = observer(() => {
       >
         {sensitive === "" ? (
           <React.Fragment>
-            <Box alignX="center" alignY="center" style={{ flex: 1 }}>
-              <div
-                ref={animDivRef}
-                style={{
-                  backgroundColor:
-                    theme.mode === "light" ? "none" : ColorPalette["gray-600"],
-                  borderRadius: "2.5rem",
-                  width: "8.5rem",
-                  height: "8.5rem",
-                }}
-              />
+            <Box
+              alignX="center"
+              alignY="center"
+              style={{ flex: 1, padding: 60 }}
+            >
+              <img src={require("assets/images/img_shield.png")} />
 
               <Gutter size="2rem" />
 
