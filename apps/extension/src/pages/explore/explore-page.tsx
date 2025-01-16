@@ -33,7 +33,7 @@ export const explorerData = [
     logo: images.dapps_scan_logo,
     title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/" + ref,
+    url: "https://scanium.io/" + ref,
   },
 ];
 export const aiData = [
