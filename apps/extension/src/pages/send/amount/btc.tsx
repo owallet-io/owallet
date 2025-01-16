@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useRef } from "react";
 import { observer } from "mobx-react-lite";
 import { HeaderLayout } from "../../../layouts/header";
 import { BackButton } from "../../../layouts/header/components";
@@ -12,13 +6,7 @@ import { Stack } from "../../../components/stack";
 import styled from "styled-components";
 import { useSearchParams } from "react-router-dom";
 import { useStore } from "../../../stores";
-import {
-  InvalidTronAddressError,
-  useGasSimulator,
-  useSendBtcTxConfig,
-  useSendMixedIBCTransferConfig,
-  useTxConfigsValidate,
-} from "@owallet/hooks";
+import { useSendBtcTxConfig, useTxConfigsValidate } from "@owallet/hooks";
 import { useNavigate } from "react-router";
 import { TokenAmountInput } from "../../../components/input";
 import { Box } from "../../../components/box";
@@ -26,13 +14,11 @@ import { YAxis } from "../../../components/axis";
 import { Gutter } from "../../../components/gutter";
 import { FeeControl } from "../../../components/input/fee-control";
 import { useNotification } from "../../../hooks/notification";
-import { DenomHelper, ExtensionKVStore } from "@owallet/common";
-import { ENSInfo, ICNSInfo } from "../../../config.ui";
-import { CoinPretty, Dec } from "@owallet/unit";
+import { DenomHelper } from "@owallet/common";
+import { CoinPretty } from "@owallet/unit";
 import { ColorPalette } from "../../../styles";
 import { openPopupWindow } from "@owallet/popup";
 import { useIntl } from "react-intl";
-import { useTxConfigsQueryString } from "../../../hooks/use-tx-config-query-string";
 import { isRunningInSidePanel } from "../../../utils";
 import { CustomRecipientInput } from "../../../components/input/reciepient-input/custom-input";
 import Color from "color";
@@ -193,8 +179,8 @@ export const SendBtcPage: FunctionComponent = observer(() => {
     }
   };
 
-  const currentFeeCurrencyCoinMinimalDenom =
-    sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
+  // const currentFeeCurrencyCoinMinimalDenom =
+  //   sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
 
   const isDetachedMode = searchParams.get("detached") === "true";
 
@@ -207,20 +193,21 @@ export const SendBtcPage: FunctionComponent = observer(() => {
       fixedMinHeight={true}
       left={<BackButton />}
       right={
-        isDetachedMode || isRunningInSidePanel() ? null : (
-          <Box
-            paddingRight="1rem"
-            cursor="pointer"
-            onClick={async (e) => {
-              e.preventDefault();
-              const url = window.location.href + "&detached=true";
-              await openPopupWindow(url, undefined);
-              window.close();
-            }}
-          >
-            <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
-          </Box>
-        )
+        null
+        // isDetachedMode || isRunningInSidePanel() ? null : (
+        //   <Box
+        //     paddingRight="1rem"
+        //     cursor="pointer"
+        //     onClick={async (e) => {
+        //       e.preventDefault();
+        //       const url = window.location.href + "&detached=true";
+        //       await openPopupWindow(url, undefined);
+        //       window.close();
+        //     }}
+        //   >
+        //     <DetachIcon size="1.5rem" color={ColorPalette["gray-300"]} />
+        //   </Box>
+        // )
       }
       bottomButtons={[
         {
