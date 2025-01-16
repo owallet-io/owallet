@@ -6208,15 +6208,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@oraichain/oraidex-universal-swap@npm:1.1.27":
   version: 1.1.27
   resolution: "@oraichain/oraidex-universal-swap@npm:1.1.27"
-=======
-"@oraichain/oraidex-universal-swap@npm:1.1.26":
-  version: 1.1.26
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.1.26"
->>>>>>> 962cb4ae7 (patch pack ton cryto libs)
   dependencies:
     "@oraichain/common": ^1.2.4
     "@oraichain/oraidex-common": ^1.1.27
@@ -6227,11 +6221,7 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
-<<<<<<< HEAD
   checksum: aed154e2051c12f86646ca5365d24967cccc1612df17141c60ed694aa31b8c94d45293e4bfc601d65f1c088397b486a50237c83a2d9343007519ee5258ad424a
-=======
-  checksum: a6d4df2cc9b43b6598e340200b9356908d4634ca926f10ce0417d408946f173ada2a1bc275785fbea7c22a051875725f7c626b837b1cbe92174303ceafb81b37
->>>>>>> 962cb4ae7 (patch pack ton cryto libs)
   languageName: node
   linkType: hard
 
@@ -25086,16 +25076,6 @@ __metadata:
     "@noble/secp256k1": ^2.1.0
     "@oasisprotocol/client": ^1.0.0
     "@oasisprotocol/client-rt": ^1.0.0
-<<<<<<< HEAD
-    "@oraichain/common-contracts-build": ^1.0.35
-    "@oraichain/common-contracts-sdk": ^1.0.31
-    "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.32
-    "@oraichain/oraidex-contracts-build": ^1.0.22
-    "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.22
-=======
->>>>>>> 962cb4ae7 (patch pack ton cryto libs)
     "@owallet/stores-btc": "*"
     "@owallet/stores-oasis": "*"
     "@owallet/stores-solana": "*"
