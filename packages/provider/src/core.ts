@@ -1201,11 +1201,10 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isOWalletLocked
-                ? "Unlock OWallet to proceed"
-                : "Open OWallet to approve request(s)";
+                ? "Unlock OWallet to continue"
+                : "Open OWallet to approve requests";
 
               // button.appendChild(megaphoneWrapper);
-              button.appendChild(arrowTop);
               button.appendChild(owalletLogoWrap);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
