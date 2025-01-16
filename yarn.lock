@@ -25076,13 +25076,6 @@ __metadata:
     "@noble/secp256k1": ^2.1.0
     "@oasisprotocol/client": ^1.0.0
     "@oasisprotocol/client-rt": ^1.0.0
-    "@oraichain/common-contracts-build": ^1.0.35
-    "@oraichain/common-contracts-sdk": ^1.0.31
-    "@oraichain/cw-simulate": ^2.8.76
-    "@oraichain/oraidex-common": ^1.1.32
-    "@oraichain/oraidex-contracts-build": ^1.0.22
-    "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.1.22
     "@owallet/stores-btc": "*"
     "@owallet/stores-oasis": "*"
     "@owallet/stores-solana": "*"
