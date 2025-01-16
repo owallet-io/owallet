@@ -14,9 +14,7 @@ import {
   useSceneTransition,
 } from "../../../components/transition";
 import { WalletStatus } from "@owallet/stores";
-import AnimCreating from "../../../public/assets/lottie/register/creating.json";
-import SplashScreen from "../../../public/assets/lottie/register/splashscreen.json";
-import AnimCreatingLight from "../../../public/assets/lottie/register/creating-light.json";
+import SplashScreen from "../../../public/assets/lottie/register/loading_owallet.json";
 import lottie from "lottie-web";
 import { PlainObject } from "@owallet/background";
 import { useTheme } from "styled-components";

@@ -19,7 +19,6 @@ PODS:
     - AppCenter/Core (= 5.0.5)
   - Base64 (1.1.2)
   - boost (1.76.0)
-  - BranchSDK (3.6.3)
   - BVLinearGradient (2.7.3):
     - React-Core
   - CocoaAsyncSocket (7.6.5)
@@ -556,9 +555,6 @@ PODS:
     - React-Core
   - react-native-blur (4.3.2):
     - React-Core
-  - react-native-branch (6.3.0):
-    - BranchSDK (= 3.6.3)
-    - React-Core
   - react-native-bytebrew-sdk (0.1.5):
     - React-Core
   - react-native-camera (4.2.1):
@@ -836,7 +832,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-ble-plx (from `../node_modules/react-native-ble-plx`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
-  - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-bytebrew-sdk (from `../node_modules/react-native-bytebrew-sdk`)
   - react-native-camera (from `../node_modules/react-native-camera`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
@@ -892,7 +887,6 @@ SPEC REPOS:
     - AppCenter
     - AppCenterReactNativeShared
     - Base64
-    - BranchSDK
     - CocoaAsyncSocket
     - Firebase
     - FirebaseAnalytics
@@ -990,8 +984,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ble-plx"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
-  react-native-branch:
-    :path: "../node_modules/react-native-branch"
   react-native-bytebrew-sdk:
     :path: "../node_modules/react-native-bytebrew-sdk"
   react-native-camera:
@@ -1099,7 +1091,6 @@ SPEC CHECKSUMS:
   AppCenterReactNativeShared: e6f6bd4d0e055bf1a3d7337edb4993bfce79185b
   Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost: 7dcd2de282d72e344012f7d6564d024930a6a440
-  BranchSDK: a5418b5fde1b837567cf00a4a7f2ed45abf2e26c
   BVLinearGradient: fbe308a1d19a8133f69e033abc85d8008644f5e3
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   CodePush: d892f13c5012e9e2cb36640f4929654b7be21fe5
@@ -1155,7 +1146,6 @@ SPEC CHECKSUMS:
   React-logger: ed7c9e01e58529065e7da6bf8318baf15024283e
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
-  react-native-branch: 2d064d63b23ea395bc3ee187faadfc8937d791fd
   react-native-bytebrew-sdk: 961c57a9f26685d1cbc5e6df1f9ff686dc7c5160
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
   react-native-get-random-values: 21325b2244dfa6b58878f51f9aa42821e7ba3d06

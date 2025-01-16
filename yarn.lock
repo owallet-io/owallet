@@ -25774,7 +25774,6 @@ __metadata:
     react-native: 0.72.15
     react-native-app-intro-slider: 4.0.4
     react-native-ble-plx: 2.0.3
-    react-native-branch: ^6.2.2
     react-native-bytebrew-sdk: 0.1.5
     react-native-camera: 4.2.1
     react-native-chart-kit: 6.12.0
@@ -29322,15 +29321,6 @@ __metadata:
   version: 2.0.3
   resolution: "react-native-ble-plx@npm:2.0.3"
   checksum: 84dba90a18feadb578fb5ffeec0d4d02ea7e8e1315bd66939d7aa9f26e22c57e898672a745bb11749beabfb5c1c06bc5c30371147404d2422f9486ac04e1d9ae
-  languageName: node
-  linkType: hard
-
-"react-native-branch@npm:^6.2.2":
-  version: 6.3.0
-  resolution: "react-native-branch@npm:6.3.0"
-  peerDependencies:
-    react-native: ">= 0.60"
-  checksum: 1564b40b91a7ef9136cacbcff5cd9961b225f9e75f23d3fb03df1e55c7fd65e91c013ef3d8e4c1ddae52fa7171c98d6ec842559cd733aadbc2231e0f287b2292
   languageName: node
   linkType: hard
 
