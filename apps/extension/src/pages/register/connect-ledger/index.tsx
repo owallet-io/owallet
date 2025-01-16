@@ -157,9 +157,10 @@ export const ConnectLedgerScene: FunctionComponent<{
               await chainStore.enableChainInfoInUI(
                 ...appendModeInfo.afterEnableChains
               );
-              navigate("/welcome", {
-                replace: true,
-              });
+              window.close();
+              // navigate("/welcome", {
+              //   replace: true,
+              // });
             } else {
               sceneTransition.replaceAll("finalize-key", {
                 name,
@@ -345,9 +346,10 @@ export const ConnectLedgerScene: FunctionComponent<{
                 stepPrevious: stepPrevious,
                 stepTotal: stepTotal,
               });
-              navigate("/welcome", {
-                replace: true,
-              });
+              window.close();
+              // navigate("/welcome", {
+              //   replace: true,
+              // });
             } else {
               sceneTransition.replaceAll("finalize-key", {
                 name,
