@@ -92,7 +92,6 @@ const Styles = {
 
 export const SendAmountPage: FunctionComponent = observer(() => {
   const {
-    analyticsStore,
     accountStore,
     ethereumAccountStore,
     chainStore,
@@ -646,13 +645,7 @@ export const SendAmountPage: FunctionComponent = observer(() => {
                         throw new Error("Invalid message type");
                       }
                     }
-                    notification.show(
-                      "success",
-                      intl.formatMessage({
-                        id: "notification.transaction-submmited",
-                      }),
-                      ""
-                    );
+
                     return await new InExtensionMessageRequester().sendMessage(
                       BACKGROUND_PORT,
                       msg

@@ -144,7 +144,7 @@
     "web3": "1.7.4",
     "web3-utils": "1.7.4",
     "ws": "8.17.1",
-    "webextension-polyfill": "0.10.0",
+    "webextension-polyfill": "^0.10.0",
     "@ledgerhq/hw-app-eth": "6.29.3",
     "@oraichain/oraidex-common": "1.1.44",
     "@oraichain/oraidex-universal-swap": "1.1.26"
