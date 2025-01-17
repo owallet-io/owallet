@@ -157,6 +157,12 @@ export const SendBtcPage: FunctionComponent = observer(() => {
                     balance.fetch();
                   }
                 });
+
+              notification.show(
+                "success",
+                intl.formatMessage({ id: "error.transaction-success" }),
+                ""
+              );
             },
           }
         );
@@ -182,7 +188,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
   // const currentFeeCurrencyCoinMinimalDenom =
   //   sendConfigs.feeConfig.fees[0]?.currency.coinMinimalDenom;
 
-  const isDetachedMode = searchParams.get("detached") === "true";
+  // const isDetachedMode = searchParams.get("detached") === "true";
 
   const loadingSend = account.isSendingTx;
 
