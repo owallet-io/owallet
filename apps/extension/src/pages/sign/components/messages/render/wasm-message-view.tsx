@@ -80,7 +80,7 @@ export const WasmMessageView: FunctionComponent<{
 
           const owallet = await accountStore.getAccount(chainId).getOWallet();
           if (!owallet) {
-            throw new Error("Can't get the keplr API");
+            throw new Error("Can't get the owallet API");
           }
 
           const enigmaUtils = owallet.getEnigmaUtils(chainId);
