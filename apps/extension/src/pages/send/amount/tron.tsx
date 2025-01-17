@@ -72,13 +72,8 @@ const Styles = {
 };
 
 export const SendTronPage: FunctionComponent = observer(() => {
-  const {
-    analyticsStore,
-    accountStore,
-    tronAccountStore,
-    chainStore,
-    queriesStore,
-  } = useStore();
+  const { accountStore, tronAccountStore, chainStore, queriesStore } =
+    useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 
   const [searchParams] = useSearchParams();
@@ -423,6 +418,11 @@ export const SendTronPage: FunctionComponent = observer(() => {
                 },
               });
               tronAccount.setIsSendingTx(false);
+              notification.show(
+                "success",
+                intl.formatMessage({ id: "error.transaction-success" }),
+                ""
+              );
             }
             if (!isDetachedMode) {
               navigate("/", {
