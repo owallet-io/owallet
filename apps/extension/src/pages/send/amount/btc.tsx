@@ -60,8 +60,7 @@ const Styles = {
 };
 
 export const SendBtcPage: FunctionComponent = observer(() => {
-  const { analyticsStore, bitcoinAccountStore, chainStore, queriesStore } =
-    useStore();
+  const { bitcoinAccountStore, chainStore, queriesStore } = useStore();
   const addressRef = useRef<HTMLInputElement | null>(null);
 
   const [searchParams] = useSearchParams();
@@ -71,6 +70,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
 
   const initialChainId = searchParams.get("chainId");
   const initialCoinMinimalDenom = searchParams.get("coinMinimalDenom");
+  const isDetachedMode = searchParams.get("detached") === "true";
 
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);
@@ -163,6 +163,13 @@ export const SendBtcPage: FunctionComponent = observer(() => {
                 intl.formatMessage({ id: "notification.transaction-success" }),
                 ""
               );
+              if (!isDetachedMode) {
+                navigate("/", {
+                  replace: true,
+                });
+              } else {
+                window.close();
+              }
             },
           }
         );
