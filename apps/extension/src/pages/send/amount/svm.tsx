@@ -27,6 +27,7 @@ import {ComputeBudgetProgram, Connection, PublicKey, SystemProgram, Transaction}
 import {createTransferInstruction, getAssociatedTokenAddress, TOKEN_2022_PROGRAM_ID} from "@solana/spl-token";
 import {createMemoInstruction} from "@solana/spl-memo";
 import {encode} from "bs58";
+import delay from "delay";
 const Styles = {
   Flex1: styled.div`
     flex: 1;
@@ -140,8 +141,30 @@ export const SendSvmPage: FunctionComponent = observer(() => {
         });
         // console.log(unsignedTx,"unsignedTx");
         await account.sendTx(sender, unsignedTx, {
-          onBroadcasted: (txHash) => {
+          onBroadcasted: async (txHash) => {
             account.setIsSendingTx(false);
+            notification.show(
+                "success",
+                intl.formatMessage({
+                  id: "notification.transaction-success",
+                }),
+                ""
+            );
+            await delay(3000);
+            queryBalances
+                .getQueryByAddress(account.base58Address)
+                .balances.forEach((balance) => {
+              if (
+                  balance.currency.coinMinimalDenom === coinMinimalDenom ||
+                  sendConfigs.feeConfig.fees.some(
+                      (fee) =>
+                          fee.currency.coinMinimalDenom ===
+                          balance.currency.coinMinimalDenom
+                  )
+              ) {
+                balance.fetch();
+              }
+            });
           },
           onFulfill: (txReceipt) => {
             queryBalances
@@ -158,6 +181,7 @@ export const SendSvmPage: FunctionComponent = observer(() => {
                 balance.fetch();
               }
             });
+
           },
         });
       } catch (e) {

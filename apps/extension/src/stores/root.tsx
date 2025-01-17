@@ -42,7 +42,7 @@ import {
   SignEthereumInteractionStore,
   SignOasisInteractionStore,
   SignTronInteractionStore,
-  SignBtcInteractionStore,
+  SignBtcInteractionStore, SignSvmInteractionStore,
 } from "@owallet/stores-core";
 import {
   OWalletETCQueries,
@@ -110,6 +110,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signSvmInteractionStore: SignSvmInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly signBtcInteractionStore: SignBtcInteractionStore;
@@ -262,6 +263,9 @@ export class RootStore {
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(
       this.interactionStore
+    );
+    this.signSvmInteractionStore = new SignSvmInteractionStore(
+        this.interactionStore
     );
 
     this.signOasisInteractionStore = new SignOasisInteractionStore(
