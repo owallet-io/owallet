@@ -126,11 +126,12 @@ export class HugeQueriesStore {
       const account = this.accountStore.getAccount(
         modularChainInfo.chainId
       ) as any;
+
       if ("cosmos" in modularChainInfo) {
         const chainInfo = this.chainStore.getChain(modularChainInfo.chainId);
-        const isBTC = chainInfo.features.includes("btc");
-        const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
-        if (!isBTC && account.bech32Address === "") {
+        // const isBTC = chainInfo.features.includes("btc");
+        // const mainCurrency = chainInfo.stakeCurrency || chainInfo.currencies[0];
+        if (account.addressDisplay === "") {
           continue;
         }
         const queries = this.queriesStore.get(chainInfo.chainId);
@@ -142,35 +143,22 @@ export class HugeQueriesStore {
 
         for (const currency of currencies) {
           const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-          const isERC20 = denomHelper.type === "erc20";
-          const isMainCurrency =
-            mainCurrency.coinMinimalDenom === currency.coinMinimalDenom;
           let queryBalance: ObservableQueryBalancesImplMap;
-
-          if (!isBTC) {
-            queryBalance =
-              this.chainStore.isEvmChain(chainInfo.chainId) &&
-              (isMainCurrency || isERC20)
-                ? queries.queryBalances.getQueryEthereumHexAddress(
-                    account.ethereumHexAddress
-                  )
-                : queries.queryBalances.getQueryBech32Address(
-                    account.bech32Address
-                  );
-          } else {
-            const isBtcLegacy = denomHelper.type === "legacy";
-
-            if (isBtcLegacy) {
-              queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
+          const isBtcLegacy = denomHelper.type === "legacy";
+          if (isBtcLegacy) {
+            queryBalance = queries.queryBalances.getQueryBtcLegacyAddress(
                 account.btcLegacyAddress
-              );
-            } else {
-              queryBalance = queries.queryBalances.getQueryByAddress(
-                account.addressDisplay
-              );
-            }
-          }
+            );
+          } else if (chainInfo.features.includes("tron")) {
+            queryBalance = queries.queryBalances.getQueryEthereumHexAddress(
+                account.ethereumHexAddress
+            );
+          } else {
 
+            queryBalance = queries.queryBalances.getQueryByAddress(
+                account.addressDisplay
+            );
+          }
           const key = `${chainInfo.chainIdentifier}/${currency.coinMinimalDenom}`;
           if (!keysUsed.get(key)) {
             if (

@@ -336,11 +336,6 @@ export class CoinGeckoTerminalPriceStore extends ObservableQuery<CoinGeckoTermin
     const vsCurrenciesUpdated = this._vsCurrencies.add(...vsCurrencies, "usd");
 
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
-      // const url = `${this._optionUri}?ids=${this._coinIds.values.join(
-      //     ","
-      // )}&vs_currencies=${this._vsCurrencies.values.join(
-      //     ","
-      // )}&include_24hr_change=true`;
       const url = `${this._optionUri}/${this._coinIds.values.join(
         ","
       )}?include=top_pools`;

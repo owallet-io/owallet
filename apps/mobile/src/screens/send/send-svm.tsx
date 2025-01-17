@@ -36,9 +36,10 @@ import {
 } from "@solana/spl-token";
 import { createMemoInstruction } from "@solana/spl-memo";
 import { FeeCurrency } from "@owallet/types";
-import { DenomHelper } from "@owallet/common";
+import { _getPriorityFeeSolana, DenomHelper } from "@owallet/common";
 import { RecipientInput } from "@components/input/reciepient-input";
 import { useFocusAfterRouting } from "@hooks/use-focus";
+import { encode } from "bs58";
 
 export const SendSvmScreen: FunctionComponent<{
   chainId: string;
@@ -217,11 +218,10 @@ export const SendSvmScreen: FunctionComponent<{
           const { blockhash } = await connection.getLatestBlockhash();
           transaction.recentBlockhash = blockhash;
           transaction.feePayer = fromPublicKey;
-          // const txStr = encode(
-          //   transaction.serialize({ requireAllSignatures: false })
-          // );
-          // const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
-          // console.log(dynamicMicroLamports, "dynamicMicroLamports");
+          const txStr = encode(
+            transaction.serialize({ requireAllSignatures: false })
+          );
+          const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
           const message = transaction.compileMessage();
           const feeInLamports = await connection.getFeeForMessage(message);
           if (feeInLamports === null) {
@@ -237,7 +237,9 @@ export const SendSvmScreen: FunctionComponent<{
           const units = unitsConsumed.lte(DefaultUnitLimit)
             ? DefaultUnitLimit
             : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
-          const microLamports = new Dec(50000);
+          const microLamports = new Dec(
+            dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
+          );
 
           transaction.add(
             // Request a specific number of compute units
@@ -253,13 +255,13 @@ export const SendSvmScreen: FunctionComponent<{
           const PriorityFee = units
             .mul(microLamports)
             .quoTruncate(DecUtils.getTenExponentNInPrecisionRange(6));
-          console.log(PriorityFee.toString(), "PriorityFee");
           const fee = [
             {
               amount: baseFee.add(PriorityFee).roundUp().toString(),
               currency: sendConfigs.feeConfig.fees[0].currency,
             },
           ];
+          console.log(fee, "fee");
           sendConfigs.feeConfig.setManualFee(fee);
         } catch (e) {
           console.log(e, "err solana");

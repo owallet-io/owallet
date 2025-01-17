@@ -21,8 +21,9 @@ import images from "@assets/images";
 import OWText from "@components/text/ow-text";
 import WrapViewModal from "@src/modals/wrap/wrap-view-modal";
 import { useTheme } from "@src/themes/theme-provider";
+import { registerCardModal } from "@src/modals/card/card-modal-base";
 
-export const BasicAccessModal = registerModal(
+export const BasicAccessModal = registerCardModal(
   observer<{
     isOpen: boolean;
 

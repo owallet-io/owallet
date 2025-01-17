@@ -232,7 +232,6 @@ export class TokenScanService {
     }
 
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    console.log("chainInfo", chainInfo);
 
     if (chainInfo.hideInUI) {
       return;

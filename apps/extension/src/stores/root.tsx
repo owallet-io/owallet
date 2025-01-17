@@ -42,7 +42,7 @@ import {
   SignEthereumInteractionStore,
   SignOasisInteractionStore,
   SignTronInteractionStore,
-  SignBtcInteractionStore,
+  SignBtcInteractionStore, SignSvmInteractionStore,
 } from "@owallet/stores-core";
 import {
   OWalletETCQueries,
@@ -82,6 +82,7 @@ import { TrxAccountStore, TrxQueries } from "@owallet/stores-trx";
 import { OasisAccountStore, OasisQueries } from "@owallet/stores-oasis";
 
 import { AllAccountStore } from "./all-account-store";
+import {SvmAccountStore, SvmQueries} from "@owallet/stores-solana";
 
 let _sidePanelWindowId: number | undefined;
 async function getSidePanelWindowId(): Promise<number | undefined> {
@@ -109,6 +110,7 @@ export class RootStore {
   public readonly permissionStore: PermissionStore;
   public readonly signInteractionStore: SignInteractionStore;
   public readonly signEthereumInteractionStore: SignEthereumInteractionStore;
+  public readonly signSvmInteractionStore: SignSvmInteractionStore;
   public readonly signOasisInteractionStore: SignOasisInteractionStore;
   public readonly signTronInteractionStore: SignTronInteractionStore;
   public readonly signBtcInteractionStore: SignBtcInteractionStore;
@@ -128,7 +130,8 @@ export class RootStore {
       EthereumQueries,
       OasisQueries,
       TrxQueries,
-      BtcQueries
+      BtcQueries,
+        SvmQueries
     ]
   >;
   public readonly swapUsageQueries: SwapUsageQueries;
@@ -156,6 +159,7 @@ export class RootStore {
   public readonly gravityBridgeCurrencyRegistrar: GravityBridgeCurrencyRegistrar;
   public readonly axelarEVMBridgeCurrencyRegistrar: AxelarEVMBridgeCurrencyRegistrar;
   public readonly erc20CurrencyRegistrar: ERC20CurrencyRegistrar;
+  public readonly solanaAccountStore: SvmAccountStore;
 
   public readonly analyticsStore: AnalyticsStore;
 
@@ -260,6 +264,9 @@ export class RootStore {
     this.signEthereumInteractionStore = new SignEthereumInteractionStore(
       this.interactionStore
     );
+    this.signSvmInteractionStore = new SignSvmInteractionStore(
+        this.interactionStore
+    );
 
     this.signOasisInteractionStore = new SignOasisInteractionStore(
       this.interactionStore
@@ -303,7 +310,8 @@ export class RootStore {
       }),
       OasisQueries.use(),
       TrxQueries.use(),
-      BtcQueries.use()
+      BtcQueries.use(),
+        SvmQueries.use()
     );
     this.swapUsageQueries = new SwapUsageQueries(
       this.queriesStore.sharedContext,
@@ -456,13 +464,19 @@ export class RootStore {
       this.chainStore,
       getOWalletFromWindow
     );
+    this.solanaAccountStore = new SvmAccountStore(
+        window,
+        this.chainStore,
+        getOWalletFromWindow
+    );
     this.allAccountStore = new AllAccountStore(
-      this.chainStore,
-      this.oasisAccountStore,
-      this.accountStore,
-      this.tronAccountStore,
-      this.ethereumAccountStore,
-      this.bitcoinAccountStore
+        this.chainStore,
+        this.oasisAccountStore,
+        this.accountStore,
+        this.tronAccountStore,
+        this.ethereumAccountStore,
+        this.bitcoinAccountStore,
+        this.solanaAccountStore
     );
     this.geckoTerminalStore = new CoinGeckoTerminalPriceStore(
         new ExtensionKVStore("store_gecko_prices"),

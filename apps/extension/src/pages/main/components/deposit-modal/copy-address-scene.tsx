@@ -30,6 +30,7 @@ import {
 } from "../../../../components/transition";
 import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 import { TokenTag } from "../token";
+import {formatAddress} from "@owallet/common";
 
 export const CopyAddressScene: FunctionComponent<{
   title?: string;
@@ -45,6 +46,7 @@ export const CopyAddressScene: FunctionComponent<{
     uiConfigStore,
     analyticsStore,
     tronAccountStore,
+      solanaAccountStore
   } = useStore();
 
   const intl = useIntl();
@@ -84,12 +86,12 @@ export const CopyAddressScene: FunctionComponent<{
   const addresses: {
     modularChainInfo: ModularChainInfo;
     bech32Address?: string;
+    base58Address?: string;
     ethereumAddress?: string;
     starknetAddress?: string;
   }[] = chainStore.modularChainInfosInUI
     .map((modularChainInfo) => {
       const accountInfo = accountStore.getAccount(modularChainInfo.chainId);
-
       const bech32Address = (() => {
         if (!("cosmos" in modularChainInfo)) {
           return undefined;
@@ -132,10 +134,18 @@ export const CopyAddressScene: FunctionComponent<{
           : undefined;
       })();
 
+      const base58Address = (() => {
+        if (!modularChainInfo.chainId.startsWith("solana")) {
+          return undefined;
+        }
+        const allAccountInfo = solanaAccountStore.getAccount(modularChainInfo.chainId);
+        return allAccountInfo.base58Address
+      })();
       return {
         modularChainInfo,
         bech32Address,
         ethereumAddress,
+        base58Address
       };
     })
     .filter(({ modularChainInfo, bech32Address }) => {
@@ -450,6 +460,7 @@ const CopyAddressItem: FunctionComponent<{
     bech32Address?: string;
     ethereumAddress?: string;
     starknetAddress?: string;
+    base58Address?: string;
   };
   close: () => void;
   onClick?: (chainId: string) => void;
@@ -538,7 +549,7 @@ const CopyAddressItem: FunctionComponent<{
               await navigator.clipboard.writeText(
                 address.starknetAddress ||
                   address.ethereumAddress ||
-                  address.bech32Address ||
+                  address.bech32Address || address.base58Address ||
                   ""
               );
               setHasCopied(true);
@@ -612,6 +623,9 @@ const CopyAddressItem: FunctionComponent<{
                         20
                       );
                     }
+                    if (address.base58Address) {
+                      return formatAddress(address.base58Address)
+                    }
                   })()}
                 </Caption1>
               </YAxis>
@@ -664,7 +678,7 @@ const CopyAddressItem: FunctionComponent<{
                     chainId: address.modularChainInfo.chainId,
                     address:
                       address.starknetAddress ||
-                      address.ethereumAddress ||
+                      address.ethereumAddress || address.base58Address ||
                       address.bech32Address,
                   });
                 }}

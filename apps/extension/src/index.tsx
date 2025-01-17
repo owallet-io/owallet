@@ -1,4 +1,6 @@
 // Shim ------------
+import {SendSvmPage} from "pages/send/amount/svm";
+
 require("setimmediate");
 // Shim ------------
 
@@ -95,6 +97,7 @@ import { SignTronTxPage } from "./pages/sign/tron";
 import { ExplorePage } from "pages/explore/explore-page";
 import { SendBtcPage } from "pages/send/amount/btc";
 import { SignBtcTxPage } from "pages/sign/btc";
+import {SignSvmTxPage} from "pages/sign/svm";
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.
@@ -367,8 +370,8 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               <Route path="/send" element={<SendAmountPage />} />
               <Route path="/send-tron" element={<SendTronPage />} />
               <Route path="/send-btc" element={<SendBtcPage />} />
+              <Route path="/send-svm" element={<SendSvmPage />} />
               <Route path="/send-oasis" element={<SendAmountPage />} />
-              <Route path="/send-btc" element={<SendAmountPage />} />
               <Route
                 path="/send/select-asset"
                 element={<SendSelectAssetPage />}
@@ -458,6 +461,7 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               />
               <Route path="/sign-ethereum" element={<SignEthereumTxPage />} />
               <Route path="/sign-btc" element={<SignBtcTxPage />} />
+              <Route path="/sign-svm" element={<SignSvmTxPage />} />
               <Route path="/sign-tron" element={<SignTronTxPage />} />
 
               <Route path="/wallet/select" element={<WalletSelectPage />} />

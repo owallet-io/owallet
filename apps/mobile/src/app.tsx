@@ -22,6 +22,7 @@ import { ErrorBoundaryFallback } from "./screens/error-boundary/error-boundary";
 import { ApolloProvider } from "@apollo/client";
 import client from "./graphql/apollo-client";
 import { LedgerBLEProvider } from "@src/providers/ledger-ble";
+import { ModalBaseProvider } from "@src/modals/v2/provider";
 
 const queryClient = new QueryClient();
 
@@ -67,19 +68,21 @@ export const App = () => {
                 <AppIntlProvider>
                   <LedgerBLEProvider>
                     <SafeAreaProvider>
-                      <ModalsProvider>
-                        <PopupRootProvider>
-                          <LoadingScreenProvider>
-                            <ConfirmModalProvider>
-                              <InteractionModalsProivder>
-                                <QueryClientProvider client={queryClient}>
-                                  <AppNavigation />
-                                </QueryClientProvider>
-                              </InteractionModalsProivder>
-                            </ConfirmModalProvider>
-                          </LoadingScreenProvider>
-                        </PopupRootProvider>
-                      </ModalsProvider>
+                      <ModalBaseProvider>
+                        <ModalsProvider>
+                          <PopupRootProvider>
+                            <LoadingScreenProvider>
+                              <ConfirmModalProvider>
+                                <InteractionModalsProivder>
+                                  <QueryClientProvider client={queryClient}>
+                                    <AppNavigation />
+                                  </QueryClientProvider>
+                                </InteractionModalsProivder>
+                              </ConfirmModalProvider>
+                            </LoadingScreenProvider>
+                          </PopupRootProvider>
+                        </ModalsProvider>
+                      </ModalBaseProvider>
                     </SafeAreaProvider>
                   </LedgerBLEProvider>
                 </AppIntlProvider>
