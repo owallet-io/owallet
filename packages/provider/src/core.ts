@@ -1688,22 +1688,52 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
         return encode(preparedTx.serialize({ requireAllSignatures: false }));
       })
     );
-    const signatures = await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "keyring-svm",
-      "request-sign-all-transaction-svm",
-      {
-        chainId: CHAIN_ID_SOL,
-        signer: publicKey,
-        txs: txStrs,
-      }
-    );
+
+    const signatures = await new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "request-sign-all-transaction-svm",
+        {
+          chainId: CHAIN_ID_SOL,
+          signer: publicKey,
+          txs: txStrs,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+
     if (!signatures) {
       throw Error("Transaction Rejected");
     }
 
     return signatures;
+    // const signatures = await sendSimpleMessage(
+    //   this.requester,
+    //   BACKGROUND_PORT,
+    //   "keyring-svm",
+    //   "request-sign-all-transaction-svm",
+    //   {
+    //     chainId: CHAIN_ID_SOL,
+    //     signer: publicKey,
+    //     txs: txStrs,
+    //   }
+    // );
+    // if (!signatures) {
+    //   throw Error("Transaction Rejected");
+    // }
+
+    // return signatures;
   }
 
   public async signAndSendTransaction<
@@ -1814,17 +1844,42 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       tx,
     });
     const txStr = encode(preparedTx.serialize({ requireAllSignatures: false }));
-    const result = await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "keyring-svm",
-      "request-sign-transaction-svm",
-      {
-        chainId: CHAIN_ID_SOL,
-        signer: publicKey,
-        tx: txStr,
-      }
-    );
+
+    const result = await new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "request-sign-transaction-svm",
+        {
+          chainId: CHAIN_ID_SOL,
+          signer: publicKey,
+          tx: txStr,
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+
+    // const result = await sendSimpleMessage(
+    //   this.requester,
+    //   BACKGROUND_PORT,
+    //   "keyring-svm",
+    //   "request-sign-transaction-svm",
+    //   {
+    //     chainId: CHAIN_ID_SOL,
+    //     signer: publicKey,
+    //     tx: txStr,
+    //   }
+    // );
     if (!result?.signature || !result?.signedTx) {
       throw Error("Transaction Rejected");
     }
@@ -1835,17 +1890,43 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     publicKey: PublicKey;
     message: Uint8Array;
   }): Promise<Uint8Array> {
-    const svmResponse = await sendSimpleMessage(
-      this.requester,
-      BACKGROUND_PORT,
-      "keyring-svm",
-      "request-sign-message-svm",
-      {
-        chainId: CHAIN_ID_SOL,
-        signer: request.publicKey,
-        message: encode(request.message),
-      }
-    );
+    // const svmResponse = await sendSimpleMessage(
+    //   this.requester,
+    //   BACKGROUND_PORT,
+    //   "keyring-svm",
+    //   "request-sign-message-svm",
+    //   {
+    //     chainId: CHAIN_ID_SOL,
+    //     signer: request.publicKey,
+    //     message: encode(request.message),
+    //   }
+    // );
+    // return decode(svmResponse.signedMessage);
+
+    const svmResponse = await new Promise((resolve, reject) => {
+      let f = false;
+      sendSimpleMessage(
+        this.requester,
+        BACKGROUND_PORT,
+        "keyring-svm",
+        "request-sign-message-svm",
+        {
+          chainId: CHAIN_ID_SOL,
+          signer: request.publicKey,
+          message: encode(request.message),
+        }
+      )
+        .then(resolve)
+        .catch(reject)
+        .finally(() => (f = true));
+
+      setTimeout(() => {
+        if (!f) {
+          this.owallet.protectedTryOpenSidePanelIfEnabled();
+        }
+      }, 100);
+    });
+
     return decode(svmResponse.signedMessage);
   }
 

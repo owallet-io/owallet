@@ -4,12 +4,12 @@ import { observer } from "mobx-react-lite";
 import React, {
   FC,
   FunctionComponent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
 import {
-  Platform,
   StyleSheet,
   Switch,
   TouchableOpacity,
@@ -39,6 +39,7 @@ import { Dec } from "@owallet/unit";
 import { useIsNotReady } from "@screens/home";
 import { XAxis } from "@components/axis";
 import { Box } from "@components/box";
+import { FlashList } from "@shopify/flash-list";
 
 const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
@@ -98,6 +99,11 @@ export const TokensCardAll: FunctionComponent<{
   useEffect(() => {
     uiConfigStore.setHideLowBalance(toggle);
   }, [toggle]);
+
+  const renderItem = useCallback(({ item }): any => {
+    return <TokenItem key={item.chainId} item={item} />;
+  }, []);
+
   return (
     <>
       <View
@@ -146,10 +152,22 @@ export const TokensCardAll: FunctionComponent<{
         </View>
       </View>
       {!isFirstTime ? (
-        (viewMore
-          ? allBalancesSearchFiltered?.slice(0, 5)
-          : allBalancesSearchFiltered
-        ).map((item, index) => <TokenItem key={index.toString()} item={item} />)
+        // (viewMore
+        //   ? allBalancesSearchFiltered?.slice(0, 5)
+        //   : allBalancesSearchFiltered
+        // ).map((item, index) => <TokenItem key={index.toString()} item={item} />)
+        <FlashList
+          data={
+            !isFirstTime
+              ? viewMore
+                ? allBalancesSearchFiltered?.slice(0, 5)
+                : allBalancesSearchFiltered
+              : []
+          }
+          renderItem={renderItem}
+          estimatedItemSize={200}
+          onEndReachedThreshold={0.5}
+        />
       ) : (
         <View
           style={{
