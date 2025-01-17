@@ -126,10 +126,10 @@ export const SendTronPage: FunctionComponent = observer(() => {
   const tronAccount = tronAccountStore.getAccount(chainId);
 
   const queryBalances = queriesStore.get(chainId).queryBalances;
-  const sender = isEvmTx ? account.ethereumHexAddress : account.bech32Address;
-  const balance = isEvmTx
-    ? queryBalances.getQueryEthereumHexAddress(sender).getBalance(currency)
-    : queryBalances.getQueryBech32Address(sender).getBalance(currency);
+  const sender = tronAccount.ethereumHexAddress;
+  const balance = queryBalances
+    .getQueryEthereumHexAddress(sender)
+    .getBalance(currency);
 
   const sendConfigs = useSendMixedIBCTransferConfig(
     chainStore,

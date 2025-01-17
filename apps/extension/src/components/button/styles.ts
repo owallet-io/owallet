@@ -64,7 +64,7 @@ const buttonStyleFromColorAndMode: Record<
       fill: {
         enabled: css`
           background-color: ${ColorPalette["purple-500"]};
-
+          color: ${ColorPalette["white"]};
           ${makeTextAndSvgColor(ColorPalette["white"])}
 
           :hover {
@@ -118,7 +118,7 @@ const buttonStyleFromColorAndMode: Record<
       fill: {
         enabled: css`
           background-color: ${ColorPalette["gray-70"]};
-
+          color: ${ColorPalette["white"]};
           ${makeTextAndSvgColor(ColorPalette["black-50"])}
 
           :hover {
