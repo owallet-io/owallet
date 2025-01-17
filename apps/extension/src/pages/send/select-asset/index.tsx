@@ -110,6 +110,11 @@ export const SendSelectAssetPage: FunctionComponent = observer(() => {
     ) {
       return "/send-btc";
     } else if (
+        "cosmos" in modularChainInfo &&
+        modularChainInfo.cosmos.features.includes("svm")
+    ) {
+      return "/send-svm";
+    } else if (
       "starknet" in modularChainInfo &&
       modularChainInfo.starknet != null
     ) {

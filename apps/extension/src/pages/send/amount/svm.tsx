@@ -91,8 +91,8 @@ export const SendSvmPage: FunctionComponent = observer(() => {
   useEffect(() => {
     if (!initialChainId || !initialCoinMinimalDenom) {
       navigate(
-        `/send-svm/select-asset?navigateReplace=true&navigateTo=${encodeURIComponent(
-          "/send-svm?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
+        `/send/select-asset?navigateReplace=true&navigateTo=${encodeURIComponent(
+          "/send?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
         )}`
       );
     }
