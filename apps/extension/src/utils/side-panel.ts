@@ -22,6 +22,26 @@ export const handleExternalInteractionWithNoProceedNext = () => {
   }
 };
 
+export const closeSidePanelMode = async (): Promise<void> => {
+  const selfCloseId = Math.random() * 100000;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  window.__self_id_for_closing_view_side_panel = selfCloseId;
+  const views = browser.extension.getViews();
+
+  for (const view of views) {
+    if (
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      window.__self_id_for_closing_view_side_panel !== selfCloseId
+    ) {
+      view.window.close();
+    }
+  }
+
+  window.close();
+};
+
 export const toggleSidePanelMode = async (
   enable: boolean,
   onRes: (enabled: boolean) => void

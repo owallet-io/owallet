@@ -30,6 +30,8 @@ import { useGlobarSimpleBar } from "../../../hooks/global-simplebar";
 import { EmptyView } from "../../../components/empty-view";
 import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
 import { TokenTag } from "pages/main/components";
+import { isRunningInSidePanel } from "helpers/side-panel";
+import { closeSidePanelMode } from "../../../utils/side-panel";
 
 const AnimatedBox = animated(Box);
 
@@ -223,6 +225,7 @@ export const WalletSelectPage: FunctionComponent = observer(() => {
       ]}
       onSubmit={async (e) => {
         e.preventDefault();
+        isRunningInSidePanel() ? closeSidePanelMode() : null;
         await browser.tabs.create({
           url: "/register.html",
         });

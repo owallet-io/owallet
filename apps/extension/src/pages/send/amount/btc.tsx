@@ -160,7 +160,7 @@ export const SendBtcPage: FunctionComponent = observer(() => {
 
               notification.show(
                 "success",
-                intl.formatMessage({ id: "error.transaction-success" }),
+                intl.formatMessage({ id: "notification.transaction-success" }),
                 ""
               );
             },

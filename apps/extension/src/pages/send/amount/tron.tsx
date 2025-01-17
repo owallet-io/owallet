@@ -420,7 +420,7 @@ export const SendTronPage: FunctionComponent = observer(() => {
               tronAccount.setIsSendingTx(false);
               notification.show(
                 "success",
-                intl.formatMessage({ id: "error.transaction-success" }),
+                intl.formatMessage({ id: "notification.transaction-success" }),
                 ""
               );
             }
