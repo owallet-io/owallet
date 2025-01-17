@@ -549,7 +549,7 @@ const CopyAddressItem: FunctionComponent<{
               await navigator.clipboard.writeText(
                 address.starknetAddress ||
                   address.ethereumAddress ||
-                  address.bech32Address ||
+                  address.bech32Address || address.base58Address ||
                   ""
               );
               setHasCopied(true);
@@ -678,7 +678,7 @@ const CopyAddressItem: FunctionComponent<{
                     chainId: address.modularChainInfo.chainId,
                     address:
                       address.starknetAddress ||
-                      address.ethereumAddress ||
+                      address.ethereumAddress || address.base58Address ||
                       address.bech32Address,
                   });
                 }}

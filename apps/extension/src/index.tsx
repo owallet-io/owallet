@@ -1,4 +1,6 @@
 // Shim ------------
+import {SendSvmPage} from "pages/send/amount/svm";
+
 require("setimmediate");
 // Shim ------------
 
@@ -367,6 +369,7 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
               <Route path="/send" element={<SendAmountPage />} />
               <Route path="/send-tron" element={<SendTronPage />} />
               <Route path="/send-btc" element={<SendBtcPage />} />
+              <Route path="/send-svm" element={<SendSvmPage />} />
               <Route path="/send-oasis" element={<SendAmountPage />} />
               <Route path="/send-btc" element={<SendAmountPage />} />
               <Route

@@ -264,6 +264,12 @@ export const TokenDetailModal: FunctionComponent<{
                         );
                         return;
                     }
+                    if (modularChainInfo.cosmos.features.includes("svm")) {
+                        navigate(
+                            `/send-svm?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
+                        );
+                        return;
+                    }
                     navigate(
                         `/send?chainId=${chainId}&coinMinimalDenom=${coinMinimalDenom}`
                     );
