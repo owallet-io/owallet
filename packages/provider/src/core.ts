@@ -1031,9 +1031,10 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     ignoreGestureFailure: boolean = false
   ): Promise<void> {
     let isInContentScript = false;
+
     if (
       typeof window !== "undefined" &&
-      (window as any).__owallet_content_script === true
+      (window as any).__keplr_content_script === true
     ) {
       isInContentScript = true;
     }
@@ -1066,7 +1067,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_owallet_side_panel__")) {
+            if (!document.getElementById("__open_keplr_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -1078,7 +1079,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               if (sidePanelPing) {
                 return;
               }
-
               const isOWalletLocked = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -1149,7 +1149,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_owallet_side_panel__";
+              button.id = "__open_keplr_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
@@ -1166,51 +1166,32 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
 
               button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
 
-              const owalletLogoWrap = document.createElement("div");
-              owalletLogoWrap.style.boxSizing = "border-box";
-              owalletLogoWrap.style.position = "relative";
-              owalletLogoWrap.style.marginRight = "1rem";
-              const owalletLogo = document.createElement("img");
-              const owalletLogoUrl = chrome.runtime.getURL(
-                `/assets/${
-                  isOWalletLocked ? "locked-owallet-logo" : "icon"
-                }-128.png`
-              );
-              owalletLogo.src = owalletLogoUrl;
-              owalletLogo.style.boxSizing = "border-box";
-              owalletLogo.style.width = "3rem";
-              owalletLogo.style.height = "3rem";
-              owalletLogoWrap.appendChild(owalletLogo);
-
-              const logoClickCursor = document.createElement("img");
-              const logoClickCursorUrl = chrome.runtime.getURL(
-                "assets/icon-click-cursor.png"
-              );
-              logoClickCursor.src = logoClickCursorUrl;
-              logoClickCursor.style.boxSizing = "border-box";
-              logoClickCursor.style.position = "absolute";
-              logoClickCursor.style.right = "-0.2rem";
-              logoClickCursor.style.bottom = "-0.2rem";
-              logoClickCursor.style.aspectRatio = "78/98";
-              logoClickCursor.style.height = "1.375rem";
-              owalletLogoWrap.appendChild(logoClickCursor);
+              const arrowTop = document.createElement("div");
+              arrowTop.style.boxSizing = "border-box";
+              arrowTop.style.transform = "translateY(-0.65rem)";
+              arrowTop.style.marginRight = "0.35rem";
+              arrowTop.innerHTML = `
+                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+                      isLightMode ? "#2C4BE2" : "#72747B"
+                    }"/>
+                </svg>
+              `;
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
-              // mainText.style.maxWidth = "9.125rem";
               mainText.style.fontSize = "1rem";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isOWalletLocked
-                ? "Unlock OWallet to continue"
-                : "Open OWallet to approve requests";
+                ? "Unlock OWallet to proceed"
+                : "Open OWallet to approve request(s)";
 
-              // button.appendChild(megaphoneWrapper);
-              button.appendChild(owalletLogoWrap);
+              button.appendChild(arrowTop);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 
               const hasAlready = document.getElementById(
-                "__open_owallet_side_panel__"
+                "__open_keplr_side_panel__"
               );
 
               if (!hasAlready) {
@@ -1235,16 +1216,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
                 }, 300);
 
                 document.body.appendChild(button);
-
-                // button.addEventListener("click", () => {
-                //   this.protectedTryOpenSidePanelIfEnabled(true);
-                //
-                //   clearInterval(intervalId);
-                //   if (!removed) {
-                //     button.remove();
-                //     removed = true;
-                //   }
-                // });
               }
             }
           }
