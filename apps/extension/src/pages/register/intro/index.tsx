@@ -27,7 +27,7 @@ const slides = [
   },
   {
     imageSrc: require("assets/images/img_leverage.png"),
-    title: "UNIVERSAL GATEWAY WITH OME WALLET",
+    title: "UNIVERSAL GATEWAY WITH ONE WALLET",
     paragraph: "Bitcoin x EVM x Oraichain x Cosmos-SDK\nblockchains",
   },
 ];
