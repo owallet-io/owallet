@@ -554,9 +554,9 @@
   "page.main.staked.staked-balance-tooltip": "Tokens that are staked to validators and earning rewards.",
   "page.main.staked.unstaking-balance-title": "Unstaking Balance",
   "page.main.staked.unstaking-balance-tooltip": "Tokens that are under the unbonding period.",
-  "page.main.staked.empty-view-title": "Ready to Start Staking?",
-  "page.main.staked.empty-view-paragraph": "Stake your assets to earn rewards and contribute to maintaining the networks!",
-  "page.main.staked.go-to-dashboard-button": "Go to Dashboard",
+  "page.main.staked.empty-view-title": "Ready to staking?",
+  "page.main.staked.empty-view-paragraph": "Lock up your assets to earn rewards while helping to sustain the networks!",
+  "page.main.staked.go-to-dashboard-button": "Stake now",
 
   "page.main.components.ibc-history-view.item.pending": "IBC Transfer in Progress",
   "page.main.components.ibc-history-view.item.succeed": "IBC Transfer Successful",
