@@ -49,6 +49,7 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
       throw new Error(`${chainInfo.chainId} not support sign from base`);
     }
     const parsedData = JSON.parse(JSON.parse(data));
+    console.log("parsedData priv", parsedData);
 
     const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
       "privateKey"

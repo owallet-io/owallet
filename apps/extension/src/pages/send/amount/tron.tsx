@@ -83,10 +83,10 @@ export const SendTronPage: FunctionComponent = observer(() => {
 
   const initialChainId = searchParams.get("chainId");
   const initialCoinMinimalDenom = searchParams.get("coinMinimalDenom");
-  const contractAddress =
-    initialCoinMinimalDenom.split(":").length > 1
-      ? initialCoinMinimalDenom.split(":")[1]
-      : null;
+  // const contractAddress =
+  //   initialCoinMinimalDenom.split(":").length > 1
+  //     ? initialCoinMinimalDenom.split(":")[1]
+  //     : null;
 
   const chainId = initialChainId || chainStore.chainInfosInUI[0].chainId;
   const chainInfo = chainStore.getChain(chainId);
@@ -98,6 +98,8 @@ export const SendTronPage: FunctionComponent = observer(() => {
     chainStore.getChain(chainId).currencies[0].coinMinimalDenom;
   const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
   const isErc20 = new DenomHelper(currency.coinMinimalDenom).type === "erc20";
+  //@ts-ignore
+  const contractAddress = currency?.contractAddress ?? null;
 
   useEffect(() => {
     if (addressRef.current) {

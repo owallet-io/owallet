@@ -326,7 +326,21 @@ export const TronSigningView: FunctionComponent<{
                   {signingDataText}
                 </Box>
               ) : (
-                <Box padding="1rem">
+                <Box
+                  as={"pre"}
+                  padding="0.25rem"
+                  // Remove normalized style of pre tag
+                  margin="0"
+                  style={{
+                    width: "fit-content",
+                    color:
+                      theme.mode === "light"
+                        ? ColorPalette["gray-400"]
+                        : ColorPalette["gray-200"],
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-all",
+                  }}
+                >
                   <Body2
                     color={
                       theme.mode === "light"
@@ -361,7 +375,7 @@ export const TronSigningView: FunctionComponent<{
           ) : (
             <Box
               as={"pre"}
-              padding="1rem"
+              padding="0.25rem"
               // Remove normalized style of pre tag
               margin="0"
               style={{
