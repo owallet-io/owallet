@@ -143,6 +143,26 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
             </Box>
           </BlurBackdrop>
         ) : null}
+
+        <Box>
+          <WarningBox
+            title={intl.formatMessage({
+              id: "pages.register.new-mnemonic.recovery-warning-box-title",
+            })}
+            paragraph={intl.formatMessage({
+              id: "pages.register.new-mnemonic.recovery-warning-box-paragraph",
+            })}
+          />
+
+          <WarningBox
+            title={intl.formatMessage({
+              id: "pages.register.new-mnemonic.back-up-warning-box-title",
+            })}
+            paragraph={intl.formatMessage({
+              id: "pages.register.new-mnemonic.back-up-warning-box-paragraph",
+            })}
+          />
+        </Box>
         <Box alignX="center">
           <HorizontalRadioGroup
             size="large"
@@ -187,26 +207,6 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
         <CopyToClipboard text={words.join(" ")} />
 
         <Gutter size="1.625rem" />
-      </Box>
-
-      <Box>
-        <WarningBox
-          title={intl.formatMessage({
-            id: "pages.register.new-mnemonic.recovery-warning-box-title",
-          })}
-          paragraph={intl.formatMessage({
-            id: "pages.register.new-mnemonic.recovery-warning-box-paragraph",
-          })}
-        />
-
-        <WarningBox
-          title={intl.formatMessage({
-            id: "pages.register.new-mnemonic.back-up-warning-box-title",
-          })}
-          paragraph={intl.formatMessage({
-            id: "pages.register.new-mnemonic.back-up-warning-box-paragraph",
-          })}
-        />
       </Box>
 
       <Gutter size="1.5rem" />

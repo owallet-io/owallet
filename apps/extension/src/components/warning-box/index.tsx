@@ -16,19 +16,19 @@ export const WarningBox: FunctionComponent<Omit<GuideBoxProps, "color">> = ({
   return (
     <Box padding="1.125rem">
       <Columns sum={1} alignY="center" gutter="0.25rem">
-        <WarningIcon
+        {/* <WarningIcon
           width="1.25rem"
           height="1.25rem"
           color={
             theme.mode === "light"
-              ? ColorPalette["orange-400"]
+              ? ColorPalette["red-600"]
               : ColorPalette["yellow-400"]
           }
-        />
+        /> */}
         <H5
           color={
             theme.mode === "light"
-              ? ColorPalette["orange-400"]
+              ? ColorPalette["red-400"]
               : ColorPalette["yellow-500"]
           }
         >
