@@ -408,7 +408,7 @@ export const MenuBar: FunctionComponent<{
           ) : null}
 
           <Gutter size="1rem" />
-
+          {/* 
           <Box
             cursor="pointer"
             onClick={(e) => {
@@ -430,8 +430,8 @@ export const MenuBar: FunctionComponent<{
                 <FormattedMessage id="page.main.components.menu-bar.go-to-keplr-chain-registry" />
               </Button2>
 
-              {/* <Gutter size="0.25rem" /> */}
-              {/* 
+              <Gutter size="0.25rem" />
+              
               <LinkIcon
                 width="1.125rem"
                 height="1.125rem"
@@ -440,9 +440,9 @@ export const MenuBar: FunctionComponent<{
                     ? ColorPalette["gray-200"]
                     : ColorPalette["gray-300"]
                 }
-              /> */}
+              />
             </XAxis>
-          </Box>
+          </Box> */}
         </Bleed>
       </Box>
     </Box>
