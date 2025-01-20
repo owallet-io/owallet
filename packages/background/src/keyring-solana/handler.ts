@@ -129,11 +129,14 @@ const handleConnectSvmMsg: (
   permissionInteractionService
 ) => {
   return async (env, msg) => {
-    await permissionInteractionService.ensureEnabled(
-      env,
-      [msg.chainId],
-      msg.origin
-    );
+    if (!msg.silent) {
+      await permissionInteractionService.ensureEnabled(
+          env,
+          [msg.chainId],
+          msg.origin
+      );
+    }
+
     const key = await service.getKeySelected(msg.chainId);
     return { publicKey: new PublicKey(key.base58Address) };
   };
