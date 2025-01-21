@@ -11,8 +11,8 @@ export const NotificationCard: FC<{}> = observer(({}) => {
           color: colors["neutral-text-body"]
         }}
       >
-        🎈 Exciting news! A major update is on the way, bringing fresh features,
-        improvements, and more. Stay tuned—things are about to get even better!
+        Exciting update coming your way—new features and improvements are
+        dropping soon. Stay tuned! 🎈
       </div>
     </div>
   );
