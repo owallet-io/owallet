@@ -9,12 +9,10 @@ import {
 import { Column, Columns } from "../../../components/column";
 import { Box } from "../../../components/box";
 import { ColorPalette } from "../../../styles";
-import { XAxis } from "../../../components/axis";
-import { Caption1, Subtitle3 } from "../../../components/typography";
+import { Subtitle3 } from "../../../components/typography";
 import { Gutter } from "../../../components/gutter";
 import { useRegisterHeader } from "../components/header";
 import { RegisterH4 } from "../components/typography";
-import { TextButton } from "../../../components/button-text";
 import { KeyIcon } from "../../../components/icon";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useTheme } from "styled-components";
