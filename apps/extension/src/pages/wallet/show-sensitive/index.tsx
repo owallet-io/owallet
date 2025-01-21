@@ -129,7 +129,7 @@ export const WalletShowSensitivePage: FunctionComponent = observer(() => {
             <Box
               alignX="center"
               alignY="center"
-              style={{ flex: 1, padding: 60 }}
+              style={{ flex: 1, padding: 30 }}
             >
               <img src={require("assets/images/img_shield.png")} />
 

@@ -138,7 +138,7 @@ export const WalletDeletePage: FunctionComponent = observer(() => {
           return null;
         })()}
 
-        <Box alignX="center" alignY="center" style={{ flex: 1, padding: 60 }}>
+        <Box alignX="center" alignY="center" style={{ flex: 1, padding: 30 }}>
           <img width={120} src={require("assets/images/img_delete.png")} />
         </Box>
 
