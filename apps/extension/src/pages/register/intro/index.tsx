@@ -105,7 +105,8 @@ export const RegisterIntroScene: FunctionComponent = observer(() => {
           })}
           size="large"
           onClick={() => {
-            sceneTransition.push("new-user");
+            // sceneTransition.push("new-user");
+            sceneTransition.push("new-mnemonic");
           }}
         />
         <Button
@@ -115,18 +116,32 @@ export const RegisterIntroScene: FunctionComponent = observer(() => {
           size="large"
           color="secondary"
           onClick={() => {
-            sceneTransition.push("existing-user");
+            // sceneTransition.push("existing-user");
+            sceneTransition.push("recover-mnemonic");
           }}
         />
         {uiConfigStore.platform !== "firefox" ? (
+          // <Button
+          //   text={intl.formatMessage({
+          //     id: "pages.register.intro.connect-hardware-wallet-button",
+          //   })}
+          //   size="large"
+          //   color="secondary"
+          //   onClick={() => {
+          //     sceneTransition.push("connect-hardware-wallet");
+          //   }}
+          // />
           <Button
             text={intl.formatMessage({
-              id: "pages.register.intro.connect-hardware-wallet-button",
+              id: "pages.register.connect-hardware.connect-ledger-button",
             })}
             size="large"
             color="secondary"
+            left={<LedgerIcon />}
             onClick={() => {
-              sceneTransition.push("connect-hardware-wallet");
+              sceneTransition.push("name-password-hardware", {
+                type: "ledger",
+              });
             }}
           />
         ) : null}
@@ -134,3 +149,36 @@ export const RegisterIntroScene: FunctionComponent = observer(() => {
     </RegisterSceneBox>
   );
 });
+
+const LedgerIcon: FunctionComponent = () => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clipPath="url(#clip0_6023_318)">
+        <path
+          d="M21 20H14.1341V19.0323H20.0546V15.3964H21V20ZM9.86588 20H3V15.3964H3.94544V19.0323H9.86588V20ZM21 8.72578H20.0546V4.9677H14.1341V4H21V8.72578ZM3.94544 8.72578H3V4H9.86588V4.9677H3.94544V8.72578Z"
+          fill="white"
+        />
+        <path
+          d="M14.1341 14.9078H9.86591V8.36877H10.8205V13.9401H14.1341V14.9078Z"
+          fill="white"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_6023_318">
+          <rect
+            width="18"
+            height="16"
+            fill="white"
+            transform="translate(3 4)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};

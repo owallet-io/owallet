@@ -434,7 +434,7 @@ export const TronSigningView: FunctionComponent<{
                     />
                   }
                 </Body2>
-                <Body2
+                {/* <Body2
                   color={
                     theme.mode === "light"
                       ? ColorPalette["gray-300"]
@@ -445,7 +445,7 @@ export const TronSigningView: FunctionComponent<{
                     whiteSpace: "pre-wrap",
                     textUnderlineOffset: "0.2rem",
                   }}
-                ></Body2>
+                ></Body2> */}
               </XAxis>
             </Box>
           </YAxis>
