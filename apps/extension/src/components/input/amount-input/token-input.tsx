@@ -67,7 +67,7 @@ export const TokenAmountInput: FunctionComponent<{
       border={false}
       noPadding={true}
       styleInput={{
-        fontSize: 30,
+        fontSize: 20,
         fontWeight: 500,
       }}
       placeholder={"0"}
@@ -371,11 +371,12 @@ const MaxButton: FunctionComponent<{
         }}
         onClick={(e) => {
           e.preventDefault();
-          if (amountConfig.fraction > 0) {
-            amountConfig.setFraction(0);
-          } else {
-            amountConfig.setFraction(0.5);
-          }
+          // if (amountConfig.fraction > 0) {
+          //   amountConfig.setFraction(0);
+          // } else {
+          //   amountConfig.setFraction(0.5);
+          // }
+          amountConfig.setFraction(0.5);
         }}
       >
         <Button2
@@ -443,11 +444,12 @@ const MaxButton: FunctionComponent<{
         onClick={(e) => {
           e.preventDefault();
 
-          if (amountConfig.fraction > 0) {
-            amountConfig.setFraction(0);
-          } else {
-            amountConfig.setFraction(1);
-          }
+          // if (amountConfig.fraction > 0) {
+          //   amountConfig.setFraction(0);
+          // } else {
+          //   amountConfig.setFraction(1);
+          // }
+          amountConfig.setFraction(1);
         }}
       >
         <Button2
