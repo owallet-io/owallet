@@ -170,7 +170,7 @@ export const RegisterHeader: FunctionComponent<{
 
 const HeaderIntro: FunctionComponent = () => {
   const theme = useTheme();
-
+  return null;
   return (
     <Box paddingY="0.25rem">
       <YAxis alignX="center">

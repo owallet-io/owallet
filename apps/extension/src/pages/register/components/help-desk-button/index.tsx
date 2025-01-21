@@ -48,6 +48,7 @@ const Styles = {
 };
 
 export const HelpDeskButton: FunctionComponent = () => {
+  return null;
   return (
     <a href={HelpDeskUrl} target="_blank" rel="noreferrer">
       <Container>
