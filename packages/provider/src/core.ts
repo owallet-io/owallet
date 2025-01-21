@@ -1155,7 +1155,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               button.style.position = "fixed";
               button.style.right = "1.5rem";
               button.style.top = "1.5rem";
-              button.style.padding = "1rem 1.75rem 1rem 0.75rem";
+              button.style.padding = "0rem 1.75rem 0rem 0.75rem";
               button.style.zIndex = "2147483647";
               button.style.borderRadius = "1rem";
               button.style.display = "flex";
