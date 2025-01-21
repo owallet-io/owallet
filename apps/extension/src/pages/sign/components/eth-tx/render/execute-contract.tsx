@@ -111,7 +111,7 @@ const EthExecuteContractTxPretty: React.FunctionComponent<{
     <React.Fragment>
       <Box
         padding="0.25rem 0.625rem"
-        backgroundColor={ColorPalette["gray-400"]}
+        backgroundColor={ColorPalette["purple-600"]}
         borderRadius="20rem"
         width="fit-content"
       >

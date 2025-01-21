@@ -658,9 +658,6 @@ export const EthereumSigningView: FunctionComponent<{
                         ) as UnsignedTransaction
                       );
 
-                      console.log("icon", icon);
-                      console.log("icon", title);
-
                       if (icon !== undefined && title !== undefined) {
                         return (
                           <EthTxBase

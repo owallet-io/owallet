@@ -637,7 +637,7 @@
   "components.input.fee-control.tooltip.external-fee-set": "Transaction fee was set by website",
   "components.input.fee-control.modal.title": "Fee Options",
   "components.input.fee-control.modal.fee-title": "Fee tier",
-  "components.input.fee-control.modal.remember-last-fee-option": "Remember my choice",
+  "components.input.fee-control.modal.remember-last-fee-option": "Remember my option",
   "components.input.fee-control.modal.fee-token-dropdown-label": "Fee Token",
   "components.input.fee-control.modal.auto-title": "Auto",
   "components.input.fee-control.modal.guide-title": "Tx simulation failed",

@@ -20,6 +20,7 @@ interface Theme {
 }
 
 const initOption = () => {
+  return "light";
   const theme = localStorage.getItem("theme-option");
 
   if (!theme) {
@@ -51,6 +52,8 @@ export const AppThemeProvider: FunctionComponent<PropsWithChildren> = ({
     }
 
     if (option === "auto") {
+      return "light";
+
       return window.matchMedia("(prefers-color-scheme: light)").matches
         ? "light"
         : "dark";
@@ -71,16 +74,18 @@ export const AppThemeProvider: FunctionComponent<PropsWithChildren> = ({
     localStorage.setItem("theme-option", option);
 
     if (option === "auto") {
-      setDisplayTheme(
-        window.matchMedia("(prefers-color-scheme: light)").matches
-          ? "light"
-          : "dark"
-      );
+      setDisplayTheme("light");
+      // setDisplayTheme(
+      //   window.matchMedia("(prefers-color-scheme: light)").matches
+      //     ? "light"
+      //     : "dark"
+      // );
     } else {
-      setDisplayTheme(option);
+      setDisplayTheme("light");
+      // setDisplayTheme(option);
     }
-
-    _setOption(option);
+    _setOption("light");
+    // _setOption(option);
   };
 
   useLayoutEffect(() => {
@@ -90,7 +95,8 @@ export const AppThemeProvider: FunctionComponent<PropsWithChildren> = ({
         const newColorScheme = event.matches ? "dark" : "light";
 
         if (option === "auto") {
-          setDisplayTheme(newColorScheme);
+          // setDisplayTheme(newColorScheme);
+          setDisplayTheme("light");
         }
       });
   }, [option]);
@@ -98,7 +104,7 @@ export const AppThemeProvider: FunctionComponent<PropsWithChildren> = ({
   return (
     <AppThemeContext.Provider
       value={{
-        option,
+        option: "light",
         setTheme,
       }}
     >
