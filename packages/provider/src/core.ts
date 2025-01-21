@@ -1181,6 +1181,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               const owalletLogoWrap = document.createElement("div");
               owalletLogoWrap.style.boxSizing = "border-box";
               owalletLogoWrap.style.position = "relative";
+              owalletLogoWrap.style.paddingTop = "10px";
               const owalletLogo = document.createElement("img");
               const owalletLogoUrl = "https://owallet.io/svg/logo_owallet.svg";
               owalletLogo.src = owalletLogoUrl;
@@ -1190,7 +1191,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
               mainText.style.fontSize = "1rem";
-              mainText.style.paddingTop = "10px";
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isOWalletLocked
                 ? "Unlock OWallet to proceed"
