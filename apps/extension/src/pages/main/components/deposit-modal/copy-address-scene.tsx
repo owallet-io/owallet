@@ -536,7 +536,6 @@ const CopyAddressItem: FunctionComponent<{
               setIsCopyContainerHover(isHover);
             }}
             cursor={blockInteraction ? undefined : "pointer"}
-            paddingLeft="1rem"
             style={{
               flex: 1,
             }}
@@ -558,10 +557,10 @@ const CopyAddressItem: FunctionComponent<{
               setHasCopied(true);
               setBlockInteraction(true);
 
-              analyticsStore.logEvent("click_copyAddress_copy", {
-                chainId: address.modularChainInfo.chainId,
-                chainName: address.modularChainInfo.chainName,
-              });
+              // analyticsStore.logEvent("click_copyAddress_copy", {
+              //   chainId: address.modularChainInfo.chainId,
+              //   chainName: address.modularChainInfo.chainName,
+              // });
               setHasCopied(true);
 
               setTimeout(() => {
@@ -638,42 +637,6 @@ const CopyAddressItem: FunctionComponent<{
                   flex: 1,
                 }}
               />
-              {!isSelectNetwork && (
-                <XAxis alignY="center">
-                  <IconButton
-                    padding="0.5rem"
-                    hoverColor={
-                      theme.mode === "light"
-                        ? ColorPalette["gray-50"]
-                        : ColorPalette["gray-500"]
-                    }
-                    disabled={hasCopied}
-                    onClick={() => {
-                      sceneTransition.push("qr-code", {
-                        chainId: address.modularChainInfo.chainId,
-                        address:
-                          address.starknetAddress ||
-                          address.ethereumAddress ||
-                          address.base58Address ||
-                          address.bech32Address,
-                      });
-                    }}
-                  >
-                    <QRCodeIcon
-                      width="1.25rem"
-                      height="1.25rem"
-                      color={
-                        theme.mode === "light"
-                          ? ColorPalette["gray-300"]
-                          : ColorPalette.white
-                      }
-                    />
-                  </IconButton>
-
-                  <Gutter size="0.75rem" direction="horizontal" />
-                </XAxis>
-              )}
-              <Gutter size="0.38rem" />
 
               {!isSelectNetwork && (
                 <Box padding="0.5rem" alignX="center" alignY="center">
@@ -700,6 +663,43 @@ const CopyAddressItem: FunctionComponent<{
               <Gutter size="0.5rem" />
             </XAxis>
           </Box>
+
+          <Gutter size="0.38rem" />
+          {!isSelectNetwork && (
+            <XAxis alignY="center">
+              <IconButton
+                padding="0.5rem"
+                hoverColor={
+                  theme.mode === "light"
+                    ? ColorPalette["gray-50"]
+                    : ColorPalette["gray-500"]
+                }
+                disabled={hasCopied}
+                onClick={() => {
+                  sceneTransition.push("qr-code", {
+                    chainId: address.modularChainInfo.chainId,
+                    address:
+                      address.starknetAddress ||
+                      address.ethereumAddress ||
+                      address.base58Address ||
+                      address.bech32Address,
+                  });
+                }}
+              >
+                <QRCodeIcon
+                  width="1.25rem"
+                  height="1.25rem"
+                  color={
+                    theme.mode === "light"
+                      ? ColorPalette["gray-300"]
+                      : ColorPalette.white
+                  }
+                />
+              </IconButton>
+
+              <Gutter size="0.75rem" direction="horizontal" />
+            </XAxis>
+          )}
 
           <XAxis alignY="center">
             <Box
