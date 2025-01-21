@@ -355,7 +355,7 @@
   "page.wallet.delete.warning-link-text": "Back Up My Wallet",
   "page.wallet.delete.paragraph": "After deletion, you will be required to import your wallet to restore your access to it.",
   "page.wallet.delete.password-input-label": "Password",
-  "page.wallet.show-sensitive.paragraph": "Please type in your password to proceed",
+  "page.wallet.show-sensitive.paragraph": "Please enter in your password to proceed",
   "page.wallet.show-sensitive.password-label": "Password",
   "page.ibc-transfer.title": "Advanced IBC Transfer",
   "page.ibc-transfer.select-channel.asset-title": "Asset",
