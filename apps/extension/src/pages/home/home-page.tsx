@@ -17,7 +17,7 @@ import {
   fetchRetry,
   MapChainIdToNetwork,
   Network,
-  unknownToken,
+  unknownToken
 } from "@owallet/common";
 import { debounce } from "lodash";
 import "dotenv/config";
@@ -27,14 +27,16 @@ import {
   Connection,
   PublicKey,
   SystemProgram,
-  Transaction,
+  Transaction
 } from "@solana/web3.js";
 import {
   createTransferInstruction,
   getAssociatedTokenAddress,
-  TOKEN_PROGRAM_ID,
+  TOKEN_PROGRAM_ID
 } from "@solana/spl-token";
 import { AppCurrency } from "@owallet/types";
+import { NotificationCard } from "./components/notification-card";
+import { ModalNoti } from "./modals/modal-noti";
 
 var mixpanelId = "acbafd21a85654933cbb0332c5a6f4f8";
 const mixpanel = Mixpanel.init(mixpanelId);
@@ -44,11 +46,22 @@ export const HomePage = observer(() => {
     hugeQueriesStore,
     priceStore,
     accountStore,
-    tokensStore,
-    keyRingStore,
+    tokensStore
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
+  const [isShowNoti, setIsShowNoti] = React.useState(false);
+
+  useEffect(() => {
+    if (chainStore.notification) {
+      setIsShowNoti(chainStore.notification);
+    }
+  }, [chainStore.notification]);
+
+  const onCloseNoti = () => {
+    setIsShowNoti(false);
+    chainStore.setHideNoti();
+  };
   const allBalances = hugeQueriesStore.getAllBalances(true);
   const balancesByChain = hugeQueriesStore.filterBalanceTokensByChain(
     allBalances,
@@ -72,7 +85,7 @@ export const HomePage = observer(() => {
   }, [hugeQueriesStore.allKnownBalances, priceStore]);
 
   const debouncedSetUaw = useCallback(
-    debounce((availableTotalPriceEmbedOnlyUSD) => {
+    debounce(availableTotalPriceEmbedOnlyUSD => {
       if (!availableTotalPriceEmbedOnlyUSD || !accountOrai.bech32Address)
         return;
       const hashedAddress = new sha256()
@@ -88,7 +101,7 @@ export const HomePage = observer(() => {
       const logEvent = {
         userId: hashedAddress,
         totalPrice: amount?.toString() || "0",
-        currency: "usd",
+        currency: "usd"
       };
       if (mixpanel) {
         mixpanel.track("OWallet Extension - Assets Managements", logEvent);
@@ -102,7 +115,7 @@ export const HomePage = observer(() => {
     fetchRetry(
       `https://raw.githubusercontent.com/oraichain/oraichain-sdk/refs/heads/master/chains/Oraichain.json`
     )
-      .then((res) => {
+      .then(res => {
         if (res && res.currencies?.length > 0) {
           const currencyOrai: AppCurrency[] = [];
           for (const currency of res.currencies) {
@@ -111,14 +124,14 @@ export const HomePage = observer(() => {
               coinGeckoId,
               coinMinimalDenom,
               coinDecimals,
-              coinImageUrl,
+              coinImageUrl
             } = currency || {};
             const token: AppCurrency = {
               coinImageUrl: coinImageUrl,
               coinGeckoId: coinGeckoId,
               coinMinimalDenom: coinMinimalDenom,
               coinDecimals: coinDecimals,
-              coinDenom: coinDenom,
+              coinDenom: coinDenom
             };
             currencyOrai.push(token);
             // tokensStore.addToken("Oraichain", token);
@@ -127,7 +140,7 @@ export const HomePage = observer(() => {
           OraiChain.addCurrencies(...currencyOrai);
         }
       })
-      .catch((err) => console.log(err, "Errr"));
+      .catch(err => console.log(err, "Errr"));
   }, []);
   useEffect(() => {
     debouncedSetUaw(availableTotalPriceEmbedOnlyUSD);
@@ -138,7 +151,7 @@ export const HomePage = observer(() => {
     let balances = chainStore.isAllNetwork
       ? hugeQueriesStore.allKnownBalances
       : hugeQueriesStore.allKnownBalances.filter(
-          (token) => token.chainInfo.chainId === chainStore.current.chainId
+          token => token.chainInfo.chainId === chainStore.current.chainId
         );
     for (const bal of balances) {
       if (bal.price) {
@@ -153,7 +166,7 @@ export const HomePage = observer(() => {
   }, [
     hugeQueriesStore.allKnownBalances,
     chainStore.isAllNetwork,
-    chainStore.current.chainId,
+    chainStore.current.chainId
   ]);
 
   const fetchAllErc20 = async (chainId, addressEvmHex) => {
@@ -164,23 +177,23 @@ export const HomePage = observer(() => {
     if (!MapChainIdToNetwork[chainInfo.chainId]) return;
     const response = await API.getAllBalancesEvm({
       address: addressEvmHex,
-      network: MapChainIdToNetwork[chainInfo.chainId],
+      network: MapChainIdToNetwork[chainInfo.chainId]
     });
 
     if (!response.result) return;
 
     const allTokensAddress = response.result
       .filter(
-        (token) =>
+        token =>
           !!chainInfo.currencies.find(
-            (coin) =>
+            coin =>
               new DenomHelper(
                 coin.coinMinimalDenom
               ).contractAddress?.toLowerCase() !==
               token.tokenAddress?.toLowerCase()
           ) && MapChainIdToNetwork[chainInfo.chainId]
       )
-      .map((coin) => {
+      .map(coin => {
         const str = `${
           MapChainIdToNetwork[chainInfo.chainId]
         }%2B${new URLSearchParams(coin.tokenAddress)
@@ -192,16 +205,16 @@ export const HomePage = observer(() => {
     if (allTokensAddress?.length === 0) return;
 
     const tokenInfos = await API.getMultipleTokenInfo({
-      tokenAddresses: allTokensAddress.join(","),
+      tokenAddresses: allTokensAddress.join(",")
     });
 
     const infoTokens = tokenInfos
       .filter(
         (item, index, self) =>
           index ===
-            self.findIndex((t) => t.contractAddress === item.contractAddress) &&
+            self.findIndex(t => t.contractAddress === item.contractAddress) &&
           chainInfo.currencies.findIndex(
-            (item2) =>
+            item2 =>
               new DenomHelper(
                 item2.coinMinimalDenom
               ).contractAddress.toLowerCase() ===
@@ -209,7 +222,7 @@ export const HomePage = observer(() => {
           ) < 0 &&
           item.coingeckoId !== null
       )
-      .map((tokeninfo) => {
+      .map(tokeninfo => {
         const infoToken = {
           coinImageUrl: tokeninfo.imgUrl || unknownToken.coinImageUrl,
           coinDenom: tokeninfo.abbr,
@@ -217,7 +230,7 @@ export const HomePage = observer(() => {
           coinDecimals: tokeninfo.decimal,
           coinMinimalDenom: `erc20:${tokeninfo.contractAddress}:${tokeninfo.name}`,
           contractAddress: tokeninfo.contractAddress,
-          type: "erc20",
+          type: "erc20"
         };
         tokensStore.addToken(chainId, infoToken);
         return infoToken;
@@ -248,6 +261,8 @@ export const HomePage = observer(() => {
         totalPrice={(availableTotalPrice || initPrice)?.toString() || "-"}
       />
 
+      <NotificationCard />
+
       {/*TODO:// need check again Claim reward */}
       {/* <ClaimReward /> */}
       {chainStore.isAllNetwork ||
@@ -257,6 +272,16 @@ export const HomePage = observer(() => {
       <TokensCard
         dataTokens={chainStore.isAllNetwork ? allBalances : balancesByChain}
       />
+      {/* <ModalNoti
+        onSubmit={() => {
+          onCloseNoti();
+        }}
+        isOpen={isShowNoti}
+        onRequestClose={() => {
+          onCloseNoti();
+        }}
+        content={<NotificationCard />}
+      /> */}
     </FooterLayout>
   );
 });

@@ -11,7 +11,7 @@ import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   TryUpdateChainMsg,
-  SuggestChainInfoMsg,
+  SuggestChainInfoMsg
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 
@@ -28,12 +28,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   protected _isAllNetwork: boolean = false;
   @observable
   protected _hideDust: boolean = true;
+  @observable
+  protected _notification: boolean = true;
 
   @observable
   protected _multipleAssets: IMultipleAsset = {
     totalPriceBalance: "0",
     dataTokens: [],
-    dataTokensByChain: null,
+    dataTokensByChain: null
   };
 
   @observable
@@ -46,12 +48,12 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     initChain?: string
   ) {
     super(
-      embedChainInfos.map((chainInfo) => {
+      embedChainInfos.map(chainInfo => {
         return {
           ...chainInfo,
           ...{
-            embeded: true,
-          },
+            embeded: true
+          }
         };
       })
     );
@@ -66,10 +68,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
         "_isAllNetwork",
         "_multipleAssets",
         "_hideDust",
-        "_selectedFee",
+        "_selectedFee"
       ],
-      storage: window.localStorage,
-    }).then(action((persistStore) => {}));
+      storage: window.localStorage
+    }).then(action(persistStore => {}));
     this.init();
   }
 
@@ -79,6 +81,10 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   get isAllNetwork(): boolean {
     return this._isAllNetwork;
+  }
+
+  get notification(): boolean {
+    return this._noti;
   }
 
   get selectedFee(): string {
@@ -94,7 +100,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   }
 
   get chainInfosInUI() {
-    return this.chainInfos.filter((chainInfo) => {
+    return this.chainInfos.filter(chainInfo => {
       return !chainInfo.raw.hideInUI;
     });
   }
@@ -106,6 +112,11 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   setIsAllNetwork(isAll: boolean) {
     this._isAllNetwork = isAll;
+  }
+
+  @action
+  setHideNoti() {
+    this._notification = false;
   }
 
   @action
@@ -144,7 +155,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   *saveLastViewChainId() {
     // Save last view chain id to persistent background
     const msg = new SetPersistentMemoryMsg({
-      lastViewChainId: this._selectedChainId,
+      lastViewChainId: this._selectedChainId
     });
     yield this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -200,7 +211,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
     const chainExisted = result.chainInfos.find(
-      (item) => item.chainId === chainInfo.chainId
+      item => item.chainId === chainInfo.chainId
     );
     if (chainExisted)
       throw Error("The chain already exists and cannot be added.");
