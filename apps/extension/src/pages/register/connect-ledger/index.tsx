@@ -639,8 +639,8 @@ const StepView: FunctionComponent<{
       }
     >
       <XAxis alignY="center">
-        <div>{icon}</div>
-        <Gutter size="1.25rem" />
+        {/* <div>{icon}</div> */}
+        {/* <Gutter size="1.25rem" /> */}
         <YAxis>
           <XAxis>
             <H2

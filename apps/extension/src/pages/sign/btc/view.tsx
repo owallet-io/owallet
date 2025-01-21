@@ -312,7 +312,22 @@ export const BTCSigningView: FunctionComponent<{
         outputs,
         // TODO: Ledger support
         signature,
-        async () => {
+        async (proceedNext) => {
+          if (!proceedNext) {
+            if (
+              interactionInfo.interaction &&
+              !interactionInfo.interactionInternal
+            ) {
+              handleExternalInteractionWithNoProceedNext();
+            }
+          }
+
+          if (
+            interactionInfo.interaction &&
+            interactionInfo.interactionInternal
+          ) {
+            await unmountPromise.promise;
+          }
           // noop
           notification.show(
             "success",
