@@ -82,7 +82,7 @@ const buttonStyleFromColorAndMode: Record<
             opacity: 0.4;
           }
 
-          ${makeTextAndSvgColor(ColorPalette["pure-white"])}
+          ${makeTextAndSvgColor("none")}
         `,
       },
     },
