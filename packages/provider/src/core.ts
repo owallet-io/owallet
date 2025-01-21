@@ -1166,17 +1166,17 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
 
               button.style.background = isLightMode ? "#FEFEFE" : "#1D1D1F";
 
-              const arrowTop = document.createElement("div");
-              arrowTop.style.boxSizing = "border-box";
-              arrowTop.style.transform = "translateY(-0.65rem)";
-              arrowTop.style.marginRight = "0.35rem";
-              arrowTop.innerHTML = `
-                <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
-                      isLightMode ? "#2C4BE2" : "#72747B"
-                    }"/>
-                </svg>
-              `;
+              // const arrowTop = document.createElement("div");
+              // arrowTop.style.boxSizing = "border-box";
+              // arrowTop.style.transform = "translateY(-0.65rem)";
+              // arrowTop.style.marginRight = "0.35rem";
+              // arrowTop.innerHTML = `
+              //   <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+              //       <path d="M30 29.7522C25.1484 31.0691 16.7109 27.1184 18.6093 18.3391C20.5078 9.55979 25.5703 11.5351 26.414 12.852C27.2578 14.1689 28.3125 22.2898 15.8672 19.2171C5.9109 16.7589 7.15625 6.04811 8 1M8 1L14 8M8 1L1 7.5" stroke="${
+              //         isLightMode ? "#2C4BE2" : "#72747B"
+              //       }"/>
+              //   </svg>
+              // `;
 
               const mainText = document.createElement("span");
               mainText.style.boxSizing = "border-box";
@@ -1184,9 +1184,9 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               mainText.style.color = isLightMode ? "#020202" : "#FEFEFE";
               mainText.textContent = isOWalletLocked
                 ? "Unlock OWallet to proceed"
-                : "Open OWallet to approve request(s)";
+                : "Open OWallet to approve request";
 
-              button.appendChild(arrowTop);
+              // button.appendChild(arrowTop);
               button.appendChild(mainText);
               // button.appendChild(arrowLeftOpenWrapper);
 

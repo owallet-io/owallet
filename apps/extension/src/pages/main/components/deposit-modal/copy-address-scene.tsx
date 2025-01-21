@@ -333,7 +333,6 @@ export const CopyAddressScene: FunctionComponent<{
                   borderRadius="0.375rem"
                   alignY="center"
                   cursor={blockInteraction ? undefined : "pointer"}
-                  paddingLeft="1rem"
                   style={{
                     flex: 1,
                   }}
