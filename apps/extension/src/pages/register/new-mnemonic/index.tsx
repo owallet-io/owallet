@@ -115,6 +115,26 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
 
   return (
     <RegisterSceneBox>
+      <Box>
+        {/* <WarningBox
+            title={intl.formatMessage({
+              id: "pages.register.new-mnemonic.recovery-warning-box-title",
+            })}
+            paragraph={intl.formatMessage({
+              id: "pages.register.new-mnemonic.recovery-warning-box-paragraph",
+            })}
+          /> */}
+
+        <WarningBox
+          title={intl.formatMessage({
+            id: "pages.register.new-mnemonic.back-up-warning-box-title",
+          })}
+          paragraph={intl.formatMessage({
+            id: "pages.register.new-mnemonic.back-up-warning-box-paragraph",
+          })}
+        />
+      </Box>
+      <Gutter size="1rem" />
       <Box position="relative">
         {!policyVerified ? (
           <BlurBackdrop>
@@ -144,25 +164,6 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
           </BlurBackdrop>
         ) : null}
 
-        <Box>
-          <WarningBox
-            title={intl.formatMessage({
-              id: "pages.register.new-mnemonic.recovery-warning-box-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "pages.register.new-mnemonic.recovery-warning-box-paragraph",
-            })}
-          />
-
-          <WarningBox
-            title={intl.formatMessage({
-              id: "pages.register.new-mnemonic.back-up-warning-box-title",
-            })}
-            paragraph={intl.formatMessage({
-              id: "pages.register.new-mnemonic.back-up-warning-box-paragraph",
-            })}
-          />
-        </Box>
         <Box alignX="center">
           <HorizontalRadioGroup
             size="large"
@@ -188,6 +189,7 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
           />
         </Box>
         <Gutter size="1rem" />
+
         <Bleed left="1rem">
           <VerticalResizeTransition>
             <Styles.WordsGridContainer columns={words.length > 12 ? 4 : 3}>
