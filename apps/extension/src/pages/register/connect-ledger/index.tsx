@@ -501,9 +501,12 @@ export const ConnectLedgerScene: FunctionComponent<{
         <Stack gutter="1.25rem">
           <StepView
             step={1}
-            paragraph={intl.formatMessage({
-              id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
-            })}
+            paragraph={intl.formatMessage(
+              {
+                id: "pages.register.connect-ledger.connect-ledger-step-paragraph",
+              },
+              { app: propApp }
+            )}
             icon={
               <Box style={{ opacity: step !== "unknown" ? 0.5 : 1 }}>
                 <LedgerIcon />
