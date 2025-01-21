@@ -71,7 +71,7 @@
 
   "setting.keyring": "계정 선택",
   "setting.keyring.button.add": "계정 추가",
-  "setting.keyring.unnamed-account": "케플러 계정",
+  "setting.keyring.unnamed-account": "OWallet 계정",
   "setting.keyring.selected-account": "(선택됨)",
 
   "setting.keyring.change.password": "비밀번호 재설정",
@@ -99,7 +99,7 @@
   "계정을 삭제하기 전에 니모닉 시드를 가지고 있는지 확인하세요",
   "setting.clear.button.back-up": "니모닉 시드 보기",
   "setting.clear.warning":
-  "계정을 삭제하면 케플러에서 계정에 접근할 수 없습니다",
+  "계정을 삭제하면 OWallet에서 계정에 접근할 수 없습니다",
   "setting.clear.input.password": "비밀번호",
   "setting.clear.input.password.error.required": "비밀번호를 입력하세요",
   "setting.clear.input.password.error.invalid": "잘못된 비밀번호입니다",
@@ -191,7 +191,7 @@
 
   "chain.suggested.title": "체인 추가 요청",
   "chain.suggested.paragraph":
-  "<b>{host}</b>가 <b>{chainId}</b> 블록체인을 케플러에 추가하길 원합니다.",
+  "<b>{host}</b>가 <b>{chainId}</b> 블록체인을 OWallet에 추가하길 원합니다.",
   "chain.suggested.waring.experiment.title": "실험적 기능",
   "chain.suggested.waring.experiment.paragraph":
   "용감한 우주 여행자를 위한 기능입니다",
@@ -287,7 +287,7 @@
   "sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm":
   "암호화됨",
   "sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption":
-  "메세지를 복호화하지 못 했습니다. 케플러를 통하지 않고 암호화되었을 수 있습니다.",
+  "메세지를 복호화하지 못 했습니다. OWallet를 통하지 않고 암호화되었을 수 있습니다.",
 
   "sign.list.message.cyber/Link.title": "Cyberlink",
   "sign.list.message.cyber/Link.content":
