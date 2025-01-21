@@ -112,7 +112,7 @@
   "pages.register.name-password-hardware.connect-to-keystone-QR": "QR",
 
   "pages.register.recover-mnemonic.title": "Import Existing Wallet",
-  "pages.register.recover-mnemonic.paragraph-1": "Input your recovery phrase here to recover your wallet. Alternatively, select any empty space and paste the complete phrase.",
+  "pages.register.recover-mnemonic.paragraph-1": "Input your recovery phrase here to recover your wallet.",
   "pages.register.recover-mnemonic.paragraph-2": "Input the phrase in correct sequence without using capital letters, punctuation marks, or spaces.",
   "pages.register.recover-mnemonic.12-words-tab": "12 words",
   "pages.register.recover-mnemonic.24-words-tab": "24 words",

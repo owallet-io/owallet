@@ -12,9 +12,8 @@ import manifest from "../manifest.json";
 
 (window as any).__keplr_content_script = true;
 
-
 InjectedOWallet.startProxy(
-    //@ts-ignore
+  //@ts-ignore
   new OWallet(manifest.version, "core", new InExtensionMessageRequester())
 );
 
@@ -118,6 +117,7 @@ if (url.hostname !== "localhost") {
   new InExtensionMessageRequester()
     .sendMessage(BACKGROUND_PORT, new CheckURLIsPhishingMsg())
     .then((r) => {
+      return;
       if (r) {
         const origin = window.location.href;
         window.location.replace(

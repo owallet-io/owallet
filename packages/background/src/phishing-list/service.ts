@@ -167,6 +167,7 @@ export class PhishingListService {
   checkURLIsPhishing(url: string): boolean {
     const origin = new URL(url).origin;
     const parsed = parseDomain(origin);
+    return false;
     while (parsed.length >= 2) {
       const domain = parsed.join(".");
       if (this.urlMap.get(domain) === true) {
