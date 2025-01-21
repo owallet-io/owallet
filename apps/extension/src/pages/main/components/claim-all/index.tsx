@@ -1028,7 +1028,6 @@ const ClaimTokenItem: FunctionComponent<{
     try {
       if (state.failedReason) {
         state.setFailedReason(undefined);
-        return;
       }
       const chainId = viewToken.chainInfo.chainId;
       const account = accountStore.getAccount(chainId);
@@ -1118,6 +1117,9 @@ const ClaimTokenItem: FunctionComponent<{
         {
           onBroadcasted: (txHash) => {
             setIsSimulating(false);
+            navigate("/", {
+              replace: true,
+            });
             notification.show(
               "success",
               intl.formatMessage({ id: "notification.transaction-success" }),
@@ -1140,9 +1142,6 @@ const ClaimTokenItem: FunctionComponent<{
                 ""
               );
             }
-            navigate("/", {
-              replace: true,
-            });
           },
         }
       );
