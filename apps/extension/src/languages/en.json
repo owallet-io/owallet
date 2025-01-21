@@ -89,7 +89,7 @@
   "pages.register.new-mnemonic.recovery-warning-box-title": "DO NOT share your recovery phrase with ANYONE.",
   "pages.register.new-mnemonic.recovery-warning-box-paragraph": "Having possession of your recovery phrase grants complete authority over your assets. Remain constantly alert to prevent falling victim to phishing attempts.",
   "pages.register.new-mnemonic.back-up-warning-box-title": "Back up the phrase safely.",
-  "pages.register.new-mnemonic.back-up-warning-box-paragraph": "Without your recovery phrase, it will be impossible to recover your account.",
+  "pages.register.new-mnemonic.back-up-warning-box-paragraph": "Without your recovery phrase, it will be impossible to recover your account.\nDO NOT share your recovery phrase with ANYONE.",
   "pages.register.new-mnemonic.agree-button": "I understood. Show my phrase.",
 
   "pages.register.verify-mnemonic.title": "Verify Your Recovery Phrase",

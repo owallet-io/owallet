@@ -134,7 +134,7 @@ export const NewMnemonicScene: FunctionComponent = observer(() => {
           })}
         />
       </Box>
-      <Gutter size="1rem" />
+      <Gutter size="1.65rem" />
       <Box position="relative">
         {!policyVerified ? (
           <BlurBackdrop>
