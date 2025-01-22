@@ -47,7 +47,7 @@ jobs:
         working-directory: apps/extension
         run: yarn --silent
 
-      - name: Build Libs
+      - name: Build Libs Codepush
         run: yarn build:codepush
 
       - name: Build @owallet/hooks
@@ -79,19 +79,19 @@ jobs:
           refresh-token: ${{ secrets.EXT_REFRESH_TOKEN }}
           publish: false
 
-      - name: Send discord message
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Extension released successe! comment=${{ github.event.head_commit.message }}
+      # - name: Send discord message
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: Extension released successe! comment=${{ github.event.head_commit.message }}
 
-      - name: Send discord message
-        if: ${{ failure() }}
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Extension released fail! ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      # - name: Send discord message
+      #   if: ${{ failure() }}
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: Extension released fail! ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
