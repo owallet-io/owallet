@@ -6235,9 +6235,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:1.1.44":
-  version: 1.1.44
-  resolution: "@oraichain/oraidex-common@npm:1.1.44"
+"@oraichain/oraidex-common@npm:1.1.45":
+  version: 1.1.45
+  resolution: "@oraichain/oraidex-common@npm:1.1.45"
   dependencies:
     "@cosmjs/amino": ^0.32.4
     "@cosmjs/cosmwasm-stargate": ^0.32.4
@@ -6258,7 +6258,7 @@ __metadata:
     cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: a4b09fa4a33380c4f8cb102f9fc4b73001aba07f7988f25212e7b6774a5823ce4642637c02cd816f01588d9660fa59d0833ad45056f50b60fb8728b7b99d4434
+  checksum: 4660a6aa5d0b1e99967d131e0b591744c3a099109b3b89b5ff46eb4304c2e9a405d47841400130d026bd574f60c2f55ea9f7354e60a429a8a9a81f7c89fb57d7
   languageName: node
   linkType: hard
 
@@ -27206,7 +27206,7 @@ __metadata:
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
     "@oraichain/ethereum-multicall": ^1.0.2
-    "@oraichain/oraidex-common": ^1.1.44
+    "@oraichain/oraidex-common": ^1.1.45
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.27-beta.1

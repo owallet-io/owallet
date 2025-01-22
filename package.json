@@ -44,7 +44,7 @@
     "@oraichain/common-contracts-sdk": "^1.0.31",
     "@oraichain/cw-simulate": "^2.8.76",
     "@oraichain/ethereum-multicall": "^1.0.2",
-    "@oraichain/oraidex-common": "^1.1.44",
+    "@oraichain/oraidex-common": "^1.1.45",
     "@oraichain/oraidex-contracts-build": "^1.0.22",
     "@oraichain/oraidex-contracts-sdk": "^1.0.33",
     "@oraichain/oraidex-universal-swap": "^1.1.27-beta.1",
@@ -146,7 +146,7 @@
     "ws": "8.17.1",
     "webextension-polyfill": "^0.10.0",
     "@ledgerhq/hw-app-eth": "6.29.3",
-    "@oraichain/oraidex-common": "1.1.44",
+    "@oraichain/oraidex-common": "1.1.45",
     "@oraichain/oraidex-universal-swap": "1.1.27-beta.1"
   },
   "browser": {
