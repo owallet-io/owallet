@@ -110,37 +110,39 @@ export const TransactionFeeModal: FunctionComponent<{
       .join(",");
     const prevFeeConfigType = useRef(feeConfig.type);
     const prevFeeConfigCurrency = useRef(feeConfigCurrencyString);
-    const prevGasConfigGas = useRef(gasConfig.gas);
+    const prevGasConfigGas = useRef(gasConfig?.gas);
     const prevGasSimulatorEnabled = useRef(isGasSimulatorEnabled);
     const lastShowChangesAppliedTimeout = useRef<NodeJS.Timeout | undefined>(
       undefined
     );
     useEffect(() => {
-      if (
-        prevFeeConfigType.current !== feeConfig.type ||
-        prevFeeConfigCurrency.current !== feeConfigCurrencyString ||
-        prevGasConfigGas.current !== gasConfig.gas ||
-        prevGasSimulatorEnabled.current !== isGasSimulatorEnabled
-      ) {
-        if (lastShowChangesAppliedTimeout.current) {
-          clearTimeout(lastShowChangesAppliedTimeout.current);
-          lastShowChangesAppliedTimeout.current = undefined;
+      if (gasConfig) {
+        if (
+          prevFeeConfigType.current !== feeConfig.type ||
+          prevFeeConfigCurrency.current !== feeConfigCurrencyString ||
+          prevGasConfigGas.current !== gasConfig.gas ||
+          prevGasSimulatorEnabled.current !== isGasSimulatorEnabled
+        ) {
+          if (lastShowChangesAppliedTimeout.current) {
+            clearTimeout(lastShowChangesAppliedTimeout.current);
+            lastShowChangesAppliedTimeout.current = undefined;
+          }
+          setShowChangesApplied(true);
+          lastShowChangesAppliedTimeout.current = setTimeout(() => {
+            setShowChangesApplied(false);
+            lastShowChangesAppliedTimeout.current = undefined;
+          }, 2500);
         }
-        setShowChangesApplied(true);
-        lastShowChangesAppliedTimeout.current = setTimeout(() => {
-          setShowChangesApplied(false);
-          lastShowChangesAppliedTimeout.current = undefined;
-        }, 2500);
-      }
 
-      prevFeeConfigType.current = feeConfig.type;
-      prevFeeConfigCurrency.current = feeConfigCurrencyString;
-      prevGasConfigGas.current = gasConfig.gas;
-      prevGasSimulatorEnabled.current = isGasSimulatorEnabled;
+        prevFeeConfigType.current = feeConfig.type;
+        prevFeeConfigCurrency.current = feeConfigCurrencyString;
+        prevGasConfigGas.current = gasConfig.gas;
+        prevGasSimulatorEnabled.current = isGasSimulatorEnabled;
+      }
     }, [
       feeConfig.type,
       feeConfigCurrencyString,
-      gasConfig.gas,
+      gasConfig,
       isGasSimulatorEnabled,
     ]);
 
@@ -386,7 +388,7 @@ export const TransactionFeeModal: FunctionComponent<{
               label={intl.formatMessage({
                 id: "components.input.fee-control.modal.gas-amount-label",
               })}
-              value={gasConfig.value}
+              value={gasConfig?.value}
               onChange={(e) => {
                 e.preventDefault();
 
