@@ -6618,6 +6618,8 @@ __metadata:
     tronweb: ^5.3.2
     ts-loader: ^9.4.2
     utility-types: ^3.10.0
+    vm: ^0.1.0
+    vm-browserify: ^1.1.2
     web3-utils: 4.11.1
     webextension-polyfill: ^0.10.0
     webpack: ^5.74.0
@@ -34598,6 +34600,13 @@ __metadata:
   bin:
     vm2: bin/vm2
   checksum: fc6cf553134145cd7bb5246985bf242b056e3fb5ea71e2eef6710b2a5d6c6119cc6bc960435ff62480ee82efb43369be8f4db07b6690916ae7d3b2e714f395d8
+  languageName: node
+  linkType: hard
+
+"vm@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "vm@npm:0.1.0"
+  checksum: a30e95cdde518d1748b9e67ad089448530bda2479b43e30251d0e95cbabb9df33eea5b51ec5afbd5722d769dfafcac293cb2dd28c6895f02e032fe097745a87b
   languageName: node
   linkType: hard
 
