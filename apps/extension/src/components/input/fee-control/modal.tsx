@@ -58,6 +58,7 @@ export const TransactionFeeModal: FunctionComponent<{
   gasSimulator?: IGasSimulator;
   disableAutomaticFeeSet?: boolean;
   isForEVMTx?: boolean;
+  disabled?: boolean;
 }> = observer(
   ({
     close,
@@ -67,6 +68,7 @@ export const TransactionFeeModal: FunctionComponent<{
     gasSimulator,
     disableAutomaticFeeSet,
     isForEVMTx,
+    disabled,
   }) => {
     const { queriesStore, uiConfigStore, priceStore } = useStore();
     const intl = useIntl();

@@ -174,6 +174,7 @@ export const FeeControl: FunctionComponent<{
 
   disableAutomaticFeeSet?: boolean;
   isForEVMTx?: boolean;
+  disabled?: boolean;
 }> = observer(
   ({
     senderConfig,
@@ -182,6 +183,7 @@ export const FeeControl: FunctionComponent<{
     gasSimulator,
     disableAutomaticFeeSet,
     isForEVMTx,
+    disabled,
   }) => {
     const {
       analyticsStore,
@@ -222,6 +224,10 @@ export const FeeControl: FunctionComponent<{
             cursor="pointer"
             onClick={(e) => {
               e.preventDefault();
+
+              if (disabled) {
+                return;
+              }
 
               analyticsStore.logEvent("click_txFeeSet");
               setIsModalOpen(true);
