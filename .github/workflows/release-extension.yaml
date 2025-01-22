@@ -51,7 +51,11 @@ jobs:
         run: yarn --silent
 
       - name: Build Libs
-        run: yarn build:libs
+        run: yarn build:codepush
+
+      - name: Build @owallet/hooks
+        working-directory: packages/hooks
+        run: yarn build
 
       - name: Build extension
         working-directory: apps/extension

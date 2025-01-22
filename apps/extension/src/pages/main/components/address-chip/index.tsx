@@ -9,15 +9,14 @@ import { Bech32Address } from "@owallet/cosmos";
 import Lottie from "lottie-web";
 import { Gutter } from "../../../../components/gutter";
 import { useTheme } from "styled-components";
-import { ChainIdEVM } from "@owallet/types";
-import {formatAddress} from "@owallet/common";
+import { formatAddress } from "@owallet/common";
 
 export const AddressChip: FunctionComponent<{
   chainId: string;
   address?: string;
   inModal?: boolean;
 }> = observer(({ chainId, address, inModal }) => {
-  const { allAccountStore, chainStore, tronAccountStore } = useStore();
+  const { allAccountStore, chainStore } = useStore();
 
   const [copyAddress, setCopyAddress] = useState("");
 
@@ -40,15 +39,8 @@ export const AddressChip: FunctionComponent<{
     if (address) {
       setCopyAddress(address);
     } else {
-      // if (chainId === ChainIdEVM.TRON) {
-      //   const accountTron = tronAccountStore.getAccount(
-      //     modularChainInfo.chainId
-      //   );
-      //   setCopyAddress(accountTron.base58Address);
-      // } else {
-        const finalAddress = account.addressDisplay;
-        setCopyAddress(finalAddress);
-      // }
+      const finalAddress = account.addressDisplay;
+      setCopyAddress(finalAddress);
     }
   }, [address, account, isEVMOnlyChain, chainId]);
 
