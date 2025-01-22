@@ -47,7 +47,7 @@ jobs:
         working-directory: apps/extension
         run: yarn --silent
 
-      - name: Build Libs Codepush
+      - name: Build Libs Extension
         run: yarn build:codepush
 
       - name: Build @owallet/hooks
