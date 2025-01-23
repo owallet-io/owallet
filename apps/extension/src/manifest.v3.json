@@ -31,10 +31,7 @@
     "activeTab",
     "scripting"
   ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; connect-src 'self' https://*.sentry.io"
-  },
-  "host_permissions": ["http://*/*", "https://*/*", "https://*.sentry.io/"],
+  "host_permissions": ["http://*/*", "https://*/*", "https://*.sentry.io/", "https://*.ingest.sentry.io/"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -68,5 +65,8 @@
       "resources": ["assets/icon-click-cursor.png"],
       "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  }
 }
