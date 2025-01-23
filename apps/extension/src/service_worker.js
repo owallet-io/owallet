@@ -45,8 +45,9 @@ try {
   }
 
   startHeartbeat();
+
   Sentry.init({
-    dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
+    dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.us.sentry.io/4504615445725184",
     tracesSampleRate: 0.5,
     integrations: [
       new CaptureConsoleIntegration({ levels: ["error"] }), // Capture console.errors
