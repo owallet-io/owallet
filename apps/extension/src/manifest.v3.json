@@ -29,7 +29,9 @@
     "unlimitedStorage",
     "sidePanel",
     "activeTab",
-    "scripting"
+    "scripting",
+    "https://*.sentry.io/", 
+    "https://*.ingest.sentry.io/"
   ],
   "host_permissions": ["http://*/*", "https://*/*", "https://*.sentry.io/", "https://*.ingest.sentry.io/"],
   "content_scripts": [
