@@ -1,8 +1,10 @@
 // for checking
 window = {};
+import * as Sentry from "@sentry/browser";
+import { CaptureConsole as CaptureConsoleIntegration } from "@sentry/integrations";
 
 try {
-  importScripts('browser-polyfill.js', 'background.bundle.js' /*, and so on */);
+  importScripts("browser-polyfill.js", "background.bundle.js" /*, and so on */);
 
   // chrome.alarms.onAlarm.addListener((a) => {
   //   console.log('Alarm! Alarm!', a);
@@ -26,7 +28,7 @@ try {
   let heartbeatInterval;
 
   async function runHeartbeat() {
-    await chrome.storage.local.set({ 'last-heartbeat': new Date().getTime() });
+    await chrome.storage.local.set({ "last-heartbeat": new Date().getTime() });
   }
 
   /**
@@ -43,7 +45,17 @@ try {
   }
 
   startHeartbeat();
-
+  Sentry.init({
+    dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
+    tracesSampleRate: 0.5,
+    integrations: [
+      new CaptureConsoleIntegration({ levels: ["error"] }), // Capture console.errors
+    ],
+    // Optional: Tag errors for filtering in Sentry
+    initialScope: {
+      tags: { context: "background" },
+    },
+  });
   // async function stopHeartbeat() {
   //   clearInterval(heartbeatInterval);
   // }

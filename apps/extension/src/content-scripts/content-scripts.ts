@@ -10,6 +10,29 @@ import { initEvents } from "./events";
 
 import manifest from "../manifest.json";
 
+import * as Sentry from "@sentry/browser";
+
+Sentry.init({
+  dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
+  tracesSampleRate: 0.5,
+  // Disable conflicting integrations in content scripts
+  autoSessionTracking: false,
+  initialScope: {
+    tags: { context: "content-script" },
+  },
+  beforeSend(event) {
+    // Optional: Filter out non-extension errors
+    if (
+      event.exception?.values?.[0]?.stacktrace?.frames?.some((frame) =>
+        frame.filename?.startsWith("chrome-extension://")
+      )
+    ) {
+      return event;
+    }
+    return null;
+  },
+});
+
 (window as any).__keplr_content_script = true;
 
 InjectedOWallet.startProxy(

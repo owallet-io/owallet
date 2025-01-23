@@ -1,5 +1,5 @@
 // Shim ------------
-import {SendSvmPage} from "pages/send/amount/svm";
+import { SendSvmPage } from "pages/send/amount/svm";
 
 require("setimmediate");
 // Shim ------------
@@ -97,7 +97,17 @@ import { SignTronTxPage } from "./pages/sign/tron";
 import { ExplorePage } from "pages/explore/explore-page";
 import { SendBtcPage } from "pages/send/amount/btc";
 import { SignBtcTxPage } from "pages/sign/btc";
-import {SignSvmTxPage} from "pages/sign/svm";
+import { SignSvmTxPage } from "pages/sign/svm";
+
+import * as Sentry from "@sentry/browser";
+
+Sentry.init({
+  dsn: "https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424",
+  tracesSampleRate: 0.5,
+  initialScope: {
+    tags: { context: "popup" },
+  },
+});
 
 configure({
   enforceActions: "always", // Make mobx to strict mode.

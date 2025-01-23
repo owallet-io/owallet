@@ -31,7 +31,10 @@
     "activeTab",
     "scripting"
   ],
-  "host_permissions": ["http://*/*", "https://*/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; connect-src 'self' https://*.sentry.io"
+  },
+  "host_permissions": ["http://*/*", "https://*/*", "https://*.sentry.io/"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
