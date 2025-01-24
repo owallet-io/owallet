@@ -29,7 +29,6 @@
     "unlimitedStorage",
     "sidePanel",
     "activeTab",
-    "scripting",
     "https://*.sentry.io/", 
     "https://*.ingest.sentry.io/"
   ],
