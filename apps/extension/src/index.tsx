@@ -305,23 +305,23 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
     const newEVMChainsEnabled = localStorage.getItem(
       newEVMChainsEnabledLocalStorageKey
     );
-    if (
-      isReady &&
-      newEVMChainsEnabled !== "true" &&
-      uiConfigStore.changelogConfig.showingInfo.some(
-        (info) => info.version === "0.12.115"
-      )
-    ) {
-      for (const keyInfo of keyRingStore.keyInfos) {
-        chainStore.enableChainInfoInUIWithVaultId(
-          keyInfo.id,
-          ...chainStore.chainInfos
-            .filter((chainInfo) => chainInfo.chainId.startsWith("eip155:"))
-            .map((chainInfo) => chainInfo.chainId)
-        );
-      }
-      localStorage.setItem(newEVMChainsEnabledLocalStorageKey, "true");
+    // if (
+    //   isReady &&
+    //   newEVMChainsEnabled !== "true" &&
+    //   uiConfigStore.changelogConfig.showingInfo.some(
+    //     (info) => info.version === "0.12.115"
+    //   )
+    // ) {
+    for (const keyInfo of keyRingStore.keyInfos) {
+      chainStore.enableChainInfoInUIWithVaultId(
+        keyInfo.id,
+        ...chainStore.chainInfos
+          .filter((chainInfo) => chainInfo.chainId.startsWith("eip155:"))
+          .map((chainInfo) => chainInfo.chainId)
+      );
     }
+    localStorage.setItem(newEVMChainsEnabledLocalStorageKey, "true");
+    // }
   }, [
     chainStore,
     isReady,

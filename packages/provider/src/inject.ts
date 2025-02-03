@@ -151,7 +151,6 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
  * This will use `window.postMessage` to interact with the content script.
  */
 export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
-
   static startProxy(
     owallet: IOWallet & OWalletCoreTypes,
     eventListener: {
@@ -1086,8 +1085,9 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   selectedAddress: string | null = null;
 
   isOWallet = true;
-  isOwallet = true;
   isMetaMask = true;
+  // This duplicate field is for compatibility with OraiDex that use isOwallet with misspelling.
+  isOwallet = true;
 
   protected _isConnected = false;
   protected _currentChainId: string | null = null;
