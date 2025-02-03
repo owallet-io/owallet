@@ -93,25 +93,24 @@ const SuggestChainPageImpl: FunctionComponent<{
           />
         );
       })()}
-      left={
-        communityChainInfo != null && updateFromRepoDisabled ? (
-          <Box
-            paddingLeft="1rem"
-            cursor="pointer"
-            onClick={() => setUpdateFromRepoDisabled(false)}
-          >
-            <ArrowLeftIcon />
-          </Box>
-        ) : undefined
-      }
+      // left={
+      //   communityChainInfo != null && updateFromRepoDisabled ? (
+      //     <Box
+      //       paddingLeft="1rem"
+      //       cursor="pointer"
+      //       onClick={() => setUpdateFromRepoDisabled(false)}
+      //     >
+      //       <ArrowLeftIcon />
+      //     </Box>
+      //   ) : undefined
+      // }
       bottomButtons={[
         {
-          textOverrideIcon: <CancelIcon color={ColorPalette["gray-200"]} />,
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
-          color: "secondary",
-          style: {
-            width: "3.25rem",
-          },
+          color: "danger",
+
           onClick: async () => {
             await chainSuggestStore.rejectWithProceedNext(
               waitingData.id,

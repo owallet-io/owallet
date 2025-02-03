@@ -22,6 +22,7 @@ import { BACKGROUND_PORT } from "@owallet/router";
 import { useIntl } from "react-intl";
 import { useTxConfigsQueryString } from "../../hooks/use-tx-config-query-string";
 import { useIBCChannelConfigQueryString } from "../../hooks/use-ibc-channel-config-query-string";
+import { CancelIcon } from "components/button";
 
 export const IBCTransferPage: FunctionComponent = observer(() => {
   const { accountStore, chainStore, queriesStore, uiConfigStore } = useStore();
@@ -125,25 +126,13 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
     <HeaderLayout
       title={intl.formatMessage({ id: "page.ibc-transfer.title" })}
       fixedHeight={true}
-      left={
-        <Box
-          paddingLeft="1rem"
-          cursor="pointer"
-          onClick={() => {
-            if (isSelectChannelPhase) {
-              navigate(-1);
-            } else {
-              setPhase("channel");
-            }
-          }}
-        >
-          <ArrowLeftIcon />
-        </Box>
-      }
       bottomButtons={[
         {
-          text: intl.formatMessage({ id: "button.next" }),
+          left: <CancelIcon />,
+          text: intl.formatMessage({ id: "button.reject" }),
           size: "large",
+          color: "danger",
+
           onClick: async () => {
             if (isSelectChannelPhase) {
               setPhase("amount");
