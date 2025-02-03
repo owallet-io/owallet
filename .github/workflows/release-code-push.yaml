@@ -70,19 +70,19 @@ jobs:
           yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
           yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
 
-      # - name: Send discord message
-      #   uses: appleboy/discord-action@master
-      #   with:
-      #     webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-      #     webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-      #     username: "GitBot"
-      #     message: Code pushed success! Comment=${{ github.event.head_commit.message }}
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed successfully! head_commit=${{ github.event.head_commit.message }}
 
-      # - name: Send discord message
-      #   if: ${{ failure() }}
-      #   uses: appleboy/discord-action@master
-      #   with:
-      #     webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-      #     webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-      #     username: "GitBot"
-      #     message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
