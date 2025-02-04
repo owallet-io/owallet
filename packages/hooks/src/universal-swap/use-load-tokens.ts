@@ -4,20 +4,12 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import {
-  CustomChainInfo,
-  ERC20__factory,
-  evmChains,
-} from "@oraichain/oraidex-common";
+import { CustomChainInfo, ERC20__factory } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
-import { evmTokens, tronToEthAddress } from "@oraichain/oraidex-common";
-import { network, chainInfos } from "@oraichain/oraidex-common";
-import {
-  cosmosTokens,
-  oraichainTokens,
-  tokenMap,
-} from "@oraichain/oraidex-common";
+import { tronToEthAddress } from "@oraichain/oraidex-common";
+import { network, chainInfos, evmTokens, evmChains } from "@owallet/common";
+import { cosmosTokens, oraichainTokens, tokenMap } from "@owallet/common";
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { uniqBy } from "lodash";

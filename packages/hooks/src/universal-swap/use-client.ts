@@ -1,5 +1,4 @@
-import { CWStargate, ChainIdEnum } from "@owallet/common";
-import { oraichainNetwork } from "@oraichain/oraidex-common";
+import { CWStargate, ChainIdEnum, oraichainNetwork } from "@owallet/common";
 import { useEffect, useState } from "react";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 

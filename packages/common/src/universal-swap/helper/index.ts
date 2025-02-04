@@ -1,12 +1,6 @@
 import Long from "long";
-import { TokenItemType, network } from "@oraichain/oraidex-common";
-import {
-  flattenTokens,
-  oraichainTokens,
-  CoinGeckoId,
-  NetworkChainId,
-  IBC_WASM_CONTRACT,
-} from "@oraichain/oraidex-common";
+import { TokenItemType } from "@oraichain/oraidex-common";
+import { CoinGeckoId, IBC_WASM_CONTRACT } from "@oraichain/oraidex-common";
 import { HIGH_GAS_PRICE, MULTIPLIER } from "../config/constants";
 import { OraiswapOracleQueryClient } from "@oraichain/oraidex-contracts-sdk";
 import {
@@ -18,6 +12,7 @@ import { getBase58Address } from "../../utils";
 import { TaxRateResponse } from "@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types";
 import { ethers } from "ethers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
+import { flattenTokens, network, oraichainTokens } from "../initCommon";
 
 export enum SwapDirection {
   From,
@@ -36,7 +31,7 @@ export const getAddress = (addr, prefix: string) => {
   return toBech32(prefix, data);
 };
 
-export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
+export function isEvmNetworkNativeSwapSupported(chainId: string | number) {
   switch (chainId) {
     case "0x01":
     case "0x38":
@@ -53,7 +48,7 @@ export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
 
 export function getTokenOnSpecificChainId(
   coingeckoId: CoinGeckoId,
-  chainId: NetworkChainId
+  chainId: string | number
 ): TokenItemType | undefined {
   return flattenTokens.find(
     (t) => t.coinGeckoId === coingeckoId && t.chainId === chainId

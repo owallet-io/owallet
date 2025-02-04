@@ -5,12 +5,12 @@ import {
   TokenItemType,
   TokenInfo,
   toTokenInfo,
-  network,
 } from "@oraichain/oraidex-common";
 import {
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
 } from "@oraichain/oraidex-contracts-sdk";
+import { network } from "../initCommon";
 
 async function fetchTokenInfo(
   token: TokenItemType,
