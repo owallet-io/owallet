@@ -102,6 +102,25 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
   }
 }
 
+function defineWritablePropertyIfPossible(o: any, p: string, value: any) {
+  const descriptor = Object.getOwnPropertyDescriptor(o, p);
+
+  if (!descriptor || descriptor.writable) {
+    if (!descriptor || descriptor.configurable) {
+      Object.defineProperty(o, p, {
+        value,
+        writable: true,
+      });
+    } else {
+      o[p] = value;
+    }
+  } else {
+    console.warn(
+      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`
+    );
+  }
+}
+
 export function injectOWalletToWindow(owallet: IOWallet): void {
   import("@oraichain/owallet-wallet-standard")
     .then(({ initialize }) => {
@@ -120,7 +139,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   const descriptor = Object.getOwnPropertyDescriptor(window, "ethereum");
 
   if (!descriptor) {
-    defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
+    defineWritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
   }
   defineUnwritablePropertyIfPossible(window, "eth_owallet", owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
