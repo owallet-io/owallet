@@ -57,7 +57,7 @@ import {
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 import { BottomTabsHeightRem } from "../../bottom-tabs";
-import { DenomHelper } from "@owallet/common";
+import { DenomHelper, shortenWord } from "@owallet/common";
 import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
 import { ModularChainInfo } from "@owallet/types";
 import Color from "color";
@@ -490,6 +490,8 @@ export const MainPage: FunctionComponent<{
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
+                  maxWidth: "calc(100% - 8rem)",
+                  overflow: "hidden",
                 }}
                 onClick={() => {
                   navigate("/wallet/select");
@@ -504,7 +506,7 @@ export const MainPage: FunctionComponent<{
                   src={require("assets/images/default-avatar.png")}
                 />
                 <Gutter size="0.5rem" />
-                <Subtitle1>{name}</Subtitle1>
+                <Subtitle1>{shortenWord(name, 15)}</Subtitle1>
                 <Gutter size="0.5rem" />
                 <ArrowDownIcon
                   width="1.25rem"

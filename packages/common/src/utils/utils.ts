@@ -788,3 +788,20 @@ export const isMilliseconds = (timestamp: number | string): boolean => {
   const timestampString = timestamp.toString();
   return timestampString.length === 13;
 };
+
+export function shortenWord(word, length = 10) {
+  /**
+   * Shortens a word by replacing its middle with three dots (...).
+   *
+   * @param {string} word - The word to be shortened.
+   * @param {number} length - The length of word to be shortened.
+   * @returns {string} - The shortened version of the word.
+   */
+  if (word.length <= length) {
+    // If the word length is equal of param length or less, return the word as is
+    return word;
+  } else {
+    // Shorten the word by keeping the first and last letter, and replacing the middle with '...'
+    return word.slice(0, 3) + "..." + word.slice(-3);
+  }
+}

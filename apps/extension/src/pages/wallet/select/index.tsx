@@ -32,6 +32,7 @@ import { dispatchGlobalEventExceptSelf } from "../../../utils/global-events";
 import { TokenTag } from "pages/main/components";
 import { isRunningInSidePanel } from "helpers/side-panel";
 import { closeSidePanelMode } from "../../../utils/side-panel";
+import { shortenWord } from "@owallet/common";
 
 const AnimatedBox = animated(Box);
 
@@ -1057,7 +1058,9 @@ const KeyringItem = observer<
                         : ColorPalette["gray-10"],
                   }}
                 >
-                  {keyInfo.name}
+                  {keyInfo.name.length > 20
+                    ? shortenWord(keyInfo.name, 15)
+                    : keyInfo.name}
                 </Subtitle2>
                 {isSelected ? (
                   <React.Fragment>

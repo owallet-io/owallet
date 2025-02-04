@@ -1,6 +1,5 @@
 import { Buffer } from "buffer/";
 
-// 최초의 랜덤값이 필요하다.
 const viewPostMessageId = (() => {
   const bytes = new Uint8Array(4);
   crypto.getRandomValues(bytes);
@@ -11,7 +10,6 @@ export const dispatchGlobalEventExceptSelf = (
   eventName: string,
   params?: any
 ) => {
-  // 모든 extension의 view에게 메시지를 보낸다.
   for (const view of browser.extension.getViews()) {
     view.postMessage(
       {
