@@ -1,12 +1,6 @@
 import Long from "long";
-import { TokenItemType, network } from "@oraichain/oraidex-common";
-import {
-  flattenTokens,
-  oraichainTokens,
-  CoinGeckoId,
-  NetworkChainId,
-  IBC_WASM_CONTRACT,
-} from "@oraichain/oraidex-common";
+import { OraidexCommon, TokenItemType } from "@oraichain/oraidex-common";
+import { CoinGeckoId, IBC_WASM_CONTRACT } from "@oraichain/oraidex-common";
 import { HIGH_GAS_PRICE, MULTIPLIER } from "../config/constants";
 import { OraiswapOracleQueryClient } from "@oraichain/oraidex-contracts-sdk";
 import {
@@ -36,7 +30,7 @@ export const getAddress = (addr, prefix: string) => {
   return toBech32(prefix, data);
 };
 
-export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
+export function isEvmNetworkNativeSwapSupported(chainId: string | number) {
   switch (chainId) {
     case "0x01":
     case "0x38":
@@ -50,15 +44,6 @@ export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
   if (!tokenInfo) return 0;
   return (gasDefault * MULTIPLIER * HIGH_GAS_PRICE) / 10 ** tokenInfo?.decimals;
 };
-
-export function getTokenOnSpecificChainId(
-  coingeckoId: CoinGeckoId,
-  chainId: NetworkChainId
-): TokenItemType | undefined {
-  return flattenTokens.find(
-    (t) => t.coinGeckoId === coingeckoId && t.chainId === chainId
-  );
-}
 
 export const tronToEthAddress = (base58: string) => {
   const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(
@@ -75,16 +60,19 @@ export const ethToTronAddress = (address: string) => {
   return getBase58Address(address);
 };
 
-export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
+export const getTokenOnOraichain = async (coingeckoId: CoinGeckoId) => {
   if (coingeckoId === "kawaii-islands" || coingeckoId === "milky-token") {
     throw new Error("KWT and MILKY not supported in this function");
   }
+  const oraidexCommonOg = await OraidexCommon.load();
+  const { oraichainTokens } = oraidexCommonOg;
   return oraichainTokens.find((token) => token.coinGeckoId === coingeckoId);
 };
 
 export async function fetchTaxRate(
   client: SigningCosmWasmClient
 ): Promise<TaxRateResponse> {
+  const { network } = await oraidexCommonLoad();
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
     const data = await oracleContract.treasury({ tax_rate: {} });
@@ -126,5 +114,14 @@ export async function fetchRelayerFee(
     return relayer_fees;
   } catch (error) {
     throw new Error(`Error when query Relayer Fee using oracle: ${error}`);
+  }
+}
+
+export async function oraidexCommonLoad(): Promise<any> {
+  try {
+    const oraidexCommonOg = await OraidexCommon.load();
+    return { ...oraidexCommonOg };
+  } catch (error) {
+    throw new Error(`Error when load oraidex-common: ${error}`);
   }
 }

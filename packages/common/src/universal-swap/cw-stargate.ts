@@ -1,6 +1,6 @@
 import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
 import { GasPrice } from "@cosmjs/stargate";
-import { network } from "@oraichain/oraidex-common";
+import { OraidexCommon } from "@oraichain/oraidex-common";
 export class CWStargate {
   static async init(
     account: any,
@@ -13,7 +13,8 @@ export class CWStargate {
       throw new Error("Can't get the owallet API");
     }
     const wallet = owallet.getOfflineSigner(chainId);
-
+    const oraidexCommonOg = await OraidexCommon.load();
+    const { network } = oraidexCommonOg;
     const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(
       rpc,
       wallet,

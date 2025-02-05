@@ -1,4 +1,4 @@
-import { cosmosTokens, evmTokens } from "@oraichain/oraidex-common";
+import { oraidexCommonLoad } from "@owallet/common";
 import { useEffect, useState } from "react";
 
 /**
@@ -25,12 +25,14 @@ export type CoinGeckoPrices<T extends string> = {
  */
 export const useCoinGeckoPrices = () => {
   const [data, setData] = useState<CoinGeckoPrices<string>>({});
-  const tokens = [
-    ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
-  ];
-  tokens.sort();
 
   const getCoingeckoPrices = async () => {
+    const { cosmosTokens, evmTokens } = await oraidexCommonLoad();
+
+    const tokens = [
+      ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
+    ];
+    tokens.sort();
     const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
 
     const prices = {};

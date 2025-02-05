@@ -6169,7 +6169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/common@npm:^1.2.4":
+"@oraichain/common@npm:1.2.8, @oraichain/common@npm:^1.2.4":
   version: 1.2.8
   resolution: "@oraichain/common@npm:1.2.8"
   dependencies:
@@ -6235,7 +6235,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:1.1.45":
+"@oraichain/oraidex-common@npm:^1.1.27, @oraichain/oraidex-common@npm:^1.1.6":
   version: 1.1.45
   resolution: "@oraichain/oraidex-common@npm:1.1.45"
   dependencies:
@@ -6259,6 +6259,33 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
   checksum: 4660a6aa5d0b1e99967d131e0b591744c3a099109b3b89b5ff46eb4304c2e9a405d47841400130d026bd574f60c2f55ea9f7354e60a429a8a9a81f7c89fb57d7
+  languageName: node
+  linkType: hard
+
+"@oraichain/oraidex-common@npm:^2.0.10":
+  version: 2.0.10
+  resolution: "@oraichain/oraidex-common@npm:2.0.10"
+  dependencies:
+    "@cosmjs/amino": ^0.32.4
+    "@cosmjs/cosmwasm-stargate": ^0.32.4
+    "@cosmjs/crypto": ^0.32.4
+    "@cosmjs/proto-signing": ^0.32.4
+    "@cosmjs/stargate": ^0.32.4
+    "@cosmjs/tendermint-rpc": ^0.32.4
+    "@ethersproject/providers": ^5.0.10
+    "@injectivelabs/sdk-ts": 1.12.1
+    "@keplr-wallet/types": ^0.11.38
+    "@oraichain/common": 1.2.8
+    "@oraichain/oraidex-contracts-sdk": latest
+    "@ton/core": 0.56.3
+    "@ton/crypto": 3.3.0
+    axios: 1.7.2
+    axios-extensions: 3.1.7
+    bignumber.js: ^9.1.2
+    cosmjs-types: ^0.9.0
+    ethers: ^5.0.15
+    tronweb: 6.0.0-beta.4
+  checksum: 873899d77aa87183d7483930b142287d1b7b4c933b0df10a5b2930ddd4c08727429b1fbe6d9d9739f86639787479ca71c99d7e9a26b0804ca7e4b583bd5fef56
   languageName: node
   linkType: hard
 
@@ -27304,7 +27331,7 @@ __metadata:
     "@oraichain/common-contracts-sdk": ^1.0.31
     "@oraichain/cw-simulate": ^2.8.76
     "@oraichain/ethereum-multicall": ^1.0.2
-    "@oraichain/oraidex-common": ^1.1.45
+    "@oraichain/oraidex-common": ^2.0.10
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
     "@oraichain/oraidex-universal-swap": ^1.1.27-beta.1

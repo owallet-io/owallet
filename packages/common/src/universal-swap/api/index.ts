@@ -5,7 +5,7 @@ import {
   TokenItemType,
   TokenInfo,
   toTokenInfo,
-  network,
+  OraidexCommon,
 } from "@oraichain/oraidex-common";
 import {
   OraiswapTokenQueryClient,
@@ -39,7 +39,11 @@ async function fetchTokenInfos(
       token_info: {},
     } as OraiswapTokenTypes.QueryMsg),
   }));
-  const multicall = new MulticallQueryClient(client, network.multicall);
+  const oraidexCommonOg = await OraidexCommon.load();
+  const multicall = new MulticallQueryClient(
+    client,
+    oraidexCommonOg.network.multicall
+  );
   let tokenInfos = tokens.map((t) => toTokenInfo(t));
 
   try {

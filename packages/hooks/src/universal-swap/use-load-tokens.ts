@@ -4,21 +4,16 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import {
-  CustomChainInfo,
-  ERC20__factory,
-  evmChains,
-} from "@oraichain/oraidex-common";
+import { CustomChainInfo, ERC20__factory } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
-import { evmTokens, tronToEthAddress } from "@oraichain/oraidex-common";
-import { network, chainInfos } from "@oraichain/oraidex-common";
+import { tronToEthAddress } from "@oraichain/oraidex-common";
+
 import {
-  cosmosTokens,
-  oraichainTokens,
-  tokenMap,
-} from "@oraichain/oraidex-common";
-import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
+  ChainIdEnum,
+  isEvmNetworkNativeSwapSupported,
+  oraidexCommonLoad,
+} from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { uniqBy } from "lodash";
 // import axios from 'axios';
@@ -66,6 +61,7 @@ async function loadNativeBalance(
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     let amountAll = await client.getAllBalances(address);
+    const { cosmosTokens, tokenMap } = await oraidexCommonLoad();
     let amountDetails: AmountDetails = {};
 
     // reset native balances
@@ -127,9 +123,7 @@ async function loadTokens(
     ),
     (c) => c.denom
   );
-
-  const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
-
+  const { chainInfos, evmChains } = await oraidexCommonLoad();
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {
@@ -254,6 +248,7 @@ async function loadTokensCosmos(
   tokenReload?: Array<any>
 ) {
   if (!injectiveAddress || !oraiAddress) return;
+  const { chainInfos } = await oraidexCommonLoad();
   let cosmosInfos = chainInfos.filter(
     (chainInfo) =>
       chainInfo.networkType === "cosmos" || chainInfo.bip44.coinType === 118
@@ -286,6 +281,7 @@ async function loadCw20Balance(
   retryCount?: number
 ) {
   if (!address) return;
+  const { oraichainTokens, network } = await oraidexCommonLoad();
   // get all cw20 token contract
   let cw20Tokens = oraichainTokens.filter((t) => t.contractAddress);
 
@@ -406,6 +402,8 @@ async function loadEvmEntries(
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
+    const { evmTokens } = await oraidexCommonLoad();
+
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {
       let result;
