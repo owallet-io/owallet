@@ -38,6 +38,8 @@ export const SelectNetworkModal: FunctionComponent<{
     const { chainStore, appInitStore, universalSwapStore } = useStore();
     const [chains, setChains] = useState(chainStore.chainInfosInUI);
 
+    const { tokenMap, flattenTokens } = appInitStore.oraidexCommon;
+
     const styles = styling(colors);
     let totalUsd: number = 0;
     let todayAssets;
@@ -47,9 +49,12 @@ export const SelectNetworkModal: FunctionComponent<{
     ) {
       totalUsd = getTotalUsd(
         universalSwapStore.getAmount,
-        appInitStore.getInitApp.prices
+        appInitStore.getInitApp.prices,
+        tokenMap
       );
       todayAssets = getTokenInfos({
+        flattenTokens,
+        tokenMap,
         tokens: universalSwapStore.getAmount,
         prices: appInitStore.getInitApp.prices,
       });
@@ -237,6 +242,7 @@ export const SelectNetworkModal: FunctionComponent<{
     useEffect(() => {
       if (chainAssets) {
         const sortedData = Object.entries(chainAssets).sort(
+          //@ts-ignore
           (a, b) => b[1].sum - a[1].sum
         );
         const keysArray = sortedData.map(([key]) => key);
