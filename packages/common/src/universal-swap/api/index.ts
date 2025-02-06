@@ -30,7 +30,8 @@ async function fetchTokenInfo(
 /// using multicall when query multiple
 async function fetchTokenInfos(
   tokens: TokenItemType[],
-  client
+  client,
+  network
 ): Promise<TokenInfo[]> {
   const filterTokenSwaps = tokens.filter((t) => t.contractAddress);
   const queries = filterTokenSwaps.map((t) => ({
@@ -39,11 +40,7 @@ async function fetchTokenInfos(
       token_info: {},
     } as OraiswapTokenTypes.QueryMsg),
   }));
-  const oraidexCommonOg = await OraidexCommon.load();
-  const multicall = new MulticallQueryClient(
-    client,
-    oraidexCommonOg.network.multicall
-  );
+  const multicall = new MulticallQueryClient(client, network.multicall);
   let tokenInfos = tokens.map((t) => toTokenInfo(t));
 
   try {

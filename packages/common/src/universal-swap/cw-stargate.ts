@@ -6,6 +6,7 @@ export class CWStargate {
     account: any,
     chainId: string,
     rpc: string,
+    network,
     options?: cosmwasm.SigningCosmWasmClientOptions
   ) {
     const owallet = await account.getOWallet();
@@ -13,8 +14,7 @@ export class CWStargate {
       throw new Error("Can't get the owallet API");
     }
     const wallet = owallet.getOfflineSigner(chainId);
-    const oraidexCommonOg = await OraidexCommon.load();
-    const { network } = oraidexCommonOg;
+
     const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(
       rpc,
       wallet,

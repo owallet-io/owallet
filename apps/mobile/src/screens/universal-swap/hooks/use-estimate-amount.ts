@@ -4,13 +4,13 @@ import {
   calculateMinReceive,
   CoinGeckoPrices,
   CW20_DECIMALS,
-  network,
   toAmount,
   TokenItemType,
 } from "@oraichain/oraidex-common";
 import { OraiswapRouterQueryClient } from "@oraichain/oraidex-contracts-sdk";
 import { UniversalSwapHelper } from "@oraichain/oraidex-universal-swap";
 import { fetchTokenInfos } from "@owallet/common";
+import { useStore } from "@src/stores";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { getRemoteDenom } from "../helpers";
@@ -75,6 +75,7 @@ const useEstimateAmount = (
     ignoreFee?: boolean;
   }
 ) => {
+  const { appInitStore } = useStore();
   const [amountLoading, setAmountLoading] = useState(false);
   const [isWarningSlippage, setIsWarningSlippage] = useState(false);
   const [impactWarning, setImpactWarning] = useState(0);
@@ -90,11 +91,21 @@ const useEstimateAmount = (
     status: false,
   });
 
+  const { oraichainTokens, flattenTokens, network } =
+    appInitStore.oraidexCommon;
+
   const {
     relayerFee,
     relayerFeeInOraiToAmount: relayerFeeToken,
     relayerFeeInOraiToDisplay: relayerFeeDisplay,
-  } = useRelayerFeeToken(originalFromToken, originalToToken, client);
+  } = useRelayerFeeToken(
+    originalFromToken,
+    originalToToken,
+    client,
+    network,
+    oraichainTokens,
+    flattenTokens
+  );
 
   const remoteTokenDenomFrom = getRemoteDenom(originalFromToken);
   const remoteTokenDenomTo = getRemoteDenom(originalToToken);
@@ -137,7 +148,7 @@ const useEstimateAmount = (
       tokenTo: toTokenId,
       status: true,
     });
-  }, [ratio, originalFromToken, originalToToken]);
+  }, [ratio?.amount]);
 
   const {
     data: [fromTokenInfoData, toTokenInfoData],
@@ -157,6 +168,8 @@ const useEstimateAmount = (
 
       try {
         const data = await UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens,
+          oraichainTokens,
           originalFromInfo: originalFromToken,
           originalToInfo: originalToToken,
           originalAmount: initAmount,
@@ -328,23 +341,11 @@ const useEstimateAmount = (
     } else {
       setSwapAmount([0, 0]);
     }
-  }, [
-    originalFromToken,
-    toTokenInfoData,
-    fromTokenInfoData,
-    originalToToken,
-    fromAmountToken,
-  ]);
+  }, [fromAmountToken, isAvgSimulate.status]);
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [
-    originalFromToken,
-    toTokenInfoData,
-    fromTokenInfoData,
-    originalToToken,
-    client,
-  ]);
+  }, []);
 
   useEffect(() => {
     if (Number(fromAmountToken) <= 0) {

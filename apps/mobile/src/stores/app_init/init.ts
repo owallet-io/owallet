@@ -27,6 +27,7 @@ export class AppInit {
     balances: object;
     chainInfos: Array<any>;
     manageToken: Record<string, boolean>;
+    oraidexCommon: any;
   };
   @persist("map")
   @observable
@@ -58,6 +59,7 @@ export class AppInit {
       chainInfos: [],
       yesterdayPriceFeed: [],
       manageToken: {},
+      oraidexCommon: null,
     };
     // this.multipleAssets = {
     //   totalPriceBalance: "0",
@@ -123,6 +125,16 @@ export class AppInit {
   @computed
   get getChainInfos() {
     return this.initApp.chainInfos;
+  }
+
+  @computed
+  get oraidexCommon() {
+    return this.initApp.oraidexCommon;
+  }
+
+  @action
+  updateOraidexCommon(oraidexCommon) {
+    this.initApp = { ...this.initApp, oraidexCommon: oraidexCommon };
   }
 
   @action

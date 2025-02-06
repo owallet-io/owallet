@@ -79,46 +79,46 @@ const embedChainInfos: ChainInfo[] = [
       accountUrl: "https://www.oasisscan.com/accounts/detail/{address}",
     },
   },
-  {
-    chainId: "oraibtc-mainnet-1",
-    chainName: "OraiBTC Bridge",
-    rpc: "https://btc.rpc.orai.io",
-    rest: "https://btc.lcd.orai.io",
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
-    stakeCurrency: {
-      coinDenom: "ORAIBTC",
-      coinMinimalDenom: "uoraibtc",
-      coinDecimals: 6,
-      coinImageUrl:
-        "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
-    // List of all coin/tokens used in this chain.
-    get currencies() {
-      return [this.stakeCurrency];
-    },
-    get feeCurrencies() {
-      return [
-        {
-          ...this.stakeCurrency,
-          gasPriceStep: {
-            low: 0,
-            average: 0,
-            high: 0,
-          },
-        },
-      ];
-    },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
-    txExplorer: {
-      name: "Scanium",
-      txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
-    },
-  },
+  // {
+  //   chainId: "oraibtc-mainnet-1",
+  //   chainName: "OraiBTC Bridge",
+  //   rpc: "https://btc.rpc.orai.io",
+  //   rest: "https://btc.lcd.orai.io",
+  //   chainSymbolImageUrl:
+  //     "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/Oraichain/chain.png",
+  //   stakeCurrency: {
+  //     coinDenom: "ORAIBTC",
+  //     coinMinimalDenom: "uoraibtc",
+  //     coinDecimals: 6,
+  //     coinImageUrl:
+  //       "https://assets.coingecko.com/coins/images/1/small/bitcoin.png",
+  //   },
+  //   bip44: {
+  //     coinType: 118,
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config("oraibtc"),
+  //   // List of all coin/tokens used in this chain.
+  //   get currencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //   get feeCurrencies() {
+  //     return [
+  //       {
+  //         ...this.stakeCurrency,
+  //         gasPriceStep: {
+  //           low: 0,
+  //           average: 0,
+  //           high: 0,
+  //         },
+  //       },
+  //     ];
+  //   },
+  //   features: ["stargate", "ibc-transfer", "cosmwasm"],
+  //   txExplorer: {
+  //     name: "Scanium",
+  //     txUrl: "https://scanium.io/OraiBtcMainnet/tx/{txHash}",
+  //   },
+  // },
   {
     rpc: "https://blockstream.info/api",
     rest: "https://blockstream.info/api",

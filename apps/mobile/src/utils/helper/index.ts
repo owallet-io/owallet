@@ -8,7 +8,6 @@ import { showMessage, MessageOptions } from "react-native-flash-message";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { Linking } from "react-native";
 import {
-  flattenTokens,
   getSubAmountDetails,
   toAmount,
   toDisplay,
@@ -608,9 +607,17 @@ export const getAddressFromLedgerWhenChangeNetwork = (
   return null;
 };
 
-export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
+export const getTokenInfos = ({
+  flattenTokens,
+  tokenMap,
+  tokens,
+  prices,
+  networkFilter = "",
+}) => {
   const dataTokens = flattenTokens
     .reduce((result, token) => {
+      console.log("tokens", tokens);
+
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress) {
         const isValidNetwork =
@@ -625,7 +632,7 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
           const totalAmount =
             amount +
             (isHaveSubAmounts
-              ? toAmount(toSumDisplay(subAmounts), token.decimals)
+              ? toAmount(toSumDisplay(subAmounts, tokenMap), token.decimals)
               : 0n);
           const value =
             toDisplay(totalAmount.toString(), token.decimals) *

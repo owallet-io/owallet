@@ -60,19 +60,21 @@ export const ethToTronAddress = (address: string) => {
   return getBase58Address(address);
 };
 
-export const getTokenOnOraichain = async (coingeckoId: CoinGeckoId) => {
+export const getTokenOnOraichain = async (
+  coingeckoId: CoinGeckoId,
+  oraichainTokens
+) => {
   if (coingeckoId === "kawaii-islands" || coingeckoId === "milky-token") {
     throw new Error("KWT and MILKY not supported in this function");
   }
-  const oraidexCommonOg = await OraidexCommon.load();
-  const { oraichainTokens } = oraidexCommonOg;
+
   return oraichainTokens.find((token) => token.coinGeckoId === coingeckoId);
 };
 
 export async function fetchTaxRate(
-  client: SigningCosmWasmClient
+  client: SigningCosmWasmClient,
+  network: any
 ): Promise<TaxRateResponse> {
-  const { network } = await oraidexCommonLoad();
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
     const data = await oracleContract.treasury({ tax_rate: {} });
@@ -114,14 +116,5 @@ export async function fetchRelayerFee(
     return relayer_fees;
   } catch (error) {
     throw new Error(`Error when query Relayer Fee using oracle: ${error}`);
-  }
-}
-
-export async function oraidexCommonLoad(): Promise<any> {
-  try {
-    const oraidexCommonOg = await OraidexCommon.load();
-    return { ...oraidexCommonOg };
-  } catch (error) {
-    throw new Error(`Error when load oraidex-common: ${error}`);
   }
 }

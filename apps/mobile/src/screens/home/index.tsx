@@ -28,6 +28,7 @@ import { CommonActions, useNavigation } from "@react-navigation/native";
 import { delay } from "@utils/helper";
 import { fetchRetry } from "@owallet/common";
 import { AppCurrency } from "@owallet/types";
+import { OraidexCommon } from "@oraichain/oraidex-common";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -108,6 +109,20 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       }
     })();
   }, [chainStore.enabledChainIdentifiers, keyRingStore.selectedKeyInfo.id]);
+
+  useEffect(() => {
+    const getOraidexCommon = async () => {
+      try {
+        const oraidexCommon = await OraidexCommon.load();
+        console.log("oraidexCommon at home", oraidexCommon);
+        appInitStore.updateOraidexCommon(oraidexCommon);
+      } catch (err) {
+        console.log("error on getOraidexCommon", err);
+      }
+    };
+    getOraidexCommon();
+  }, []);
+
   // const getFCMToken = async () => {
   //   try {
   //     // Request permission for notifications (iOS)

@@ -2,6 +2,8 @@ import { BTC_CONTRACT, TokenItemType } from "@oraichain/oraidex-common";
 import {
   SwapDirection,
   UniversalSwapHelper,
+  getSwapFromTokens,
+  getSwapToTokens,
 } from "@oraichain/oraidex-universal-swap";
 import { useEffect, useState } from "react";
 
@@ -10,20 +12,14 @@ import { useEffect, useState } from "react";
  * @param originalFromToken
  * @param originalToToken
  * @param searchTokenName
- * @param fromToken
- * @param toToken
- * @param fromTokenDenom
- * @param toTokenDenom
  * @returns
  */
 export const useFilterToken = (
   originalFromToken: TokenItemType,
   originalToToken: TokenItemType,
   searchTokenName: string,
-  fromToken: TokenItemType,
-  toToken: TokenItemType,
-  fromTokenDenom: string,
-  toTokenDenom: string
+  flattenTokens: TokenItemType[],
+  oraichainTokens: TokenItemType[]
 ) => {
   const [filteredToTokens, setFilteredToTokens] = useState(
     [] as TokenItemType[]
@@ -38,7 +34,11 @@ export const useFilterToken = (
       originalFromToken.coinGeckoId,
       originalFromToken.denom,
       searchTokenName,
-      SwapDirection.To
+      SwapDirection.To,
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
     );
 
     setFilteredToTokens(
@@ -50,15 +50,17 @@ export const useFilterToken = (
       originalToToken.coinGeckoId,
       originalToToken.denom,
       searchTokenName,
-      SwapDirection.From
+      SwapDirection.From,
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
     );
 
     setFilteredFromTokens(
       filteredFromTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
     );
-
-    // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
-  }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
+  }, [flattenTokens, oraichainTokens]);
 
   return { filteredToTokens, filteredFromTokens };
 };

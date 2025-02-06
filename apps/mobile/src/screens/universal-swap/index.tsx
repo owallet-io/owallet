@@ -26,16 +26,10 @@ import {
   toAmount,
 } from "@owallet/common";
 import {
-  oraichainNetwork,
-  Networks,
   TRON_DENOM,
   BigDecimal,
   toSubAmount,
   getTokenOnOraichain,
-  tokenMap,
-  chainInfos,
-  TokenItemType,
-  getTokensFromNetwork,
   calcMaxAmount,
 } from "@oraichain/oraidex-common";
 import { openLink } from "../../utils/helper";
@@ -77,11 +71,18 @@ import { Toggle } from "@src/components/toggle";
 import { SendToModal } from "./modals/SendToModal";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PriceSettingModal } from "./modals/PriceSettingModal";
-import { flatten } from "lodash";
+import { flatten, isEmpty } from "lodash";
 import { tracking } from "@src/utils/tracking";
 import { AFFILIATE_ADDRESS } from "@src/common/constants";
 import { SlippageConfirmModal } from "./modals/SlippageConfirmModal";
 import { useFilterToken } from "./hooks/use-filter-token";
+import { Networks } from "@oraichain/ethereum-multicall";
+import { BTC_CONTRACT, TokenItemType } from "@oraichain/oraidex-common";
+import {
+  SwapDirection,
+  getSwapFromTokens,
+  getSwapToTokens,
+} from "@oraichain/oraidex-universal-swap";
 
 const mixpanel = globalThis.mixpanel as Mixpanel;
 
@@ -134,7 +135,7 @@ const useFee = ({
         .add(estSwapFee)
         .toNumber() || 0;
     setTotalFee(totalFeeEst);
-  }, [simulateDisplayAmount, fromTokenFee, toTokenFee, fee, relayerFeeAmount]);
+  }, [simulateData, fromAmountToken, fromTokenFee, toTokenFee, fee]);
 
   return {
     usdPriceShowFrom,
@@ -146,20 +147,11 @@ const useFee = ({
 };
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const {
-    accountStore,
-    universalSwapStore,
-    chainStore,
-    appInitStore,
-    keyRingStore,
-  } = useStore();
+  const { accountStore, universalSwapStore, chainStore, appInitStore } =
+    useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const { data: prices } = useCoinGeckoPrices();
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
-  useEffect(() => {
-    appInitStore.updatePrices(prices);
-  }, [prices]);
 
   const theme = appInitStore.getInitApp.theme;
 
@@ -180,28 +172,50 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [fromNetwork, setFromNetwork] = useState(ChainIdEnum.Oraichain);
   const [toNetworkOpen, setToNetworkOpen] = useState(false);
   const [toNetwork, setToNetwork] = useState(ChainIdEnum.Oraichain);
-
-  useEffect(() => {
-    if (appInitStore.getInitApp.wallet === "osmosis") {
-      setFromNetwork(ChainIdEnum.Osmosis);
-      setSwapTokens(["uosmo", "usdt"]);
-    } else if (appInitStore.getInitApp.wallet === "injective") {
-      setFromNetwork(ChainIdEnum.Injective);
-      setSwapTokens(["inj", "usdt"]);
-    }
-  }, [appInitStore.getInitApp.wallet]);
-
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
-  >(["orai", "usdt"]);
-
+  >(["orai", "cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT"]);
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
-
   const [toggle, setToggle] = useState(false);
+  const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
+  const [selectToTokenModal, setSelectToTokenModal] = useState(false);
+  const [sendToModal, setSendToModal] = useState(false);
+  const [slippageModal, setSlippageModal] = useState(false);
 
-  const client = useClient(accountOrai);
+  if (isEmpty(appInitStore.oraidexCommon)) return;
 
-  const taxRate = useTaxRate(accountOrai);
+  const {
+    tokenMap,
+    oraichainTokens,
+    chainInfos,
+    oraichainNetwork,
+    flattenTokens,
+    cosmosTokens,
+    evmTokens,
+    network,
+    otherChainTokens,
+    evmChains,
+  } = appInitStore.oraidexCommon;
+
+  // useEffect(() => {
+  //   if (appInitStore.getInitApp.wallet === "osmosis") {
+  //     setFromNetwork(ChainIdEnum.Osmosis);
+  //     setSwapTokens(["uosmo", "usdt"]);
+  //   } else if (appInitStore.getInitApp.wallet === "injective") {
+  //     setFromNetwork(ChainIdEnum.Injective);
+  //     setSwapTokens(["inj", "usdt"]);
+  //   }
+  // }, [appInitStore.getInitApp.wallet]);
+
+  const client = useClient(accountOrai, oraichainNetwork);
+
+  const { data: prices } = useCoinGeckoPrices();
+
+  useEffect(() => {
+    appInitStore.updatePrices(prices);
+  }, [prices]);
+
+  const taxRate = useTaxRate(accountOrai, oraichainNetwork);
 
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([0, toAmountToken]);
@@ -220,12 +234,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const subAmountFrom = toSubAmount(
     universalSwapStore.getAmount,
-    originalFromToken
+    originalFromToken,
+    tokenMap
   );
   const subAmountTo = toSubAmount(
     universalSwapStore.getAmount,
-    originalToToken
+    originalToToken,
+    tokenMap
   );
+
   const fromTokenBalance = originalFromToken
     ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? "0") +
       subAmountFrom
@@ -255,13 +272,99 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenom]
-    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ??
-      tokenMap[fromTokenDenom];
+    : getTokenOnOraichain(
+        tokenMap[fromTokenDenom].coinGeckoId,
+        oraichainTokens
+      ) ?? tokenMap[fromTokenDenom];
 
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenom]
-    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
-      tokenMap[toTokenDenom];
+    : getTokenOnOraichain(
+        tokenMap[toTokenDenom].coinGeckoId,
+        oraichainTokens
+      ) ?? tokenMap[toTokenDenom];
+
+  const loadTokenAmounts = useLoadTokens(universalSwapStore);
+  // handle fetch all tokens of all chains
+  const handleFetchAmounts = async (params: {
+    orai?: string;
+    eth?: string;
+    tron?: string;
+    inj?: string;
+  }) => {
+    const { orai, eth, tron, inj } = params;
+    let loadTokenParams = {
+      cosmosTokens,
+      tokenMap,
+      chainInfos,
+      oraichainTokens,
+      network,
+      evmChains,
+      evmTokens,
+    } as any;
+
+    try {
+      const cwStargate = {
+        account: accountOrai,
+        chainId: ChainIdEnum.Oraichain,
+        rpc: oraichainNetwork.rpc,
+      };
+
+      const tokens = [otherChainTokens, oraichainTokens];
+      const flattenTokens = flatten(tokens);
+
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: orai ?? accountOrai.bech32Address,
+        metamaskAddress: eth ?? null,
+        tronAddress: tron ?? null,
+        injAddress: inj ?? null,
+        cwStargate,
+        tokenReload: null,
+        customChainInfos: flattenTokens,
+        cosmosTokens,
+        tokenMap,
+        chainInfos,
+        oraichainTokens,
+        network,
+        evmChains,
+        evmTokens,
+      };
+
+      loadTokenAmounts(loadTokenParams);
+      universalSwapStore.clearTokenReload();
+    } catch (error) {
+      setLoadingRefresh(false);
+      console.log("error loadTokenAmounts", error);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: "danger",
+      });
+    }
+  };
+
+  const onFetchAmount = async () => {
+    universalSwapStore.clearAmounts();
+    universalSwapStore.setLoaded(false);
+    if (
+      accountOrai.bech32Address &&
+      accountEth.ethereumHexAddress &&
+      accountTron.base58Address
+    ) {
+      setTimeout(() => {
+        handleFetchAmounts({
+          orai: accountOrai.bech32Address,
+          eth: accountEth.ethereumHexAddress,
+          tron: accountTron.base58Address,
+          inj: accountInj.bech32Address,
+        });
+      }, 1000);
+    }
+  };
+
+  useEffect(() => {
+    onFetchAmount();
+  }, []);
 
   const { fromTokenFee, toTokenFee } = useTokenFee(
     originalFromToken,
@@ -270,15 +373,47 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     toToken,
     client
   );
-  const { filteredFromTokens, filteredToTokens } = useFilterToken(
-    originalFromToken,
-    originalToToken,
-    searchTokenName,
-    fromToken,
-    toToken,
-    fromTokenDenom,
-    toTokenDenom
+
+  const [filteredToTokens, setFilteredToTokens] = useState(
+    [] as TokenItemType[]
   );
+  const [filteredFromTokens, setFilteredFromTokens] = useState(
+    [] as TokenItemType[]
+  );
+
+  useEffect(() => {
+    const filteredToTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
+      originalFromToken.chainId,
+      originalFromToken.coinGeckoId,
+      originalFromToken.denom,
+      searchTokenName,
+      SwapDirection.To,
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
+    );
+
+    setFilteredToTokens(
+      filteredToTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
+
+    const filteredFromTokens = UniversalSwapHelper.filterNonPoolEvmTokens(
+      originalToToken.chainId,
+      originalToToken.coinGeckoId,
+      originalToToken.denom,
+      searchTokenName,
+      SwapDirection.From,
+      getSwapFromTokens(flattenTokens),
+      getSwapToTokens(flattenTokens),
+      oraichainTokens,
+      flattenTokens
+    );
+
+    setFilteredFromTokens(
+      filteredFromTokens.filter((fi) => fi?.contractAddress !== BTC_CONTRACT)
+    );
+  }, []);
 
   const useAlphaIbcWasm = isAllowAlphaIbcWasm(
     originalFromToken,
@@ -340,94 +475,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fee,
     relayerFeeAmount,
   });
-
-  const [selectFromTokenModal, setSelectFromTokenModal] = useState(false);
-  const [selectToTokenModal, setSelectToTokenModal] = useState(false);
-  const [sendToModal, setSendToModal] = useState(false);
-  const [slippageModal, setSlippageModal] = useState(false);
-
-  const loadTokenAmounts = useLoadTokens(universalSwapStore);
-  // handle fetch all tokens of all chains
-  const handleFetchAmounts = async (
-    params: {
-      orai?: string;
-      eth?: string;
-      tron?: string;
-      inj?: string;
-      tokenReload?: Array<any>;
-    },
-    customChainInfos?: Array<any>
-  ) => {
-    const { orai, eth, tron, inj, tokenReload } = params;
-    let loadTokenParams = {};
-    try {
-      const cwStargate = {
-        account: accountOrai,
-        chainId: ChainIdEnum.Oraichain,
-        rpc: oraichainNetwork.rpc,
-      };
-
-      // other chains, oraichain
-      const otherChainTokens = flatten(
-        customChainInfos
-          ?.filter((chainInfo) => chainInfo.chainId !== "Oraichain")
-          .map(getTokensFromNetwork)
-      );
-      const oraichainTokens: TokenItemType[] =
-        getTokensFromNetwork(oraichainNetwork);
-
-      const tokens = [otherChainTokens, oraichainTokens];
-      const flattenTokens = flatten(tokens);
-
-      loadTokenParams = {
-        ...loadTokenParams,
-        oraiAddress: orai ?? accountOrai.bech32Address,
-        metamaskAddress: eth ?? null,
-        tronAddress: tron ?? null,
-        injAddress: inj ?? null,
-        cwStargate,
-        tokenReload: Number(tokenReload?.length) > 0 ? tokenReload : null,
-        customChainInfos: flattenTokens,
-      };
-
-      loadTokenAmounts(loadTokenParams);
-      universalSwapStore.clearTokenReload();
-    } catch (error) {
-      setLoadingRefresh(false);
-      console.log("error loadTokenAmounts", error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: "danger",
-      });
-    }
-  };
-
-  const onFetchAmount = async (tokenReload?: Array<any>) => {
-    universalSwapStore.clearAmounts();
-    universalSwapStore.setLoaded(false);
-    const customChainInfos = chainInfos;
-    if (
-      accountOrai.bech32Address &&
-      accountEth.ethereumHexAddress &&
-      accountTron.base58Address
-    ) {
-      setTimeout(() => {
-        handleFetchAmounts(
-          {
-            orai: accountOrai.bech32Address,
-            eth: accountEth.ethereumHexAddress,
-            tron: accountTron.base58Address,
-            inj: accountInj.bech32Address,
-          },
-          customChainInfos
-        );
-      }, 1000);
-    }
-  };
-
-  useEffect(() => {
-    onFetchAmount();
-  }, []);
 
   const handleSubmit = async (retryCount = 0) => {
     setSwapLoading(true);
@@ -513,9 +560,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
 
     if (isSpecialFromCoingecko && originalFromToken.chainId === "Oraichain") {
-      const tokenInfo = getTokenOnOraichain(originalFromToken.coinGeckoId);
+      const tokenInfo = getTokenOnOraichain(
+        originalFromToken.coinGeckoId,
+        oraichainTokens
+      );
       // const IBC_DECIMALS = 18;
-      const fromTokenInOrai = getTokenOnOraichain(tokenInfo.coinGeckoId, true);
+      const fromTokenInOrai = getTokenOnOraichain(
+        tokenInfo.coinGeckoId,
+        oraichainTokens
+      );
       const [nativeAmount, cw20Amount] = await Promise.all([
         client.getBalance(accountOrai.bech32Address, fromTokenInOrai.denom),
         client.queryContractSmart(tokenInfo.contractAddress, {
@@ -615,16 +668,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         new BigDecimal(ratio.amount).div(SIMULATE_INIT_AMOUNT).toString(),
     };
 
-    const universalSwapHandler = new UniversalSwapHandler(compileSwapData, {
-      //@ts-ignore
-      cosmosWallet,
-      //@ts-ignore
-      evmWallet,
-      swapOptions: {
-        isAlphaIbcWasm: useAlphaIbcWasm,
-        isIbcWasm: useIbcWasm,
+    const universalSwapHandler = new UniversalSwapHandler(
+      compileSwapData,
+      {
+        //@ts-ignore
+        cosmosWallet,
+        //@ts-ignore
+        evmWallet,
+        swapOptions: {
+          isAlphaIbcWasm: useAlphaIbcWasm,
+          isIbcWasm: useIbcWasm,
+        },
       },
-    });
+      appInitStore.oraidexCommon
+    );
 
     return await universalSwapHandler.processUniversalSwap();
   };
@@ -644,8 +701,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       },
     });
 
-    await onFetchAmount([originalFromToken, originalToToken]);
+    await onFetchAmount();
     const tokens = getTokenInfos({
+      tokenMap,
+      flattenTokens,
       tokens: universalSwapStore.getAmount,
       prices: appInitStore.getInitApp.prices,
       networkFilter: appInitStore.getInitApp.isAllNetworks

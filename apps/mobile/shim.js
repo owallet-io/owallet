@@ -38,6 +38,17 @@ if (!global.atob || !global.btoa) {
   global.btoa = base64.btoa;
 }
 
+// polyfill for AbortSignal
+if (!AbortSignal.timeout) {
+  AbortSignal.timeout = function (delay) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), delay);
+    // Allow Node.js processes to exit early if only the timeout is running
+    timeoutId?.unref?.();
+    return controller.signal;
+  };
+}
+
 // polyfillWebCrypto();
 // crypto is now globally defined
 import "text-encoding";

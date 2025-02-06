@@ -4,7 +4,11 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import { CustomChainInfo, ERC20__factory } from "@oraichain/oraidex-common";
+import {
+  CustomChainInfo,
+  ERC20__factory,
+  OraidexCommon,
+} from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import { tronToEthAddress } from "@oraichain/oraidex-common";
@@ -39,6 +43,13 @@ export type CWStargateType = {
 };
 
 export type LoadTokenParams = {
+  cosmosTokens;
+  tokenMap;
+  chainInfos;
+  oraichainTokens;
+  network;
+  evmChains;
+  evmTokens;
   refresh?: boolean;
   metamaskAddress?: string;
   oraiAddress?: string;
@@ -54,6 +65,8 @@ async function loadNativeBalance(
   universalSwapStore: any,
   address: string,
   tokenInfo: { chainId: string; rpc: string },
+  cosmosTokens,
+  tokenMap,
   retryCount?: number
 ) {
   if (!address) return;
@@ -61,7 +74,6 @@ async function loadNativeBalance(
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     let amountAll = await client.getAllBalances(address);
-    const { cosmosTokens, tokenMap } = await oraidexCommonLoad();
     let amountDetails: AmountDetails = {};
 
     // reset native balances
@@ -82,9 +94,12 @@ async function loadNativeBalance(
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
+    console.log("retryCount", retryCount);
+
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
       throw `Cannot loadNativeBalance with error: ${err}`;
+    }
 
     await new Promise((resolve) => setTimeout(resolve, 2500));
     console.log("try again with address ", address);
@@ -93,7 +108,9 @@ async function loadNativeBalance(
       universalSwapStore,
       address,
       tokenInfo,
-      retryCount
+      cosmosTokens,
+      tokenMap,
+      retry
     );
   }
 }
@@ -108,8 +125,15 @@ async function loadTokens(
     tronAddress,
     injAddress,
     cwStargate,
+    cosmosTokens,
+    tokenMap,
+    chainInfos,
     tokenReload,
     customChainInfos,
+    oraichainTokens,
+    network,
+    evmChains,
+    evmTokens,
   }: LoadTokenParams
 ) {
   const customEvmTokens = uniqBy(
@@ -123,7 +147,6 @@ async function loadTokens(
     ),
     (c) => c.denom
   );
-  const { chainInfos, evmChains } = await oraidexCommonLoad();
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {
@@ -136,9 +159,18 @@ async function loadTokens(
                 universalSwapStore,
                 injAddress,
                 oraiAddress,
+                cosmosTokens,
+                tokenMap,
+                chainInfos,
                 tokenReload
               ),
-              loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
+              loadCw20Balance(
+                universalSwapStore,
+                oraiAddress,
+                cwStargate,
+                oraichainTokens,
+                network
+              ),
               // different cointype but also require keplr connected by checking oraiAddress
               // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
             ]);
@@ -155,6 +187,7 @@ async function loadTokens(
                 tronToEthAddress(tronAddress),
                 chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
                 true,
+                evmTokens,
                 tokenReload
               );
             }, 500);
@@ -168,6 +201,7 @@ async function loadTokens(
                 metamaskAddress,
                 evmChains,
                 false,
+                evmTokens,
                 tokenReload
               );
             }, 500);
@@ -188,9 +222,18 @@ async function loadTokens(
           universalSwapStore,
           injAddress,
           oraiAddress,
+          cosmosTokens,
+          tokenMap,
+          chainInfos,
           tokenReload
         ),
-        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
+        loadCw20Balance(
+          universalSwapStore,
+          oraiAddress,
+          cwStargate,
+          oraichainTokens,
+          network
+        ),
         // different cointype but also require keplr connected by checking oraiAddress
         // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
       ]);
@@ -205,6 +248,7 @@ async function loadTokens(
         metamaskAddress,
         evmChains,
         false,
+        evmTokens,
         tokenReload,
         customEvmTokens
       );
@@ -219,6 +263,7 @@ async function loadTokens(
         tronToEthAddress(tronAddress),
         chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
         true,
+        evmTokens,
         tokenReload
       );
     }, 500);
@@ -245,10 +290,12 @@ async function loadTokensCosmos(
   updateAmounts: any,
   injectiveAddress: string,
   oraiAddress: string,
+  cosmosTokens,
+  tokenMap,
+  chainInfos,
   tokenReload?: Array<any>
 ) {
   if (!injectiveAddress || !oraiAddress) return;
-  const { chainInfos } = await oraidexCommonLoad();
   let cosmosInfos = chainInfos.filter(
     (chainInfo) =>
       chainInfo.networkType === "cosmos" || chainInfo.bip44.coinType === 118
@@ -269,7 +316,13 @@ async function loadTokensCosmos(
       oraiAddress
     );
 
-    loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
+    loadNativeBalance(
+      updateAmounts,
+      cosmosAddress,
+      chainInfo,
+      cosmosTokens,
+      tokenMap
+    );
   }
 }
 
@@ -277,11 +330,12 @@ async function loadCw20Balance(
   universalSwapStore: any,
   address: string,
   cwStargate: CWStargateType,
+  oraichainTokens,
+  network,
   // tokenReload?: any,
   retryCount?: number
 ) {
   if (!address) return;
-  const { oraichainTokens, network } = await oraidexCommonLoad();
   // get all cw20 token contract
   let cw20Tokens = oraichainTokens.filter((t) => t.contractAddress);
 
@@ -336,7 +390,14 @@ async function loadCw20Balance(
     if (retry >= EVM_BALANCE_RETRY_COUNT)
       console.error(`Cannot query EVM balance with error: ${err}`);
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    return loadCw20Balance(universalSwapStore, address, cwStargate, retry);
+    return loadCw20Balance(
+      universalSwapStore,
+      address,
+      cwStargate,
+      oraichainTokens,
+      network,
+      retry
+    );
   }
 }
 
@@ -396,14 +457,13 @@ async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {
 async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
+  evmTokens: any,
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>,
   multicallCustomContractAddress?: string,
   retryCount?: number
 ): Promise<[string, string][]> {
   try {
-    const { evmTokens } = await oraidexCommonLoad();
-
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {
       let result;
@@ -472,6 +532,7 @@ async function loadEvmEntries(
     return loadEvmEntries(
       address,
       chain,
+      evmTokens,
       tokenReload,
       customEvmTokens,
       multicallCustomContractAddress,
@@ -485,6 +546,7 @@ async function loadEvmAmounts(
   evmAddress: string,
   chains: CustomChainInfo[],
   isTronAddress: boolean,
+  evmTokens,
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>
 ) {
@@ -493,7 +555,13 @@ async function loadEvmAmounts(
     flatten(
       await Promise.all(
         chains.map((chain) =>
-          loadEvmEntries(evmAddress, chain, tokenReload, customEvmTokens)
+          loadEvmEntries(
+            evmAddress,
+            chain,
+            evmTokens,
+            tokenReload,
+            customEvmTokens
+          )
         )
       )
     )

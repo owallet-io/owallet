@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  NetworkChainId,
   TokenItemType,
-  network,
-  oraichainTokens,
   toDisplay,
   toAmount,
   BigDecimal,
@@ -34,8 +31,9 @@ export async function fetchFeeConfig(client): Promise<ConfigResponse> {
 export function useTokenFee(
   remoteTokenDenom: string,
   client: SigningCosmWasmClient,
-  fromChainId?: NetworkChainId,
-  toChainId?: NetworkChainId
+
+  fromChainId?: string,
+  toChainId?: string
 ) {
   const [bridgeFee, setBridgeFee] = useState(0);
 
@@ -82,7 +80,10 @@ export function useTokenFee(
 export const useRelayerFeeToken = (
   originalFromToken: TokenItemType,
   originalToToken: TokenItemType,
-  client: SigningCosmWasmClient
+  client: SigningCosmWasmClient,
+  network,
+  oraichainTokens,
+  flattenTokens: TokenItemType[]
 ) => {
   const [relayerFeeInOrai, setRelayerFeeInOrai] = useState(0);
   const [relayerFee, setRelayerFeeAmount] = useState(0);
@@ -99,6 +100,8 @@ export const useRelayerFeeToken = (
           (token) => token.coinGeckoId === "oraichain-token"
         );
         const data = await UniversalSwapHelper.handleSimulateSwap({
+          flattenTokens,
+          oraichainTokens,
           originalFromInfo: oraiToken,
           originalToInfo: originalToToken,
           originalAmount: relayerFeeInOrai,
