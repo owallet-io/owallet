@@ -616,8 +616,6 @@ export const getTokenInfos = ({
 }) => {
   const dataTokens = flattenTokens
     .reduce((result, token) => {
-      console.log("tokens", tokens);
-
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
       if (token.bridgeTo || token.contractAddress) {
         const isValidNetwork =

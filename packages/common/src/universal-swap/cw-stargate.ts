@@ -1,6 +1,5 @@
 import * as cosmwasm from "@cosmjs/cosmwasm-stargate";
 import { GasPrice } from "@cosmjs/stargate";
-import { OraidexCommon } from "@oraichain/oraidex-common";
 export class CWStargate {
   static async init(
     account: any,

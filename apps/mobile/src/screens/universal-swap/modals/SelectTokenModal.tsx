@@ -68,8 +68,6 @@ export const SelectTokenModal: FunctionComponent<{
 
     const prices = appInitStore.getInitApp.prices;
 
-    console.log("data", data);
-
     const onFilter = (key, chain) => {
       if (key && chain && key !== "" && chain !== "") {
         const tmpData = [];

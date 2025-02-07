@@ -4,20 +4,12 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import {
-  CustomChainInfo,
-  ERC20__factory,
-  OraidexCommon,
-} from "@oraichain/oraidex-common";
+import { CustomChainInfo, ERC20__factory } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
 import { tronToEthAddress } from "@oraichain/oraidex-common";
 
-import {
-  ChainIdEnum,
-  isEvmNetworkNativeSwapSupported,
-  oraidexCommonLoad,
-} from "@owallet/common";
+import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
 import { uniqBy } from "lodash";
 // import axios from 'axios';
@@ -35,6 +27,15 @@ import { uniqBy } from "lodash";
 
 const EVM_BALANCE_RETRY_COUNT = 2;
 // const COSMOS_BALANCE_RETRY_COUNT = 4;
+
+const flattenObject = (array) => {
+  return array.reduce((acc, obj) => {
+    if (obj && typeof obj === "object") {
+      return { ...acc, ...obj };
+    }
+    return acc; // Skip null or invalid entries
+  }, {});
+};
 
 export type CWStargateType = {
   account: any;
@@ -356,7 +357,8 @@ async function loadCw20Balance(
   const client = await CWStargate.init(
     cwStargate.account,
     cwStargate.chainId,
-    cwStargate.rpc
+    cwStargate.rpc,
+    network
   );
 
   try {
@@ -464,9 +466,8 @@ async function loadEvmEntries(
   customEvmTokens?: Array<any>,
   multicallCustomContractAddress?: string,
   retryCount?: number
-): Promise<[string, string][]> {
-  if (!address) return;
-  if (address.startsWith("oraie") || address.startsWith("oraibtc")) return;
+  // ): Promise<[string, string][]> {
+): Promise<Object> {
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {
@@ -526,7 +527,10 @@ async function loadEvmEntries(
     });
     if (nativeEvmToken)
       entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
-    return entries;
+
+    console.log("entries 2", entries, Object.fromEntries(entries));
+
+    return Object.fromEntries(entries);
   } catch (error) {
     console.log("error querying EVM balance: ", error);
     let retry = retryCount ? retryCount + 1 : 1;
@@ -556,9 +560,8 @@ async function loadEvmAmounts(
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>
 ) {
-  //@ts-ignore
-  const amountDetails = Object.fromEntries(
-    flatten(
+  try {
+    const amountDetails = flatten(
       await Promise.all(
         chains.map((chain) =>
           loadEvmEntries(
@@ -570,18 +573,24 @@ async function loadEvmAmounts(
           )
         )
       )
-    )
-  );
+    );
 
-  if (!isTronAddress) {
-    Object.keys(amountDetails).forEach(function (key) {
-      if (key.startsWith("trx")) {
-        delete amountDetails[key];
-      }
-    });
+    const tokens = flattenObject(amountDetails);
+
+    console.log("amountDetails", evmAddress, flattenObject(amountDetails));
+
+    if (!isTronAddress) {
+      Object.keys(tokens).forEach(function (key) {
+        if (key.startsWith("trx")) {
+          delete tokens[key];
+        }
+      });
+    }
+
+    universalSwapStore.updateAmounts(tokens);
+  } catch (error) {
+    console.log("error on loadEvmAmounts: ", error);
   }
-
-  universalSwapStore.updateAmounts(amountDetails);
 }
 
 // export async function loadKawaiiSubnetAmount(universalSwapStore: any, injAddress: string, tokenReload?: any) {

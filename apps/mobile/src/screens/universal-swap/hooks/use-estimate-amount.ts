@@ -154,7 +154,7 @@ const useEstimateAmount = (
     data: [fromTokenInfoData, toTokenInfoData],
   } = useQuery({
     queryKey: ["token-infos", fromToken, toToken],
-    queryFn: () => fetchTokenInfos([fromToken, toToken], client),
+    queryFn: () => fetchTokenInfos([fromToken, toToken], client, network),
     initialData: [],
   });
 
@@ -182,7 +182,6 @@ const useEstimateAmount = (
         },
         routerConfig: getRouterConfig(simulateOption),
       });
-      console.log("data getSimulateSwap", data);
 
       setAmountLoading(false);
       setImpactWarning(0);
@@ -260,7 +259,6 @@ const useEstimateAmount = (
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      console.log("data111", data);
 
       const defaultRouterSwap = { amount: "0", displayAmount: 0, routes: [] };
       const routersSwapData =

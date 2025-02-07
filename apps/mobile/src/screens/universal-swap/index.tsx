@@ -206,7 +206,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   //   }
   // }, [appInitStore.getInitApp.wallet]);
 
-  const client = useClient(accountOrai, oraichainNetwork);
+  const client = useClient(accountOrai, oraichainNetwork, network);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -312,6 +312,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const tokens = [otherChainTokens, oraichainTokens];
       const flattenTokens = flatten(tokens);
 
+      console.log("metamaskAddress", eth);
       loadTokenParams = {
         ...loadTokenParams,
         oraiAddress: orai ?? accountOrai.bech32Address,
