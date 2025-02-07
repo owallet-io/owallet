@@ -70,7 +70,7 @@ async function loadNativeBalance(
   retryCount?: number
 ) {
   if (!address) return;
-
+  if (address.startsWith("oraie") || address.startsWith("oraibtc")) return;
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     let amountAll = await client.getAllBalances(address);
@@ -465,6 +465,8 @@ async function loadEvmEntries(
   multicallCustomContractAddress?: string,
   retryCount?: number
 ): Promise<[string, string][]> {
+  if (!address) return;
+  if (address.startsWith("oraie") || address.startsWith("oraibtc")) return;
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {

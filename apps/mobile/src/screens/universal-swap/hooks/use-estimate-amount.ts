@@ -158,35 +158,39 @@ const useEstimateAmount = (
     initialData: [],
   });
 
-  const getRouterClient = () =>
-    new OraiswapRouterQueryClient(client, network.router);
+  const getRouterClient = () => {
+    if (client) {
+      return new OraiswapRouterQueryClient(client, network.router);
+    }
+  };
 
   const getSimulateSwap = async (initAmount = fromAmountToken) => {
     setAmountLoading(true);
-    if (client) {
-      const routerClient = getRouterClient();
 
-      try {
-        const data = await UniversalSwapHelper.handleSimulateSwap({
-          flattenTokens,
-          oraichainTokens,
-          originalFromInfo: originalFromToken,
-          originalToInfo: originalToToken,
-          originalAmount: initAmount,
-          routerClient,
-          routerOption: {
-            useAlphaIbcWasm: simulateOption?.useAlphaIbcWasm,
-            useIbcWasm: simulateOption?.useIbcWasm,
-          },
-          routerConfig: getRouterConfig(simulateOption),
-        });
-        setAmountLoading(false);
-        setImpactWarning(0);
-        return data;
-      } catch (err) {
-        console.error("Error in getSimulateSwap:", err);
-        setAmountLoading(false);
-      }
+    const routerClient = getRouterClient();
+
+    try {
+      const data = await UniversalSwapHelper.handleSimulateSwap({
+        flattenTokens,
+        oraichainTokens,
+        originalFromInfo: originalFromToken,
+        originalToInfo: originalToToken,
+        originalAmount: initAmount,
+        routerClient,
+        routerOption: {
+          useAlphaIbcWasm: simulateOption?.useAlphaIbcWasm,
+          useIbcWasm: simulateOption?.useIbcWasm,
+        },
+        routerConfig: getRouterConfig(simulateOption),
+      });
+      console.log("data getSimulateSwap", data);
+
+      setAmountLoading(false);
+      setImpactWarning(0);
+      return data;
+    } catch (err) {
+      console.error("Error in getSimulateSwap:", err);
+      setAmountLoading(false);
     }
   };
 
@@ -250,7 +254,6 @@ const useEstimateAmount = (
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
-    console.log("data √ß", data);
 
     setRatio(data);
   };
@@ -345,7 +348,7 @@ const useEstimateAmount = (
 
   useEffect(() => {
     estimateAverageRatio();
-  }, []);
+  }, [client]);
 
   useEffect(() => {
     if (Number(fromAmountToken) <= 0) {
