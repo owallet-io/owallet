@@ -75,7 +75,6 @@ import { flatten, isEmpty } from "lodash";
 import { tracking } from "@src/utils/tracking";
 import { AFFILIATE_ADDRESS } from "@src/common/constants";
 import { SlippageConfirmModal } from "./modals/SlippageConfirmModal";
-import { useFilterToken } from "./hooks/use-filter-token";
 import { Networks } from "@oraichain/ethereum-multicall";
 import { BTC_CONTRACT, TokenItemType } from "@oraichain/oraidex-common";
 import {

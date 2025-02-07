@@ -2,11 +2,11 @@ import { JsonRpcProvider, JsonRpcSigner } from "@ethersproject/providers";
 import {
   CosmosWallet,
   EvmWallet,
-  NetworkChainId,
   EvmResponse,
-  Networks,
   ethToTronAddress,
 } from "@oraichain/oraidex-common";
+import { Networks } from "@oraichain/ethereum-multicall";
+
 import { OfflineSigner } from "@cosmjs/proto-signing";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import {
@@ -28,7 +28,7 @@ export class SwapCosmosWallet extends CosmosWallet {
     this.owallet = window.owallet;
   }
 
-  async getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
+  async getKeplrAddr(chainId?: string | undefined): Promise<string> {
     try {
       const key = await this.owallet.getKey(chainId);
       return key?.bech32Address;
@@ -37,6 +37,7 @@ export class SwapCosmosWallet extends CosmosWallet {
     }
   }
 
+  //@ts-ignore
   async createCosmosSigner(chainId: string): Promise<OfflineSigner> {
     if (!this.owallet) {
       throw new Error(
