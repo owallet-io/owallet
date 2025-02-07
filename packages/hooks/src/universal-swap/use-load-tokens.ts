@@ -385,10 +385,12 @@ async function loadCw20Balance(
 
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
-    console.log("error querying EVM balance: ", err);
+    console.log("error querying loadCw20Balance: ", err);
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
-      console.error(`Cannot query EVM balance with error: ${err}`);
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
+      console.error(`Cannot query loadCw20Balance balance with error: ${err}`);
+      return;
+    }
     await new Promise((resolve) => setTimeout(resolve, 2500));
     return loadCw20Balance(
       universalSwapStore,
@@ -526,8 +528,10 @@ async function loadEvmEntries(
   } catch (error) {
     console.log("error querying EVM balance: ", error);
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
       console.error(`Cannot query EVM balance with error: ${error}`);
+      return;
+    }
     await new Promise((resolve) => setTimeout(resolve, 5000));
     return loadEvmEntries(
       address,

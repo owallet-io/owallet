@@ -221,7 +221,6 @@ const useEstimateAmount = (
   }
 
   const calculateMinimumReceive = (
-    data,
     fromAmountToken,
     ratio,
     fromTokenInfoData,
@@ -251,6 +250,8 @@ const useEstimateAmount = (
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
+    console.log("data √ß", data);
+
     setRatio(data);
   };
 
@@ -283,7 +284,6 @@ const useEstimateAmount = (
       setRoutersSwapData(routersSwapData);
 
       const minimumReceive = calculateMinimumReceive(
-        data,
         fromAmountToken,
         ratio,
         fromTokenInfoData,
