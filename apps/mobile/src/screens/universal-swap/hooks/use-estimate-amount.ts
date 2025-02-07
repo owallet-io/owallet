@@ -166,7 +166,6 @@ const useEstimateAmount = (
 
   const getSimulateSwap = async (initAmount = fromAmountToken) => {
     setAmountLoading(true);
-
     const routerClient = getRouterClient();
 
     try {
@@ -254,7 +253,6 @@ const useEstimateAmount = (
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
-
     setRatio(data);
   };
 
@@ -262,6 +260,7 @@ const useEstimateAmount = (
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
+      console.log("data111", data);
 
       const defaultRouterSwap = { amount: "0", displayAmount: 0, routes: [] };
       const routersSwapData =
@@ -338,17 +337,18 @@ const useEstimateAmount = (
 
   useEffect(() => {
     setMininumReceive(0);
-    if (fromAmountToken > 0 && isAvgSimulate.status) {
+
+    if (fromAmountToken > 0) {
       setSwapAmount([fromAmountToken, 0]);
       estimateSwapAmount();
     } else {
       setSwapAmount([0, 0]);
     }
-  }, [fromAmountToken, isAvgSimulate.status]);
+  }, [fromAmountToken]);
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [client]);
+  }, []);
 
   useEffect(() => {
     if (Number(fromAmountToken) <= 0) {

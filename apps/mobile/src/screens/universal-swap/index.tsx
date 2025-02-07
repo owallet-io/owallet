@@ -441,7 +441,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     estimateAverageRatio,
     relayerFeeAmount,
     relayerFeeToken,
-    impactWarning,
     routersSwapData,
     simulateData,
   } = useEstimateAmount(
@@ -916,7 +915,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             setPriceSettingModal(false);
           }}
           currentSlippage={userSlippage}
-          impactWarning={impactWarning}
+          impactWarning={impact}
           routersSwapData={routersSwapData}
           fromAmountToken={fromAmountToken}
           minimumReceive={
@@ -1023,7 +1022,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
           isOpen={slippageModal}
           //@ts-ignore
-          impactWarning={impactWarning}
+          impactWarning={impact}
           handleConfirm={() => handleSubmit()}
         />
       </>
@@ -1193,7 +1192,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           disabled={amountLoading || swapLoading}
           loading={swapLoading}
           onPress={() => {
-            if (impactWarning > 5) {
+            if (impact > 5) {
               setSlippageModal(true);
               return;
             } else {
