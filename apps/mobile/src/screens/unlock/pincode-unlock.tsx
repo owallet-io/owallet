@@ -41,6 +41,7 @@ import { SCREENS } from "@src/common/constants";
 import { KeychainStore } from "@src/stores/keychain";
 import { KeyRingStore } from "@owallet/stores-core";
 import { ChainIdEnum, fetchRetry } from "@owallet/common";
+import { OraidexCommon } from "@oraichain/oraidex-common";
 
 export const useAutoBiomtric = (
   keychainStore: KeychainStore,
@@ -350,6 +351,19 @@ export const PincodeUnlockScreen: FunctionComponent = observer(() => {
     return () => {
       subscription.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    const getOraidexCommon = async () => {
+      try {
+        const oraidexCommon = await OraidexCommon.load();
+        console.log("oraidexCommon at unlock", oraidexCommon);
+        appInitStore.updateOraidexCommon(oraidexCommon);
+      } catch (err) {
+        console.log("error on getOraidexCommon", err);
+      }
+    };
+    getOraidexCommon();
   }, []);
 
   useEffect(() => {

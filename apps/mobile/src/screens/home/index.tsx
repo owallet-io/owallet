@@ -22,13 +22,11 @@ import OWIcon from "@components/ow-icon/ow-icon";
 import { imagesNoel } from "@assets/images/noels";
 import OWText from "@components/text/ow-text";
 import OWButtonIcon from "@components/button/ow-button-icon";
-import { navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
-import { CommonActions, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { delay } from "@utils/helper";
 import { fetchRetry } from "@owallet/common";
 import { AppCurrency } from "@owallet/types";
-import { OraidexCommon } from "@oraichain/oraidex-common";
 
 export const useIsNotReady = () => {
   const { chainStore, queriesStore } = useStore();
@@ -110,19 +108,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     })();
   }, [chainStore.enabledChainIdentifiers, keyRingStore.selectedKeyInfo.id]);
 
-  useEffect(() => {
-    const getOraidexCommon = async () => {
-      try {
-        const oraidexCommon = await OraidexCommon.load();
-        console.log("oraidexCommon at home", oraidexCommon);
-        appInitStore.updateOraidexCommon(oraidexCommon);
-      } catch (err) {
-        console.log("error on getOraidexCommon", err);
-      }
-    };
-    getOraidexCommon();
-  }, []);
-
   // const getFCMToken = async () => {
   //   try {
   //     // Request permission for notifications (iOS)
@@ -168,6 +153,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         console.log("Notification opened from background:", remoteMessage);
         // Handle navigation or other actions here
         if (remoteMessage.data?.url) {
+          //@ts-ignore
           navigation.navigate(SCREENS.STACK.MainTab, {
             screen: SCREENS.TABS.Browser,
             params: {
@@ -187,6 +173,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         console.log("Notification opened from closed state:", remoteMessage);
         // Handle navigation or other actions here
         if (remoteMessage.data?.url) {
+          //@ts-ignore
           navigation.navigate(SCREENS.STACK.MainTab, {
             screen: SCREENS.TABS.Browser,
             params: {
