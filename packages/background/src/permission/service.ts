@@ -230,21 +230,30 @@ export class PermissionService {
       options,
     };
 
-    await this.interactionService.waitApproveV2(
-      env,
-      "/permission",
-      INTERACTION_TYPE_PERMISSION,
-      permissionData,
-      (newChainId?: string) => {
-        if (options?.isForEVM) {
-          const chainId = newChainId ?? chainIds[0];
-          this.addPermission([chainId], type, origins);
-          this.setCurrentChainIdForEVM(origins, chainId);
-        } else {
-          this.addPermission(chainIds, type, origins);
-        }
-      }
-    );
+    if (options?.isForEVM) {
+      const chainId = chainIds[0];
+
+      this.addPermission([chainId], type, origins);
+      this.setCurrentChainIdForEVM(origins, chainId);
+    } else {
+      this.addPermission(chainIds, type, origins);
+    }
+
+    // await this.interactionService.waitApproveV2(
+    //   env,
+    //   "/permission",
+    //   INTERACTION_TYPE_PERMISSION,
+    //   permissionData,
+    //   (newChainId?: string) => {
+    //     if (options?.isForEVM) {
+    //       const chainId = newChainId ?? chainIds[0];
+    //       this.addPermission([chainId], type, origins);
+    //       this.setCurrentChainIdForEVM(origins, chainId);
+    //     } else {
+    //       this.addPermission(chainIds, type, origins);
+    //     }
+    //   }
+    // );
   }
 
   async grantBasicAccessPermission(
@@ -621,12 +630,6 @@ export class PermissionService {
 
   getCurrentChainIdForEVM(origin: string): string | undefined {
     const currentChainId = this.currentChainIdForEVMByOriginMap.get(origin);
-    console.log(
-      "getCurrentChainIdForEVM",
-      currentChainId,
-      origin,
-      this.hasPermission(currentChainId, getBasicAccessPermissionType(), origin)
-    );
 
     if (
       currentChainId &&
