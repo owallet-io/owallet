@@ -192,10 +192,6 @@ export const FinalizeKeyScene: FunctionComponent<{
         }[] = [];
 
         promises = [];
-        console.log(
-          "chainStore.modularChainInfos",
-          chainStore.modularChainInfos
-        );
 
         for (const modularChainInfo of chainStore.modularChainInfos) {
           if ("cosmos" in modularChainInfo) {

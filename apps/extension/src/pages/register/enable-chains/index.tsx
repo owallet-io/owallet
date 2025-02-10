@@ -851,7 +851,10 @@ export const EnableChainsScene: FunctionComponent<{
                   isFresh={isFresh ?? false}
                   onClick={() => {
                     if (isForcedSelected) {
-                      return;
+                      setEnabledChainIdentifiers([
+                        ...enabledChainIdentifiers,
+                        chainIdentifier,
+                      ]);
                     }
                     if (enabledChainIdentifierMap.get(chainIdentifier)) {
                       setEnabledChainIdentifiers(

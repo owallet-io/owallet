@@ -61,10 +61,26 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       })
     );
 
-    // Should be enabled at least one chain.
+    // Should be enabled at least one chain. Maybe bitcoin and solana should be enabled by default?
+
+    const solanaChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("solana")
+    );
+
+    const bitcoinChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("bitcoin")
+    );
+
     this._enabledChainIdentifiers = [
       ChainIdHelper.parse(embedChainInfos[0].chainId).identifier,
+      ChainIdHelper.parse(solanaChainInfo.chainId).identifier,
+      ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier,
     ];
+
+    console.log(
+      "this._enabledChainIdentifiers ",
+      this._enabledChainIdentifiers
+    );
 
     makeObservable(this);
 
@@ -98,10 +114,12 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     if (this._enabledChainIdentifiers.length === 0) {
       // Should be enabled at least one chain.
       const map = new Map<string, true>();
+
       map.set(
         ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier,
         true
       );
+
       return map;
     }
 
@@ -109,6 +127,17 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     for (const chainIdentifier of this._enabledChainIdentifiers) {
       map.set(chainIdentifier, true);
     }
+    const solanaChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("solana")
+    );
+
+    const bitcoinChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("bitcoin")
+    );
+
+    map.set(ChainIdHelper.parse(solanaChainInfo.chainId).identifier, true);
+
+    map.set(ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier, true);
     return map;
   }
 
