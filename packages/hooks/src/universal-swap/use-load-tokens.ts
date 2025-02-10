@@ -528,8 +528,6 @@ async function loadEvmEntries(
     if (nativeEvmToken)
       entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
 
-    console.log("entries 2", entries, Object.fromEntries(entries));
-
     return Object.fromEntries(entries);
   } catch (error) {
     console.log("error querying EVM balance: ", error);
@@ -576,8 +574,6 @@ async function loadEvmAmounts(
     );
 
     const tokens = flattenObject(amountDetails);
-
-    console.log("amountDetails", evmAddress, flattenObject(amountDetails));
 
     if (!isTronAddress) {
       Object.keys(tokens).forEach(function (key) {

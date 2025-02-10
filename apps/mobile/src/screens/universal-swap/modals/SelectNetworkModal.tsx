@@ -130,6 +130,8 @@ export const SelectNetworkModal: FunctionComponent<{
       }
       let chainIcon = chainIcons.find((c) => c.chainId === formatedChainID);
 
+      console.log("chainIcon", chainIcon);
+
       // Hardcode for Oasis because oraidex-common does not have icon yet
       if (item.chainName.toLowerCase().includes("oasis")) {
         chainIcon = {
@@ -142,6 +144,13 @@ export const SelectNetworkModal: FunctionComponent<{
         chainIcon = {
           chainId: item.chainId,
           Icon: "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        };
+      }
+
+      if (item.chainName.toLowerCase().includes("solana")) {
+        chainIcon = {
+          chainId: item.chainId,
+          Icon: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
         };
       }
 
