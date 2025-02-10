@@ -56,7 +56,9 @@ jobs:
         run: yarn build:codepush
 
       - name: Build @owallet/hooks
-        working-directory: packages/hooks
+        run: yarn build
+
+      - name: Build @owallet/hooks-internal
         run: yarn build
 
       - name: Build provider
