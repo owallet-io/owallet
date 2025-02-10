@@ -7,7 +7,7 @@ import {
   runInAction,
 } from "mobx";
 
-import { ChainInfo, ModularChainInfo } from "@owallet/types";
+import { ChainIdEVM, ChainInfo, ModularChainInfo } from "@owallet/types";
 import { ChainStore as BaseChainStore, IChainInfoImpl } from "@owallet/stores";
 import { KeyRingStore } from "@owallet/stores-core";
 
@@ -77,11 +77,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier,
     ];
 
-    console.log(
-      "this._enabledChainIdentifiers ",
-      this._enabledChainIdentifiers
-    );
-
     makeObservable(this);
 
     this.init();
@@ -131,12 +126,16 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
       e.chainId.includes("solana")
     );
 
+    const tronChainInfo = this.embedChainInfos.find(
+      (e) => e.chainId === ChainIdEVM.TRON
+    );
+
     const bitcoinChainInfo = this.embedChainInfos.find((e) =>
       e.chainId.includes("bitcoin")
     );
 
     map.set(ChainIdHelper.parse(solanaChainInfo.chainId).identifier, true);
-
+    map.set(ChainIdHelper.parse(tronChainInfo.chainId).identifier, true);
     map.set(ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier, true);
     return map;
   }
