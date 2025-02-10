@@ -1,11 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import {
-  _keyExtract,
-  getTokenInfos,
-  maskedNumber,
-} from "../../../utils/helper";
+import { _keyExtract, getTokenInfos } from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -129,8 +125,6 @@ export const SelectNetworkModal: FunctionComponent<{
         selected = true;
       }
       let chainIcon = chainIcons.find((c) => c.chainId === formatedChainID);
-
-      console.log("chainIcon", chainIcon);
 
       // Hardcode for Oasis because oraidex-common does not have icon yet
       if (item.chainName.toLowerCase().includes("oasis")) {

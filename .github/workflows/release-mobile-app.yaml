@@ -155,10 +155,11 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
-        run: yarn build:libs
-      #      - name: Build provider
-      #        working-directory: apps/mobile
-      #        run: yarn build:provider
+        run: yarn build:codepush
+
+      - name: Build @owallet/hooks
+        working-directory: packages/hooks
+        run: yarn build
 
       - name: Bundle mobile
         working-directory: apps/mobile
