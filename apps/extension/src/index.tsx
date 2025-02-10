@@ -317,8 +317,8 @@ const RoutesAfterReady: FunctionComponent = observer(() => {
         keyInfo.id,
         ...chainStore.chainInfos
           .filter((chainInfo) => chainInfo.chainId.startsWith("eip155:"))
-          .filter((chainInfo) => chainInfo.chainId.includes("solana"))
-          .filter((chainInfo) => chainInfo.chainId.includes("bitcoin"))
+          .filter((chainInfo) => chainInfo.chainId.startsWith("solana"))
+          .filter((chainInfo) => chainInfo.chainId.startsWith("bitcoin"))
           .map((chainInfo) => chainInfo.chainId)
       );
     }
