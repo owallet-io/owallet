@@ -1260,11 +1260,11 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   };
 
   protected _initProviderState = async () => {
-    const descriptor = Object.getOwnPropertyDescriptor(window, "keplr");
+    // const descriptor = Object.getOwnPropertyDescriptor(window, "keplr");
 
-    if (descriptor) {
-      return;
-    }
+    // if (descriptor) {
+    //   return;
+    // }
 
     const initialProviderState = await this._requestMethod("request", {
       method: "keplr_initProviderState",
