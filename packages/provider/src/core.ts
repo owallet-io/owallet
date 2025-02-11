@@ -118,7 +118,6 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
     });
   }
 
-  // TODO: 웹페이지에서도 필요할수도 있을 것 같으니 나중에 owallet의 API로 추가해준다.
   async isEnabled(chainIds: string | string[]): Promise<boolean> {
     if (typeof chainIds === "string") {
       chainIds = [chainIds];
@@ -1299,7 +1298,9 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (method !== "owallet_initProviderState") {
+    console.log("method request", method);
+
+    if (method !== "keplr_initProviderState") {
       await this.protectedEnableAccess();
     }
 
@@ -2209,7 +2210,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (method !== "owallet_initProviderState") {
+    if (method !== "keplr_initProviderState") {
       await this.protectedEnableAccess();
     }
 

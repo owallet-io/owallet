@@ -230,30 +230,30 @@ export class PermissionService {
       options,
     };
 
-    if (options?.isForEVM) {
-      const chainId = chainIds[0];
+    // if (options?.isForEVM) {
+    //   const chainId = chainIds[0];
 
-      this.addPermission([chainId], type, origins);
-      this.setCurrentChainIdForEVM(origins, chainId);
-    } else {
-      this.addPermission(chainIds, type, origins);
-    }
+    //   this.addPermission([chainId], type, origins);
+    //   this.setCurrentChainIdForEVM(origins, chainId);
+    // } else {
+    //   this.addPermission(chainIds, type, origins);
+    // }
 
-    // await this.interactionService.waitApproveV2(
-    //   env,
-    //   "/permission",
-    //   INTERACTION_TYPE_PERMISSION,
-    //   permissionData,
-    //   (newChainId?: string) => {
-    //     if (options?.isForEVM) {
-    //       const chainId = newChainId ?? chainIds[0];
-    //       this.addPermission([chainId], type, origins);
-    //       this.setCurrentChainIdForEVM(origins, chainId);
-    //     } else {
-    //       this.addPermission(chainIds, type, origins);
-    //     }
-    //   }
-    // );
+    await this.interactionService.waitApproveV2(
+      env,
+      "/permission",
+      INTERACTION_TYPE_PERMISSION,
+      permissionData,
+      (newChainId?: string) => {
+        if (options?.isForEVM) {
+          const chainId = newChainId ?? chainIds[0];
+          this.addPermission([chainId], type, origins);
+          this.setCurrentChainIdForEVM(origins, chainId);
+        } else {
+          this.addPermission(chainIds, type, origins);
+        }
+      }
+    );
   }
 
   async grantBasicAccessPermission(

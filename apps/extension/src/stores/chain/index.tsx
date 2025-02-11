@@ -291,6 +291,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
     if (!this.keyRingStore.selectedKeyInfo) {
       return;
     }
+    console.log("enableChainInfoInUI");
 
     const msg = new EnableChainsMsg(
       this.keyRingStore.selectedKeyInfo.id,
