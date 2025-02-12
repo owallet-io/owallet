@@ -45,7 +45,7 @@ export class MessageRenderRegistry implements IMessageRenderRegistry {
         }
       }
     } catch (e) {
-      console.log(e);
+      console.log("error on render", e);
       // Fallback to unknown message
     }
 

@@ -13,7 +13,7 @@ export class InExtensionMessageRequester implements MessageRequester {
     msg: M
   ): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
-    console.log("msg InExtensionMessageRequester", msg);
+    // console.log("msg InExtensionMessageRequester", msg);
 
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

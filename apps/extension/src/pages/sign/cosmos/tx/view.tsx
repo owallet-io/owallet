@@ -49,6 +49,7 @@ import { ApproveIcon, CancelIcon } from "../../../../components/button";
 import Color from "color";
 import styled from "styled-components";
 import { AddressChip } from "pages/main/components/address-chip";
+import { TxRaw } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 
 const Styles = {
   Container: styled.div<{
@@ -185,6 +186,28 @@ export const CosmosTxView: FunctionComponent<{
     memoConfig,
     signDocHelper,
   ]);
+
+  const simulateTx = async () => {
+    const data = interactionData;
+    // const unsignedTx = TxRaw.encode({
+    //   //@ts-ignore
+    //   bodyBytes: data.data.signDocWrapper.signDoc.bodyBytes,
+    //   //@ts-ignore
+    //   authInfoBytes: data.data.signDocWrapper.signDoc.authInfoBytes,
+    //   // Because of the validation of tx itself, the signature must exist.
+    //   // However, since they do not actually verify the signature, it is okay to use any value.
+    //   signatures: [new Uint8Array(64)],
+    // });
+    console.log(
+      "sign direct,unsignedTx 2",
+      data
+      // Buffer.from(unsignedTx.finish()).toString("base64")
+    );
+  };
+
+  useEffect(() => {
+    simulateTx();
+  }, []);
 
   const msgs = signDocHelper.signDocWrapper
     ? signDocHelper.signDocWrapper.mode === "amino"
@@ -624,6 +647,8 @@ export const CosmosTxView: FunctionComponent<{
                       icon={r.icon}
                       title={r.title}
                       content={r.content}
+                      msg={msg}
+                      senderConfig={senderConfig}
                     />
                   );
                 })}

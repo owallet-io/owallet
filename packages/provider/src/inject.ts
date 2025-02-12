@@ -63,11 +63,13 @@ import {
 } from "@solana/wallet-standard-features";
 // import {isReactNative, isWeb} from "@owallet/common";
 import { initialize } from "@oraichain/owallet-wallet-standard";
+import { NAMESPACE } from "./constants";
 
 // initialize(owallet.solana as any);
 export interface ProxyRequest {
-  type: "proxy-request";
+  type: "proxy-request" | "owallet-proxy-request";
   id: string;
+  namespace?: string;
   method: keyof (OWallet & OWalletCoreTypes);
   args: any[];
   ethereumProviderMethod?: keyof IEthereumProvider;
@@ -81,6 +83,7 @@ export interface ProxyRequestResponse {
   type: "proxy-request-response";
   id: string;
   result: Result | undefined;
+  namespace?: string;
 }
 
 function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
@@ -199,7 +202,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         return;
       }
 
-      console.log("message.method", message.method);
+      console.log("message", message);
 
       try {
         if (!message.id) {
@@ -515,6 +518,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             return: JSONUint8Array.wrap(result),
@@ -525,6 +529,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             error:
@@ -562,6 +567,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
     const proxyMessage: ProxyRequest = {
       type: "proxy-request",
+      namespace: NAMESPACE,
       id,
       method,
       args: JSONUint8Array.wrap(args),

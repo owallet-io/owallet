@@ -1,17 +1,30 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { Column, Columns } from "../../../../components/column";
 import { Box } from "../../../../components/box";
 import { ColorPalette } from "../../../../styles";
 import { Gutter } from "../../../../components/gutter";
 import { Body3, H5 } from "../../../../components/typography";
 import { useTheme } from "styled-components";
+import { SenderConfig } from "@owallet/hooks";
 
 export const MessageItem: FunctionComponent<{
   icon: React.ReactElement;
   title: string | React.ReactElement;
   content: string | React.ReactElement;
-}> = ({ icon, title, content }) => {
+  msg?: any;
+  senderConfig?: SenderConfig;
+}> = ({ title, content, msg, senderConfig }) => {
   const theme = useTheme();
+
+  useEffect(() => {
+    if (msg) {
+      console.log("fulfill msg ", {
+        typeUrl: msg.typeUrl,
+        value: Buffer.from(msg.value).toString("base64"),
+        sender: senderConfig.sender,
+      });
+    }
+  }, [msg]);
 
   return (
     <Box padding="1rem">
