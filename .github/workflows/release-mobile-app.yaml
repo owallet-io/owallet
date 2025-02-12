@@ -162,7 +162,7 @@ jobs:
         run: yarn build:hooks
 
       - name: Build @owallet/hooks-internal
-        working-directory: packages/hooks-internal
+        working-directory: apps/hooks-internal
         run: yarn build:hooks-internal
 
       - name: Bundle mobile
