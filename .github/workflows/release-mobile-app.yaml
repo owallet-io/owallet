@@ -159,11 +159,11 @@ jobs:
 
       - name: Build @owallet/hooks
         working-directory: packages/hooks
-        run: yarn build
+        run: yarn build:hooks
 
       - name: Build @owallet/hooks-internal
         working-directory: packages/hooks-internal
-        run: yarn build
+        run: yarn build:hooks-internal
 
       - name: Bundle mobile
         working-directory: apps/mobile
