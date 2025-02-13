@@ -34,7 +34,6 @@ import { Gutter } from "../../../../components/gutter";
 import { GuideBox } from "../../../../components/guide-box";
 import { FormattedMessage, useIntl } from "react-intl";
 import SimpleBar from "simplebar-react";
-import { KeyRingService } from "@owallet/background";
 import { useTheme } from "styled-components";
 import { defaultProtoCodec } from "@owallet/cosmos";
 import { MsgGrant } from "@owallet/proto-types/cosmos/authz/v1beta1/tx";
