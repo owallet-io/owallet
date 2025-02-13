@@ -54,6 +54,7 @@ const Styles = {
   Container: styled.div<{
     forChange: boolean | undefined;
     isError: boolean;
+    padding?: string;
     disabled?: boolean;
     isNotReady?: boolean;
   }>`
@@ -63,8 +64,10 @@ const Styles = {
           ? ColorPalette["skeleton-layer-0"]
           : ColorPalette.white
         : ColorPalette["gray-650"]};
-    padding ${({ forChange }) =>
-      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    padding ${({ forChange, padding }) =>
+      padding ?? forChange
+        ? "0.5rem 0.25rem 0.35rem 0.75rem"
+        : "0.75rem 0.5rem"};
     border-radius: 1rem;
     
     border: ${({ isError }) =>
@@ -655,7 +658,6 @@ export const CosmosTxView: FunctionComponent<{
                   id: "components.input.memo-input.optional-placeholder",
                 })}
               />
-              <Gutter size="0.75rem" />
             </Styles.Container>
           )}
         </Box>

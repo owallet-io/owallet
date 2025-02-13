@@ -88,17 +88,8 @@ export const MessageItem: FunctionComponent<{
             >
               {title}
             </H5>
-            <Gutter size="2px" />
-            <Body3
-              color={
-                theme.mode === "light"
-                  ? ColorPalette["gray-300"]
-                  : ColorPalette["gray-200"]
-              }
-            >
-              {content}
-            </Body3>
-            {parsedMsg && (
+
+            {parsedMsg ? (
               <>
                 <Gutter size="2px" />
                 <Body3
@@ -130,6 +121,19 @@ export const MessageItem: FunctionComponent<{
                       </XAxis>
                     );
                   })}
+                </Body3>
+              </>
+            ) : (
+              <>
+                <Gutter size="2px" />
+                <Body3
+                  color={
+                    theme.mode === "light"
+                      ? ColorPalette["gray-300"]
+                      : ColorPalette["gray-200"]
+                  }
+                >
+                  {content}
                 </Body3>
               </>
             )}
