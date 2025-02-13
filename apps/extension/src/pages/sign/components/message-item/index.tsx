@@ -6,6 +6,7 @@ import { Gutter } from "../../../../components/gutter";
 import { Body3, H5 } from "../../../../components/typography";
 import { useTheme } from "styled-components";
 import { SenderConfig } from "@owallet/hooks";
+import axios from "axios";
 
 export const MessageItem: FunctionComponent<{
   icon: React.ReactElement;
@@ -14,7 +15,25 @@ export const MessageItem: FunctionComponent<{
   msg?: any;
   senderConfig?: SenderConfig;
 }> = ({ title, content, msg, senderConfig }) => {
+  const rpc = "localhost:9000/";
   const theme = useTheme();
+
+  const parseMsg = async (msg: any) => {
+    const client = axios.create({ baseURL: rpc });
+    const { data } = await client.put(
+      `multichain-parser/v1/swap-contract/swap`,
+      {
+        typeUrl: msg.typeUrl,
+        value: Buffer.from(msg.value).toString("base64"),
+        sender: senderConfig.sender,
+      },
+      {}
+    );
+    if (data) {
+      console.log("dataaa", data);
+    }
+    return data;
+  };
 
   useEffect(() => {
     if (msg) {
@@ -23,8 +42,10 @@ export const MessageItem: FunctionComponent<{
         value: Buffer.from(msg.value).toString("base64"),
         sender: senderConfig.sender,
       });
+
+      parseMsg(msg);
     }
-  }, [msg]);
+  }, []);
 
   return (
     <Box padding="1rem">

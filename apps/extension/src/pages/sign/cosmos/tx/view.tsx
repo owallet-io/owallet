@@ -187,28 +187,6 @@ export const CosmosTxView: FunctionComponent<{
     signDocHelper,
   ]);
 
-  const simulateTx = async () => {
-    const data = interactionData;
-    // const unsignedTx = TxRaw.encode({
-    //   //@ts-ignore
-    //   bodyBytes: data.data.signDocWrapper.signDoc.bodyBytes,
-    //   //@ts-ignore
-    //   authInfoBytes: data.data.signDocWrapper.signDoc.authInfoBytes,
-    //   // Because of the validation of tx itself, the signature must exist.
-    //   // However, since they do not actually verify the signature, it is okay to use any value.
-    //   signatures: [new Uint8Array(64)],
-    // });
-    console.log(
-      "sign direct,unsignedTx 2",
-      data
-      // Buffer.from(unsignedTx.finish()).toString("base64")
-    );
-  };
-
-  useEffect(() => {
-    simulateTx();
-  }, []);
-
   const msgs = signDocHelper.signDocWrapper
     ? signDocHelper.signDocWrapper.mode === "amino"
       ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
