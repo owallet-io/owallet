@@ -16,6 +16,47 @@ import { XAxis } from "components/axis";
 import { camelCaseToTitleCase, mapToDynamicAction } from "./helper";
 import { shortenWord } from "@owallet/common";
 
+export const ParsedItem: FunctionComponent<{
+  theme: any;
+  parsedMsg: any;
+}> = ({ theme, parsedMsg }) => {
+  {
+    return (
+      <>
+        <Gutter size="2px" />
+        <Body3
+          color={
+            theme.mode === "light"
+              ? ColorPalette["gray-300"]
+              : ColorPalette["gray-200"]
+          }
+        >
+          {Object.keys(parsedMsg).map((key) => {
+            return (
+              <XAxis
+                //@ts-ignore
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Subtitle3>{camelCaseToTitleCase(key)}</Subtitle3>
+                <Subtitle4>
+                  {typeof parsedMsg[key] === "object"
+                    ? shortenWord(
+                        JSON.stringify(mapToDynamicAction(parsedMsg[key]))
+                      )
+                    : shortenWord(parsedMsg[key])}
+                </Subtitle4>
+              </XAxis>
+            );
+          })}
+        </Body3>
+      </>
+    );
+  }
+};
+
 export const MessageItem: FunctionComponent<{
   icon: React.ReactElement;
   title: string | React.ReactElement;
@@ -90,39 +131,7 @@ export const MessageItem: FunctionComponent<{
             </H5>
 
             {parsedMsg ? (
-              <>
-                <Gutter size="2px" />
-                <Body3
-                  color={
-                    theme.mode === "light"
-                      ? ColorPalette["gray-300"]
-                      : ColorPalette["gray-200"]
-                  }
-                >
-                  {Object.keys(parsedMsg).map((key) => {
-                    return (
-                      <XAxis
-                        //@ts-ignore
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <Subtitle3>{camelCaseToTitleCase(key)}</Subtitle3>
-                        <Subtitle4>
-                          {typeof parsedMsg[key] === "object"
-                            ? shortenWord(
-                                JSON.stringify(
-                                  mapToDynamicAction(parsedMsg[key])
-                                )
-                              )
-                            : shortenWord(parsedMsg[key])}
-                        </Subtitle4>
-                      </XAxis>
-                    );
-                  })}
-                </Body3>
-              </>
+              <ParsedItem theme={theme} parsedMsg={parseMsg} />
             ) : (
               <>
                 <Gutter size="2px" />
