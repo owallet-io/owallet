@@ -16,6 +16,7 @@ export interface TextInputProps {
   textAlign?: string;
 
   disabled?: boolean;
+  singeLine?: boolean;
   style?: CSSProperties;
   styleInput?: CSSProperties;
   left?: React.ReactNode;

@@ -647,8 +647,9 @@ export const CosmosTxView: FunctionComponent<{
               <Gutter size="0.75rem" />
             </Styles.Container>
           ) : (
-            <Styles.Container>
+            <Styles.Container forChange={true}>
               <MemoInput
+                singeLine={true}
                 memoConfig={memoConfig}
                 placeholder={intl.formatMessage({
                   id: "components.input.memo-input.optional-placeholder",

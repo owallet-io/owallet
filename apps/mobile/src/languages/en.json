@@ -422,8 +422,7 @@
   "page.sign.ethereum.tx.send.paragraph": "Send <b>{amount}</b> from <b>{fromAddress}</b> to <b>{toAddress}</b>",
   "page.sign.ethereum.message": "Signing Message",
 
-  "page.sign.components.fee-summary.fee": "Estimated Fee",
-
+  "page.sign.components.fee-summary.fee": "Est.Fee",
   "page.sign.components.messages.agoric.provision.title": "Provision Smart Wallet",
   "page.sign.components.messages.agoric.provision.message": "Provision a smart wallet for address <b>{address}</b>",
   "page.sign.components.messages.agoric.wallet-spend-action.execute-offer": "Execute an offer with the following parameters:",
@@ -696,7 +695,7 @@
   "components.input.amount-input.amount-label": "Amount",
   "components.input.amount-input.max-button": "Max",
   "components.input.memo-input.memo-label": "Memo",
-  "components.input.fee-control.fee": "Estimated Fee: {assets}",
+  "components.input.fee-control.fee": "Est.Fee: {assets}",
   "components.input.fee-control.error.insufficient-fee": "Insufficient balance to cover the fees",
   "components.input.fee-control.modal.title": "Fee Options",
   "components.input.fee-control.modal.fee-title": "Fee tier",

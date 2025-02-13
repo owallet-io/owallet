@@ -6,14 +6,15 @@ import { Gutter } from "../../../../components/gutter";
 import {
   Body3,
   H5,
-  Subtitle1,
-  Subtitle2,
+  Subtitle3,
+  Subtitle4,
 } from "../../../../components/typography";
 import { useTheme } from "styled-components";
 import { SenderConfig } from "@owallet/hooks";
 import axios from "axios";
 import { XAxis } from "components/axis";
 import { camelCaseToTitleCase, mapToDynamicAction } from "./helper";
+import { shortenWord } from "@owallet/common";
 
 export const MessageItem: FunctionComponent<{
   icon: React.ReactElement;
@@ -47,6 +48,12 @@ export const MessageItem: FunctionComponent<{
 
   useEffect(() => {
     if (msg) {
+      console.log("full msg", {
+        typeUrl: msg.typeUrl,
+        value: Buffer.from(msg.value).toString("base64"),
+        sender: senderConfig.sender,
+      });
+
       console.log("msg", Buffer.from(msg.value).toString("base64"));
 
       parseMsg(msg);
@@ -110,12 +117,16 @@ export const MessageItem: FunctionComponent<{
                           justifyContent: "space-between",
                         }}
                       >
-                        <Subtitle1>{camelCaseToTitleCase(key)}</Subtitle1>
-                        <Subtitle2>
+                        <Subtitle3>{camelCaseToTitleCase(key)}</Subtitle3>
+                        <Subtitle4>
                           {typeof parsedMsg[key] === "object"
-                            ? JSON.stringify(mapToDynamicAction(parsedMsg[key]))
-                            : parsedMsg[key]}
-                        </Subtitle2>
+                            ? shortenWord(
+                                JSON.stringify(
+                                  mapToDynamicAction(parsedMsg[key])
+                                )
+                              )
+                            : shortenWord(parsedMsg[key])}
+                        </Subtitle4>
                       </XAxis>
                     );
                   })}

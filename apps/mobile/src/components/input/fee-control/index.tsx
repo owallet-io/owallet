@@ -227,7 +227,7 @@ export const FeeControl: FunctionComponent<{
           }}
         >
           <OWText color={colors["neutral-text-title"]} weight="600" size={16}>
-            Estimated Fee
+            Est.Fee
           </OWText>
           <TouchableOpacity
             style={{ flexDirection: "row", alignItems: "center" }}
