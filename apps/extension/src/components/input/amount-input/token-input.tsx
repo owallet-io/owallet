@@ -118,6 +118,12 @@ export const TokenAmountInput: FunctionComponent<{
                 )
               );
 
+              console.log(
+                "amountConfig.amount[0].currency",
+                amountConfig.amount[0].currency,
+                onePrice.toString()
+              );
+
               if (!onePrice) {
                 // Can't be happen
                 return;

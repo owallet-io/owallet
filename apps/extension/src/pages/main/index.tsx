@@ -123,7 +123,6 @@ export const MainPage: FunctionComponent<{
     uiConfigStore,
     keyRingStore,
     priceStore,
-    allAccountStore,
   } = useStore();
 
   const isNotReady = useIsNotReady();
