@@ -93,8 +93,6 @@ export const MessageItem: FunctionComponent<{
         sender: senderConfig.sender,
       });
 
-      console.log("msg", Buffer.from(msg.value).toString("base64"));
-
       parseMsg(msg);
     }
   }, []);

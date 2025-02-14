@@ -546,7 +546,7 @@ export const CosmosTxView: FunctionComponent<{
               </H5>
               <Box
                 style={{
-                  padding: "0.25rem 0.35rem",
+                  padding: "0.15rem 0.4rem",
                   borderRadius: "0.35rem",
                   backgroundColor: ColorPalette["purple-700"],
                   alignItems: "center",
@@ -554,13 +554,15 @@ export const CosmosTxView: FunctionComponent<{
                   marginLeft: "0.35rem",
                 }}
               >
-                <H5
+                <div
                   style={{
                     color: ColorPalette["white"],
+                    fontSize: "12px",
+                    fontWeight: "600",
                   }}
                 >
                   {msgs.length}
-                </H5>
+                </div>
               </Box>
             </XAxis>
             <Column weight={1} />
