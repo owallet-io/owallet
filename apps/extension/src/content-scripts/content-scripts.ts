@@ -33,7 +33,7 @@ Sentry.init({
   },
 });
 
-(window as any).__keplr_content_script = true;
+(window as any).__owallet_content_script = true;
 
 InjectedOWallet.startProxy(
   //@ts-ignore

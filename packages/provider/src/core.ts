@@ -1033,7 +1033,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
 
     if (
       typeof window !== "undefined" &&
-      (window as any).__keplr_content_script === true
+      (window as any).__owallet_content_script === true
     ) {
       isInContentScript = true;
     }
@@ -1066,7 +1066,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
             e.message &&
             e.message.includes("in response to a user gesture")
           ) {
-            if (!document.getElementById("__open_keplr_side_panel__")) {
+            if (!document.getElementById("__open_owallet_side_panel__")) {
               const sidePanelPing = await sendSimpleMessage<boolean>(
                 this.requester,
                 BACKGROUND_PORT,
@@ -1148,7 +1148,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               document.head.appendChild(styleElement);
 
               const button = document.createElement("div");
-              button.id = "__open_keplr_side_panel__";
+              button.id = "__open_owallet_side_panel__";
               button.style.boxSizing = "border-box";
               button.style.animation = "slide-left 0.5s forwards";
               button.style.position = "fixed";
@@ -1201,7 +1201,7 @@ export class OWallet implements IOWallet, OWalletCoreTypes {
               // button.appendChild(arrowLeftOpenWrapper);
 
               const hasAlready = document.getElementById(
-                "__open_keplr_side_panel__"
+                "__open_owallet_side_panel__"
               );
 
               if (!hasAlready) {
