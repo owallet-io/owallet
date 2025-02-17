@@ -99,7 +99,6 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
 
     transaction.signature = [transactionSign?.signature?.[0]];
 
-    console.log("transaction sig", transaction.signature);
     const receipt = await tronWeb.trx.sendRawTransaction(transaction);
 
     console.log("receipt", receipt);

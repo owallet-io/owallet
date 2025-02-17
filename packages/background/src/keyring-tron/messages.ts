@@ -146,9 +146,9 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error("chain id not set");
-    }
+    // if (!this.chainId) {
+    //   throw new Error("chain id not set");
+    // }
 
     if (!this.data) {
       throw new Error("data not set");
