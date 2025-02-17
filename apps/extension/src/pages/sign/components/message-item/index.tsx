@@ -33,13 +33,12 @@ const BridgeParsedItem: FunctionComponent<{
   }, [parsedMsg]);
 
   if (!data) return null;
-  console.log("data 2222", data);
 
   const tokenPrice = prices?.[data?.tokenInfo?.coinGeckoId];
   const feeAmount =
-    tokenPrice * toDisplay(data?.feeAmount, data?.tokenInfo.decimals);
+    tokenPrice * toDisplay(data?.feeAmount, data?.tokenInfo.decimal);
   const outValue =
-    tokenPrice * toDisplay(data?.bridgeAmount, data?.tokenInfo.decimals);
+    tokenPrice * toDisplay(data?.bridgeAmount, data?.tokenInfo.decimal);
 
   return (
     <>
@@ -67,13 +66,7 @@ const BridgeParsedItem: FunctionComponent<{
           >
             Action
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
+          <div>
             <span
               style={{
                 fontSize: 16,
@@ -132,8 +125,11 @@ const BridgeParsedItem: FunctionComponent<{
                     : ColorPalette["green-350"],
               }}
             >
-              +{toDisplay(data.bridgeAmount, data.tokenInfo.decimals)}{" "}
-              {data.tokenInfo.denom.toUpperCase()}
+              +
+              {data.tokenInfo
+                ? toDisplay(data.bridgeAmount, data.tokenInfo.decimal)
+                : data.bridgeAmount}{" "}
+              {data?.tokenInfo?.denom?.toUpperCase()}
             </span>
             <span
               style={{
@@ -193,7 +189,7 @@ const BridgeParsedItem: FunctionComponent<{
                     : ColorPalette["red-350"],
               }}
             >
-              -{toDisplay(data.feeAmount, data.tokenInfo.decimals)}{" "}
+              -{toDisplay(data.feeAmount, data.tokenInfo.decimal)}{" "}
               {data.tokenInfo.denom.toUpperCase()}
             </span>
             <span
@@ -206,7 +202,7 @@ const BridgeParsedItem: FunctionComponent<{
                 paddingTop: 4,
               }}
             >
-              ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
+              ≈ ${!feeAmount ? "0" : feeAmount.toFixed(4).toString()}
             </span>
           </div>
         </XAxis>
@@ -238,28 +234,29 @@ const SwapParsedItem: FunctionComponent<{
   theme: any;
   parsedMsg: any;
 }> = ({ theme, parsedMsg }) => {
-  const mockInAsset = {
-    denom: "ORAI",
-    coinMinimalDenom: "orai",
-    coinGeckoId: "oraichain-token",
-    decimals: 6,
-  };
-
-  const mockOutAsset = {
-    denom: "USDC",
-    coinMinimalDenom: "cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:USDT",
-    coinGeckoId: "usd-coin",
-    decimals: 6,
-  };
-
   const { data: prices } = useCoinGeckoPrices();
-  const inPrice = prices?.[mockInAsset.coinGeckoId];
-  const inValue = inPrice * toDisplay(parsedMsg.inAmount, mockInAsset.decimals);
-  const outPrice = prices?.[mockOutAsset.coinGeckoId];
-  const outValue =
-    outPrice * toDisplay(parsedMsg.outAmount, mockOutAsset.decimals);
 
-  console.log("parsedMsg", parsedMsg);
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    setData(parsedMsg.response);
+  }, [parsedMsg]);
+
+  if (!data) return null;
+
+  let inPrice,
+    inValue,
+    outPrice,
+    outValue = 0;
+
+  if (data?.inAssetInfo) {
+    inPrice = prices?.[data.inAssetInfo?.coinGeckoId];
+    inValue = inPrice * toDisplay(data.inAmount, data.inAssetInfo?.decimal);
+  }
+
+  if (data?.outAssetInfo) {
+    outPrice = prices?.[data.outAssetInfo?.coinGeckoId];
+    outValue = outPrice * toDisplay(data.outAmount, data.outAssetInfo?.decimal);
+  }
 
   return (
     <>
@@ -285,7 +282,49 @@ const SwapParsedItem: FunctionComponent<{
               color: ColorPalette["black-50"],
             }}
           >
-            {mockInAsset.denom}
+            Action
+          </div>
+          <div>
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+                color:
+                  theme.mode === "light"
+                    ? ColorPalette["platinum-200"]
+                    : ColorPalette["platinum-200"],
+              }}
+            >
+              {parsedMsg.action}
+            </span>
+          </div>
+        </XAxis>
+        <Gutter size="1.25rem" />
+        <div
+          style={{
+            width: "100%",
+            height: 0.75,
+            backgroundColor:
+              theme.mode === "light"
+                ? ColorPalette["gray-90"]
+                : ColorPalette["gray-90"],
+          }}
+        />
+        <Gutter size="1rem" />
+        <XAxis
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: ColorPalette["black-50"],
+            }}
+          >
+            In Asset
           </div>
           <div
             style={{
@@ -304,8 +343,11 @@ const SwapParsedItem: FunctionComponent<{
                     : ColorPalette["red-350"],
               }}
             >
-              -{toDisplay(parsedMsg.inAmount, mockInAsset.decimals)}{" "}
-              {mockInAsset.denom}
+              -
+              {data.inAssetInfo
+                ? toDisplay(data.inAmount, data.inAssetInfo.decimal)
+                : data.inAmount}{" "}
+              {data?.inAssetInfo?.name?.toUpperCase()}
             </span>
             <span
               style={{
@@ -317,7 +359,7 @@ const SwapParsedItem: FunctionComponent<{
                 paddingTop: 4,
               }}
             >
-              ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
+              ≈ ${!inValue ? "0" : inValue.toFixed(4).toString()}
             </span>
           </div>
         </XAxis>
@@ -346,7 +388,7 @@ const SwapParsedItem: FunctionComponent<{
               color: ColorPalette["black-50"],
             }}
           >
-            {mockOutAsset.denom}
+            Out Asset
           </div>
           <div
             style={{
@@ -365,8 +407,11 @@ const SwapParsedItem: FunctionComponent<{
                     : ColorPalette["green-350"],
               }}
             >
-              +{toDisplay(parsedMsg.outAmount, mockOutAsset.decimals)}{" "}
-              {mockOutAsset.denom}
+              +
+              {data.outAssetInfo
+                ? toDisplay(data.outAmount, data.outAssetInfo.decimal)
+                : data.outAmount}{" "}
+              {data?.outAssetInfo?.name?.toUpperCase()}
             </span>
             <span
               style={{
@@ -378,7 +423,7 @@ const SwapParsedItem: FunctionComponent<{
                 paddingTop: 4,
               }}
             >
-              ≈ ${!inValue ? "0" : inValue.toFixed(4).toString()}
+              ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
             </span>
           </div>
         </XAxis>
@@ -420,7 +465,7 @@ export const MessageItem: FunctionComponent<{
       },
       {}
     );
-    console.log("data parseMsg", data);
+    console.log("Parsed data", data);
     if (data) {
       setParsedMsg(data.data);
     }
@@ -429,7 +474,7 @@ export const MessageItem: FunctionComponent<{
 
   useEffect(() => {
     if (msg) {
-      console.log("full msg", {
+      console.log("Full msg", {
         typeUrl: msg.typeUrl,
         value: Buffer.from(msg.value).toString("base64"),
         sender: senderConfig.sender,
