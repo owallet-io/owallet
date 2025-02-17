@@ -9,7 +9,7 @@ import { SenderConfig, useCoinGeckoPrices } from "@owallet/hooks";
 import axios from "axios";
 import { XAxis } from "components/axis";
 import { snakeToTitle, mapToDynamicAction } from "./helper";
-import { shortenWord, toDisplay } from "@owallet/common";
+import { toDisplay } from "@owallet/common";
 
 const ParsedItem: FunctionComponent<{
   theme: any;
@@ -101,12 +101,25 @@ const BridgeParsedItem: FunctionComponent<{
         >
           <div
             style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            Token Info
+            <img
+              style={{ width: 24, height: 24, borderRadius: 30 }}
+              src={data?.tokenInfo?.icon}
+            />
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: ColorPalette["black-50"],
+                marginLeft: 4,
+              }}
+            >
+              {data?.tokenInfo?.name.toUpperCase()}
+            </span>
           </div>
           <div
             style={{
@@ -319,12 +332,25 @@ const SwapParsedItem: FunctionComponent<{
         >
           <div
             style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            In Asset
+            <img
+              style={{ width: 24, height: 24, borderRadius: 30 }}
+              src={data?.inAssetInfo?.icon}
+            />
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: ColorPalette["black-50"],
+                marginLeft: 4,
+              }}
+            >
+              {data?.inAssetInfo?.name.toUpperCase()}
+            </span>
           </div>
           <div
             style={{
@@ -383,12 +409,25 @@ const SwapParsedItem: FunctionComponent<{
         >
           <div
             style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
+              alignItems: "center",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            Out Asset
+            <img
+              style={{ width: 24, height: 24, borderRadius: 30 }}
+              src={data?.outAssetInfo?.icon}
+            />
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: ColorPalette["black-50"],
+                marginLeft: 4,
+              }}
+            >
+              {data?.outAssetInfo?.name.toUpperCase()}
+            </span>
           </div>
           <div
             style={{
