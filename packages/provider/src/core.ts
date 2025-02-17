@@ -2120,6 +2120,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
         "request-send-raw-transaction",
         {
           data: JSON.stringify(transaction),
+          chainId: ChainIdEVM.TRON,
         }
       )
         .then(resolve)

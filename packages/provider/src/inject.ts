@@ -2026,7 +2026,9 @@ class TronProvider extends EventEmitter implements ITronProvider {
     txID: string;
     visible?: boolean;
   }): Promise<object> {
-    return this._requestMethod("sendRawTransaction", [transaction]);
+    return this._requestMethod("sendRawTransaction", [
+      { transaction, chainId: ChainIdEVM.TRON },
+    ]);
   }
 
   triggerSmartContract(

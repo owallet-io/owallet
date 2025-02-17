@@ -101,9 +101,13 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
 
     const receipt = await tronWeb.trx.sendRawTransaction(transaction);
 
-    console.log("receipt", receipt);
+    console.log("receipt tron", receipt);
 
-    return receipt;
+    if (receipt.result) {
+      return receipt;
+    } else {
+      throw new Error(receipt.code);
+    }
   }
 
   protected async getPrivKey(

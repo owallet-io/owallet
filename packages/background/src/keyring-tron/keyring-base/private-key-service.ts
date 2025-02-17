@@ -97,7 +97,11 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
 
     const receipt = await tronWeb.trx.sendRawTransaction(transaction);
 
-    return receipt;
+    if (receipt.result) {
+      return receipt;
+    } else {
+      throw new Error(receipt.code);
+    }
   }
 
   protected getBIP44PathFromVault(vault: Vault): {
