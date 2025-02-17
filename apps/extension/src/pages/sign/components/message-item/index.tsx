@@ -8,7 +8,7 @@ import { useTheme } from "styled-components";
 import { SenderConfig, useCoinGeckoPrices } from "@owallet/hooks";
 import axios from "axios";
 import { XAxis } from "components/axis";
-import { camelCaseToTitleCase, mapToDynamicAction } from "./helper";
+import { snakeToTitle, mapToDynamicAction } from "./helper";
 import { shortenWord, toDisplay } from "@owallet/common";
 
 const ParsedItem: FunctionComponent<{
@@ -77,7 +77,7 @@ const BridgeParsedItem: FunctionComponent<{
                     : ColorPalette["platinum-200"],
               }}
             >
-              {parsedMsg.action}
+              {snakeToTitle(parsedMsg.action)}
             </span>
           </div>
         </XAxis>
@@ -295,7 +295,7 @@ const SwapParsedItem: FunctionComponent<{
                     : ColorPalette["platinum-200"],
               }}
             >
-              {parsedMsg.action}
+              {snakeToTitle(parsedMsg.action)}
             </span>
           </div>
         </XAxis>
