@@ -219,6 +219,100 @@ const BridgeParsedItem: FunctionComponent<{
             </span>
           </div>
         </XAxis>
+        <div
+          style={{
+            width: "100%",
+            height: 0.75,
+            backgroundColor:
+              theme.mode === "light"
+                ? ColorPalette["gray-90"]
+                : ColorPalette["gray-90"],
+          }}
+        />
+        <Gutter size="1rem" />
+        <XAxis
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+              }}
+            >
+              From
+            </span>
+            <div
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.fromChain?.image}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.fromChain?.name}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-end",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+              }}
+            >
+              To
+            </span>
+            <div
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.toChain?.image}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.toChain?.name}
+              </span>
+            </div>
+          </div>
+        </XAxis>
         {/* {Object.keys(parsedMsg).map((key) => {
           return (
             <XAxis
