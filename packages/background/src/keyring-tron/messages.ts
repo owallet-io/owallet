@@ -143,8 +143,6 @@ export class RequestSendRawTransactionMsg extends Message<object> {
     }
   ) {
     super();
-    console.log("chainId tron", chainId);
-    console.log(" data", data);
   }
 
   validateBasic(): void {
@@ -162,7 +160,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   route(): string {
-    return "keyring";
+    return ROUTE;
   }
 
   type(): string {
