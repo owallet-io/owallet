@@ -187,6 +187,8 @@ export class KeyRingTronService {
     signingData: Uint8Array;
     signature?: any;
   }> {
+    console.log("signTron", data);
+
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
       throw new Error("Can't sign for hidden chain");

@@ -53,7 +53,7 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
     if (!chainInfo?.features.includes("tron")) {
       throw new Error(`${chainInfo.chainId} not support sign from base`);
     }
-    const parsedData = JSON.parse(JSON.parse(data));
+    const parsedData = JSON.parse(data);
     console.log("parsedData", parsedData);
 
     const privKey = await this.getPrivKey(vault, coinType);
@@ -80,12 +80,14 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
       ).transaction;
 
       console.log("transaction with contractAddress", transaction);
-    } else {
+    } else if (parsedData.recipient) {
       transaction = await tronWeb.transactionBuilder.sendTrx(
         parsedData.recipient,
         parsedData.amount,
         parsedData.address
       );
+    } else {
+      transaction = parsedData;
     }
 
     const transactionSign = TronWeb.utils.crypto.signTransaction(
@@ -98,7 +100,6 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
     transaction.signature = [transactionSign?.signature?.[0]];
 
     console.log("transaction sig", transaction.signature);
-
     const receipt = await tronWeb.trx.sendRawTransaction(transaction);
 
     console.log("receipt", receipt);

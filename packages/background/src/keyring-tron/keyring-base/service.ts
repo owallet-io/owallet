@@ -114,6 +114,8 @@ export class KeyRingTronBaseService {
 
     const keyRing = this.getVaultKeyRing(vault);
 
+    console.log("data", data, typeof data);
+
     return Promise.resolve(keyRing.sign(vault, coinType, data, chainInfo));
   }
 }

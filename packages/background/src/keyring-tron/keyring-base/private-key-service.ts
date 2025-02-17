@@ -76,12 +76,14 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
           parsedData.address
         )
       ).transaction;
-    } else {
+    } else if (parsedData.recipient) {
       transaction = await tronWeb.transactionBuilder.sendTrx(
         parsedData.recipient,
         parsedData.amount,
         parsedData.address
       );
+    } else {
+      transaction = parsedData;
     }
 
     const transactionSign = TronWeb.utils.crypto.signTransaction(
