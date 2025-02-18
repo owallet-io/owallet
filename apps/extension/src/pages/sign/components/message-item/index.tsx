@@ -586,39 +586,39 @@ export const MessageItem: FunctionComponent<{
   msg?: any;
   senderConfig?: SenderConfig;
 }> = ({ title, content, msg, senderConfig }) => {
-  const rpc = "http://192.168.10.71:9000/";
+  // const rpc = "http://192.168.10.71:9000/";
   const theme = useTheme();
-  const [parsedMsg, setParsedMsg] = React.useState<any>();
+  // const [parsedMsg, setParsedMsg] = React.useState<any>();
 
-  const parseMsg = async (msg: any) => {
-    const client = axios.create({ baseURL: rpc });
-    const { data } = await client.put(
-      `multichain-parser/v1/parser/parse`,
-      {
-        typeUrl: msg.typeUrl,
-        value: Buffer.from(msg.value).toString("base64"),
-        sender: senderConfig.sender,
-      },
-      {}
-    );
-    console.log("Parsed data", data);
-    if (data) {
-      setParsedMsg(data.data);
-    }
-    return data;
-  };
+  // const parseMsg = async (msg: any) => {
+  //   const client = axios.create({ baseURL: rpc });
+  //   const { data } = await client.put(
+  //     `multichain-parser/v1/parser/parse`,
+  //     {
+  //       typeUrl: msg.typeUrl,
+  //       value: Buffer.from(msg.value).toString("base64"),
+  //       sender: senderConfig.sender,
+  //     },
+  //     {}
+  //   );
+  //   console.log("Parsed data", data);
+  //   if (data) {
+  //     setParsedMsg(data.data);
+  //   }
+  //   return data;
+  // };
 
-  useEffect(() => {
-    if (msg) {
-      console.log("Full msg", {
-        typeUrl: msg.typeUrl,
-        value: Buffer.from(msg.value).toString("base64"),
-        sender: senderConfig.sender,
-      });
+  // useEffect(() => {
+  //   if (msg) {
+  //     console.log("Full msg", {
+  //       typeUrl: msg.typeUrl,
+  //       value: Buffer.from(msg.value).toString("base64"),
+  //       sender: senderConfig.sender,
+  //     });
 
-      parseMsg(msg);
-    }
-  }, []);
+  //     parseMsg(msg);
+  //   }
+  // }, []);
 
   return (
     <Box padding="1rem">
@@ -646,8 +646,19 @@ export const MessageItem: FunctionComponent<{
             >
               {title}
             </H5>
-
-            {parsedMsg ? (
+            <>
+              <Gutter size="2px" />
+              <Body3
+                color={
+                  theme.mode === "light"
+                    ? ColorPalette["gray-300"]
+                    : ColorPalette["gray-200"]
+                }
+              >
+                {content}
+              </Body3>
+            </>
+            {/* {parsedMsg ? (
               <ParsedItem theme={theme} parsedMsg={parsedMsg} />
             ) : (
               <>
@@ -662,7 +673,7 @@ export const MessageItem: FunctionComponent<{
                   {content}
                 </Body3>
               </>
-            )}
+            )} */}
           </Box>
         </Column>
       </Columns>
