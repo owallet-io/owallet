@@ -122,7 +122,7 @@ export const CopyAddressScene: FunctionComponent<{
     base58Address?: string;
     ethereumAddress?: string;
     starknetAddress?: string;
-    bal?: string;
+    bal?: string | number;
   }[] = chainStore.modularChainInfosInUI
     .map((modularChainInfo) => {
       let result: PricePretty | undefined;

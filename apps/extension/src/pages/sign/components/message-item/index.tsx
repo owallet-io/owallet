@@ -339,7 +339,8 @@ const SwapParsedItem: FunctionComponent<{
   let inPrice,
     inValue,
     outPrice,
-    outValue = 0;
+    outValue = 0,
+    totalOut = 0;
 
   if (data?.inAssetInfo) {
     inPrice = prices?.[data.inAssetInfo?.coinGeckoId];
@@ -348,7 +349,14 @@ const SwapParsedItem: FunctionComponent<{
 
   if (data?.outAssetInfo) {
     outPrice = prices?.[data.outAssetInfo?.coinGeckoId];
-    outValue = outPrice * toDisplay(data.outAmount, data.outAssetInfo?.decimal);
+    totalOut = toDisplay(data.outAmount, data.outAssetInfo?.decimal);
+
+    if (data.postActionFee) {
+      totalOut =
+        Number(totalOut) -
+        Number(toDisplay(data.postActionFee, data.outAssetInfo?.decimal));
+    }
+    outValue = outPrice * totalOut;
   }
 
   return (
@@ -527,8 +535,8 @@ const SwapParsedItem: FunctionComponent<{
               }}
             >
               +
-              {data.outAssetInfo
-                ? toDisplay(data.outAmount, data.outAssetInfo.decimal)
+              {data.outAssetInfo && totalOut
+                ? totalOut.toFixed(4)
                 : data.outAmount}{" "}
               {data?.outAssetInfo?.name?.toUpperCase()}
             </span>
