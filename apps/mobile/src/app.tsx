@@ -10,7 +10,6 @@ import { InteractionModalsProivder } from "./providers/interaction-modals-provid
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingScreenProvider } from "./providers/loading-screen";
 import { ConfirmModalProvider } from "./providers/confirm-modal";
-// import { AppIntlProvider } from "@owallet/common/src/languages";
 import ThemeProvider from "./themes/theme-provider";
 import analytics from "@react-native-firebase/analytics";
 import FlashMessage from "react-native-flash-message";
