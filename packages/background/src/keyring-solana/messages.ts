@@ -1,5 +1,5 @@
 import { Message, OWalletError } from "@owallet/router";
-import { Key, SettledResponses, TransactionType } from "@owallet/types";
+import { Key, SettledResponses } from "@owallet/types";
 import { ROUTE } from "./constants";
 import { SolanaSignInInput } from "@solana/wallet-standard-features";
 import { isBase58 } from "@owallet/common";

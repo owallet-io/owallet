@@ -29,11 +29,12 @@ export const TextInput = forwardRef<
       noPadding = false,
       textAlign = "left",
       styleInput,
+      singeLine,
       ...props
     },
     ref
   ) => {
-    return (
+    return !singeLine ? (
       <Styles.Container className={className} style={style}>
         {top ? (
           <Box
@@ -100,6 +101,38 @@ export const TextInput = forwardRef<
           ) : null}
         </VerticalResizeTransition>
       </Styles.Container>
+    ) : (
+      <>
+        <Styles.Container
+          className={className}
+          style={{
+            ...style,
+            justifyContent: "space-between",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "row",
+          }}
+        >
+          {label ? <Label content={label} isLoading={isLoading} /> : null}
+          <Styles.TextInput
+            {...props}
+            style={styleInput}
+            autoComplete={autoComplete || "off"}
+            paragraph={paragraph}
+            error={error}
+            ref={ref}
+            textAlign="right"
+            placeholder={props.placeholder ?? label ?? ""}
+          />
+        </Styles.Container>
+        <VerticalResizeTransition transitionAlign="top">
+          {error || paragraph ? (
+            <Styles.SubText error={error} paragraph={paragraph}>
+              {error || paragraph}
+            </Styles.SubText>
+          ) : null}
+        </VerticalResizeTransition>
+      </>
     );
   }
 );

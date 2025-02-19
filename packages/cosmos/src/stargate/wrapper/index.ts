@@ -21,8 +21,6 @@ export class SignDocWrapper {
     if ("msgs" in signDoc) {
       this.mode = "amino";
     } else {
-      // direct나 direct aux나 사실 비슷비슷하다.
-      // 기존의 로직을 활용하기 위해서 direct aux도 기본적으로는 direct로 취급한다.
       this.mode = "direct";
 
       this.isDirectAux = !("authInfoBytes" in signDoc);

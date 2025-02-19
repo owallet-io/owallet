@@ -62,6 +62,28 @@ const Styles = {
     padding: 0.75rem;
     border-radius: 0.375rem;
   `,
+  Marquee: styled.div<{}>`
+    @keyframes marquee {
+      0% {
+        transform: translateX(10%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    padding: 10px 0;
+    position: relative;
+    width: 50%;
+  `,
+  MarqueeText: styled.div<{}>`
+    display: inline-block;
+    animation: marquee 15s linear infinite;
+    font-size: 1rem;
+    font-weight: 600;
+  `,
 };
 
 export const WalletSelectPage: FunctionComponent = observer(() => {
@@ -1048,30 +1070,33 @@ const KeyringItem = observer<
                 <rect width="14" height="3" x="5" y="13.5" rx="1.5" />
               </svg>
             </Box>
-            <YAxis>
-              <XAxis alignY="center">
-                <Subtitle2
-                  style={{
-                    color:
-                      theme.mode === "light"
-                        ? ColorPalette["gray-700"]
-                        : ColorPalette["gray-10"],
-                  }}
-                >
-                  {keyInfo.name.length > 20
-                    ? shortenWord(keyInfo.name, 15)
-                    : keyInfo.name}
-                </Subtitle2>
-                {isSelected ? (
-                  <React.Fragment>
-                    <Gutter size="0.25rem" />
-                    <Box alignY="center" height="1px">
-                      <TokenTag text={"selected".toUpperCase()} />
-                    </Box>
-                  </React.Fragment>
-                ) : null}
-              </XAxis>
-              {paragraph ? (
+            <Box
+              style={{
+                maxWidth: "calc(100% - 6rem)",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              {keyInfo.name.length > 15 ? (
+                <Styles.Marquee>
+                  <Styles.MarqueeText>{keyInfo.name}</Styles.MarqueeText>
+                </Styles.Marquee>
+              ) : (
+                <Subtitle2>{keyInfo.name}</Subtitle2>
+              )}
+
+              {isSelected ? (
+                <React.Fragment>
+                  <Gutter size="0.25rem" />
+                  <Box alignY="center" height="1px">
+                    <TokenTag text={"selected".toUpperCase()} />
+                  </Box>
+                </React.Fragment>
+              ) : null}
+            </Box>
+            {/* {paragraph ? (
                 <React.Fragment>
                   <Gutter size="0.5rem" />
                   <Body2
@@ -1082,8 +1107,7 @@ const KeyringItem = observer<
                     {paragraph}
                   </Body2>
                 </React.Fragment>
-              ) : null}
-            </YAxis>
+              ) : null} */}
             <Column weight={1} />
             <XAxis alignY="center">
               <Box

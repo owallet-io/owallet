@@ -190,11 +190,10 @@ export const TokenItem: FunctionComponent<TokenItemProps> = observer(
     const theme = useTheme();
 
     const [isHover, setIsHover] = useState(false);
+    console.log("viewToken.token", viewToken.token);
 
     const pricePretty = priceStore.calculatePrice(viewToken.token);
-    const price24h = priceStore.getPrice24hChange(
-      viewToken.token.currency
-    );
+    const price24h = priceStore.getPrice24hChange(viewToken.token.currency);
 
     const isIBC = useMemo(() => {
       return viewToken.token.currency.coinMinimalDenom.startsWith("ibc/");

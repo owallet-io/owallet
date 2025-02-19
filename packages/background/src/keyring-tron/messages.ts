@@ -160,7 +160,7 @@ export class RequestSendRawTransactionMsg extends Message<object> {
   }
 
   route(): string {
-    return "keyring";
+    return ROUTE;
   }
 
   type(): string {

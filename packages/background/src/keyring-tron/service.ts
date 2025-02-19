@@ -153,7 +153,10 @@ export class KeyRingTronService {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = TronWebProvider(chainInfo.rpc);
-      return await tronWeb.trx.sendRawTransaction(transaction);
+      const res = await tronWeb.trx.sendRawTransaction(transaction);
+      console.log("requestSendRawTransaction res", res);
+
+      return res;
     } catch (error) {
       throw error;
     }
@@ -187,6 +190,8 @@ export class KeyRingTronService {
     signingData: Uint8Array;
     signature?: any;
   }> {
+    console.log("signTron", data);
+
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
     if (chainInfo.hideInUI) {
       throw new Error("Can't sign for hidden chain");

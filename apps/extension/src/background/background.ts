@@ -145,11 +145,11 @@ const { initFn, keyRingService, analyticsService } = init(
           walletUrl:
             NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/starname"
-              : "http://localhost:8080/chains/starname",
+              : "https://scanium.io/starname",
           walletUrlForStaking:
             NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/starname"
-              : "http://localhost:8080/chains/starname",
+              : "https://scanium.io/starname",
           bip44: {
             coinType: 234,
           },
@@ -191,11 +191,11 @@ const { initFn, keyRingService, analyticsService } = init(
           walletUrl:
             NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/e-money"
-              : "http://localhost:8080/chains/e-money",
+              : "https://scanium.io/e-money",
           walletUrlForStaking:
             NODE_ENV === "production"
               ? "https://wallet.keplr.app/chains/e-money"
-              : "http://localhost:8080/chains/e-money",
+              : "https://scanium.io/e-money",
           bip44: {
             coinType: 118,
           },

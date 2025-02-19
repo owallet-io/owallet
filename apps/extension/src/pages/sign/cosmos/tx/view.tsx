@@ -34,7 +34,6 @@ import { Gutter } from "../../../../components/gutter";
 import { GuideBox } from "../../../../components/guide-box";
 import { FormattedMessage, useIntl } from "react-intl";
 import SimpleBar from "simplebar-react";
-import { KeyRingService } from "@owallet/background";
 import { useTheme } from "styled-components";
 import { defaultProtoCodec } from "@owallet/cosmos";
 import { MsgGrant } from "@owallet/proto-types/cosmos/authz/v1beta1/tx";
@@ -49,11 +48,13 @@ import { ApproveIcon, CancelIcon } from "../../../../components/button";
 import Color from "color";
 import styled from "styled-components";
 import { AddressChip } from "pages/main/components/address-chip";
+import { TxRaw } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 
 const Styles = {
   Container: styled.div<{
     forChange: boolean | undefined;
     isError: boolean;
+    padding?: string;
     disabled?: boolean;
     isNotReady?: boolean;
   }>`
@@ -63,8 +64,10 @@ const Styles = {
           ? ColorPalette["skeleton-layer-0"]
           : ColorPalette.white
         : ColorPalette["gray-650"]};
-    padding ${({ forChange }) =>
-      forChange ? "0.5rem 0.25rem 0.35rem 0.75rem" : "0.75rem 0.5rem"};
+    padding ${({ forChange, padding }) =>
+      padding ?? forChange
+        ? "0.5rem 0.25rem 0.35rem 0.75rem"
+        : "0.75rem 0.5rem"};
     border-radius: 1rem;
     
     border: ${({ isError }) =>
@@ -543,7 +546,7 @@ export const CosmosTxView: FunctionComponent<{
               </H5>
               <Box
                 style={{
-                  padding: "0.25rem 0.35rem",
+                  padding: "0.15rem 0.4rem",
                   borderRadius: "0.35rem",
                   backgroundColor: ColorPalette["purple-700"],
                   alignItems: "center",
@@ -551,13 +554,15 @@ export const CosmosTxView: FunctionComponent<{
                   marginLeft: "0.35rem",
                 }}
               >
-                <H5
+                <div
                   style={{
                     color: ColorPalette["white"],
+                    fontSize: "12px",
+                    fontWeight: "600",
                   }}
                 >
                   {msgs.length}
-                </H5>
+                </div>
               </Box>
             </XAxis>
             <Column weight={1} />
@@ -624,6 +629,8 @@ export const CosmosTxView: FunctionComponent<{
                       icon={r.icon}
                       title={r.title}
                       content={r.content}
+                      msg={msg}
+                      senderConfig={senderConfig}
                     />
                   );
                 })}
@@ -645,14 +652,14 @@ export const CosmosTxView: FunctionComponent<{
               <Gutter size="0.75rem" />
             </Styles.Container>
           ) : (
-            <Styles.Container>
+            <Styles.Container forChange={true}>
               <MemoInput
+                singeLine={true}
                 memoConfig={memoConfig}
                 placeholder={intl.formatMessage({
                   id: "components.input.memo-input.optional-placeholder",
                 })}
               />
-              <Gutter size="0.75rem" />
             </Styles.Container>
           )}
         </Box>

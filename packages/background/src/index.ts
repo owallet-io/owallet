@@ -189,6 +189,7 @@ export function init(
     chainsService,
     notification
   );
+
   const backgroundTxBitcoinService = new BackgroundTxBtc.BackgroundTxBtcService(
     chainsService,
     notification

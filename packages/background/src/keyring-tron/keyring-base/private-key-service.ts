@@ -76,12 +76,14 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
           parsedData.address
         )
       ).transaction;
-    } else {
+    } else if (parsedData.recipient) {
       transaction = await tronWeb.transactionBuilder.sendTrx(
         parsedData.recipient,
         parsedData.amount,
         parsedData.address
       );
+    } else {
+      transaction = parsedData;
     }
 
     const transactionSign = TronWeb.utils.crypto.signTransaction(
@@ -95,7 +97,11 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
 
     const receipt = await tronWeb.trx.sendRawTransaction(transaction);
 
-    return receipt;
+    if (receipt.result) {
+      return receipt;
+    } else {
+      throw new Error(receipt.code);
+    }
   }
 
   protected getBIP44PathFromVault(vault: Vault): {

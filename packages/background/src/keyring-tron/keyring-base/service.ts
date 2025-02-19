@@ -1,5 +1,5 @@
 import { Vault, VaultService } from "../../vault";
-import { KeyRing, KeyRingTron } from "../../keyring";
+import { KeyRingTron } from "../../keyring";
 import { makeObservable } from "mobx";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { ChainInfo } from "@owallet/types";
@@ -14,10 +14,6 @@ export class KeyRingTronBaseService {
   ) {
     makeObservable(this);
   }
-
-  // getPubKeySelected(chainId: string): Promise<PubKeySecp256k1> {
-  //   return this.getPubKey(chainId, this.selectedVaultId);
-  // }
 
   getPubKey(chainId: string, vaultId: string): Promise<PubKeySecp256k1> {
     if (this.vaultService.isLocked) {

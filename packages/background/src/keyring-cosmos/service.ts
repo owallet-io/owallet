@@ -692,7 +692,6 @@ export class KeyRingCosmosService {
     if (signer !== bech32Address) {
       throw new Error("Signer mismatched");
     }
-    console.log(SignDoc.encode(signDoc).finish(), "encode");
     return await this.interactionService.waitApproveV2(
       env,
       "/sign-cosmos",

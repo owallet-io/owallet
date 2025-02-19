@@ -475,7 +475,8 @@ export const EnableChainsScreen: FunctionComponent = observer(() => {
 
       const isForcedSelected =
         chainInfo.features.includes("btc") ||
-        chainInfo.features.includes("tron");
+        chainInfo.features.includes("tron") ||
+        chainInfo.features.includes("solana");
 
       if (isForcedSelected) {
         enabledChainIdentifiers.push(chainInfo.chainIdentifier);

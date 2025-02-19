@@ -81,6 +81,7 @@ export enum ChainIdEnum {
   CELESTIA = "celestia",
   AKASH = "akashnet-2",
   NEUTRON = "neutron-1",
+  Solana = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
 }
 
 export enum KADOChainNameEnum {

@@ -63,11 +63,13 @@ import {
 } from "@solana/wallet-standard-features";
 // import {isReactNative, isWeb} from "@owallet/common";
 import { initialize } from "@oraichain/owallet-wallet-standard";
+import { NAMESPACE } from "./constants";
 
 // initialize(owallet.solana as any);
 export interface ProxyRequest {
-  type: "proxy-request";
+  type: "proxy-request" | "owallet-proxy-request";
   id: string;
+  namespace?: string;
   method: keyof (OWallet & OWalletCoreTypes);
   args: any[];
   ethereumProviderMethod?: keyof IEthereumProvider;
@@ -81,6 +83,7 @@ export interface ProxyRequestResponse {
   type: "proxy-request-response";
   id: string;
   result: Result | undefined;
+  namespace?: string;
 }
 
 function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
@@ -133,7 +136,10 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
       );
     });
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
-  defineUnwritablePropertyIfPossible(window, "keplr", owallet);
+  const descriptorKeplr = Object.getOwnPropertyDescriptor(window, "keplr");
+  if (!descriptorKeplr) {
+    defineWritablePropertyIfPossible(window, "keplr", owallet);
+  }
   defineUnwritablePropertyIfPossible(window, "owalletSolana", owallet.solana);
   defineUnwritablePropertyIfPossible(window, "bitcoin", owallet.bitcoin);
   const descriptor = Object.getOwnPropertyDescriptor(window, "ethereum");
@@ -146,22 +152,22 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronWeb_owallet", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronLink_owallet", owallet.tron);
-  defineUnwritablePropertyIfPossible(
+  defineWritablePropertyIfPossible(
     window,
     "getOfflineSigner",
     owallet.getOfflineSigner
   );
-  defineUnwritablePropertyIfPossible(
+  defineWritablePropertyIfPossible(
     window,
     "getOfflineSignerOnlyAmino",
     owallet.getOfflineSignerOnlyAmino
   );
-  defineUnwritablePropertyIfPossible(
+  defineWritablePropertyIfPossible(
     window,
     "getOfflineSignerAuto",
     owallet.getOfflineSignerAuto
   );
-  defineUnwritablePropertyIfPossible(
+  defineWritablePropertyIfPossible(
     window,
     "getEnigmaUtils",
     owallet.getEnigmaUtils
@@ -195,11 +201,21 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)
         : e.data;
-      if (!message || message.type !== "proxy-request") {
+      const isReactNative = owallet.version.includes("mobile");
+      // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+      const typeProxy: any = !isReactNative
+        ? `${NAMESPACE}-proxy-request`
+        : "proxy-request";
+      // filter proxy-request by namespace
+      if (
+        !message ||
+        message.type !== typeProxy ||
+        message.namespace !== NAMESPACE
+      ) {
         return;
       }
 
-      console.log("message.method", message.method);
+      console.log("message", message);
 
       try {
         if (!message.id) {
@@ -515,6 +531,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             return: JSONUint8Array.wrap(result),
@@ -525,6 +542,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: "proxy-request-response",
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             error:
@@ -560,8 +578,15 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       })
       .join("");
 
+    const typeProxy: any =
+      this.mode === "extension"
+        ? `${NAMESPACE}-proxy-request`
+        : "proxy-request";
+
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method,
       args: JSONUint8Array.wrap(args),
@@ -1205,10 +1230,18 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       })
       .join("");
 
+    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    const typeProxy: any = !isReactNative
+      ? `${NAMESPACE}-proxy-request`
+      : "proxy-request";
+
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
       id,
       method: "ethereum",
+      namespace: NAMESPACE,
       args: JSONUint8Array.wrap(args),
       ethereumProviderMethod: method,
     };
@@ -1260,8 +1293,14 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   };
 
   protected _initProviderState = async () => {
+    // const descriptor = Object.getOwnPropertyDescriptor(window, "keplr");
+
+    // if (descriptor) {
+    //   return;
+    // }
+
     const initialProviderState = await this._requestMethod("request", {
-      method: "owallet_initProviderState",
+      method: "keplr_initProviderState",
     });
 
     if (initialProviderState) {
@@ -1406,8 +1445,16 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       })
       .join("");
 
+    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    const typeProxy: any = !isReactNative
+      ? `${NAMESPACE}-proxy-request`
+      : "proxy-request";
+
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method: "solana",
       args: JSONUint8Array.wrap(args),
@@ -1647,8 +1694,16 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       })
       .join("");
 
+    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    const typeProxy: any = !isReactNative
+      ? `${NAMESPACE}-proxy-request`
+      : "proxy-request";
+
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method: "oasis",
       args: JSONUint8Array.wrap(args),
@@ -1749,8 +1804,15 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       })
       .join("");
 
+    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    const typeProxy: any = !isReactNative
+      ? `${NAMESPACE}-proxy-request`
+      : "proxy-request";
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method: "bitcoin",
       args: JSONUint8Array.wrap(args),
@@ -1849,8 +1911,16 @@ class TronProvider extends EventEmitter implements ITronProvider {
       })
       .join("");
 
+    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    const typeProxy: any = !isReactNative
+      ? `${NAMESPACE}-proxy-request`
+      : "proxy-request";
+
     const proxyMessage: ProxyRequest = {
-      type: "proxy-request",
+      // type: "proxy-request",
+      type: typeProxy,
+      namespace: NAMESPACE,
       id,
       method: "tron",
       args: JSONUint8Array.wrap(args),
@@ -1956,7 +2026,9 @@ class TronProvider extends EventEmitter implements ITronProvider {
     txID: string;
     visible?: boolean;
   }): Promise<object> {
-    return this._requestMethod("sendRawTransaction", [transaction]);
+    return this._requestMethod("sendRawTransaction", [
+      { transaction, chainId: ChainIdEVM.TRON },
+    ]);
   }
 
   triggerSmartContract(

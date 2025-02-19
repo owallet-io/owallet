@@ -123,7 +123,6 @@ export const MainPage: FunctionComponent<{
     uiConfigStore,
     keyRingStore,
     priceStore,
-    allAccountStore,
   } = useStore();
 
   const isNotReady = useIsNotReady();
@@ -506,7 +505,14 @@ export const MainPage: FunctionComponent<{
                   src={require("assets/images/default-avatar.png")}
                 />
                 <Gutter size="0.5rem" />
-                <Subtitle1>{shortenWord(name, 15)}</Subtitle1>
+                {name.length > 15 ? (
+                  <Styles.Marquee>
+                    <Styles.MarqueeText>{name}</Styles.MarqueeText>
+                  </Styles.Marquee>
+                ) : (
+                  <Subtitle1>{name}</Subtitle1>
+                )}
+
                 <Gutter size="0.5rem" />
                 <ArrowDownIcon
                   width="1.25rem"
@@ -891,6 +897,28 @@ const Styles = {
           ? ColorPalette["gray-200"]
           : ColorPalette["gray-300"]};
     }
+  `,
+  Marquee: styled.div<{}>`
+    @keyframes marquee {
+      0% {
+        transform: translateX(10%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    padding: 10px 0;
+    position: relative;
+    width: 50%;
+  `,
+  MarqueeText: styled.div<{}>`
+    display: inline-block;
+    animation: marquee 15s linear infinite;
+    font-size: 1rem;
+    font-weight: 600;
   `,
 };
 

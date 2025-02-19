@@ -7,43 +7,64 @@ import { useIntl } from "react-intl";
 
 export const MemoInput: FunctionComponent<{
   memoConfig: IMemoConfig;
-
   label?: string;
   rightLabel?: React.ReactNode;
-
   paragraph?: string;
   error?: string;
   errorBorder?: boolean;
-
   placeholder?: string;
-
   disabled?: boolean;
-}> = observer(({ memoConfig, label, placeholder, ...others }) => {
+  singeLine?: boolean;
+}> = observer(({ memoConfig, label, placeholder, singeLine, ...others }) => {
   const intl = useIntl();
   return (
     <Box>
-      <TextInput
-        label={
-          label ??
-          intl.formatMessage({ id: "components.input.memo-input.memo-label" })
-        }
-        border={false}
-        placeholder={placeholder}
-        onChange={(e) => {
-          e.preventDefault();
-          memoConfig.setValue(e.target.value);
-        }}
-        value={memoConfig.value}
-        error={(() => {
-          const uiProperties = memoConfig.uiProperties;
-
-          const err = uiProperties.error || uiProperties.warning;
-          if (err) {
-            return err.message || err.toString();
+      {singeLine ? (
+        <TextInput
+          label={
+            label ??
+            intl.formatMessage({ id: "components.input.memo-input.memo-label" })
           }
-        })()}
-        {...others}
-      />
+          singeLine={singeLine}
+          placeholder={placeholder}
+          onChange={(e) => {
+            e.preventDefault();
+            memoConfig.setValue(e.target.value);
+          }}
+          value={memoConfig.value}
+          error={(() => {
+            const uiProperties = memoConfig.uiProperties;
+            const err = uiProperties.error || uiProperties.warning;
+            if (err) {
+              return err.message || err.toString();
+            }
+          })()}
+          {...others}
+        />
+      ) : (
+        <TextInput
+          label={
+            label ??
+            intl.formatMessage({ id: "components.input.memo-input.memo-label" })
+          }
+          border={false}
+          placeholder={placeholder}
+          onChange={(e) => {
+            e.preventDefault();
+            memoConfig.setValue(e.target.value);
+          }}
+          value={memoConfig.value}
+          error={(() => {
+            const uiProperties = memoConfig.uiProperties;
+
+            const err = uiProperties.error || uiProperties.warning;
+            if (err) {
+              return err.message || err.toString();
+            }
+          })()}
+          {...others}
+        />
+      )}
     </Box>
   );
 });

@@ -83,12 +83,12 @@ export const EnableChainsScene: FunctionComponent<{
       chainStore,
       accountStore,
       tronAccountStore,
+      solanaAccountStore,
       queriesStore,
       priceStore,
       keyRingStore,
     } = useStore();
 
-    const navigate = useNavigate();
     const intl = useIntl();
     const theme = useTheme();
 
@@ -181,6 +181,34 @@ export const EnableChainsScene: FunctionComponent<{
                   const accountTron = tronAccountStore.getAccount(
                     chainInfo.chainId
                   );
+                  if (accountTron.base58Address) {
+                    candidateAddresses.push({
+                      chainId: chainInfo.chainId,
+                      bech32Addresses: [
+                        {
+                          coinType: chainInfo.bip44.coinType,
+                          address: accountTron.base58Address,
+                        },
+                      ],
+                    });
+                  }
+                }
+                if (chainInfo.features.includes("solana")) {
+                  const accountSolana = solanaAccountStore.getAccount(
+                    chainInfo.chainId
+                  );
+
+                  if (accountSolana.base58Address) {
+                    candidateAddresses.push({
+                      chainId: chainInfo.chainId,
+                      bech32Addresses: [
+                        {
+                          coinType: chainInfo.bip44.coinType,
+                          address: accountSolana.base58Address,
+                        },
+                      ],
+                    });
+                  }
                 }
                 const account = accountStore.getAccount(chainInfo.chainId);
                 promises.push(
@@ -356,6 +384,14 @@ export const EnableChainsScene: FunctionComponent<{
             )
           ) {
             enabledChainIdentifiers.push(ChainIdEnum.Bitcoin);
+          }
+
+          if (
+            chainStore.chainInfos.find(
+              (c) => c.chainIdentifier === ChainIdEnum.Solana
+            )
+          ) {
+            enabledChainIdentifiers.push(ChainIdEnum.Solana);
           }
 
           if (
@@ -802,7 +838,8 @@ export const EnableChainsScene: FunctionComponent<{
 
               const isForcedSelected =
                 modularChainInfo.chainId === ChainIdEnum.Bitcoin ||
-                modularChainInfo.chainId === ChainIdEVM.TRON;
+                modularChainInfo.chainId === ChainIdEVM.TRON ||
+                modularChainInfo.chainId.includes("solana");
 
               return (
                 <ChainItem
@@ -814,7 +851,10 @@ export const EnableChainsScene: FunctionComponent<{
                   isFresh={isFresh ?? false}
                   onClick={() => {
                     if (isForcedSelected) {
-                      return;
+                      setEnabledChainIdentifiers([
+                        ...enabledChainIdentifiers,
+                        chainIdentifier,
+                      ]);
                     }
                     if (enabledChainIdentifierMap.get(chainIdentifier)) {
                       setEnabledChainIdentifiers(
@@ -1433,11 +1473,12 @@ export const EnableChainsScene: FunctionComponent<{
                 const vaultId = keyRingStore.selectedKeyInfo.id;
                 const chainIdentifier =
                   ChainIdHelper.parse("bitcoin").identifier;
-                const chainIdentifierSolana =
-                    ChainIdHelper.parse("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp").identifier;
+                const chainIdentifierSolana = ChainIdHelper.parse(
+                  "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
+                ).identifier;
                 await chainStore.enableChainInfoInUIWithVaultId(
                   vaultId,
-                  ...[chainIdentifier,chainIdentifierSolana]
+                  ...[chainIdentifier, chainIdentifierSolana]
                 );
               } catch (err) {
                 console.log("err enabled", err);
