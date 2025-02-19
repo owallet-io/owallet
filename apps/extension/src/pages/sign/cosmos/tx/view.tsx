@@ -48,7 +48,7 @@ import { ApproveIcon, CancelIcon } from "../../../../components/button";
 import Color from "color";
 import styled from "styled-components";
 import { AddressChip } from "pages/main/components/address-chip";
-import { TxRaw } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import { AccountInfoBox } from "pages/sign/components/account-info-box";
 
 const Styles = {
   Container: styled.div<{
@@ -768,51 +768,7 @@ export const CosmosTxView: FunctionComponent<{
           ledgerInteractingError={ledgerInteractingError}
           isInternal={interactionData.isInternal}
         />
-        <div
-          style={{
-            borderTop: "1px solid" + ColorPalette["gray-100"],
-          }}
-        >
-          <div
-            style={{
-              flexDirection: "row",
-              display: "flex",
-              padding: 8,
-              justifyContent: "space-between",
-              backgroundColor: ColorPalette["gray-50"],
-              borderRadius: 12,
-              marginTop: 8,
-            }}
-          >
-            <div
-              style={{
-                flexDirection: "row",
-                display: "flex",
-              }}
-            >
-              <img
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 40,
-                  marginRight: 8,
-                }}
-                src={require("assets/images/default-avatar.png")}
-              />
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Subtitle3
-                  style={{
-                    padding: "2px 6px",
-                  }}
-                  color={ColorPalette["gray-500"]}
-                >
-                  {keyRingStore.selectedKeyInfo?.name || "OWallet Account"}
-                </Subtitle3>
-                <AddressChip chainId={chainId} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <AccountInfoBox chainId={chainId} />
       </Box>
     </HeaderLayout>
   );

@@ -17,3 +17,5 @@ export declare const EnumAction: {
     fee_swap: Optional<null>;
   };
 };
+
+export const TX_PARSER = "https://tx-parser.orai.network/";

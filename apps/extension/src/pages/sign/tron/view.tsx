@@ -31,6 +31,7 @@ import { handleTronPreSignByLedger } from "../utils/handle-trx-sign";
 import { useNotification } from "../../../hooks/notification";
 import { AddressChip } from "pages/main/components/address-chip";
 import { useNavigate } from "react-router";
+import { AccountInfoBox } from "../components/account-info-box";
 
 export const TronSigningView: FunctionComponent<{
   interactionData: NonNullable<SignTronInteractionStore["waitingData"]>;
@@ -459,52 +460,7 @@ export const TronSigningView: FunctionComponent<{
           ledgerInteractingError={ledgerInteractingError}
           isInternal={interactionData.isInternal}
         />
-        <div
-          style={{
-            borderTop: "1px solid" + ColorPalette["gray-100"],
-            marginTop: 8,
-          }}
-        >
-          <div
-            style={{
-              flexDirection: "row",
-              display: "flex",
-              padding: 8,
-              justifyContent: "space-between",
-              backgroundColor: ColorPalette["gray-50"],
-              borderRadius: 12,
-              marginTop: 8,
-            }}
-          >
-            <div
-              style={{
-                flexDirection: "row",
-                display: "flex",
-              }}
-            >
-              <img
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 40,
-                  marginRight: 8,
-                }}
-                src={require("assets/images/default-avatar.png")}
-              />
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Subtitle3
-                  style={{
-                    padding: "2px 6px",
-                  }}
-                  color={ColorPalette["gray-500"]}
-                >
-                  {keyRingStore.selectedKeyInfo?.name || "OWallet Account"}
-                </Subtitle3>
-                <AddressChip chainId={chainId} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <AccountInfoBox chainId={chainId} />
       </Box>
     </HeaderLayout>
   );

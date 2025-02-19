@@ -251,10 +251,10 @@ const CopyToClipboard: FunctionComponent<{ text: string }> = ({ text }) => {
             <Button1 color={ColorPalette["green-400"]}>
               <FormattedMessage id="pages.register.components.copy-to-clipboard.button-after" />
             </Button1>
-            {/* <div
+            <div
               style={{ width: "1.125rem", height: "1.125rem" }}
               ref={checkAnimDivRef}
-            /> */}
+            />
           </Columns>
         ) : (
           <FormattedMessage id="pages.register.components.copy-to-clipboard.button-before" />

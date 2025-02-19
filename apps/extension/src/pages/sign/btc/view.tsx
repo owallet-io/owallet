@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { SignBtcInteractionStore } from "@owallet/stores-core";
 import { Box } from "../../../components/box";
 import { XAxis, YAxis } from "../../../components/axis";
-import { Body2, Subtitle3 } from "../../../components/typography";
+import { Body2 } from "../../../components/typography";
 import { ColorPalette } from "../../../styles";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -14,7 +14,7 @@ import { ErrModuleLedgerSign } from "../utils/ledger-types";
 import { Buffer } from "buffer/";
 import { LedgerGuideBox } from "../components/ledger-guide-box";
 import { useIntl } from "react-intl";
-import { useTheme } from "styled-components";
+import styled, { useTheme } from "styled-components";
 import SimpleBar from "simplebar-react";
 import { Gutter } from "../../../components/gutter";
 import accumulative from "coinselect/accumulative";
@@ -29,7 +29,6 @@ import {
 import { ApproveIcon, CancelIcon } from "../../../components/button";
 import { MessageItem } from "../components/message-item";
 import { useNotification } from "../../../hooks/notification";
-import { AddressChip } from "pages/main/components/address-chip";
 import { UnsignedBtcTransaction } from "@owallet/types";
 import {
   Utxos,
@@ -48,6 +47,7 @@ import { FeeSummary } from "../components/fee-summary";
 import { FeeControl } from "components/input/fee-control";
 import { handleExternalInteractionWithNoProceedNext } from "src/utils";
 import { useNavigate } from "react-router";
+import { AccountInfoBox } from "../components/account-info-box";
 
 export const BTCSigningView: FunctionComponent<{
   interactionData: NonNullable<SignBtcInteractionStore["waitingData"]>;
@@ -58,7 +58,6 @@ export const BTCSigningView: FunctionComponent<{
     signBtcInteractionStore,
     bitcoinAccountStore,
     queriesStore,
-    keyRingStore,
   } = useStore();
   const intl = useIntl();
   const theme = useTheme();
@@ -579,52 +578,7 @@ export const BTCSigningView: FunctionComponent<{
           ledgerInteractingError={ledgerInteractingError}
           isInternal={interactionData.isInternal}
         />
-        <div
-          style={{
-            borderTop: "1px solid" + ColorPalette["gray-100"],
-            marginTop: 8,
-          }}
-        >
-          <div
-            style={{
-              flexDirection: "row",
-              display: "flex",
-              padding: 8,
-              justifyContent: "space-between",
-              backgroundColor: ColorPalette["gray-50"],
-              borderRadius: 12,
-              marginTop: 8,
-            }}
-          >
-            <div
-              style={{
-                flexDirection: "row",
-                display: "flex",
-              }}
-            >
-              <img
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 40,
-                  marginRight: 8,
-                }}
-                src={require("assets/images/default-avatar.png")}
-              />
-              <div style={{ flexDirection: "column", display: "flex" }}>
-                <Subtitle3
-                  style={{
-                    padding: "2px 6px",
-                  }}
-                  color={ColorPalette["gray-500"]}
-                >
-                  {keyRingStore.selectedKeyInfo?.name || "OWallet Account"}
-                </Subtitle3>
-                <AddressChip chainId={chainId} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <AccountInfoBox chainId={chainId} />
       </Box>
     </HeaderLayout>
   );

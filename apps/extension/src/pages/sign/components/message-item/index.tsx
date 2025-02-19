@@ -10,6 +10,7 @@ import axios from "axios";
 import { XAxis } from "components/axis";
 import { snakeToTitle, isUint8Array } from "./helper";
 import { toDisplay } from "@owallet/common";
+import { TX_PARSER } from "./constant";
 
 const ParsedItem: FunctionComponent<{
   theme: any;
@@ -176,7 +177,7 @@ const BridgeParsedItem: FunctionComponent<{
             </div>
           </div>
         </XAxis>
-        <Gutter size="1rem" />
+        <Gutter size="0.5rem" />
         <div
           style={{
             width: "100%",
@@ -586,12 +587,11 @@ export const MessageItem: FunctionComponent<{
   msg?: any;
   senderConfig?: SenderConfig;
 }> = ({ title, content, msg, senderConfig }) => {
-  const rpc = "http://192.168.10.71:9000/";
   const theme = useTheme();
   const [parsedMsg, setParsedMsg] = React.useState<any>();
 
   const parseMsg = async (msg: any) => {
-    const client = axios.create({ baseURL: rpc });
+    const client = axios.create({ baseURL: TX_PARSER });
 
     if (isUint8Array(msg.value)) {
       const { data } = await client.put(
