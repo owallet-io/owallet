@@ -1,68 +1,59 @@
+import { ChainGetter } from "@owallet/stores";
 import {
-  ChainGetter,
-  CosmosMsgOpts,
-  CosmwasmMsgOpts,
-  Erc20MsgOpts,
-  ObservableQueryBitcoinBalance,
-  SecretMsgOpts,
-} from "@owallet/stores";
-import { ObservableQueryBalances } from "@owallet/stores";
-import { FeeConfig, useFeeConfig } from "./fee";
-import { useMemoConfig } from "./memo";
-import { useRecipientConfig } from "./recipient";
-import { useSendGasConfig } from "./send-gas";
+  useFeeConfig,
+  useGasConfig,
+  useMemoConfig,
+  useRecipientConfig,
+  useSenderConfig,
+} from "./index";
 import { useAmountConfig } from "./amount";
-import { FeeEvmConfig, useFeeEvmConfig } from "./fee-evm";
-
-type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & Erc20MsgOpts;
+import { QueriesStore } from "./internal";
 
 export const useSendTxConfig = (
   chainGetter: ChainGetter,
+  queriesStore: QueriesStore,
   chainId: string,
-  sendMsgOpts: MsgOpts["send"],
   sender: string,
-  queryBalances: ObservableQueryBalances,
-  ensEndpoint?: string,
-  // queryEvmBalances?: ObservableQueryEvmBalance,
-  // senderEvm?: string,
-  queryBtcBalances?: ObservableQueryBitcoinBalance
+  initialGas: number,
+  options: {
+    allowHexAddressToBech32Address?: boolean;
+    icns?: {
+      chainId: string;
+      resolverContractAddress: string;
+    };
+    ens?: {
+      chainId: string;
+    };
+    computeTerraClassicTax?: boolean;
+  } = {}
 ) => {
-  const chainInfo = chainGetter.getChain(chainId);
+  const senderConfig = useSenderConfig(chainGetter, chainId, sender);
+
   const amountConfig = useAmountConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryBalances,
-    // chainInfo.networkType === 'evm' && queryEvmBalances,
-    // chainInfo.networkType === 'evm' && senderEvm,
-    chainInfo.networkType === "bitcoin" && queryBtcBalances
+    senderConfig
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useSendGasConfig(
-    chainGetter,
-    chainId,
-    amountConfig,
-    sendMsgOpts
-  );
+  const gasConfig = useGasConfig(chainGetter, chainId, initialGas);
   const feeConfig = useFeeConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryBalances,
+    senderConfig,
     amountConfig,
     gasConfig,
-    true,
-    chainInfo.networkType === "bitcoin" && queryBtcBalances,
-    memoConfig
+    options
   );
-  // Due to the circular references between the amount config and gas/fee configs,
-  // set the fee config of the amount config after initing the gas/fee configs.
+
   amountConfig.setFeeConfig(feeConfig);
 
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
+  const recipientConfig = useRecipientConfig(chainGetter, chainId, options);
 
   return {
+    senderConfig,
     amountConfig,
     memoConfig,
     gasConfig,

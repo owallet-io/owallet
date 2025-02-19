@@ -34,6 +34,7 @@
   ],
   "web_accessible_resources": [
     "injectedScript.bundle.js",
-    "assets/orai_wallet_logo.png"
+    "assets/orai_wallet_logo.png",
+    "assets/SpaceGrotesk-Bold.ttf"
   ]
 }

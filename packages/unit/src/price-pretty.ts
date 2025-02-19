@@ -24,7 +24,7 @@ export class PricePretty {
 
   constructor(
     protected _fiatCurrency: FiatCurrency,
-    protected amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
+    amount: Dec | { toDec(): Dec } | bigInteger.BigNumber
   ) {
     this.intPretty = new IntPretty(amount)
       .maxDecimals(_fiatCurrency.maxDecimals)
@@ -135,6 +135,12 @@ export class PricePretty {
     return pretty;
   }
 
+  roundTo(roundTo: number | undefined): PricePretty {
+    const pretty = this.clone();
+    pretty.intPretty = pretty.intPretty.roundTo(roundTo);
+    return pretty;
+  }
+
   /**
    * Ready indicates the actual value is ready to show the users.
    * Even if the ready option is false, it expects that the value can be shown to users (probably as 0).
@@ -221,7 +227,7 @@ export class PricePretty {
   }
 
   clone(): PricePretty {
-    const pretty = new PricePretty(this._fiatCurrency, this.amount);
+    const pretty = new PricePretty(this._fiatCurrency, 0);
     pretty._options = {
       ...this._options,
     };

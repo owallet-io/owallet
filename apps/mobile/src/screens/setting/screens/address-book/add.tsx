@@ -1,10 +1,10 @@
 import { EthereumEndpoint } from "@owallet/common";
-import {
-  AddressBookConfig,
-  useMemoConfig,
-  useRecipientConfig,
-} from "@owallet/hooks";
-import { RouteProp, useRoute } from "@react-navigation/native";
+// import {
+//   AddressBookConfig,
+//   useMemoConfig,
+//   useRecipientConfig,
+// } from "@owallet/hooks";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWBox } from "@src/components/card";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -24,7 +24,16 @@ import {
 
 import { useStore } from "../../../../stores";
 import { metrics, spacing } from "../../../../themes";
-import { goBack, navigate } from "@src/router/root";
+import { goBack, navigate, RootStackParamList } from "@src/router/root";
+import {
+  useMemoConfig,
+  useRecipientConfig,
+  useTxConfigsValidate,
+} from "@owallet/hooks";
+import { useFocusAfterRouting } from "@hooks/use-focus";
+import { useIntl } from "react-intl";
+import { useStyle } from "@src/styles";
+import { OWHeaderTitle } from "@components/header";
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -58,77 +67,119 @@ const styling = (colors) =>
   });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
-  const route = useRoute<
-    RouteProp<
-      Record<
-        string,
-        {
-          chainId: string;
-          addressBookConfig: AddressBookConfig;
-          recipient: string;
-          addressBookObj?: Object;
-        }
-      >,
-      string
-    >
-  >();
-
-  const { chainStore } = useStore();
+  const { chainStore, uiConfigStore } = useStore();
+  const labelRef = useFocusAfterRouting();
+  const navigate = useNavigation();
   const { colors } = useTheme();
-  const styles = styling(colors);
+  const route =
+    useRoute<RouteProp<RootStackParamList, "Setting.General.ContactAdd">>();
+  const intl = useIntl();
 
-  const recipientConfig = useRecipientConfig(
-    chainStore,
-    route.params.chainId,
-    EthereumEndpoint
-  );
-
-  const addressBookConfig = route.params.addressBookConfig;
+  const [chainId, setChainId] = useState(chainStore.chainInfosInUI[0].chainId);
+  // If edit mode, this will be equal or greater than 0.
+  const [editIndex, setEditIndex] = useState(-1);
 
   const [name, setName] = useState("");
+
+  const recipientConfig = useRecipientConfig(chainStore, chainId, {
+    allowHexAddressToBech32Address: !chainStore
+      .getChain(chainId)
+      .chainId.startsWith("injective"),
+    icns: uiConfigStore.icnsInfo,
+  });
+  const memoConfig = useMemoConfig(chainStore, chainId);
+
+  // Param "chainId" is required.
+  const paramChainId = route.params.chainId;
+  const paramEditIndex = route.params.editIndex;
+
   useEffect(() => {
-    if (route?.params?.recipient) {
-      recipientConfig.setRawRecipient(route?.params?.recipient);
-    }
-    if (route?.params?.addressBookObj) {
-      setName(route?.params?.addressBookObj?.name);
-    }
-  }, [route?.params?.recipient, route?.params?.addressBookObj]);
+    navigate.setOptions({
+      title:
+        editIndex < 0
+          ? intl.formatMessage({ id: "page.setting.contacts.add.add-title" })
+          : intl.formatMessage({ id: "page.setting.contacts.add.edit-title" }),
+    });
+  }, [editIndex, intl, navigate]);
 
-  const memoConfig = useMemoConfig(chainStore, route.params.chainId);
-  // const keyboardVerticalOffset = Platform.OS === 'ios' ? -50 : 0;
+  useEffect(() => {
+    if (!paramChainId) {
+      throw new Error('Param "chainId" is required');
+    }
 
+    setChainId(paramChainId);
+    recipientConfig.setChain(paramChainId);
+    memoConfig.setChain(paramChainId);
+
+    if (typeof paramEditIndex !== "undefined") {
+      const index = paramEditIndex;
+      // const index = Number.parseInt(paramEditIndex, 10);
+      const addressBook =
+        uiConfigStore.addressBookConfig.getAddressBook(paramChainId);
+      if (addressBook.length > index) {
+        setEditIndex(index);
+        const data = addressBook[index];
+        setName(data.name);
+        recipientConfig.setValue(data.address);
+        memoConfig.setValue(data.memo);
+        return;
+      }
+    }
+
+    setEditIndex(-1);
+  }, [
+    intl,
+    memoConfig,
+    paramChainId,
+    paramEditIndex,
+    recipientConfig,
+    uiConfigStore.addressBookConfig,
+  ]);
+
+  const txConfigsValidate = useTxConfigsValidate({
+    recipientConfig,
+    memoConfig,
+  });
+  const navigation = useNavigation();
+  const chainInfo = chainStore.getChain(chainId);
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <OWHeaderTitle
+          title={"Add new contact"}
+          subTitle={chainInfo?.chainName}
+        />
+      ),
+    });
+  }, [chainId]);
+  const handleSubmit = () => {
+    if (name === "") {
+      return;
+    }
+    if (editIndex < 0) {
+      uiConfigStore.addressBookConfig.addAddressBook(chainId, {
+        name,
+        address: recipientConfig.value,
+        memo: memoConfig.value,
+      });
+    } else {
+      uiConfigStore.addressBookConfig.setAddressBookAt(chainId, editIndex, {
+        name,
+        address: recipientConfig.value,
+        memo: memoConfig.value,
+      });
+    }
+
+    navigate.goBack();
+  };
+  const styles = styling(colors);
   return (
     <PageWithBottom
       bottomGroup={
         <OWButton
           label="Save"
-          disabled={
-            !name ||
-            recipientConfig.getError() != null ||
-            memoConfig.getError() != null
-          }
-          onPress={async () => {
-            if (
-              name &&
-              recipientConfig.getError() == null &&
-              memoConfig.getError() == null
-            ) {
-              if (addressBookConfig) {
-                await addressBookConfig.addAddressBook({
-                  name,
-                  address: recipientConfig.rawRecipient,
-                  memo: memoConfig.memo,
-                });
-                goBack();
-              } else {
-                showToast({
-                  message: "Something went wrong! Plase try again.",
-                  type: "danger",
-                });
-              }
-            }
-          }}
+          disabled={name === ""}
+          onPress={() => handleSubmit()}
           style={[
             {
               width: metrics.screenWidth - 32,
@@ -167,21 +218,22 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 color={colors["neutral-icon-on-light"]}
               />
             }
-            onChangeText={(text) => setName(text)}
+            ref={labelRef}
             value={name}
+            onChange={(e) => {
+              e.preventDefault();
+              setName(e.nativeEvent.text);
+            }}
             placeholder="Enter contact name"
           />
 
-          <AddressInput
+          <TextInput
             label=""
             topInInputContainer={
               <View style={{ paddingBottom: 4 }}>
                 <OWText>Address</OWText>
               </View>
             }
-            recipientConfig={recipientConfig}
-            memoConfig={memoConfig}
-            disableAddressBook={false}
             inputContainerStyle={styles.input}
             labelStyle={styles.addNewBookLabel}
             placeholder="Enter address"
@@ -195,20 +247,21 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
               </View>
             }
             inputRight={
-              <TouchableOpacity
-                onPress={() => {
-                  navigate("Camera", {
-                    screenCurrent: "addressbook",
-                    name,
-                  });
-                }}
-              >
-                <OWIcon
-                  size={22}
-                  name="tdesign_scan"
-                  color={colors["neutral-icon-on-light"]}
-                />
-              </TouchableOpacity>
+              // <TouchableOpacity
+              //   onPress={() => {
+              //     navigate("Camera", {
+              //       screenCurrent: "addressbook",
+              //       name,
+              //     });
+              //   }}
+              // >
+              //   <OWIcon
+              //     size={22}
+              //     name="tdesign_scan"
+              //     color={colors["neutral-icon-on-light"]}
+              //   />
+              // </TouchableOpacity>
+              <></>
             }
           />
           <MemoInput

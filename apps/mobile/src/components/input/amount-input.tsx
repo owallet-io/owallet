@@ -43,7 +43,11 @@ export const NewAmountInput: FunctionComponent<{
     maxBalance,
     colors,
   }) => {
-    const error = amountConfig.getError();
+    // const error = amountConfig.getError();
+    const uiProperties = amountConfig.uiProperties;
+
+    const error = uiProperties.error || uiProperties.warning;
+
     const errorText: string | undefined = useMemo(() => {
       if (error) {
         switch (error.constructor) {
@@ -123,9 +127,9 @@ export const NewAmountInput: FunctionComponent<{
             textAlign="right"
             errorLabelStyle={errorLabelStyle}
             maxLength={20}
-            value={amountConfig.amount}
+            value={amountConfig.value}
             onChangeText={(text) => {
-              amountConfig.setAmount(text.replace(/,/g, "."));
+              amountConfig.setValue(text?.replace(",", "."));
             }}
             placeholder={placeholder}
             placeholderTextColor={placeholderTextColor}

@@ -1,4 +1,4 @@
-import { BondStatus } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import React from "react";
@@ -19,7 +19,7 @@ const Validators = ({
   const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
 
   const renderItem = ({ item }) => {

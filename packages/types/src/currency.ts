@@ -5,18 +5,12 @@ export interface Currency {
   readonly coinDenom: string;
   readonly coinMinimalDenom: string;
   readonly coinDecimals: number;
-
   /**
    * This is used to fetch asset's fiat value from coingecko.
    * You can get id from https://api.coingecko.com/api/v3/coins/list.
    */
   readonly coinGeckoId?: string;
   readonly coinImageUrl?: string;
-  readonly gasPriceStep?: {
-    low: number;
-    average: number;
-    high: number;
-  };
 }
 
 /**
@@ -29,9 +23,12 @@ export interface CW20Currency extends Currency {
   readonly contractAddress: string;
 }
 
-export interface ERC20Currency extends Currency {
-  readonly type: "erc20";
-  readonly contractAddress: string;
+export interface BTCSegwitCurrency extends Currency {
+  readonly type: "segwit";
+}
+
+export interface BTCLegacyCurrency extends Currency {
+  readonly type: "legacy";
 }
 
 export interface Secret20Currency extends Currency {
@@ -49,6 +46,10 @@ export interface IBCCurrency extends Currency {
   readonly paths: {
     portId: string;
     channelId: string;
+
+    counterpartyChannelId?: string;
+    counterpartyPortId?: string;
+    clientChainId?: string;
   }[];
   /**
    * The chain id that the currency is from.
@@ -63,6 +64,14 @@ export interface IBCCurrency extends Currency {
 }
 
 /**
+ * The currency that is supported on the EVM.
+ */
+export interface ERC20Currency extends Currency {
+  readonly type: "erc20";
+  readonly contractAddress: string;
+}
+
+/**
  * Any type of currency that Kepler applications can support.
  */
 export type AppCurrency =
@@ -70,7 +79,9 @@ export type AppCurrency =
   | CW20Currency
   | Secret20Currency
   | IBCCurrency
-  | ERC20Currency;
+  | ERC20Currency
+  | BTCSegwitCurrency
+  | BTCLegacyCurrency;
 
 export interface FiatCurrency {
   readonly currency: string;

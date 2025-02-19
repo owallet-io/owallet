@@ -26,6 +26,7 @@ export const AFFILIATE_ADDRESS = "orai1h8rg7zknhxmffp3ut5ztsn8zcaytckfemdkp8n";
 
 export const SCREENS = {
   Home: "Home",
+  SelectAsset: "SelectAsset",
   TransactionDetail: "Transactions.Detail",
   BackupMnemonic: "BackupMnemonic",
   RecoveryPhrase: "RecoveryPhrase",
@@ -52,6 +53,7 @@ export const SCREENS = {
   RegisterRecoverMnemonic: "Register.RecoverMnemonic",
   RegisterRecoverPhrase: "Register.RecoverPhrase",
   RegisterNewLedger: "Register.NewLedger",
+  ConnectNewLedger: "Connect.NewLedger",
   PincodeScreen: "PincodeScreen",
   Send: "Send",
   SendEvm: "SendEvm",
@@ -79,6 +81,7 @@ export const SCREENS = {
   DetailsBrowser: "Detail.Browser",
   AddressBook: "AddressBook",
   ManageChain: "ManageChain",
+  ManageToken: "ManageToken",
   AddChain: "AddChain",
   AddAddressBook: "AddAddressBook",
   Browser: "Browser",
@@ -87,6 +90,7 @@ export const SCREENS = {
   WebDApp: "Web.dApp",
   Invest: "Invest",
   Delegate: "Delegate",
+  StakeDashboard: "StakeDashboard",
   NewSend: "NewSend",
   SendTron: "SendTron",
   SendBtc: "SendBtc",
@@ -174,6 +178,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.ManageWalletConnect]: {
     title: "Manage Wallet Connect",
   },
+  [SCREENS.SelectAsset]: {
+    title: "Select Asset",
+  },
   [SCREENS.Tokens]: {
     title: HEADER_KEY.showNetworkHeader,
   },
@@ -250,6 +257,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.NetworkSelect]: {
     title: HEADER_KEY.showNetworkHeader,
   },
+  [SCREENS.StakeDashboard]: {
+    title: HEADER_KEY.showNetworkHeader,
+  },
   [SCREENS.NetworkToken]: {
     // title: HEADER_KEY.showNetworkHeader,
     title: "Add Token",
@@ -302,7 +312,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.ManageChain]: {
     title: "Select Chains",
   },
-
+  [SCREENS.ManageToken]: {
+    title: "Manage token",
+  },
   [SCREENS.AddAddressBook]: {
     title: "Add new contact",
   },

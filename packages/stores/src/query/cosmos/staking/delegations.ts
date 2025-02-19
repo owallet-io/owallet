@@ -2,17 +2,14 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../chain-query";
-import { Delegation, Delegations, DelegationsStargate } from "./types";
-import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../../common";
-import { CoinPretty, Int } from "@owallet/unit";
+import { Delegation, Delegations } from "./types";
+import { ChainGetter } from "../../../chain";
+import { CoinPretty, Dec, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../../common";
 
-export class ObservableQueryDelegationsInner extends ObservableChainQuery<
-  Delegations | DelegationsStargate
-> {
+export class ObservableQueryDelegationsInner extends ObservableChainQuery<Delegations> {
   protected bech32Address: string;
 
   constructor(
@@ -32,14 +29,21 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
     this.bech32Address = bech32Address;
   }
 
-  protected canFetch(): boolean {
+  protected override canFetch(): boolean {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.bech32Address?.length > 0;
+    return (
+      this.bech32Address.length > 0 ||
+      this.chainGetter.getChain(this.chainId).stakeCurrency != null
+    );
   }
 
   @computed
-  get total(): CoinPretty {
+  get total(): CoinPretty | undefined {
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+    if (!stakeCurrency) {
+      return;
+    }
 
     if (!this.response) {
       return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
@@ -47,10 +51,9 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
 
     let totalBalance = new Int(0);
     for (const delegation of this.response.data.delegation_responses) {
-      if (typeof delegation.balance === "string") {
-        totalBalance = totalBalance.add(new Int(delegation.balance));
-      } else {
-        totalBalance = totalBalance.add(new Int(delegation.balance.amount));
+      const amount = new Int(delegation.balance.amount);
+      if (amount.gt(new Int(0))) {
+        totalBalance = totalBalance.add(amount);
       }
     }
 
@@ -68,21 +71,23 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
 
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
+    if (!stakeCurrency) {
+      return [];
+    }
+
     const result = [];
 
     for (const delegation of this.response.data.delegation_responses) {
-      const balance =
-        typeof delegation.balance === "string"
-          ? delegation.balance
-          : delegation.balance.amount;
-
-      result.push({
-        validatorAddress:
-          "validator_address" in delegation
-            ? delegation.validator_address
-            : delegation.delegation.validator_address,
-        balance: new CoinPretty(stakeCurrency, new Int(balance)),
-      });
+      const balance = new CoinPretty(
+        stakeCurrency,
+        new Int(delegation.balance.amount)
+      );
+      if (balance.toDec().gt(new Dec(0))) {
+        result.push({
+          validatorAddress: delegation.delegation.validator_address,
+          balance,
+        });
+      }
     }
 
     return result;
@@ -94,46 +99,32 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
       return [];
     }
 
-    const result = this.response.data.delegation_responses;
-    if (result.length > 0 && "delegation" in result[0]) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return result.map((r) => {
-        return {
-          balance: r.balance,
-          delegator_address: r.delegation.delegator_address,
-          validator_address: r.delegation.validator_address,
-          shares: r.delegation.shares,
-        };
-      });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return result;
+    return this.response.data.delegation_responses.filter((del) => {
+      return new Int(del.balance.amount).gt(new Int(0));
+    });
   }
 
   readonly getDelegationTo = computedFn(
-    (validatorAddress: string): CoinPretty => {
+    (validatorAddress: string): CoinPretty | undefined => {
       const delegations = this.delegations;
 
       const stakeCurrency = this.chainGetter.getChain(
         this.chainId
       ).stakeCurrency;
 
+      if (!stakeCurrency) {
+        return;
+      }
+
       if (!this.response) {
         return new CoinPretty(stakeCurrency, new Int(0)).ready(false);
       }
 
       for (const delegation of delegations) {
-        if (delegation.validator_address === validatorAddress) {
+        if (delegation.delegation.validator_address === validatorAddress) {
           return new CoinPretty(
             stakeCurrency,
-            new Int(
-              typeof delegation.balance === "string"
-                ? delegation.balance
-                : delegation.balance.amount
-            )
+            new Int(delegation.balance.amount)
           );
         }
       }
@@ -143,13 +134,11 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
   );
 }
 
-export class ObservableQueryDelegations extends ObservableChainQueryMap<
-  Delegations | DelegationsStargate
-> {
+export class ObservableQueryDelegations extends ObservableChainQueryMap<Delegations> {
   constructor(
-    protected readonly sharedContext: QuerySharedContext,
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
   ) {
     super(sharedContext, chainId, chainGetter, (bech32Address: string) => {
       return new ObservableQueryDelegationsInner(

@@ -1,85 +1,243 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { SignModal } from "../../modals/sign";
-import { LedgerGranterModal } from "../../modals/ledger";
-import { navigationRef } from "../../router/root";
 import { HomeBaseModal } from "../../modals/home-base";
-import { SignEthereumModal } from "../../modals/sign/sign-ethereum";
+import { AppState, BackHandler, Platform } from "react-native";
+import { WCMessageRequester } from "@stores/wallet-connect/msg-requester";
+import { ADR36SignModal } from "@src/modals/sign/sign-adr36-modal";
+import { SignEthereumModal } from "@src/modals/sign/sign-ethereum-modal";
+import { LoadingModal } from "@src/modals/loading";
+import { WalletConnectAccessModal } from "@src/modals/permission/wallet-connect-access";
+import { GlobalPermissionModal } from "@src/modals/permission/global-permission";
+import { SuggestChainModal } from "@src/modals/permission/suggest-chain";
+import { BasicAccessModal } from "@src/modals/permission/basic-access";
+import { SignOasisModal } from "@src/modals/sign/sign-oasis";
+import { SignBtcModal } from "@src/modals/sign/sign-btc";
+import { BasicAccessEVMModal } from "@src/modals/permission/basic-access-evm";
 import { SignTronModal } from "../../modals/sign/sign-tron";
-import { AccessModal } from "@src/modals/permission";
-import { SignBitcoinModal } from "@src/modals/sign/sign-bitcoin";
+import { SignSvmModal } from "@src/modals/sign/sign-svm";
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
-      ledgerInitStore,
-      permissionStore,
       signInteractionStore,
+      signEthereumInteractionStore,
+      signSvmInteractionStore,
+      signOasisInteractionStore,
+      signBtcInteractionStore,
+      signTronInteractionStore,
+      permissionStore,
+      chainSuggestStore,
+      walletConnectStore,
+      keyRingStore,
       modalStore,
     } = useStore();
 
-    // useEffect(() => {
-    //   for (const data of permissionStore.waitingDatas) {
-    //     // Currently, there is no modal to permit the permission of external apps.
-    //     // All apps should be embeded explicitly.
-    //     // If such apps needs the permissions, add these origins to the privileged origins.
-    //     // if (data.data.origins.length !== 1) {
-    //     //   // permissionStore.rejectAll();
-    //     // }
-    //   }
-    // }, [permissionStore, permissionStore.waitingDatas]);
+    const [showGoBackToBrowserIOS, setShowGoBackToBrowserIOS] = useState(false);
 
-    const renderAccessModal = () => {
-      if (permissionStore.waitingDatas) {
-        return permissionStore.waitingDatas.map((wd) => {
-          return (
-            <AccessModal
-              waitingData={wd}
-              isOpen={true}
-              close={() => permissionStore.rejectAll()}
-            />
-          );
-        });
+    useEffect(() => {
+      if (walletConnectStore.needGoBackToBrowser) {
+        if (Platform.OS === "android") {
+          BackHandler.exitApp();
+        } else {
+          setShowGoBackToBrowserIOS(true);
+        }
       }
-    };
+    }, [walletConnectStore.needGoBackToBrowser]);
+
+    useEffect(() => {
+      const listener = AppState.addEventListener("change", (e) => {
+        if (e === "background" || e === "inactive") {
+          setShowGoBackToBrowserIOS(false);
+          walletConnectStore.clearNeedGoBackToBrowser();
+        }
+      });
+
+      return () => {
+        listener.remove();
+      };
+    }, [walletConnectStore]);
+
+    const mergedPermissionData = permissionStore.waitingPermissionMergedData;
+    const mergedDataForEVM = permissionStore.waitingPermissionMergedDataForEVM;
 
     return (
       <React.Fragment>
-        {ledgerInitStore.isInitNeeded ? (
-          <LedgerGranterModal
-            isOpen={true}
-            close={() => ledgerInitStore.abortAll()}
-          />
-        ) : null}
-
-        {renderAccessModal()}
-
-        {signInteractionStore.waitingData ? (
+        {signInteractionStore.waitingData &&
+        !signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
           <SignModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            close={() => {
+              signInteractionStore.rejectWithProceedNext(
+                signInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signInteractionStore.waitingData}
           />
         ) : null}
-        {signInteractionStore.waitingEthereumData ? (
+
+        {signOasisInteractionStore.waitingData ? (
+          <SignOasisModal
+            isOpen={true}
+            close={() => {
+              signOasisInteractionStore.rejectWithProceedNext(
+                signOasisInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signOasisInteractionStore.waitingData}
+          />
+        ) : null}
+        {signTronInteractionStore.waitingData ? (
+          <SignTronModal
+            isOpen={true}
+            close={() => {
+              signTronInteractionStore.rejectWithProceedNext(
+                signTronInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signTronInteractionStore.waitingData}
+          />
+        ) : null}
+        {signSvmInteractionStore.waitingData ? (
+          <SignSvmModal
+            isOpen={true}
+            close={() => {
+              signSvmInteractionStore.rejectWithProceedNext(
+                signSvmInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signSvmInteractionStore.waitingData}
+          />
+        ) : null}
+        {signEthereumInteractionStore.waitingData ? (
           <SignEthereumModal
             isOpen={true}
             close={() => {
-              signInteractionStore.rejectAll();
+              signEthereumInteractionStore.rejectWithProceedNext(
+                signEthereumInteractionStore.waitingData?.id!,
+                () => {}
+              );
             }}
+            interactionData={signEthereumInteractionStore.waitingData}
           />
         ) : null}
-        {signInteractionStore.waitingTronData ? (
-          <SignTronModal
+        {signBtcInteractionStore.waitingData ? (
+          <SignBtcModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            close={() => {
+              signBtcInteractionStore.rejectWithProceedNext(
+                signBtcInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signBtcInteractionStore.waitingData}
+          />
+        ) : null}
+        {signOasisInteractionStore.waitingData ? (
+          <SignOasisModal
+            isOpen={true}
+            close={() => {
+              signOasisInteractionStore.rejectWithProceedNext(
+                signOasisInteractionStore.waitingData?.id!,
+                () => {}
+              );
+            }}
+            interactionData={signOasisInteractionStore.waitingData}
           />
         ) : null}
 
-        {signInteractionStore.waitingBitcoinData ? (
-          <SignBitcoinModal
+        {keyRingStore.status === "unlocked" &&
+        (walletConnectStore.isPendingClientFromDeepLink ||
+          walletConnectStore.isPendingWcCallFromDeepLinkClient) ? (
+          <LoadingModal isOpen={true} close={() => {}} />
+        ) : null}
+
+        {permissionStore.waitingGlobalPermissionData ? (
+          <GlobalPermissionModal
             isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
+            setIsOpen={async () => {
+              await permissionStore.rejectGlobalPermissionAll();
+            }}
+          />
+        ) : null}
+
+        {mergedPermissionData
+          ? (() => {
+              const data = mergedPermissionData;
+              if (data.origins.length === 1) {
+                if (WCMessageRequester.isVirtualURL(data.origins[0])) {
+                  return (
+                    <WalletConnectAccessModal
+                      isOpen={true}
+                      setIsOpen={async () =>
+                        await permissionStore.rejectPermissionWithProceedNext(
+                          data.ids,
+                          () => {}
+                        )
+                      }
+                      // close={() => {}}
+                      key={data.ids.join(",")}
+                      data={data}
+                    />
+                  );
+                }
+              }
+
+              return (
+                <BasicAccessModal
+                  isOpen={true}
+                  setIsOpen={async () =>
+                    await permissionStore.rejectPermissionWithProceedNext(
+                      data.ids,
+                      () => {}
+                    )
+                  }
+                  // close={() => {}}
+                  key={data.ids.join(",")}
+                  data={data}
+                />
+              );
+            })()
+          : null}
+        {signInteractionStore.waitingData &&
+        signInteractionStore.waitingData.data.signDocWrapper.isADR36SignDoc ? (
+          <ADR36SignModal
+            isOpen={true}
+            setIsOpen={() => signInteractionStore.rejectAll()}
+          />
+        ) : null}
+        {mergedDataForEVM
+          ? (() => {
+              const data = mergedDataForEVM;
+
+              return (
+                <BasicAccessEVMModal
+                  isOpen={true}
+                  setIsOpen={async () =>
+                    await permissionStore.rejectPermissionWithProceedNext(
+                      data.ids,
+                      () => {}
+                    )
+                  }
+                  // close={() => {}}
+                  key={data.ids.join(",")}
+                  data={data}
+                />
+              );
+            })()
+          : null}
+
+        {chainSuggestStore.waitingSuggestedChainInfo ? (
+          <SuggestChainModal
+            isOpen={true}
+            setIsOpen={async () => {
+              await chainSuggestStore.rejectAll();
+            }}
           />
         ) : null}
 

@@ -1,13 +1,5 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
-import {
-  AppState,
-  BackHandler,
-  Platform,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle,
-} from "react-native";
+import { AppState, BackHandler, View, ViewStyle } from "react-native";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react-lite";
 import { ModalBase } from "./base";

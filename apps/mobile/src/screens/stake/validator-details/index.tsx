@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { StyleSheet, View } from "react-native";
@@ -23,7 +23,13 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
   const apr = route.params.apr;
   const percentageVote = route.params.percentageVote;
-  tracking(`Validator Detail Screen`);
+
+  useEffect(() => {
+    tracking(`Validator Detail Screen`);
+
+    return () => {};
+  }, []);
+
   return (
     <View>
       <ValidatorDetailsCard

@@ -15,6 +15,9 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 export const RegisterDoneScreen: FunctionComponent = observer(() => {
   const {
@@ -91,7 +94,11 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                 width: metrics.screenWidth,
                 height: metrics.screenHeight / 2.2,
               }}
-              source={require("../../assets/image/img-all-done.png")}
+              source={
+                eventTheme === "noel"
+                  ? imagesNoel.img_all_done
+                  : images.img_all_done
+              }
               resizeMode="cover"
               fadeDuration={0}
             />
@@ -202,12 +209,12 @@ export const RegisterDoneScreen: FunctionComponent = observer(() => {
                   await keychainStore.turnOnBiometry(password);
                 }
                 // Definetly, the last key is newest keyring.
-                if (keyRingStore.multiKeyStoreInfo.length > 0) {
-                  await keyRingStore.changeKeyRing(
-                    keyRingStore.multiKeyStoreInfo.length - 1
-                  );
-                }
-                await waitAccountInit(chainStore, accountStore, keyRingStore);
+                // if (keyRingStore.multiKeyStoreInfo.length > 0) {
+                //   await keyRingStore.changeKeyRing(
+                //     keyRingStore.multiKeyStoreInfo.length - 1
+                //   );
+                // }
+                // await waitAccountInit(chainStore, accountStore, keyRingStore);
 
                 resetTo(SCREENS.STACK.MainTab);
               } catch (e) {

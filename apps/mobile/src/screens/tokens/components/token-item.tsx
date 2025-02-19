@@ -11,7 +11,6 @@ import { RightArrowIcon } from "../../../components/icon";
 import { TokenSymbol } from "../../../components/token-symbol";
 
 import { spacing, typography } from "../../../themes";
-import { formatBalance } from "@owallet/bitcoin";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 
@@ -55,14 +54,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   }
 
   const amountBalance = useMemo(() => {
-    if (chainInfo.networkType === "bitcoin") {
-      const amount = formatBalance({
-        balance: Number(balance?.toCoin()?.amount),
-        cryptoUnit: "BTC",
-        coin: chainInfo.chainId,
-      });
-      return amount;
-    }
     const amount = balance
       .trim(true)
       .shrink(true)

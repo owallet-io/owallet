@@ -7,25 +7,20 @@ import {
   sortChainsByPrice,
 } from "../../../utils/helper";
 import { Text } from "@src/components/text";
-import {
-  ChainIdEnum,
-  COINTYPE_NETWORK,
-  getKeyDerivationFromAddressType,
-} from "@owallet/common";
+
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { useBIP44Option } from "@src/screens/register/bip44";
 import { useStore } from "@src/stores";
 import { useTheme } from "@src/themes/theme-provider";
-import { Popup } from "react-native-popup-confirm-toast";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { OWButton } from "@src/components/button";
 import { RadioButton } from "react-native-radio-buttons-group";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
-import { CoinPretty, Dec, PricePretty } from "@owallet/unit";
+import { PricePretty } from "@owallet/unit";
 import { tracking } from "@src/utils/tracking";
-import { ViewToken } from "@src/stores/huge-queries";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SCREENS } from "@common/constants";
+import { navigate } from "@src/router/root";
+import { useBIP44PathState } from "@screens/register/components/bip-path-44";
+import { initPrice } from "./account-box-new";
 
 export const NetworkModal: FC<{
   hideAllNetwork?: boolean;
@@ -36,76 +31,16 @@ export const NetworkModal: FC<{
   useEffect(() => {
     tracking("Modal Select Network Screen");
   }, []);
-  const bip44Option = useBIP44Option();
+
   const {
     modalStore,
     chainStore,
-    keyRingStore,
-    accountStore,
     appInitStore,
-    priceStore,
+    keyRingStore,
+    hugeQueriesStore,
+    allAccountStore,
   } = useStore();
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const [dataBalances, setDataBalances] = useState<ViewToken[]>([]);
-  const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
-  const loadCachedData = async (cacheKey: string) => {
-    // InteractionManager.runAfterInteractions(async () => {
-    try {
-      const cachedData = await AsyncStorage.getItem(
-        `cachedDataBalances-${cacheKey}`
-      );
-      if (cachedData) {
-        const dataBalances: any[] = JSON.parse(cachedData);
-        const balances = dataBalances.map((item) => {
-          const token = new CoinPretty(
-            item.token.currency,
-            new Dec(item.token.balance)
-          );
-          return {
-            chainInfo: chainStore.getChain(item.chainId),
-            isFetching: false,
-            error: null,
-            token,
-            price: priceStore.calculatePrice(token),
-          };
-        });
-        setDataBalances(balances);
-      }
-    } catch (e) {
-      console.error("Failed to load data from cache", e);
-    }
-    // });
-  };
-  useEffect(() => {
-    loadCachedData(accountOrai.bech32Address);
-
-    return () => {};
-  }, [accountOrai.bech32Address]);
-  const onConfirm = async (item: any) => {
-    const { networkType } = chainStore.getChain(item?.chainId);
-    const keyDerivation = (() => {
-      const keyMain = getKeyDerivationFromAddressType(account.addressType);
-      if (networkType === "bitcoin") {
-        return keyMain;
-      }
-      return "44";
-    })();
-    chainStore.selectChain(item?.chainId);
-    await chainStore.saveLastViewChainId();
-    appInitStore.selectAllNetworks(false);
-    modalStore.close();
-    Popup.hide();
-
-    await keyRingStore.setKeyStoreLedgerAddress(
-      `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${
-        bip44Option.bip44HDPath.account
-      }'/${bip44Option.bip44HDPath.change}/${
-        bip44Option.bip44HDPath.addressIndex
-      }`,
-      item?.chainId
-    );
-  };
 
   useEffect(() => {
     if (chainStore.current.chainName.toLowerCase().includes("test")) {
@@ -118,50 +53,60 @@ export const NetworkModal: FC<{
       setActiveTab("mainnet");
     }
   }, [appInitStore.getInitApp.hideTestnet]);
+  const getApp = (chainId: string) => {
+    if (!chainId) return;
 
+    const chainInfo = chainStore.getChain(chainId);
+    if (chainInfo.features.includes("tron")) {
+      return "Tron";
+    }
+    if (chainId.includes("eip155") || chainId.includes("inj")) {
+      return "Ethereum";
+    } else if (chainInfo.features.includes("btc")) {
+      return "Bitcoin";
+    }
+    return;
+  };
   const handleSwitchNetwork = useCallback(async (item) => {
     try {
-      if (account.isNanoLedger) {
-        modalStore.close();
-        if (!item.isAll) {
-          Popup.show({
-            type: "confirm",
-            title: "Switch network!",
-            textBody: `You are switching to ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } network. Please confirm that you have ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App opened before switch network`,
-            buttonText: `I have switched ${
-              COINTYPE_NETWORK[item.bip44.coinType]
-            } App`,
-            confirmText: "Cancel",
-            okButtonStyle: {
-              backgroundColor: colors["orange-800"],
-            },
-            callback: () => onConfirm(item),
-            cancelCallback: () => {
-              Popup.hide();
-            },
-            bounciness: 0,
-            duration: 10,
-          });
-          return;
-        } else {
-          appInitStore.selectAllNetworks(true);
-        }
+      modalStore.close();
+      if (!item?.chainId) {
+        appInitStore.selectAllNetworks(true);
       } else {
-        modalStore.close();
-        if (!item.isAll) {
-          tracking(`Select ${item?.chainName} Network`);
-          chainStore.selectChain(item?.chainId);
-          await chainStore.saveLastViewChainId();
+        if (keyRingStore.selectedKeyInfo.type === "ledger") {
+          const account = allAccountStore.getAccount(item?.chainId);
+          if (account?.addressDisplay) {
+            chainStore.selectChain(item?.chainId);
+          } else {
+            const bip44Path =
+              keyRingStore.selectedKeyInfo.insensitive["bip44Path"];
+            if (!bip44Path) {
+              throw new Error("bip44Path not found");
+            }
+            const app = getApp(item?.chainId);
+            if (!app) return;
+            navigate(SCREENS.ConnectNewLedger, {
+              name: "",
+              password: "",
+              stepPrevious: 1,
+              stepTotal: 3,
+              bip44Path: bip44Path,
+              app: app,
+              appendModeInfo: {
+                vaultId: keyRingStore.selectedKeyInfo.id,
+                afterEnableChains: chainStore.chainInfos.map(
+                  (chain) => chain.chainId
+                ),
+              },
+            });
+          }
           appInitStore.selectAllNetworks(false);
-          modalStore.close();
         } else {
-          tracking("Select All Network");
-          appInitStore.selectAllNetworks(true);
+          chainStore.selectChain(item?.chainId);
+          appInitStore.selectAllNetworks(false);
         }
+
+        // const chainInfo = chainStore.getChain(item?.chainId);
       }
     } catch (error) {
       showToast({
@@ -172,8 +117,7 @@ export const NetworkModal: FC<{
   }, []);
   const availableTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
-    let balances = dataBalances;
-    for (const bal of balances) {
+    for (const bal of hugeQueriesStore.allKnownBalances) {
       if (bal.price) {
         if (!result) {
           result = bal.price;
@@ -183,7 +127,29 @@ export const NetworkModal: FC<{
       }
     }
     return result;
-  }, [dataBalances]);
+  }, [hugeQueriesStore.allKnownBalances]);
+  const stakedTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    for (const bal of hugeQueriesStore.delegations) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    for (const bal of hugeQueriesStore.unbondings) {
+      if (bal.viewToken.price) {
+        if (!result) {
+          result = bal.viewToken.price;
+        } else {
+          result = result.add(bal.viewToken.price);
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.delegations, hugeQueriesStore.unbondings]);
   const _renderItem = ({ item }: { item }) => {
     let selected =
       item?.chainId === chainStore.current.chainId &&
@@ -233,7 +199,7 @@ export const NetworkModal: FC<{
               <OWIcon
                 name={"tdesignblockchain"}
                 size={20}
-                // color={colors["neutral-text-title"]}
+                color={colors["neutral-text-title"]}
               />
             ) : (
               <OWIcon
@@ -267,7 +233,9 @@ export const NetworkModal: FC<{
               }}
             >
               {!item.chainId
-                ? (availableTotalPrice || initPrice)?.toString()
+                ? (
+                    availableTotalPrice?.add(stakedTotalPrice) || initPrice
+                  )?.toString()
                 : (item.balance || initPrice)?.toString()}
             </Text>
           </View>
@@ -288,11 +256,8 @@ export const NetworkModal: FC<{
       </TouchableOpacity>
     );
   };
-  console.log(chainStore.chainInfosInUI, "chainStore.chainInfos");
-  const chainsInfoWithBalance = chainStore.chainInfos.map((item, index) => {
-    let balances = dataBalances.filter(
-      (token) => token.chainInfo.chainId === item.chainId
-    );
+  const chainsInfoWithBalance = chainStore.chainInfosInUI.map((item, index) => {
+    let balances = hugeQueriesStore.getAllBalancesByChainId(item.chainId);
     let result: PricePretty | undefined;
     for (const bal of balances) {
       if (bal.price) {
@@ -303,11 +268,32 @@ export const NetworkModal: FC<{
         }
       }
     }
+    for (const bal of hugeQueriesStore.delegations.filter(
+      (delegation) => delegation.chainInfo.chainId === item.chainId
+    )) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    for (const bal of hugeQueriesStore.unbondings.filter(
+      (unbonding) => unbonding.viewToken.chainInfo.chainId === item.chainId
+    )) {
+      if (bal.viewToken.price) {
+        if (!result) {
+          result = bal.viewToken.price;
+        } else {
+          result = result.add(bal.viewToken.price);
+        }
+      }
+    }
     //@ts-ignore
     item.balance = result || initPrice;
     return item;
   });
-  // console.log(chainsInfoWithBalance,"chainsInfoWithBalance");
   const dataTestnet = sortChainsByPrice(chainsInfoWithBalance).filter(
     (c) =>
       c.chainName.toLowerCase().includes("test") &&

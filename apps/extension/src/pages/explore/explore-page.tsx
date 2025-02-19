@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { FooterLayout } from "../../layouts/footer-layout/footer-layout";
-import styles from "./explore.module.scss";
-import classnames from "classnames";
 import images from "assets/images";
 import { limitString } from "@owallet/common";
+import { MainHeaderLayout } from "../main/layouts/header";
+import { Box } from "../../components/box";
+import { Stack } from "../../components/stack";
+import styled, { useTheme } from "styled-components";
+import { ColorPalette } from "../../styles";
 
 const types = [
   {
@@ -30,7 +32,7 @@ export const explorerData = [
     logo: images.dapps_scan_logo,
     title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/" + ref,
+    url: "https://scanium.io/" + ref,
   },
 ];
 export const aiData = [
@@ -105,7 +107,96 @@ export const dataAll = [
   ...explorerData,
   ...aiData,
 ];
+
+const Styles = {
+  Container: styled.div<{ isNotReady?: boolean }>`
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? props.isNotReady
+          ? ColorPalette["skeleton-layer-0"]
+          : ColorPalette.white
+        : ColorPalette["gray-650"]};
+
+    box-shadow: ${(props) =>
+      props.theme.mode === "light" && !props.isNotReady
+        ? "0px 1px 4px 0px rgba(43, 39, 55, 0.10)"
+        : "none"};
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+  `,
+  Title: styled.span`
+    color: ${ColorPalette["gray-650"]};
+    font-size: 16px;
+    font-weight: 400;
+  `,
+  TitleEco: styled.div`
+    color: ${ColorPalette["purple-600"]};
+    font-size: 22px;
+    font-weight: 700;
+  `,
+  ContainerTypeNetwork: styled.div`
+    padding-top: 8px;
+    display: flex;
+    flex-direction: row;
+  `,
+  ItemTypeNetwork: styled.div<{ active?: boolean }>`
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: ${(props) => (props.active ? `2px` : `0`)} solid
+      ${(props) =>
+        props.active ? ColorPalette["purple-400"] : ColorPalette["gray-400"]};
+  `,
+  TitleTxtItem: styled.div<{ active?: boolean }>`
+    font-weight: 600;
+    line-height: 24px;
+    font-size: 16px;
+    color: ${(props) => {
+      return props.active
+        ? ColorPalette["purple-400"]
+        : ColorPalette["gray-400"];
+    }};
+  `,
+  ListExplore: styled.div`
+    padding-top: 16px;
+    padding-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  `,
+  ItemExplore: styled.div`
+    height: 142px;
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    justify-content: center;
+    flex: calc(50% - 16px);
+    border-radius: 8px;
+    padding: 16px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+  `,
+  TitleItem: styled.div`
+    color: ${ColorPalette["gray-10"]};
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 24px;
+  `,
+  SubTitleItem: styled.div`
+    color: ${ColorPalette["gray-50"]};
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 18px;
+  `,
+};
+
 export const ExplorePage = () => {
+  const theme = useTheme();
+
   const [tab, setTab] = useState(types[0]);
   const activeTab = (item) => {
     setTab(item);
@@ -123,57 +214,49 @@ export const ExplorePage = () => {
     }
   };
   return (
-    <FooterLayout>
-      <div className={styles.container}>
-        <span className={styles.title}>Ecosystem</span>
-        <br />
-        <span className={styles.titleEco}>Oraichain</span>
-        <div className={styles.containerTypeNetwork}>
-          {types.map((item, index) => (
-            <div
-              onClick={() => activeTab(item)}
-              key={item.id}
-              className={classnames([
-                styles.itemTypeNetwork,
-                tab.id === item.id
-                  ? styles.activeBorderBottom
-                  : styles.inactiveBorderBottom,
-              ])}
-            >
-              <span
-                className={classnames([
-                  styles.titleTxtItem,
-                  tab.id === item.id
-                    ? styles.activeTxtColor
-                    : styles.inactiveTxtColor,
-                ])}
-              >
-                {item.title}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className={styles.listExplore}>
-          {checkTab(tab).map((item, index) => {
-            return (
-              <div
-                onClick={() => window.open(item.url)}
-                key={index}
-                style={{
-                  backgroundImage: `url(${item.images})`,
-                }}
-                className={styles.itemExplore}
-              >
-                <img className={styles.imgIcon} src={item.logo} />
-                <span className={styles.titleItem}>{item.title}</span>
-                <span className={styles.subTitleItem}>
-                  {limitString(item.subTitle, 30)}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </FooterLayout>
+    <MainHeaderLayout>
+      <Box paddingX="0.75rem" paddingBottom="1.5rem">
+        <Stack gutter="0.75rem">
+          <Styles.Container>
+            <Styles.TitleEco>
+              Oraichain <Styles.Title>Ecosystem</Styles.Title>
+            </Styles.TitleEco>
+
+            <Styles.ContainerTypeNetwork>
+              {types.map((item, index) => (
+                <Styles.ItemTypeNetwork
+                  active={tab.id === item.id}
+                  onClick={() => activeTab(item)}
+                  key={item.id}
+                >
+                  <Styles.TitleTxtItem active={tab.id === item.id}>
+                    {item.title}
+                  </Styles.TitleTxtItem>
+                </Styles.ItemTypeNetwork>
+              ))}
+            </Styles.ContainerTypeNetwork>
+            <Styles.ListExplore>
+              {checkTab(tab).map((item, index) => {
+                return (
+                  <Styles.ItemExplore
+                    onClick={() => window.open(item.url)}
+                    key={index}
+                    style={{
+                      backgroundImage: `url(${item.images})`,
+                    }}
+                  >
+                    <img width={32} height={32} src={item.logo} />
+                    <Styles.Title>{item.title}</Styles.Title>
+                    <Styles.SubTitleItem>
+                      {limitString(item.subTitle, 30)}
+                    </Styles.SubTitleItem>
+                  </Styles.ItemExplore>
+                );
+              })}
+            </Styles.ListExplore>
+          </Styles.Container>
+        </Stack>
+      </Box>
+    </MainHeaderLayout>
   );
 };

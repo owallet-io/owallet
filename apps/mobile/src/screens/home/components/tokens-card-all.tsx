@@ -1,9 +1,15 @@
 import { OWButton } from "@src/components/button";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
-import React, { FC, FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FC,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
-  Platform,
   StyleSheet,
   Switch,
   TouchableOpacity,
@@ -13,6 +19,7 @@ import {
 import { useStore } from "@src/stores";
 import {
   capitalizedText,
+  getImageFromToken,
   maskedNumber,
   removeDataInParentheses,
 } from "@utils/helper";
@@ -25,43 +32,78 @@ import { metrics } from "@src/themes";
 import FastImage from "react-native-fast-image";
 import OWText from "@src/components/text/ow-text";
 import { ViewToken } from "@src/stores/huge-queries";
-import { CoinPretty, Dec } from "@owallet/unit";
 import { OWSearchInput } from "@src/components/ow-search-input";
-import { initPrice } from "@src/screens/home/hooks/use-multiple-assets";
 import images from "@src/assets/images";
+import { initPrice } from "./account-box-new";
+import { Dec } from "@owallet/unit";
+import { useIsNotReady } from "@screens/home";
+import { XAxis } from "@components/axis";
+import { Box } from "@components/box";
+import { FlashList } from "@shopify/flash-list";
 
+const zeroDec = new Dec(0);
 export const TokensCardAll: FunctionComponent<{
   containerStyle?: ViewStyle;
-  dataTokens: ViewToken[];
-}> = observer(({ containerStyle, dataTokens }) => {
-  const { priceStore, appInitStore } = useStore();
+  // dataTokens: ViewToken[];
+}> = observer(({ containerStyle }) => {
+  const { hugeQueriesStore, uiConfigStore, appInitStore, chainStore } =
+    useStore();
   const [keyword, setKeyword] = useState("");
   const { colors } = useTheme();
-  const tokens = appInitStore.getInitApp.hideTokensWithoutBalance
-    ? dataTokens.filter((item, index) => {
-        const balance = new CoinPretty(
-          item.token.currency,
-          item.token.toCoin().amount
-        );
-        const price = priceStore.calculatePrice(balance, "usd");
-        return price?.toDec()?.gte(new Dec("0.1")) ?? false;
-      })
-    : dataTokens;
+  const { chainId } = chainStore.current;
+  const allBalances = useMemo(() => {
+    return appInitStore.getInitApp.isAllNetworks
+      ? hugeQueriesStore.getAllBalances(true)
+      : hugeQueriesStore.getAllBalancesByChainId(chainId);
+  }, [
+    appInitStore.getInitApp.isAllNetworks,
+    hugeQueriesStore.getAllBalances(true),
+    hugeQueriesStore.getAllBalancesByChainId(chainId),
+  ]);
 
-  const tokensAll =
-    tokens &&
-    tokens.filter((item, index) =>
-      item?.token?.currency?.coinDenom
-        ?.toLowerCase()
-        ?.includes(keyword.toLowerCase())
-    );
+  const allBalancesNonZero = useMemo(() => {
+    return allBalances.filter((token) => {
+      return token.token.toDec().gt(zeroDec);
+    });
+  }, [allBalances]);
+  const isNotReady = useIsNotReady();
+  const isFirstTime = allBalancesNonZero.length === 0 && isNotReady;
+  const trimSearch = keyword.trim();
+  const _allBalancesSearchFiltered = useMemo(() => {
+    return allBalances.filter((token) => {
+      const key = `${token.chainInfo.chainId}/${token.token.currency.coinMinimalDenom}`;
+      const isHide = appInitStore.isItemUpdated(key);
+      return (
+        (token.chainInfo.chainName
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase()) ||
+          token.token.currency.coinDenom
+            .toLowerCase()
+            .includes(trimSearch.toLowerCase())) &&
+        !isHide
+      );
+    });
+  }, [allBalances, trimSearch, Array.from(appInitStore.tokenMap.entries())]);
+  const hasLowBalanceTokens =
+    hugeQueriesStore.filterLowBalanceTokens(allBalances).length > 0;
+  const lowBalanceFilteredAllBalancesSearchFiltered =
+    hugeQueriesStore.filterLowBalanceTokens(_allBalancesSearchFiltered);
 
-  const [toggle, setToggle] = useState(
-    appInitStore.getInitApp.hideTokensWithoutBalance
-  );
+  const allBalancesSearchFiltered =
+    uiConfigStore.isHideLowBalance && hasLowBalanceTokens
+      ? lowBalanceFilteredAllBalancesSearchFiltered
+      : _allBalancesSearchFiltered;
+
+  const [toggle, setToggle] = useState(uiConfigStore.isHideLowBalance);
+  const [viewMore, setViewMore] = useState(true);
   useEffect(() => {
-    appInitStore.updateHideTokensWithoutBalance(toggle);
+    uiConfigStore.setHideLowBalance(toggle);
   }, [toggle]);
+
+  const renderItem = useCallback(({ item }): any => {
+    return <TokenItem key={item.chainId} item={item} />;
+  }, []);
+
   return (
     <>
       <View
@@ -109,10 +151,23 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
       </View>
-      {tokensAll?.length > 0 ? (
-        tokensAll.map((item, index) => (
-          <TokenItem key={index.toString()} item={item} />
-        ))
+      {!isFirstTime ? (
+        // (viewMore
+        //   ? allBalancesSearchFiltered?.slice(0, 5)
+        //   : allBalancesSearchFiltered
+        // ).map((item, index) => <TokenItem key={index.toString()} item={item} />)
+        <FlashList
+          data={
+            !isFirstTime
+              ? viewMore
+                ? allBalancesSearchFiltered?.slice(0, 5)
+                : allBalancesSearchFiltered
+              : []
+          }
+          renderItem={renderItem}
+          estimatedItemSize={200}
+          onEndReachedThreshold={0.5}
+        />
       ) : (
         <View
           style={{
@@ -148,28 +203,55 @@ export const TokensCardAll: FunctionComponent<{
           />
         </View>
       )}
-      <OWButton
+      <View
         style={{
-          marginTop: Platform.OS === "android" ? 28 : 22,
-          marginHorizontal: 16,
-          width: metrics.screenWidth - 32,
-          borderRadius: 999,
+          marginVertical: 8,
         }}
-        icon={
-          <OWIcon
-            name="tdesignplus"
-            color={colors["neutral-text-title"]}
-            size={20}
-          />
-        }
-        label={"Add token"}
-        size="large"
-        type="secondary"
-        onPress={() => {
-          navigate(SCREENS.NetworkToken);
-          return;
-        }}
-      />
+      >
+        <OWButton
+          style={{
+            width: "100%",
+            marginBottom: 8,
+          }}
+          label={`View ${viewMore ? "more" : "less"}`}
+          iconRight={
+            <OWIcon
+              name={viewMore ? "tdesignchevron-down" : "tdesignchevron-up"}
+              color={colors["neutral-text-body"]}
+              size={20}
+            />
+          }
+          textStyle={{
+            color: colors["neutral-text-body"],
+          }}
+          onPress={() => setViewMore((prev) => !prev)}
+          contentAlign={"center"}
+          fullWidth={false}
+          type={"link"}
+        />
+        <OWButton
+          style={{
+            marginHorizontal: 16,
+            width: metrics.screenWidth - 32,
+            borderRadius: 999,
+          }}
+          icon={
+            <OWIcon
+              name="tdesignlist"
+              color={colors["neutral-text-title"]}
+              size={20}
+            />
+          }
+          label={"Manage token"}
+          size="large"
+          type="secondary"
+          onPress={() => {
+            navigate(SCREENS.ManageToken);
+            // navigate(SCREENS.NetworkToken);
+            return;
+          }}
+        />
+      </View>
     </>
   );
 });
@@ -184,19 +266,15 @@ const TokenItem: FC<{
   if (!fiatCurrency) return;
   const styles = styling(colors);
   const onPressToken = async (item) => {
-    if (
-      !item.token?.currency?.coinGeckoId ||
-      !item.token?.currency?.coinImageUrl
-    )
-      return;
     navigate(SCREENS.TokenDetails, {
       item,
     });
     return;
   };
-  const price24h = item.token?.currency?.coinGeckoId
-    ? priceStore.getPrice24hChange(item.token.currency.coinGeckoId)
+  const price24h = item.token?.currency?.coinMinimalDenom
+    ? priceStore.getPrice24hChange(item.token.currency)
     : 0;
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -212,11 +290,7 @@ const TokenItem: FC<{
               style={{ borderRadius: 999 }}
               type="images"
               source={{
-                uri:
-                  item.token?.currency?.coinImageUrl?.includes("missing.png") ||
-                  !item.token?.currency?.coinImageUrl
-                    ? unknownToken.coinImageUrl
-                    : item.token?.currency?.coinImageUrl,
+                uri: getImageFromToken(item),
               }}
               size={32}
             />
@@ -230,42 +304,67 @@ const TokenItem: FC<{
               source={{
                 uri:
                   item?.chainInfo?.chainSymbolImageUrl ||
-                  unknownToken.coinImageUrl,
+                  unknownToken?.coinImageUrl,
               }}
               size={16}
             />
           </View>
 
           <View style={styles.pl12}>
-            <Text size={16} color={colors["neutral-text-heading"]} weight="600">
-              {removeDataInParentheses(item.token?.currency?.coinDenom)}{" "}
+            <XAxis alignY={"center"}>
               <Text
-                size={12}
-                color={
-                  price24h < 0
-                    ? colors["error-text-body"]
-                    : colors["success-text-body"]
-                }
-                style={styles.profit}
+                size={16}
+                color={colors["neutral-text-heading"]}
+                weight="600"
               >
-                {price24h > 0 ? "+" : ""}
-                {maskedNumber(price24h, 2, 2)}%
+                {removeDataInParentheses(
+                  item.token?.currency?.coinDenom
+                ).trim()}
               </Text>
-            </Text>
-            <Text weight="400" color={colors["neutral-text-body"]}>
-              {item?.chainInfo?.chainName}
-            </Text>
-            {item.typeAddress && (
-              <View style={styles.type}>
+              <Box
+                marginLeft={5}
+                borderWidth={1}
+                borderColor={
+                  price24h < 0
+                    ? colors["error-border-pressed"]
+                    : colors["success-border-pressed"]
+                }
+                backgroundColor={
+                  price24h < 0
+                    ? colors["error-surface-subtle"]
+                    : colors["success-surface-subtle"]
+                }
+                paddingX={4}
+                borderRadius={16}
+              >
                 <Text
-                  weight="400"
                   size={12}
-                  color={colors["neutral-text-body-2"]}
+                  weight={"500"}
+                  color={
+                    price24h < 0
+                      ? colors["error-text-body"]
+                      : colors["success-text-body"]
+                  }
+                  style={styles.profit}
                 >
-                  {capitalizedText(item.typeAddress)}
+                  {price24h > 0 ? "+" : ""}
+                  {!price24h ? "0.00" : maskedNumber(price24h, 2, 2)}%
                 </Text>
-              </View>
-            )}
+              </Box>
+            </XAxis>
+            <Text
+              style={{
+                lineHeight: 24,
+              }}
+              weight="400"
+              color={colors["neutral-text-body"]}
+            >
+              {item?.chainInfo?.chainName}
+              {item.token?.currency?.type &&
+              item.token?.currency?.coinDenom === "BTC"
+                ? ` ${capitalizedText(item.token?.currency?.type)}`
+                : ""}
+            </Text>
           </View>
         </View>
         <View style={styles.rightBoxItem}>
@@ -323,14 +422,15 @@ const styling = (colors) =>
       justifyContent: "space-between",
       marginVertical: 8,
       marginHorizontal: 16,
+      alignItems: "center",
     },
     btnItem: {
       borderBottomColor: colors["neutral-border-default"],
       borderBottomWidth: 1,
     },
     profit: {
-      fontWeight: "400",
-      lineHeight: 20,
+      // fontWeight: "400",
+      lineHeight: 16,
     },
     iconWrap: {
       width: 44,

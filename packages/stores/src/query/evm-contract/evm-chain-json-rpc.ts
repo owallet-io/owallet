@@ -1,5 +1,5 @@
+import { ChainGetter } from "../../chain";
 import {
-  ChainGetter,
   HasMapStore,
   ObservableJsonRPCQuery,
   QuerySharedContext,
@@ -22,13 +22,7 @@ export class ObservableEvmChainJsonRpcQuery<
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
-    super(
-      sharedContext,
-      chainInfo?.evmRpc ?? chainInfo?.rpc,
-      "",
-      method,
-      params
-    );
+    super(sharedContext, chainInfo?.rpc, "", method, params);
 
     this._chainId = chainId;
     this.chainGetter = chainGetter;

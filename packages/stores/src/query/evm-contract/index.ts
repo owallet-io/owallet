@@ -1,5 +1,1 @@
-export * from "./erc20-balance";
-
-export * as EvmContract from "./types";
-
-export * from "./queries";
+export * from "./evm-chain-json-rpc";

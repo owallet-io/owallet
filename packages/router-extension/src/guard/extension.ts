@@ -17,9 +17,7 @@ export class ExtensionGuards {
 
     const url = new URL(sender.url);
     if (url.origin !== msg.origin) {
-      throw new Error(
-        `Invalid origin: received: ${url.origin}, expected: ${msg.origin}`
-      );
+      throw new Error("Invalid origin");
     }
     return Promise.resolve();
   };
@@ -30,7 +28,7 @@ export class ExtensionGuards {
     sender: MessageSender
   ): Promise<void> => {
     if (!env.isInternalMsg && !msg.approveExternal(env, sender)) {
-      throw new Error("Permission rejected");
+      throw new Error("Permission rejected 2");
     }
     return Promise.resolve();
   };

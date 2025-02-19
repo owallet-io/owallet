@@ -1,4 +1,0 @@
-{
-  "bitcoin": [{ "host": "blockstream.info/electrum-websocket/api", "port": 0 }],
-  "bitcoinTestnet": [{ "host": "blockstream.info/testnet/electrum-websocket/api", "port": 0 }]
-}

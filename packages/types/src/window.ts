@@ -1,20 +1,20 @@
-import { OWallet, Ethereum, TronWeb, Bitcoin } from "./wallet";
-import { OfflineSigner } from "@cosmjs/launchpad";
+import { OWallet, OWalletSignOptions } from "./wallet";
+import { OfflineAminoSigner, OfflineDirectSigner } from "./cosmjs";
 import { SecretUtils } from "./secretjs";
-import { OfflineDirectSigner } from "@cosmjs/proto-signing";
+
 export interface Window {
   owallet?: OWallet;
-  bitcoin?: Bitcoin;
-  ethereum?: Ethereum;
-  eth_owallet?: Ethereum;
-  tronWeb?: TronWeb;
-  tronLink?: TronWeb;
-  tronWeb_owallet?: TronWeb;
-  tronLink_owallet?: TronWeb;
-  getOfflineSigner?: (chainId: string) => OfflineSigner & OfflineDirectSigner;
-  getOfflineSignerOnlyAmino?: (chainId: string) => OfflineSigner;
+  getOfflineSigner?: (
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ) => OfflineAminoSigner & OfflineDirectSigner;
+  getOfflineSignerOnlyAmino?: (
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ) => OfflineAminoSigner;
   getOfflineSignerAuto?: (
-    chainId: string
-  ) => Promise<OfflineSigner | OfflineDirectSigner>;
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ) => Promise<OfflineAminoSigner | OfflineDirectSigner>;
   getEnigmaUtils?: (chainId: string) => SecretUtils;
 }

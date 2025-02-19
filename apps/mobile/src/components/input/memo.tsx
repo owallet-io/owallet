@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
-import { IMemoConfig } from "@owallet/hooks";
+import { IMemoConfig, MemoConfig } from "@owallet/hooks";
 import { TextStyle, ViewStyle } from "react-native";
 import { TextInput } from "./input";
 
@@ -14,9 +14,10 @@ export const MemoInput: FunctionComponent<{
   label: string;
   inputLeft?: React.ReactNode;
   placeholderTextColor?: string;
-  memoConfig: IMemoConfig;
+  memoConfig: MemoConfig;
   multiline?: boolean;
   editable?: boolean;
+  isBottomSheet?: boolean;
   topInInputContainer?: React.ReactNode;
 }> = observer(
   ({
@@ -33,9 +34,11 @@ export const MemoInput: FunctionComponent<{
     multiline,
     topInInputContainer,
     editable,
+    isBottomSheet,
   }) => {
     return (
       <TextInput
+        isBottomSheet={isBottomSheet}
         topInInputContainer={topInInputContainer}
         label={label}
         labelStyle={labelStyle}
@@ -52,7 +55,7 @@ export const MemoInput: FunctionComponent<{
         placeholder={placeholder}
         placeholderTextColor={placeholderTextColor}
         onChangeText={(text) => {
-          memoConfig.setMemo(text);
+          memoConfig.setValue(text);
         }}
         inputLeft={inputLeft}
       />

@@ -4,24 +4,18 @@ import { observer } from "mobx-react-lite";
 import { StyleSheet, View } from "react-native";
 import { OWBox } from "@components/card";
 import { OWButton } from "@src/components/button";
-
 import { HistoryCard } from "@src/screens/transactions";
 import { TokensCardAll } from "./tokens-card-all";
 import { NftCard } from "./nft-card";
-import { useStore } from "@src/stores";
-import { ViewToken } from "@owallet/types";
 
-export const MainTabHome: FC<{
-  dataTokens: readonly ViewToken[];
-}> = observer(({ dataTokens }) => {
+export const MainTabHome: FC<{}> = observer(() => {
   const { colors } = useTheme();
-  const { chainStore, appInitStore } = useStore();
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const styles = styling(colors);
   const renderContentTab = () => {
     switch (activeTab.id) {
       case TabEnum.TOKEN:
-        return <TokensCardAll dataTokens={dataTokens} />;
+        return <TokensCardAll />;
       case TabEnum.NFT:
         return <NftCard />;
       case TabEnum.History:
@@ -41,7 +35,7 @@ export const MainTabHome: FC<{
                 ...styles.titleTab,
                 color:
                   activeTab.id === item.id
-                    ? colors["neutral-border-bold"]
+                    ? colors["neutral-text-title"]
                     : colors["neutral-text-body"],
               }}
               onPress={() => {
@@ -50,6 +44,7 @@ export const MainTabHome: FC<{
               style={[
                 {
                   flex: 1,
+                  borderRadius: 0,
                 },
                 activeTab.id === item.id ? styles.active : styles.inactive,
               ]}

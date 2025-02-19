@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -6,7 +6,11 @@ import _ from "lodash";
 import { View, Image, ScrollView, StyleSheet } from "react-native";
 
 import { useTheme } from "@src/themes/theme-provider";
-import { capitalizedText, formatContractAddress } from "@src/utils/helper";
+import {
+  capitalizedText,
+  formatContractAddress,
+  openLink,
+} from "@src/utils/helper";
 
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
@@ -21,6 +25,8 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import { goBack, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { OWButton } from "@components/button";
+import { ChainIdentifierToTxExplorerMap } from "@owallet/common";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore } = useStore();
@@ -35,11 +41,11 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
           txHash: string;
           data?: {
             memo: string;
-            fee: StdFee;
+            fee: CoinPretty;
             fromAddress: string;
             toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
+            amount: CoinPretty;
+            type: string;
           };
         }
       >,
@@ -48,7 +54,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
   >();
 
   const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId || current.chainId;
   const { params } = route;
 
   const { colors, images } = useTheme();
@@ -59,17 +65,6 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     resetTo(SCREENS.STACK.MainTab);
     return;
   };
-
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-  const fee = params?.data?.fee?.amount?.[0]?.amount
-    ? new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee?.amount?.[0]?.amount)
-      )
-    : new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -81,6 +76,10 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
+  const zeroCoin = new CoinPretty(chainInfo.feeCurrencies[0], new Dec(0));
+
+  const amount = params?.data?.amount || zeroCoin;
+  const fee = params?.data?.fee || zeroCoin;
   const styles = styling(colors);
   return (
     <PageWithBottom

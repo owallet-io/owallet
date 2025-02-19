@@ -1,15 +1,15 @@
 {
   "name": "@owallet/proto-types",
   "version": "0.12.28",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "zx ./proto-types-gen/scripts/clean.mjs; rm -rf node_modules; rm -rf proto-types-gen/build; rm -rf proto-types-gen/src",
-    "build": "zx ./proto-types-gen/scripts/proto-gen.mjs",
-    "dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
+    "clean:dev": "zx ./proto-types-gen/scripts/clean.mjs; rm -rf node_modules; rm -rf proto-types-gen/build; rm -rf proto-types-gen/src",
+    "build:dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
+    "start:dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
     "lint-test": "eslint \"proto-types-gen/scripts/**/*\" && prettier --check \"proto-types-gen/scripts/**/*\"",
     "lint-fix": "eslint --fix \"proto-types-gen/scripts/**/*\" && prettier --write \"proto-types-gen/scripts/**/*\""
   },

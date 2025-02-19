@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+
+  "name": "OWallet",
+  "description": "OWallet: BTC x COSMOS x EVM x TRON x OASIS x SOLANA in one Wallet.",
+  "version": "3.2.17",
+  "icons": {
+    "16": "assets/icon-16.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "OWallet"
+  },
+  "background": {
+    "page": "background.html",
+    "persistent": true
+  },
+  "permissions": [
+    "storage",
+    "notifications",
+    "identity",
+    "idle",
+    "alarms",
+    "unlimitedStorage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["browser-polyfill.js", "contentScripts.bundle.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    "injectedScript.bundle.js",
+    "assets/SpaceGrotesk-Bold.ttf",
+    "assets/icon-128.png",
+    "assets/megaphone.svg",
+    "assets/locked-keplr-logo-128.png",
+    "assets/icon-click-cursor.png"
+  ]
+}

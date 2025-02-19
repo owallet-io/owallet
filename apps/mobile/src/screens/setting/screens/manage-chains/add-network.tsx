@@ -16,7 +16,7 @@ import { checkValidDomain, showToast } from "@utils/helper";
 import { fetchRetry, unknownToken } from "@owallet/common";
 import { simpleFetch } from "@owallet/simple-fetch";
 import { logger } from "ethers";
-import { Bech32Address } from "@owallet/cosmos";
+import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { useStore } from "@src/stores";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@common/constants";
@@ -49,7 +49,7 @@ export const AddChainScreen: FunctionComponent = observer(() => {
     formState: { errors },
   } = useForm<IFormData>();
   const [isLoading, setIsLoading] = useState(false);
-  const { chainStore } = useStore();
+  const { chainStore, keyRingStore } = useStore();
   const submit = handleSubmit(async () => {
     try {
       setIsLoading(true);
@@ -97,8 +97,14 @@ export const AddChainScreen: FunctionComponent = observer(() => {
         },
         // beta: true // use v1beta1
       };
-
-      await chainStore.addChain(infoConfig);
+      //@ts-ignore
+      await window.owallet.experimentalSuggestChain(infoConfig);
+      const vaultId = keyRingStore.selectedKeyInfo.id;
+      const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+      await chainStore.enableChainInfoInUIWithVaultId(
+        vaultId,
+        ...[chainIdentifier]
+      );
       showToast({
         type: "success",
         message: "Add chain success",
@@ -325,6 +331,7 @@ export const AddChainScreen: FunctionComponent = observer(() => {
       <OWBox
         style={{
           marginTop: 8,
+          backgroundColor: colors["neutral-surface-card"],
         }}
       >
         <TextInput

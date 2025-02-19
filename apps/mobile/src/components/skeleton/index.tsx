@@ -1,0 +1,69 @@
+import React, { FunctionComponent, PropsWithChildren } from "react";
+import { useStyle } from "../../styles";
+import { Box } from "../box";
+import { DimensionValue } from "react-native";
+import { useTheme } from "@src/themes/theme-provider";
+
+export interface SkeletonProps {
+  isNotReady?: boolean;
+  type?: "default" | "button" | "copyAddress" | "circle" | "rect";
+  dummyMinWidth?: DimensionValue;
+  // This is for the case that the skeleton's background color.
+  layer?: 0 | 1;
+
+  horizontalBleed?: DimensionValue;
+  verticalBleed?: DimensionValue;
+}
+
+export const Skeleton: FunctionComponent<PropsWithChildren<SkeletonProps>> = ({
+  isNotReady,
+  type = "default",
+  layer = 0,
+  dummyMinWidth,
+  horizontalBleed,
+  verticalBleed,
+  children,
+}) => {
+  const style = useStyle();
+
+  const getBorderRadius = () => {
+    switch (type) {
+      case "rect":
+        return 0;
+      case "button":
+        return 6;
+      // case 'copyAddress':
+      //   return CopyAddressRadius;
+      case "circle":
+        return 999999;
+      default:
+        return 256;
+    }
+  };
+  const { colors } = useTheme();
+  return (
+    <Box position="relative" minWidth={isNotReady ? dummyMinWidth : undefined}>
+      {isNotReady ? (
+        <Box
+          position="absolute"
+          backgroundColor={
+            layer === 0
+              ? colors["neutral-surface-action"]
+              : colors["neutral-surface-action3"]
+          }
+          zIndex={10}
+          borderRadius={getBorderRadius()}
+          style={{
+            top: verticalBleed || 0 * -1,
+            bottom: verticalBleed || 0 * -1,
+            left: horizontalBleed || 0 * -1,
+            right: horizontalBleed || 0 * -1,
+            elevation: 1,
+          }}
+        />
+      ) : null}
+
+      {children}
+    </Box>
+  );
+};

@@ -52,8 +52,14 @@ jobs:
         working-directory: apps/mobile
         run: yarn --silent
 
-      - name: Build Libs
-        run: yarn build:libs
+      - name: Build Libs Codepush
+        run: yarn build:codepush
+
+      - name: Build @owallet/hooks
+        run: yarn build
+
+      - name: Build @owallet/hooks-internal
+        run: yarn build
 
       - name: Build provider
         working-directory: apps/mobile
@@ -72,7 +78,7 @@ jobs:
           webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
           username: "GitBot"
-          message: Code pushed success! Comment=${{ github.event.head_commit.message }}
+          message: Code pushed successfully! head_commit=${{ github.event.head_commit.message }}
 
       - name: Send discord message
         if: ${{ failure() }}

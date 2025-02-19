@@ -4,7 +4,12 @@ const bip39 = require("bip39");
 const bip32 = require("bip32");
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bs58check = require("bs58check");
-import { Buffer } from "buffer";
+import { Keypair } from "@solana/web3.js";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import { HDKey } from "micro-ed25519-hdkey";
+
+import { Buffer } from "buffer/";
 
 export type RNG = <
   T extends
@@ -43,8 +48,8 @@ export class Mnemonic {
     };
   }
 
-  static validateMnemonic(mnemonic: string) {
-    bip39.validateMnemonic(mnemonic);
+  static validateMnemonic(mnemonic: string): boolean {
+    return bip39.validateMnemonic(mnemonic);
   }
 
   static async generateSeed(rng: RNG, strength: number = 128): Promise<string> {
@@ -62,16 +67,16 @@ export class Mnemonic {
     password: string = ""
   ): Uint8Array {
     const seed = bip39.mnemonicToSeedSync(mnemonic, password);
-    const masterKey = bip32.fromSeed(seed);
-    const hd = masterKey.derivePath(path);
+    const masterSeed = bip32.fromSeed(seed);
+    const hd = masterSeed.derivePath(path);
 
     const privateKey = hd.privateKey;
-
     if (!privateKey) {
       throw new Error("null hd key");
     }
     return privateKey;
   }
+
   static generateMasterSeedFromMnemonic(
     mnemonic: string,
     password: string = ""
@@ -81,6 +86,7 @@ export class Mnemonic {
 
     return Buffer.from(bs58check.decode(masterKey.toBase58()));
   }
+
   static generatePrivateKeyFromMasterSeed(
     seed: Uint8Array,
     path: string = `m/44'/118'/0'/0/0`
@@ -93,5 +99,21 @@ export class Mnemonic {
       throw new Error("null hd key");
     }
     return privateKey;
+  }
+  static generateKeyPairFromMasterSeed(
+    seed: Uint8Array,
+    path: string = `m/44'/118'/0'/0/0`
+  ): Uint8Array {
+    const masterSeed = bip32.fromBase58(bs58check.encode(seed));
+    const keyPair = masterSeed.derivePath(path);
+    if (!keyPair) {
+      throw new Error("null keyPair");
+    }
+    return keyPair;
+  }
+  static generateWalletSolanaFromSeed(mnemonic: string): Keypair {
+    const seed = bip39.mnemonicToSeedSync(mnemonic, "");
+    const hd = HDKey.fromMasterSeed(seed.toString("hex"));
+    return Keypair.fromSeed(hd.derive(`m/44'/501'/0'/0'`).privateKey);
   }
 }

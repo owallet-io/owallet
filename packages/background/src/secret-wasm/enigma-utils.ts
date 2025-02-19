@@ -2,9 +2,9 @@ import { generateKeyPair, sharedKey as x25519 } from "curve25519-js";
 import { hkdf } from "@noble/hashes/hkdf";
 import { sha256 } from "@noble/hashes/sha256";
 import * as miscreant from "miscreant";
+import { simpleFetch } from "@owallet/simple-fetch";
 import { Buffer } from "buffer/";
 import { ChainIdHelper } from "@owallet/cosmos";
-import axios, { AxiosResponse } from "axios";
 
 const cryptoProvider = new miscreant.PolyfillCryptoProvider();
 
@@ -71,12 +71,10 @@ export class EnigmaUtils implements EncryptionUtils {
       return this.consensusIoPubKey;
     }
 
-    const response = await axios.get<
-      any,
-      AxiosResponse<{ result: { TxKey: string } }>
-    >("/reg/tx-key", {
-      baseURL: this.url,
-    });
+    const response = await simpleFetch<{ result: { TxKey: string } }>(
+      this.url,
+      "/reg/tx-key"
+    );
 
     this.consensusIoPubKey = new Uint8Array(
       Buffer.from(response.data.result.TxKey, "base64")

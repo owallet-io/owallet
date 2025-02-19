@@ -1,342 +1,197 @@
-import { Env, Handler, InternalHandler, Message } from "@owallet/router";
 import {
-  getAddressFromBech32,
-  bufferToHex,
-  getNetworkTypeByChainId,
-  getBase58Address,
-} from "@owallet/common";
+  Env,
+  Handler,
+  InternalHandler,
+  OWalletError,
+  Message,
+} from "@owallet/router";
 import {
-  CreateMnemonicKeyMsg,
-  CreatePrivateKeyMsg,
-  GetKeyMsg,
-  UnlockKeyRingMsg,
-  RequestSignAminoMsg,
-  RequestSignEIP712CosmosTxMsg_v0,
-  RequestSignDirectMsg,
-  LockKeyRingMsg,
+  GetIsLockedMsg,
+  ChangeKeyRingNameMsg,
   DeleteKeyRingMsg,
-  UpdateNameKeyRingMsg,
-  ShowKeyRingMsg,
-  SimulateSignTronMsg,
-  AddMnemonicKeyMsg,
-  AddPrivateKeyMsg,
-  GetMultiKeyStoreInfoMsg,
-  ChangeKeyRingMsg,
-  AddLedgerKeyMsg,
-  CreateLedgerKeyMsg,
-  SetKeyStoreCoinTypeMsg,
-  SetKeyStoreLedgerAddressMsg,
-  RestoreKeyRingMsg,
-  GetIsKeyStoreCoinTypeSetMsg,
+  FinalizeKeyCoinTypeMsg,
+  GetKeyRingStatusMsg,
+  GetKeyRingStatusOnlyMsg,
+  LockKeyRingMsg,
+  NewLedgerKeyMsg,
+  NewPrivateKeyKeyMsg,
+  AppendLedgerKeyAppMsg,
+  NewMnemonicKeyMsg,
+  SelectKeyRingMsg,
+  ShowSensitiveKeyRingDataMsg,
+  UnlockKeyRingMsg,
+  ChangeUserPasswordMsg,
+  ChangeKeyRingNameInteractiveMsg,
+  ExportKeyRingDataMsg,
+  CheckLegacyKeyRingPasswordMsg,
+  NewKeystoneKeyMsg,
   CheckPasswordMsg,
-  ExportKeyRingDatasMsg,
-  RequestVerifyADR36AminoSignDoc,
-  RequestSignEthereumMsg,
-  RequestSignEthereumTypedDataMsg,
-  RequestSignReEncryptDataMsg,
-  RequestSignDecryptDataMsg,
-  RequestPublicKeyMsg,
-  ChangeChainMsg,
-  RequestSignTronMsg,
-  RequestSendRawTransactionMsg,
-  GetDefaultAddressTronMsg,
-  RequestSignProxyReEncryptionDataMsg,
-  RequestSignProxyDecryptionDataMsg,
-  RequestSignBitcoinMsg,
-  TriggerSmartContractMsg,
-  RequestSignOasisMsg,
-  GetKeySettledMsg,
-  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
+  GetLegacyKeyRingInfosMsg,
+  ShowSensitiveLegacyKeyRingDataMsg,
+  ExportKeyRingVaultsMsg,
+  SearchKeyRingsMsg,
+  SimulateSignTronMsg,
+  ExportKeyRingMsg,
 } from "./messages";
 import { KeyRingService } from "./service";
-import { Bech32Address } from "@owallet/cosmos";
 
-import Long from "long";
-import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 export const getHandler: (service: KeyRingService) => Handler = (
   service: KeyRingService
 ) => {
   return (env: Env, msg: Message<unknown>) => {
     switch (msg.constructor) {
-      case RestoreKeyRingMsg:
-        return handleRestoreKeyRingMsg(service)(env, msg as RestoreKeyRingMsg);
-      case DeleteKeyRingMsg:
-        return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
-      case UpdateNameKeyRingMsg:
-        return handleUpdateNameKeyRingMsg(service)(
+      case GetIsLockedMsg:
+        return handleGetIsLockedMsg(service)(env, msg as GetIsLockedMsg);
+      case GetKeyRingStatusMsg:
+        return handleGetKeyRingStatusMsg(service)(
           env,
-          msg as UpdateNameKeyRingMsg
+          msg as GetKeyRingStatusMsg
         );
       case SimulateSignTronMsg:
         return handleSimulateSignTron(service)(env, msg as SimulateSignTronMsg);
-      case ShowKeyRingMsg:
-        return handleShowKeyRingMsg(service)(env, msg as ShowKeyRingMsg);
-      case CreateMnemonicKeyMsg:
-        return handleCreateMnemonicKeyMsg(service)(
+      case GetKeyRingStatusOnlyMsg:
+        return handleGetKeyRingStatusOnlyMsg(service)(
           env,
-          msg as CreateMnemonicKeyMsg
+          msg as GetKeyRingStatusOnlyMsg
         );
-      case AddMnemonicKeyMsg:
-        return handleAddMnemonicKeyMsg(service)(env, msg as AddMnemonicKeyMsg);
-      case CreatePrivateKeyMsg:
-        return handleCreatePrivateKeyMsg(service)(
-          env,
-          msg as CreatePrivateKeyMsg
-        );
-      case AddPrivateKeyMsg:
-        return handleAddPrivateKeyMsg(service)(env, msg as AddPrivateKeyMsg);
-      case CreateLedgerKeyMsg:
-        return handleCreateLedgerKeyMsg(service)(
-          env,
-          msg as CreateLedgerKeyMsg
-        );
-      case AddLedgerKeyMsg:
-        return handleAddLedgerKeyMsg(service)(env, msg as AddLedgerKeyMsg);
+      case SelectKeyRingMsg:
+        return handleSelectKeyRingMsg(service)(env, msg as SelectKeyRingMsg);
       case LockKeyRingMsg:
         return handleLockKeyRingMsg(service)(env, msg as LockKeyRingMsg);
       case UnlockKeyRingMsg:
         return handleUnlockKeyRingMsg(service)(env, msg as UnlockKeyRingMsg);
-      case GetKeyMsg:
-        return handleGetKeyMsg(service)(env, msg as GetKeyMsg);
-      case GetKeySettledMsg:
-        return handleGetKeySettledMsg(service)(env, msg as GetKeySettledMsg);
-      case RequestSignAminoMsg:
-        return handleRequestSignAminoMsg(service)(
+      case FinalizeKeyCoinTypeMsg:
+        return handleFinalizeKeyCoinTypeMsg(service)(
           env,
-          msg as RequestSignAminoMsg
+          msg as FinalizeKeyCoinTypeMsg
         );
-      case RequestSignEIP712CosmosTxMsg_v0:
-        return handleRequestSignEIP712CosmosTxMsg_v0(service)(
+      case NewMnemonicKeyMsg:
+        return handleNewMnemonicKeyMsg(service)(env, msg as NewMnemonicKeyMsg);
+      case NewLedgerKeyMsg:
+        return handleNewLedgerKeyMsg(service)(env, msg as NewLedgerKeyMsg);
+      case NewKeystoneKeyMsg:
+        return handleNewKeystoneKeyMsg(service)(env, msg as NewKeystoneKeyMsg);
+      case NewPrivateKeyKeyMsg:
+        return handleNewPrivateKeyKeyMsg(service)(
           env,
-          msg as RequestSignEIP712CosmosTxMsg_v0
+          msg as NewPrivateKeyKeyMsg
         );
-      case RequestVerifyADR36AminoSignDoc:
-        return handleRequestVerifyADR36AminoSignDoc(service)(
+      case AppendLedgerKeyAppMsg:
+        return handleAppendLedgerKeyAppMsg(service)(
           env,
-          msg as RequestVerifyADR36AminoSignDoc
+          msg as AppendLedgerKeyAppMsg
         );
-      case RequestSignDirectMsg:
-        return handleRequestSignDirectMsg(service)(
+      case ChangeKeyRingNameMsg:
+        return handleChangeKeyRingNameMsg(service)(
           env,
-          msg as RequestSignDirectMsg
+          msg as ChangeKeyRingNameMsg
         );
-      case RequestSignEthereumMsg:
-        return handleRequestSignEthereumMsg(service)(
+      case DeleteKeyRingMsg:
+        return handleDeleteKeyRingMsg(service)(env, msg as DeleteKeyRingMsg);
+      case ShowSensitiveKeyRingDataMsg:
+        return handleShowSensitiveKeyRingDataMsg(service)(
           env,
-          msg as RequestSignEthereumMsg
+          msg as ShowSensitiveKeyRingDataMsg
         );
-      case RequestSignBitcoinMsg:
-        return handleRequestSignBitcoinMsg(service)(
+      case ChangeUserPasswordMsg:
+        return handleChangeUserPasswordMsg(service)(
           env,
-          msg as RequestSignBitcoinMsg
+          msg as ChangeUserPasswordMsg
         );
-      case RequestSignTronMsg:
-        return handleRequestSignTronMsg(service)(
+      case ChangeKeyRingNameInteractiveMsg:
+        return handleChangeKeyRingNameInteractiveMsg(service)(
           env,
-          msg as RequestSignTronMsg
+          msg as ChangeKeyRingNameInteractiveMsg
         );
-      case RequestSignOasisMsg:
-        return handleRequestSignOasisMsg(service)(
+      case ExportKeyRingDataMsg:
+        return handleExportKeyRingDatasMsg(service)(
           env,
-          msg as RequestSignOasisMsg
+          msg as ExportKeyRingDataMsg
         );
-      case RequestSignEthereumTypedDataMsg:
-        return handleRequestSignEthereumTypedData(service)(
+      case CheckLegacyKeyRingPasswordMsg:
+        return handleCheckLegacyKeyRingPasswordMsg(service)(
           env,
-          msg as RequestSignEthereumTypedDataMsg
+          msg as CheckLegacyKeyRingPasswordMsg
         );
-      case RequestPublicKeyMsg:
-        return handleRequestPublicKey(service)(env, msg as RequestPublicKeyMsg);
-      case RequestSignDecryptDataMsg:
-        return handleRequestSignDecryptionData(service)(
+      case GetLegacyKeyRingInfosMsg:
+        return handleGetLegacyKeyRingInfosMsg(service)(
           env,
-          msg as RequestSignDecryptDataMsg
+          msg as GetLegacyKeyRingInfosMsg
         );
-      case RequestSignProxyDecryptionDataMsg:
-        return handleRequestSignProxyDecryptionData(service)(
+      case ShowSensitiveLegacyKeyRingDataMsg:
+        return handleShowSensitiveLegacyKeyRingDataMsg(service)(
           env,
-          msg as RequestSignDecryptDataMsg
-        );
-      case RequestSignProxyReEncryptionDataMsg:
-        return handleRequestSignProxyReEncryptionData(service)(
-          env,
-          msg as RequestSignReEncryptDataMsg
-        );
-      case GetMultiKeyStoreInfoMsg:
-        return handleGetMultiKeyStoreInfoMsg(service)(
-          env,
-          msg as GetMultiKeyStoreInfoMsg
-        );
-      case GetDefaultAddressTronMsg:
-        return handleGetDefaultAddressMsg(service)(
-          env,
-          msg as GetDefaultAddressTronMsg
-        );
-      case RequestSendRawTransactionMsg:
-        return handleSendRawTransactionMsg(service)(
-          env,
-          msg as RequestSendRawTransactionMsg
-        );
-      case TriggerSmartContractMsg:
-        return handleTriggerSmartContractMsg(service)(
-          env,
-          msg as TriggerSmartContractMsg
-        );
-      case ChangeKeyRingMsg:
-        return handleChangeKeyRingMsg(service)(env, msg as ChangeKeyRingMsg);
-      case GetIsKeyStoreCoinTypeSetMsg:
-        return handleGetIsKeyStoreCoinTypeSetMsg(service)(
-          env,
-          msg as GetIsKeyStoreCoinTypeSetMsg
-        );
-      case SetKeyStoreCoinTypeMsg:
-        return handleSetKeyStoreCoinTypeMsg(service)(
-          env,
-          msg as SetKeyStoreCoinTypeMsg
-        );
-      case SetKeyStoreLedgerAddressMsg:
-        return handleSetKeyStoreLedgerAddressMsg(service)(
-          env,
-          msg as SetKeyStoreLedgerAddressMsg
+          msg as ShowSensitiveLegacyKeyRingDataMsg
         );
       case CheckPasswordMsg:
         return handleCheckPasswordMsg(service)(env, msg as CheckPasswordMsg);
-      case ExportKeyRingDatasMsg:
-        return handleExportKeyRingDatasMsg(service)(
+      case ExportKeyRingVaultsMsg:
+        return handleExportKeyRingVaultsMsg(service)(
           env,
-          msg as ExportKeyRingDatasMsg
+          msg as ExportKeyRingVaultsMsg
         );
-      case ChangeChainMsg:
-        return handleChangeChainMsg(service)(env, msg as ChangeChainMsg);
-
-      case PrivilegeCosmosSignAminoWithdrawRewardsMsg:
-        return handlePrivilegeCosmosSignAminoWithdrawRewardsMsg(service)(
-          env,
-          msg as PrivilegeCosmosSignAminoWithdrawRewardsMsg
-        );
+      case ExportKeyRingMsg:
+        return handleExportKeyRingMsg(service)(env, msg as ExportKeyRingMsg);
+      case SearchKeyRingsMsg:
+        return handleSearchKeyRingsMsg(service)(env, msg as SearchKeyRingsMsg);
       default:
-        throw new Error("Unknown msg type");
+        throw new OWalletError("keyring", 221, "Unknown msg type");
     }
   };
 };
 
-const handleRestoreKeyRingMsg: (
+const handleGetIsLockedMsg: (
   service: KeyRingService
-) => InternalHandler<RestoreKeyRingMsg> = (service) => {
-  return async (_env, _msg) => {
-    return await service.restore();
+) => InternalHandler<GetIsLockedMsg> = (service) => {
+  return () => {
+    return service.keyRingStatus === "locked";
   };
 };
 
-const handleDeleteKeyRingMsg: (
+const handleGetKeyRingStatusMsg: (
   service: KeyRingService
-) => InternalHandler<DeleteKeyRingMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.deleteKeyRing(msg.index, msg.password);
+) => InternalHandler<GetKeyRingStatusMsg> = (service) => {
+  return () => {
+    return {
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+      needMigration: service.needMigration,
+      isMigrating: service.isMigrating,
+    };
   };
 };
 
-const handleUpdateNameKeyRingMsg: (
+const handleGetKeyRingStatusOnlyMsg: (
   service: KeyRingService
-) => InternalHandler<UpdateNameKeyRingMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.updateNameKeyRing(msg.index, msg.name, msg?.email);
+) => InternalHandler<GetKeyRingStatusOnlyMsg> = (service) => {
+  return () => {
+    return {
+      status: service.keyRingStatus,
+    };
   };
 };
 
-const handleShowKeyRingMsg: (
-  service: KeyRingService
-) => InternalHandler<ShowKeyRingMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.showKeyRing(
-      msg.index,
-      msg.password,
-      msg.chainId,
-      msg.isShowPrivKey
-    );
-  };
-};
 const handleSimulateSignTron: (
   service: KeyRingService
 ) => InternalHandler<SimulateSignTronMsg> = (service) => {
   return async (_, msg) => {
-    return await service.simulateSignTron(msg.msg);
-  };
-};
-
-const handleCreateMnemonicKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<CreateMnemonicKeyMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.createMnemonicKey(
-      msg.kdf,
-      msg.mnemonic,
-      msg.password,
-      msg.meta,
-      msg.bip44HDPath
+    return await service.simulateSignTron(
+      msg.transaction,
+      msg.vaultId,
+      msg.coinType
     );
   };
 };
 
-const handleAddMnemonicKeyMsg: (
+const handleSelectKeyRingMsg: (
   service: KeyRingService
-) => InternalHandler<AddMnemonicKeyMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.addMnemonicKey(
-      msg.kdf,
-      msg.mnemonic,
-      msg.meta,
-      msg.bip44HDPath
-    );
-  };
-};
-
-const handleCreatePrivateKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<CreatePrivateKeyMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.createPrivateKey(
-      msg.kdf,
-      msg.privateKey,
-      msg.password,
-      msg.meta
-    );
-  };
-};
-
-const handleAddPrivateKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<AddPrivateKeyMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.addPrivateKey(msg.kdf, msg.privateKey, msg.meta);
-  };
-};
-
-const handleCreateLedgerKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<CreateLedgerKeyMsg> = (service) => {
-  return async (env, msg) => {
-    return await service.createLedgerKey(
-      env,
-      msg.kdf,
-      msg.password,
-      msg.meta,
-      msg.bip44HDPath
-    );
-  };
-};
-
-const handleAddLedgerKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<AddLedgerKeyMsg> = (service) => {
-  return async (env, msg) => {
-    const result = await service.addLedgerKey(
-      env,
-      msg.kdf,
-      msg.meta,
-      msg.bip44HDPath
-    );
-    return result;
+) => InternalHandler<SelectKeyRingMsg> = (service) => {
+  return (_, msg) => {
+    service.selectKeyRing(msg.vaultId);
+    return {
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
   };
 };
 
@@ -344,8 +199,9 @@ const handleLockKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<LockKeyRingMsg> = (service) => {
   return () => {
+    service.lockKeyRing();
     return {
-      status: service.lock(),
+      status: service.keyRingStatus,
     };
   };
 };
@@ -353,413 +209,238 @@ const handleLockKeyRingMsg: (
 const handleUnlockKeyRingMsg: (
   service: KeyRingService
 ) => InternalHandler<UnlockKeyRingMsg> = (service) => {
-  return async (_, msg) => {
+  return async (_env, msg) => {
+    await service.unlockKeyRing(msg.password);
     return {
-      status: await service.unlock(msg.password, msg.saving),
-    };
-  };
-};
-//@ts-ignore
-const handleGetKeySettledMsg: (
-  service: KeyRingService
-) => InternalHandler<GetKeySettledMsg> = (service) => {
-  return async (env, msg) => {
-    const paramArray = msg.chainIds.map((chainId) =>
-      handleGetKeyMsg(service)(env, { chainId } as GetKeyMsg)
-    );
-    const data = await Promise.allSettled(paramArray);
-    return data;
-  };
-};
-
-const handleGetKeyMsg: (
-  service: KeyRingService
-) => InternalHandler<GetKeyMsg> = (service) => {
-  return async (env, msg) => {
-    await service.permissionService.checkOrGrantBasicAccessPermission(
-      env,
-      msg.chainId,
-      msg.origin
-    );
-
-    const key = await service.getKey(msg.chainId);
-
-    const networkType = getNetworkTypeByChainId(msg.chainId);
-
-    // hereeee
-
-    const isInj = msg.chainId?.startsWith("injective");
-    const isBtc = msg.chainId?.startsWith("bitcoin");
-    const pubkeyLedger = service.getKeyRingLedgerPubKey();
-    const addressesLedger = service.getKeyRingLedgerAddresses();
-    const bech32Address = new Bech32Address(key.address);
-
-    const { bech32PrefixAccAddr } = (
-      await service.chainsService.getChainInfo(msg.chainId)
-    ).bech32Config;
-    // hereee
-    const bech32Convert =
-      networkType === "bitcoin"
-        ? bech32Address.toBech32Btc(bech32PrefixAccAddr)
-        : bech32Address.toBech32(bech32PrefixAccAddr);
-
-    return {
-      name: service.getKeyStoreMeta("name"),
-      algo: "secp256k1",
-      pubKey: key.pubKey,
-      address: key.address,
-      bech32Address: (() => {
-        if (isInj && key.isNanoLedger) {
-          return pubkeyLedger && pubkeyLedger["eth"] ? bech32Convert : "";
-        }
-        if (isBtc && key.isNanoLedger) {
-          return addressesLedger && addressesLedger["btc84"]
-            ? addressesLedger["btc84"]
-            : "";
-        }
-        return bech32Convert;
-      })(),
-      legacyAddress: key.legacyAddress ?? "",
-      isNanoLedger: key.isNanoLedger,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
     };
   };
 };
 
-const handleRequestSignAminoMsg: (
+const handleFinalizeKeyCoinTypeMsg: (
   service: KeyRingService
-) => InternalHandler<RequestSignAminoMsg> = (service) => {
-  return async (env, msg) => {
-    await service.permissionService.checkOrGrantBasicAccessPermission(
-      env,
-      msg.chainId,
-      msg.origin
-    );
-
-    return await service.requestSignAmino(
-      env,
-      msg.origin,
-      msg.chainId,
-      msg.signer,
-      msg.signDoc,
-      msg.signOptions
-    );
-  };
-};
-
-const handleRequestVerifyADR36AminoSignDoc: (
-  service: KeyRingService
-) => InternalHandler<RequestVerifyADR36AminoSignDoc> = (service) => {
-  return async (env, msg) => {
-    await service.permissionService.checkOrGrantBasicAccessPermission(
-      env,
-      msg.chainId,
-      msg.origin
-    );
-
-    return await service.verifyADR36AminoSignDoc(
-      msg.chainId,
-      msg.signer,
-      msg.data,
-      msg.signature
-    );
-  };
-};
-
-const handleRequestSignDirectMsg: (
-  service: KeyRingService
-) => InternalHandler<RequestSignDirectMsg> = (service) => {
-  return async (env, msg) => {
-    await service.permissionService.checkOrGrantBasicAccessPermission(
-      env,
-      msg.chainId,
-      msg.origin
-    );
-
-    const signDoc = SignDoc.create({
-      bodyBytes: msg.signDoc.bodyBytes,
-      authInfoBytes: msg.signDoc.authInfoBytes,
-      chainId: msg.signDoc.chainId,
-      accountNumber: msg.signDoc.accountNumber
-        ? Long.fromString(msg.signDoc.accountNumber)
-        : undefined,
-    });
-
-    const response = await service.requestSignDirect(
-      env,
-      msg.origin,
-      msg.chainId,
-      msg.signer,
-      signDoc,
-      msg.signOptions
-    );
-
-    return {
-      signed: {
-        bodyBytes: response.signed.bodyBytes,
-        authInfoBytes: response.signed.authInfoBytes,
-        chainId: response.signed.chainId,
-        accountNumber: response.signed.accountNumber.toString(),
-      },
-      signature: response.signature,
-    };
-  };
-};
-
-const handleRequestSignEthereumTypedData: (
-  service: KeyRingService
-) => InternalHandler<RequestSignEthereumTypedDataMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignEthereumTypedData(
-      env,
-      msg.chainId,
-      msg.data
-    );
-    return { result: response };
-  };
-};
-
-const handleRequestPublicKey: (
-  service: KeyRingService
-) => InternalHandler<RequestPublicKeyMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestPublicKey(env, msg.chainId);
-    return { result: JSON.stringify(response) };
-  };
-};
-
-const handleRequestSignDecryptionData: (
-  service: KeyRingService
-) => InternalHandler<RequestSignProxyDecryptionDataMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignDecryptData(
-      env,
-      msg.chainId,
-      msg.data
-    );
-    return { result: JSON.stringify(response) };
-  };
-};
-const handleRequestSignEIP712CosmosTxMsg_v0: (
-  service: KeyRingService
-) => InternalHandler<RequestSignEIP712CosmosTxMsg_v0> = (service) => {
-  return async (env, msg) => {
-    return await service.requestSignEIP712CosmosTx_v0_selected(
-      env,
-      msg.origin,
-      msg.chainId,
-      msg.signer,
-      msg.eip712,
-      msg.signDoc,
-      msg.signOptions
-    );
-  };
-};
-const handleRequestSignProxyDecryptionData: (
-  service: KeyRingService
-) => InternalHandler<RequestSignProxyDecryptionDataMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignProxyDecryptionData(
-      env,
-      msg.chainId,
-      msg.data
-    );
-    return { result: JSON.stringify(response) };
-  };
-};
-
-const handleGetDefaultAddressMsg: (
-  service: KeyRingService
-) => InternalHandler<GetDefaultAddressTronMsg> = (service) => {
-  return async (_, msg) => {
-    const key = await service.getKey(msg.chainId);
-    const ledgerCheck = service.getKeyRingType();
-    let base58 = getBase58Address(
-      getAddressFromBech32(
-        new Bech32Address(key.address).toBech32(
-          (await service.chainsService.getChainInfo(msg.chainId)).bech32Config
-            .bech32PrefixAccAddr
-        )
-      )
-    );
-    if (ledgerCheck === "ledger") {
-      const ledgerAddress = service.getKeyRingLedgerAddresses();
-      base58 = ledgerAddress?.trx;
-    }
-    return {
-      name: service.getKeyStoreMeta("name"),
-      type: Number(key.isNanoLedger),
-      hex: bufferToHex(key.pubKey),
-      base58,
-    };
-  };
-};
-
-const handleRequestSignProxyReEncryptionData: (
-  service: KeyRingService
-) => InternalHandler<RequestSignProxyReEncryptionDataMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignReEncryptData(
-      env,
-      msg.chainId,
-      msg.data
-    );
-
-    return { result: JSON.stringify(response) };
-  };
-};
-
-const handleRequestSignBitcoinMsg: (
-  service: KeyRingService
-) => InternalHandler<RequestSignBitcoinMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignBitcoin(
-      env,
-      msg.chainId,
-      msg.data
-    );
-
-    return { rawTxHex: response };
-  };
-};
-const handleRequestSignEthereumMsg: (
-  service: KeyRingService
-) => InternalHandler<RequestSignEthereumMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignEthereum(
-      env,
-      msg.chainId,
-      msg.data
-    );
-
-    return { rawTxHex: response };
-  };
-};
-
-const handleGetMultiKeyStoreInfoMsg: (
-  service: KeyRingService
-) => InternalHandler<GetMultiKeyStoreInfoMsg> = (service) => {
-  return () => {
-    return {
-      multiKeyStoreInfo: service.getMultiKeyStoreInfo(),
-    };
-  };
-};
-
-const handleChangeKeyRingMsg: (
-  service: KeyRingService
-) => InternalHandler<ChangeKeyRingMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.changeKeyStoreFromMultiKeyStore(msg.index);
-  };
-};
-
-const handleChangeChainMsg: (
-  service: any
-) => InternalHandler<ChangeChainMsg> = (service) => {
-  return async (_, msg) => {
-    return await service.changeChain(msg.chainInfos);
-  };
-};
-
-const handleGetIsKeyStoreCoinTypeSetMsg: (
-  service: KeyRingService
-) => InternalHandler<GetIsKeyStoreCoinTypeSetMsg> = (service) => {
+) => InternalHandler<FinalizeKeyCoinTypeMsg> = (service) => {
   return (_, msg) => {
-    return service.getKeyStoreBIP44Selectables(msg.chainId, msg.paths);
+    service.finalizeKeyCoinType(msg.id, msg.chainId, msg.coinType);
+    return {
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
   };
 };
 
-const handleSetKeyStoreCoinTypeMsg: (
+const handleNewMnemonicKeyMsg: (
   service: KeyRingService
-) => InternalHandler<SetKeyStoreCoinTypeMsg> = (service) => {
+) => InternalHandler<NewMnemonicKeyMsg> = (service) => {
   return async (_, msg) => {
-    await service.setKeyStoreCoinType(msg.chainId, msg.coinType);
-    return service.keyRingStatus;
+    const vaultId = await service.createMnemonicKeyRing(
+      msg.mnemonic,
+      msg.bip44HDPath,
+      msg.name,
+      msg.password,
+      msg.meta
+    );
+    return {
+      vaultId,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
   };
 };
 
-const handleSetKeyStoreLedgerAddressMsg: (
+const handleNewLedgerKeyMsg: (
   service: KeyRingService
-) => InternalHandler<SetKeyStoreLedgerAddressMsg> = (service) => {
+) => InternalHandler<NewLedgerKeyMsg> = (service) => {
+  return async (_, msg) => {
+    const vaultId = await service.createLedgerKeyRing(
+      msg.pubKey,
+      msg.app,
+      msg.bip44HDPath,
+      msg.name,
+      msg.password
+    );
+    return {
+      vaultId,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleNewKeystoneKeyMsg: (
+  service: KeyRingService
+) => InternalHandler<NewKeystoneKeyMsg> = (service) => {
+  return async (_, msg) => {
+    const vaultId = await service.createKeystoneKeyRing(
+      msg.multiAccounts,
+      msg.name,
+      msg.password
+    );
+    return {
+      vaultId,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleNewPrivateKeyKeyMsg: (
+  service: KeyRingService
+) => InternalHandler<NewPrivateKeyKeyMsg> = (service) => {
+  return async (_, msg) => {
+    const vaultId = await service.createPrivateKeyKeyRing(
+      msg.privateKey,
+      msg.meta,
+      msg.name,
+      msg.password
+    );
+    return {
+      vaultId,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleAppendLedgerKeyAppMsg: (
+  service: KeyRingService
+) => InternalHandler<AppendLedgerKeyAppMsg> = (service) => {
+  return (_, msg) => {
+    service.appendLedgerKeyRing(msg.vaultId, msg.pubKey, msg.app);
+    return {
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleChangeKeyRingNameMsg: (
+  service: KeyRingService
+) => InternalHandler<ChangeKeyRingNameMsg> = (service) => {
+  return (_env, msg) => {
+    service.changeKeyRingName(msg.vaultId, msg.name);
+    return {
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleDeleteKeyRingMsg: (
+  service: KeyRingService
+) => InternalHandler<DeleteKeyRingMsg> = (service) => {
+  return async (_env, msg) => {
+    const wasSelected = await service.deleteKeyRing(msg.vaultId, msg.password);
+    return {
+      wasSelected,
+      status: service.keyRingStatus,
+      keyInfos: service.getKeyInfos(),
+    };
+  };
+};
+
+const handleShowSensitiveKeyRingDataMsg: (
+  service: KeyRingService
+) => InternalHandler<ShowSensitiveKeyRingDataMsg> = (service) => {
+  return async (_env, msg) => {
+    return await service.showSensitiveKeyRingData(msg.vaultId, msg.password);
+  };
+};
+
+const handleChangeUserPasswordMsg: (
+  service: KeyRingService
+) => InternalHandler<ChangeUserPasswordMsg> = (service) => {
+  return async (_env, msg) => {
+    return await service.changeUserPassword(
+      msg.prevUserPassword,
+      msg.newUserPassword
+    );
+  };
+};
+
+const handleChangeKeyRingNameInteractiveMsg: (
+  service: KeyRingService
+) => InternalHandler<ChangeKeyRingNameInteractiveMsg> = (service) => {
   return async (env, msg) => {
-    await service.setKeyStoreLedgerAddress(env, msg.bip44HDPath, msg.chainId);
-    return service.keyRingStatus;
+    await service.ensureUnlockInteractive(env);
+
+    return await service.changeKeyRingNameInteractive(
+      env,
+      service.selectedVaultId,
+      msg.defaultName,
+      msg.editable
+    );
+  };
+};
+
+const handleExportKeyRingDatasMsg: (
+  service: KeyRingService
+) => InternalHandler<ExportKeyRingDataMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportKeyRingData(msg.password);
+  };
+};
+
+const handleCheckLegacyKeyRingPasswordMsg: (
+  service: KeyRingService
+) => InternalHandler<CheckLegacyKeyRingPasswordMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.checkLegacyKeyRingPassword(msg.password);
+  };
+};
+
+const handleGetLegacyKeyRingInfosMsg: (
+  service: KeyRingService
+) => InternalHandler<GetLegacyKeyRingInfosMsg> = (service) => {
+  return async () => {
+    return await service.getLegacyKeyringInfos();
+  };
+};
+
+const handleShowSensitiveLegacyKeyRingDataMsg: (
+  service: KeyRingService
+) => InternalHandler<ShowSensitiveLegacyKeyRingDataMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.showSensitiveLegacyKeyringData(
+      msg.index,
+      msg.password
+    );
   };
 };
 
 const handleCheckPasswordMsg: (
   service: KeyRingService
 ) => InternalHandler<CheckPasswordMsg> = (service) => {
-  return (_, msg) => {
-    return service.checkPassword(msg.password);
-  };
-};
-
-const handleExportKeyRingDatasMsg: (
-  service: KeyRingService
-) => InternalHandler<ExportKeyRingDatasMsg> = (service) => {
   return async (_, msg) => {
-    return await service.exportKeyRingDatas(msg.password);
+    return await service.checkUserPassword(msg.password);
   };
 };
 
-const handleRequestSignTronMsg: (
+const handleExportKeyRingVaultsMsg: (
   service: KeyRingService
-) => InternalHandler<RequestSignTronMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignTron(env, msg.chainId, msg.data);
-    return response;
+) => InternalHandler<ExportKeyRingVaultsMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportKeyRingVaults(msg.password);
   };
 };
 
-const handleSendRawTransactionMsg: (
+const handleExportKeyRingMsg: (
   service: KeyRingService
-) => InternalHandler<RequestSendRawTransactionMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSendRawTransaction(
-      env,
-      msg.chainId,
-      msg.data
-    );
-    return { ...response };
-  };
-};
-
-const handleTriggerSmartContractMsg: (
-  service: KeyRingService
-) => InternalHandler<TriggerSmartContractMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestTriggerSmartContract(
-      env,
-      msg.chainId,
-      msg.data
-    );
-    return { ...response };
-  };
-};
-
-const handlePrivilegeCosmosSignAminoWithdrawRewardsMsg: (
-  service: KeyRingService
-) => InternalHandler<PrivilegeCosmosSignAminoWithdrawRewardsMsg> = (
-  service
-) => {
-  return async (env, msg) => {
-    return await service.privilegeSignAminoWithdrawRewards(
-      env,
-      msg.origin,
-      msg.chainId,
-      msg.signer,
-      msg.signDoc,
-      msg.signOptions
+) => InternalHandler<ExportKeyRingMsg> = (service) => {
+  return async (_, msg) => {
+    return await service.exportSensitiveKeyRingData(
+      msg.vaultId,
+      msg.password,
+      msg.chainId
     );
   };
 };
 
-const handleRequestSignOasisMsg: (
+const handleSearchKeyRingsMsg: (
   service: KeyRingService
-) => InternalHandler<RequestSignOasisMsg> = (service) => {
-  return async (env, msg) => {
-    const response = await service.requestSignOasis(env, msg.chainId, msg.data);
-    return { ...response };
+) => InternalHandler<SearchKeyRingsMsg> = (service) => {
+  return (_, msg) => {
+    return service.searchKeyRings(msg.searchText);
   };
 };

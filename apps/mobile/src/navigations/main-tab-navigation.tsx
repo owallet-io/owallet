@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import React, { FC } from "react";
 
 import { useTheme } from "@src/themes/theme-provider";
@@ -17,10 +17,14 @@ import { BlurView } from "@react-native-community/blur";
 import { NewSettingScreen } from "@src/screens/setting/setting";
 import OWHeaderTitle from "../components/header/ow-header-title";
 import { useGetNewHeaderHeight } from "@src/hooks";
+import { useStore } from "@src/stores";
+import LottieView from "lottie-react-native";
 
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
-  const { colors, dark } = useTheme();
+  const { colors, dark, images } = useTheme();
+
+  const { appInitStore } = useStore();
 
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
@@ -31,11 +35,38 @@ export const MainTabNavigation: FC = observer(() => {
         return {
           tabBarIcon: ({ color, focused }) => {
             if (route?.name === SCREENS.TABS.SendNavigation) {
-              return (
-                <View style={styles.paddingIcon}>
-                  <OWIcon type="images" source={imagesGlobal.swap} size={50} />
-                </View>
-              );
+              if (appInitStore.getInitApp.wallet === "osmosis") {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <OWIcon
+                      type="images"
+                      source={imagesGlobal.osmo_swap}
+                      size={50}
+                    />
+                  </View>
+                );
+              } else if (appInitStore.getInitApp.wallet === "injective") {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <OWIcon
+                      type="images"
+                      source={imagesGlobal.inj_swap}
+                      size={50}
+                    />
+                  </View>
+                );
+              } else {
+                return (
+                  <View style={styles.paddingIcon}>
+                    <LottieView
+                      source={require("@src/assets/animations/snow-btn.json")}
+                      style={{ width: 50, height: 50 }}
+                      autoPlay
+                      loop
+                    />
+                  </View>
+                );
+              }
             }
             return (
               <OWIcon

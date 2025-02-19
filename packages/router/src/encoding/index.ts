@@ -23,7 +23,6 @@ export class MessageRegistry {
     if (!msgCls) {
       throw new Error(`Unregistered msg type ${message.type}`);
     }
-
     return Object.setPrototypeOf(
       message.msg,
       msgCls.prototype

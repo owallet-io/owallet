@@ -1,0 +1,200 @@
+import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo, useState } from "react";
+import { BackButton } from "../../../layouts/header/components";
+import { HeaderLayout } from "../../../layouts/header";
+import styled, { useTheme } from "styled-components";
+import { Stack } from "../../../components/stack";
+import { SearchTextInput } from "../../../components/input";
+import { useStore } from "../../../stores";
+import { TokenItem } from "../../main/components";
+import { Column, Columns } from "../../../components/column";
+import { Body2 } from "../../../components/typography";
+import { Checkbox } from "../../../components/checkbox";
+import { ColorPalette } from "../../../styles";
+import { Dec } from "@owallet/unit";
+import { useFocusOnMount } from "../../../hooks/use-focus-on-mount";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router";
+import { FormattedMessage, useIntl } from "react-intl";
+import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
+
+const Styles = {
+  Container: styled(Stack)`
+    padding: 0.75rem;
+  `,
+};
+
+export const SendSelectAssetPage: FunctionComponent = observer(() => {
+  const { hugeQueriesStore, skipQueriesStore, chainStore, uiConfigStore } =
+    useStore();
+  const navigate = useNavigate();
+  const intl = useIntl();
+  const theme = useTheme();
+  const [searchParams] = useSearchParams();
+
+  /*
+    navigate(
+      `/send/select-asset?isIBCTransfer=true&navigateTo=${encodeURIComponent(
+        "/ibc-transfer?chainId={chainId}&coinMinimalDenom={coinMinimalDenom}"
+      )}`
+    );
+   */
+  const paramNavigateTo = searchParams.get("navigateTo");
+  const paramNavigateReplace = searchParams.get("navigateReplace");
+  const paramIsIBCTransfer = searchParams.get("isIBCTransfer") === "true";
+  const paramIsIBCSwap = searchParams.get("isIBCSwap") === "true";
+
+  const [search, setSearch] = useState("");
+  const [hideIBCToken, setHideIBCToken] = useState(false);
+
+  const searchRef = useFocusOnMount<HTMLInputElement>();
+
+  const tokens =
+    uiConfigStore.currentNetwork === "all"
+      ? hugeQueriesStore.getAllBalances(!hideIBCToken)
+      : hugeQueriesStore.getAllBalancesByChainId(uiConfigStore.currentNetwork);
+
+  const _filteredTokens = useMemo(() => {
+    const zeroDec = new Dec(0);
+    const newTokens = tokens.filter((token) => {
+      return token.token.toDec().gt(zeroDec);
+    });
+
+    const trimSearch = search.trim();
+
+    if (!trimSearch) {
+      return newTokens;
+    }
+
+    const filtered = newTokens.filter((token) => {
+      return (
+        token.chainInfo.chainName
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase()) ||
+        token.token.currency.coinDenom
+          .toLowerCase()
+          .includes(trimSearch.toLowerCase())
+      );
+    });
+
+    if (paramIsIBCTransfer) {
+      return filtered.filter((token) => {
+        if (!("currencies" in token.chainInfo)) {
+          return false;
+        }
+
+        return token.chainInfo.hasFeature("ibc-transfer");
+      });
+    }
+
+    return filtered;
+  }, [paramIsIBCTransfer, search, tokens]);
+
+  const filteredTokens = _filteredTokens.filter((token) => {
+    if (paramIsIBCSwap) {
+      return skipQueriesStore.queryIBCSwap.isSwappableCurrency(
+        token.chainInfo.chainId,
+        token.token.currency
+      );
+    }
+
+    return true;
+  });
+
+  const getSendLink = (modularChainInfo: ModularChainInfo) => {
+    if (modularChainInfo.chainId === ChainIdEVM.TRON) {
+      return "/send-tron";
+    } else if (
+      "cosmos" in modularChainInfo &&
+      modularChainInfo.cosmos.features.includes("btc")
+    ) {
+      return "/send-btc";
+    } else if (
+        "cosmos" in modularChainInfo &&
+        modularChainInfo.cosmos.features.includes("svm")
+    ) {
+      return "/send-svm";
+    } else if (
+      "starknet" in modularChainInfo &&
+      modularChainInfo.starknet != null
+    ) {
+      return "/starknet/send";
+    } else {
+      return "/send";
+    }
+  };
+
+  return (
+    <HeaderLayout
+      title={intl.formatMessage({ id: "page.send.select-asset.title" })}
+      left={<BackButton />}
+    >
+      <Styles.Container gutter="0.5rem">
+        <SearchTextInput
+          ref={searchRef}
+          placeholder={intl.formatMessage({
+            id: "page.send.select-asset.search-placeholder",
+          })}
+          value={search}
+          onChange={(e) => {
+            e.preventDefault();
+
+            setSearch(e.target.value);
+          }}
+        />
+
+        <Columns sum={1} gutter="0.25rem">
+          <Column weight={1} />
+          <Body2
+            onClick={() => setHideIBCToken(!hideIBCToken)}
+            style={{
+              color:
+                theme.mode === "light"
+                  ? ColorPalette["gray-200"]
+                  : ColorPalette["gray-300"],
+              cursor: "pointer",
+            }}
+          >
+            <FormattedMessage id="page.send.select-asset.hide-ibc-token" />
+          </Body2>
+          <Checkbox
+            size="small"
+            checked={hideIBCToken}
+            onChange={setHideIBCToken}
+          />
+        </Columns>
+
+        {filteredTokens.map((viewToken) => {
+          const modularChainInfo = chainStore.getModularChain(
+            viewToken.chainInfo.chainId
+          );
+
+          return (
+            <TokenItem
+              viewToken={viewToken}
+              key={`${viewToken.chainInfo.chainId}-${viewToken.token.currency.coinMinimalDenom}`}
+              onClick={() => {
+                if (paramNavigateTo) {
+                  navigate(
+                    paramNavigateTo
+                      .replace("/send", getSendLink(modularChainInfo))
+                      .replace("{chainId}", viewToken.chainInfo.chainId)
+                      .replace(
+                        "{coinMinimalDenom}",
+                        viewToken.token.currency.coinMinimalDenom
+                      ),
+                    {
+                      replace: paramNavigateReplace === "true",
+                    }
+                  );
+                } else {
+                  console.error("Empty navigateTo param");
+                }
+              }}
+            />
+          );
+        })}
+      </Styles.Container>
+    </HeaderLayout>
+  );
+});

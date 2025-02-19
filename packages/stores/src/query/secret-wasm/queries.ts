@@ -1,43 +1,45 @@
 import { QueriesSetBase } from "../queries";
-import { ChainGetter } from "../../common";
-import { KVStore } from "@owallet/common";
+import { ChainGetter } from "../../chain";
 import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
 import { ObservableQuerySecret20ContractInfo } from "./secret20-contract-info";
 import { DeepReadonly } from "utility-types";
 import { ObservableQuerySecret20BalanceRegistry } from "./secret20-balance";
-import { QueriesWrappedCosmos } from "../cosmos";
 import { OWallet } from "@owallet/types";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../common";
 
-export interface HasSecretQueries {
-  secret: SecretQueries;
+export interface SecretQueries {
+  secret: SecretQueriesImpl;
 }
 
-export class QueriesWrappedSecret
-  extends QueriesWrappedCosmos
-  implements HasSecretQueries
-{
-  public secret: SecretQueries;
-
-  constructor(
+export const SecretQueries = {
+  use(options: {
+    apiGetter: () => Promise<OWallet | undefined>;
+  }): (
+    queriesSetBase: QueriesSetBase,
     sharedContext: QuerySharedContext,
     chainId: string,
-    chainGetter: ChainGetter,
-    apiGetter: () => Promise<OWallet | undefined>
-  ) {
-    super(sharedContext, chainId, chainGetter);
+    chainGetter: ChainGetter
+  ) => SecretQueries {
+    return (
+      queriesSetBase: QueriesSetBase,
+      sharedContext: QuerySharedContext,
+      chainId: string,
+      chainGetter: ChainGetter
+    ) => {
+      return {
+        secret: new SecretQueriesImpl(
+          queriesSetBase,
+          sharedContext,
+          chainId,
+          chainGetter,
+          options.apiGetter
+        ),
+      };
+    };
+  },
+};
 
-    this.secret = new SecretQueries(
-      this,
-      sharedContext,
-      chainId,
-      chainGetter,
-      apiGetter
-    );
-  }
-}
-
-export class SecretQueries {
+export class SecretQueriesImpl {
   public readonly querySecretContractCodeHash: DeepReadonly<ObservableQuerySecretContractCodeHash>;
   public readonly querySecret20ContractInfo: DeepReadonly<ObservableQuerySecret20ContractInfo>;
 

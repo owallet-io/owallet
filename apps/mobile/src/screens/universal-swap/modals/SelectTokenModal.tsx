@@ -141,9 +141,13 @@ export const SelectTokenModal: FunctionComponent<{
     const renderTokenItem = useCallback(
       (item) => {
         if (item) {
-          const currencies = item.chainId
-            ? chainStore.getChain(item.chainId).currencies
-            : [];
+          let chainId = item.chainId;
+          if (item.chainId.startsWith("0x")) {
+            chainId = `eip155:${parseInt(item.chainId, 16)}`;
+          }
+
+          const chainInfo = chainStore.getChain(chainId);
+          const currencies = item.chainId ? chainInfo.currencies : [];
 
           const tokenIcon = find(
             tokensIcon,
@@ -176,7 +180,7 @@ export const SelectTokenModal: FunctionComponent<{
                       alignItems: "center",
                       justifyContent: "center",
                       overflow: "hidden",
-                      backgroundColor: colors["neutral-surface-action"],
+                      backgroundColor: colors["icon"],
                       padding: 4,
                     }}
                   >
@@ -233,7 +237,11 @@ export const SelectTokenModal: FunctionComponent<{
           );
         }
       },
-      [universalSwapStore?.getAmount]
+      [
+        universalSwapStore?.getAmount,
+        appInitStore.getInitApp.theme,
+        appInitStore.getInitApp.wallet,
+      ]
     );
 
     return (

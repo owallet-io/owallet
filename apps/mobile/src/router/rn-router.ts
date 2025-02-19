@@ -1,30 +1,29 @@
-import { EnvProducer, MessageSender, Result, Router } from "@owallet/router";
+import {
+  EnvProducer,
+  OWalletError,
+  MessageSender,
+  Result,
+  Router,
+} from "@owallet/router";
 
 import EventEmitter from "eventemitter3";
 
 export class RNRouterBase extends Router {
   constructor(
-    protected readonly envProducer: EnvProducer,
+    envProducer: EnvProducer,
     protected readonly eventEmitter: EventEmitter
   ) {
     super(envProducer);
   }
 
-  listen(port: string): void {
-    if (!port) {
-      throw new Error("Empty port");
-    }
-
-    this.port = port;
+  protected attachHandler() {
     this.eventEmitter.addListener("message", this.onMessage);
   }
 
-  unlisten(): void {
-    this.port = "";
+  protected detachHandler() {
     this.eventEmitter.removeListener("message", this.onMessage);
   }
 
-  // some how it get here
   protected onMessage = async (params: {
     message: any;
     sender: MessageSender & {
@@ -38,7 +37,6 @@ export class RNRouterBase extends Router {
 
     try {
       const result = await this.handleMessage(message, sender);
-
       sender.resolver({
         return: result,
       });
@@ -47,7 +45,15 @@ export class RNRouterBase extends Router {
       console.log(
         `Failed to process msg ${message.type}: ${e?.message || e?.toString()}`
       );
-      if (e) {
+      if (e instanceof OWalletError) {
+        sender.resolver({
+          error: {
+            code: e.code,
+            module: e.module,
+            message: e.message || e.toString(),
+          },
+        });
+      } else if (e) {
         sender.resolver({
           error: e.message || e.toString(),
         });
@@ -63,7 +69,7 @@ export class RNRouterBase extends Router {
 export class RNRouterBackground extends RNRouterBase {
   public static readonly EventEmitter: EventEmitter = new EventEmitter();
 
-  constructor(protected readonly envProducer: EnvProducer) {
+  constructor(envProducer: EnvProducer) {
     super(envProducer, RNRouterBackground.EventEmitter);
   }
 }
@@ -71,7 +77,7 @@ export class RNRouterBackground extends RNRouterBase {
 export class RNRouterUI extends RNRouterBase {
   public static readonly EventEmitter: EventEmitter = new EventEmitter();
 
-  constructor(protected readonly envProducer: EnvProducer) {
+  constructor(envProducer: EnvProducer) {
     super(envProducer, RNRouterUI.EventEmitter);
   }
 }

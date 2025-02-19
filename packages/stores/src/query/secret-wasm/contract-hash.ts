@@ -1,8 +1,7 @@
 import { SecretContractCodeHash } from "./types";
-import { KVStore } from "@owallet/common";
 import { ObservableChainQuery, ObservableChainQueryMap } from "../chain-query";
-import { ChainGetter } from "../../common";
-import { QuerySharedContext } from "src/common/query/context";
+import { ChainGetter } from "../../chain";
+import { QuerySharedContext } from "../../common";
 
 export class ObservableQuerySecretContractCodeHashInner extends ObservableChainQuery<SecretContractCodeHash> {
   constructor(
@@ -15,20 +14,20 @@ export class ObservableQuerySecretContractCodeHashInner extends ObservableChainQ
       sharedContext,
       chainId,
       chainGetter,
-      `/wasm/contract/${contractAddress}/code-hash`
+      `/compute/v1beta1/code_hash/by_contract_address/${contractAddress}`
     );
   }
 
-  protected canFetch(): boolean {
-    return this.contractAddress?.length > 0;
+  protected override canFetch(): boolean {
+    return this.contractAddress.length > 0;
   }
 }
 
 export class ObservableQuerySecretContractCodeHash extends ObservableChainQueryMap<SecretContractCodeHash> {
   constructor(
-    protected readonly sharedContext: QuerySharedContext,
-    protected readonly chainId: string,
-    protected readonly chainGetter: ChainGetter
+    sharedContext: QuerySharedContext,
+    chainId: string,
+    chainGetter: ChainGetter
   ) {
     super(sharedContext, chainId, chainGetter, (contractAddress: string) => {
       return new ObservableQuerySecretContractCodeHashInner(

@@ -8,7 +8,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Fee = exports.ModeInfo_Multi = exports.ModeInfo_Single = exports.ModeInfo = exports.SignerInfo = exports.AuthInfo = exports.TxBody = exports.SignDoc = exports.TxRaw = exports.Tx = exports.protobufPackage = void 0;
+exports.AuxSignerData = exports.Fee = exports.ModeInfo_Multi = exports.ModeInfo_Single = exports.ModeInfo = exports.SignerInfo = exports.AuthInfo = exports.TxBody = exports.SignDocDirectAux = exports.SignDoc = exports.TxRaw = exports.Tx = exports.protobufPackage = void 0;
 /* eslint-disable */
 const long_1 = __importDefault(require("long"));
 const minimal_1 = __importDefault(require("protobufjs/minimal"));
@@ -279,6 +279,117 @@ exports.SignDoc = {
         message.authInfoBytes = (_b = object.authInfoBytes) !== null && _b !== void 0 ? _b : new Uint8Array(0);
         message.chainId = (_c = object.chainId) !== null && _c !== void 0 ? _c : "";
         message.accountNumber = (_d = object.accountNumber) !== null && _d !== void 0 ? _d : "0";
+        return message;
+    },
+};
+function createBaseSignDocDirectAux() {
+    return { bodyBytes: new Uint8Array(0), publicKey: undefined, chainId: "", accountNumber: "0", sequence: "0" };
+}
+exports.SignDocDirectAux = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.bodyBytes.length !== 0) {
+            writer.uint32(10).bytes(message.bodyBytes);
+        }
+        if (message.publicKey !== undefined) {
+            any_1.Any.encode(message.publicKey, writer.uint32(18).fork()).ldelim();
+        }
+        if (message.chainId !== "") {
+            writer.uint32(26).string(message.chainId);
+        }
+        if (message.accountNumber !== "0") {
+            writer.uint32(32).uint64(message.accountNumber);
+        }
+        if (message.sequence !== "0") {
+            writer.uint32(40).uint64(message.sequence);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : minimal_1.default.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseSignDocDirectAux();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.bodyBytes = reader.bytes();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+                    message.publicKey = any_1.Any.decode(reader, reader.uint32());
+                    continue;
+                case 3:
+                    if (tag !== 26) {
+                        break;
+                    }
+                    message.chainId = reader.string();
+                    continue;
+                case 4:
+                    if (tag !== 32) {
+                        break;
+                    }
+                    message.accountNumber = longToString(reader.uint64());
+                    continue;
+                case 5:
+                    if (tag !== 40) {
+                        break;
+                    }
+                    message.sequence = longToString(reader.uint64());
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            bodyBytes: isSet(object.bodyBytes) ? bytesFromBase64(object.bodyBytes) : new Uint8Array(0),
+            publicKey: isSet(object.publicKey) ? any_1.Any.fromJSON(object.publicKey) : undefined,
+            chainId: isSet(object.chainId) ? globalThis.String(object.chainId) : "",
+            accountNumber: isSet(object.accountNumber) ? globalThis.String(object.accountNumber) : "0",
+            sequence: isSet(object.sequence) ? globalThis.String(object.sequence) : "0",
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        if (message.bodyBytes.length !== 0) {
+            obj.bodyBytes = base64FromBytes(message.bodyBytes);
+        }
+        if (message.publicKey !== undefined) {
+            obj.publicKey = any_1.Any.toJSON(message.publicKey);
+        }
+        if (message.chainId !== "") {
+            obj.chainId = message.chainId;
+        }
+        if (message.accountNumber !== "0") {
+            obj.accountNumber = message.accountNumber;
+        }
+        if (message.sequence !== "0") {
+            obj.sequence = message.sequence;
+        }
+        return obj;
+    },
+    create(base) {
+        return exports.SignDocDirectAux.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a, _b, _c, _d;
+        const message = createBaseSignDocDirectAux();
+        message.bodyBytes = (_a = object.bodyBytes) !== null && _a !== void 0 ? _a : new Uint8Array(0);
+        message.publicKey = (object.publicKey !== undefined && object.publicKey !== null)
+            ? any_1.Any.fromPartial(object.publicKey)
+            : undefined;
+        message.chainId = (_b = object.chainId) !== null && _b !== void 0 ? _b : "";
+        message.accountNumber = (_c = object.accountNumber) !== null && _c !== void 0 ? _c : "0";
+        message.sequence = (_d = object.sequence) !== null && _d !== void 0 ? _d : "0";
         return message;
     },
 };
@@ -837,6 +948,103 @@ exports.Fee = {
         message.gasLimit = (_b = object.gasLimit) !== null && _b !== void 0 ? _b : "0";
         message.payer = (_c = object.payer) !== null && _c !== void 0 ? _c : "";
         message.granter = (_d = object.granter) !== null && _d !== void 0 ? _d : "";
+        return message;
+    },
+};
+function createBaseAuxSignerData() {
+    return { address: "", signDoc: undefined, mode: 0, sig: new Uint8Array(0) };
+}
+exports.AuxSignerData = {
+    encode(message, writer = minimal_1.default.Writer.create()) {
+        if (message.address !== "") {
+            writer.uint32(10).string(message.address);
+        }
+        if (message.signDoc !== undefined) {
+            exports.SignDocDirectAux.encode(message.signDoc, writer.uint32(18).fork()).ldelim();
+        }
+        if (message.mode !== 0) {
+            writer.uint32(24).int32(message.mode);
+        }
+        if (message.sig.length !== 0) {
+            writer.uint32(34).bytes(message.sig);
+        }
+        return writer;
+    },
+    decode(input, length) {
+        const reader = input instanceof minimal_1.default.Reader ? input : minimal_1.default.Reader.create(input);
+        let end = length === undefined ? reader.len : reader.pos + length;
+        const message = createBaseAuxSignerData();
+        while (reader.pos < end) {
+            const tag = reader.uint32();
+            switch (tag >>> 3) {
+                case 1:
+                    if (tag !== 10) {
+                        break;
+                    }
+                    message.address = reader.string();
+                    continue;
+                case 2:
+                    if (tag !== 18) {
+                        break;
+                    }
+                    message.signDoc = exports.SignDocDirectAux.decode(reader, reader.uint32());
+                    continue;
+                case 3:
+                    if (tag !== 24) {
+                        break;
+                    }
+                    message.mode = reader.int32();
+                    continue;
+                case 4:
+                    if (tag !== 34) {
+                        break;
+                    }
+                    message.sig = reader.bytes();
+                    continue;
+            }
+            if ((tag & 7) === 4 || tag === 0) {
+                break;
+            }
+            reader.skipType(tag & 7);
+        }
+        return message;
+    },
+    fromJSON(object) {
+        return {
+            address: isSet(object.address) ? globalThis.String(object.address) : "",
+            signDoc: isSet(object.signDoc) ? exports.SignDocDirectAux.fromJSON(object.signDoc) : undefined,
+            mode: isSet(object.mode) ? (0, signing_1.signModeFromJSON)(object.mode) : 0,
+            sig: isSet(object.sig) ? bytesFromBase64(object.sig) : new Uint8Array(0),
+        };
+    },
+    toJSON(message) {
+        const obj = {};
+        if (message.address !== "") {
+            obj.address = message.address;
+        }
+        if (message.signDoc !== undefined) {
+            obj.signDoc = exports.SignDocDirectAux.toJSON(message.signDoc);
+        }
+        if (message.mode !== 0) {
+            obj.mode = (0, signing_1.signModeToJSON)(message.mode);
+        }
+        if (message.sig.length !== 0) {
+            obj.sig = base64FromBytes(message.sig);
+        }
+        return obj;
+    },
+    create(base) {
+        return exports.AuxSignerData.fromPartial(base !== null && base !== void 0 ? base : {});
+    },
+    fromPartial(object) {
+        var _a, _b, _c;
+        const message = createBaseAuxSignerData();
+        message.address = (_a = object.address) !== null && _a !== void 0 ? _a : "";
+        message.signDoc = (object.signDoc !== undefined && object.signDoc !== null)
+            ? exports.SignDocDirectAux.fromPartial(object.signDoc)
+            : undefined;
+        message.mode = (_b = object.mode) !== null && _b !== void 0 ? _b : 0;
+        message.sig = (_c = object.sig) !== null && _c !== void 0 ? _c : new Uint8Array(0);
         return message;
     },
 };

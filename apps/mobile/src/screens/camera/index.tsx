@@ -121,13 +121,15 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                         name: isParamAddressBook.params.name,
                       },
                     });
-                  } else if (chainStore.current.networkType === "bitcoin") {
-                    navigate(SCREENS.SendBtc, {
-                      chainId: chainInfo.chainId,
-                      recipient: data,
-                    });
-                  } else {
-                    navigate(SCREENS.NewSend, {
+                  }
+                  //     if (chainStore.current.networkType === "bitcoin") {
+                  //   navigate(SCREENS.SendBtc, {
+                  //     chainId: chainInfo.chainId,
+                  //     recipient: data,
+                  //   });
+                  // } else
+                  else {
+                    navigate(SCREENS.Send, {
                       chainId: chainInfo.chainId,
                       recipient: data,
                     });
@@ -211,9 +213,9 @@ export const AddressQRCodeModal: FunctionComponent<{
   chainId: string;
 }> = registerModal(
   observer(({ chainId }) => {
-    const { accountStore } = useStore();
+    const { allAccountStore } = useStore();
 
-    const account = accountStore.getAccount(chainId);
+    const account = allAccountStore.getAccount(chainId);
 
     return (
       <CardModal title="Scan QR code">
@@ -222,15 +224,18 @@ export const AddressQRCodeModal: FunctionComponent<{
             alignItems: "center",
           }}
         >
-          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+          <AddressCopyable
+            address={account.addressDisplay}
+            maxCharacters={22}
+          />
           <View
             style={{
               marginTop: 32,
               marginBottom: 32,
             }}
           >
-            {account.bech32Address ? (
-              <QRCode size={200} value={account.bech32Address} />
+            {account.addressDisplay ? (
+              <QRCode size={200} value={account.addressDisplay} />
             ) : (
               <View
                 style={StyleSheet.flatten([
@@ -254,10 +259,10 @@ export const AddressQRCodeModal: FunctionComponent<{
               //   flex: 1
               // }}
               label="Share Address"
-              loading={account.bech32Address === ""}
+              loading={account.addressDisplay === ""}
               onPress={() => {
                 Share.share({
-                  message: account.bech32Address,
+                  message: account.addressDisplay,
                 }).catch((e) => {
                   console.log(e);
                 });

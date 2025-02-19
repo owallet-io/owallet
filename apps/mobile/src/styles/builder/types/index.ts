@@ -8,4 +8,5 @@ export * from "./image";
 export * from "./text";
 export * from "./size";
 
+export * from "./dimension";
 export * from "./all";

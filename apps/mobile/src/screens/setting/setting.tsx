@@ -27,6 +27,9 @@ import { SettingSwitchHideTestnet } from "./items/hide-testnet";
 import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { ThemeModal } from "./components/theme-modal";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 
 export const NewSettingScreen: FunctionComponent = observer((props) => {
   const {
@@ -36,41 +39,47 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
     modalStore,
     accountStore,
     appInitStore,
+    chainStore,
   } = useStore();
   const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
-  const { colors } = useTheme();
-  const styles = styling(colors);
-  const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
-      return {
-        key,
-        label: key.toUpperCase(),
-      };
-    });
-  }, [priceStore.supportedVsCurrencies]);
-  const selected = keyRingStore.multiKeyStoreInfo.find(
-    (keyStore) => keyStore.selected
+  console.log(
+    "keyRingStore?.selectedKeyInfo?.type",
+    keyRingStore?.selectedKeyInfo?.type
   );
 
-  const _onPressCountryModal = () => {
-    modalStore.setOptions({
-      bottomSheetModalConfig: {
-        enablePanDownToClose: false,
-        enableOverDrag: false,
-      },
-    });
-
-    modalStore.setChildren(
-      CountryModal({
-        data: currencyItems,
-        current: priceStore.defaultVsCurrency,
-        priceStore,
-        modalStore,
-        colors,
-      })
-    );
-  };
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  // const currencyItems = useMemo(() => {
+  //   return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
+  //     return {
+  //       key,
+  //       label: key.toUpperCase(),
+  //     };
+  //   });
+  // }, [priceStore.supportedVsCurrencies]);
+  // const selected = keyRingStore.multiKeyStoreInfo.find(
+  //   (keyStore) => keyStore.selected
+  // );
+  const selectedKeyInfo = keyRingStore.selectedKeyInfo;
+  // const _onPressCountryModal = () => {
+  //   modalStore.setOptions({
+  //     bottomSheetModalConfig: {
+  //       enablePanDownToClose: false,
+  //       enableOverDrag: false,
+  //     },
+  //   });
+  //
+  //   modalStore.setChildren(
+  //     CountryModal({
+  //       data: currencyItems,
+  //       current: priceStore.defaultVsCurrency,
+  //       priceStore,
+  //       modalStore,
+  //       colors,
+  //     })
+  //   );
+  // };
 
   const _onPressThemeModal = () => {
     modalStore.setOptions({
@@ -130,7 +139,11 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
         <View style={{ alignItems: "center" }}>
           <Image
             style={{ width: 60, height: 60 }}
-            source={require("../../assets/image/img_owallet.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_owallet
+                : images.img_owallet
+            }
             fadeDuration={0}
             resizeMode="contain"
           />
@@ -213,9 +226,58 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView
       showsVerticalScrollIndicator={false}
+      style={{
+        paddingTop: 0,
+      }}
       backgroundColor={colors["neutral-surface-bg"]}
     >
-      <View>
+      <View
+        style={{
+          paddingTop: 20,
+        }}
+      >
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.left_top_setting_noel}
+            style={{
+              width: 45,
+              height: 18,
+              position: "absolute",
+              top: 20,
+              left: 26,
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.right_top_setting_noel}
+            style={{
+              width: 65,
+              height: 38,
+              position: "absolute",
+              top: 16,
+              right: 15,
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
+        {eventTheme === "noel" ? (
+          <Image
+            source={imagesNoel.center_top_setting_noel}
+            style={{
+              width: 150,
+              height: 55,
+              position: "absolute",
+              top: -9,
+              left: "30%",
+              zIndex: 1000,
+            }}
+            resizeMode={"contain"}
+          />
+        ) : null}
         <OWCard
           style={{
             marginBottom: 16,
@@ -226,6 +288,20 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           <BasicSettingItem
             left={
               <View style={{ paddingRight: 12 }}>
+                {eventTheme === "noel" ? (
+                  <Image
+                    source={imagesNoel.avatar_noel}
+                    style={{
+                      width: 36,
+                      height: 26,
+                      position: "absolute",
+                      top: -13,
+                      left: -16,
+                      zIndex: 1000,
+                    }}
+                    resizeMode={"contain"}
+                  />
+                ) : null}
                 <Image
                   style={{ width: 44, height: 44, borderRadius: 44 }}
                   source={require("../../assets/images/default-avatar.png")}
@@ -236,7 +312,9 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
             }
             icon="owallet"
             paragraph={
-              selected ? selected.meta?.name || "OWallet Account" : "No Account"
+              selectedKeyInfo
+                ? selectedKeyInfo.name || "OWallet Account"
+                : "No Account"
             }
             subtitle={Bech32Address.shortenAddress(
               accountOrai.bech32Address,
@@ -248,7 +326,7 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
             <SettingBiometricLockItem />
           ) : null}
-          {canShowPrivateData(keyRingStore.keyRingType) && (
+          {canShowPrivateData(keyRingStore?.selectedKeyInfo?.type) && (
             <SettingViewPrivateDataItem />
           )}
           <SettingRemoveAccountItem />
@@ -284,34 +362,34 @@ export const NewSettingScreen: FunctionComponent = observer((props) => {
           />
           {/* <SettingSwitchModeItem /> */}
 
-          <BasicSettingItem
-            icon="tdesign_money"
-            paragraph="Currency"
-            onPress={_onPressCountryModal}
-            right={
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {renderFlag(priceStore.defaultVsCurrency, 20)}
-                <OWText
-                  style={{ paddingHorizontal: 8 }}
-                  weight="600"
-                  color={colors["neutral-text-body"]}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </OWText>
-                <OWIcon
-                  color={colors["neutral-text-title"]}
-                  name="chevron_right"
-                  size={16}
-                />
-              </View>
-            }
-          />
+          {/*<BasicSettingItem*/}
+          {/*  icon="tdesign_money"*/}
+          {/*  paragraph="Currency"*/}
+          {/*  onPress={_onPressCountryModal}*/}
+          {/*  right={*/}
+          {/*    <View*/}
+          {/*      style={{*/}
+          {/*        flexDirection: "row",*/}
+          {/*        alignItems: "center",*/}
+          {/*        justifyContent: "center",*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      {renderFlag(priceStore.defaultVsCurrency, 20)}*/}
+          {/*      <OWText*/}
+          {/*        style={{ paddingHorizontal: 8 }}*/}
+          {/*        weight="600"*/}
+          {/*        color={colors["neutral-text-body"]}*/}
+          {/*      >*/}
+          {/*        {priceStore.defaultVsCurrency.toUpperCase()}*/}
+          {/*      </OWText>*/}
+          {/*      <OWIcon*/}
+          {/*        color={colors["neutral-text-title"]}*/}
+          {/*        name="chevron_right"*/}
+          {/*        size={16}*/}
+          {/*      />*/}
+          {/*    </View>*/}
+          {/*  }*/}
+          {/*/>*/}
           <BasicSettingItem
             icon="tdesign_book"
             paragraph="Address book"

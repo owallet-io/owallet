@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./stores";
-// import { EthSignType } from "@keplr-wallet/types";
+// import { EthSignType } from "@owallet/types";
 
 const IBCChannel = "channel-141";
 const CounterpartyIBCChannel = "channel-0";
@@ -75,22 +75,6 @@ export const App: FunctionComponent = observer(() => {
       >
         Test IBC 2
       </button>
-
-      {/* <button
-        onClick={() => {
-          const chainInfo = chainStore.chainInfos[0];
-          const account = accountStore.getAccount(chainInfo.chainId);
-
-          const data = "NDk2NDAxNmVkMWM4MDI1NjAxZWUzMDA5NjU2MGI3YzI4NTRmMGFjNjdiODA4ZjNm";
-
-          account.getOWallet().then((keplr) => {
-            keplr?.signArbitrary(chainInfo.chainId, account.bech32Address, data);
-          });
-        }}
-      >
-        Sign Abitrary
-      </button>
-     */}
 
       <button
         onClick={() => {

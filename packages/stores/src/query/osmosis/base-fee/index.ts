@@ -1,7 +1,8 @@
 import { ObservableChainQuery } from "../../chain-query";
+import { ChainGetter } from "../../../chain";
 import { computed, makeObservable } from "mobx";
 import { BaseFee } from "./types";
-import { ChainGetter, QuerySharedContext } from "../../../common";
+import { QuerySharedContext } from "../../../common";
 import { Dec } from "@owallet/unit";
 
 export class ObservableQueryBaseFee extends ObservableChainQuery<BaseFee> {

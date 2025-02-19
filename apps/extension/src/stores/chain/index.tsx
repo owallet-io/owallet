@@ -1,75 +1,84 @@
-// @ts-nocheck
-import { observable, action, computed, makeObservable, flow } from "mobx";
-
-import { ChainInfoInner, ChainStore as BaseChainStore } from "@owallet/stores";
-
-import { ChainInfo, IMultipleAsset } from "@owallet/types";
 import {
-  ChainInfoWithEmbed,
-  SetPersistentMemoryMsg,
-  GetPersistentMemoryMsg,
-  GetChainInfosMsg,
+  autorun,
+  computed,
+  flow,
+  makeObservable,
+  observable,
+  runInAction,
+} from "mobx";
+
+import { ChainIdEVM, ChainInfo, ModularChainInfo } from "@owallet/types";
+import { ChainStore as BaseChainStore, IChainInfoImpl } from "@owallet/stores";
+import { KeyRingStore } from "@owallet/stores-core";
+
+import {
+  ChainInfoWithCoreTypes,
+  ClearAllChainEndpointsMsg,
+  ClearAllSuggestedChainInfosMsg,
+  ClearChainEndpointsMsg,
+  DisableChainsMsg,
+  EnableChainsMsg,
+  EnableVaultsWithCosmosAddressMsg,
+  GetChainInfosWithCoreTypesMsg,
+  GetEnabledChainIdentifiersMsg,
+  GetTokenScansMsg,
   RemoveSuggestedChainInfoMsg,
-  TryUpdateChainMsg,
-  SuggestChainInfoMsg,
+  RevalidateTokenScansMsg,
+  SetChainEndpointsMsg,
+  ToggleChainsMsg,
+  TokenScan,
+  TryUpdateEnabledChainInfosMsg,
 } from "@owallet/background";
-import { BACKGROUND_PORT } from "@owallet/router";
-
-import { MessageRequester } from "@owallet/router";
+import { BACKGROUND_PORT, MessageRequester } from "@owallet/router";
 import { toGenerator } from "@owallet/common";
-import { makePersistable } from "mobx-persist-store";
+import { ChainIdHelper } from "@owallet/cosmos";
 
-export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
-  @observable
-  protected _selectedChainId: string;
-  @observable
-  protected _selectedFee: string = "average";
-  @observable
-  protected _isAllNetwork: boolean = false;
-  @observable
-  protected _hideDust: boolean = true;
-
-  @observable
-  protected _multipleAssets: IMultipleAsset = {
-    totalPriceBalance: "0",
-    dataTokens: [],
-    dataTokensByChain: null,
-  };
-
+export class ChainStore extends BaseChainStore<ChainInfoWithCoreTypes> {
   @observable
   protected _isInitializing: boolean = false;
-  protected deferChainIdSelect: string = "";
+
+  @observable
+  protected _lastSyncedEnabledChainsVaultId: string = "";
+  @observable.ref
+  protected _enabledChainIdentifiers: string[] = [];
+
+  @observable.ref
+  protected _tokenScans: TokenScan[] = [];
 
   constructor(
-    embedChainInfos: ChainInfo[],
-    protected readonly requester: MessageRequester,
-    initChain?: string
+    protected readonly embedChainInfos: (ModularChainInfo | ChainInfo)[],
+    protected readonly keyRingStore: KeyRingStore,
+    protected readonly requester: MessageRequester
   ) {
     super(
       embedChainInfos.map((chainInfo) => {
         return {
           ...chainInfo,
           ...{
-            embeded: true,
+            embedded: true,
           },
         };
       })
     );
 
-    this._selectedChainId = initChain ?? embedChainInfos[0].chainId;
+    // Should be enabled at least one chain. Maybe bitcoin and solana should be enabled by default?
+
+    const solanaChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("solana")
+    );
+
+    const bitcoinChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("bitcoin")
+    );
+
+    this._enabledChainIdentifiers = [
+      ChainIdHelper.parse(embedChainInfos[0].chainId).identifier,
+      ChainIdHelper.parse(solanaChainInfo.chainId).identifier,
+      ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier,
+    ];
 
     makeObservable(this);
 
-    makePersistable(this, {
-      name: "ChainStore",
-      properties: [
-        "_isAllNetwork",
-        "_multipleAssets",
-        "_hideDust",
-        "_selectedFee",
-      ],
-      storage: window.localStorage,
-    }).then(action((persistStore) => {}));
     this.init();
   }
 
@@ -77,143 +86,466 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     return this._isInitializing;
   }
 
-  get isAllNetwork(): boolean {
-    return this._isAllNetwork;
-  }
-
-  get selectedFee(): string {
-    return this._selectedFee;
-  }
-
-  get multipleAssets(): IMultipleAsset {
-    return this._multipleAssets;
-  }
-
-  get isHideDust(): boolean {
-    return this._hideDust;
-  }
-
-  get chainInfosInUI() {
-    return this.chainInfos.filter((chainInfo) => {
-      return !chainInfo.raw.hideInUI;
-    });
-  }
-
-  get selectedChainId(): string {
-    return this._selectedChainId;
-  }
-
-  @action
-  setIsAllNetwork(isAll: boolean) {
-    this._isAllNetwork = isAll;
-  }
-
-  @action
-  setSelectedFee(fee: string) {
-    this._selectedFee = fee;
-  }
-
-  @action
-  setIsHideDust(isHide: boolean) {
-    this._hideDust = isHide;
-  }
-
-  @action
-  setMultipleAsset(data: IMultipleAsset) {
-    this._multipleAssets = data;
-  }
-
-  @action
-  selectChain(chainId: string) {
-    if (this._isInitializing) {
-      this.deferChainIdSelect = chainId;
+  async waitUntilInitialized(): Promise<void> {
+    if (!this.isInitializing) {
+      return;
     }
-    this._selectedChainId = chainId;
+
+    return new Promise((resolve) => {
+      const disposal = autorun(() => {
+        if (!this.isInitializing) {
+          resolve();
+
+          if (disposal) {
+            disposal();
+          }
+        }
+      });
+    });
   }
 
   @computed
-  get current(): ChainInfoInner<ChainInfoWithEmbed> {
-    if (this.hasChain(this._selectedChainId)) {
-      return this.getChain(this._selectedChainId);
+  protected get enabledChainIdentifiesMap(): Map<string, true> {
+    if (this._enabledChainIdentifiers.length === 0) {
+      // Should be enabled at least one chain.
+      const map = new Map<string, true>();
+
+      map.set(
+        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier,
+        true
+      );
+
+      return map;
     }
 
-    return this.chainInfos[0];
+    const map = new Map<string, true>();
+    for (const chainIdentifier of this._enabledChainIdentifiers) {
+      map.set(chainIdentifier, true);
+    }
+    const solanaChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("solana")
+    );
+
+    const tronChainInfo = this.embedChainInfos.find(
+      (e) => e.chainId === ChainIdEVM.TRON
+    );
+
+    const bitcoinChainInfo = this.embedChainInfos.find((e) =>
+      e.chainId.includes("bitcoin")
+    );
+
+    map.set(ChainIdHelper.parse(solanaChainInfo.chainId).identifier, true);
+    map.set(ChainIdHelper.parse(tronChainInfo.chainId).identifier, true);
+    map.set(ChainIdHelper.parse(bitcoinChainInfo.chainId).identifier, true);
+    return map;
+  }
+
+  @computed
+  get tokenScans(): TokenScan[] {
+    return this._tokenScans.filter((scan) => {
+      if (!this.hasChain(scan.chainId) && !this.hasModularChain(scan.chainId)) {
+        return false;
+      }
+
+      const chainIdentifier = ChainIdHelper.parse(scan.chainId).identifier;
+      return !this.enabledChainIdentifiesMap.get(chainIdentifier);
+    });
+  }
+
+  @computed
+  override get chainInfos(): IChainInfoImpl<ChainInfoWithCoreTypes>[] {
+    // Sort by chain name.
+    // The first chain has priority to be the first.
+    return super.chainInfos.sort((a, b) => {
+      const aChainIdentifier = ChainIdHelper.parse(a.chainId).identifier;
+      const bChainIdentifier = ChainIdHelper.parse(b.chainId).identifier;
+
+      if (
+        aChainIdentifier ===
+        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
+      ) {
+        return -1;
+      }
+      if (
+        bChainIdentifier ===
+        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
+      ) {
+        return 1;
+      }
+
+      return a.chainName.trim().localeCompare(b.chainName.trim());
+    });
+  }
+
+  @computed
+  override get modularChainInfos(): ModularChainInfo[] {
+    // Sort by chain name.
+    // The first chain has priority to be the first.
+    return super.modularChainInfos.sort((a, b) => {
+      const aChainIdentifier = ChainIdHelper.parse(a.chainId).identifier;
+      const bChainIdentifier = ChainIdHelper.parse(b.chainId).identifier;
+
+      if (
+        aChainIdentifier ===
+        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
+      ) {
+        return -1;
+      }
+      if (
+        bChainIdentifier ===
+        ChainIdHelper.parse(this.embedChainInfos[0].chainId).identifier
+      ) {
+        return 1;
+      }
+
+      return a.chainName.trim().localeCompare(b.chainName.trim());
+    });
+  }
+
+  get enabledChainIdentifiers(): string[] {
+    return this._enabledChainIdentifiers;
+  }
+
+  @computed
+  get chainInfosInUI() {
+    return this.chainInfos.filter((chainInfo) => {
+      if (chainInfo.hideInUI) {
+        return false;
+      }
+      const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId).identifier;
+      return this.enabledChainIdentifiesMap.get(chainIdentifier);
+    });
+  }
+
+  @computed
+  get modularChainInfosInUI() {
+    return this.modularChainInfos.filter((modularChainInfo) => {
+      if ("cosmos" in modularChainInfo && modularChainInfo.cosmos.hideInUI) {
+        return false;
+      }
+      const chainIdentifier = ChainIdHelper.parse(
+        modularChainInfo.chainId
+      ).identifier;
+
+      return this.enabledChainIdentifiesMap.get(chainIdentifier);
+    });
+  }
+
+  @computed
+  get chainInfosInListUI() {
+    return this.chainInfos.filter((chainInfo) => {
+      return !chainInfo.hideInUI;
+    });
+  }
+
+  @computed
+  get modularChainInfosInListUI() {
+    return this.modularChainInfos.filter((modularChainInfo) => {
+      if ("cosmos" in modularChainInfo && modularChainInfo.cosmos.hideInUI) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  isEnabledChain(chainId: string): boolean {
+    const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
+    return this.enabledChainIdentifiesMap.get(chainIdentifier) === true;
+  }
+
+  @computed
+  protected get chainInfosInListUIMap(): Map<string, true> {
+    const map = new Map<string, true>();
+    for (const chainInfo of this.chainInfosInListUI) {
+      map.set(chainInfo.chainIdentifier, true);
+    }
+    return map;
+  }
+
+  isInChainInfosInListUI(chainId: string): boolean {
+    return (
+      this.chainInfosInListUIMap.get(
+        ChainIdHelper.parse(chainId).identifier
+      ) === true
+    );
   }
 
   @flow
-  *saveLastViewChainId() {
-    // Save last view chain id to persistent background
-    const msg = new SetPersistentMemoryMsg({
-      lastViewChainId: this._selectedChainId,
-    });
-    yield this.requester.sendMessage(BACKGROUND_PORT, msg);
+  *toggleChainInfoInUI(...chainIds: string[]) {
+    if (!this.keyRingStore.selectedKeyInfo) {
+      return;
+    }
+
+    const msg = new ToggleChainsMsg(
+      this.keyRingStore.selectedKeyInfo.id,
+      chainIds
+    );
+    this._enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+  }
+
+  @flow
+  *enableChainInfoInUI(...chainIds: string[]) {
+    if (!this.keyRingStore.selectedKeyInfo) {
+      return;
+    }
+    console.log("enableChainInfoInUI");
+
+    const msg = new EnableChainsMsg(
+      this.keyRingStore.selectedKeyInfo.id,
+      chainIds
+    );
+    this._enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+  }
+
+  @flow
+  *enableChainInfoInUIWithVaultId(vaultId: string, ...chainIds: string[]) {
+    const msg = new EnableChainsMsg(vaultId, chainIds);
+    const enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    if (this.keyRingStore.selectedKeyInfo?.id === vaultId) {
+      this._enabledChainIdentifiers = enabledChainIdentifiers;
+    }
+  }
+
+  @flow
+  *disableChainInfoInUI(...chainIds: string[]) {
+    if (!this.keyRingStore.selectedKeyInfo) {
+      return;
+    }
+
+    const msg = new DisableChainsMsg(
+      this.keyRingStore.selectedKeyInfo.id,
+      chainIds
+    );
+    this._enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+  }
+
+  @flow
+  *disableChainInfoInUIWithVaultId(vaultId: string, ...chainIds: string[]) {
+    const msg = new DisableChainsMsg(vaultId, chainIds);
+    const enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    if (this.keyRingStore.selectedKeyInfo?.id === vaultId) {
+      this._enabledChainIdentifiers = enabledChainIdentifiers;
+    }
   }
 
   @flow
   protected *init() {
     this._isInitializing = true;
-    yield this.getChainInfosFromBackground();
 
-    // Get last view chain id to persistent background
-    const msg = new GetPersistentMemoryMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    yield this.keyRingStore.waitUntilInitialized();
 
-    if (!this.deferChainIdSelect) {
-      if (result && result.lastViewChainId) {
-        this.selectChain(result.lastViewChainId);
+    yield Promise.all([
+      this.updateChainInfosFromBackground(),
+      this.updateEnabledChainIdentifiersFromBackground(),
+    ]);
+
+    autorun(() => {
+      // Change the enabled chain identifiers when the selected key info is changed.
+      if (this.keyRingStore.selectedKeyInfo) {
+        if (
+          this._lastSyncedEnabledChainsVaultId ===
+          this.keyRingStore.selectedKeyInfo.id
+        ) {
+          return;
+        }
+        this.updateEnabledChainIdentifiersFromBackground();
       }
-    }
+    });
+
     this._isInitializing = false;
 
-    if (this.deferChainIdSelect) {
-      this.selectChain(this.deferChainIdSelect);
-      this.deferChainIdSelect = "";
+    // Must not wait!!
+    this.tryUpdateEnabledChainInfos();
+  }
+
+  async tryUpdateEnabledChainInfos(): Promise<void> {
+    const msg = new TryUpdateEnabledChainInfosMsg();
+    const updated = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (updated) {
+      await this.updateChainInfosFromBackground();
     }
   }
 
   @flow
-  protected *getChainInfosFromBackground() {
-    const msg = new GetChainInfosMsg();
+  *updateChainInfosFromBackground() {
+    const msg = new GetChainInfosWithCoreTypesMsg();
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    this.setChainInfos(result.chainInfos);
+    this.setEmbeddedChainInfosV2({
+      chainInfos: result.chainInfos,
+      modulrChainInfos: result.modulrChainInfos,
+    });
+  }
+
+  @flow
+  *enableVaultsWithCosmosAddress(chainId: string, bech32Address: string) {
+    const msg = new EnableVaultsWithCosmosAddressMsg(chainId, bech32Address);
+    const res = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+
+    const changed = res.find(
+      (r) => r.vaultId === this.keyRingStore.selectedKeyInfo?.id
+    );
+    if (changed) {
+      this._enabledChainIdentifiers = changed.newEnabledChains as string[];
+    }
+  }
+
+  @flow
+  *updateEnabledChainIdentifiersFromBackground() {
+    if (!this.keyRingStore.selectedKeyInfo) {
+      this._lastSyncedEnabledChainsVaultId = "";
+      return;
+    }
+
+    const id = this.keyRingStore.selectedKeyInfo.id;
+    const msg = new GetEnabledChainIdentifiersMsg(id);
+    this._enabledChainIdentifiers = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+
+    this._tokenScans = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, new GetTokenScansMsg(id))
+    );
+    (async () => {
+      await new Promise<void>((resolve) => {
+        const disposal = autorun(() => {
+          if (this.keyRingStore.status === "unlocked") {
+            resolve();
+
+            if (disposal) {
+              disposal();
+            }
+          }
+        });
+      });
+
+      const res = await this.requester.sendMessage(
+        BACKGROUND_PORT,
+        new RevalidateTokenScansMsg(id)
+      );
+
+      if (res.vaultId === this.keyRingStore.selectedKeyInfo?.id) {
+        runInAction(() => {
+          this._tokenScans = res.tokenScans;
+        });
+      }
+    })();
+
+    this._lastSyncedEnabledChainsVaultId = id;
+  }
+
+  // Enabled chains depends on the selected key info.
+  // This process is automatically done when the selected key info is changed. (see init())
+  // But, if you want to wait until the enabled chains are synced, you can use this getter.
+  @computed
+  get isEnabledChainsSynced(): boolean {
+    return !!(
+      this.keyRingStore.selectedKeyInfo &&
+      this.keyRingStore.selectedKeyInfo.id ===
+        this._lastSyncedEnabledChainsVaultId
+    );
+  }
+
+  get lastSyncedEnabledChainsVaultId(): string {
+    return this._lastSyncedEnabledChainsVaultId;
+  }
+
+  // Enabled chains depends on the selected key info.
+  // This process is automatically done when the selected key info is changed. (see init())
+  // But, if you want to wait until the enabled chains are synced, you can use this method.
+  async waitSyncedEnabledChains(): Promise<void> {
+    if (
+      this.keyRingStore.selectedKeyInfo &&
+      this.keyRingStore.selectedKeyInfo.id ===
+        this._lastSyncedEnabledChainsVaultId
+    ) {
+      return;
+    }
+
+    return new Promise((resolve) => {
+      const disposal = autorun(() => {
+        if (
+          this.keyRingStore.selectedKeyInfo &&
+          this.keyRingStore.selectedKeyInfo.id ===
+            this._lastSyncedEnabledChainsVaultId
+        ) {
+          resolve();
+
+          if (disposal) {
+            disposal();
+          }
+        }
+      });
+    });
   }
 
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(
+    const res = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
 
-    this.setChainInfos(chainInfos);
+    this.setEmbeddedChainInfosV2({
+      chainInfos: res.chainInfos,
+      modulrChainInfos: res.modularChainInfos,
+    });
   }
 
   @flow
-  *addChain(chainInfo: ChainInfo) {
-    if (!chainInfo) throw Error("Chain Info must not be empty.");
-    const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(
+  *setChainEndpoints(
+    chainId: string,
+    rpc: string | undefined,
+    rest: string | undefined,
+    evmRpc: string | undefined
+  ) {
+    const msg = new SetChainEndpointsMsg(chainId, rpc, rest, evmRpc);
+    const res = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
-    const chainExisted = result.chainInfos.find(
-      (item) => item.chainId === chainInfo.chainId
-    );
-    if (chainExisted)
-      throw Error("The chain already exists and cannot be added.");
-    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
-    yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
 
-    yield this.setChainInfos([...result.chainInfos, chainInfo]);
+    this.setEmbeddedChainInfosV2({
+      chainInfos: res.chainInfos,
+      modulrChainInfos: res.modularChainInfos,
+    });
   }
 
   @flow
-  *tryUpdateChain(chainId: string) {
-    const msg = new TryUpdateChainMsg(chainId);
-    yield this.requester.sendMessage(BACKGROUND_PORT, msg);
-    yield this.getChainInfosFromBackground();
+  *resetChainEndpoints(chainId: string) {
+    const msg = new ClearChainEndpointsMsg(chainId);
+    const res = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+
+    this.setEmbeddedChainInfosV2({
+      chainInfos: res.chainInfos,
+      modulrChainInfos: res.modularChainInfos,
+    });
+  }
+
+  // I use Async, Await because it doesn't change the state value.
+  async clearClearAllSuggestedChainInfos() {
+    const msg = new ClearAllSuggestedChainInfosMsg();
+    await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  // I use Async, Await because it doesn't change the state value.
+  async clearAllChainEndpoints() {
+    const msg = new ClearAllChainEndpointsMsg();
+    await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }

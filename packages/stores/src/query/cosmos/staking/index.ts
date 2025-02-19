@@ -3,5 +3,4 @@ export * from "./rewards";
 export * from "./unbonding-delegations";
 export * from "./validators";
 export * from "./pool";
-export * from "./types";
 export * from "./params";

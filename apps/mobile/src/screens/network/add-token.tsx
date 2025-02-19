@@ -29,10 +29,10 @@ export const AddTokenScreen = observer(() => {
     });
     modalStore.setChildren(<NetworkModal hideAllNetwork={true} />);
   };
-  const { networkType } = chainStore.current;
-  if (networkType === "cosmos") {
+  const chainId = chainStore.current["chainId"];
+  if (!chainStore.isEvmOnlyChain(chainId)) {
     return <AddTokenCosmosScreen _onPressNetworkModal={_onPressNetworkModal} />;
-  } else if (networkType === "evm") {
+  } else if (chainStore.isEvmOnlyChain(chainId)) {
     return <AddTokenEVMScreen _onPressNetworkModal={_onPressNetworkModal} />;
   }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { observer } from "mobx-react-lite";
 import { useStore } from "@src/stores";
@@ -13,7 +13,11 @@ import { tracking } from "@src/utils/tracking";
 const TxTransactionsScreen = observer(() => {
   const { chainStore, appInitStore } = useStore();
   const { chainId } = chainStore.current;
-  tracking(`History Screen`);
+  useEffect(() => {
+    tracking(`History Screen`);
+    return () => {};
+  }, []);
+
   return (
     <>
       {mappingChainIdToHistoryScreen(

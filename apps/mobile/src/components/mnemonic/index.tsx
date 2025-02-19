@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { View } from "react-native";
 import { Text } from "@src/components/text";
-import { useTheme } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
 
 export const WordChip: FunctionComponent<{
   index: number;
@@ -49,7 +49,8 @@ export const BackupWordChip: FunctionComponent<{
   colors: any;
   empty?: boolean;
   dashedBorder?: boolean;
-}> = ({ index, word, hideWord, empty, colors }) => {
+}> = ({ index, word, hideWord, empty }) => {
+  const { colors } = useTheme();
   return (
     <View
       style={{
@@ -77,9 +78,7 @@ export const BackupWordChip: FunctionComponent<{
             fontSize: 12,
             fontWeight: "600",
             padding: 4,
-            color: empty
-              ? colors["primary-surface-default"]
-              : colors["primary-surface-default"],
+            color: colors["neutral-text-title"],
           }}
         >
           {index}
@@ -93,9 +92,7 @@ export const BackupWordChip: FunctionComponent<{
           padding: 4,
           paddingHorizontal: 6,
           opacity: 1,
-          color: empty
-            ? colors["primary-surface-default"]
-            : colors["neutral-text-title"],
+          color: colors["neutral-text-action-on-light-bg"],
         }}
       >
         {empty ? `         ` : `${word}`}

@@ -1,4 +1,4 @@
-import { ChainIdEnum, ValidatorThumbnails } from "@owallet/common";
+import { ChainIdEnum } from "@owallet/common";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
@@ -9,7 +9,7 @@ import {
   TextInput,
   InteractionManager,
 } from "react-native";
-import { BondStatus, Validator } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { useTheme } from "@src/themes/theme-provider";
 import { API } from "../../../common/api";
@@ -33,7 +33,12 @@ import { SCREENS } from "@src/common/constants";
 
 export const ValidatorList: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
-  tracking(`Stake Screen`);
+  useEffect(() => {
+    tracking(`Stake Screen`);
+
+    return () => {};
+  }, []);
+
   const account = accountStore.getAccount(chainStore.current.chainId);
 
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -45,7 +50,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
   const [validators, setValidators] = useState([]);
   const [sort, setSort] = useState<string>("Voting Power");
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
 
   const queryDelegations =
@@ -53,7 +58,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
       account.bech32Address
     );
   const delegations = queryDelegations.delegations;
-
+  console.log(delegations, "delegations");
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
@@ -86,23 +91,22 @@ export const ValidatorList: FunctionComponent = observer(() => {
     });
   }, [chainStore.current.chainId]);
 
-  const mergeAllValidators: Validator[] = bondedValidators.validators.map(
-    (v1Item) => {
-      if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return v1Item;
-      const matchingItem = validators.find(
-        (v2Item) => v2Item.operator_address === v1Item.operator_address
-      );
-      return {
-        ...v1Item,
-        ...matchingItem,
-      };
-    }
-  );
+  const mergeAllValidators = bondedValidators.validators.map((v1Item) => {
+    if (chainStore.current.chainId !== ChainIdEnum.Oraichain) return v1Item;
+    const matchingItem = validators.find(
+      (v2Item) => v2Item.operator_address === v1Item.operator_address
+    );
+    return {
+      ...v1Item,
+      ...matchingItem,
+    };
+  });
 
   const myValidators = mergeAllValidators.filter(
     (vaItem) =>
       delegations.some(
-        (deItem) => deItem.validator_address === vaItem.operator_address
+        (deItem) =>
+          deItem.delegation.validator_address === vaItem.operator_address
       ) &&
       vaItem.description.moniker.toLowerCase().includes(search.toLowerCase())
   );
@@ -114,7 +118,7 @@ export const ValidatorList: FunctionComponent = observer(() => {
     () => computeTotalVotingPower(validators),
     [validators]
   );
-  const renderItem = ({ item, index }: { item: Validator; index: number }) => {
+  const renderItem = ({ item, index }: { item; index: number }) => {
     const currentVotingPower = parseFloat(item?.voting_power || 0);
     const percentage = formatPercentage(
       currentVotingPower / totalVotingPower,
@@ -230,7 +234,7 @@ const ValidatorItem: FunctionComponent<{
     const styles = styling(colors);
     const queries = queriesStore.get(chainStore.current.chainId);
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Bonded
+      Staking.BondStatus.Bonded
     );
     const validator = bondedValidators.getValidator(validatorAddress);
 

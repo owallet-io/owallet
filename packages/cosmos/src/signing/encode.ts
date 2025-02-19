@@ -1,36 +1,6 @@
 import { PubKey, StdSignature, StdSignDoc } from "@owallet/types";
-import { Buffer } from "buffer";
-function escapeHTML(str: string): string {
-  return str
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
-}
-
-/**
- * Unescapes \u003c/(<),\u003e(>),\u0026(&) in string.
- * Golang's json marshaller escapes <,>,& by default, whilst for most of the users, such escape characters are unfamiliar.
- * This function can be used to show the escaped characters with more familiar characters.
- * @param str
- */
-function sortObjectByKey(obj: Record<string, any>): any {
-  if (typeof obj !== "object" || obj === null) {
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map(sortObjectByKey);
-  }
-  const sortedKeys = Object.keys(obj).sort();
-  const result: Record<string, any> = {};
-  sortedKeys.forEach((key) => {
-    result[key] = sortObjectByKey(obj[key]);
-  });
-  return result;
-}
-
-export function sortedJsonByKeyStringify(obj: Record<string, any>): string {
-  return JSON.stringify(sortObjectByKey(obj));
-}
+import { Buffer } from "buffer/";
+import { escapeHTML, sortedJsonByKeyStringify } from "@owallet/common";
 
 export function encodeSecp256k1Pubkey(pubkey: Uint8Array): PubKey {
   if (pubkey.length !== 33 || (pubkey[0] !== 0x02 && pubkey[0] !== 0x03)) {

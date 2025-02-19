@@ -3,11 +3,8 @@ import {
   Key,
   SettledResponse,
   SettledResponses,
-  Ethereum,
-  TronWeb,
-  Bitcoin,
 } from "@owallet/types";
-import { DebounceActionTimer } from "@owallet/common";
+import { DebounceActionTimer } from "@owallet/mobx-utils";
 
 export class AccountSharedContext {
   protected suggestChainDebounceTimer = new DebounceActionTimer<
@@ -25,7 +22,7 @@ export class AccountSharedContext {
       } catch (e) {
         responses.push({
           status: "rejected",
-          reason: e,
+          reason: e.toString(),
         });
       }
     }
@@ -62,7 +59,7 @@ export class AccountSharedContext {
       return requests.map(() => {
         return {
           status: "rejected",
-          reason: e,
+          reason: e.toString(),
         };
       });
     }
@@ -98,15 +95,9 @@ export class AccountSharedContext {
   });
 
   protected promiseGetOWallet?: Promise<OWallet | undefined>;
-  protected promiseGetEthereum?: Promise<Ethereum | undefined>;
-  protected promiseGetTronWeb?: Promise<TronWeb | undefined>;
-  protected promiseGetBitcoin?: Promise<Bitcoin | undefined>;
 
   constructor(
-    protected readonly _getOWallet: () => Promise<OWallet | undefined>,
-    protected readonly _getEthereum: () => Promise<Ethereum | undefined>,
-    protected readonly _getTronWeb: () => Promise<TronWeb | undefined>,
-    protected readonly _getBitcoin: () => Promise<Bitcoin | undefined>
+    protected readonly _getOWallet: () => Promise<OWallet | undefined>
   ) {}
 
   async getOWallet(): Promise<OWallet | undefined> {
@@ -126,60 +117,6 @@ export class AccountSharedContext {
         });
     });
     return (this.promiseGetOWallet = promise);
-  }
-  async getEthereum(): Promise<Ethereum | undefined> {
-    if (this.promiseGetEthereum) {
-      return this.promiseGetEthereum;
-    }
-
-    const promise = new Promise<Ethereum | undefined>((resolve, reject) => {
-      this._getEthereum()
-        .then((ethereum) => {
-          this.promiseGetEthereum = undefined;
-          resolve(ethereum);
-        })
-        .catch((e) => {
-          this.promiseGetEthereum = undefined;
-          reject(e);
-        });
-    });
-    return (this.promiseGetEthereum = promise);
-  }
-  async getBitcoin(): Promise<Bitcoin | undefined> {
-    if (this.promiseGetBitcoin) {
-      return this.promiseGetBitcoin;
-    }
-
-    const promise = new Promise<Bitcoin | undefined>((resolve, reject) => {
-      this._getBitcoin()
-        .then((bitcoin) => {
-          this.promiseGetBitcoin = undefined;
-          resolve(bitcoin);
-        })
-        .catch((e) => {
-          this.promiseGetBitcoin = undefined;
-          reject(e);
-        });
-    });
-    return (this.promiseGetBitcoin = promise);
-  }
-  async getTronWeb(): Promise<TronWeb | undefined> {
-    if (this.promiseGetTronWeb) {
-      return this.promiseGetTronWeb;
-    }
-
-    const promise = new Promise<TronWeb | undefined>((resolve, reject) => {
-      this._getTronWeb()
-        .then((tronweb) => {
-          this.promiseGetTronWeb = undefined;
-          resolve(tronweb);
-        })
-        .catch((e) => {
-          this.promiseGetTronWeb = undefined;
-          reject(e);
-        });
-    });
-    return (this.promiseGetTronWeb = promise);
   }
 
   suggestChain(fn: () => Promise<void>): Promise<void> {

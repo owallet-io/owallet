@@ -1,13 +1,11 @@
-import { delay, inject, singleton } from "tsyringe";
-import { TYPES } from "../types";
-import Axios from "axios";
-import { ChainInfoWithEmbed, ChainsService } from "../chains";
-import { PermissionService } from "../permission";
+import { ChainsService } from "../chains";
 import { TendermintTxTracer } from "@owallet/cosmos";
 import { Notification } from "./types";
-
-import { Buffer } from "buffer";
-import { KeyRingService } from "../keyring";
+import { simpleFetch } from "@owallet/simple-fetch";
+import { Buffer } from "buffer/";
+import { retry } from "@owallet/common";
+import { TXSLcdRest } from "@owallet/types";
+import { AuthInfo } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 
 interface CosmosSdkError {
   codespace: string;
@@ -22,77 +20,35 @@ interface ABCIMessageLog {
   // Events StringEvents
 }
 
-// TODO: is this place good to place this function?
-export async function request(
-  rpc: string,
-  method: string,
-  params: any[]
-): Promise<any> {
-  const restInstance = Axios.create({
-    ...{
-      baseURL: rpc,
-    },
-    adapter: "fetch",
-  });
-
-  const response = await restInstance.post(
-    "/",
-    {
-      jsonrpc: "2.0",
-      id: 1,
-      method,
-      params,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "x-api-key": process.env.X_API_KEY,
-      },
-    }
-  );
-
-  if (response.data.result) return response.data.result;
-  if (response.data.error) throw new Error(JSON.stringify(response.data.error));
-  return response.data;
-  // throw new Error(`Unexpected error from the network: ${JSON.stringify(response.data)}`);
-}
-
-@singleton()
 export class BackgroundTxService {
   constructor(
-    @inject(delay(() => ChainsService))
     protected readonly chainsService: ChainsService,
-    @inject(delay(() => KeyRingService))
-    protected readonly keyRingService: KeyRingService,
-    @inject(delay(() => PermissionService))
-    public readonly permissionService: PermissionService,
-    @inject(TYPES.Notification)
     protected readonly notification: Notification
   ) {}
+
+  async init(): Promise<void> {
+    // noop
+  }
 
   async sendTx(
     chainId: string,
     tx: unknown,
-    mode: "async" | "sync" | "block"
+    mode: "async" | "sync" | "block",
+    options: {
+      silent?: boolean;
+      onFulfill?: (tx: any) => void;
+    }
   ): Promise<Uint8Array> {
-    const chainInfo = await this.chainsService.getChainInfo(chainId);
+    const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
 
-    const restInstance = Axios.create({
-      ...{
-        baseURL: chainInfo.rest,
-      },
-      ...chainInfo.restConfig,
-      adapter: "fetch",
-    });
+    if (!options.silent) {
+      this.notification.create({
+        iconRelativeUrl: "assets/orai_wallet_logo.png",
+        title: "Tx is pending...",
+        message: "Wait a second",
+      });
+    }
 
-    this.notification.create({
-      iconRelativeUrl: "assets/orai_wallet_logo.png",
-      title: "Tx is pending...",
-      message: "Wait a second",
-    });
-
-    // here
     const isProtoTx = Buffer.isBuffer(tx) || tx instanceof Uint8Array;
 
     const params = isProtoTx
@@ -117,9 +73,16 @@ export class BackgroundTxService {
         };
 
     try {
-      const result = await restInstance.post(
+      const result = await simpleFetch<any>(
+        chainInfo.rest,
         isProtoTx ? "/cosmos/tx/v1beta1/txs" : "/txs",
-        params
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(params),
+        }
       );
 
       const txResponse = isProtoTx ? result.data["tx_response"] : result.data;
@@ -129,67 +92,103 @@ export class BackgroundTxService {
       }
 
       const txHash = Buffer.from(txResponse.txhash, "hex");
+      if (
+        (chainInfo?.chainId?.includes("Oraichain") ||
+          chainId?.includes("oraibridge-subnet-2")) &&
+        txHash
+      ) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch<TXSLcdRest>(
+                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txResponse.txhash}`
+                );
+                if (data && status === 200) {
+                  const tx = { ...data?.tx_response } as any;
 
-      const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
-      txTracer.traceTx(txHash).then((tx) => {
-        txTracer.close();
-        BackgroundTxService.processTxResultNotification(this.notification, tx);
-      });
+                  if (options.onFulfill) {
+                    if (!tx.hash) {
+                      tx.hash = data?.tx_response.txhash;
+                    }
+                    options.onFulfill(tx);
+                  }
+
+                  if (!options.silent) {
+                    BackgroundTxService.processTxResultNotification(
+                      this.notification,
+                      tx
+                    );
+                  }
+
+                  resolve();
+                }
+              } catch (error) {
+                console.log("error", error);
+                reject();
+                throw Error(error);
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 1000,
+          }
+        );
+        return txHash;
+      }
+      retry(
+        () => {
+          return new Promise<void>((resolve, reject) => {
+            const txTracer = new TendermintTxTracer(
+              chainInfo.rpc,
+              "/websocket"
+            );
+            txTracer.addEventListener("close", () => {
+              setTimeout(() => {
+                reject();
+              }, 500);
+            });
+            txTracer.addEventListener("error", () => {
+              reject();
+            });
+            txTracer.traceTx(txHash).then((tx) => {
+              txTracer.close();
+
+              if (options.onFulfill) {
+                if (!tx.hash) {
+                  tx.hash = txHash;
+                }
+                options.onFulfill(tx);
+              }
+
+              if (!options.silent) {
+                BackgroundTxService.processTxResultNotification(
+                  this.notification,
+                  tx
+                );
+              }
+
+              resolve();
+            });
+          });
+        },
+        {
+          maxRetries: 10,
+          waitMsAfterError: 10 * 1000, // 10sec
+          maxWaitMsAfterError: 5 * 60 * 1000, // 5min
+        }
+      );
 
       return txHash;
-    } catch (e: any) {
+    } catch (e) {
       console.log(e);
-      BackgroundTxService.processTxErrorNotification(this.notification, e);
+      if (!options.silent) {
+        BackgroundTxService.processTxErrorNotification(this.notification, e);
+      }
       throw e;
-    }
-  }
-
-  private parseChainId({ chainId }: { chainId: string }): {
-    chainId: string;
-    isEvm: boolean;
-  } {
-    if (!chainId)
-      throw new Error("Invalid empty chain id when switching Ethereum chain");
-    if (chainId.substring(0, 2) === "0x")
-      return { chainId: chainId, isEvm: true };
-    return { chainId, isEvm: false };
-  }
-
-  async request(chainId: string, method: string, params: any[]): Promise<any> {
-    let chainInfo: ChainInfoWithEmbed;
-    switch (method) {
-      case "eth_accounts":
-      case "wallet_requestPermissions":
-      case "eth_requestAccounts":
-        chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (chainInfo.coinType !== 60) return undefined;
-        const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
-        const key = await this.keyRingService.getKey(chainIdOrCoinType);
-        const ledgerCheck = await this.keyRingService.getKeyRingType();
-        if (ledgerCheck === "ledger") {
-          const addresses =
-            await this.keyRingService.getKeyRingLedgerAddresses();
-          return [`${addresses?.eth}`];
-        }
-        return [`0x${Buffer.from(key.address).toString("hex")}`];
-      case "wallet_switchEthereumChain" as any:
-        const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
-        chainInfo = isEvm
-          ? await this.chainsService.getChainInfo(inputChainId, "evm")
-          : await this.chainsService.getChainInfo(inputChainId);
-
-        return chainInfo.chainId;
-      default:
-        console.log("method", method);
-
-        chainInfo = await this.chainsService.getChainInfo(chainId);
-        console.log("chainInfo", chainInfo);
-
-        if (!chainInfo.rest)
-          throw new Error(
-            `The given chain ID: ${chainId} does not have a RPC endpoint to connect to`
-          );
-        return await request(chainInfo.rest, method, params);
     }
   }
 
@@ -222,7 +221,7 @@ export class BackgroundTxService {
         // TODO: Let users know the tx id?
         message: "Congratulations!",
       });
-    } catch (e: any) {
+    } catch (e) {
       BackgroundTxService.processTxErrorNotification(notification, e);
     }
   }
@@ -231,6 +230,7 @@ export class BackgroundTxService {
     notification: Notification,
     e: Error
   ): void {
+    console.log(e);
     let message = e.message;
 
     // Tendermint rpc error.

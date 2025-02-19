@@ -35,22 +35,16 @@ export const SlippageConfirmModal = registerModal(
             borderWidth: 1,
             borderColor: colors["warning-border-default"],
             marginBottom: metrics.screenHeight / 6,
+            flexDirection: "row",
           }}
         >
-          <View style={{ flexDirection: "row", paddingBottom: 6 }}>
-            <OWIcon
-              name="tdesignerror-triangle"
-              color={colors["warning-text-body"]}
-              size={16}
-            />
-          </View>
           <OWText
             color={colors["warning-border-default"]}
             weight="500"
             size={14}
           >
-            This swap has price impact over {impactWarning}%. Are you sure you
-            have reviewed the swap details ?
+            This swap has price impact over {impactWarning.toFixed(2)}%. Are you
+            sure you have reviewed the swap details ?
           </OWText>
         </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

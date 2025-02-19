@@ -1,5 +1,5 @@
-import { AminoMsgsOrWithProtoMsgs } from "./base";
 import { EthermintChainIdHelper } from "@owallet/cosmos";
+import { ProtoMsgsOrWithAminoMsgs } from "./types";
 
 export function txEventsWithPreOnFulfill(
   onTxEvents:
@@ -80,7 +80,7 @@ export function txEventsWithPreOnFulfill(
 
 export const getEip712TypedDataBasedOnChainId = (
   chainId: string,
-  msgs: AminoMsgsOrWithProtoMsgs
+  msgs: ProtoMsgsOrWithAminoMsgs
 ): {
   types: Record<string, { name: string; type: string }[] | undefined>;
   domain: Record<string, any>;

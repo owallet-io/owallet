@@ -1,7 +1,9 @@
 import { flow, makeObservable, observable } from "mobx";
 import * as Keychain from "react-native-keychain";
+import { SECURITY_RULES } from "react-native-keychain";
 import { KVStore, toGenerator } from "@owallet/common";
-import { KeyRingStore } from "@owallet/stores";
+import { KeyRingStore } from "@owallet/stores-core";
+import { Platform } from "react-native";
 
 export class KeychainStore {
   @observable
@@ -13,9 +15,11 @@ export class KeychainStore {
   protected static defaultOptions: Keychain.Options = {
     authenticationPrompt: {
       title: "Biometric Authentication",
+      cancel: "Cancel",
     },
     accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
     accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET,
+    rules: SECURITY_RULES.AUTOMATIC_UPGRADE,
   };
 
   constructor(
@@ -35,6 +39,21 @@ export class KeychainStore {
     return this._isBiometryOn;
   }
 
+  async getPasswordWithBiometry(): Promise<string> {
+    if (!this.isBiometryOn) {
+      throw new Error("Biometry is off");
+    }
+
+    const credentials = await Keychain.getGenericPassword(
+      KeychainStore.defaultOptions
+    );
+    if (credentials) {
+      return credentials.password;
+    } else {
+      throw new Error("Failed to get credentials from keychain");
+    }
+  }
+
   @flow
   *tryUnlockWithBiometry() {
     if (!this.isBiometryOn) {
@@ -45,7 +64,7 @@ export class KeychainStore {
       Keychain.getGenericPassword(KeychainStore.defaultOptions)
     );
     if (credentials) {
-      yield this.keyRingStore.unlock(credentials.password, false);
+      yield this.keyRingStore.unlock(credentials.password);
     } else {
       throw new Error("Failed to get credentials from keychain");
     }
@@ -57,7 +76,7 @@ export class KeychainStore {
     if (valid) {
       const result = yield* toGenerator(
         Keychain.setGenericPassword(
-          "owallet",
+          "keplr",
           password,
           KeychainStore.defaultOptions
         )

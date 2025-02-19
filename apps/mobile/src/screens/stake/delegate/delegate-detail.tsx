@@ -1,8 +1,6 @@
-import { ValidatorThumbnails } from "@owallet/common";
-import { BondStatus } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { OWButton } from "@src/components/button";
-import { OWBox } from "@src/components/card";
 import { OWSubTitleHeader } from "@src/components/header";
 import { PageWithView } from "@src/components/page";
 import { Text } from "@src/components/text";
@@ -11,7 +9,6 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ValidatorThumbnail } from "../../../components/thumbnail";
-
 import { useStore } from "../../../stores";
 import { spacing, typography } from "../../../themes";
 import { tracking } from "@src/utils/tracking";
@@ -52,13 +49,13 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       .getStakableRewardOf(validatorAddress);
 
     const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Bonded
+      Staking.BondStatus.Bonded
     );
     const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Unbonding
+      Staking.BondStatus.Unbonding
     );
     const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-      BondStatus.Unbonded
+      Staking.BondStatus.Unbonded
     );
     const thumbnail =
       bondedValidators.getValidatorThumbnail(validatorAddress) ||
@@ -75,7 +72,12 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       unbondedValidators.validators,
       validatorAddress,
     ]);
-    tracking(`Delegate Detail Screen`);
+    useEffect(() => {
+      tracking(`Delegate Detail Screen`);
+
+      return () => {};
+    }, []);
+
     const navigation = useNavigation();
     useEffect(() => {
       navigation.setOptions({

@@ -1,78 +1,166 @@
-import { BIP44HDPath } from "@owallet/types";
-export type CoinTypeForChain = {
-  [identifier: string]: number;
+import { PlainObject, Vault } from "../vault";
+import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
+import { ChainInfo, TransactionType } from "@owallet/types";
+import { types } from "@oasisprotocol/client";
+import { PublicKey } from "@solana/web3.js";
+
+export type KeyRingStatus = "empty" | "locked" | "unlocked";
+
+export type BIP44HDPath = {
+  account: number;
+  change: number;
+  addressIndex: number;
 };
 
-export interface CommonCrypto {
-  scrypt: (text: string, params: ScryptParams) => Promise<Uint8Array>;
+export interface KeyInfo {
+  readonly id: string;
+  readonly name: string;
+  readonly type: string;
+  readonly isSelected: boolean;
+  readonly insensitive: PlainObject;
 }
 
-export interface ScryptParams {
-  dklen: number;
-  salt: string;
-  n: number;
-  r: number;
-  p: number;
+export interface KeyRing {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+  simulateSignTron?(
+    transaction: any,
+    vault: Vault,
+    coinType: number
+  ): string | Promise<string>;
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: Uint8Array,
+    digestMethod: "sha256" | "keccak256",
+    chainInfo: ChainInfo
+  ):
+    | {
+        readonly r: Uint8Array;
+        readonly s: Uint8Array;
+        readonly v: number | null;
+      }
+    | Promise<{
+        readonly r: Uint8Array;
+        readonly s: Uint8Array;
+        readonly v: number | null;
+      }>;
+}
+export interface KeyRingBtc {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  getPubKeyBip84?(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: Uint8Array,
+    //TODO: need check type inputs/outputs
+    inputs: any,
+    outputs: any,
+    signType: "legacy" | "bech32",
+    chainInfo: ChainInfo
+  ): string | Promise<string>;
+}
+export interface KeyRingSvm {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PublicKey | Promise<PublicKey>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: string,
+    chainInfo: ChainInfo
+  ): string | Promise<string>;
 }
 
-export interface ExportKeyRingData {
-  type: "mnemonic" | "privateKey";
-  // If the type is private key, the key is encoded as hex.
-  key: string;
-  coinTypeForChain: CoinTypeForChain;
-  bip44HDPath: BIP44HDPath;
-  meta: {
-    [key: string]: string;
+export interface KeyRingOasis {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): Uint8Array | Promise<Uint8Array>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: Uint8Array,
+    chainInfo: ChainInfo
+  ): types.SignatureSigned | Promise<types.SignatureSigned>;
+}
+
+export interface KeyRingTron {
+  supportedKeyRingType(): string;
+
+  createKeyRingVault(...args: any[]): Promise<{
+    insensitive: PlainObject;
+    sensitive: PlainObject;
+  }>;
+
+  getPubKey(
+    vault: Vault,
+    coinType: number,
+    chainInfo: ChainInfo
+  ): PubKeySecp256k1 | Promise<PubKeySecp256k1>;
+
+  sign(
+    vault: Vault,
+    coinType: number,
+    data: string,
+    chainInfo: ChainInfo
+  ): unknown | Promise<unknown>;
+}
+
+export interface ExportedKeyRingVault {
+  type: "mnemonic" | "private-key";
+  id: string;
+  insensitive: PlainObject;
+  sensitive: string;
+  privKey?: string;
+  bip44HDPath?: {
+    account: number;
+    change: number;
+    addressIndex: number;
   };
-}
-
-export enum SignTypedDataVersion {
-  V1 = "V1",
-  V3 = "V3",
-  V4 = "V4",
-}
-
-export interface MessageTypeProperty {
-  name: string;
-  type: string;
-}
-export interface MessageTypes {
-  EIP712Domain: MessageTypeProperty[];
-  [additionalProperties: string]: MessageTypeProperty[];
-}
-
-export type TypedDataV1 = TypedDataV1Field[];
-
-export interface TypedDataV1Field {
-  name: string;
-  type: string;
-  value: any;
-}
-
-export interface TypedMessage<T extends MessageTypes> {
-  types: T;
-  primaryType: keyof T;
-  domain: {
-    name?: string;
-    version?: string;
-    chainId?: number;
-    verifyingContract?: string;
-    salt?: ArrayBuffer;
-  };
-  message: Record<string, unknown>;
-}
-export interface MessageTypeProperty {
-  name: string;
-  type: string;
-}
-export interface ECDSASignature {
-  v: number;
-  r: Buffer;
-  s: Buffer;
-}
-
-export interface SignEthereumTypedDataObject {
-  typedMessage: TypedMessage<MessageTypes>;
-  version: SignTypedDataVersion;
-  defaultCoinType: number;
 }

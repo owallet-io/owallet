@@ -4,6 +4,9 @@ import FastImage from "react-native-fast-image";
 import { Text } from "../text";
 import { useTheme } from "@src/themes/theme-provider";
 import globalImages from "@assets/images";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
+import images from "@assets/images";
 interface IOWEmpty extends ViewProps {
   style?: ViewProps["style"];
   type?: "list" | "crash" | "cash" | "nft";
@@ -21,10 +24,11 @@ const OWEmpty = ({
     props;
   const { colors, images } = useTheme();
   const imgList = {
-    list: require("../../assets/image/img_planet.png"),
+    list:
+      eventTheme === "noel" ? imagesNoel.img_planet : globalImages.img_planet,
     crash: images.crash_empty,
-    cash: images.money_empty,
-    nft: globalImages.img_color,
+    cash: eventTheme === "noel" ? imagesNoel.img_money : images.money_empty,
+    nft: eventTheme === "noel" ? imagesNoel.img_color : globalImages.img_color,
   };
 
   return (

@@ -4,56 +4,58 @@ import { MulticallQueryClient } from "@oraichain/common-contracts-sdk";
 import { OraiswapTokenTypes } from "@oraichain/oraidex-contracts-sdk";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import {
-  CustomChainInfo,
-  ERC20__factory,
-  evmChains,
-} from "@oraichain/oraidex-common";
+import { CustomChainInfo, ERC20__factory } from "@oraichain/oraidex-common";
 import flatten from "lodash/flatten";
 import { ContractCallResults, Multicall } from "@oraichain/ethereum-multicall";
-import {
-  evmTokens,
-  getEvmAddress,
-  tronToEthAddress,
-} from "@oraichain/oraidex-common";
-import { network, chainInfos } from "@oraichain/oraidex-common";
-import {
-  cosmosTokens,
-  oraichainTokens,
-  tokenMap,
-} from "@oraichain/oraidex-common";
+import { tronToEthAddress } from "@oraichain/oraidex-common";
+
 import { ChainIdEnum, isEvmNetworkNativeSwapSupported } from "@owallet/common";
 import { CWStargate } from "@owallet/common";
-import { AccountWithAll } from "@owallet/stores";
 import { uniqBy } from "lodash";
-import axios from "axios";
+// import axios from 'axios';
 
-export const getUtxos = async (address: string, baseUrl: string) => {
-  if (!address) throw Error("Address is not empty");
-  if (!baseUrl) throw Error("BaseUrl is not empty");
-  const { data } = await axios({
-    baseURL: baseUrl,
-    method: "get",
-    url: `/address/${address}/utxo`,
-  });
-  return data;
-};
+// export const getUtxos = async (address: string, baseUrl: string) => {
+//   if (!address) throw Error('Address is not empty');
+//   if (!baseUrl) throw Error('BaseUrl is not empty');
+//   const { data } = await axios({
+//     baseURL: baseUrl,
+//     method: 'get',
+//     url: `/address/${address}/utxo`
+//   });
+//   return data;
+// };
 
 const EVM_BALANCE_RETRY_COUNT = 2;
-const COSMOS_BALANCE_RETRY_COUNT = 4;
+// const COSMOS_BALANCE_RETRY_COUNT = 4;
+
+const flattenObject = (array) => {
+  return array.reduce((acc, obj) => {
+    if (obj && typeof obj === "object") {
+      return { ...acc, ...obj };
+    }
+    return acc; // Skip null or invalid entries
+  }, {});
+};
 
 export type CWStargateType = {
-  account: AccountWithAll;
+  account: any;
   chainId: string;
   rpc: string;
 };
 
 export type LoadTokenParams = {
+  cosmosTokens;
+  tokenMap;
+  chainInfos;
+  oraichainTokens;
+  network;
+  evmChains;
+  evmTokens;
   refresh?: boolean;
   metamaskAddress?: string;
   oraiAddress?: string;
   tronAddress?: string;
-  kwtAddress?: string;
+  injAddress?: string;
   cwStargate?: CWStargateType;
   tokenReload?: Array<any>;
   customChainInfos?: Array<any>;
@@ -63,11 +65,13 @@ type AmountDetails = { [denom: string]: string };
 async function loadNativeBalance(
   universalSwapStore: any,
   address: string,
-  tokenInfo: { chainId?: string; rpc?: string },
+  tokenInfo: { chainId: string; rpc: string },
+  cosmosTokens,
+  tokenMap,
   retryCount?: number
 ) {
   if (!address) return;
-
+  if (address.startsWith("oraie") || address.startsWith("oraibtc")) return;
   try {
     const client = await StargateClient.connect(tokenInfo.rpc);
     let amountAll = await client.getAllBalances(address);
@@ -91,9 +95,12 @@ async function loadNativeBalance(
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log("error address,", address, err);
+    console.log("retryCount", retryCount);
+
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
       throw `Cannot loadNativeBalance with error: ${err}`;
+    }
 
     await new Promise((resolve) => setTimeout(resolve, 2500));
     console.log("try again with address ", address);
@@ -102,7 +109,9 @@ async function loadNativeBalance(
       universalSwapStore,
       address,
       tokenInfo,
-      retryCount
+      cosmosTokens,
+      tokenMap,
+      retry
     );
   }
 }
@@ -115,10 +124,17 @@ async function loadTokens(
     oraiAddress,
     metamaskAddress,
     tronAddress,
-    kwtAddress,
+    injAddress,
     cwStargate,
+    cosmosTokens,
+    tokenMap,
+    chainInfos,
     tokenReload,
     customChainInfos,
+    oraichainTokens,
+    network,
+    evmChains,
+    evmTokens,
   }: LoadTokenParams
 ) {
   const customEvmTokens = uniqBy(
@@ -132,10 +148,6 @@ async function loadTokens(
     ),
     (c) => c.denom
   );
-
-  const och = customEvmTokens.filter((cem) => cem.denom.includes("pendle"));
-  console.log("och", och);
-
   if (tokenReload) {
     tokenReload.map((t) => {
       if (t.networkType === "cosmos") {
@@ -146,17 +158,22 @@ async function loadTokens(
             await Promise.all([
               loadTokensCosmos(
                 universalSwapStore,
-                kwtAddress,
+                injAddress,
                 oraiAddress,
+                cosmosTokens,
+                tokenMap,
+                chainInfos,
                 tokenReload
               ),
-              loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
-              // different cointype but also require keplr connected by checking oraiAddress
-              loadKawaiiSubnetAmount(
+              loadCw20Balance(
                 universalSwapStore,
-                kwtAddress,
-                tokenReload
+                oraiAddress,
+                cwStargate,
+                oraichainTokens,
+                network
               ),
+              // different cointype but also require keplr connected by checking oraiAddress
+              // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
             ]);
           }, 500);
         }
@@ -171,6 +188,7 @@ async function loadTokens(
                 tronToEthAddress(tronAddress),
                 chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
                 true,
+                evmTokens,
                 tokenReload
               );
             }, 500);
@@ -184,6 +202,7 @@ async function loadTokens(
                 metamaskAddress,
                 evmChains,
                 false,
+                evmTokens,
                 tokenReload
               );
             }, 500);
@@ -202,13 +221,22 @@ async function loadTokens(
       await Promise.all([
         loadTokensCosmos(
           universalSwapStore,
-          kwtAddress,
+          injAddress,
           oraiAddress,
+          cosmosTokens,
+          tokenMap,
+          chainInfos,
           tokenReload
         ),
-        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
+        loadCw20Balance(
+          universalSwapStore,
+          oraiAddress,
+          cwStargate,
+          oraichainTokens,
+          network
+        ),
         // different cointype but also require keplr connected by checking oraiAddress
-        loadKawaiiSubnetAmount(universalSwapStore, kwtAddress, tokenReload),
+        // loadKawaiiSubnetAmount(universalSwapStore, injAddress, tokenReload)
       ]);
     }, 500);
   }
@@ -221,6 +249,7 @@ async function loadTokens(
         metamaskAddress,
         evmChains,
         false,
+        evmTokens,
         tokenReload,
         customEvmTokens
       );
@@ -235,6 +264,7 @@ async function loadTokens(
         tronToEthAddress(tronAddress),
         chainInfos.filter((c) => c.chainId == "0x2b6653dc"),
         true,
+        evmTokens,
         tokenReload
       );
     }, 500);
@@ -259,11 +289,14 @@ export const genAddressCosmos = (info, address60, address118) => {
 
 async function loadTokensCosmos(
   updateAmounts: any,
-  kwtAddress: string,
+  injectiveAddress: string,
   oraiAddress: string,
+  cosmosTokens,
+  tokenMap,
+  chainInfos,
   tokenReload?: Array<any>
 ) {
-  if (!kwtAddress || !oraiAddress) return;
+  if (!injectiveAddress || !oraiAddress) return;
   let cosmosInfos = chainInfos.filter(
     (chainInfo) =>
       chainInfo.networkType === "cosmos" || chainInfo.bip44.coinType === 118
@@ -280,11 +313,17 @@ async function loadTokensCosmos(
   for (const chainInfo of cosmosInfos) {
     const { cosmosAddress } = genAddressCosmos(
       chainInfo,
-      kwtAddress,
+      injectiveAddress,
       oraiAddress
     );
 
-    loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
+    loadNativeBalance(
+      updateAmounts,
+      cosmosAddress,
+      chainInfo,
+      cosmosTokens,
+      tokenMap
+    );
   }
 }
 
@@ -292,6 +331,8 @@ async function loadCw20Balance(
   universalSwapStore: any,
   address: string,
   cwStargate: CWStargateType,
+  oraichainTokens,
+  network,
   // tokenReload?: any,
   retryCount?: number
 ) {
@@ -316,7 +357,8 @@ async function loadCw20Balance(
   const client = await CWStargate.init(
     cwStargate.account,
     cwStargate.chainId,
-    cwStargate.rpc
+    cwStargate.rpc,
+    network
   );
 
   try {
@@ -345,12 +387,21 @@ async function loadCw20Balance(
 
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
-    console.log("error querying EVM balance: ", err);
+    console.log("error querying loadCw20Balance: ", err);
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
-      console.error(`Cannot query EVM balance with error: ${err}`);
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
+      console.error(`Cannot query loadCw20Balance balance with error: ${err}`);
+      return;
+    }
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    return loadCw20Balance(universalSwapStore, address, cwStargate, retry);
+    return loadCw20Balance(
+      universalSwapStore,
+      address,
+      cwStargate,
+      oraichainTokens,
+      network,
+      retry
+    );
   }
 }
 
@@ -410,11 +461,13 @@ async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {
 async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
+  evmTokens: any,
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>,
   multicallCustomContractAddress?: string,
   retryCount?: number
-): Promise<[string, string][]> {
+  // ): Promise<[string, string][]> {
+): Promise<Object> {
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {
@@ -474,16 +527,20 @@ async function loadEvmEntries(
     });
     if (nativeEvmToken)
       entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
-    return entries;
+
+    return Object.fromEntries(entries);
   } catch (error) {
     console.log("error querying EVM balance: ", error);
     let retry = retryCount ? retryCount + 1 : 1;
-    if (retry >= EVM_BALANCE_RETRY_COUNT)
+    if (retry >= EVM_BALANCE_RETRY_COUNT) {
       console.error(`Cannot query EVM balance with error: ${error}`);
+      return;
+    }
     await new Promise((resolve) => setTimeout(resolve, 5000));
     return loadEvmEntries(
       address,
       chain,
+      evmTokens,
       tokenReload,
       customEvmTokens,
       multicallCustomContractAddress,
@@ -497,53 +554,57 @@ async function loadEvmAmounts(
   evmAddress: string,
   chains: CustomChainInfo[],
   isTronAddress: boolean,
+  evmTokens,
   tokenReload?: Array<any>,
   customEvmTokens?: Array<any>
 ) {
-  //@ts-ignore
-  const amountDetails = Object.fromEntries(
-    flatten(
+  try {
+    const amountDetails = flatten(
       await Promise.all(
         chains.map((chain) =>
-          loadEvmEntries(evmAddress, chain, tokenReload, customEvmTokens)
+          loadEvmEntries(
+            evmAddress,
+            chain,
+            evmTokens,
+            tokenReload,
+            customEvmTokens
+          )
         )
       )
-    )
-  );
-
-  if (!isTronAddress) {
-    Object.keys(amountDetails).forEach(function (key) {
-      if (key.startsWith("trx")) {
-        delete amountDetails[key];
-      }
-    });
-  }
-
-  universalSwapStore.updateAmounts(amountDetails);
-}
-
-export async function loadKawaiiSubnetAmount(
-  universalSwapStore: any,
-  kwtAddress: string,
-  tokenReload?: any
-) {
-  if (!kwtAddress) return;
-  const kawaiiInfo = chainInfos.find((c) => c.chainId === "kawaii_6886-1");
-  try {
-    loadNativeBalance(universalSwapStore, kwtAddress, kawaiiInfo);
-
-    const kwtSubnetAddress = getEvmAddress(kwtAddress);
-    const kawaiiEvmInfo = chainInfos.find((c) => c.chainId === "0x1ae6");
-    //@ts-ignore
-    let amountDetails = Object.fromEntries(
-      await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload)
     );
 
-    universalSwapStore.updateAmounts(amountDetails);
-  } catch (err) {
-    console.log("loadKawaiiSubnetAmount err", err);
+    const tokens = flattenObject(amountDetails);
+
+    if (!isTronAddress) {
+      Object.keys(tokens).forEach(function (key) {
+        if (key.startsWith("trx")) {
+          delete tokens[key];
+        }
+      });
+    }
+
+    universalSwapStore.updateAmounts(tokens);
+  } catch (error) {
+    console.log("error on loadEvmAmounts: ", error);
   }
 }
+
+// export async function loadKawaiiSubnetAmount(universalSwapStore: any, injAddress: string, tokenReload?: any) {
+//   if (!injAddress) return;
+//   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
+//   try {
+//     loadNativeBalance(universalSwapStore, injAddress, kawaiiInfo);
+
+//     const kwtSubnetAddress = getEvmAddress(injAddress);
+//     const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
+//     //@ts-ignore
+//     let amountDetails = Object.fromEntries(await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo, tokenReload));
+
+//     universalSwapStore.updateAmounts(amountDetails);
+//   } catch (err) {
+//     console.log('loadKawaiiSubnetAmount err', err);
+//   }
+// }
 
 export function useLoadTokens(
   universalSwapStore: any

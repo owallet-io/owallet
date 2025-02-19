@@ -1,5 +1,5 @@
 import { KVStore, MultiGet, WrapMultiGetKVStore } from "@owallet/common";
-import { DebounceActionTimer } from "@owallet/common";
+import { DebounceActionTimer } from "@owallet/mobx-utils";
 import { SettledResponse } from "@owallet/types";
 
 export class QuerySharedContext {

@@ -1,5 +1,7 @@
 import bech32, { fromWords } from "bech32";
 import { Bech32Config } from "@owallet/types";
+import { Buffer } from "buffer/";
+import { getAddress as getEthAddress } from "@ethersproject/address";
 
 export class Bech32Address {
   static shortenAddress(bech32: string, maxCharacters: number): string {
@@ -34,24 +36,21 @@ export class Bech32Address {
     return prefix + "1" + former + "..." + latter;
   }
 
-  static fromBech32(bech32Address: string, prefix?: string): Bech32Address {
-    const decoded = bech32.decode(bech32Address);
+  static fromBech32(
+    bech32Address: string,
+    prefix?: string,
+    limit?: number
+  ): Bech32Address {
+    const decoded = bech32.decode(bech32Address, limit);
     if (prefix && decoded.prefix !== prefix) {
       throw new Error("Unmatched prefix");
     }
+
     return new Bech32Address(new Uint8Array(fromWords(decoded.words)));
   }
-  static fromBech32Btc(address: string, prefix?: string): Bech32Address {
-    const decoded = bech32.decode(address);
-    if (prefix && decoded.prefix !== prefix) {
-      throw new Error("Unmatched prefix");
-    }
-    const addressHex = new Uint8Array(fromWords(decoded.words.slice(1)));
 
-    return new Bech32Address(addressHex);
-  }
-  static validate(bech32Address: string, prefix?: string) {
-    const { prefix: decodedPrefix } = bech32.decode(bech32Address);
+  static validate(bech32Address: string, prefix?: string, limit?: number) {
+    const { prefix: decodedPrefix } = bech32.decode(bech32Address, limit);
     if (prefix && prefix !== decodedPrefix) {
       throw new Error(
         `Unexpected prefix (expected: ${prefix}, actual: ${decodedPrefix})`
@@ -80,14 +79,27 @@ export class Bech32Address {
 
   constructor(public readonly address: Uint8Array) {}
 
-  toBech32(prefix: string): string {
+  toBech32(prefix: string, limit?: number): string {
     const words = bech32.toWords(this.address);
-    return bech32.encode(prefix, words);
+    return bech32.encode(prefix, words, limit);
   }
-  toBech32Btc(prefix: string): string {
+  toBech32Btc(prefix: string, limit?: number): string {
     const words = bech32.toWords(this.address);
     words.unshift(0);
+    return bech32.encode(prefix, words, limit);
+  }
 
-    return bech32.encode(prefix, words);
+  toHex(mixedCaseChecksum: boolean = true): string {
+    const hex = Buffer.from(this.address).toString("hex");
+
+    if (hex.length === 0) {
+      throw new Error("Empty address");
+    }
+
+    if (mixedCaseChecksum) {
+      return getEthAddress("0x" + hex);
+    } else {
+      return "0x" + hex;
+    }
   }
 }

@@ -15,6 +15,11 @@ import Long from "long";
 import { ChainIdHelper } from "@owallet/cosmos";
 import { AppState } from "react-native";
 import { Key } from "@owallet/types";
+import {
+  KeyRingStore,
+  PermissionManagerStore,
+  PermissionStore,
+} from "@owallet/stores-core";
 // import {
 //   KeyRingStore,
 //   PermissionManagerStore,
@@ -40,8 +45,6 @@ async function getRandomBytesAsync(size) {
   window.crypto.getRandomValues(randomBytes);
   return randomBytes;
 }
-import { KeyRingStore, PermissionStore } from "@owallet/stores";
-
 function noop(fn: () => void): void {
   fn();
 }
@@ -121,7 +124,8 @@ export class WalletConnectStore {
     },
     protected readonly chainStore: ChainStore,
     protected readonly keyRingStore: KeyRingStore,
-    protected readonly permissionStore: PermissionStore // protected readonly permissionManagerStore: PermissionManagerStore
+    protected readonly permissionStore: PermissionStore,
+    protected readonly permissionManagerStore: PermissionManagerStore
   ) {
     makeObservable(this);
 
@@ -138,9 +142,11 @@ export class WalletConnectStore {
       projectId: projectId,
       metadata: {
         name: "OWallet",
-        description: "Your Gateway to Web3",
+        description: "Your Wallet for the Interchain",
         url: "https://owallet.io",
-        icons: ["https://owallet.io/svg/logo_owallet.svg"],
+        icons: [
+          "https://asset-icons.s3.us-west-2.amazonaws.com/owallet_512.png",
+        ],
       },
     });
 
@@ -186,8 +192,6 @@ export class WalletConnectStore {
         }
         if (this.sessionProposalResolverMap.has(topic)) {
           runInAction(() => {
-            // 엄밀하게 말하면 확신할 수 있는건 아니지만
-            // 이미 pairing된 uri로 wc 요청이 들어오면 request 처리일 확률이 높음.
             this._isPendingWcCallFromDeepLinkClient = true;
           });
           // Already requested. Do nothing.
@@ -502,10 +506,11 @@ export class WalletConnectStore {
 
     if (id) {
       for (const chainInfo of this.chainStore.chainInfos) {
-        const basicAccessInfo = this.permissionStore.getBasicAccessInfo(
-          chainInfo.chainId
+        await this.permissionManagerStore.removePermission(
+          WCMessageRequester.getVirtualURL(id),
+          chainInfo.chainId,
+          getBasicAccessPermissionType()
         );
-        basicAccessInfo.removeOrigin(WCMessageRequester.getVirtualURL(id));
       }
     }
 
@@ -845,22 +850,27 @@ export class WalletConnectStore {
           });
           break;
         }
-        // case "owallet_signEthereum": {
-        //   interactionNeeded = true;
-        //   const res = await owallet.signEthereum(params.chainId, params.signer, params.data, params.type);
+        case "owallet_signEthereum": {
+          interactionNeeded = true;
+          const res = await owallet.signEthereum(
+            params.chainId,
+            params.signer,
+            params.data,
+            params.type
+          );
 
-        //   await signClient.respond({
-        //     topic,
-        //     response: {
-        //       id,
-        //       jsonrpc: "2.0",
-        //       result: {
-        //         ...res
-        //       }
-        //     }
-        //   });
-        //   break;
-        // }
+          await signClient.respond({
+            topic,
+            response: {
+              id,
+              jsonrpc: "2.0",
+              result: {
+                ...res,
+              },
+            },
+          });
+          break;
+        }
         case "owallet_experimentalSuggestChain": {
           interactionNeeded = true;
 
@@ -1017,10 +1027,10 @@ export class WalletConnectStore {
       });
     }
 
-    if (this.keyRingStore.status !== KeyRingStatus.UNLOCKED) {
+    if (this.keyRingStore.status !== "unlocked") {
       await new Promise<void>((resolve) => {
         const disposer = autorun(() => {
-          if (this.keyRingStore.status === KeyRingStatus.UNLOCKED) {
+          if (this.keyRingStore.status === "unlocked") {
             resolve();
             if (disposer) {
               disposer();

@@ -1,45 +1,52 @@
-import { ChainGetter, ObservableQueryDelegations } from "@owallet/stores";
-import { ObservableQueryBalances } from "@owallet/stores";
-import { useFeeConfig } from "./fee";
-import { useGasConfig } from "./gas";
-import { useMemoConfig } from "./memo";
-import { useRecipientConfig } from "./recipient";
+import { ChainGetter } from "@owallet/stores";
+import {
+  useFeeConfig,
+  useGasConfig,
+  useMemoConfig,
+  useRecipientConfig,
+  useSenderConfig,
+} from "./index";
 import { useStakedAmountConfig } from "./staked-amount";
+import { QueriesStore } from "./internal";
 
 export const useRedelegateTxConfig = (
   chainGetter: ChainGetter,
+  queriesStore: QueriesStore,
   chainId: string,
-  gas: number,
   sender: string,
-  queryBalances: ObservableQueryBalances,
-  queryDelegations: ObservableQueryDelegations,
-  srcValidatorAddress: string
+  validatorAddress: string,
+  initialGas: number
 ) => {
+  const senderConfig = useSenderConfig(chainGetter, chainId, sender);
   const amountConfig = useStakedAmountConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryDelegations,
-    srcValidatorAddress
+    validatorAddress,
+    senderConfig
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useGasConfig(chainGetter, chainId, gas);
-  gasConfig.setGas(gas);
+  const gasConfig = useGasConfig(chainGetter, chainId, initialGas);
   const feeConfig = useFeeConfig(
     chainGetter,
+    queriesStore,
     chainId,
-    sender,
-    queryBalances,
+    senderConfig,
     amountConfig,
     gasConfig,
-    false
+    {
+      additionAmountToNeedFee: false,
+    }
   );
+  amountConfig.setFeeConfig(feeConfig);
 
   const recipientConfig = useRecipientConfig(chainGetter, chainId);
-  recipientConfig.setBech32Prefix(
-    chainGetter.getChain(chainId).bech32Config.bech32PrefixValAddr
-  );
+  const chainInfo = chainGetter.getChain(chainId);
+  if (chainInfo.bech32Config) {
+    recipientConfig.setBech32Prefix(chainInfo.bech32Config.bech32PrefixValAddr);
+  }
+  amountConfig.setCurrency(chainGetter.getChain(chainId).stakeCurrency);
 
   return {
     amountConfig,
@@ -47,7 +54,6 @@ export const useRedelegateTxConfig = (
     gasConfig,
     feeConfig,
     recipientConfig,
-    srcValidatorAddress,
-    dstValidatorAddress: recipientConfig.recipient,
+    senderConfig,
   };
 };

@@ -1,32 +1,40 @@
-import {
-  ChainInfo,
-  ChainInfoWithoutEndpoints,
-  NetworkType,
-} from "../chain-info";
+import { ChainInfo, ChainInfoWithoutEndpoints } from "../chain-info";
+import { EthSignType } from "../ethereum";
 import {
   BroadcastMode,
   AminoSignResponse,
   StdSignDoc,
-  StdTx,
-  OfflineSigner,
+  OfflineAminoSigner,
   StdSignature,
-} from "@cosmjs/launchpad";
-import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
+  DirectSignResponse,
+  OfflineDirectSigner,
+} from "../cosmjs";
 import { SecretUtils } from "../secretjs";
 import Long from "long";
-import { SignEthereumTypedDataObject } from "../typedMessage";
-import { Signer } from "@oasisprotocol/client/dist/signature";
-import { SettledResponses } from "src/settled";
-
-export type AddressesLedger = {
-  cosmos?: string;
-  eth?: string;
-  trx?: string;
-  btc44?: string;
-  btc84?: string;
-  tbtc44?: string;
-  tbtc84?: string;
-};
+import { SettledResponses } from "../settled";
+import { DirectAuxSignResponse } from "../cosmjs-alt";
+import EventEmitter from "events";
+import { TransactionType } from "../oasis";
+import { TW } from "../oasis/oasis-types";
+import * as oasis from "@oasisprotocol/client";
+import { types } from "@oasisprotocol/client";
+import { TransactionBtcType } from "../btc";
+import { ITronProvider } from "../tron";
+import {
+  ConfirmOptions,
+  Connection,
+  PublicKey,
+  SendOptions,
+  Signer,
+  Transaction,
+  TransactionSignature,
+  VersionedTransaction,
+} from "@solana/web3.js";
+import {
+  SolanaSignInInput,
+  SolanaSignInOutput,
+} from "@solana/wallet-standard-features";
+import { OWalletSolana } from "@oraichain/owallet-wallet-standard/src/window";
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -34,12 +42,25 @@ export interface Key {
   readonly pubKey: Uint8Array;
   readonly address: Uint8Array;
   readonly bech32Address: string;
-  readonly legacyAddress?: string;
+  readonly ethereumHexAddress: string;
+  readonly base58Address?: string;
+  readonly btcLegacyAddress?: string;
   // Indicate whether the selected account is from the nano ledger.
   // Because current cosmos app in the nano ledger doesn't support the direct (proto) format msgs,
   // this can be used to select the amino or direct signer.
   readonly isNanoLedger: boolean;
+  readonly isKeystone: boolean;
 }
+
+export type ICNSAdr36Signatures = {
+  chainId: string;
+  bech32Prefix: string;
+  bech32Address: string;
+  addressHash: "cosmos" | "ethereum";
+  pubKey: Uint8Array;
+  signatureSalt: number;
+  signature: Uint8Array;
+}[];
 
 export type OWalletMode = "core" | "extension" | "mobile-web" | "walletconnect";
 
@@ -52,8 +73,6 @@ export interface OWalletSignOptions {
   readonly preferNoSetMemo?: boolean;
 
   readonly disableBalanceCheck?: boolean;
-  readonly networkType?: NetworkType;
-  readonly chainId?: string;
 }
 
 export interface OWallet {
@@ -66,9 +85,19 @@ export interface OWallet {
   readonly mode: OWalletMode;
   defaultOptions: OWalletIntereactionOptions;
 
+  ping(): Promise<void>;
+
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
+  /**
+   * Delete permissions granted to origin.
+   * If chain ids are specified, only the permissions granted to each chain id are deleted (In this case, permissions such as getChainInfosWithoutEndpoints() are not deleted).
+   * Else, remove all permissions granted to origin (In this case, permissions that are not assigned to each chain, such as getChainInfosWithoutEndpoints(), are also deleted).
+   *
+   * @param chainIds disable(Remove approve domain(s)) target chain ID(s).
+   */
+  disable(chainIds?: string | string[]): Promise<void>;
+
   getKey(chainId: string): Promise<Key>;
   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
   signAmino(
@@ -95,15 +124,44 @@ export interface OWallet {
     },
     signOptions?: OWalletSignOptions
   ): Promise<DirectSignResponse>;
+  signDirectAux(
+    chainId: string,
+    signer: string,
+    signDoc: {
+      bodyBytes?: Uint8Array | null;
+      publicKey?: {
+        typeUrl: string;
+        value: Uint8Array;
+      } | null;
+      chainId?: string | null;
+      accountNumber?: Long | null;
+      sequence?: Long | null;
+      tip?: {
+        amount: {
+          denom: string;
+          amount: string;
+        }[];
+        tipper: string;
+      } | null;
+    },
+    signOptions?: Exclude<
+      OWalletSignOptions,
+      "preferNoSetFee" | "disableBalanceCheck"
+    >
+  ): Promise<DirectAuxSignResponse>;
   sendTx(
     chainId: string,
-    /*
-     If the type is `StdTx`, it is considered as legacy stdTx.
-     If the type is `Uint8Array`, it is considered as proto tx.
-     */
-    tx: StdTx | Uint8Array,
+    tx: Uint8Array,
     mode: BroadcastMode
   ): Promise<Uint8Array>;
+
+  signICNSAdr36(
+    chainId: string,
+    contractAddress: string,
+    owner: string,
+    username: string,
+    addressChainIds: string[]
+  ): Promise<ICNSAdr36Signatures>;
 
   signArbitrary(
     chainId: string,
@@ -117,11 +175,26 @@ export interface OWallet {
     signature: StdSignature
   ): Promise<boolean>;
 
-  getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner;
-  getOfflineSignerOnlyAmino(chainId: string): OfflineSigner;
+  signEthereum(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: EthSignType
+  ): Promise<Uint8Array>;
+
+  getOfflineSigner(
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): OfflineAminoSigner & OfflineDirectSigner;
+  getOfflineSignerOnlyAmino(
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): OfflineAminoSigner;
   getOfflineSignerAuto(
-    chainId: string
-  ): Promise<OfflineSigner | OfflineDirectSigner>;
+    chainId: string,
+    signOptions?: OWalletSignOptions
+  ): Promise<OfflineAminoSigner | OfflineDirectSigner>;
+
   suggestToken(
     chainId: string,
     contractAddress: string,
@@ -132,6 +205,25 @@ export interface OWallet {
     contractAddress: string
   ): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
+
+  // Related to Enigma.
+  // But, recommended to use `getEnigmaUtils` rather than using below.
+  getEnigmaPubKey(chainId: string): Promise<Uint8Array>;
+  getEnigmaTxEncryptionKey(
+    chainId: string,
+    nonce: Uint8Array
+  ): Promise<Uint8Array>;
+  enigmaEncrypt(
+    chainId: string,
+    contractCodeHash: string,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    msg: object
+  ): Promise<Uint8Array>;
+  enigmaDecrypt(
+    chainId: string,
+    ciphertext: Uint8Array,
+    nonce: Uint8Array
+  ): Promise<Uint8Array>;
 
   /**
    * Sign the sign doc with ethermint's EIP-712 format.
@@ -157,34 +249,84 @@ export interface OWallet {
     signDoc: StdSignDoc,
     signOptions?: OWalletSignOptions
   ): Promise<AminoSignResponse>;
-  // Related to Enigma.
-  // But, recommended to use `getEnigmaUtils` rather than using below.
-  getEnigmaPubKey(chainId: string): Promise<Uint8Array>;
-  getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
-  enigmaEncrypt(
-    chainId: string,
-    contractCodeHash: string,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    msg: object
-  ): Promise<Uint8Array>;
-  enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
-}
 
-export type EthereumMode =
-  | "core"
-  | "extension"
-  | "mobile-web"
-  | "walletconnect";
-export type BitcoinMode = "core" | "extension" | "mobile-web" | "walletconnect";
-export type DefaultMode = "core" | "extension" | "mobile-web" | "walletconnect";
-export type TronWebMode = "core" | "extension" | "mobile-web" | "walletconnect";
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
+  getChainInfoWithoutEndpoints(
+    chainId: string
+  ): Promise<ChainInfoWithoutEndpoints>;
+
+  /** Change wallet extension user name **/
+  changeKeyRingName(opts: {
+    defaultName: string;
+    editable?: boolean;
+  }): Promise<string>;
+
+  sendEthereumTx(chainId: string, tx: Uint8Array): Promise<string>;
+
+  suggestERC20(chainId: string, contractAddress: string): Promise<void>;
+
+  readonly ethereum: IEthereumProvider;
+  readonly oasis?: IOasisProvider;
+  readonly bitcoin?: IBitcoinProvider;
+  readonly tron?: ITronProvider;
+  readonly solana?: ISolanaProvider;
+}
+export interface IOasisProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  sendTx(chainId: string, signedTx: types.SignatureSigned): Promise<string>;
+  sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionType
+  ): Promise<types.SignatureSigned>;
+}
+// export interface ISolanaProvider extends OWalletSolana {
+//   getKey(chainId: string): Promise<Key>;
+//   getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+// }
+export interface ISolanaProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  publicKey: PublicKey | null;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  connect?(options?: {
+    onlyIfTrusted?: boolean;
+    reconnect?: boolean;
+  }): Promise<{ publicKey: PublicKey }>;
+  // connect(options): Promise<{ publicKey: PublicKey }>;
+  disconnect(): Promise<void>;
+  signTransaction<T extends Transaction | VersionedTransaction>(
+    tx: T,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<T>;
+  signIn(input?: SolanaSignInInput): Promise<SolanaSignInOutput>;
+  signAndSendTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T,
+    options?: SendOptions
+  ): Promise<{ signature: TransactionSignature }>;
+  signMessage(
+    msg: Uint8Array,
+    publicKey?: PublicKey
+  ): Promise<{ signature: Uint8Array }>;
+  signAllTransactions<T extends Transaction | VersionedTransaction>(
+    txs: Array<T>,
+    publicKey?: PublicKey,
+    connection?: Connection
+  ): Promise<Array<T>>;
+}
+export interface IBitcoinProvider extends EventEmitter {
+  getKey(chainId: string): Promise<Key>;
+  getKeysSettled(chainIds: string[]): Promise<SettledResponses<Key>>;
+  sendTx(chainId: string, signedTx: string): Promise<string>;
+  sign(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    type: TransactionBtcType
+  ): Promise<string>;
+}
 
 export interface RequestArguments {
   method: string;
@@ -192,79 +334,29 @@ export interface RequestArguments {
   [key: string]: any;
 }
 
-export interface Ethereum {
-  readonly version: string;
-  /**
-   * mode means that how Ethereum is connected.
-   * If the connected Ethereum is browser's extension, the mode should be "extension".
-   * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
-   */
-  readonly mode: EthereumMode;
-  initChainId: string;
-  // send(): Promise<void>;
-  request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
-  experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  signEthereumTypeData(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<void>;
-  signReEncryptData(chainId: string, data: object): Promise<object>;
-  signDecryptData(chainId: string, data: object): Promise<object>;
-  getPublicKey(chainId: string): Promise<object>;
-  signAndBroadcastTron(chainId: string, data: object): Promise<any>;
-  // asyncRequest(): Promise<void>;
-  // getKey(chainId: string): Promise<Key>;
-}
+export interface IEthereumProvider extends EventEmitter {
+  // It must be in the hexadecimal format used in EVM-based chains, not the format used in Tendermint nodes.
+  readonly chainId: string | null;
+  // It must be in the decimal format of chainId.
+  readonly networkVersion: string | null;
 
-export interface TronWeb {
-  readonly version: string;
-  readonly mode: TronWebMode;
-  defaultAddress?: object;
-  initChainId: string;
-  sign(transaction: object): Promise<object>;
-  sendRawTransaction(transaction: {
-    raw_data: any;
-    raw_data_hex: string;
-    txID: string;
-    visible?: boolean;
-  }): Promise<object>;
-  triggerSmartContract(
-    address: string,
-    functionSelector: string,
-    options: any,
-    parameters: any[],
-    issuerAddress: string
-  ): Promise<any>;
-  getDefaultAddress(): Promise<object>;
-}
-export interface Bitcoin {
-  readonly version: string;
-  /**
-   * mode means that how Ethereum is connected.
-   * If the connected Ethereum is browser's extension, the mode should be "extension".
-   * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
-   */
-  readonly mode: BitcoinMode;
+  readonly selectedAddress: string | null;
 
-  signAndBroadcast(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
-  getKey(chainId: string): Promise<Key>;
-}
+  readonly isOWallet: boolean;
+  readonly isMetaMask: boolean;
 
-export interface Oasis {
-  readonly version: string;
-  /**
-   * mode means that how Oasis is connected.
-   * If the connected Oasis is browser's extension, the mode should be "extension".
-   * If the connected Oasis is on the mobile app with the embeded web browser, the mode should be "mobile-web".
-   */
-  readonly mode: DefaultMode;
+  isConnected(): boolean;
 
-  signOasis(amount: bigint, to: string): Promise<any>;
+  request<T = unknown>({
+    method,
+    params,
+    chainId,
+  }: {
+    method: string;
+    params?: readonly unknown[] | Record<string, unknown>;
+    chainId?: string;
+  }): Promise<T>;
+
+  enable(): Promise<string[]>;
+  net_version(): Promise<string>;
 }

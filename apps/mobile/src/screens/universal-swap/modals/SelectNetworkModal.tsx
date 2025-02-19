@@ -1,11 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import { metrics, spacing, typography } from "../../../themes";
-import {
-  _keyExtract,
-  getTokenInfos,
-  maskedNumber,
-} from "../../../utils/helper";
+import { _keyExtract, getTokenInfos } from "../../../utils/helper";
 import { VectorCharacter } from "../../../components/vector-character";
 import { Text } from "@src/components/text";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -34,12 +30,11 @@ export const SelectNetworkModal: FunctionComponent<{
 
     const { colors } = useTheme();
     const [keyword, setKeyword] = useState("");
-    const [activeTab, setActiveTab] = useState<"mainnet" | "testnet">(
-      "mainnet"
-    );
 
     const { chainStore, appInitStore, universalSwapStore } = useStore();
     const [chains, setChains] = useState(chainStore.chainInfosInUI);
+
+    const { tokenMap, flattenTokens } = appInitStore.oraidexCommon;
 
     const styles = styling(colors);
     let totalUsd: number = 0;
@@ -50,16 +45,19 @@ export const SelectNetworkModal: FunctionComponent<{
     ) {
       totalUsd = getTotalUsd(
         universalSwapStore.getAmount,
-        appInitStore.getInitApp.prices
+        appInitStore.getInitApp.prices,
+        tokenMap
       );
       todayAssets = getTokenInfos({
+        flattenTokens,
+        tokenMap,
         tokens: universalSwapStore.getAmount,
         prices: appInitStore.getInitApp.prices,
       });
     }
 
-    const handleChangeNetwork = (network) => {
-      setChainFilter(network.chainId);
+    const handleChangeNetwork = (chainId) => {
+      setChainFilter(chainId);
       close();
     };
 
@@ -78,64 +76,45 @@ export const SelectNetworkModal: FunctionComponent<{
     }, {});
 
     useEffect(() => {
-      if (activeTab === "mainnet") {
-        const tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (!c.chainName.toLowerCase().includes("test")) {
-            tmpChainInfos.push(c);
-          }
-        });
-        setChains(tmpChainInfos);
-      } else {
-        const tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (c.chainName.toLowerCase().includes("test")) {
-            tmpChainInfos.push(c);
-          }
-        });
-        setChains(tmpChainInfos);
-      }
-    }, [activeTab]);
+      const tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (!c.chainName.toLowerCase().includes("test")) {
+          tmpChainInfos.push(c);
+        }
+      });
+      setChains(tmpChainInfos);
+    }, []);
 
     useEffect(() => {
-      if (activeTab === "mainnet") {
-        let tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (
-            !c.chainName.toLowerCase().includes("test") &&
-            c.chainName.toLowerCase().includes(keyword.toLowerCase())
-          ) {
-            tmpChainInfos.push(c);
-          }
-        });
+      let tmpChainInfos = [];
+      chainStore.chainInfosInUI.map((c) => {
+        if (
+          !c.chainName.toLowerCase().includes("test") &&
+          c.chainName.toLowerCase().includes(keyword.toLowerCase())
+        ) {
+          tmpChainInfos.push(c);
+        }
+      });
 
-        setChains(tmpChainInfos);
-      } else {
-        let tmpChainInfos = [];
-        chainStore.chainInfosInUI.map((c) => {
-          if (
-            c.chainName.toLowerCase().includes("test") &&
-            c.chainName.toLowerCase().includes(keyword.toLowerCase())
-          ) {
-            tmpChainInfos.push(c);
-          }
-        });
-
-        setChains(tmpChainInfos);
-      }
-    }, [keyword, activeTab]);
-
-    useEffect(() => {
-      if (chainStore.current.chainName.toLowerCase().includes("test")) {
-        setActiveTab("testnet");
-      }
-    }, [chainStore.current.chainName]);
+      setChains(tmpChainInfos);
+    }, [keyword]);
 
     const _renderItem = ({ item }) => {
       let selected = item?.chainId === selectedChainFilter;
+      let formatedChainID = item?.chainId;
+
+      if (item?.chainId.toString().startsWith("eip155")) {
+        const evmChainId = Number(item?.chainId.toString().split(":")?.[1]);
+        const hexadecimalNumber = evmChainId.toString(16);
+        formatedChainID = "0x" + hexadecimalNumber;
+        if (evmChainId === 1) {
+          // For ETH
+          formatedChainID = "0x01";
+        }
+      }
 
       const tokenListByChain = tokenList.filter(
-        (t) => t.chainId === item?.chainId
+        (t) => t.chainId === formatedChainID
       );
 
       if (tokenListByChain.length <= 0) {
@@ -145,7 +124,7 @@ export const SelectNetworkModal: FunctionComponent<{
       if (item.isAll && appInitStore.getInitApp.isAllNetworks) {
         selected = true;
       }
-      let chainIcon = chainIcons.find((c) => c.chainId === item.chainId);
+      let chainIcon = chainIcons.find((c) => c.chainId === formatedChainID);
 
       // Hardcode for Oasis because oraidex-common does not have icon yet
       if (item.chainName.toLowerCase().includes("oasis")) {
@@ -159,6 +138,13 @@ export const SelectNetworkModal: FunctionComponent<{
         chainIcon = {
           chainId: item.chainId,
           Icon: "https://assets.coingecko.com/coins/images/31967/standard/tia.jpg?1696530772",
+        };
+      }
+
+      if (item.chainName.toLowerCase().includes("solana")) {
+        chainIcon = {
+          chainId: item.chainId,
+          Icon: "https://assets.coingecko.com/coins/images/4128/standard/solana.png?1718769756",
         };
       }
 
@@ -180,7 +166,7 @@ export const SelectNetworkModal: FunctionComponent<{
             backgroundColor: selected ? colors["neutral-surface-bg2"] : null,
           }}
           onPress={() => {
-            handleChangeNetwork(item);
+            handleChangeNetwork(formatedChainID);
           }}
         >
           <View
@@ -234,10 +220,8 @@ export const SelectNetworkModal: FunctionComponent<{
                   fontWeight: "400",
                 }}
               >
-                $
-                {!item.chainId
-                  ? maskedNumber(totalUsd)
-                  : maskedNumber(chainAssets?.[item.chainId]?.sum)}
+                {`${item.balance?.toString()}`}
+                {/* ${!item.chainId ? maskedNumber(totalUsd) : maskedNumber(chainAssets?.[item.chainId]?.sum)} */}
               </Text>
             </View>
           </View>
@@ -251,7 +235,7 @@ export const SelectNetworkModal: FunctionComponent<{
               }
               id={item.chainId}
               selected={selected}
-              onPress={() => handleChangeNetwork(item)}
+              onPress={() => handleChangeNetwork(formatedChainID)}
             />
           </View>
         </TouchableOpacity>
@@ -261,6 +245,7 @@ export const SelectNetworkModal: FunctionComponent<{
     useEffect(() => {
       if (chainAssets) {
         const sortedData = Object.entries(chainAssets).sort(
+          //@ts-ignore
           (a, b) => b[1].sum - a[1].sum
         );
         const keysArray = sortedData.map(([key]) => key);

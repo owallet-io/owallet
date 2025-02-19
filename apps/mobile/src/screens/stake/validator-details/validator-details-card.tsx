@@ -1,5 +1,8 @@
-import { BondStatus } from "@owallet/stores";
-import { CoinPretty, Dec, IntPretty } from "@owallet/unit";
+import {
+  Staking,
+  // BondStatus
+} from "@owallet/stores";
+import { CoinPretty, Dec, Int, IntPretty } from "@owallet/unit";
 import { Text } from "@src/components/text";
 import { useTheme } from "@src/themes/theme-provider";
 import { observer } from "mobx-react-lite";
@@ -15,10 +18,11 @@ import { useStore } from "@src/stores";
 import {
   DenomDydx,
   removeDataInParentheses,
-  ValidatorThumbnails,
+  // ValidatorThumbnails,
 } from "@owallet/common";
 import { OWButton } from "@src/components/button";
 import {
+  AlertIcon,
   ValidatorAPYIcon,
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
@@ -37,7 +41,10 @@ import { navigate } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
 import { useNavigation } from "@react-navigation/native";
 import { OWHeaderTitle } from "@components/header";
+import { OWBox } from "@components/card";
+import { useIntl } from "react-intl";
 
+const defaultGasPerDelegation = 140000;
 const renderIconValidator = (
   label: string,
   size?: number,
@@ -108,37 +115,45 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const initialChainId = chainStore.current["chainId"];
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
   const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonding
+    Staking.BondStatus.Unbonding
   );
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonded
+    Staking.BondStatus.Unbonded
   );
   const navigation = useNavigation();
 
-  const validator = useMemo(() => {
-    return bondedValidators.validators
-      .concat(unbondingValidators.validators)
-      .concat(unbondedValidators.validators)
+  const [validator, isJailed] = (() => {
+    const bondedValidator = bondedValidators.validators
+      .sort((a, b) => Number(b.tokens) - Number(a.tokens))
+      .map((validator, i) => ({ ...validator, rank: i + 1 }))
       .find((val) => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress,
-  ]);
+    if (bondedValidator) {
+      return [bondedValidator, false];
+    }
+
+    const validator = unbondingValidators.validators
+      .concat(unbondedValidators.validators)
+      .sort((a, b) => Number(b.tokens) - Number(a.tokens))
+      .map((validator, i) => ({ ...validator, rank: i + 1 }))
+      .find((val) => val.operator_address === validatorAddress);
+    return [validator, validator?.jailed === true];
+  })();
 
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress) ||
-    ValidatorThumbnails[validatorAddress];
+    unbondedValidators.getValidatorThumbnail(validatorAddress);
+  // ||
+  // ValidatorThumbnails[validatorAddress];
   const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
+
   const rewards = (() => {
     let reward: CoinPretty | undefined;
     const isDydx = chainStore.current.chainId?.includes("dydx-mainnet");
@@ -164,7 +179,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       Number(staked.trim(true).shrink(true).hideDenom(true).maxDecimals(6)) > 0
     );
   }, [validatorAddress]);
-
+  const intl = useIntl();
   const renderTextDetail = (label: string) => {
     switch (label) {
       case "Commission":
@@ -199,31 +214,66 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   const _onPressClaim = async () => {
     try {
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        [validatorAddress],
+      const tx = account.cosmos.makeWithdrawDelegationRewardTx([
+        validatorAddress,
+      ]);
+      let gas = new Int([validatorAddress].length * defaultGasPerDelegation);
+      try {
+        // setIsSimulating(true);
+
+        const simulated = await tx.simulate();
+        console.log(simulated, "simulated");
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gas = new Dec(simulated.gasUsed * 1.5).truncate();
+      } catch (e) {
+        console.log(e, "err high gas");
+      }
+
+      await tx.send(
+        {
+          gas: gas.toString(),
+          amount: [],
+        },
         "",
         {},
-        {},
         {
-          onBroadcasted: (txHash) => {
-            const validatorObject = convertArrToObject([validatorAddress]);
-            tracking(`Claim ${rewards?.currency.coinDenom}`);
-            navigate(SCREENS.TxPendingResult, {
-              txHash: Buffer.from(txHash).toString("hex"),
-              data: {
-                ...validatorObject,
-                type: "claim",
-                amount: rewards?.toCoin(),
-                currency: rewards?.currency,
-              },
+          // onBroadcasted: (txHash) => {
+          //   const validatorObject = convertArrToObject([validatorAddress]);
+          //   navigate(SCREENS.TxPendingResult, {
+          //     chainId: initialChainId,
+          //     txHash: Buffer.from(txHash).toString("hex"),
+          //     data: {
+          //       ...validatorObject,
+          //       type: "claim",
+          //       amount: rewards,
+          //     },
+          //   });
+          // },
+          onFulfill: (tx: any) => {
+            if (tx.code != null && tx.code !== 0) {
+              console.log(tx.log ?? tx.raw_log);
+              showToast({
+                type: "danger",
+                message: intl.formatMessage({
+                  id: "error.transaction-failed",
+                }),
+              });
+              return;
+            }
+            showToast({
+              type: "success",
+              message: intl.formatMessage({
+                id: "notification.transaction-success",
+              }),
             });
           },
-        },
-        rewards?.currency.coinMinimalDenom
+        }
       );
     } catch (e) {
       console.error({ errorClaim: e });
-      if (!e?.message?.startsWith("Transaction Rejected")) {
+      if (!e?.message?.includes("rejected")) {
         showToast({
           message:
             e?.message ?? "Something went wrong! Please try again later.",
@@ -267,7 +317,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       },
     });
   }, [isStakedValidator, chainStore.current.chainName]);
-
+  const isTop10Validator = validator?.rank ? validator.rank <= 10 : false;
   return (
     <PageWithBottom
       bottomGroup={
@@ -330,6 +380,33 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{ height: metrics.screenHeight / 1.4 }}
         showsVerticalScrollIndicator={false}
       >
+        {isTop10Validator ? (
+          <OWCard>
+            <View
+              style={{
+                flexDirection: "row",
+                borderRadius: 12,
+                backgroundColor: colors["warning-surface-subtle"],
+                padding: 12,
+              }}
+            >
+              <AlertIcon color={colors["warning-text-body"]} size={16} />
+              <OWText style={{ paddingLeft: 8 }} weight="600" size={14}>
+                <OWText
+                  style={{
+                    fontWeight: "bold",
+                  }}
+                >
+                  You're about to stake with top 10 validators {"\n"}
+                </OWText>
+                <OWText weight="400">
+                  Consider staking with other validators to improve network
+                  decentralization
+                </OWText>
+              </OWText>
+            </View>
+          </OWCard>
+        ) : null}
         {validator ? (
           <View>
             <OWCard
@@ -430,6 +507,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                           borderRadius: 999,
                           marginBottom: 10,
                         }}
+                        loading={account.isSendingMsg === "withdrawRewards"}
                         size={"small"}
                         fullWidth={false}
                         label={"Claimable"}

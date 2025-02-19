@@ -1,4 +1,5 @@
 import { ChainIdEnum } from "@owallet/common";
+import { ChainIdEVM } from "@owallet/types";
 import { Network as NetworkTatum } from "@tatumio/tatum";
 
 export enum OasisNetwork {
@@ -16,6 +17,12 @@ export enum COSMOS_NETWORK {
 
 export type Network = NetworkTatum & OasisNetwork & COSMOS_NETWORK;
 export const Network = { ...NetworkTatum, ...OasisNetwork, ...COSMOS_NETWORK };
+
+export const MapChainIdEVM = {
+  [ChainIdEnum.BNBChain]: ChainIdEVM.BNBChain,
+  [ChainIdEnum.Ethereum]: ChainIdEVM.Ethereum,
+  [ChainIdEnum.TRON]: ChainIdEVM.TRON,
+};
 
 export const MapChainIdToNetwork = {
   [ChainIdEnum.BNBChain]: Network.BINANCE_SMART_CHAIN,

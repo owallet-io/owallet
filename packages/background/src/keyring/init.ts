@@ -1,89 +1,63 @@
 import { Router } from "@owallet/router";
+import { KeyRingService } from "./service";
 import {
-  CreateMnemonicKeyMsg,
-  CreatePrivateKeyMsg,
-  GetKeyMsg,
-  UnlockKeyRingMsg,
-  RequestSignAminoMsg,
-  RequestSignEIP712CosmosTxMsg_v0,
-  RequestSignDirectMsg,
+  GetIsLockedMsg,
+  GetKeyRingStatusMsg,
+  GetKeyRingStatusOnlyMsg,
+  FinalizeKeyCoinTypeMsg,
+  NewMnemonicKeyMsg,
+  NewLedgerKeyMsg,
+  NewPrivateKeyKeyMsg,
+  AppendLedgerKeyAppMsg,
   LockKeyRingMsg,
+  UnlockKeyRingMsg,
+  SelectKeyRingMsg,
+  ChangeKeyRingNameMsg,
   DeleteKeyRingMsg,
-  UpdateNameKeyRingMsg,
-  ShowKeyRingMsg,
-  AddMnemonicKeyMsg,
-  AddPrivateKeyMsg,
-  GetMultiKeyStoreInfoMsg,
-  ChangeKeyRingMsg,
-  CreateLedgerKeyMsg,
-  AddLedgerKeyMsg,
-  GetIsKeyStoreCoinTypeSetMsg,
-  SetKeyStoreCoinTypeMsg,
-  SetKeyStoreLedgerAddressMsg,
-  RestoreKeyRingMsg,
+  ShowSensitiveKeyRingDataMsg,
+  ChangeUserPasswordMsg,
+  ChangeKeyRingNameInteractiveMsg,
+  ExportKeyRingDataMsg,
+  CheckLegacyKeyRingPasswordMsg,
+  NewKeystoneKeyMsg,
   CheckPasswordMsg,
-  ExportKeyRingDatasMsg,
-  RequestVerifyADR36AminoSignDoc,
-  RequestSignEthereumMsg,
-  RequestSignEthereumTypedDataMsg,
-  RequestSignReEncryptDataMsg,
-  RequestSignDecryptDataMsg,
-  RequestPublicKeyMsg,
-  ChangeChainMsg,
-  RequestSignTronMsg,
-  RequestSignOasisMsg,
-  RequestSignBitcoinMsg,
-  GetDefaultAddressTronMsg,
-  TriggerSmartContractMsg,
-  RequestSendRawTransactionMsg,
+  GetLegacyKeyRingInfosMsg,
+  ShowSensitiveLegacyKeyRingDataMsg,
+  ExportKeyRingVaultsMsg,
+  SearchKeyRingsMsg,
   SimulateSignTronMsg,
-  GetKeySettledMsg,
-  PrivilegeCosmosSignAminoWithdrawRewardsMsg,
+  ExportKeyRingMsg,
 } from "./messages";
 import { ROUTE } from "./constants";
 import { getHandler } from "./handler";
-import { KeyRingService } from "./service";
 
 export function init(router: Router, service: KeyRingService): void {
-  router.registerMessage(RestoreKeyRingMsg);
-  router.registerMessage(DeleteKeyRingMsg);
-  router.registerMessage(UpdateNameKeyRingMsg);
-  router.registerMessage(ShowKeyRingMsg);
-  router.registerMessage(SimulateSignTronMsg);
-  router.registerMessage(CreateMnemonicKeyMsg);
-  router.registerMessage(AddMnemonicKeyMsg);
-  router.registerMessage(CreatePrivateKeyMsg);
-  router.registerMessage(AddPrivateKeyMsg);
-  router.registerMessage(CreateLedgerKeyMsg);
-  router.registerMessage(AddLedgerKeyMsg);
+  router.registerMessage(GetIsLockedMsg);
+  router.registerMessage(GetKeyRingStatusMsg);
+  router.registerMessage(GetKeyRingStatusOnlyMsg);
+  router.registerMessage(SelectKeyRingMsg);
+  router.registerMessage(FinalizeKeyCoinTypeMsg);
+  router.registerMessage(NewMnemonicKeyMsg);
+  router.registerMessage(NewLedgerKeyMsg);
+  router.registerMessage(NewKeystoneKeyMsg);
+  router.registerMessage(NewPrivateKeyKeyMsg);
+  router.registerMessage(AppendLedgerKeyAppMsg);
   router.registerMessage(LockKeyRingMsg);
   router.registerMessage(UnlockKeyRingMsg);
-  router.registerMessage(GetKeyMsg);
-  router.registerMessage(GetKeySettledMsg);
-  router.registerMessage(RequestSignAminoMsg);
-  router.registerMessage(RequestVerifyADR36AminoSignDoc);
-  router.registerMessage(RequestSignDirectMsg);
-  router.registerMessage(RequestSignEthereumMsg);
-  router.registerMessage(RequestSignTronMsg);
-  router.registerMessage(TriggerSmartContractMsg);
-  router.registerMessage(RequestSignBitcoinMsg);
-  router.registerMessage(RequestSignEthereumTypedDataMsg);
-  router.registerMessage(RequestPublicKeyMsg);
-  router.registerMessage(SetKeyStoreLedgerAddressMsg);
-  router.registerMessage(RequestSignDecryptDataMsg);
-  router.registerMessage(RequestSignReEncryptDataMsg);
-  router.registerMessage(GetMultiKeyStoreInfoMsg);
-  router.registerMessage(GetDefaultAddressTronMsg);
-  router.registerMessage(RequestSignOasisMsg);
-  router.registerMessage(RequestSendRawTransactionMsg);
-  router.registerMessage(ChangeKeyRingMsg);
-  router.registerMessage(GetIsKeyStoreCoinTypeSetMsg);
-  router.registerMessage(SetKeyStoreCoinTypeMsg);
+  router.registerMessage(ChangeKeyRingNameMsg);
+  router.registerMessage(DeleteKeyRingMsg);
+  router.registerMessage(ShowSensitiveKeyRingDataMsg);
+  router.registerMessage(ChangeUserPasswordMsg);
+  router.registerMessage(ChangeKeyRingNameInteractiveMsg);
+  router.registerMessage(ExportKeyRingDataMsg);
+  router.registerMessage(CheckLegacyKeyRingPasswordMsg);
   router.registerMessage(CheckPasswordMsg);
-  router.registerMessage(ExportKeyRingDatasMsg);
-  router.registerMessage(RequestSignEIP712CosmosTxMsg_v0);
-  router.registerMessage(ChangeChainMsg);
-  router.registerMessage(PrivilegeCosmosSignAminoWithdrawRewardsMsg);
+  router.registerMessage(GetLegacyKeyRingInfosMsg);
+  router.registerMessage(ShowSensitiveLegacyKeyRingDataMsg);
+  router.registerMessage(ExportKeyRingVaultsMsg);
+  router.registerMessage(ExportKeyRingMsg);
+  router.registerMessage(SearchKeyRingsMsg);
+  router.registerMessage(SimulateSignTronMsg);
 
   router.addHandler(ROUTE, getHandler(service));
 }

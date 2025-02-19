@@ -1,6 +1,9 @@
 import { ProtoSignDocDecoder } from "../decoder";
 import { Coin, StdSignDoc } from "@owallet/types";
-import { SignDoc } from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import {
+  SignDoc,
+  SignDocDirectAux,
+} from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
 import { checkAndValidateADR36AminoSignDoc } from "../../adr-36";
 
 export class SignDocWrapper {
@@ -10,11 +13,17 @@ export class SignDocWrapper {
 
   public readonly mode: "amino" | "direct";
 
-  constructor(protected readonly signDoc: StdSignDoc | SignDoc) {
+  public readonly isDirectAux: boolean = false;
+
+  constructor(
+    protected readonly signDoc: StdSignDoc | SignDoc | SignDocDirectAux
+  ) {
     if ("msgs" in signDoc) {
       this.mode = "amino";
     } else {
       this.mode = "direct";
+
+      this.isDirectAux = !("authInfoBytes" in signDoc);
     }
 
     if (this.mode === "amino") {
@@ -38,8 +47,16 @@ export class SignDocWrapper {
     return new SignDocWrapper(signDoc);
   }
 
+  static fromDirectAuxSignDoc(signDoc: SignDocDirectAux) {
+    return new SignDocWrapper(signDoc);
+  }
+
   static fromDirectSignDocBytes(signDocBytes: Uint8Array) {
     return new SignDocWrapper(SignDoc.decode(signDocBytes));
+  }
+
+  static fromDirectAuxSignDocBytes(signDocBytes: Uint8Array) {
+    return new SignDocWrapper(SignDocDirectAux.decode(signDocBytes));
   }
 
   clone(): SignDocWrapper {

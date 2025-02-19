@@ -22,7 +22,7 @@ export const AllNetworkTxCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const {
-    accountStore,
+    allAccountStore,
     appInitStore,
     hugeQueriesStore,
     chainStore,
@@ -31,19 +31,17 @@ export const AllNetworkTxCard: FunctionComponent<{
   } = useStore();
   const { chainId } = chainStore.current;
   const mapChainNetwork = MapChainIdToNetwork[chainId];
-  const account = accountStore.getAccount(chainId);
-  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses
-  );
+  const account = allAccountStore.getAccount(chainId);
+  const accountOrai = allAccountStore.getAccount(ChainIdEnum.Oraichain);
+  const address = account.addressDisplay;
+
+  const chainInfo = chainStore.getChain(chainId);
   const allArr = appInitStore.getInitApp.isAllNetworks
     ? hugeQueriesStore.getAllAddrByChain
     : {
-        [mapChainNetwork]:
-          chainId === ChainIdEnum.OasisSapphire ||
-          chainId === ChainIdEnum.OasisEmerald
-            ? getOasisAddress(address)
-            : address,
+        [mapChainNetwork]: chainInfo.features.includes("oasis-address")
+          ? getOasisAddress(address)
+          : address,
       };
   const [histories, setHistories] = useState<AllNetworkItemTx[]>([]);
   const [loading, setLoading] = useState(false);

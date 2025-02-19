@@ -11,11 +11,17 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   ActivityIndicator,
+  InteractionManager,
 } from "react-native";
 import { observer } from "mobx-react-lite";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
-import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
+// import { RegisterConfig, useRegisterConfig } from "@owallet/hooks";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import OWText from "@src/components/text/ow-text";
 import { metrics } from "@src/themes";
@@ -35,6 +41,8 @@ import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
 import { SCREENS } from "@src/common/constants";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useBIP44PathState } from "@screens/register/components/bip-path-44";
+import { Buffer } from "buffer";
 
 interface FormData {
   name: string;
@@ -48,25 +56,20 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
       Record<
         string,
         {
-          registerConfig: RegisterConfig;
+          // registerConfig: RegisterConfig;
           words?: string;
+          ledger?: any;
           walletName?: string;
+          stepPrevious: number;
+          stepTotal: number;
         }
       >,
       string
     >
   >();
-  const { appInitStore, keyRingStore } = useStore();
+  const { appInitStore, keyRingStore, chainStore } = useStore();
 
   const { colors } = useTheme();
-
-  const registerConfig = useRegisterConfig(keyRingStore, []);
-  const words: string = route.params?.words;
-  const walletName: string = route.params?.walletName;
-  const bip44Option = useBIP44Option();
-
-  const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
-  const [mode] = useState(registerConfig.mode);
 
   const [statusPass, setStatusPass] = useState(false);
   const [isNumericPad, setNumericPad] = useState(true);
@@ -78,69 +81,100 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
-
   const [isCreating, setIsCreating] = useState(false);
+  const [isScreenTransitionEnded, setIsScreenTransitionEnded] = useState(false);
+  useFocusEffect(
+    React.useCallback(() => {
+      const task = InteractionManager.runAfterInteractions(() => {
+        setIsScreenTransitionEnded(true);
+      });
 
-  const onVerifyMnemonic = useCallback(async () => {
+      return () => task.cancel();
+    }, [])
+  );
+  const navigation = useNavigation<StackNavProp>();
+  const bip44PathState = useBIP44PathState();
+  const onVerifyMnemonic = async () => {
     if (isCreating) return;
     setIsCreating(true);
-    try {
-      const newWalletName =
-        walletName ?? `OWallet-${Math.floor(Math.random() * (100 - 1)) + 1}`;
-
-      const mnemonic = trimWordsStr(words ?? newMnemonicConfig.mnemonic);
-
-      if (!isPrivateKey(mnemonic)) {
-        await registerConfig.createMnemonic(
-          newWalletName,
-          mnemonic,
-          newMnemonicConfig.password,
-          bip44Option.bip44HDPath
-        );
-      } else {
-        const privateKey = Buffer.from(
-          mnemonic.trim().replace("0x", ""),
-          "hex"
-        );
-        await registerConfig.createPrivateKey(
-          newWalletName,
-          privateKey,
-          newMnemonicConfig.password
-        );
-      }
-      resetTo(SCREENS.RegisterDone, {
-        password: newMnemonicConfig.password,
-        type: "new",
-        walletName,
+    if (route.params?.ledger) {
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              ledger: route.params?.ledger,
+            },
+          },
+        ],
       });
-    } catch (err) {
-      console.log("errrr,", err);
     }
-  }, [newMnemonicConfig, isCreating]);
+    if (isPrivateKey(route.params.words)) {
+      const privateKey = Buffer.from(
+        route.params.words.trim().replace("0x", ""),
+        "hex"
+      );
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              privateKey: {
+                hexValue: privateKey.toString("hex"),
+                meta: {},
+              },
+            },
+          },
+        ],
+      });
+    } else {
+      navigation.reset({
+        routes: [
+          {
+            name: "Register.FinalizeKey",
+            params: {
+              name: route.params.walletName,
+              password: password,
+              stepPrevious: route.params.stepPrevious + 1,
+              stepTotal: route.params.stepTotal,
+              mnemonic: {
+                value: route.params.words,
+                bip44Path: bip44PathState.getPath(),
+                isFresh: true,
+              },
+            },
+          },
+        ],
+      });
+    }
+  };
   const {
     control,
     formState: { errors },
   } = useForm<FormData>();
 
   const onGoBack = () => {
-    // if (checkRouter(route?.name, SCREENS.RegisterMain)) {
-    //   goBack();
-    // } else {
-    //   navigate(SCREENS.RegisterIntro);
-    // }
     goBack();
   };
 
-  useEffect(() => {
-    // mode : add | create
-    // add is for user that have wallet existed
-    // create is for new user
-    if (mode === "add" && newMnemonicConfig.mnemonic) {
-      setTimeout(() => {
-        onVerifyMnemonic();
-      }, 2000);
-    }
-  }, [newMnemonicConfig.mnemonic]);
+  // useEffect(() => {
+  //   // mode : add | create
+  //   // add is for user that have wallet existed
+  //   // create is for new user
+  //   if (mode === "add" && mnemonic) {
+  //     setTimeout(() => {
+  //       onVerifyMnemonic();
+  //     }, 2000);
+  //   }
+  // }, [mnemonic]);
 
   const showPass = () => setStatusPass(!statusPass);
 
@@ -151,7 +185,7 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
 
   const handleSetPassword = () => {
     setConfirmCode(code);
-    newMnemonicConfig.setPassword(code);
+    setPassword(code);
     setCode("");
     numpadRef?.current?.clearAll();
     setPrevPad("numeric");
@@ -164,8 +198,8 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     if (password.length >= 6) {
       if (!confirmCode) {
         setConfirmCode(password);
-        newMnemonicConfig.setPassword(password);
-        setPassword("");
+        setPassword(password);
+        // setPassword("");
       } else {
         handleCheckConfirm(password);
       }
@@ -289,10 +323,11 @@ export const NewPincodeScreen: FunctionComponent = observer((props) => {
     return () => {};
   }, []);
 
-  return mode === "add" ? (
-    // @ts-ignore
-    <LoadingWalletScreen mode={mode} />
-  ) : (
+  // return mode === "add" ? (
+  //     // @ts-ignore
+  //     <LoadingWalletScreen mode={mode}/>
+  // ) :
+  return (
     <KeyboardAvoidingView style={styles.container} behavior="padding" enabled>
       <SafeAreaView>
         {isCreating ? (

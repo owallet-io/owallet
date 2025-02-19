@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
@@ -11,19 +11,20 @@ import {
 } from "react-native";
 import { Text } from "@src/components/text";
 
-import { CommonActions } from "@react-navigation/native";
 import { useTheme } from "@src/themes/theme-provider";
 import {
   capitalizedText,
   formatContractAddress,
   openLink,
 } from "../../utils/helper";
-import { ChainIdEnum, TRON_ID } from "@owallet/common";
+import {
+  ChainIdentifierToTxExplorerMap,
+  ChainIdEnum,
+  TRON_ID,
+} from "@owallet/common";
 import { PageWithBottom } from "@src/components/page/page-with-bottom";
 import OWButtonGroup from "@src/components/button/OWButtonGroup";
 
-import image from "@src/assets/images";
-import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
 import { CoinPretty, Dec } from "@owallet/unit";
@@ -34,6 +35,7 @@ import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
+import { ChainIdHelper } from "@owallet/cosmos";
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore, priceStore, txsStore, accountStore, keyRingStore } =
@@ -49,11 +51,11 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           txHash?: string;
           data?: {
             memo: string;
-            fee: StdFee;
+            fee: CoinPretty;
             fromAddress: string;
             toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
+            amount: CoinPretty;
+            type: string;
           };
         }
       >,
@@ -61,83 +63,13 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
   const { current } = chainStore;
-  const chainId = current.chainId;
+  const chainId = route.params.chainId || current.chainId;
 
   const { params } = route;
   const txHash = params?.txHash;
-  const [data, setData] = useState<Partial<ResTxsInfo>>();
-  const account = accountStore.getAccount(chainStore?.current?.chainId);
-  const address = account.getAddressDisplay(
-    keyRingStore.keyRingLedgerAddresses,
-    false
-  );
-  const txs = txsStore(chainTxs);
 
   const chainInfo = chainStore.getChain(chainId);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash?.toLowerCase()
-        : txHash?.toUpperCase()
-    );
-  };
-  const handleOnExplorer = async () => {
-    if (chainInfo.raw?.txExplorer && txHash) {
-      const url = handleUrl(txHash);
-      await openLink(url);
-    }
-  };
-
-  const onDone = () => {
-    resetTo(SCREENS.STACK.MainTab);
-  };
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-
-  const fee = () => {
-    if (params?.data?.fee) {
-      return new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee.amount?.[0]?.amount)
-      );
-    } else {
-      if (data?.stdFee?.amount?.[0]?.amount) {
-        return new CoinPretty(
-          chainInfo.feeCurrencies?.[0],
-          new Dec(data?.stdFee?.amount?.[0]?.amount)
-        );
-      }
-      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
-    }
-  };
-  const getDetailByHash = async (txHash) => {
-    try {
-      const tx = await txs.getTxsByHash(txHash, address);
-      setData(tx);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-  useEffect(() => {
-    if (txHash) {
-      InteractionManager.runAfterInteractions(() => {
-        getDetailByHash(txHash);
-      });
-    }
-  }, [txHash]);
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -149,6 +81,31 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
+  const zeroCoin = new CoinPretty(chainInfo.feeCurrencies[0], new Dec(0));
+  const txExplorer = useMemo(() => {
+    return ChainIdentifierToTxExplorerMap[
+      ChainIdHelper.parse(chainId).identifier
+    ];
+  }, [chainId]);
+  const handleUrl = (txHash) => {
+    return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
+      "{txHash}",
+      txHash
+    );
+  };
+  const handleOnExplorer = async () => {
+    if ((chainInfo?.txExplorer || txExplorer) && txHash) {
+      const url = handleUrl(txHash);
+      await openLink(url);
+    }
+  };
+
+  const amount = params?.data?.amount || zeroCoin;
+  const fee = params?.data?.fee || zeroCoin;
+
+  const onDone = () => {
+    resetTo(SCREENS.STACK.MainTab);
+  };
   const styles = styling(colors);
   return (
     <PageWithBottom
@@ -208,11 +165,11 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               label={"Network"}
               valueDisplay={
                 <View style={styles.viewNetwork}>
-                  {chainInfo?.raw?.chainSymbolImageUrl && (
+                  {chainInfo?.chainSymbolImageUrl && (
                     <Image
                       style={styles.imgNetwork}
                       source={{
-                        uri: chainInfo?.raw?.chainSymbolImageUrl,
+                        uri: chainInfo?.chainSymbolImageUrl,
                       }}
                     />
                   )}
@@ -232,16 +189,16 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             />
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
-                priceStore.calculatePrice(fee()) || "$0"
+              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee) || "$0"
               })`}
               btnCopy={false}
             />
-            <ItemReceivedToken
-              label={"Time"}
-              valueDisplay={data?.time?.timeLong}
-              btnCopy={false}
-            />
+            {/*<ItemReceivedToken*/}
+            {/*    label={"Time"}*/}
+            {/*    valueDisplay={data?.time?.timeLong}*/}
+            {/*    btnCopy={false}*/}
+            {/*/>*/}
             <ItemReceivedToken
               label={"Memo"}
               valueDisplay={params?.data?.memo || "-"}
@@ -251,7 +208,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               label={"Hash"}
               valueDisplay={formatContractAddress(txHash)}
               value={txHash}
-              btnCopy={false}
+              btnCopy={true}
               IconRightComponent={
                 <View>
                   <OWButtonIcon

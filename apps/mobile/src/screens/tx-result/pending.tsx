@@ -1,69 +1,74 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useEffect, useMemo, useRef } from "react";
+import {
+  RouteProp,
+  StackActions,
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
+import { Text, View, StyleSheet, Image } from "react-native";
+import { useStyle } from "../../styles";
+import { ChainIdHelper, TendermintTxTracer } from "@owallet/cosmos";
+import { Buffer } from "buffer/";
+import LottieView from "lottie-react-native";
+import { Box } from "../../components/box";
+import { FormattedMessage, useIntl } from "react-intl";
+import { simpleFetch } from "@owallet/simple-fetch";
 import {
-  View,
-  Image,
-  ScrollView,
-  InteractionManager,
-  StyleSheet,
-} from "react-native";
-import { Text } from "@src/components/text";
-
-import { metrics } from "../../themes";
-import { useTheme } from "@src/themes/theme-provider";
+  ChainIdentifierToTxExplorerMap,
+  Network,
+  retry,
+  urlTxHistory,
+} from "@owallet/common";
+import { navigate, resetTo } from "@src/router/root";
+import { SCREENS } from "@common/constants";
+import { OWButton } from "@components/button";
+import OWIcon from "@components/ow-icon/ow-icon";
+import { EthTxReceipt, ResDetailAllTx, TxBtcInfo } from "@owallet/types";
+import { TXSLcdRest } from "@owallet/types";
+import { CoinPretty, Dec } from "@owallet/unit";
+import _ from "lodash";
+import { PageWithBottom } from "@components/page/page-with-bottom";
+import { ScrollView } from "react-native-gesture-handler";
+import { HeaderTx } from "@screens/tx-result/components/header-tx";
 import {
   capitalizedText,
   formatContractAddress,
   openLink,
-} from "../../utils/helper";
-import { ChainIdEnum } from "@owallet/common";
-import { API } from "@src/common/api";
-import { OwalletEvent, TRON_ID } from "@owallet/common";
-import { PageWithBottom } from "@src/components/page/page-with-bottom";
-import { OWButton } from "@src/components/button";
-
-import ItemReceivedToken from "@src/screens/transactions/components/item-received-token";
-import { CoinPretty, Dec } from "@owallet/unit";
-import { AppCurrency, StdFee } from "@owallet/types";
-import { BondStatus, CoinPrimitive } from "@owallet/stores";
-import _ from "lodash";
-import { HeaderTx } from "@src/screens/tx-result/components/header-tx";
-import { TendermintTxTracer } from "@owallet/cosmos";
-import { navigate } from "@src/router/root";
-import { SCREENS } from "@src/common/constants";
-
+} from "@utils/helper";
+import ItemReceivedToken from "@screens/transactions/components/item-received-token";
+import { useTheme } from "@src/themes/theme-provider";
+import { metrics } from "@src/themes";
+import OWText from "@components/text/ow-text";
+import { confirmTransaction } from "@owallet/provider";
+import { Connection } from "@solana/web3.js";
+enum EthTxStatus {
+  Success = "0x1",
+  Failure = "0x0",
+}
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    txsStore,
-    accountStore,
-    keyRingStore,
-    priceStore,
-    queriesStore,
-  } = useStore();
+  const { chainStore, allAccountStore, priceStore } = useStore();
+  const intl = useIntl();
 
-  const [retry] = useState(3);
-  const { colors } = useTheme();
-  const [data, setData] = useState<Partial<any>>();
+  const isPendingGoToResult = useRef(false);
+  const isPendingGotoHome = useRef(false);
+
   const route = useRoute<
     RouteProp<
       Record<
         string,
         {
-          chainId?: string;
-          // Hex encoded bytes.
+          chainId: string;
           txHash: string;
-          tronWeb?: any;
-          title: string;
           data?: {
             memo: string;
-            fee: StdFee;
+            fee: CoinPretty;
             fromAddress: string;
             toAddress: string;
-            amount: CoinPrimitive;
-            currency: AppCurrency;
+            amount: CoinPretty;
+            type: string;
           };
         }
       >,
@@ -71,162 +76,323 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { current } = chainStore;
-  const chainId = current.chainId;
-  const queries = queriesStore.get(chainId);
-  const { params } = route;
-  const accountAddress = accountStore
-    .getAccount(chainId)
-    .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
-  const txHash = params?.txHash;
+  const chainId = route.params.chainId;
+  const account = allAccountStore.getAccount(chainId);
+  const style = useStyle();
+  const params = route.params;
   const chainInfo = chainStore.getChain(chainId);
+  const navigation = useNavigation();
 
   const isFocused = useIsFocused();
+  const txHash = route.params?.txHash;
   useEffect(() => {
-    // let txTracer: TendermintTxTracer | undefined;
-    if (isFocused && chainId && chainInfo) {
-      if (chainId === ChainIdEnum.Bitcoin) {
-        API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
-          .then((res: any) => {
-            if (res?.confirmed) {
-              navigate(SCREENS.TxSuccessResult, {
-                txHash: txHash,
-              });
+    if (isFocused) {
+      const isEvmTx = chainId?.includes("eip155");
+      console.log(chainId?.includes("oraibridge-subnet-2"), chainId, "oraib");
+      console.log(txHash, "txHash");
+      if (
+        (chainInfo.chainId?.includes("Oraichain") ||
+          chainId?.includes("oraibridge-subnet-2")) &&
+        txHash
+      ) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch<TXSLcdRest>(
+                  `${chainInfo.rest}/cosmos/tx/v1beta1/txs/${txHash}`
+                );
+                if (data?.tx_response?.code === 0) {
+                  isPendingGoToResult.current = true;
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
+                  resolve();
+                } else {
+                  isPendingGoToResult.current = true;
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxFailedResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
+                  resolve();
+                }
+              } catch (error) {
+                console.log("error", error);
+                reject();
+                throw Error(error);
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 1000,
+          }
+        );
+        return;
+      }
+      if (chainInfo.chainId.includes("solana") && txHash) {
+        (async () => {
+          try {
+            const connection = new Connection(chainInfo.rpc, "confirmed");
+            console.log(txHash, "txHash");
+            await confirmTransaction(connection, txHash, "confirmed");
+            isPendingGoToResult.current = true;
+            navigation.dispatch(
+              StackActions.replace(SCREENS.TxSuccessResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              })
+            );
+          } catch (e) {
+            console.log(e, "Err svm");
+            isPendingGoToResult.current = true;
+            navigation.dispatch(
+              StackActions.replace(SCREENS.TxFailedResult, {
+                chainId,
+                txHash,
+                data: params?.data,
+              })
+            );
+          }
+        })();
+      }
+
+      if (chainInfo.features.includes("btc") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const txReceiptResponse = await simpleFetch<TxBtcInfo>(
+                  `${chainInfo.rest}/tx/${txHash}`
+                );
+                if (txReceiptResponse?.data) {
+                  if (isPendingGotoHome.current) {
+                    return resolve();
+                  }
+                  isPendingGoToResult.current = true;
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
+                  resolve();
+                }
+                reject();
+              } catch (e) {
+                reject();
+                throw Error(e);
+              }
+            });
+          },
+          {
+            maxRetries: 20,
+            waitMsAfterError: 2000,
+            maxWaitMsAfterError: 4000,
+          }
+        );
+        return;
+      }
+      if (chainInfo.features.includes("tron") && txHash) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              try {
+                const { status, data } = await simpleFetch(
+                  `https://tronscan.org/#/transaction/${txHash}`
+                );
+                if (data && status === 200) {
+                  isPendingGoToResult.current = true;
+                  navigation.dispatch(
+                    StackActions.replace(SCREENS.TxSuccessResult, {
+                      chainId,
+                      txHash,
+                      data: params?.data,
+                    })
+                  );
+                  resolve();
+                }
+              } catch (error) {
+                reject();
+                console.log("error", error);
+                isPendingGoToResult.current = true;
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
+              }
+              reject();
+            });
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 4000,
+          }
+        );
+        return;
+      }
+      if (chainInfo.features.includes("oasis") && txHash) {
+        simpleFetch(
+          `https://www.oasisscan.com/v2/mainnet/chain/transactions?page=1&size=5&height=&address=${account.addressDisplay}`
+        )
+          .then(({ data }) => {
+            if (!data.data?.list) return;
+            for (const itemList of data.data?.list) {
+              if (!itemList?.txHash) return;
+              if (itemList?.txHash === txHash && itemList.status) {
+                isPendingGoToResult.current = true;
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxSuccessResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
+                return;
+              } else {
+                isPendingGoToResult.current = true;
+                navigation.dispatch(
+                  StackActions.replace(SCREENS.TxFailedResult, {
+                    chainId,
+                    txHash,
+                    data: params?.data,
+                  })
+                );
+                return;
+              }
             }
           })
-          .catch((err) => console.log(err, "err data"));
+          .catch((err) => console.error(err, "Err oasis"));
+        return;
       }
-    }
 
-    return () => {};
-  }, [chainId, chainStore, isFocused, route.params.txHash, retry]);
-  const handleUrl = (txHash) => {
-    return chainInfo.raw.txExplorer.txUrl.replace(
-      "{txHash}",
-      chainInfo.chainId === TRON_ID ||
-        chainInfo.networkType === "bitcoin" ||
-        chainInfo.chainId === ChainIdEnum.OasisSapphire ||
-        chainInfo.chainId === ChainIdEnum.OasisEmerald ||
-        chainInfo.chainId === ChainIdEnum.Oasis ||
-        chainInfo.chainId === ChainIdEnum.BNBChain
-        ? txHash.toLowerCase()
-        : txHash.toUpperCase()
-    );
-  };
-  const handleOnExplorer = async () => {
-    if (chainInfo?.raw?.txExplorer && txHash) {
-      const url = handleUrl(txHash);
-      await openLink(url);
-    }
-  };
-  const amount = new CoinPretty(
-    params?.data?.currency,
-    new Dec(params?.data?.amount?.amount)
-  );
-  const chainTxs =
-    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
-      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
-      : chainStore.current;
-  const txs = txsStore(chainTxs);
-  const getDetailByHash = async (txHash) => {
-    try {
-      const tx = await txs.getTxsByHash(txHash, accountAddress);
-      setData(tx);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  };
-  useEffect(() => {
-    if (txHash) {
-      InteractionManager.runAfterInteractions(() => {
-        if (chainInfo?.chainId === ChainIdEnum.Bitcoin) return;
-        const data = {
-          ...params?.data,
-        };
-        if (chainInfo?.chainId === "oraibtc-mainnet-1") {
-          setTimeout(() => {
-            if (params?.data?.type === "send") {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
+      if (isEvmTx) {
+        retry(
+          () => {
+            return new Promise<void>(async (resolve, reject) => {
+              if (chainInfo.evm === undefined) {
+                return reject();
               }
-            } else {
-              const bal = queries.queryBalances
-                .getQueryBech32Address(accountAddress)
-                .balances.find(
-                  (bal) =>
-                    bal.currency.coinMinimalDenom ===
-                    data?.currency?.coinMinimalDenom
-                );
-              if (bal) {
-                bal.fetch();
+              try {
+                const txReceiptResponse = await simpleFetch<{
+                  result: EthTxReceipt | null;
+                  error?: Error;
+                }>(chainInfo.evm.rpc, {
+                  method: "POST",
+                  headers: {
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    jsonrpc: "2.0",
+                    method: "eth_getTransactionReceipt",
+                    params: [txHash],
+                    id: 1,
+                  }),
+                });
+                console.log(txReceiptResponse, "txReceiptResponse");
+                if (txReceiptResponse.data.error) {
+                  console.error(txReceiptResponse.data.error);
+                  resolve();
+                }
+
+                const txReceipt = txReceiptResponse.data.result;
+                if (txReceipt) {
+                  if (isPendingGotoHome.current) {
+                    return resolve();
+                  }
+
+                  if (txReceipt.status === EthTxStatus.Success) {
+                    isPendingGoToResult.current = true;
+                    navigation.dispatch(
+                      StackActions.replace(SCREENS.TxSuccessResult, {
+                        chainId,
+                        txHash,
+                        data: params?.data,
+                      })
+                    );
+                  } else {
+                    isPendingGoToResult.current = true;
+                    navigation.dispatch(
+                      StackActions.replace(SCREENS.TxFailedResult, {
+                        chainId,
+                        txHash,
+                        data: params?.data,
+                      })
+                    );
+                  }
+                  resolve();
+                }
+
+                reject();
+              } catch (e) {
+                reject();
+                throw Error(e);
               }
-              Promise.all([
-                queries.cosmos.queryValidators
-                  .getQueryStatus(BondStatus.Bonded)
-                  .fetch(),
-                queries.cosmos.queryDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryRewards
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-                queries.cosmos.queryUnbondingDelegations
-                  .getQueryBech32Address(accountAddress)
-                  .fetch(),
-              ]);
-            }
-            navigate(SCREENS.TxSuccessResult, {
-              chainId,
-              txHash,
-              data,
             });
-          }, 5000);
-          return;
-        }
-        OwalletEvent.txHashListener(txHash, (txInfo) => {
-          if (txInfo?.code === 0) {
-            navigate(SCREENS.TxSuccessResult, {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
-          } else {
-            navigate(SCREENS.TxFailedResult, {
-              chainId,
-              txHash,
-              data,
-            });
-            return;
+          },
+          {
+            maxRetries: 10,
+            waitMsAfterError: 500,
+            maxWaitMsAfterError: 4000,
           }
-        });
-        getDetailByHash(txHash);
-      });
-    }
-  }, [txHash, chainId]);
-  const fee = () => {
-    if (params?.data?.fee) {
-      return new CoinPretty(
-        chainInfo.feeCurrencies?.[0],
-        new Dec(params?.data?.fee.amount?.[0]?.amount)
-      );
-    } else {
-      if (data?.stdFee?.amount?.[0]?.amount) {
-        return new CoinPretty(
-          chainInfo.feeCurrencies?.[0],
-          new Dec(data?.stdFee?.amount?.[0]?.amount)
         );
+      } else {
+        const txTracer = new TendermintTxTracer(chainInfo.rpc, "/websocket");
+        txTracer
+          .traceTx(Buffer.from(txHash, "hex"))
+          .then((tx) => {
+            if (isPendingGotoHome.current) {
+              return;
+            }
+
+            if (tx.code == null || tx.code === 0) {
+              isPendingGoToResult.current = true;
+              navigation.dispatch(
+                StackActions.replace(SCREENS.TxSuccessResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                })
+              );
+            } else {
+              isPendingGoToResult.current = true;
+              navigation.dispatch(
+                StackActions.replace(SCREENS.TxFailedResult, {
+                  chainId,
+                  txHash,
+                  data: params?.data,
+                })
+              );
+            }
+          })
+          .catch((e) => {
+            console.log(`Failed to trace the tx (${txHash})`, e);
+          });
+
+        return () => {
+          txTracer.close();
+        };
       }
-      return new CoinPretty(chainInfo.feeCurrencies?.[0], new Dec(0));
     }
-  };
+  }, [chainId, chainStore, isFocused, navigation, route.params.txHash]);
+
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const dataItem =
     params?.data &&
     _.pickBy(params?.data, function (value, key) {
@@ -238,15 +404,35 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         key !== "type"
       );
     });
-  const styles = styling(colors);
+  const zeroCoin = new CoinPretty(chainInfo.feeCurrencies[0], new Dec(0));
+  const txExplorer = useMemo(() => {
+    return ChainIdentifierToTxExplorerMap[
+      ChainIdHelper.parse(chainId).identifier
+    ];
+  }, [chainId]);
+  const handleUrl = (txHash) => {
+    return (chainInfo.txExplorer || txExplorer)?.txUrl.replace(
+      "{txHash}",
+      txHash
+    );
+  };
+  const handleOnExplorer = async () => {
+    if ((chainInfo?.txExplorer || txExplorer) && txHash) {
+      const url = handleUrl(txHash);
+      await openLink(url);
+    }
+  };
+
+  const amount = params?.data?.amount || zeroCoin;
+  const fee = params?.data?.fee || zeroCoin;
   return (
     <PageWithBottom
       bottomGroup={
         <View style={styles.containerBottomButton}>
-          <Text style={styles.txtPending}>
+          <OWText style={styles.txtPending}>
             The transaction is still pending. {"\n"}
-            You can check the status on {chainInfo?.raw?.txExplorer?.name}
-          </Text>
+            You can check the status on {chainInfo?.txExplorer?.name}
+          </OWText>
           <OWButton
             label="View on Explorer"
             onPress={handleOnExplorer}
@@ -292,8 +478,8 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
             <ItemReceivedToken
               label={"Fee"}
-              valueDisplay={`${fee()?.shrink(true)?.trim(true)?.toString()} (${
-                priceStore.calculatePrice(fee()) || "$0"
+              valueDisplay={`${fee?.shrink(true)?.trim(true)?.toString()} (${
+                priceStore.calculatePrice(fee) || "$0"
               })`}
               btnCopy={false}
             />

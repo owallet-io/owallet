@@ -1,72 +1,34 @@
-import { computed, makeObservable, override } from "mobx";
-import { DenomHelper, KVStore } from "@owallet/common";
-import { ChainGetter } from "../../common";
+import { computed } from "mobx";
+import { DenomHelper } from "@owallet/common";
+import { ChainGetter } from "../../chain";
 import { CoinPretty, Int } from "@owallet/unit";
-import {
-  BalanceRegistry,
-  BalanceRegistryType,
-  ObservableQueryBalanceInner,
-} from "../balances";
+import { BalanceRegistry, IObservableQueryBalanceImpl } from "../balances";
 import { Cw20ContractBalance } from "./types";
 import { ObservableCosmwasmContractChainQuery } from "./contract-query";
-import { QuerySharedContext } from "src/common/query/context";
+import { QuerySharedContext } from "../../common";
+import { AppCurrency } from "@owallet/types";
 
-export class ObservableQueryCw20Balance extends ObservableCosmwasmContractChainQuery<Cw20ContractBalance> {
+export class ObservableQueryCw20BalanceImpl
+  extends ObservableCosmwasmContractChainQuery<Cw20ContractBalance>
+  implements IObservableQueryBalanceImpl
+{
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
-    protected readonly contractAddress: string,
+    protected readonly denomHelper: DenomHelper,
     protected readonly bech32Address: string
   ) {
-    super(sharedContext, chainId, chainGetter, contractAddress, {
+    if (denomHelper.type !== "cw20") {
+      throw new Error(`Denom helper must be cw20: ${denomHelper.denom}`);
+    }
+    super(sharedContext, chainId, chainGetter, denomHelper.contractAddress, {
       balance: { address: bech32Address },
     });
   }
 
-  protected canFetch(): boolean {
+  protected override canFetch(): boolean {
     return super.canFetch() && this.bech32Address !== "";
-  }
-}
-
-export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner {
-  protected readonly queryCw20Balance: ObservableQueryCw20Balance;
-
-  constructor(
-    sharedContext: QuerySharedContext,
-    chainId: string,
-    chainGetter: ChainGetter,
-    denomHelper: DenomHelper,
-    protected readonly bech32Address: string
-  ) {
-    super(
-      sharedContext,
-      chainId,
-      chainGetter,
-      // No need to set the url at initial.
-      "",
-      denomHelper
-    );
-
-    makeObservable(this);
-
-    this.queryCw20Balance = new ObservableQueryCw20Balance(
-      sharedContext,
-      chainId,
-      chainGetter,
-      denomHelper.contractAddress,
-      bech32Address
-    );
-  }
-
-  // This method doesn't have the role because the fetching is actually exeucnted in the `ObservableQueryCw20Balance`.
-  protected canFetch(): boolean {
-    return false;
-  }
-
-  @override
-  *fetch() {
-    yield this.queryCw20Balance.fetch();
   }
 
   @computed
@@ -83,34 +45,34 @@ export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner
       throw new Error(`Unknown currency: ${denom}`);
     }
 
-    if (
-      !this.queryCw20Balance.response ||
-      !this.queryCw20Balance.response.data.balance
-    ) {
+    if (!this.response || !this.response.data.balance) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
-    return new CoinPretty(
-      currency,
-      new Int(this.queryCw20Balance.response.data.balance)
-    );
+    return new CoinPretty(currency, new Int(this.response.data.balance));
+  }
+
+  @computed
+  get currency(): AppCurrency {
+    const denom = this.denomHelper.denom;
+
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    return chainInfo.forceFindCurrency(denom);
   }
 }
 
 export class ObservableQueryCw20BalanceRegistry implements BalanceRegistry {
-  readonly type: BalanceRegistryType = "cw20";
-
   constructor(protected readonly sharedContext: QuerySharedContext) {}
 
-  getBalanceInner(
+  getBalanceImpl(
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string,
     minimalDenom: string
-  ): ObservableQueryBalanceInner | undefined {
+  ): IObservableQueryBalanceImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     if (denomHelper.type === "cw20") {
-      return new ObservableQueryCw20BalanceInner(
+      return new ObservableQueryCw20BalanceImpl(
         this.sharedContext,
         chainId,
         chainGetter,

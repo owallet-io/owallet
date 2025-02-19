@@ -1,5 +1,7 @@
-import { ValidatorThumbnails } from "@owallet/common";
-import { BondStatus, Validator } from "@owallet/stores";
+import {
+  Staking,
+  // BondStatus, Validator
+} from "@owallet/stores";
 import { API } from "@src/common/api";
 import { AlertIcon, CheckIcon } from "@src/components/icon";
 import { Text } from "@src/components/text";
@@ -32,13 +34,13 @@ export const DelegationsCard: FunctionComponent<{
   const delegations = queryDelegations.delegations;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
   const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonding
+    Staking.BondStatus.Unbonding
   );
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonded
+    Staking.BondStatus.Unbonded
   );
 
   const validators = useMemo(() => {

@@ -1,5 +1,5 @@
-import { ChainGetter, ObservableQuery, QuerySharedContext } from "../common";
-
+import { ObservableQuery, QuerySharedContext } from "../common";
+import { ChainGetter } from "../chain";
 import { HasMapStore } from "../common";
 
 export class ObservableChainQueryRPC<

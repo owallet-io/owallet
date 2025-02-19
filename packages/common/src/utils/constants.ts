@@ -3,6 +3,8 @@ export const EXTRA_FEE_LIMIT_TRON = 50_000_000;
 export const DEFAULT_FEE_LIMIT_TRON = 150_000_000;
 export const TRIGGER_TYPE = "TriggerSmartContract";
 export const TRON_ID = "0x2b6653dc";
+export const ETH_ID = "0x01";
+export const BNB_ID = "0x38";
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
@@ -65,9 +67,9 @@ export enum ChainIdEnum {
   BNBChain = "0x38",
   BNBChainTestNet = "0x61",
   TRON = "0x2b6653dc",
-  Oasis = "native-0x5afe",
-  OasisSapphire = "0x5afe",
-  OasisEmerald = "0xa516",
+  Oasis = "oasis-1",
+  OasisSapphire = "eip155:23294",
+  OasisEmerald = "eip155:42262",
   BitcoinTestnet = "bitcoinTestnet",
   Bitcoin = "bitcoin",
   Injective = "injective-1",
@@ -79,6 +81,7 @@ export enum ChainIdEnum {
   CELESTIA = "celestia",
   AKASH = "akashnet-2",
   NEUTRON = "neutron-1",
+  Solana = "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
 }
 
 export enum KADOChainNameEnum {

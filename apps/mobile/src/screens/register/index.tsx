@@ -1,4 +1,3 @@
-import { useRegisterConfig } from "@owallet/hooks";
 import { useRoute } from "@react-navigation/native";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import OWText from "@src/components/text/ow-text";
@@ -21,29 +20,24 @@ import { SCREENS } from "@src/common/constants";
 import OwButtonIcon from "@components/button/ow-button-icon";
 import { PageWithScrollView } from "@components/page";
 import { SafeAreaView } from "react-native-safe-area-context";
+import images from "@assets/images";
+import { eventTheme } from "@utils/helper";
+import { imagesNoel } from "@assets/images/noels";
 
 export const RegisterIntroScreen: FunctionComponent = observer((props) => {
-  const { keyRingStore, analyticsStore } = useStore();
+  const { keyRingStore } = useStore();
   const { colors } = useTheme();
 
   const route = useRoute();
 
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const handleImportFromMnemonic = () => {
-    analyticsStore.logEvent("Import account started", {
-      registerType: "seed",
-    });
-
     navigate(SCREENS.RegisterRecoverPhrase);
   };
   const handleImportLedgerNanoX = () => {
     navigate(SCREENS.RegisterNewLedger);
   };
   const handleCreateANewWallet = () => {
-    analyticsStore.logEvent("Create account started", {
-      registerType: "seed",
-    });
-
     navigate(SCREENS.RegisterNewMnemonic);
   };
   const styles = useStyles();
@@ -105,7 +99,11 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
         </View>
         <View style={styles.logo_owallet}>
           <Image
-            source={require("../../assets/image/img_owallet.png")}
+            source={
+              eventTheme === "noel"
+                ? imagesNoel.img_owallet
+                : images.img_owallet
+            }
             fadeDuration={0}
             resizeMode="contain"
             style={styles.img}
@@ -140,6 +138,7 @@ export const RegisterIntroScreen: FunctionComponent = observer((props) => {
         <View style={{ paddingHorizontal: 42 }}>
           <OWButton
             style={styles.btnOW}
+            textStyle={{ color: colors["neutral-text-action-on-dark-bg"] }}
             size="default"
             label="Create a new wallet"
             onPress={handleCreateANewWallet}

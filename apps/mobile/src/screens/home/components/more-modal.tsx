@@ -10,15 +10,16 @@ import { SCREENS } from "@src/common/constants";
 import { showToast } from "@src/utils/helper";
 import { useStore } from "@src/stores";
 import { tracking } from "@src/utils/tracking";
-import { Dec } from "@owallet/unit";
-
+import { Dec, Int } from "@owallet/unit";
+import { useIntl } from "react-intl";
+const defaultGasPerDelegation = 140000;
 const MoreModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<BottomSheetProps, "snapPoints" | "children">;
 }> = registerModal(({ close }) => {
   const { colors } = useTheme();
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
 
   const chainId = chainStore.current.chainId;
   const isDydx = chainId?.includes("dydx-mainnet");
@@ -27,49 +28,88 @@ const MoreModal: FunctionComponent<{
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
   );
+  const intl = useIntl();
   const stakingReward = queryReward.stakableReward;
   const _onPressCompound = async () => {
     try {
-      const validatorRewars = [];
-      queryReward
-        .getDescendingPendingRewardValidatorAddresses(10)
-        .map((validatorAddress) => {
-          const rewards = queries.cosmos.queryRewards
-            .getQueryBech32Address(account.bech32Address)
-            .getStakableRewardOf(validatorAddress);
-          validatorRewars.push({ validatorAddress, rewards });
-        });
+      const account = accountStore.getAccount(chainId);
 
-      if (queryReward) {
-        tracking(`${chainStore.current.chainName} Compound`);
-        await account.cosmos.sendWithdrawAndDelegationRewardMsgs(
-          queryReward.getDescendingPendingRewardValidatorAddresses(10),
-          validatorRewars,
-          "",
-          {},
-          {},
-          {
-            onBroadcasted: (txHash) => {
-              analyticsStore.logEvent("Compound reward tx broadcasted", {
-                chainId: chainId,
-                chainName: chainStore.current.chainName,
-              });
-            },
-          },
-          stakingReward.currency.coinMinimalDenom
-        );
-      } else {
-        showToast({
-          message: "There is no reward!",
-          type: "danger",
-        });
+      const queries = queriesStore.get(chainId);
+      const queryRewards = queries.cosmos.queryRewards.getQueryBech32Address(
+        account.bech32Address
+      );
+      const validatorAddresses =
+        queryRewards.getDescendingPendingRewardValidatorAddresses(8);
+
+      if (validatorAddresses.length === 0) {
+        return;
       }
+      const validatorRewards = validatorAddresses.map((validatorAddress) => {
+        const rewards = queryRewards.getStakableRewardOf(validatorAddress);
+        return { validatorAddress, rewards };
+      });
+      const tx = account.cosmos.makeWithdrawAndDelegationsRewardTx(
+        validatorAddresses,
+        validatorRewards
+      );
+
+      let gas = new Int(
+        validatorAddresses.length * 2 * defaultGasPerDelegation
+      );
+
+      try {
+        const simulated = await tx.simulate();
+        // Gas adjustment is 1.5
+        // Since there is currently no convenient way to adjust the gas adjustment on the UI,
+        // Use high gas adjustment to prevent failure.
+        gas = new Dec(simulated.gasUsed * 1.5).truncate();
+      } catch (e) {
+        console.log(e);
+      }
+      await tx.send(
+        {
+          gas: gas.toString(),
+          amount: [],
+        },
+        "",
+        {},
+        {
+          onBroadcasted: (txHash) => {
+            // analyticsStore.logEvent('complete_claim', {
+            //   chainId: viewToken.chainInfo.chainId,
+            //   chainName: viewToken.chainInfo.chainName,
+            // });
+            // navigation.navigate('TxPending', {
+            //   chainId,
+            //   txHash: Buffer.from(txHash).toString('hex'),
+            // });
+          },
+          onFulfill: (tx: any) => {
+            if (tx.code != null && tx.code !== 0) {
+              console.log(tx.log ?? tx.raw_log);
+
+              showToast({
+                type: "danger",
+                message: intl.formatMessage({ id: "error.transaction-failed" }),
+              });
+              return;
+            }
+            showToast({
+              type: "success",
+              message: intl.formatMessage({
+                id: "notification.transaction-success",
+              }),
+            });
+          },
+        }
+      );
     } catch (e) {
       console.error({ errorClaim: e });
       if (!e?.message?.startsWith("Transaction Rejected")) {
         showToast({
           message:
-            e?.message ?? "Something went wrong! Please try again later.",
+            `Failed to Compound: ${e?.message}` ??
+            "Something went wrong! Please try again later.",
           type: "danger",
         });
         return;

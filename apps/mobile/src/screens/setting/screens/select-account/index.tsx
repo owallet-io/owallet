@@ -2,13 +2,8 @@ import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
 
-import { KeyStoreItem, KeyStoreSectionTitle } from "../../components";
-import Svg, { Path } from "react-native-svg";
 import { useLoadingScreen } from "../../../../providers/loading-screen";
-import {
-  MultiKeyStoreInfoElem,
-  MultiKeyStoreInfoWithSelectedElem,
-} from "@owallet/background";
+
 import { Image, ScrollView, View } from "react-native";
 
 import { useTheme } from "@src/themes/theme-provider";
@@ -20,106 +15,60 @@ import OWCard from "@src/components/card/ow-card";
 import OWText from "@src/components/text/ow-text";
 import { RadioButton } from "react-native-radio-buttons-group";
 import { useNavigation } from "@react-navigation/native";
-import { waitAccountInit } from "@src/screens/unlock/pincode-unlock";
-import { navigate, resetTo } from "@src/router/root";
+import { goBack, navigate, resetTo } from "@src/router/root";
 import { SCREENS } from "@src/common/constants";
-import { reset } from "react-native-svg/lib/typescript/lib/Matrix2D";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
-export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
-  const bip44HDPath = keyStore.bip44HDPath
-    ? keyStore.bip44HDPath
-    : {
-        coinType: 0,
-        account: 0,
-        change: 0,
-        addressIndex: 0,
-      };
-
-  switch (keyStore.type) {
-    case "ledger":
-      return `Ledger - m/44'/${bip44HDPath.coinType}'/${bip44HDPath.account}'${
-        bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
-          ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-          : ""
-      }`;
-    case "mnemonic":
-      if (
-        bip44HDPath.account !== 0 ||
-        bip44HDPath.change !== 0 ||
-        bip44HDPath.addressIndex !== 0
-      ) {
-        return `Mnemonic - m/44'/-/${bip44HDPath.account}'${
-          bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
-            ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-            : ""
-        }`;
-      }
-      return;
-    case "privateKey":
-      // Torus key
-      if (keyStore.meta?.email) {
-        return keyStore.meta.email;
-      }
-      return;
-  }
-};
+import { KeyInfo } from "@owallet/background";
+import { delay } from "@owallet/common";
 
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
-  const {
-    keyRingStore,
-    chainStore,
-    analyticsStore,
-    universalSwapStore,
-    accountStore,
-  } = useStore();
+  const { keyRingStore, chainStore, universalSwapStore, accountStore } =
+    useStore();
 
   const { colors } = useTheme();
 
-  const navigation = useNavigation();
-
   const mnemonicKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
+    return keyRingStore.keyInfos.filter(
       (keyStore) => !keyStore.type || keyStore.type === "mnemonic"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
   const ledgerKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
+    return keyRingStore.keyInfos.filter(
       (keyStore) => keyStore.type === "ledger"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
   const privateKeyStores = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "privateKey"
+    return keyRingStore.keyInfos.filter(
+      (keyStore) => keyStore.type === "private-key"
     );
-  }, [keyRingStore.multiKeyStoreInfo]);
+  }, [keyRingStore.keyInfos]);
 
   const loadingScreen = useLoadingScreen();
 
-  const selectKeyStore = async (
-    keyStore: MultiKeyStoreInfoWithSelectedElem
-  ) => {
-    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-    if (index >= 0) {
-      await keyRingStore.changeKeyRing(index);
-      await waitAccountInit(chainStore, accountStore, keyRingStore);
-      resetTo(SCREENS.STACK.MainTab);
+  const selectKeyStore = async (keyStore: KeyInfo) => {
+    await delay(10);
+    keyRingStore.selectKeyRing(keyStore.id);
+    await chainStore.waitSyncedEnabledChains();
+  };
+  const handleOnKeyStore = async (keyStore: KeyInfo) => {
+    try {
+      if (keyRingStore.selectedKeyInfo.id === keyStore.id) {
+        return;
+      }
+      loadingScreen.setIsLoading(true);
+      universalSwapStore.setLoaded(false);
+      universalSwapStore.clearAmounts();
+      await selectKeyStore(keyStore);
+    } finally {
+      loadingScreen.setIsLoading(false);
+      universalSwapStore.setLoaded(true);
+      goBack();
     }
   };
-  const handleOnKeyStore = useCallback(async (keyStore) => {
-    loadingScreen.setIsLoading(true);
-    universalSwapStore.setLoaded(false);
-    universalSwapStore.clearAmounts();
-    analyticsStore.logEvent("Account changed");
-    await selectKeyStore(keyStore);
 
-    loadingScreen.setIsLoading(false);
-    universalSwapStore.setLoaded(true);
-  }, []);
-
-  const renderKeyStoreItem = (keyStore, i) => {
+  const renderKeyStoreItem = (keyStore: KeyInfo, i) => {
     return (
       <TouchableOpacity
         onPress={() => handleOnKeyStore(keyStore)}
@@ -143,26 +92,23 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
             fadeDuration={0}
           />
           <OWText color={colors["neutral-text-title"]} size={14} weight="600">
-            {keyStore.meta?.name || "OWallet Account"}
+            {keyStore.name || "OWallet Account"}
           </OWText>
         </View>
         <RadioButton
           color={
-            keyStore.selected
+            keyStore.isSelected
               ? colors["highlight-surface-active"]
               : colors["neutral-text-body"]
           }
           id={i.toString()}
-          selected={keyStore.selected}
+          selected={keyStore.isSelected}
         />
       </TouchableOpacity>
     );
   };
 
-  const renderKeyStores = (
-    title: string,
-    keyStores: MultiKeyStoreInfoWithSelectedElem[]
-  ) => {
+  const renderKeyStores = (title: string, keyStores) => {
     return keyStores.length > 0 ? (
       <OWCard
         style={{

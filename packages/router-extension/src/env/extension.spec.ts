@@ -5,7 +5,7 @@ import { MessageSender } from "@owallet/router";
 
 describe("Test extension env producer", () => {
   const extensionId = "id";
-  const extensionUrl = "https://wallet.owallet.app";
+  const extensionUrl = "https://wallet.keplr.app";
   const validSender: MessageSender = {
     id: extensionId,
     url: extensionUrl,
@@ -60,11 +60,7 @@ describe("Test extension env producer", () => {
 
   it("should throw an error if the sender is invalid", () => {
     assert.throws(() => {
-      ExtensionEnv.checkIsInternalMessage(
-        {},
-        "id",
-        "https://wallet.owallet.app"
-      );
+      ExtensionEnv.checkIsInternalMessage({}, "id", "https://wallet.keplr.app");
     });
 
     assert.throws(() => {
@@ -74,7 +70,7 @@ describe("Test extension env producer", () => {
           url: "invalid://test.com",
         },
         "id",
-        "https://wallet.owallet.app"
+        "https://wallet.keplr.app"
       );
     });
   });

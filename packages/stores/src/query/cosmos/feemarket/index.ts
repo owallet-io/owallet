@@ -1,6 +1,7 @@
 import { ObservableChainQuery } from "../../chain-query";
 import { GasPrices } from "./types";
-import { ChainGetter, QuerySharedContext } from "../../../common";
+import { QuerySharedContext } from "../../../common";
+import { ChainGetter } from "../../../chain";
 import { makeObservable } from "mobx";
 import { Dec } from "@owallet/unit";
 

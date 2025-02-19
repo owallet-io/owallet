@@ -4,19 +4,17 @@ import { find } from "lodash";
 import moment from "moment";
 import { AppCurrency } from "@owallet/types";
 import get from "lodash/get";
-import { TxsHelper } from "@src/stores/txs/helpers/txs-helper";
 import { showMessage, MessageOptions } from "react-native-flash-message";
 import { InAppBrowser } from "react-native-inappbrowser-reborn";
 import { Linking } from "react-native";
 import {
-  flattenTokens,
   getSubAmountDetails,
   toAmount,
   toDisplay,
   toSumDisplay,
   tokensIcon,
 } from "@oraichain/oraidex-common";
-import { ChainIdEnum } from "@owallet/common";
+import { avatarName, ChainIdEnum, unknownToken } from "@owallet/common";
 import { Dec } from "@owallet/unit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -30,7 +28,27 @@ export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = "FAILED";
 export const SUCCESS = "SUCCESS";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
+export const eventTheme: "noel" | "owallet" | "halloween" = "owallet";
+// export const getUrlImageByTheme = (theme:"noel" | "owallet" | "halloween")=>{
+//   if(theme === "noel"){
+//
+//   }
+// }
+export const oraiToken =
+  "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png";
+export const getImageFromToken = (item) => {
+  const { coinImageUrl, coinGeckoId, coinDenom } = item?.token?.currency || {};
 
+  const resolvedImageUrl =
+    !coinImageUrl ||
+    coinImageUrl.includes("missing.") ||
+    coinImageUrl === unknownToken.coinImageUrl
+      ? avatarName.replace("{name}", coinDenom || "unknown")
+      : coinGeckoId === "oraichain-token"
+      ? oraiToken
+      : coinImageUrl;
+  return resolvedImageUrl;
+};
 export const TRC20_LIST = [
   {
     contractAddress: "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8",
@@ -162,7 +180,7 @@ export const convertArrToObject = (arr, label = `Validator`) => {
   return rv;
 };
 export const removeDataInParentheses = (inputString: string): string => {
-  if (!inputString) return;
+  if (!inputString) return "";
   return inputString.replace(/\([^)]*\)/g, "");
 };
 export const extractDataInParentheses = (
@@ -589,7 +607,13 @@ export const getAddressFromLedgerWhenChangeNetwork = (
   return null;
 };
 
-export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
+export const getTokenInfos = ({
+  flattenTokens,
+  tokenMap,
+  tokens,
+  prices,
+  networkFilter = "",
+}) => {
   const dataTokens = flattenTokens
     .reduce((result, token) => {
       // not display because it is evm map and no bridge to option, also no smart contract and is ibc native
@@ -606,7 +630,7 @@ export const getTokenInfos = ({ tokens, prices, networkFilter = "" }) => {
           const totalAmount =
             amount +
             (isHaveSubAmounts
-              ? toAmount(toSumDisplay(subAmounts), token.decimals)
+              ? toAmount(toSumDisplay(subAmounts, tokenMap), token.decimals)
               : 0n);
           const value =
             toDisplay(totalAmount.toString(), token.decimals) *
@@ -686,10 +710,6 @@ export const getCurrencyByMinimalDenom = (
 };
 
 export const isNegative = (number) => number <= 0;
-
-export function createTxsHelper() {
-  return new TxsHelper();
-}
 
 export function shortenAddress(address, digits = 6): string {
   if (address) {
@@ -811,9 +831,10 @@ export function numberWithCommas(number) {
 }
 
 export const sortChainsByPrice = (chains) => {
+  if (!chains?.length) return [];
   return chains.sort(
     (a, b) =>
-      Number(b.balance.toDec().toString()) -
-      Number(a.balance.toDec().toString())
+      Number(b.balance?.toDec().toString()) -
+      Number(a.balance?.toDec().toString())
   );
 };

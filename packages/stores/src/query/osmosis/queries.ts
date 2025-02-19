@@ -1,9 +1,10 @@
 import { QueriesSetBase } from "../queries";
+import { ChainGetter } from "../../chain";
 import { DeepReadonly } from "utility-types";
 import { ObservableQueryTxFeesFeeTokens } from "./txfees/fee-tokens";
 import { ObservableQueryTxFeesSpotPriceByDenom } from "./txfees/spot-price-by-denom";
 import { ObservableQueryTxFeesBaseDenom } from "./txfees/base-denom";
-import { ChainGetter, QuerySharedContext } from "../../common";
+import { QuerySharedContext } from "../../common";
 import { ObservableQueryBaseFee } from "./base-fee";
 
 export interface OsmosisQueries {

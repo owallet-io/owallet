@@ -2,42 +2,42 @@
   "name": "@owallet/hooks",
   "version": "0.9.16",
   "main": "build/index.js",
-  "author": "oraichain labs",
+  "author": "owallet-io",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
-    "rebuild": "rimraf build && yarn build",
-    "dev": "tsc -w --project tsconfig.build.json",
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
-  "devDependencies": {
-    "@types/react": "18.0.24"
-  },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.27.1",
-    "@oraichain/ethereum-multicall": "^1.0.2",
-    "@owallet/background": "^0.9.16",
-    "@owallet/common": "^0.9.10",
-    "@owallet/cosmos": "^0.9.16",
-    "@owallet/crypto": "^0.9.10",
-    "@owallet/ens": "^0.9.0",
-    "@owallet/popup": "^0.9.6",
-    "@owallet/stores": "^0.9.16",
-    "@owallet/types": "^0.9.12",
-    "@owallet/unit": "^0.9.12",
+    "@ethersproject/address": "^5.7.0",
+    "@ethersproject/providers": "^5.7.0",
+    "@owallet/background": "*",
+    "@owallet/common": "*",
+    "@owallet/cosmos": "*",
+    "@owallet/crypto": "*",
+    "@owallet/proto-types": "*",
+    "@owallet/simple-fetch": "*",
+    "@owallet/stores": "*",
+    "@owallet/stores-etc": "*",
+    "@owallet/stores-eth": "*",
+    "@owallet/stores-oasis": "*",
+    "@owallet/types": "*",
+    "@owallet/unit": "*",
+    "buffer": "^6.0.3",
     "long": "^4.0.0",
-    "mobx": "^6.13.1",
-    "mobx-utils": "^6.0.8",
     "querystring": "0.2.1",
-    "react": "18.2.0",
-    "react-router": "^5.1.2",
-    "utility-types": "^3.10.0",
-    "web3": "1.10.0"
+    "utility-types": "^3.10.0"
+  },
+  "peerDependencies": {
+    "mobx": "^6",
+    "mobx-utils": "^6",
+    "react": "^16.8.0 || ^17 || ^18"
   }
 }

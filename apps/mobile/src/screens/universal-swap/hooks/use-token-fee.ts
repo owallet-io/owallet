@@ -1,5 +1,5 @@
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { NetworkChainId, TokenItemType } from "@oraichain/oraidex-common";
+import { TokenItemType } from "@oraichain/oraidex-common";
 import {
   getTransferTokenFee,
   isEvmNetworkNativeSwapSupported,
@@ -27,8 +27,8 @@ export const useTokenFee = (
 
   const getTokenFee = async (
     remoteTokenDenom: string,
-    fromChainId: NetworkChainId,
-    toChainId: NetworkChainId,
+    fromChainId: string,
+    toChainId: string,
     type: "from" | "to"
   ) => {
     // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)

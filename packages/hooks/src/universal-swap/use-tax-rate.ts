@@ -1,18 +1,17 @@
 import { CWStargate, fetchTaxRate, ChainIdEnum } from "@owallet/common";
-import { oraichainNetwork } from "@oraichain/oraidex-common";
 import { useEffect, useState } from "react";
-import { AccountWithAll } from "@owallet/stores";
 
-export const useTaxRate = (accountOrai: AccountWithAll) => {
+export const useTaxRate = (accountOrai: any, oraichainNetwork, network) => {
   const [taxRate, setTaxRate] = useState("");
 
   const queryTaxRate = async () => {
     const cwClient = await CWStargate.init(
       accountOrai,
       ChainIdEnum.Oraichain,
-      oraichainNetwork.rpc
+      oraichainNetwork.rpc,
+      network
     );
-    const data = await fetchTaxRate(cwClient);
+    const data = await fetchTaxRate(cwClient, network);
     setTaxRate(data?.rate);
   };
 

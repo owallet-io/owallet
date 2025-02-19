@@ -1,0 +1,24 @@
+{
+  "name": "@owallet/mobx-utils",
+  "version": "0.9.16",
+  "main": "build/index.js",
+  "author": "owallet-io",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "rm -rf node_modules; rm -rf build",
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests",
+    "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
+    "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
+  },
+  "dependencies": {
+    "@owallet/types": "*"
+  },
+  "peerDependencies": {
+    "mobx": "^6"
+  }
+}

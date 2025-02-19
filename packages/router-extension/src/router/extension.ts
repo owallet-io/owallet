@@ -4,20 +4,20 @@ import {
   Result,
   EnvProducer,
   OWalletError,
+  Message,
+  JSONUint8Array,
 } from "@owallet/router";
+import { getOWalletExtensionRouterId } from "../utils";
 
 export class ExtensionRouter extends Router {
-  constructor(envProducer: EnvProducer) {
+  constructor(
+    envProducer: EnvProducer,
+    protected msgIgnoreCheck?: (msg: Message<any>) => boolean
+  ) {
     super(envProducer);
   }
 
-  listen(port: string): void {
-    if (!port) {
-      throw new Error("Empty port");
-    }
-
-    this.port = port;
-
+  protected attachHandler() {
     browser.runtime.onMessage.addListener(this.onMessage);
     // Although security considerations cross-extension communication are in place,
     // we have put in additional security measures by disbling extension-to-extension communication until a formal security audit has taken place.
@@ -28,8 +28,7 @@ export class ExtensionRouter extends Router {
      */
   }
 
-  unlisten(): void {
-    this.port = "";
+  protected detachHandler() {
     browser.runtime.onMessage.removeListener(this.onMessage);
     // Although security considerations cross-extension communication are in place,
     // we have put in additional security measures by disbling extension-to-extension communication until a formal security audit has taken place.
@@ -51,6 +50,51 @@ export class ExtensionRouter extends Router {
       return;
     }
 
+    // The receiverRouterId will be set when requesting an interaction from the background to the frontend.
+    // If this value exists, it compares this value with the current router id and processes them only if they are the same.
+    if (
+      message.msg?.routerMeta?.receiverRouterId &&
+      message.msg.routerMeta.receiverRouterId !== getOWalletExtensionRouterId()
+    ) {
+      return;
+    }
+
+    if (message.type === "tryOpenSidePanelIfEnabled") {
+      return new Promise((resolve) => {
+        if (
+          sender.tab?.id &&
+          typeof chrome !== "undefined" &&
+          typeof chrome.sidePanel !== "undefined"
+        ) {
+          chrome.sidePanel
+            .open({
+              tabId: sender.tab.id,
+            })
+            .then(() => {
+              resolve({
+                return: {},
+              });
+            })
+            .catch((e) => {
+              resolve({
+                error: e.message || e.toString(),
+              });
+            });
+        } else {
+          resolve({
+            error: "Side panel is not supported",
+          });
+        }
+      });
+    }
+
+    if (this.msgIgnoreCheck) {
+      const msg = this.msgRegistry.parseMessage(JSONUint8Array.unwrap(message));
+      if (this.msgIgnoreCheck(msg)) {
+        return;
+      }
+    }
+
     return this.onMessageHandler(message, sender);
   };
 
@@ -67,7 +111,6 @@ export class ExtensionRouter extends Router {
       console.log(
         `Failed to process msg ${message.type}: ${e?.message || e?.toString()}`
       );
-
       if (e instanceof OWalletError) {
         return Promise.resolve({
           error: {

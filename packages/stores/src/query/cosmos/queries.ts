@@ -1,13 +1,6 @@
 import { QueriesSetBase } from "../queries";
-import { KVStore } from "@owallet/common";
-import { ChainGetter } from "../../common";
-import { ObservableQueryBlock } from "./block";
+import { ChainGetter } from "../../chain";
 import { ObservableQueryAccount } from "./account";
-import {
-  ObservableQueryInflation,
-  ObservableQueryMintingInfation,
-  ObservableQuerySupplyTotal,
-} from "./supply";
 import {
   ObservableQueryDelegations,
   ObservableQueryRewards,
@@ -17,72 +10,70 @@ import {
   ObservableQueryValidators,
 } from "./staking";
 import {
-  ObservableQueryGovernance,
-  ObservableQueryProposalVote,
-} from "./governance";
-import {
   ObservableQueryDenomTrace,
   ObservableQueryIBCChannel,
   ObservableQueryIBCClientState,
 } from "./ibc";
-import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
-import { ObservableQueryCosmosBalanceRegistry } from "./balance";
-import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
-import { DeepReadonly } from "utility-types";
 import {
-  ObservableQueryOsmosisEpochProvisions,
-  ObservableQueryOsmosisEpochs,
-  ObservableQueryOsmosisMintParmas,
-} from "./supply/osmosis";
-import { QuerySharedContext } from "src/common/query/context";
+  ObservableQueryCosmosBalanceRegistry,
+  ObservableQuerySpendableBalances,
+} from "./balance";
+import { DeepReadonly } from "utility-types";
+import { ObservableQueryDistributionParams } from "./distribution";
+import { ObservableQueryRPCStatus } from "./status";
+import { ObservableQueryAuthZGranter } from "./authz";
+import { QuerySharedContext } from "../../common";
 import { ObservableQueryFeeMarketGasPrices } from "./feemarket";
-import { ObservableQueryBaseFee } from "../osmosis";
 
-export interface HasCosmosQueries {
-  cosmos: CosmosQueries;
+export interface CosmosQueries {
+  cosmos: CosmosQueriesImpl;
 }
 
-export class QueriesWrappedCosmos
-  extends QueriesSetBase
-  implements HasCosmosQueries
-{
-  public cosmos: CosmosQueries;
-
-  constructor(
+export const CosmosQueries = {
+  use(): (
+    queriesSetBase: QueriesSetBase,
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter
-  ) {
-    super(sharedContext, chainId, chainGetter);
+  ) => CosmosQueries {
+    return (
+      queriesSetBase: QueriesSetBase,
+      sharedContext: QuerySharedContext,
+      chainId: string,
+      chainGetter: ChainGetter
+    ) => {
+      return {
+        cosmos: new CosmosQueriesImpl(
+          queriesSetBase,
+          sharedContext,
+          chainId,
+          chainGetter
+        ),
+      };
+    };
+  },
+};
 
-    this.cosmos = new CosmosQueries(this, sharedContext, chainId, chainGetter);
-  }
-}
+export class CosmosQueriesImpl {
+  public readonly queryRPCStatus: DeepReadonly<ObservableQueryRPCStatus>;
 
-export class CosmosQueries {
-  public readonly queryBlock: DeepReadonly<ObservableQueryBlock>;
   public readonly queryAccount: DeepReadonly<ObservableQueryAccount>;
-  public readonly queryMint: DeepReadonly<ObservableQueryMintingInfation>;
+  public readonly querySpendableBalances: DeepReadonly<ObservableQuerySpendableBalances>;
   public readonly queryPool: DeepReadonly<ObservableQueryStakingPool>;
   public readonly queryStakingParams: DeepReadonly<ObservableQueryStakingParams>;
-  public readonly querySupplyTotal: DeepReadonly<ObservableQuerySupplyTotal>;
-  public readonly queryInflation: DeepReadonly<ObservableQueryInflation>;
+  public readonly queryDistributionParams: DeepReadonly<ObservableQueryDistributionParams>;
   public readonly queryRewards: DeepReadonly<ObservableQueryRewards>;
   public readonly queryDelegations: DeepReadonly<ObservableQueryDelegations>;
   public readonly queryUnbondingDelegations: DeepReadonly<ObservableQueryUnbondingDelegations>;
   public readonly queryValidators: DeepReadonly<ObservableQueryValidators>;
-  public readonly queryGovernance: DeepReadonly<ObservableQueryGovernance>;
-  public readonly queryProposalVote: DeepReadonly<ObservableQueryProposalVote>;
 
   public readonly queryIBCClientState: DeepReadonly<ObservableQueryIBCClientState>;
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
   public readonly queryIBCDenomTrace: DeepReadonly<ObservableQueryDenomTrace>;
 
-  public readonly querySifchainAPY: DeepReadonly<ObservableQuerySifchainLiquidityAPY>;
+  public readonly queryAuthZGranter: DeepReadonly<ObservableQueryAuthZGranter>;
 
   public readonly queryFeeMarketGasPrices: DeepReadonly<ObservableQueryFeeMarketGasPrices>;
-
-  public readonly queryBaseFee: DeepReadonly<ObservableQueryBaseFee>;
 
   constructor(
     base: QueriesSetBase,
@@ -90,26 +81,22 @@ export class CosmosQueries {
     chainId: string,
     chainGetter: ChainGetter
   ) {
-    this.querySifchainAPY = new ObservableQuerySifchainLiquidityAPY(
+    this.queryRPCStatus = new ObservableQueryRPCStatus(
       sharedContext,
-      chainId
+      chainId,
+      chainGetter
     );
 
     base.queryBalances.addBalanceRegistry(
       new ObservableQueryCosmosBalanceRegistry(sharedContext)
     );
 
-    this.queryBlock = new ObservableQueryBlock(
-      sharedContext,
-      chainId,
-      chainGetter
-    );
     this.queryAccount = new ObservableQueryAccount(
       sharedContext,
       chainId,
       chainGetter
     );
-    this.queryMint = new ObservableQueryMintingInfation(
+    this.querySpendableBalances = new ObservableQuerySpendableBalances(
       sharedContext,
       chainId,
       chainGetter
@@ -124,39 +111,13 @@ export class CosmosQueries {
       chainId,
       chainGetter
     );
-    this.querySupplyTotal = new ObservableQuerySupplyTotal(
+
+    this.queryDistributionParams = new ObservableQueryDistributionParams(
       sharedContext,
       chainId,
       chainGetter
     );
 
-    const osmosisMintParams = new ObservableQueryOsmosisMintParmas(
-      sharedContext,
-      chainId,
-      chainGetter
-    );
-
-    this.queryInflation = new ObservableQueryInflation(
-      chainId,
-      chainGetter,
-      this.queryMint,
-      this.queryPool,
-      this.querySupplyTotal,
-      new ObservableQueryIrisMintingInfation(
-        sharedContext,
-        chainId,
-        chainGetter
-      ),
-      this.querySifchainAPY,
-      new ObservableQueryOsmosisEpochs(sharedContext, chainId, chainGetter),
-      new ObservableQueryOsmosisEpochProvisions(
-        sharedContext,
-        chainId,
-        chainGetter,
-        osmosisMintParams
-      ),
-      osmosisMintParams
-    );
     this.queryRewards = new ObservableQueryRewards(
       sharedContext,
       chainId,
@@ -177,17 +138,6 @@ export class CosmosQueries {
       chainId,
       chainGetter
     );
-    this.queryGovernance = new ObservableQueryGovernance(
-      sharedContext,
-      chainId,
-      chainGetter,
-      this.queryPool
-    );
-    this.queryProposalVote = new ObservableQueryProposalVote(
-      sharedContext,
-      chainId,
-      chainGetter
-    );
 
     this.queryIBCClientState = new ObservableQueryIBCClientState(
       sharedContext,
@@ -204,14 +154,13 @@ export class CosmosQueries {
       chainId,
       chainGetter
     );
-
-    this.queryFeeMarketGasPrices = new ObservableQueryFeeMarketGasPrices(
+    this.queryAuthZGranter = new ObservableQueryAuthZGranter(
       sharedContext,
       chainId,
       chainGetter
     );
 
-    this.queryBaseFee = new ObservableQueryBaseFee(
+    this.queryFeeMarketGasPrices = new ObservableQueryFeeMarketGasPrices(
       sharedContext,
       chainId,
       chainGetter

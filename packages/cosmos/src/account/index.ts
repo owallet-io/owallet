@@ -1,5 +1,5 @@
 import { Int } from "@owallet/unit";
-import { AxiosInstance } from "axios";
+import { simpleFetch } from "@owallet/simple-fetch";
 
 export interface Account {
   getType(): string;
@@ -10,14 +10,21 @@ export interface Account {
 
 export class BaseAccount implements Account {
   public static async fetchFromRest(
-    instance: AxiosInstance,
+    rest: string,
     address: string,
     // If the account doesn't exist, the result from `auth/accounts` would not have the address.
     // In this case, if `defaultBech32Address` param is provided, this will use it instead of the result from rest.
     defaultBech32Address: boolean = false
   ): Promise<BaseAccount> {
-    const result = await instance.get(
-      `/cosmos/auth/v1beta1/accounts/${address}`
+    const result = await simpleFetch<any>(
+      rest,
+      `/cosmos/auth/v1beta1/accounts/${address}`,
+      {
+        validateStatus: function (status) {
+          // Permit 404 not found to handle the case of account not exists
+          return (status >= 200 && status < 300) || status === 404;
+        },
+      }
     );
 
     return BaseAccount.fromProtoJSON(
@@ -84,11 +91,11 @@ export class BaseAccount implements Account {
     // the actual base account exists under the base vesting account.
     // But, this can be different according to the version of cosmos-sdk.
     // So, anyway, try to parse it by some ways...
-    const baseVestingAccount =
+    let baseVestingAccount =
       value.BaseVestingAccount ||
       value.baseVestingAccount ||
       value.base_vesting_account;
-    if (baseVestingAccount) {
+    while (baseVestingAccount) {
       value = baseVestingAccount;
 
       const baseAccount =
@@ -96,6 +103,11 @@ export class BaseAccount implements Account {
       if (baseAccount) {
         value = baseAccount;
       }
+
+      baseVestingAccount =
+        value.BaseVestingAccount ||
+        value.baseVestingAccount ||
+        value.base_vesting_account;
     }
 
     let address = value.address;

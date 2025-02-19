@@ -1,0 +1,498 @@
+import React, { FunctionComponent, useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { useSendSvmTxConfig, useTxConfigsValidate } from "@owallet/hooks";
+import { useStore } from "../../stores";
+import { StyleSheet, View, ScrollView } from "react-native";
+import {
+  AddressInput,
+  CurrencySelector,
+  MemoInput,
+} from "../../components/input";
+import { OWButton } from "../../components/button";
+import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "@src/themes/theme-provider";
+import { metrics, spacing } from "../../themes";
+import OWText from "@src/components/text/ow-text";
+import OWCard from "@src/components/card/ow-card";
+import OWIcon from "@src/components/ow-icon/ow-icon";
+import { NewAmountInput } from "@src/components/input/amount-input";
+import { PageWithBottom } from "@src/components/page/page-with-bottom";
+import { CoinPretty, Dec, DecUtils } from "@owallet/unit";
+import { navigate } from "@src/router/root";
+import { SCREENS } from "@src/common/constants";
+import { OWHeaderTitle } from "@components/header";
+import { FeeControl } from "@components/input/fee-control";
+import {
+  ComputeBudgetProgram,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
+import {
+  createTransferInstruction,
+  getAssociatedTokenAddress,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
+import { createMemoInstruction } from "@solana/spl-memo";
+import { FeeCurrency } from "@owallet/types";
+import { _getPriorityFeeSolana, DenomHelper } from "@owallet/common";
+import { RecipientInput } from "@components/input/reciepient-input";
+import { useFocusAfterRouting } from "@hooks/use-focus";
+import { encode } from "bs58";
+
+export const SendSvmScreen: FunctionComponent<{
+  chainId: string;
+  coinMinimalDenom: string;
+  recipientAddress: string;
+  setSelectedKey: (key) => void;
+}> = observer(
+  ({ chainId, coinMinimalDenom, recipientAddress, setSelectedKey }) => {
+    const {
+      chainStore,
+      solanaAccountStore,
+      queriesStore,
+      priceStore,
+      appInitStore,
+    } = useStore();
+    const { colors } = useTheme();
+    const styles = styling(colors);
+
+    const chainInfo = chainStore.getChain(chainId);
+    const addressRef = useFocusAfterRouting();
+    const navigation = useNavigation();
+    useEffect(() => {
+      if (appInitStore.getInitApp.isAllNetworks) return;
+      navigation.setOptions({
+        headerTitle: () => (
+          <OWHeaderTitle title={"Send"} subTitle={chainInfo.chainName} />
+        ),
+      });
+    }, [chainId]);
+
+    const currency = chainInfo.forceFindCurrency(coinMinimalDenom);
+
+    const account = solanaAccountStore.getAccount(chainId);
+    const queryBalances = queriesStore.get(chainId).queryBalances;
+    const sender = account.base58Address;
+    const balance = queryBalances
+      .getQueryByAddress(sender)
+      .getBalance(currency);
+    const sendConfigs = useSendSvmTxConfig(
+      chainStore,
+      queriesStore,
+      chainId,
+      sender,
+      1
+    );
+
+    sendConfigs.amountConfig.setCurrency(currency);
+    useEffect(() => {
+      sendConfigs.recipientConfig.setValue(recipientAddress || "");
+    }, [recipientAddress, sendConfigs.recipientConfig]);
+    const txConfigsValidate = useTxConfigsValidate({
+      ...sendConfigs,
+    });
+
+    const submitSend = async () => {
+      if (!txConfigsValidate.interactionBlocked) {
+        try {
+          account.setIsSendingTx(true);
+          const denom = new DenomHelper(
+            sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom
+          );
+          console.log(denom, "denom");
+          const amount = DecUtils.getTenExponentN(
+            sendConfigs.amountConfig.amount[0].currency.coinDecimals
+          )
+            .mul(sendConfigs.amountConfig.amount[0].toDec())
+            .roundUp()
+            .toString();
+          const unsignedTx = await account.makeSendTokenTx({
+            currency: sendConfigs.amountConfig.amount[0].currency,
+            amount: amount,
+            to: sendConfigs.recipientConfig.recipient,
+            memo: sendConfigs.memoConfig.memo,
+          });
+          // console.log(unsignedTx,"unsignedTx");
+          await account.sendTx(sender, unsignedTx, {
+            onBroadcasted: (txHash) => {
+              account.setIsSendingTx(false);
+              navigate(SCREENS.TxPendingResult, {
+                chainId,
+                txHash,
+                data: {
+                  amount: sendConfigs.amountConfig.amount[0],
+                  fee: sendConfigs.feeConfig.fees[0],
+                  type: "send",
+                  from: sender,
+                  to: sendConfigs.recipientConfig.recipient,
+                },
+              });
+            },
+            onFulfill: (txReceipt) => {
+              queryBalances
+                .getQueryBech32Address(account.base58Address)
+                .balances.forEach((balance) => {
+                  if (
+                    balance.currency.coinMinimalDenom === coinMinimalDenom ||
+                    sendConfigs.feeConfig.fees.some(
+                      (fee) =>
+                        fee.currency.coinMinimalDenom ===
+                        balance.currency.coinMinimalDenom
+                    )
+                  ) {
+                    balance.fetch();
+                  }
+                });
+            },
+          });
+        } catch (e) {
+          account.setIsSendingTx(false);
+          console.log(e, "eee svm");
+          if (e?.message === "Request rejected") {
+            return;
+          }
+        }
+      }
+    };
+    const loadingSend = account.isSendingTx;
+    useEffect(() => {
+      (async () => {
+        try {
+          if (txConfigsValidate.interactionBlocked) return;
+          const connection = new Connection(chainInfo.rpc, "confirmed");
+          const fromPublicKey = new PublicKey(account.base58Address);
+          const toPublicKey = new PublicKey(
+            sendConfigs.recipientConfig.recipient
+          );
+          const amount = DecUtils.getTenExponentN(
+            sendConfigs.amountConfig.amount[0].currency.coinDecimals
+          )
+            .mul(sendConfigs.amountConfig.amount[0].toDec())
+            .roundUp()
+            .toString();
+          let transaction = new Transaction().add(
+            SystemProgram.transfer({
+              fromPubkey: fromPublicKey,
+              toPubkey: toPublicKey,
+              lamports: BigInt(amount),
+            })
+          );
+          const denom = new DenomHelper(
+            sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom
+          );
+          if (denom.type.startsWith("spl")) {
+            const mintPublicKey = new PublicKey(denom.contractAddress);
+            const isToken2020 = denom.type.includes("spl20");
+            // Get the associated token accounts for the sender and receiver
+            const senderTokenAccount = await getAssociatedTokenAddress(
+              mintPublicKey,
+              fromPublicKey,
+              isToken2020 ? true : undefined, // Allow Token2022
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+            );
+            const receiverTokenAccount = await getAssociatedTokenAddress(
+              mintPublicKey,
+              toPublicKey,
+              isToken2020 ? true : undefined, // Allow Token2022
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+            );
+
+            // Create SPL token transfer instruction
+            const transferInstruction = createTransferInstruction(
+              senderTokenAccount, // Sender's token account
+              receiverTokenAccount, // Receiver's token account
+              fromPublicKey, // Payer's public key
+              BigInt(amount),
+              undefined, // Amount to transfer (raw amount, not adjusted for decimals)
+              isToken2020 ? TOKEN_2022_PROGRAM_ID : undefined // Token2022 Program ID
+            );
+
+            // Create a transaction
+            transaction = new Transaction().add(transferInstruction);
+          }
+          if (sendConfigs.memoConfig.memo) {
+            transaction.add(createMemoInstruction(sendConfigs.memoConfig.memo));
+          }
+          const { blockhash } = await connection.getLatestBlockhash();
+          transaction.recentBlockhash = blockhash;
+          transaction.feePayer = fromPublicKey;
+          const txStr = encode(
+            transaction.serialize({ requireAllSignatures: false })
+          );
+          const dynamicMicroLamports = await _getPriorityFeeSolana(txStr);
+          const message = transaction.compileMessage();
+          const feeInLamports = await connection.getFeeForMessage(message);
+          if (feeInLamports === null) {
+            throw new Error("Unable to estimate the fee");
+          }
+          const simulationResult = await connection.simulateTransaction(
+            transaction
+          );
+          if (!simulationResult.value.unitsConsumed)
+            throw new Error("Unable to estimate the fee");
+          const DefaultUnitLimit = new Dec(200_000);
+          const unitsConsumed = new Dec(simulationResult.value.unitsConsumed);
+          const units = unitsConsumed.lte(DefaultUnitLimit)
+            ? DefaultUnitLimit
+            : unitsConsumed.mul(new Dec(1.2)); // Request up to 1,000,000 compute units
+          const microLamports = new Dec(
+            dynamicMicroLamports > 0 ? dynamicMicroLamports : 50000
+          );
+
+          transaction.add(
+            // Request a specific number of compute units
+            ComputeBudgetProgram.setComputeUnitLimit({
+              units: Number(units.roundUp().toString()),
+            }),
+            // Attach a priority fee (in lamports)
+            ComputeBudgetProgram.setComputeUnitPrice({
+              microLamports: Number(microLamports.roundUp().toString()), // Set priority fee per compute unit in micro-lamports
+            })
+          );
+          const baseFee = new Dec(feeInLamports.value);
+          const PriorityFee = units
+            .mul(microLamports)
+            .quoTruncate(DecUtils.getTenExponentNInPrecisionRange(6));
+          const fee = [
+            {
+              amount: baseFee.add(PriorityFee).roundUp().toString(),
+              currency: sendConfigs.feeConfig.fees[0].currency,
+            },
+          ];
+          console.log(fee, "fee");
+          sendConfigs.feeConfig.setManualFee(fee);
+        } catch (e) {
+          console.log(e, "err solana");
+        }
+      })();
+    }, [
+      txConfigsValidate.interactionBlocked,
+      sendConfigs.recipientConfig.recipient,
+      sendConfigs.amountConfig.amount,
+      sendConfigs.memoConfig.memo,
+      sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom,
+    ]);
+    useEffect(() => {
+      const fee = [
+        {
+          amount: "0",
+          currency: sendConfigs.feeConfig.fees[0].currency,
+        },
+      ];
+      sendConfigs.feeConfig.setManualFee(fee);
+    }, [sendConfigs.amountConfig.amount[0].currency.coinMinimalDenom]);
+    const fee =
+      sendConfigs.feeConfig.fees[0] ||
+      new CoinPretty(chainStore.current.stakeCurrency, new Dec(0));
+    console.log(fee?.toString(), "fee");
+    return (
+      <PageWithBottom
+        bottomGroup={
+          <OWButton
+            label="Send Solana"
+            disabled={loadingSend || txConfigsValidate.interactionBlocked}
+            loading={loadingSend}
+            onPress={submitSend}
+            style={[
+              styles.bottomBtn,
+              {
+                width: metrics.screenWidth - 32,
+              },
+            ]}
+            textStyle={styles.txtBtnSend}
+          />
+        }
+      >
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View>
+            <OWCard
+              type="normal"
+              style={[
+                // isRecipientError ? styles.errorBorder : undefined,
+                {
+                  backgroundColor: colors["neutral-surface-card"],
+                },
+              ]}
+            >
+              <OWText color={colors["neutral-text-title"]}>Recipient</OWText>
+
+              <AddressInput
+                colors={colors}
+                placeholder="Enter address"
+                label=""
+                recipientConfig={sendConfigs.recipientConfig}
+                memoConfig={sendConfigs.memoConfig}
+                labelStyle={styles.sendlabelInput}
+                containerStyle={{
+                  marginBottom: 12,
+                }}
+                inputContainerStyle={styles.inputContainerAddress}
+              />
+              {/*  <RecipientInput*/}
+              {/*      ref={addressRef}*/}
+              {/*      historyType={"basic-send"}*/}
+              {/*      recipientConfig={sendConfigs.recipientConfig}*/}
+              {/*      memoConfig={sendConfigs.memoConfig}*/}
+              {/*      currency={sendConfigs.amountConfig.currency}*/}
+              {/*      permitAddressBookSelfKeyInfo={false}*/}
+              {/*  />*/}
+            </OWCard>
+            <OWCard
+              style={[
+                {
+                  paddingTop: 22,
+                  backgroundColor: colors["neutral-surface-card"],
+                },
+                // isAmountError && styles.errorBorder,
+              ]}
+              type="normal"
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <View>
+                  <OWText style={{ paddingTop: 8 }}>
+                    Balance:{" "}
+                    {(balance?.balance ?? new CoinPretty(currency, "0"))
+                      ?.trim(true)
+                      ?.maxDecimals(6)
+                      ?.hideDenom(true)
+                      ?.toString() || "0"}
+                  </OWText>
+                  <CurrencySelector
+                    chainId={chainId}
+                    selectedKey={coinMinimalDenom}
+                    setSelectedKey={setSelectedKey}
+                    label="Select a token"
+                    placeHolder="Select Token"
+                    amountConfig={sendConfigs.amountConfig}
+                    labelStyle={styles.sendlabelInput}
+                    containerStyle={styles.containerStyle}
+                    selectorContainerStyle={{
+                      backgroundColor: colors["neutral-surface-card"],
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    alignItems: "flex-end",
+                    flex: 1,
+                  }}
+                >
+                  <NewAmountInput
+                    colors={colors}
+                    inputContainerStyle={{
+                      borderWidth: 0,
+                      width: metrics.screenWidth / 2.3,
+                    }}
+                    amountConfig={sendConfigs.amountConfig}
+                    placeholder={"0.0"}
+                  />
+                </View>
+              </View>
+              <View style={styles.containerEstimatePrice}>
+                <OWIcon name="tdesign_swap" size={16} />
+                <OWText
+                  style={{ paddingLeft: 4 }}
+                  color={colors["neutral-text-body"]}
+                >
+                  {priceStore
+                    .calculatePrice(sendConfigs.amountConfig.amount[0])
+                    ?.toString()}
+                </OWText>
+              </View>
+            </OWCard>
+            <OWCard
+              style={{
+                backgroundColor: colors["neutral-surface-card"],
+              }}
+              type="normal"
+            >
+              <FeeControl
+                senderConfig={sendConfigs.senderConfig}
+                feeConfig={sendConfigs.feeConfig}
+                gasConfig={sendConfigs.gasConfig}
+                gasSimulator={null}
+                showDenom={true}
+                disableSelectFee={true}
+              />
+
+              <OWText color={colors["neutral-text-title"]}>Memo</OWText>
+
+              <MemoInput
+                label=""
+                placeholder="Required if send to CEX"
+                inputContainerStyle={styles.inputContainerMemo}
+                memoConfig={sendConfigs.memoConfig}
+                labelStyle={styles.sendlabelInput}
+              />
+            </OWCard>
+          </View>
+        </ScrollView>
+      </PageWithBottom>
+    );
+  }
+);
+const styling = (colors) =>
+  StyleSheet.create({
+    txtBtnSend: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors["neutral-text-action-on-dark-bg"],
+    },
+    inputContainerAddress: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerEstimatePrice: {
+      alignSelf: "flex-end",
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    containerFee: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderBottomColor: colors["neutral-border-default"],
+      borderBottomWidth: 1,
+      paddingVertical: 16,
+      marginBottom: 8,
+    },
+    sendInputRoot: {
+      paddingHorizontal: spacing["20"],
+      paddingVertical: spacing["24"],
+      backgroundColor: colors["primary"],
+      borderRadius: 24,
+    },
+    sendlabelInput: {
+      fontSize: 14,
+      fontWeight: "500",
+      lineHeight: 20,
+      color: colors["neutral-text-body"],
+    },
+    inputContainerMemo: {
+      backgroundColor: colors["neutral-surface-card"],
+      borderWidth: 0,
+      paddingHorizontal: 0,
+    },
+    containerStyle: {
+      backgroundColor: colors["neutral-surface-bg2"],
+    },
+    bottomBtn: {
+      marginTop: 20,
+      width: metrics.screenWidth / 2.3,
+      borderRadius: 999,
+    },
+    errorBorder: {
+      borderWidth: 2,
+      borderColor: colors["error-border-default"],
+    },
+  });

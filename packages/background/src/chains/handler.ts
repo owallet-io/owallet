@@ -1,88 +1,266 @@
-import { Env, Handler, InternalHandler, Message } from "@owallet/router";
+import {
+  Env,
+  Handler,
+  InternalHandler,
+  OWalletError,
+  Message,
+} from "@owallet/router";
 import { ChainsService } from "./service";
 import {
-  GetChainInfosMsg,
+  GetChainInfosWithCoreTypesMsg,
+  GetChainInfosWithoutEndpointsMsg,
   RemoveSuggestedChainInfoMsg,
   SuggestChainInfoMsg,
-  GetChainInfosWithoutEndpointsMsg,
+  NeedSuggestChainInfoInteractionMsg,
+  SetChainEndpointsMsg,
+  ClearChainEndpointsMsg,
+  GetChainOriginalEndpointsMsg,
+  ClearAllSuggestedChainInfosMsg,
+  ClearAllChainEndpointsMsg,
+  GetChainInfoWithoutEndpointsMsg,
+  PingMsg,
 } from "./messages";
 import { ChainInfo } from "@owallet/types";
+import { getBasicAccessPermissionType, PermissionService } from "../permission";
+import { PermissionInteractiveService } from "../permission-interactive";
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 
-export const getHandler: (service: ChainsService) => Handler = (service) => {
+export const getHandler: (
+  chainsService: ChainsService,
+  permissionService: PermissionService,
+  permissionInteractiveService: PermissionInteractiveService
+) => Handler = (
+  chainsService,
+  permissionService,
+  permissionInteractiveService
+) => {
   return (env: Env, msg: Message<unknown>) => {
     switch (msg.constructor) {
-      case GetChainInfosMsg:
-        return handleGetChainInfosMsg(service)(env, msg as GetChainInfosMsg);
-      case SuggestChainInfoMsg:
-        return handleSuggestChainInfoMsg(service)(
+      case PingMsg:
+        return {};
+      case GetChainInfosWithCoreTypesMsg:
+        return handleGetInfosWithCoreTypesMsg(chainsService)(
           env,
-          msg as SuggestChainInfoMsg
+          msg as GetChainInfosWithCoreTypesMsg
+        );
+      case GetChainInfosWithoutEndpointsMsg:
+        return handleGetChainInfosWithoutEndpointsMsg(
+          chainsService,
+          permissionInteractiveService
+        )(env, msg as GetChainInfosWithoutEndpointsMsg);
+      case GetChainInfoWithoutEndpointsMsg:
+        return handleGetChainInfoWithoutEndpointsMsg(
+          chainsService,
+          permissionInteractiveService
+        )(env, msg as GetChainInfoWithoutEndpointsMsg);
+      case SuggestChainInfoMsg:
+        return handleSuggestChainInfoMsg(
+          chainsService,
+          permissionService,
+          permissionInteractiveService
+        )(env, msg as SuggestChainInfoMsg);
+      case NeedSuggestChainInfoInteractionMsg:
+        return handleNeedSuggestChainInfoInteractionMsg(chainsService)(
+          env,
+          msg as NeedSuggestChainInfoInteractionMsg
         );
       case RemoveSuggestedChainInfoMsg:
-        return handleRemoveSuggestedChainInfoMsg(service)(
+        return handleRemoveSuggestedChainInfoMsg(chainsService)(
           env,
           msg as RemoveSuggestedChainInfoMsg
         );
-      case GetChainInfosWithoutEndpointsMsg:
-        return handleGetChainInfosWithoutEndpointsMsg(service)(
+      case SetChainEndpointsMsg:
+        return handleSetChainEndpointsMsg(chainsService)(
           env,
-          msg as GetChainInfosWithoutEndpointsMsg
+          msg as SetChainEndpointsMsg
+        );
+      case ClearChainEndpointsMsg:
+        return handleClearChainEndpointsMsg(chainsService)(
+          env,
+          msg as ClearChainEndpointsMsg
+        );
+      case GetChainOriginalEndpointsMsg:
+        return handleGetChainOriginalEndpointsMsg(chainsService)(
+          env,
+          msg as GetChainOriginalEndpointsMsg
+        );
+      case ClearAllSuggestedChainInfosMsg:
+        return handleClearAllSuggestedChainInfosMsg(chainsService)(
+          env,
+          msg as ClearAllSuggestedChainInfosMsg
+        );
+      case ClearAllChainEndpointsMsg:
+        return handleClearAllChainEndpointsMsg(chainsService)(
+          env,
+          msg as ClearAllChainEndpointsMsg
         );
       default:
-        throw new Error("Unknown msg type");
+        throw new OWalletError("chains", 110, "Unknown msg type");
     }
   };
 };
 
-const handleGetChainInfosMsg: (
+const handleGetInfosWithCoreTypesMsg: (
   service: ChainsService
-) => InternalHandler<GetChainInfosMsg> = (service) => {
-  return async () => {
-    const chainInfos = await service.getChainInfos();
+) => InternalHandler<GetChainInfosWithCoreTypesMsg> = (service) => {
+  return () => {
+    console.log(
+      "service.getModularChainInfos() 2",
+      service.getModularChainInfos()
+    );
+
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modulrChainInfos: service.getModularChainInfos(),
+    };
+  };
+};
+
+const handleGetChainInfosWithoutEndpointsMsg: (
+  service: ChainsService,
+  permissionInteractiveService: PermissionInteractiveService
+) => InternalHandler<GetChainInfosWithoutEndpointsMsg> = (
+  service,
+  permissionInteractiveService
+) => {
+  return async (env, msg) => {
+    await permissionInteractiveService.checkOrGrantGetChainInfosWithoutEndpointsPermission(
+      env,
+      msg.origin
+    );
+
+    const chainInfos = service.getChainInfosWithoutEndpoints();
     return {
       chainInfos,
     };
   };
 };
 
-const handleSuggestChainInfoMsg: (
-  service: ChainsService
-) => InternalHandler<SuggestChainInfoMsg> = (service) => {
+const handleGetChainInfoWithoutEndpointsMsg: (
+  service: ChainsService,
+  permissionInteractiveService: PermissionInteractiveService
+) => InternalHandler<GetChainInfoWithoutEndpointsMsg> = (
+  service,
+  permissionInteractiveService
+) => {
   return async (env, msg) => {
-    if (await service.hasChainInfo(msg.chainInfo.chainId)) {
-      // throw new Error("This chain is already registered");
+    await permissionInteractiveService.ensureEnabled(
+      env,
+      [msg.chainId],
+      msg.origin
+    );
+
+    const chainInfo = service.getChainInfoWithoutEndpoints(msg.chainId);
+
+    return {
+      chainInfo,
+    };
+  };
+};
+
+const handleSuggestChainInfoMsg: (
+  chainsService: ChainsService,
+  permissionService: PermissionService,
+  permissionInteractiveService: PermissionInteractiveService
+) => InternalHandler<SuggestChainInfoMsg> = (
+  chainsService,
+  permissionService,
+  permissionInteractiveService
+) => {
+  return async (env, msg) => {
+    if (chainsService.getChainInfo(msg.chainInfo.chainId) != null) {
       // If suggested chain info is already registered, just return.
       return;
     }
 
+    await permissionInteractiveService.ensureKeyRingNotEmpty(env);
+
     const chainInfo = msg.chainInfo as Writeable<ChainInfo>;
-    // And, always handle it as beta, if not specific.
-    if (chainInfo.beta === undefined) {
-      chainInfo.beta = true;
+    chainInfo.beta = true;
+
+    await chainsService.suggestChainInfo(env, chainInfo, msg.origin);
+
+    permissionService.addPermission(
+      [chainInfo.chainId],
+      getBasicAccessPermissionType(),
+      [msg.origin]
+    );
+  };
+};
+
+const handleNeedSuggestChainInfoInteractionMsg: (
+  chainsService: ChainsService
+) => InternalHandler<NeedSuggestChainInfoInteractionMsg> = (chainsService) => {
+  return async (_env, msg) => {
+    if (chainsService.getChainInfo(msg.chainInfo.chainId) != null) {
+      // If suggested chain info is already registered, just return.
+      return false;
     }
 
-    await service.suggestChainInfo(env, chainInfo, msg.origin);
+    return chainsService.needSuggestChainInfoInteraction(msg.origin);
   };
 };
 
 const handleRemoveSuggestedChainInfoMsg: (
   service: ChainsService
 ) => InternalHandler<RemoveSuggestedChainInfoMsg> = (service) => {
-  return async (_, msg) => {
-    await service.removeChainInfo(msg.chainId);
-    return await service.getChainInfos();
+  return (_, msg) => {
+    service.removeSuggestedChainInfo(msg.chainId);
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
+    };
   };
 };
 
-const handleGetChainInfosWithoutEndpointsMsg: (
+const handleSetChainEndpointsMsg: (
   service: ChainsService
-) => InternalHandler<GetChainInfosWithoutEndpointsMsg> = (service) => {
-  return async (env, msg) => {
-    const chainInfos = await service.getChainInfosWithoutEndpoints();
+) => InternalHandler<SetChainEndpointsMsg> = (service) => {
+  return (_, msg) => {
+    service.setEndpoint(msg.chainId, {
+      rpc: msg.rpc,
+      rest: msg.rest,
+      evmRpc: msg.evmRpc,
+    });
     return {
-      chainInfos,
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
     };
+  };
+};
+
+const handleClearChainEndpointsMsg: (
+  service: ChainsService
+) => InternalHandler<ClearChainEndpointsMsg> = (service) => {
+  return (_, msg) => {
+    service.clearEndpoint(msg.chainId);
+    return {
+      chainInfos: service.getChainInfosWithCoreTypes(),
+      modularChainInfos: service.getModularChainInfos(),
+    };
+  };
+};
+const handleGetChainOriginalEndpointsMsg: (
+  service: ChainsService
+) => InternalHandler<GetChainOriginalEndpointsMsg> = (service) => {
+  return (_, msg) => {
+    return service.getOriginalEndpoint(msg.chainId);
+  };
+};
+
+const handleClearAllSuggestedChainInfosMsg: (
+  service: ChainsService
+) => InternalHandler<ClearAllSuggestedChainInfosMsg> = (service) => {
+  return () => {
+    return service.clearAllSuggestedChainInfos();
+  };
+};
+
+const handleClearAllChainEndpointsMsg: (
+  service: ChainsService
+) => InternalHandler<ClearAllChainEndpointsMsg> = (service) => {
+  return () => {
+    return service.clearAllEndpoints();
   };
 };

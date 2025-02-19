@@ -70,7 +70,7 @@ export function getWCOWallet(): Promise<OWallet> {
         description: "WC Test Dapp",
         url: "http://localhost:1234/",
         icons: [
-          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/logo-256.png",
+          "https://raw.githubusercontent.com/chainapsis/owallet/master/apps/extension/src/public/assets/orai_wallet_logo.png",
         ],
       },
     });

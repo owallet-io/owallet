@@ -1,24 +1,23 @@
 import { CWStargate, ChainIdEnum } from "@owallet/common";
-import { oraichainNetwork } from "@oraichain/oraidex-common";
 import { useEffect, useState } from "react";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { AccountWithAll } from "@owallet/stores";
 
-export const useClient = (accountOrai: AccountWithAll) => {
+export const useClient = (accountOrai: any, oraichainNetwork, network) => {
   const [client, setClient] = useState<SigningCosmWasmClient>();
 
-  const getClient = async () => {
+  const getClient = async (oraichainNetwork, network) => {
     const cwClient = await CWStargate.init(
       accountOrai,
       ChainIdEnum.Oraichain,
-      oraichainNetwork.rpc
+      oraichainNetwork.rpc,
+      network
     );
     setClient(cwClient);
   };
 
   useEffect(() => {
-    getClient();
-  }, []);
+    getClient(oraichainNetwork, network);
+  }, [oraichainNetwork]);
 
   return client;
 };

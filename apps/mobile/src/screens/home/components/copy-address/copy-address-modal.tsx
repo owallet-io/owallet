@@ -11,20 +11,11 @@ import OWIcon from "@src/components/ow-icon/ow-icon";
 import { TypeTheme, useTheme } from "@src/themes/theme-provider";
 import { metrics } from "@src/themes";
 import { CustomAddressCopyable } from "@src/components/address-copyable/custom";
-import { chainIcons } from "@oraichain/oraidex-common";
-import {
-  ChainIdEnum,
-  ChainNameEnum,
-  getBase58Address,
-  KADOChainNameEnum,
-  unknownToken,
-} from "@owallet/common";
-import OWText from "@src/components/text/ow-text";
+import { unknownToken } from "@owallet/common";
 import { useStore } from "@src/stores";
 import { registerModal } from "@src/modals/base";
 import { BottomSheetProps } from "@gorhom/bottom-sheet";
 import { ScrollView } from "react-native-gesture-handler";
-import { tracking } from "@src/utils/tracking";
 
 export const CopyAddressModal: FunctionComponent<{
   copyable?: boolean;
@@ -40,16 +31,13 @@ export const CopyAddressModal: FunctionComponent<{
 
   const styles = styling(colors);
 
-  const { accountStore, keyRingStore, chainStore } = useStore();
-  const btcLegacyChain = chainStore.chainInfos.find(
-    (chainInfo) => chainInfo.chainId === ChainIdEnum.Bitcoin
-  );
-  const chains = chainStore.chainInfos.filter(
+  const { chainStore, allAccountStore } = useStore();
+
+  const chainsData = chainStore.chainInfosInUI.filter(
     (item, index) =>
       item?.chainName?.toLowerCase()?.includes(keyword?.toLowerCase()) &&
       !item?.chainName?.toLowerCase()?.includes("test")
   );
-  const chainsData = btcLegacyChain ? [...chains, btcLegacyChain] : [...chains];
 
   return (
     <View>
@@ -87,41 +75,58 @@ export const CopyAddressModal: FunctionComponent<{
       >
         {chainsData?.length > 0 &&
           chainsData.map((item, index) => {
-            let address;
-            if (index === chainsData.length - 1) {
-              address = accountStore.getAccount(item.chainId).legacyAddress;
-            } else {
-              address = accountStore
-                .getAccount(item.chainId)
-                .getAddressDisplay(keyRingStore.keyRingLedgerAddresses, true);
-            }
+            let address = allAccountStore.getAccount(
+              item.chainId
+            ).addressDisplay;
+            const addresses =
+              item.chainId === "bitcoin"
+                ? [
+                    {
+                      chainName: "Bitcoin Segwit",
+                      address,
+                    },
+                    {
+                      chainName: "Bitcoin Legacy",
+                      address: allAccountStore.getAccount(item.chainId)
+                        ?.btcLegacyAddress,
+                    },
+                  ]
+                : [
+                    {
+                      chainName: item.chainName,
+                      address,
+                    },
+                  ];
+
             return (
-              <CustomAddressCopyable
-                copyable={copyable}
-                onPress={() =>
-                  onPress && onPress(item, index === chainsData?.length - 1)
-                }
-                icon={
-                  <OWIcon
-                    style={{
-                      borderRadius: 999,
-                    }}
-                    type="images"
-                    source={{
-                      uri:
-                        item?.chainSymbolImageUrl || unknownToken.coinImageUrl,
-                    }}
-                    size={28}
+              <>
+                {addresses.map((addr) => (
+                  <CustomAddressCopyable
+                    copyable={copyable}
+                    onPress={() =>
+                      onPress &&
+                      onPress(item, addr.chainName.includes("Legacy"))
+                    }
+                    icon={
+                      <OWIcon
+                        style={{
+                          borderRadius: 999,
+                        }}
+                        type="images"
+                        source={{
+                          uri:
+                            item?.chainSymbolImageUrl ||
+                            unknownToken.coinImageUrl,
+                        }}
+                        size={28}
+                      />
+                    }
+                    chain={`${addr.chainName}`}
+                    address={addr?.address}
+                    maxCharacters={22}
                   />
-                }
-                chain={`${
-                  index === chainsData.length - 1
-                    ? item.chainName + " Legacy"
-                    : item.chainName
-                }`}
-                address={address}
-                maxCharacters={22}
-              />
+                ))}
+              </>
             );
           })}
       </ScrollView>

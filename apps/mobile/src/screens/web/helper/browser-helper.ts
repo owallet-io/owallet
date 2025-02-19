@@ -7,7 +7,7 @@ export const explorerData = [
     logo: images.dapps_scan_logo,
     title: "Oraichain Scan",
     subTitle: "The Oraichain blockchain explorer",
-    url: "https://scan.orai.io/",
+    url: "https://scanium.io/",
   },
 ];
 export const aiData = [
@@ -34,6 +34,13 @@ export const aiData = [
   // },
 ];
 export const defiData = [
+  {
+    images: images.bg_agent_land,
+    logo: images.dapps_agent_land_logo,
+    title: "agents(dot)land",
+    subTitle: "AI Agent Launch Platform",
+    url: "https://agents.land/",
+  },
   {
     images: images.img_oraidex,
     logo: images.dapps_dex_logo,

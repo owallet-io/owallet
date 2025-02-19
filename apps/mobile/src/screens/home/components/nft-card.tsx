@@ -38,7 +38,7 @@ export const NftCard = observer(() => {
 
       {nfts?.length > 0 &&
         nfts.map((it, index) => {
-          const coinDenom = it?.chainInfo?.stakeCurrency?.coinDenom;
+          const coinDenom = it?.chainInfo?.feeCurrencies?.[0]?.coinDenom;
           if (it?.data?.length > 0) {
             return (
               <View
@@ -54,6 +54,10 @@ export const NftCard = observer(() => {
                       size={22}
                       style={{
                         borderRadius: 999,
+                        tintColor:
+                          coinDenom === "AIRI"
+                            ? colors["neutral-text-title"]
+                            : null,
                       }}
                       source={{
                         uri:

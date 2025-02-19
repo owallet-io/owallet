@@ -21,7 +21,9 @@ export interface AllNetworkItemTx {
   netFee: string;
   explorer: string;
 }
-
+export interface ITokenInfoRes {
+  data: TokenInfo;
+}
 export interface TokenInfo {
   uniqueKey: string;
   network: string;

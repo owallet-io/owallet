@@ -26,7 +26,7 @@ export const TextInput = React.forwardRef<
 
     label?: string;
     error?: string;
-
+    errorBorder?: boolean;
     paragraph?: React.ReactNode;
 
     topInInputContainer?: React.ReactNode;
@@ -59,7 +59,7 @@ export const TextInput = React.forwardRef<
             <Text
               style={{
                 ...typography.h7,
-                color: colors["primary-text"],
+                color: colors["neutral-text-title"],
                 marginBottom: spacing["3"],
                 ...props.labelStyle,
               }}
@@ -86,7 +86,10 @@ export const TextInput = React.forwardRef<
           ),
           {
             backgroundColor: "transparent",
-            borderColor: colors["border-input-login"],
+            borderColor:
+              props.errorBorder || !!props.error
+                ? colors["error-border-default"]
+                : colors["border-input-login"],
             paddingHorizontal: 12,
             paddingVertical: 12,
           },
@@ -98,6 +101,9 @@ export const TextInput = React.forwardRef<
         <View style={style.flatten(["flex-row", "items-center"])}>
           {props.inputLeft}
           <ElementTextInput
+            importantForAutofill={"no"}
+            autoCorrect={true}
+            autoComplete="off"
             multiline={props.multiline ?? false}
             style={[
               StyleSheet.flatten([
@@ -159,10 +165,12 @@ export const TextInput = React.forwardRef<
               style.flatten([
                 "absolute",
                 "text-caption2",
-                "color-error",
+                // "color-error",
+
                 "margin-top-2",
                 "margin-left-4",
               ]),
+              { color: colors["error-text-body"] },
               props.errorLabelStyle,
             ])}
           >

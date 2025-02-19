@@ -65,9 +65,13 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
       tokensIcon,
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
-    const currencies = tokenActive.chainId
-      ? chainStore.getChain(tokenActive.chainId).currencies
-      : [];
+    let chainId = tokenActive.chainId;
+    if (tokenActive.chainId.startsWith("0x")) {
+      chainId = `eip155:${parseInt(tokenActive.chainId, 16)}`;
+    }
+
+    const chainInfo = chainStore.getChain(chainId);
+    const currencies = tokenActive.chainId ? chainInfo.currencies : [];
     const tokenIconFromLocal = currencies.find(
       (tk) => tk.coinGeckoId === tokenActive.coinGeckoId
     );
@@ -85,7 +89,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             width: 33,
             height: 33,
             borderRadius: 999,
-            backgroundColor: colors["neutral-surface-action"],
+            backgroundColor: colors["icon"],
             alignItems: "center",
             justifyContent: "center",
           }}
@@ -167,7 +171,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
                         ? colors["warning-text-body"]
                         : colors["neutral-text-body3"]
                     }
-                  >{`(-${impactWarning.toFixed(2)}%)`}</Text>
+                  >{`(-${impactWarning.toFixed(3)}%)`}</Text>
                 ) : null}
               </BalanceText>
             </View>

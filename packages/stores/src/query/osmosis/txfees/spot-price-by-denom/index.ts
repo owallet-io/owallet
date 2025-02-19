@@ -2,10 +2,11 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "../../../chain-query";
+import { ChainGetter } from "../../../../chain";
 import { computed, makeObservable } from "mobx";
 import { SpotPriceByDenom } from "./types";
 import { Dec } from "@owallet/unit";
-import { ChainGetter, QuerySharedContext } from "../../../../common";
+import { QuerySharedContext } from "../../../../common";
 
 export class ObservableQueryTxFeesSpotPriceByDenomInner extends ObservableChainQuery<SpotPriceByDenom> {
   constructor(

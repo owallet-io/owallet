@@ -1,11 +1,11 @@
-import { ValidatorThumbnails } from "@owallet/common";
+// import { ValidatorThumbnails } from "@owallet/common";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { PageWithView } from "../../../components/page";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Text } from "@src/components/text";
-import { BondStatus, Validator } from "@owallet/stores";
+import { Staking } from "@owallet/stores";
 import { CoinPretty, Dec } from "@owallet/unit";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { OWSubTitleHeader } from "@src/components/header";
@@ -29,7 +29,12 @@ import { SCREENS } from "@src/common/constants";
 type Sort = "APR" | "Amount Staked" | "Name";
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
-  tracking(`Stake Screen`);
+  useEffect(() => {
+    tracking(`Stake Screen`);
+
+    return () => {};
+  }, []);
+
   const route = useRoute<
     RouteProp<
       Record<
@@ -52,7 +57,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
 
   useEffect(() => {
@@ -239,7 +244,7 @@ const ValidatorItem: FunctionComponent<{
   const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
+    Staking.BondStatus.Bonded
   );
   const validator = bondedValidators.getValidator(validatorAddress);
 

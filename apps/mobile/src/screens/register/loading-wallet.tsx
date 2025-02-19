@@ -63,6 +63,7 @@ export const LoadingWalletScreen: FunctionComponent = observer((props) => {
             />
             <Text size={28} weight={"700"} style={styles.text}>
               {props?.mode === "add" ? "CREATING" : "IMPORTING"}
+              {/*{"CREATING"}*/}
             </Text>
             <Text size={28} weight={"700"} style={styles.text}>
               YOUR WALLET

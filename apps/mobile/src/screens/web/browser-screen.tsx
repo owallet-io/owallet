@@ -1,20 +1,17 @@
 import { Clipboard, FlatList, useWindowDimensions, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TabBar, TabView } from "react-native-tab-view";
 import OWText from "@src/components/text/ow-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { TextInput } from "@src/components/input";
-import { RightArrowIcon, SearchIcon } from "@src/components/icon";
+import { RightArrowIcon } from "@src/components/icon";
 import { OWButton } from "@src/components/button";
-import OWFlatList from "@src/components/page/ow-flat-list";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import OWIcon from "@src/components/ow-icon/ow-icon";
 import { observer } from "mobx-react-lite";
 import { renderScene } from "@src/screens/web/routes";
 import { useTheme } from "@src/themes/theme-provider";
 import {
-  dataBookMarks,
   getFavicon,
   getNameBookmark,
 } from "@src/screens/web/helper/browser-helper";
@@ -25,18 +22,21 @@ import { useStore } from "@src/stores";
 import OWButtonIcon from "@src/components/button/ow-button-icon";
 import { tracking } from "@src/utils/tracking";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
-import {
-  PageWithView,
-  PageWithViewInBottomTabView,
-} from "@src/components/page";
+import { PageWithViewInBottomTabView } from "@src/components/page";
 
 export const BrowserScreen = observer(() => {
   const layout = useWindowDimensions();
-  tracking(`Browser Screen`);
+  useEffect(() => {
+    tracking(`Browser Screen`);
+
+    return () => {};
+  }, []);
+
   const { colors } = useTheme();
-  const { browserStore } = useStore();
+  const { browserStore, appInitStore } = useStore();
   const { inject } = browserStore;
   const sourceCode = inject;
+
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "all", title: "All" },
@@ -44,6 +44,7 @@ export const BrowserScreen = observer(() => {
     // { key: "ai", title: "AI" },
     { key: "explorer", title: "Explorer" },
   ]);
+
   const renderTabBar = (props) => (
     <TabBar
       {...props}
@@ -124,9 +125,8 @@ export const BrowserScreen = observer(() => {
   };
   return (
     <PageWithViewInBottomTabView
-      // disableSafeArea={true}
       style={{
-        backgroundColor: colors["neutral-surface-action"],
+        // backgroundColor: colors["neutral-surface-action"],
         flexGrow: 1,
       }}
     >
@@ -204,7 +204,7 @@ export const BrowserScreen = observer(() => {
           paddingBottom: 0,
         }}
       >
-        {[...(browserStore.getBookmarks || [])].length > 0 ? (
+        {[...(appInitStore.getBookmarks || [])].length > 0 ? (
           <View style={{}}>
             <View
               style={{
@@ -260,8 +260,9 @@ export const BrowserScreen = observer(() => {
                 style={{
                   paddingBottom: 16,
                 }}
+                keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
-                data={[...(browserStore.getBookmarks || [])]}
+                data={[...(appInitStore.getBookmarks || [])]}
                 renderItem={({ item, index }) => {
                   return (
                     <TouchableOpacity
