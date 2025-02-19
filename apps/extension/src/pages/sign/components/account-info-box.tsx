@@ -67,7 +67,11 @@ export const AccountInfoBox: FunctionComponent<{ chainId }> = ({ chainId }) => {
             src={require("assets/images/default-avatar.png")}
           />
           <div
-            style={{ flexDirection: "column", display: "flex", width: "20%" }}
+            style={{
+              flexDirection: "column",
+              display: "flex",
+              width: "calc(100% - 3rem)",
+            }}
           >
             {keyRingStore.selectedKeyInfo?.name.length > 15 ? (
               <Styles.Marquee>
@@ -76,7 +80,9 @@ export const AccountInfoBox: FunctionComponent<{ chainId }> = ({ chainId }) => {
                 </Styles.MarqueeText>
               </Styles.Marquee>
             ) : (
-              <Subtitle3>{keyRingStore.selectedKeyInfo?.name}</Subtitle3>
+              <Subtitle3 style={{ paddingLeft: 6 }}>
+                {keyRingStore.selectedKeyInfo?.name}
+              </Subtitle3>
             )}
             <AddressChip chainId={chainId} />
           </div>
