@@ -14,8 +14,6 @@ build
 build/*
 apps/extension/src/config.ui.var.tsx
 
-apps
-
 .cache
 .parcel-cache
 
