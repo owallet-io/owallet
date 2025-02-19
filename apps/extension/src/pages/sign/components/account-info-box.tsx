@@ -80,7 +80,7 @@ export const AccountInfoBox: FunctionComponent<{ chainId }> = ({ chainId }) => {
                 </Styles.MarqueeText>
               </Styles.Marquee>
             ) : (
-              <Subtitle3 style={{ paddingLeft: 6 }}>
+              <Subtitle3 style={{ paddingLeft: 4 }}>
                 {keyRingStore.selectedKeyInfo?.name}
               </Subtitle3>
             )}
