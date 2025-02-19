@@ -13,6 +13,11 @@ do
                 echo "❌ This tag is not created from the main branch. Return the tag from the main!"
                 exit 1
             fi
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            if [ "$current_branch" != "main" ]; then
+                echo "❌ You are only allowed to create a release tag from the main branch!"
+                exit 1
+            fi
             # Status update from remote (fetch but not merge)
             git fetch origin main
 
