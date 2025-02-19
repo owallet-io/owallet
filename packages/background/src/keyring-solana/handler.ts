@@ -131,9 +131,9 @@ const handleConnectSvmMsg: (
   return async (env, msg) => {
     if (!msg.silent) {
       await permissionInteractionService.ensureEnabled(
-          env,
-          [msg.chainId],
-          msg.origin
+        env,
+        [msg.chainId],
+        msg.origin
       );
     }
 
