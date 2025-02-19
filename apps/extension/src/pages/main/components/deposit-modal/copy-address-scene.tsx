@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -31,6 +37,8 @@ import {
 import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 import { TokenTag } from "../token";
 import { formatAddress } from "@owallet/common";
+import { PricePretty } from "@owallet/unit";
+import { ChainInfoWithCoreTypes } from "@owallet/background";
 
 export const CopyAddressScene: FunctionComponent<{
   title?: string;
@@ -47,6 +55,8 @@ export const CopyAddressScene: FunctionComponent<{
     analyticsStore,
     tronAccountStore,
     solanaAccountStore,
+    hugeQueriesStore,
+    priceStore,
   } = useStore();
 
   const intl = useIntl();
@@ -83,14 +93,48 @@ export const CopyAddressScene: FunctionComponent<{
     return res;
   });
 
+  const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
+    let result: PricePretty | undefined;
+    for (const bal of hugeQueriesStore.allKnownBalances) {
+      if (!("currencies" in bal.chainInfo)) {
+        continue;
+      }
+      if (!(bal.chainInfo.embedded as ChainInfoWithCoreTypes).embedded) {
+        continue;
+      }
+      if (bal.price) {
+        const price = priceStore.calculatePrice(bal.token, "usd");
+        if (price) {
+          if (!result) {
+            result = price;
+          } else {
+            result = result.add(price);
+          }
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, priceStore]);
+
   const addresses: {
     modularChainInfo: ModularChainInfo;
     bech32Address?: string;
     base58Address?: string;
     ethereumAddress?: string;
     starknetAddress?: string;
+    bal?: string;
   }[] = chainStore.modularChainInfosInUI
     .map((modularChainInfo) => {
+      let result: PricePretty | undefined;
+      hugeQueriesStore.allKnownBalances.find((bal) => {
+        if (bal.chainInfo.chainId === modularChainInfo.chainId) {
+          if (!result) {
+            result = bal.price;
+          } else {
+            result = result.add(bal.price);
+          }
+        }
+      });
       const accountInfo = accountStore.getAccount(modularChainInfo.chainId);
       const bech32Address = (() => {
         if (!("cosmos" in modularChainInfo)) {
@@ -148,6 +192,7 @@ export const CopyAddressScene: FunctionComponent<{
         bech32Address,
         ethereumAddress,
         base58Address,
+        bal: result ? result.toString() : 0,
       };
     })
     .filter(({ modularChainInfo, bech32Address }) => {
@@ -431,6 +476,12 @@ export const CopyAddressScene: FunctionComponent<{
             })
             .flat()
             .map((address) => {
+              console.log(
+                "address",
+                address.modularChainInfo.chainId,
+                address.bal
+              );
+
               return (
                 <CopyAddressItem
                   key={
