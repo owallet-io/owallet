@@ -22,6 +22,7 @@ import { CoinPretty, PricePretty } from "@owallet/unit";
 import {
   ArrowDownIcon,
   ArrowTopRightOnSquareIcon,
+  CopyOutlineIcon,
 } from "../../components/icon";
 import { Box } from "../../components/box";
 import { Modal } from "../../components/modal";
@@ -33,6 +34,7 @@ import {
   Subtitle3,
   Subtitle1,
   Subtitle4,
+  Caption1,
 } from "../../components/typography";
 import { ColorPalette, SidePanelMaxWidth } from "../../styles";
 import { AvailableTabView } from "./available";
@@ -57,12 +59,13 @@ import {
 } from "@owallet/background";
 import { BACKGROUND_PORT } from "@owallet/router";
 import { BottomTabsHeightRem } from "../../bottom-tabs";
-import { DenomHelper, shortenWord } from "@owallet/common";
+import { DenomHelper } from "@owallet/common";
 import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
-import { ModularChainInfo } from "@owallet/types";
+import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
 import Color from "color";
 import { DoubleSortIcon } from "components/icon/double-sort";
 import { useNavigate } from "react-router";
+import { AddressChip } from "./components/address-chip";
 
 export interface ViewToken {
   token: CoinPretty;
@@ -123,9 +126,15 @@ export const MainPage: FunctionComponent<{
     uiConfigStore,
     keyRingStore,
     priceStore,
+    chainStore,
   } = useStore();
 
   const isNotReady = useIsNotReady();
+  const chainInfo =
+    uiConfigStore.currentNetwork === "all"
+      ? null
+      : chainStore.getChain(uiConfigStore.currentNetwork);
+
   const intl = useIntl();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -427,6 +436,11 @@ export const MainPage: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const copy = async (value: string) => {
+    if (!value) return;
+    await navigator.clipboard.writeText(value);
+  };
+
   const mainHeaderLayoutRef = useRef<MainHeaderLayoutRef | null>(null);
   const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
 
@@ -520,13 +534,17 @@ export const MainPage: FunctionComponent<{
                   color={ColorPalette["gray-300"]}
                 />
               </Box>
-              <CopyAddress
-                onClick={() => {
-                  analyticsStore.logEvent("click_copyAddress");
-                  setIsOpenDepositModal(true);
-                }}
-                isNotReady={isNotReady}
-              />
+              {uiConfigStore.currentNetwork === "all" ? (
+                <CopyAddress
+                  onClick={() => {
+                    analyticsStore.logEvent("click_copyAddress");
+                    setIsOpenDepositModal(true);
+                  }}
+                  isNotReady={isNotReady}
+                />
+              ) : (
+                <AddressChip chainId={chainInfo?.chainId} />
+              )}
             </Box>
             <Box
               style={{
@@ -870,6 +888,37 @@ export const MainPage: FunctionComponent<{
 });
 
 const Styles = {
+  ContainerCopy: styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    padding: 3.5px 0.5rem;
+
+    background-color: ${(props) =>
+      props.theme.mode === "light"
+        ? ColorPalette["gray-50"]
+        : ColorPalette["gray-600"]};
+    border-radius: 16rem;
+
+    cursor: pointer;
+
+    color: ${ColorPalette["gray-300"]};
+
+    :hover {
+      background-color: ${(props) =>
+        props.theme.mode === "light"
+          ? ColorPalette["gray-50"]
+          : ColorPalette["gray-500"]};
+
+      color: ${(props) =>
+        props.theme.mode === "light"
+          ? ColorPalette["gray-200"]
+          : ColorPalette["gray-300"]};
+    }
+
+    user-select: none;
+  `,
   Container: styled.div<{ isNotReady?: boolean }>`
     background-color: ${(props) =>
       props.theme.mode === "light"
