@@ -70,7 +70,7 @@ export const AccountInfoBox: FunctionComponent<{ chainId }> = ({ chainId }) => {
             style={{
               flexDirection: "column",
               display: "flex",
-              width: "calc(100% - 3rem)",
+              width: "180px",
             }}
           >
             {keyRingStore.selectedKeyInfo?.name.length > 15 ? (

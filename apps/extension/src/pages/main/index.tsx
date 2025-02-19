@@ -22,7 +22,6 @@ import { CoinPretty, PricePretty } from "@owallet/unit";
 import {
   ArrowDownIcon,
   ArrowTopRightOnSquareIcon,
-  CopyOutlineIcon,
 } from "../../components/icon";
 import { Box } from "../../components/box";
 import { Modal } from "../../components/modal";
@@ -34,7 +33,6 @@ import {
   Subtitle3,
   Subtitle1,
   Subtitle4,
-  Caption1,
 } from "../../components/typography";
 import { ColorPalette, SidePanelMaxWidth } from "../../styles";
 import { AvailableTabView } from "./available";
@@ -61,7 +59,7 @@ import { BACKGROUND_PORT } from "@owallet/router";
 import { BottomTabsHeightRem } from "../../bottom-tabs";
 import { DenomHelper } from "@owallet/common";
 import { NewSidePanelHeaderTop } from "./new-side-panel-header-top";
-import { ChainIdEVM, ModularChainInfo } from "@owallet/types";
+import { ModularChainInfo } from "@owallet/types";
 import Color from "color";
 import { DoubleSortIcon } from "components/icon/double-sort";
 import { useNavigate } from "react-router";
@@ -435,11 +433,6 @@ export const MainPage: FunctionComponent<{
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const copy = async (value: string) => {
-    if (!value) return;
-    await navigator.clipboard.writeText(value);
-  };
 
   const mainHeaderLayoutRef = useRef<MainHeaderLayoutRef | null>(null);
   const name = keyRingStore.selectedKeyInfo?.name || "OWallet Account";
