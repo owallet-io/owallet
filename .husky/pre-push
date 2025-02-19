@@ -1,4 +1,36 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
+while read local_ref local_sha remote_ref remote_sha
+do
+    # Check if you are push tag
+    if echo "$remote_ref" | grep -q "refs/tags/"; then
+        tag_name=$(echo "$remote_ref" | sed 's|refs/tags/||')
 
+        # If the tag belongs to the group to be controlled (product, codepush)
+        if echo "$tag_name" | grep -Eq "^mobile/v[0-9]+\.[0-9]+\.[0-9]+(-cp\.[0-9]+)?$|^v[0-9]+\.[0-9]+\.[0-9]+$"; then
+            # Check the commit that the tag pointing to the main is not
+            if ! git branch --contains "$local_sha" | grep -q "main"; then
+                echo "❌ This tag is not created from the main branch. Return the tag from the main!"
+                exit 1
+            fi
+            current_branch=$(git rev-parse --abbrev-ref HEAD)
+            if [ "$current_branch" != "main" ]; then
+                echo "❌ You are only allowed to create a release tag from the main branch!"
+                exit 1
+            fi
+            # Status update from remote (fetch but not merge)
+            git fetch origin main
+
+            # Get the latest commit on Remote
+            latest_remote_commit=$(git rev-parse origin/main)
+            latest_local_commit=$(git rev-parse HEAD)
+
+            # If the commit is not the latest on the remote
+            if [ "$latest_local_commit" != "$latest_remote_commit" ]; then
+                echo "❌ The main branch is not the latest commit on the remote. Please pull and try again!"
+                exit 1
+            fi
+        fi
+    fi
+done
 npm run test
