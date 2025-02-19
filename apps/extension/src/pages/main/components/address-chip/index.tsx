@@ -5,7 +5,6 @@ import { ColorPalette } from "../../../../styles";
 import { Body3 } from "../../../../components/typography";
 import { useStore } from "../../../../stores";
 import { XAxis } from "../../../../components/axis";
-import { Bech32Address } from "@owallet/cosmos";
 import Lottie from "lottie-web";
 import { Gutter } from "../../../../components/gutter";
 import { useTheme } from "styled-components";
@@ -30,19 +29,25 @@ export const AddressChip: FunctionComponent<{
 
   const theme = useTheme();
 
-  const account = allAccountStore.getAccount(chainId);
-
   const [isHover, setIsHover] = useState(false);
   const [animCheck, setAnimCheck] = useState(false);
+  const account = allAccountStore.getAccount(chainId);
 
   useEffect(() => {
-    if (address) {
+    if (address && address !== "") {
       setCopyAddress(address);
     } else {
-      const finalAddress = account.addressDisplay;
-      setCopyAddress(finalAddress);
+      if (chainId) {
+        setCopyAddress(account.addressDisplay);
+      }
     }
-  }, [address, account, isEVMOnlyChain, chainId]);
+  }, [
+    address,
+    isEVMOnlyChain,
+    chainId,
+    allAccountStore,
+    account.addressDisplay,
+  ]);
 
   useEffect(() => {
     if (animCheck) {

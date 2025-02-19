@@ -3,7 +3,7 @@ import { Column, Columns } from "../../../../components/column";
 import { Box } from "../../../../components/box";
 import { ColorPalette } from "../../../../styles";
 import { Gutter } from "../../../../components/gutter";
-import { Body3, H5, H3 } from "../../../../components/typography";
+import { Body3, H5 } from "../../../../components/typography";
 import { useTheme } from "styled-components";
 import { SenderConfig, useCoinGeckoPrices } from "@owallet/hooks";
 import axios from "axios";
@@ -120,6 +120,7 @@ const BridgeParsedItem: FunctionComponent<{
                 alignItems: "center",
                 display: "flex",
                 justifyContent: "space-between",
+                marginTop: 6,
               }}
             >
               <img
@@ -158,6 +159,7 @@ const BridgeParsedItem: FunctionComponent<{
                 alignItems: "center",
                 display: "flex",
                 justifyContent: "space-between",
+                marginTop: 6,
               }}
             >
               <img
@@ -316,26 +318,6 @@ const BridgeParsedItem: FunctionComponent<{
           </div>
         </XAxis>
         <Gutter size="0.25rem" />
-
-        {/* {Object.keys(parsedMsg).map((key) => {
-          return (
-            <XAxis
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <Subtitle3>{camelCaseToTitleCase(key)}</Subtitle3>
-              <Subtitle4>
-                {typeof parsedMsg[key] === "object"
-                  ? shortenWord(
-                      JSON.stringify(mapToDynamicAction(parsedMsg[key]))
-                    )
-                  : shortenWord(parsedMsg[key])}
-              </Subtitle4>
-            </XAxis>
-          );
-        })} */}
       </Body3>
     </>
   );

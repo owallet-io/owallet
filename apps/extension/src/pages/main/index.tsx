@@ -171,6 +171,8 @@ export const MainPage: FunctionComponent<{
     return result;
   }, [hugeQueriesStore.allKnownBalances, uiConfigStore.currentNetwork]);
 
+  console.log("availableTotalPrice", availableTotalPrice?.toString());
+
   const availableTotalPriceEmbedOnlyUSD = useMemo(() => {
     let result: PricePretty | undefined;
     for (const bal of hugeQueriesStore.allKnownBalances) {
@@ -193,6 +195,11 @@ export const MainPage: FunctionComponent<{
     }
     return result;
   }, [hugeQueriesStore.allKnownBalances, priceStore]);
+
+  console.log(
+    "availableTotalPriceEmbedOnlyUSD",
+    availableTotalPriceEmbedOnlyUSD?.toString()
+  );
 
   const stakedTotalPrice = useMemo(() => {
     let result: PricePretty | undefined;
@@ -536,7 +543,7 @@ export const MainPage: FunctionComponent<{
                   isNotReady={isNotReady}
                 />
               ) : (
-                <AddressChip chainId={chainInfo?.chainId} />
+                <AddressChip chainId={uiConfigStore.currentNetwork} />
               )}
             </Box>
             <Box
