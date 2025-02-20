@@ -82,20 +82,20 @@ BYTE_BREW_ID_IOS=
 BYTE_BREW_SDK_KEY_IOS=
 ```
 
-3. Build necessary packages
+4. Build necessary packages
 
 ```shell
 yarn build:libs
 ```
 
 
-4. Install Pod for iOS
+5. Install Pod for iOS
 
 ```shell
 cd apps/mobile && yarn pod:install
 ```
 
-5. Run it
+6. Run it
 
 Get into apps/mobile and run
 - iOS
