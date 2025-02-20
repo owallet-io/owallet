@@ -26,6 +26,7 @@ OWallet supports all web3 activities on most common liqudity networks, which are
 - EVM-based: Ethereum, BNB Chain, Oasis / Oasis Sapphire
 - Cosmos-based: Oraichain, Osmosis, Injective, Cosmos Hub...
 - TVM-based: TRON network
+- SVM-based: Solana network
 
 ### OWallet’s key features
 - Supports multiple accounts  Bitcoin & Cosmos-based & EVM-based networks simultaneously
@@ -57,13 +58,28 @@ You can create a pull request to add your network
 1. Git clone this repo to desired directory
 
 ```shell
-git clone https://github.com/oraichain/owallet
+git clone --recurse-submodules git@github.com:owallet-io/owallet.git
 ```
 
 2. Install required packages
 
 ```shell
-yarn
+yarn or yarn install
+```
+3. Create a .env file in the apps/mobile folder. 
+
+```shell
+API_KEY=
+SENDER_ID=
+APP_ID=
+SENTRY_DSN=
+SENTRY_TOKEN=
+MIX_PANEL_TOKEN=
+WC_PROJECT_ID=
+BYTE_BREW_ID_ANDROID=
+BYTE_BREW_SDK_KEY_ANDROID=
+BYTE_BREW_ID_IOS=
+BYTE_BREW_SDK_KEY_IOS=
 ```
 
 3. Build necessary packages
@@ -72,19 +88,14 @@ yarn
 yarn build:libs
 ```
 
-4. Build provider
+
+4. Install Pod for iOS
 
 ```shell
-cd apps/mobile && yarn build:provider
+cd apps/mobile && yarn pod:install
 ```
 
-5. Install Pod for iOS
-
-```shell
-cd apps/mobile/ios && pod install
-```
-
-6. Run it
+5. Run it
 
 Get into apps/mobile and run
 - iOS
@@ -123,7 +134,7 @@ yarn android
 1. Clone this repo to desired directory
 
 ```shell
-git clone https://github.com/oraichain/owallet
+git clone --recurse-submodules git@github.com:owallet-io/owallet.git
 ```
 
 2. Checkout to main
