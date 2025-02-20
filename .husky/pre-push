@@ -6,8 +6,8 @@ do
     if echo "$remote_ref" | grep -q "refs/tags/"; then
         tag_name=$(echo "$remote_ref" | sed 's|refs/tags/||')
 
-        # If the tag belongs to the group to be controlled (product, codepush)
-        if echo "$tag_name" | grep -Eq "^mobile/v[0-9]+\.[0-9]+\.[0-9]+(-cp\.[0-9]+)?$|^v[0-9]+\.[0-9]+\.[0-9]+$"; then
+        # If the tag belongs to the group to be controlled (product)
+        if echo "$tag_name" | grep -Eq "^mobile/v[0-9]+\.[0-9]+\.[0-9]+$|^v[0-9]+\.[0-9]+\.[0-9]+$"; then
             # Check the commit that the tag pointing to the main is not
             if ! git branch --contains "$local_sha" | grep -q "main"; then
                 echo "❌ This tag is not created from the main branch. Return the tag from the main!"
