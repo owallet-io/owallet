@@ -10,6 +10,7 @@
   },
   "scripts": {
     "git:update": "git submodule update --recursive && git pull",
+    "git:submodule": "git submodule update --init --recursive",
     "bootstrap": "lerna bootstrap",
     "setup:mobile": "yarn && yarn build:libs && cd apps/mobile && yarn pod:install",
     "dev": "lerna run dev --ignore @owallet/extension  --ignore @owallet/proto-types --ignore @owallet/wc-client-example --include-dependencies --no-sort --parallel",
