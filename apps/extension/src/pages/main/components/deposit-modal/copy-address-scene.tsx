@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../../stores";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -115,6 +109,20 @@ export const CopyAddressScene: FunctionComponent<{
     }
     return result;
   }, [hugeQueriesStore.allKnownBalances, priceStore]);
+
+  const availableTotalPrice = useMemo(() => {
+    let result: PricePretty | undefined;
+    for (const bal of hugeQueriesStore.allKnownBalances) {
+      if (bal.price) {
+        if (!result) {
+          result = bal.price;
+        } else {
+          result = result.add(bal.price);
+        }
+      }
+    }
+    return result;
+  }, [hugeQueriesStore.allKnownBalances, uiConfigStore.currentNetwork]);
 
   const addresses: {
     modularChainInfo: ModularChainInfo;
@@ -434,6 +442,19 @@ export const CopyAddressScene: FunctionComponent<{
                         )}
                         <Gutter size="0.25rem" />
                       </XAxis>
+                      <span
+                        style={{
+                          fontWeight: "500",
+                          paddingTop: 6,
+                        }}
+                        color={
+                          theme.mode === "light"
+                            ? ColorPalette["gray-700"]
+                            : ColorPalette["gray-10"]
+                        }
+                      >
+                        {availableTotalPrice.toString()}
+                      </span>
                     </YAxis>
 
                     <Gutter size="0.5rem" />
@@ -476,12 +497,6 @@ export const CopyAddressScene: FunctionComponent<{
             })
             .flat()
             .map((address) => {
-              console.log(
-                "address",
-                address.modularChainInfo.chainId,
-                address.bal
-              );
-
               return (
                 <CopyAddressItem
                   key={
@@ -513,6 +528,7 @@ const CopyAddressItem: FunctionComponent<{
     ethereumAddress?: string;
     starknetAddress?: string;
     base58Address?: string;
+    bal?: string | number;
   };
   close: () => void;
   onClick?: (chainId: string) => void;
@@ -658,28 +674,51 @@ const CopyAddressItem: FunctionComponent<{
                   )}
                 </XAxis>
                 <Gutter size="0.25rem" />
-                <Caption1 color={ColorPalette["gray-300"]}>
-                  {(() => {
-                    if (address.ethereumAddress) {
-                      return address.ethereumAddress.length <= 42
-                        ? `${address.ethereumAddress.slice(
-                            0,
-                            10
-                          )}...${address.ethereumAddress.slice(-8)}`
-                        : address.ethereumAddress;
-                    }
+                <XAxis>
+                  <Caption1 color={ColorPalette["gray-300"]}>
+                    {(() => {
+                      if (address.ethereumAddress) {
+                        return address.ethereumAddress.length <= 42
+                          ? `${address.ethereumAddress.slice(
+                              0,
+                              10
+                            )}...${address.ethereumAddress.slice(-8)}`
+                          : address.ethereumAddress;
+                      }
 
-                    if (address.bech32Address) {
-                      return Bech32Address.shortenAddress(
-                        address.bech32Address,
-                        20
-                      );
+                      if (address.bech32Address) {
+                        return Bech32Address.shortenAddress(
+                          address.bech32Address,
+                          20
+                        );
+                      }
+                      if (address.base58Address) {
+                        return formatAddress(address.base58Address);
+                      }
+                    })()}
+                  </Caption1>
+                  <span
+                    style={{
+                      fontWeight: "500",
+                      paddingLeft: 6,
+                      paddingRight: 6,
+                    }}
+                  >
+                    ·
+                  </span>
+                  <span
+                    style={{
+                      fontWeight: "500",
+                    }}
+                    color={
+                      theme.mode === "light"
+                        ? ColorPalette["gray-700"]
+                        : ColorPalette["gray-10"]
                     }
-                    if (address.base58Address) {
-                      return formatAddress(address.base58Address);
-                    }
-                  })()}
-                </Caption1>
+                  >
+                    {address.bal}
+                  </span>
+                </XAxis>
               </YAxis>
 
               <div

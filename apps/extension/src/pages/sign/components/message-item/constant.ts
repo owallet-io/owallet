@@ -19,3 +19,4 @@ export declare const EnumAction: {
 };
 
 export const TX_PARSER = "https://tx-parser.orai.network/";
+// export const TX_PARSER = "http:/192.168.20.81:9000/";
