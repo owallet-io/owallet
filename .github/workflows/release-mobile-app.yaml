@@ -128,6 +128,8 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+      - name: Fix submodule URL to use HTTPS
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
       - name: Checkout Repository with Submodules
         uses: actions/checkout@v3
         with:
