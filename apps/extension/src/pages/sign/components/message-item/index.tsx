@@ -422,19 +422,12 @@ const UpdatePositionParsedItem: FunctionComponent<{
   theme: any;
   parsedMsg: any;
 }> = ({ theme, parsedMsg }) => {
-  const { data: prices } = useCoinGeckoPrices();
-
   const [data, setData] = useState(null);
   useEffect(() => {
     setData(parsedMsg.response);
   }, [parsedMsg]);
 
   if (!data) return null;
-
-  const tokenPrice = prices?.[data?.tokenInfo?.coinGeckoId];
-
-  const depositValue =
-    tokenPrice * toDisplay(data?.depositAmount, data?.tokenInfo.decimal);
 
   return (
     <>
