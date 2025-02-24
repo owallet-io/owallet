@@ -135,7 +135,7 @@ jobs:
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
-        run: yarn install --immutable --immutable-cache
+        run: yarn install --immutable
       #      - name: Install mobile packages
       #        working-directory: apps/mobile
       #        run: yarn --silent
