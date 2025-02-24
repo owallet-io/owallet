@@ -107,12 +107,20 @@ jobs:
   # FILE_PATH: "/OWalletKeystore"
   release-ios-mobile:
     name: release-ios-mobile
-    runs-on: macos-13 #orai-self-hosted
+    runs-on: macos-latest #orai-self-hosted
     timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
         node-version: [20.17.0]
     steps:
+      - name: Install xcodes
+        run: brew install xcodes
+#  - name: Install Xcode 15.4
+#    run: xcodes install 15.4 --experimental-unxip || true
+      - name: Select Xcode 15.4
+        run: xcodes select 15.4
+      - name: Verify Xcode version
+        run: xcodebuild -version
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
@@ -153,9 +161,9 @@ jobs:
         working-directory: apps/mobile
         run: |
           echo "SENTRY_TOKEN=${{ secrets.SENTRY_TOKEN }}" >> .env
-          echo "API_KEY=${{ secrets.API_KEY_FIREBASE }}" >> .env
-          echo "SENDER_ID=${{ secrets.SENDER_ID_FIREBASE }}" >> .env
-          echo "APP_ID=${{ secrets.APP_ID_FIREBASE }}" >> .env
+          echo "API_KEY=${{ secrets.FIREBASE_API_KEY }}" >> .env
+          echo "SENDER_ID=${{ secrets.FIREBASE_SENDER_ID }}" >> .env
+          echo "APP_ID=${{ secrets.FIREBASE_APP_ID }}" >> .env
           echo "MIX_PANEL_TOKEN=${{ secrets.MIX_PANEL_TOKEN }}" >> .env
           echo "BYTE_BREW_SDK_KEY_IOS=${{ secrets.BYTE_BREW_SDK_KEY_IOS }}" >> .env
           echo "BYTE_BREW_ID_IOS=${{ secrets.BYTE_BREW_ID_IOS }}" >> .env
