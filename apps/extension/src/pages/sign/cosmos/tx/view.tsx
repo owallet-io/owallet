@@ -47,8 +47,11 @@ import { useNavigate } from "react-router-dom";
 import { ApproveIcon, CancelIcon } from "../../../../components/button";
 import Color from "color";
 import styled from "styled-components";
-import { AddressChip } from "pages/main/components/address-chip";
 import { AccountInfoBox } from "pages/sign/components/account-info-box";
+import { isUint8Array } from "pages/sign/components/message-item/helper";
+import { TX_PARSER } from "pages/sign/components/message-item/constant";
+import axios from "axios";
+import { ParsedItem } from "../components";
 
 const Styles = {
   Container: styled.div<{
@@ -465,6 +468,39 @@ export const CosmosTxView: FunctionComponent<{
 
   const isLoading = isLedgerInteracting;
 
+  const [parsedMsg, setParsedMsg] = React.useState<any>();
+
+  const parseMsg = async (msgArray: Array<any>, sender: string) => {
+    const client = axios.create({ baseURL: TX_PARSER });
+
+    console.log("msgArray", { messages: msgArray, sender });
+
+    const { data } = await client.put(
+      `multichain-parser/v1/parser/parse`,
+      { messages: msgArray, sender },
+      {}
+    );
+    console.log("Parsed data", data);
+    if (data) {
+      setParsedMsg(data.data);
+    }
+  };
+
+  useEffect(() => {
+    const msgArray = [];
+    msgs.map((mg) => {
+      if (mg && isUint8Array(mg.value)) {
+        const convertedMsg = {
+          typeUrl: mg.typeUrl,
+          value: Buffer.from(mg.value).toString("base64"),
+        };
+        msgArray.push(convertedMsg);
+      }
+    });
+
+    parseMsg(msgArray, senderConfig.sender);
+  }, [msgs, senderConfig.sender]);
+
   return (
     <HeaderLayout
       title={intl.formatMessage({ id: "page.sign.cosmos.tx.title" })}
@@ -615,25 +651,30 @@ export const CosmosTxView: FunctionComponent<{
                   minWidth: "100%",
                 }}
               >
-                {msgs.map((msg, i) => {
-                  const r = defaultRegistry.render(
-                    chainId,
-                    defaultProtoCodec,
-                    msg
-                  );
+                {parsedMsg ? (
+                  <Box padding="1rem">
+                    <ParsedItem parsedMsg={parsedMsg} theme={theme} />
+                  </Box>
+                ) : (
+                  msgs.map((msg, i) => {
+                    const r = defaultRegistry.render(
+                      chainId,
+                      defaultProtoCodec,
+                      msg
+                    );
 
-                  return (
-                    <MessageItem
-                      key={i}
-                      icon={r.icon}
-                      title={r.title}
-                      content={r.content}
-                      msg={msg}
-                      msgs={[...msgs]}
-                      senderConfig={senderConfig}
-                    />
-                  );
-                })}
+                    return (
+                      <MessageItem
+                        key={i}
+                        icon={r.icon}
+                        title={r.title}
+                        content={r.content}
+                        msgs={[...msgs]}
+                        senderConfig={senderConfig}
+                      />
+                    );
+                  })
+                )}
               </Box>
             )}
           </Box>
