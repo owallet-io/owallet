@@ -6169,9 +6169,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/common@npm:1.2.8":
-  version: 1.2.8
-  resolution: "@oraichain/common@npm:1.2.8"
+"@oraichain/common@npm:1.2.10":
+  version: 1.2.10
+  resolution: "@oraichain/common@npm:1.2.10"
   dependencies:
     "@keplr-wallet/types": 0.12.141
     axios: 0.21.4
@@ -6180,7 +6180,7 @@ __metadata:
     cosmjs-types: ^0.9.0
     ethers: ^5.5.1
     lodash: ^4.17.21
-  checksum: 6744dbc6f2fa080ba847b0c29865fd0a1f035e35b5aebc2f386c55b0e44cae9952ada84c5ecf41b12add6e13743789a4ec003c7aeba0355c21466ae9dcfe820f
+  checksum: 9dd2078db2dfbf785a80ed3e69efe4c7775742722be52beac036cca921c83f18b1355f0b082944f004629f6866681765723dbe68f653f0e708d452a2a642fba8
   languageName: node
   linkType: hard
 
@@ -6235,9 +6235,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-common@npm:2.0.10":
-  version: 2.0.10
-  resolution: "@oraichain/oraidex-common@npm:2.0.10"
+"@oraichain/oraidex-common@npm:2.0.11":
+  version: 2.0.11
+  resolution: "@oraichain/oraidex-common@npm:2.0.11"
   dependencies:
     "@cosmjs/amino": ^0.32.4
     "@cosmjs/cosmwasm-stargate": ^0.32.4
@@ -6248,7 +6248,7 @@ __metadata:
     "@ethersproject/providers": ^5.0.10
     "@injectivelabs/sdk-ts": 1.12.1
     "@keplr-wallet/types": ^0.11.38
-    "@oraichain/common": 1.2.8
+    "@oraichain/common": 1.2.10
     "@oraichain/oraidex-contracts-sdk": latest
     "@ton/core": 0.56.3
     "@ton/crypto": 3.3.0
@@ -6258,7 +6258,7 @@ __metadata:
     cosmjs-types: ^0.9.0
     ethers: ^5.0.15
     tronweb: 6.0.0-beta.4
-  checksum: 873899d77aa87183d7483930b142287d1b7b4c933b0df10a5b2930ddd4c08727429b1fbe6d9d9739f86639787479ca71c99d7e9a26b0804ca7e4b583bd5fef56
+  checksum: c0a6c8386b54c5fc509c37755164bec419a2b286be0bade4494f80fc299ffe8330afc666f9afd55f98f8b350a0105ba16aca615c035ba2d14195949bea2d2adf
   languageName: node
   linkType: hard
 
@@ -6276,11 +6276,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oraichain/oraidex-universal-swap@npm:1.3.1":
-  version: 1.3.1
-  resolution: "@oraichain/oraidex-universal-swap@npm:1.3.1"
+"@oraichain/oraidex-universal-swap@npm:1.3.3":
+  version: 1.3.3
+  resolution: "@oraichain/oraidex-universal-swap@npm:1.3.3"
   dependencies:
-    "@oraichain/common": 1.2.8
+    "@oraichain/common": 1.2.10
     "@oraichain/oraidex-common": 2.0.8
     "@oraichain/oraidex-contracts-sdk": ^1.0.49
     "@oraichain/osor-api-contracts-sdk": ^1.0.2
@@ -6289,7 +6289,7 @@ __metadata:
     ethers: ^5.0.15
     tronweb: 5.3.2
     ts-protoc-gen: ^0.15.0
-  checksum: 87361bb4c968f6b12cb051acbf55f9486bd9873115b25486e7139d078871356f6448274414727f20a43aac94dfa03a1072cb4cd76ced3fb4fe9198f0d86ad3a7
+  checksum: 4ea2ec85e03f83bfc00e14053d460f34cd05dce5dab6133503983f19a37ae8f8d50c1685bf65285bc94d9f7eceb13ae3c0884fb370604534bfa645419b6e7033
   languageName: node
   linkType: hard
 
@@ -27405,7 +27405,7 @@ __metadata:
     "@oraichain/oraidex-common": 2.0.10
     "@oraichain/oraidex-contracts-build": ^1.0.22
     "@oraichain/oraidex-contracts-sdk": ^1.0.33
-    "@oraichain/oraidex-universal-swap": ^1.3.1
+    "@oraichain/oraidex-universal-swap": ^1.3.3
     "@oraichain/owallet-wallet-standard": 0.1.1
     "@oraichain/tonbridge-sdk": ^1.4.2
     "@orbs-network/ton-access": ^2.3.3

@@ -1,3 +1,4 @@
 [submodule "apps"]
 	path = apps
 	url = git@github.com:owallet-io/owallet-apps.git
+	branch = feat/ci-cd
