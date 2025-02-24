@@ -6659,9 +6659,11 @@ __metadata:
     "@owallet/proto-types": "*"
     "@owallet/simple-fetch": "*"
     "@owallet/stores": "*"
+    "@owallet/stores-core": "*"
     "@owallet/stores-etc": "*"
     "@owallet/stores-eth": "*"
     "@owallet/stores-oasis": "*"
+    "@owallet/stores-trx": "*"
     "@owallet/types": "*"
     "@owallet/unit": "*"
     buffer: ^6.0.3
@@ -6795,7 +6797,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@owallet/stores-core@workspace:packages/stores-core":
+"@owallet/stores-core@*, @owallet/stores-core@workspace:packages/stores-core":
   version: 0.0.0-use.local
   resolution: "@owallet/stores-core@workspace:packages/stores-core"
   dependencies:
