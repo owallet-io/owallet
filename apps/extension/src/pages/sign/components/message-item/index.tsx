@@ -84,9 +84,13 @@ const ParsedItem: FunctionComponent<{
       return <BridgeParsedItem parsedMsg={parsedMsg} theme={theme} />;
     case "swap":
       return <SwapParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    case "open_position":
+      return <OpenPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    case "deposit_margin":
+      return <DepositPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
     case "future":
-      if (parsedMsg.action.msgAction === "open_position") {
-        return <OpenPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+      if (parsedMsg.action.msgAction === "update_tp_sl") {
+        return <div />;
       } else if (parsedMsg.action.msgAction === "close_position") {
         return <ClosePositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
       } else {
@@ -399,6 +403,112 @@ const ClosePositionParsedItem: FunctionComponent<{
               ? ColorPalette["green-350"]
               : ColorPalette["red-350"]
           }
+        />
+
+        <Gutter size="0.25rem" />
+      </Body3>
+    </>
+  );
+};
+
+const DepositPositionParsedItem: FunctionComponent<{
+  theme: any;
+  parsedMsg: any;
+}> = ({ theme, parsedMsg }) => {
+  const { data: prices } = useCoinGeckoPrices();
+
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    setData(parsedMsg.response);
+  }, [parsedMsg]);
+
+  if (!data) return null;
+
+  const tokenPrice = prices?.[data?.tokenInfo?.coinGeckoId];
+
+  const depositValue =
+    tokenPrice * toDisplay(data?.depositAmount, data?.tokenInfo.decimal);
+
+  return (
+    <>
+      <Gutter size="2px" />
+      <Body3
+        color={
+          theme.mode === "light"
+            ? ColorPalette["gray-300"]
+            : ColorPalette["gray-200"]
+        }
+      >
+        <ParsedComponent label="Action" value={snakeToTitle(data.action)} />
+
+        <ParsedComponent
+          left={
+            <div
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.tokenInfo?.icon}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.tokenInfo?.name.toUpperCase()}
+              </span>
+            </div>
+          }
+          right={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["green-350"],
+                }}
+              >
+                +
+                {data.tokenInfo
+                  ? toDisplay(data.depositAmount, data.tokenInfo.decimal)
+                  : data.depositAmount}{" "}
+                {data?.tokenInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!depositValue ? "0" : depositValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
+        />
+
+        <ParsedComponent
+          label="Position Id"
+          value={data.positionId.toUpperCase()}
         />
 
         <Gutter size="0.25rem" />
