@@ -58,19 +58,32 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         })
         .join(",");
       fetchRetry(
-        `https://oraicommon.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+        // `https://oraicommon.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+        `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       ).then((res) => {
+        console.log(
+          "allTokensAddress",
+          `https://oraicommon-staging.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
+        );
+
         if (res?.length > 0) {
           const tokens = res.map((item, index) => {
             const { name, decimals, coinGeckoId, icon, denom } = item || {};
-            return {
-              coinImageUrl: icon,
-              coinDenom: name,
-              coinGeckoId: coinGeckoId,
-              coinDecimals: decimals,
-              coinMinimalDenom: denom,
-            };
+            if (name && decimals && coinGeckoId && icon && denom) {
+              return {
+                coinImageUrl: icon,
+                coinDenom: name,
+                coinGeckoId: coinGeckoId,
+                coinDecimals: decimals,
+                coinMinimalDenom: denom,
+              };
+            } else {
+              return;
+            }
           });
+
+          console.log("tokens", tokens);
+
           chainInfo.addCurrencies(...tokens);
         }
       });

@@ -84,8 +84,15 @@ const ParsedItem: FunctionComponent<{
       return <BridgeParsedItem parsedMsg={parsedMsg} theme={theme} />;
     case "swap":
       return <SwapParsedItem parsedMsg={parsedMsg} theme={theme} />;
-    case "open_position":
-      return <OpenPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    case "future":
+      if (parsedMsg.action.msgAction === "open_position") {
+        return <OpenPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+      } else if (parsedMsg.action.msgAction === "close_position") {
+        return <ClosePositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+      } else {
+        return <div />;
+      }
+
     default:
       return <div />;
   }
@@ -239,6 +246,161 @@ const OpenPositionParsedItem: FunctionComponent<{
           }
           color={ColorPalette["green-350"]}
         />
+        <Gutter size="0.25rem" />
+      </Body3>
+    </>
+  );
+};
+
+const ClosePositionParsedItem: FunctionComponent<{
+  theme: any;
+  parsedMsg: any;
+}> = ({ theme, parsedMsg }) => {
+  const { data: prices } = useCoinGeckoPrices();
+
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    setData(parsedMsg.response);
+  }, [parsedMsg]);
+
+  if (!data) return null;
+
+  const tokenPrice = prices?.[data?.tokenInfo?.coinGeckoId];
+
+  const marginValue =
+    tokenPrice * toDisplay(data?.marginAmount, data?.tokenInfo.decimal);
+
+  const withdrawValue =
+    tokenPrice * toDisplay(data?.withdrawAmount, data?.tokenInfo.decimal);
+
+  return (
+    <>
+      <Gutter size="2px" />
+      <Body3
+        color={
+          theme.mode === "light"
+            ? ColorPalette["gray-300"]
+            : ColorPalette["gray-200"]
+        }
+      >
+        <ParsedComponent label="Action" value={snakeToTitle(data.action)} />
+
+        <ParsedComponent
+          label="Pair"
+          value={data.pair}
+          color={ColorPalette["gray-600"]}
+        />
+        <ParsedComponent
+          label="Margin Amount"
+          right={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["green-350"],
+                }}
+              >
+                {data.tokenInfo
+                  ? toDisplay(data.marginAmount, data.tokenInfo.decimal)
+                  : data.marginAmount}{" "}
+                {data?.tokenInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!marginValue ? "0" : marginValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
+        />
+        <ParsedComponent
+          label="PnL"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.pnl, data.tokenInfo.decimal)
+              : data.pnl
+          }
+          color={
+            data.pnl > 0 ? ColorPalette["green-350"] : ColorPalette["red-350"]
+          }
+        />
+        <ParsedComponent
+          label="Withdraw Amount"
+          right={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    data.withdrawAmount >= data.marginAmount
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["red-350"],
+                }}
+              >
+                {data.tokenInfo
+                  ? toDisplay(data.withdrawAmount, data.tokenInfo.decimal)
+                  : data.withdrawAmount}{" "}
+                {data?.tokenInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!withdrawValue ? "0" : withdrawValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
+        />
+
+        <ParsedComponent
+          label="Leverage"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.leverage, data.tokenInfo.decimal) + "x"
+              : data.leverage + "x"
+          }
+          color={ColorPalette["gray-600"]}
+        />
+        <ParsedComponent
+          label="Side"
+          value={data.positionSide.toUpperCase()}
+          color={
+            data.positionSide === "Buy"
+              ? ColorPalette["green-350"]
+              : ColorPalette["red-350"]
+          }
+        />
+
         <Gutter size="0.25rem" />
       </Body3>
     </>
@@ -481,6 +643,8 @@ const SwapParsedItem: FunctionComponent<{
 
   const [data, setData] = useState(null);
   useEffect(() => {
+    console.log("parsedMsg", parsedMsg);
+
     setData(parsedMsg.response);
   }, [parsedMsg]);
 
