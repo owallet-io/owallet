@@ -133,11 +133,7 @@ jobs:
         with:
           submodules: true
           fetch-depth: 0
-          token: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-      - name: Configure Git with Basic Authorization
-        run: |
-          git config --global url."https://${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}@github.com/".insteadOf "https://github.com/"
-          git submodule update --init --recursive  # Ensure submodules are fully fetched
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
       #      - name: Install mobile packages
