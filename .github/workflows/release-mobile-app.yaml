@@ -117,6 +117,14 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
+      - name: Install xcodes
+        run: brew install xcodes
+      #  - name: Install Xcode 15.4
+      #    run: xcodes install 15.4 --experimental-unxip || true
+      - name: Select Xcode 15.4
+        run: xcodes select 15.4
+      - name: Verify Xcode version
+        run: xcodebuild -version
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -136,12 +144,6 @@ jobs:
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --immutable
-      #      - name: Install mobile packages
-      #        working-directory: apps/mobile
-      #        run: yarn --silent
-      #      - name: Build mobile images
-      #        working-directory: apps/mobile
-      #        run: yarn images
       - name: restore lerna
         uses: actions/cache@v3
         with:
