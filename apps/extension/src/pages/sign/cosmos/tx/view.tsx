@@ -52,6 +52,7 @@ import { isUint8Array } from "pages/sign/components/message-item/helper";
 import { TX_PARSER } from "pages/sign/components/message-item/constant";
 import axios from "axios";
 import { ParsedItem } from "../components";
+import { isEmpty } from "lodash";
 
 const Styles = {
   Container: styled.div<{
@@ -487,19 +488,21 @@ export const CosmosTxView: FunctionComponent<{
   };
 
   useEffect(() => {
-    const msgArray = [];
-    msgs.map((mg) => {
-      if (mg && isUint8Array(mg.value)) {
-        const convertedMsg = {
-          typeUrl: mg.typeUrl,
-          value: Buffer.from(mg.value).toString("base64"),
-        };
-        msgArray.push(convertedMsg);
-      }
-    });
+    if (!parsedMsg) {
+      const msgArray = [];
+      msgs.map((mg) => {
+        if (mg && isUint8Array(mg.value)) {
+          const convertedMsg = {
+            typeUrl: mg.typeUrl,
+            value: Buffer.from(mg.value).toString("base64"),
+          };
+          msgArray.push(convertedMsg);
+        }
+      });
 
-    parseMsg(msgArray, senderConfig.sender);
-  }, [msgs, senderConfig.sender]);
+      parseMsg(msgArray, senderConfig.sender);
+    }
+  }, [msgs]);
 
   return (
     <HeaderLayout
@@ -651,7 +654,7 @@ export const CosmosTxView: FunctionComponent<{
                   minWidth: "100%",
                 }}
               >
-                {parsedMsg ? (
+                {parsedMsg && !isEmpty(parsedMsg.response) ? (
                   <Box padding="1rem">
                     <ParsedItem parsedMsg={parsedMsg} theme={theme} />
                   </Box>

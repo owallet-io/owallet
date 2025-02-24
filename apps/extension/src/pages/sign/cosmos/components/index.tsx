@@ -73,6 +73,7 @@ const ParsedComponent: FunctionComponent<{
 export const ParsedItem: FunctionComponent<{
   theme: any;
   parsedMsg: any;
+  msgs?: Array<any>;
 }> = ({ theme, parsedMsg }) => {
   switch (parsedMsg.action.action) {
     case "bridge":
@@ -673,7 +674,7 @@ const StakingParsedItem: FunctionComponent<{
 
         <ParsedComponent
           label="Staker"
-          value={shortenWord(data.stakerAddress)}
+          value={shortenWord(data.stakerAddress, 6)}
         />
 
         <Gutter size="0.25rem" />
