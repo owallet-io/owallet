@@ -1,8 +1,8 @@
-name: Mobile fastlane release workflow
+name: Deploy to Firebase
 on:
   push:
     tags:
-      - mobile/v*.*.*
+      - mobile/v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
   workflow_dispatch:
 
 jobs:
@@ -113,10 +113,6 @@ jobs:
       matrix:
         node-version: [20.17.0]
     steps:
-      - name: Check tag name
-        if: contains(github.ref, 'cp')
-        run: |
-          exit 1
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
@@ -125,22 +121,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Increase Node.js memory limit to 7GB
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=7168"
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Restore node_modules from cache
-        uses: actions/cache@v2
-        id: yarn-cache
+      - name: Cache node_modules
+        uses: actions/cache@v3
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: "**/node_modules"
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Checkout submodule repo
+      - name: Checkout Repository with Submodules
         uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0  # Đảm bảo lấy toàn bộ lịch sử git
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
       - name: Install mobile packages
@@ -155,27 +147,15 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
-        run: yarn build:codepush
-
-      - name: Build @owallet/hooks
-        working-directory: packages/hooks
-        run: yarn build:hooks
-
-      - name: Build @owallet/hooks-internal
-        working-directory: apps/hooks-internal
-        run: yarn build:hooks-internal
-
+        run: yarn build:libs
       - name: Bundle mobile
         working-directory: apps/mobile
         run: yarn build:ios
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
-          API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
           BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
           BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
@@ -184,12 +164,23 @@ jobs:
         with:
           ruby-version: 3.2
           bundler-cache: true
+      - name: Cache Pods
+        uses: actions/cache@v3
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
       - name: Pod install
         working-directory: apps/mobile
         run: yarn pod:install
+      - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
+        run: |
+         echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+         echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
       - name: Setup Fastlane ios
         working-directory: apps/mobile/ios/fastlane
-        run: cd .. && bundle update && fastlane release
+        run: cd .. && bundle update && fastlane deploy_firebase
         env:
           DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
@@ -209,3 +200,4 @@ jobs:
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          FIREBASE_APP_ID_IOS: ${{ secrets.FIREBASE_APP_ID_IOS }}
