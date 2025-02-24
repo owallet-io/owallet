@@ -129,7 +129,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Checkout Repository with Submodules
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
