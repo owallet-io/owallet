@@ -519,201 +519,139 @@ const SwapParsedItem: FunctionComponent<{
             : ColorPalette["gray-200"]
         }
       >
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
-            }}
-          >
-            Action
-          </div>
-          <div>
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["platinum-200"]
-                    : ColorPalette["platinum-200"],
-              }}
-            >
-              {snakeToTitle(parsedMsg.action.msgAction)}
-            </span>
-          </div>
-        </XAxis>
-        <Gutter size="1.25rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+        <ParsedComponent
+          label="Action"
+          value={snakeToTitle(parsedMsg.action.msgAction)}
         />
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <img
-              style={{ width: 24, height: 24, borderRadius: 30 }}
-              src={data?.inAssetInfo?.icon}
-            />
-            <span
+
+        <ParsedComponent
+          left={
+            <div
               style={{
-                fontSize: 14,
-                fontWeight: "600",
-                color: ColorPalette["black-50"],
-                marginLeft: 4,
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              {data?.inAssetInfo?.name.toUpperCase()}
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <span
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.inAssetInfo?.icon}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.inAssetInfo?.name.toUpperCase()}
+              </span>
+            </div>
+          }
+          right={
+            <div
               style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["red-350"]
-                    : ColorPalette["red-350"],
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
               }}
             >
-              -
-              {data.inAssetInfo
-                ? toDisplay(data.inAmount, data.inAssetInfo.decimal)
-                : data.inAmount}{" "}
-              {data?.inAssetInfo?.name?.toUpperCase()}
-            </span>
-            <span
-              style={{
-                fontSize: 12,
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["gray-80"]
-                    : ColorPalette["gray-80"],
-                paddingTop: 4,
-              }}
-            >
-              ≈ ${!inValue ? "0" : inValue.toFixed(4).toString()}
-            </span>
-          </div>
-        </XAxis>
-        <Gutter size="0.25rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["red-350"]
+                      : ColorPalette["red-350"],
+                }}
+              >
+                -
+                {data.inAssetInfo
+                  ? toDisplay(data.inAmount, data.inAssetInfo.decimal)
+                  : data.inAmount}{" "}
+                {data?.inAssetInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!inValue ? "0" : inValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
         />
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <img
-              style={{ width: 24, height: 24, borderRadius: 30 }}
-              src={data?.outAssetInfo?.icon}
-            />
-            <span
+
+        <ParsedComponent
+          left={
+            <div
               style={{
-                fontSize: 14,
-                fontWeight: "600",
-                color: ColorPalette["black-50"],
-                marginLeft: 4,
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
               }}
             >
-              {data?.outAssetInfo?.name.toUpperCase()}
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <span
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.outAssetInfo?.icon}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.outAssetInfo?.name.toUpperCase()}
+              </span>
+            </div>
+          }
+          right={
+            <div
               style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["green-350"]
-                    : ColorPalette["green-350"],
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
               }}
             >
-              +
-              {data.outAssetInfo && totalOut
-                ? totalOut.toFixed(4)
-                : data.outAmount}{" "}
-              {data?.outAssetInfo?.name?.toUpperCase()}
-            </span>
-            <span
-              style={{
-                fontSize: 12,
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["gray-80"]
-                    : ColorPalette["gray-80"],
-                paddingTop: 4,
-              }}
-            >
-              ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
-            </span>
-          </div>
-        </XAxis>
-        <Gutter size="0.25rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["green-350"],
+                }}
+              >
+                +
+                {data.outAssetInfo && totalOut
+                  ? totalOut.toFixed(4)
+                  : data.outAmount}{" "}
+                {data?.outAssetInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
         />
       </Body3>
     </>
