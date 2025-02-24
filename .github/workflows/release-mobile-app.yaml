@@ -132,15 +132,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-          fetch-depth: 0  # Đảm bảo lấy toàn bộ lịch sử git
+          fetch-depth: 0
+          token: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
-      - name: Install mobile packages
-        working-directory: apps/mobile
-        run: yarn --silent
-      - name: Build mobile images
-        working-directory: apps/mobile
-        run: yarn images
+#      - name: Install mobile packages
+#        working-directory: apps/mobile
+#        run: yarn --silent
+#      - name: Build mobile images
+#        working-directory: apps/mobile
+#        run: yarn images
       - name: restore lerna
         uses: actions/cache@v3
         with:
@@ -150,7 +151,7 @@ jobs:
         run: yarn build:libs
       - name: Bundle mobile
         working-directory: apps/mobile
-        run: yarn build:ios
+#        run: yarn build:ios
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
@@ -179,8 +180,8 @@ jobs:
          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
          echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
       - name: Setup Fastlane ios
-        working-directory: apps/mobile/ios/fastlane
-        run: cd .. && bundle update && fastlane deploy_firebase
+        working-directory: apps/mobile/ios
+        run: bundle install && fastlane deploy_firebase
         env:
           DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
