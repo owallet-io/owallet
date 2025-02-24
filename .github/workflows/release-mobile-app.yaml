@@ -135,7 +135,7 @@ jobs:
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
       #      - name: Install mobile packages
       #        working-directory: apps/mobile
       #        run: yarn --silent
@@ -153,9 +153,9 @@ jobs:
         working-directory: apps/mobile
         run: |
           echo "SENTRY_TOKEN=${{ secrets.SENTRY_TOKEN }}" >> .env
-          echo "API_KEY=${{ secrets.API_KEY_FIREBASE }}" >> .env
-          echo "SENDER_ID=${{ secrets.SENDER_ID_FIREBASE }}" >> .env
-          echo "APP_ID=${{ secrets.APP_ID_FIREBASE }}" >> .env
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          echo "SENDER_ID=${{ secrets.SENDER_ID }}" >> .env
+          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
           echo "MIX_PANEL_TOKEN=${{ secrets.MIX_PANEL_TOKEN }}" >> .env
           echo "BYTE_BREW_SDK_KEY_IOS=${{ secrets.BYTE_BREW_SDK_KEY_IOS }}" >> .env
           echo "BYTE_BREW_ID_IOS=${{ secrets.BYTE_BREW_ID_IOS }}" >> .env
@@ -167,8 +167,10 @@ jobs:
       - name: Cache Pods
         uses: actions/cache@v3
         with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          path: |
+            apps/mobile/Pods
+            apps/mobile/ios/Podfile.lock
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
       - name: Pod install
