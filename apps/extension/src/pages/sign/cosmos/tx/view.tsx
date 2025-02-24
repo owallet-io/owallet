@@ -94,7 +94,6 @@ export const CosmosTxView: FunctionComponent<{
     signInteractionStore,
     uiConfigStore,
     priceStore,
-    keyRingStore,
   } = useStore();
 
   const intl = useIntl();
@@ -630,6 +629,7 @@ export const CosmosTxView: FunctionComponent<{
                       title={r.title}
                       content={r.content}
                       msg={msg}
+                      msgs={[...msgs]}
                       senderConfig={senderConfig}
                     />
                   );

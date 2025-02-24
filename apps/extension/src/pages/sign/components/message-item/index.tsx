@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useEffect,
+  useState,
+} from "react";
 import { Column, Columns } from "../../../../components/column";
 import { Box } from "../../../../components/box";
 import { ColorPalette } from "../../../../styles";
@@ -12,16 +17,234 @@ import { snakeToTitle, isUint8Array } from "./helper";
 import { toDisplay } from "@owallet/common";
 import { TX_PARSER } from "./constant";
 
+const ParsedComponent: FunctionComponent<{
+  label?: string;
+  value?: string;
+  left?: ReactElement;
+  right?: ReactElement;
+  color?: string;
+}> = ({ label, value, left, right, color }) => {
+  return (
+    <>
+      <Gutter size="0.75rem" />
+      <XAxis
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        {left ? (
+          left
+        ) : (
+          <div
+            style={{
+              fontSize: 14,
+              fontWeight: "600",
+              color: ColorPalette["black-50"],
+            }}
+          >
+            {label}
+          </div>
+        )}
+
+        <div>
+          {right ? (
+            right
+          ) : (
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: "500",
+                color: color ?? ColorPalette["platinum-200"],
+              }}
+            >
+              {value}
+            </span>
+          )}
+        </div>
+      </XAxis>
+      <Gutter size="0.75rem" />
+      <div
+        style={{
+          width: "100%",
+          height: 0.75,
+          backgroundColor: ColorPalette["gray-90"],
+        }}
+      />
+    </>
+  );
+};
+
 const ParsedItem: FunctionComponent<{
   theme: any;
   parsedMsg: any;
 }> = ({ theme, parsedMsg }) => {
-  return parsedMsg.action === "transfer_to_remote" ? (
-    <BridgeParsedItem parsedMsg={parsedMsg} theme={theme} />
-  ) : (
-    <SwapParsedItem parsedMsg={parsedMsg} theme={theme} />
+  switch (parsedMsg.action.action) {
+    case "bridge":
+      return <BridgeParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    case "swap":
+      return <SwapParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    case "open_position":
+      return <OpenPositionParsedItem parsedMsg={parsedMsg} theme={theme} />;
+    default:
+      return <div />;
+  }
+};
+
+const OpenPositionParsedItem: FunctionComponent<{
+  theme: any;
+  parsedMsg: any;
+}> = ({ theme, parsedMsg }) => {
+  const { data: prices } = useCoinGeckoPrices();
+
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    setData(parsedMsg.response);
+  }, [parsedMsg]);
+
+  if (!data) return null;
+
+  const tokenPrice = prices?.[data?.tokenInfo?.coinGeckoId];
+
+  const marginValue =
+    tokenPrice * toDisplay(data?.marginAmount, data?.tokenInfo.decimal);
+
+  return (
+    <>
+      <Gutter size="2px" />
+      <Body3
+        color={
+          theme.mode === "light"
+            ? ColorPalette["gray-300"]
+            : ColorPalette["gray-200"]
+        }
+      >
+        <ParsedComponent label="Action" value={snakeToTitle(data.action)} />
+
+        <ParsedComponent
+          left={
+            <div
+              style={{
+                alignItems: "center",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <img
+                style={{ width: 24, height: 24, borderRadius: 30 }}
+                src={data?.tokenInfo?.icon}
+              />
+              <span
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: ColorPalette["black-50"],
+                  marginLeft: 4,
+                }}
+              >
+                {data?.tokenInfo?.name.toUpperCase()}
+              </span>
+            </div>
+          }
+          right={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["green-350"],
+                }}
+              >
+                {data.tokenInfo
+                  ? toDisplay(data.marginAmount, data.tokenInfo.decimal)
+                  : data.marginAmount}{" "}
+                {data?.tokenInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!marginValue ? "0" : marginValue.toFixed(4).toString()}
+              </span>
+            </div>
+          }
+        />
+
+        <ParsedComponent
+          label="Pair"
+          value={data.pair}
+          color={ColorPalette["gray-600"]}
+        />
+        <ParsedComponent
+          label="Side"
+          value={data.positionSide.toUpperCase()}
+          color={
+            data.positionSide === "Buy"
+              ? ColorPalette["green-350"]
+              : ColorPalette["red-350"]
+          }
+        />
+        <ParsedComponent
+          label="Entry Price"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.entryPrice, data.tokenInfo.decimal)
+              : data.entryPrice
+          }
+          color={
+            data.positionSide === "Buy"
+              ? ColorPalette["green-350"]
+              : ColorPalette["red-350"]
+          }
+        />
+        <ParsedComponent
+          label="Leverage"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.leverage, data.tokenInfo.decimal) + "x"
+              : data.leverage + "x"
+          }
+          color={ColorPalette["gray-600"]}
+        />
+        <ParsedComponent
+          label="Stop loss"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.sl, data.tokenInfo.decimal)
+              : data.sl
+          }
+          color={ColorPalette["red-350"]}
+        />
+        <ParsedComponent
+          label="Take profit"
+          value={
+            data.tokenInfo
+              ? toDisplay(data.tp, data.tokenInfo.decimal)
+              : data.sl
+          }
+          color={ColorPalette["green-350"]}
+        />
+        <Gutter size="0.25rem" />
+      </Body3>
+    </>
   );
 };
+
 const BridgeParsedItem: FunctionComponent<{
   theme: any;
   parsedMsg: any;
@@ -51,81 +274,107 @@ const BridgeParsedItem: FunctionComponent<{
             : ColorPalette["gray-200"]
         }
       >
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
-            }}
-          >
-            Action
-          </div>
-          <div>
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["platinum-200"]
-                    : ColorPalette["platinum-200"],
-              }}
-            >
-              {snakeToTitle(parsedMsg.action)}
-            </span>
-          </div>
-        </XAxis>
-        <Gutter size="1.25rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+        <ParsedComponent
+          label="Action"
+          value={snakeToTitle(parsedMsg.action.action)}
         />
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}
-          >
-            <span
+        <ParsedComponent
+          left={
+            <div
               style={{
-                fontSize: 16,
-                fontWeight: "500",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
               }}
             >
-              From
-            </span>
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                From
+              </span>
+              <div
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 6,
+                }}
+              >
+                <img
+                  style={{ width: 24, height: 24, borderRadius: 30 }}
+                  src={data?.fromChain?.image}
+                />
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: ColorPalette["black-50"],
+                    marginLeft: 4,
+                  }}
+                >
+                  {data?.fromChain?.name}
+                </span>
+              </div>
+            </div>
+          }
+          right={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                }}
+              >
+                To
+              </span>
+              <div
+                style={{
+                  alignItems: "center",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 6,
+                }}
+              >
+                <img
+                  style={{ width: 24, height: 24, borderRadius: 30 }}
+                  src={data?.toChain?.image}
+                />
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    color: ColorPalette["black-50"],
+                    marginLeft: 4,
+                  }}
+                >
+                  {data?.toChain?.name}
+                </span>
+              </div>
+            </div>
+          }
+        />
+
+        <ParsedComponent
+          left={
             <div
               style={{
                 alignItems: "center",
                 display: "flex",
                 justifyContent: "space-between",
-                marginTop: 6,
               }}
             >
               <img
                 style={{ width: 24, height: 24, borderRadius: 30 }}
-                src={data?.fromChain?.image}
+                src={data?.tokenInfo?.icon}
               />
               <span
                 style={{
@@ -135,188 +384,89 @@ const BridgeParsedItem: FunctionComponent<{
                   marginLeft: 4,
                 }}
               >
-                {data?.fromChain?.name}
+                {data?.tokenInfo?.name.toUpperCase()}
               </span>
             </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: "500",
-              }}
-            >
-              To
-            </span>
+          }
+          right={
             <div
               style={{
-                alignItems: "center",
                 display: "flex",
-                justifyContent: "space-between",
-                marginTop: 6,
+                flexDirection: "column",
+                alignItems: "flex-end",
               }}
             >
-              <img
-                style={{ width: 24, height: 24, borderRadius: 30 }}
-                src={data?.toChain?.image}
-              />
               <span
                 style={{
-                  fontSize: 14,
-                  fontWeight: "600",
-                  color: ColorPalette["black-50"],
-                  marginLeft: 4,
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["green-350"]
+                      : ColorPalette["green-350"],
                 }}
               >
-                {data?.toChain?.name}
+                +
+                {data.tokenInfo
+                  ? toDisplay(data.bridgeAmount, data.tokenInfo.decimal)
+                  : data.bridgeAmount}{" "}
+                {data?.tokenInfo?.name?.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
               </span>
             </div>
-          </div>
-        </XAxis>
-        <Gutter size="0.5rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+          }
         />
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              alignItems: "center",
-              display: "flex",
-              justifyContent: "space-between",
-            }}
-          >
-            <img
-              style={{ width: 24, height: 24, borderRadius: 30 }}
-              src={data?.tokenInfo?.icon}
-            />
-            <span
+
+        <ParsedComponent
+          label="Bridge Fee"
+          right={
+            <div
               style={{
-                fontSize: 14,
-                fontWeight: "600",
-                color: ColorPalette["black-50"],
-                marginLeft: 4,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
               }}
             >
-              {data?.tokenInfo?.name.toUpperCase()}
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["green-350"]
-                    : ColorPalette["green-350"],
-              }}
-            >
-              +
-              {data.tokenInfo
-                ? toDisplay(data.bridgeAmount, data.tokenInfo.decimal)
-                : data.bridgeAmount}{" "}
-              {data?.tokenInfo?.denom?.toUpperCase()}
-            </span>
-            <span
-              style={{
-                fontSize: 12,
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["gray-80"]
-                    : ColorPalette["gray-80"],
-                paddingTop: 4,
-              }}
-            >
-              ≈ ${!outValue ? "0" : outValue.toFixed(4).toString()}
-            </span>
-          </div>
-        </XAxis>
-        <Gutter size="0.25rem" />
-        <div
-          style={{
-            width: "100%",
-            height: 0.75,
-            backgroundColor:
-              theme.mode === "light"
-                ? ColorPalette["gray-90"]
-                : ColorPalette["gray-90"],
-          }}
+              <span
+                style={{
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["red-350"]
+                      : ColorPalette["red-350"],
+                }}
+              >
+                -{toDisplay(data.feeAmount, data.tokenInfo?.decimal)}{" "}
+                {data.tokenInfo?.name.toUpperCase()}
+              </span>
+              <span
+                style={{
+                  fontSize: 12,
+                  color:
+                    theme.mode === "light"
+                      ? ColorPalette["gray-80"]
+                      : ColorPalette["gray-80"],
+                  paddingTop: 4,
+                }}
+              >
+                ≈ ${!feeAmount ? "0" : feeAmount.toFixed(4).toString()}
+              </span>
+            </div>
+          }
         />
-        <Gutter size="1rem" />
-        <XAxis
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: "600",
-              color: ColorPalette["black-50"],
-            }}
-          >
-            Bridge Fee
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-end",
-            }}
-          >
-            <span
-              style={{
-                fontSize: 16,
-                fontWeight: "500",
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["red-350"]
-                    : ColorPalette["red-350"],
-              }}
-            >
-              -{toDisplay(data.feeAmount, data.tokenInfo.decimal)}{" "}
-              {data.tokenInfo.denom.toUpperCase()}
-            </span>
-            <span
-              style={{
-                fontSize: 12,
-                color:
-                  theme.mode === "light"
-                    ? ColorPalette["gray-80"]
-                    : ColorPalette["gray-80"],
-                paddingTop: 4,
-              }}
-            >
-              ≈ ${!feeAmount ? "0" : feeAmount.toFixed(4).toString()}
-            </span>
-          </div>
-        </XAxis>
+
         <Gutter size="0.25rem" />
       </Body3>
     </>
@@ -396,7 +546,7 @@ const SwapParsedItem: FunctionComponent<{
                     : ColorPalette["platinum-200"],
               }}
             >
-              {snakeToTitle(parsedMsg.action)}
+              {snakeToTitle(parsedMsg.action.msgAction)}
             </span>
           </div>
         </XAxis>
@@ -575,42 +725,41 @@ export const MessageItem: FunctionComponent<{
   title: string | React.ReactElement;
   content: string | React.ReactElement;
   msg?: any;
+  msgs?: Array<any>;
   senderConfig?: SenderConfig;
-}> = ({ title, content, msg, senderConfig }) => {
+}> = ({ title, content, msg, senderConfig, msgs }) => {
   const theme = useTheme();
   const [parsedMsg, setParsedMsg] = React.useState<any>();
 
-  const parseMsg = async (msg: any) => {
+  const parseMsg = async (msgArray: Array<any>, sender: string) => {
     const client = axios.create({ baseURL: TX_PARSER });
 
-    if (isUint8Array(msg.value)) {
-      const { data } = await client.put(
-        `multichain-parser/v1/parser/parse`,
-        {
-          typeUrl: msg.typeUrl,
-          value: Buffer.from(msg.value).toString("base64"),
-          sender: senderConfig.sender,
-        },
-        {}
-      );
-      console.log("Parsed data", data);
-      if (data) {
-        setParsedMsg(data.data);
-      }
+    console.log("msgArray", { messages: msgArray, sender });
+
+    const { data } = await client.put(
+      `multichain-parser/v1/parser/parse`,
+      { messages: msgArray, sender },
+      {}
+    );
+    console.log("Parsed data", data);
+    if (data) {
+      setParsedMsg(data.data);
     }
   };
 
   useEffect(() => {
-    console.log("value parseMsg", msg.value, isUint8Array(msg.value));
-    if (msg && isUint8Array(msg.value)) {
-      console.log("Full msg", {
-        typeUrl: msg.typeUrl,
-        value: Buffer.from(msg.value).toString("base64"),
-        sender: senderConfig.sender,
-      });
+    const msgArray = [];
+    msgs.map((mg) => {
+      if (mg && isUint8Array(mg.value)) {
+        const convertedMsg = {
+          typeUrl: mg.typeUrl,
+          value: Buffer.from(mg.value).toString("base64"),
+        };
+        msgArray.push(convertedMsg);
+      }
+    });
 
-      parseMsg(msg);
-    }
+    parseMsg(msgArray, senderConfig.sender);
   }, []);
 
   return (
