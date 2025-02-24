@@ -30,6 +30,8 @@
     "@owallet/stores-eth": "*",
     "@owallet/stores-oasis": "*",
     "@owallet/stores-trx": "*",
+    "@owallet/stores-btc": "*",
+    "@owallet/stores-solana": "*",
     "@owallet/types": "*",
     "@owallet/unit": "*",
     "buffer": "^6.0.3",
