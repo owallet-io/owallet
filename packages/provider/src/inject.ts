@@ -85,31 +85,11 @@ export interface ProxyRequestResponse {
 
 function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
   const descriptor = Object.getOwnPropertyDescriptor(o, p);
-
   if (!descriptor || descriptor.writable) {
     if (!descriptor || descriptor.configurable) {
       Object.defineProperty(o, p, {
         value,
         writable: false,
-      });
-    } else {
-      o[p] = value;
-    }
-  } else {
-    console.warn(
-      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`
-    );
-  }
-}
-
-function defineWritablePropertyIfPossible(o: any, p: string, value: any) {
-  const descriptor = Object.getOwnPropertyDescriptor(o, p);
-
-  if (!descriptor || descriptor.writable) {
-    if (!descriptor || descriptor.configurable) {
-      Object.defineProperty(o, p, {
-        value,
-        writable: true,
       });
     } else {
       o[p] = value;
@@ -136,12 +116,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineUnwritablePropertyIfPossible(window, "keplr", owallet);
   defineUnwritablePropertyIfPossible(window, "owalletSolana", owallet.solana);
   defineUnwritablePropertyIfPossible(window, "bitcoin", owallet.bitcoin);
-  const descriptor = Object.getOwnPropertyDescriptor(window, "ethereum");
-
-  if (!descriptor) {
-    defineWritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
-  }
-  defineUnwritablePropertyIfPossible(window, "eth_owallet", owallet.ethereum);
+  defineUnwritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronWeb_owallet", owallet.tron);
@@ -175,6 +150,8 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
  * This will use `window.postMessage` to interact with the content script.
  */
 export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
+  public isOwallet: boolean = true;
+
   static startProxy(
     owallet: IOWallet & OWalletCoreTypes,
     eventListener: {
@@ -607,7 +584,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
   public defaultOptions: OWalletIntereactionOptions = {};
-  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
@@ -1073,28 +1049,28 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   }
 
   public readonly ethereum = new EthereumProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage,
     this.eip6963ProviderInfo
   );
   public readonly oasis = new OasisProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly solana = new SolanaProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly bitcoin = new BitcoinProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly tron = new TronProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
@@ -1108,16 +1084,15 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
   selectedAddress: string | null = null;
 
+  isOwallet = true;
   isOWallet = true;
   isMetaMask = true;
-  // This duplicate field is for compatibility with OraiDex that use isOwallet with misspelling.
-  isOwallet = true;
 
   protected _isConnected = false;
   protected _currentChainId: string | null = null;
 
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1139,13 +1114,13 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     window.addEventListener("keplr_keystorechange", async () => {
       if (this._currentChainId) {
-        const chainInfo = await injectedOWallet().getChainInfoWithoutEndpoints(
+        const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(
           this._currentChainId
         );
 
         if (chainInfo) {
           const selectedAddress = (
-            await injectedOWallet().getKey(this._currentChainId)
+            await injectedOWallet.getKey(this._currentChainId)
           ).ethereumHexAddress;
           this._handleAccountsChanged(selectedAddress);
         }
@@ -1374,7 +1349,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   isOWallet = true;
 
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1618,7 +1593,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
 
 class OasisProvider extends EventEmitter implements IOasisProvider {
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1720,7 +1695,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
 
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1817,10 +1792,8 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
 }
 
 class TronProvider extends EventEmitter implements ITronProvider {
-  isOwallet = true;
-
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;

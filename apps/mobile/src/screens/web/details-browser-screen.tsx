@@ -70,7 +70,6 @@ export const DetailsBrowserScreen = observer((props) => {
     return () => {};
   }, []);
 
-  const [eventEmitter] = useState(() => new EventEmitter());
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
   const isFocused = useIsFocused();
@@ -83,20 +82,22 @@ export const DetailsBrowserScreen = observer((props) => {
     visible: false,
     height: 3,
   });
-  const [currentURL, setCurrentURL] = useState(() => {
-    if (route?.params?.url) {
-      return route?.params?.url;
-    }
+  const [uri, setUri] = useState(
+    route.params.url.startsWith("http://") ||
+      route.params.url.startsWith("https://")
+      ? route.params.url
+      : `https://${route.params.url}`
+  );
 
-    return "";
-  });
+  const [currentURL, setCurrentURL] = useState(uri);
   const { inject } = browserStore;
   const sourceCode = inject;
+
+  const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
       eventEmitter.emit("message", event.nativeEvent);
-      // console.log(event.nativeEvent.data,"event.nativeEvent.data");
-      console.log(event.nativeEvent, "event.nativeEvent");
+
       const data: { message: string; origin: string } = JSON.parse(
         event.nativeEvent.data
       );
@@ -107,12 +108,12 @@ export const DetailsBrowserScreen = observer((props) => {
             .sendMessage(
               BACKGROUND_PORT,
               new URLTempAllowOnMobileMsg(
-                new URL(currentURL).href,
+                new URL(uri).href,
                 new URL(data.origin).href
               )
             )
             .then(() => {
-              setCurrentURL(data.origin);
+              setUri(data.origin);
             })
             .catch((e) => {
               console.log(e);
@@ -123,14 +124,10 @@ export const DetailsBrowserScreen = observer((props) => {
           console.log(e);
         }
       }
-
-      // if (data.message === 'download-image') {
-      //   setImageData(data.origin);
-      //   setIsSaveImageModalOpen(true);
-      // }
     },
-    [eventEmitter, currentURL]
+    [eventEmitter]
   );
+
   useEffect(() => {
     const unlisten = RNInjectedOWallet.startProxy(
       new OWallet(
@@ -167,7 +164,8 @@ export const DetailsBrowserScreen = observer((props) => {
     return () => {
       unlisten();
     };
-  }, [chainStore, currentURL, eventEmitter]);
+  }, [chainStore, uri, eventEmitter]);
+
   const vConsoleScript = `
   (function() {
     var script = document.createElement('script');
@@ -203,12 +201,6 @@ export const DetailsBrowserScreen = observer((props) => {
       BackHandler.removeEventListener("hardwareBackPress", backHandler);
     };
   }, [canGoBack, isFocused]);
-  // const onMessage = useCallback(
-  //   (event: WebViewMessageEvent) => {
-  //     eventEmitter.emit("message", event.nativeEvent);
-  //   },
-  //   [eventEmitter]
-  // );
 
   useEffect(() => {
     // Android disables the gesture by default.
@@ -431,7 +423,7 @@ export const DetailsBrowserScreen = observer((props) => {
                 originWhitelist={["*"]} // to allowing WebView to load blob
                 ref={webviewRef}
                 //enable if support for debug webview
-                // injectedJavaScript={vConsoleScript}
+                injectedJavaScript={vConsoleScript}
                 // style={visible && percent < 1 ? { flex: 0, height: 0, opacity: 0 } : {}}
                 cacheEnabled={false}
                 incognito={true}
