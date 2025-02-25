@@ -151,16 +151,27 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
+#      - name: Setup environment variables
+#        working-directory: apps/mobile
+#        run: |
+#          echo "SENTRY_TOKEN=${{ secrets.SENTRY_TOKEN }}" >> .env
+#          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+#          echo "SENDER_ID=${{ secrets.SENDER_ID }}" >> .env
+#          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
+#          echo "MIX_PANEL_TOKEN=${{ secrets.MIX_PANEL_TOKEN }}" >> .env
+#          echo "BYTE_BREW_SDK_KEY_IOS=${{ secrets.BYTE_BREW_SDK_KEY_IOS }}" >> .env
+#          echo "BYTE_BREW_ID_IOS=${{ secrets.BYTE_BREW_ID_IOS }}" >> .env
       - name: Setup environment variables
         working-directory: apps/mobile
-        run: |
-          echo "SENTRY_TOKEN=${{ secrets.SENTRY_TOKEN }}" >> .env
-          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-          echo "SENDER_ID=${{ secrets.SENDER_ID }}" >> .env
-          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
-          echo "MIX_PANEL_TOKEN=${{ secrets.MIX_PANEL_TOKEN }}" >> .env
-          echo "BYTE_BREW_SDK_KEY_IOS=${{ secrets.BYTE_BREW_SDK_KEY_IOS }}" >> .env
-          echo "BYTE_BREW_ID_IOS=${{ secrets.BYTE_BREW_ID_IOS }}" >> .env
+        run: yarn bundle:ios
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
