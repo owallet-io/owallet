@@ -654,7 +654,7 @@ export class PermissionService {
 
       this.interactionService.dispatchEvent(
         WEBPAGE_PORT,
-        "keplr_chainChanged",
+        "owallet_chainChanged",
         {
           origin,
           evmChainId: evmInfo.chainId,
