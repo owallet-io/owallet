@@ -60,7 +60,7 @@ import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-import { isReactNative as checkIsMobile, isReactNative } from "@owallet/common";
+import { isReactNative as checkIsMobile } from "@owallet/common";
 import { NAMESPACE } from "./constants";
 
 // initialize(owallet.solana as any);
