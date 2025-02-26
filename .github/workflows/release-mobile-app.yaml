@@ -117,12 +117,12 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-#      - name: Install xcodes
-#        run: brew install xcodes
+      - name: Install xcodes
+        run: brew install xcodes
       #  - name: Install Xcode 15.4
       #    run: xcodes install 15.4 --experimental-unxip || true
-#      - name: Select Xcode 15.2
-#        run: xcodes select 15.2
+      - name: Select Xcode 15.2
+        run: xcodes select 15.2
       - name: Verify Xcode version
         run: xcodebuild -version
       - name: Use Node.js ${{ matrix.node-version }}
@@ -195,8 +195,9 @@ jobs:
           echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
       - name: Setup Fastlane ios
-        working-directory: apps/mobile/ios
-        run: bundle update
+        working-directory: apps/mobile/ios/fastlane
+        run: cd .. && bundle update && fastlane deploy_firebase
+        timeout-minutes: 30 # Set the timeout to 120 minutes
         env:
           DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
