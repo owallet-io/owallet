@@ -193,6 +193,9 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
+      - name: Debug via SSH with tmate
+        uses: mxschmitt/action-tmate@v3
+        if: always()  # Ensures it runs even if previous steps fail
       - name: Setup Fastlane ios
         working-directory: apps/mobile/ios
         run: bundle update && fastlane deploy_firebase --verbose
