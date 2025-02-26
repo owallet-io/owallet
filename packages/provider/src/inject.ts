@@ -60,7 +60,7 @@ import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-import { isReactNative as checkIsMobile } from "@owallet/common";
+import { isReactNative as checkIsMobile, isReactNative } from "@owallet/common";
 import { NAMESPACE } from "./constants";
 
 // initialize(owallet.solana as any);
@@ -208,7 +208,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       if (
         !message ||
         message.type !== typeProxy ||
-        message.namespace !== NAMESPACE
+        (!isReactNative && message.namespace !== NAMESPACE)
       ) {
         return;
       }
@@ -569,62 +569,70 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     method: keyof (IOWallet & OWalletCoreTypes),
     args: any[]
   ): Promise<any> {
-    const bytes = new Uint8Array(8);
-    const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
-        return value.toString(16);
-      })
-      .join("");
+    try {
+      const bytes = new Uint8Array(8);
+      const id: string = Array.from(crypto.getRandomValues(bytes))
+        .map((value) => {
+          return value.toString(16);
+        })
+        .join("");
 
-    const typeProxy: any =
-      this.mode === "extension"
+      const isReactNative = this.version === "0.0.1" || checkIsMobile();
+
+      const typeProxy: any = !isReactNative
         ? `${NAMESPACE}-proxy-request`
         : "proxy-request";
 
-    const proxyMessage: ProxyRequest = {
-      // type: "proxy-request",
-      type: typeProxy,
-      namespace: NAMESPACE,
-      id,
-      method,
-      args: JSONUint8Array.wrap(args),
-    };
-
-    return new Promise((resolve, reject) => {
-      const receiveResponse = (e: any) => {
-        const proxyResponse: ProxyRequestResponse = this.parseMessage
-          ? this.parseMessage(e.data)
-          : e.data;
-
-        if (!proxyResponse || proxyResponse.type !== "proxy-request-response") {
-          return;
-        }
-
-        if (proxyResponse.id !== id) {
-          return;
-        }
-
-        this.eventListener.removeMessageListener(receiveResponse);
-
-        const result = JSONUint8Array.unwrap(proxyResponse.result);
-
-        if (!result) {
-          reject(new Error("Result is null"));
-          return;
-        }
-
-        if (result.error) {
-          reject(new Error(result.error));
-          return;
-        }
-
-        resolve(result.return);
+      const proxyMessage: ProxyRequest = {
+        // type: "proxy-request",
+        type: typeProxy,
+        namespace: NAMESPACE,
+        id,
+        method,
+        args: JSONUint8Array.wrap(args),
       };
 
-      this.eventListener.addMessageListener(receiveResponse);
+      return new Promise((resolve, reject) => {
+        const receiveResponse = (e: any) => {
+          const proxyResponse: ProxyRequestResponse = this.parseMessage
+            ? this.parseMessage(e.data)
+            : e.data;
 
-      this.eventListener.postMessage(proxyMessage);
-    });
+          if (
+            !proxyResponse ||
+            proxyResponse.type !== "proxy-request-response"
+          ) {
+            return;
+          }
+
+          if (proxyResponse.id !== id) {
+            return;
+          }
+
+          this.eventListener.removeMessageListener(receiveResponse);
+
+          const result = JSONUint8Array.unwrap(proxyResponse.result);
+
+          if (!result) {
+            reject(new Error("Result is null"));
+            return;
+          }
+
+          if (result.error) {
+            reject(new Error(result.error));
+            return;
+          }
+
+          resolve(result.return);
+        };
+
+        this.eventListener.addMessageListener(receiveResponse);
+
+        this.eventListener.postMessage(proxyMessage);
+      });
+    } catch (err) {
+      console.log("error on requestMethod", err);
+    }
   }
 
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -1230,6 +1238,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     const isReactNative =
       this.injectedOWallet.version === "0.0.1" || checkIsMobile();
+
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
