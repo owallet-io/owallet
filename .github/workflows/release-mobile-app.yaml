@@ -121,8 +121,8 @@ jobs:
         run: brew install xcodes
       #  - name: Install Xcode 15.4
       #    run: xcodes install 15.4 --experimental-unxip || true
-      - name: Select Xcode 15.4
-        run: xcodes select 15.4
+      - name: Select Xcode 15.2
+        run: xcodes select 15.2
       - name: Verify Xcode version
         run: xcodebuild -version
       - name: Use Node.js ${{ matrix.node-version }}
