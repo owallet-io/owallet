@@ -26,6 +26,7 @@
     "build:hooks-internal": "lerna run build --scope @owallet/hooks-internal",
     "postinstall": "yarn update:libs && patch-package && rimraf node_modules/crypto && yarn workspace mobile postinstall",
     "update:libs": "node ./scripts/update-inj.js",
+    "update-new-submodule": "git submodule update --remote --merge",
     "build:proto": "lerna run build:dev --scope @owallet/proto-types",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
