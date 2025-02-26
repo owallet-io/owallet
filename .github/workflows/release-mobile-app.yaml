@@ -113,6 +113,8 @@ jobs:
       matrix:
         node-version: [20.17.0]
     steps:
+      - name: Debug via SSH
+        uses: mxschmitt/action-tmate@v3
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
         with:
@@ -142,13 +144,23 @@ jobs:
           submodules: true
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
-      - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
-        run: yarn install --immutable
-      - name: restore lerna
-        uses: actions/cache@v3
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install dependencies
+        run: |
+          yarn install
       - name: Build Libs
         run: yarn build:libs
 #      - name: Setup environment variables
@@ -179,13 +191,10 @@ jobs:
           bundler-cache: true
       - name: Cache Pods
         uses: actions/cache@v3
+        id: pods-cache
         with:
-          path: |
-            apps/mobile/Pods
-            apps/mobile/ios/Podfile.lock
+          path: ./apps/mobile/ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
       - name: Pod install
         working-directory: apps/mobile
         run: yarn pod:install
@@ -195,7 +204,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
       - name: Setup Fastlane ios
         working-directory: apps/mobile/ios
-        run: bundle update && fastlane deploy_firebase
+        run: bundle update && fastlane deploy_firebase --verbose
         env:
           DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
           DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
