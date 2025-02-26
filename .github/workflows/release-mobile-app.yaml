@@ -117,12 +117,12 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-      - name: Install xcodes
-        run: brew install xcodes
+#      - name: Install xcodes
+#        run: brew install xcodes
       #  - name: Install Xcode 15.4
       #    run: xcodes install 15.4 --experimental-unxip || true
-      - name: Select Xcode 15.2
-        run: xcodes select 15.2
+#      - name: Select Xcode 15.2
+#        run: xcodes select 15.2
       - name: Verify Xcode version
         run: xcodebuild -version
       - name: Use Node.js ${{ matrix.node-version }}
