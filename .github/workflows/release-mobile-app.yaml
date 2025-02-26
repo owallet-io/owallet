@@ -179,6 +179,8 @@ jobs:
         run: |
           echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
+      - name: Set NODE_OPTIONS
+        run: echo "NODE_OPTIONS=--max-old-space-size=8192" >> $GITHUB_ENV
       - name: Setup Fastlane ios
         working-directory: apps/mobile/ios/fastlane
         run: cd .. && bundle update && fastlane deploy_firebase
@@ -204,6 +206,3 @@ jobs:
       - name: Cleanup Google Credentials
         if: always()  # Run even on failure
         run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
-      - name: Debug via SSH
-        uses: mxschmitt/action-tmate@v3
-        if: failure()  # Runs only when the build fails
