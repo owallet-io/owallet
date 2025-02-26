@@ -85,7 +85,7 @@ export class HDKey {
     const segments = path
       .split("/")
       .slice(1)
-      .map((val: string): string => val.replace("'", ""))
+      .map((val: string): string => val.replace(/'/g, ""))
       .map((el) => parseInt(el, 10));
 
     return segments.reduce<HDKey>(

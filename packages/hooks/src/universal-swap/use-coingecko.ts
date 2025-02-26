@@ -1,4 +1,4 @@
-import { cosmosTokens, evmTokens } from "@oraichain/oraidex-common";
+import { OraidexCommon } from "@oraichain/oraidex-common";
 import { useEffect, useState } from "react";
 
 /**
@@ -25,30 +25,33 @@ export type CoinGeckoPrices<T extends string> = {
  */
 export const useCoinGeckoPrices = () => {
   const [data, setData] = useState<CoinGeckoPrices<string>>({});
-  const tokens = [
-    ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
-  ];
-  tokens.sort();
 
   const getCoingeckoPrices = async () => {
-    const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
-
-    const prices = {};
-
-    // by default not return data then use cached version
     try {
+      const { cosmosTokens, evmTokens } = await OraidexCommon.load();
+
+      const tokens = [
+        ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
+      ];
+      tokens.sort();
+      const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
+      console.log("coingeckoPricesURL", coingeckoPricesURL);
+
+      const prices = {};
+
       const resp = await fetch(coingeckoPricesURL, {});
       const rawData = await resp.json();
       // update cached
       for (const key in rawData) {
         prices[key] = rawData[key].usd;
       }
-    } catch {
-      // remain old cache
+
+      setData(
+        Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
+      );
+    } catch (err) {
+      console.log("error on getCoingeckoPrices", err);
     }
-    setData(
-      Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
-    );
   };
 
   useEffect(() => {

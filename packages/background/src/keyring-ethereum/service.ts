@@ -325,7 +325,7 @@ export class KeyRingEthereumService {
       this.permissionService.getCurrentChainIdForEVM(origin) ?? chainId;
 
     if (currentChainId == null) {
-      if (method === "keplr_initProviderState") {
+      if (method === "owallet_initProviderState") {
         return {
           currentEvmChainId: null,
           currentChainId: null,
@@ -400,7 +400,7 @@ export class KeyRingEthereumService {
 
     const result = (await (async () => {
       switch (method) {
-        case "keplr_initProviderState":
+        case "owallet_initProviderState":
         case "owallet_connect": {
           return {
             currentEvmChainId: currentChainEVMInfo.chainId,

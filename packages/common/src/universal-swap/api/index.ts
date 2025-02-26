@@ -5,7 +5,7 @@ import {
   TokenItemType,
   TokenInfo,
   toTokenInfo,
-  network,
+  OraidexCommon,
 } from "@oraichain/oraidex-common";
 import {
   OraiswapTokenQueryClient,
@@ -30,7 +30,8 @@ async function fetchTokenInfo(
 /// using multicall when query multiple
 async function fetchTokenInfos(
   tokens: TokenItemType[],
-  client
+  client,
+  network
 ): Promise<TokenInfo[]> {
   const filterTokenSwaps = tokens.filter((t) => t.contractAddress);
   const queries = filterTokenSwaps.map((t) => ({
