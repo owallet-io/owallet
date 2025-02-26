@@ -56,13 +56,11 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import { encode, decode } from "bs58";
-// import {CHAIN_ID_SOL} from "@owallet/common";
 import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-// import {isReactNative, isWeb} from "@owallet/common";
-import { initialize } from "@oraichain/owallet-wallet-standard";
+import { isReactNative as checkIsMobile } from "@owallet/common";
 import { NAMESPACE } from "./constants";
 
 // initialize(owallet.solana as any);
@@ -201,7 +199,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)
         : e.data;
-      const isReactNative = owallet.version.includes("mobile");
+      const isReactNative = owallet.version === "0.0.1" || checkIsMobile();
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
       const typeProxy: any = !isReactNative
         ? `${NAMESPACE}-proxy-request`
@@ -1098,28 +1096,28 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   }
 
   public readonly ethereum = new EthereumProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage,
     this.eip6963ProviderInfo
   );
   public readonly oasis = new OasisProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly solana = new SolanaProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly bitcoin = new BitcoinProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
   public readonly tron = new TronProvider(
-    () => this,
+    this,
     this.eventListener,
     this.parseMessage
   );
@@ -1142,7 +1140,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
   protected _currentChainId: string | null = null;
 
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1164,13 +1162,13 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
     window.addEventListener("keplr_keystorechange", async () => {
       if (this._currentChainId) {
-        const chainInfo = await injectedOWallet().getChainInfoWithoutEndpoints(
+        const chainInfo = await injectedOWallet.getChainInfoWithoutEndpoints(
           this._currentChainId
         );
 
         if (chainInfo) {
           const selectedAddress = (
-            await injectedOWallet().getKey(this._currentChainId)
+            await injectedOWallet.getKey(this._currentChainId)
           ).ethereumHexAddress;
           this._handleAccountsChanged(selectedAddress);
         }
@@ -1230,7 +1228,8 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       })
       .join("");
 
-    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    const isReactNative =
+      this.injectedOWallet.version === "0.0.1" || checkIsMobile();
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
@@ -1413,7 +1412,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   isOWallet = true;
 
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1445,7 +1444,8 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       })
       .join("");
 
-    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    const isReactNative =
+      this.injectedOWallet.version === "0.0.1" || checkIsMobile();
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
@@ -1665,7 +1665,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
 
 class OasisProvider extends EventEmitter implements IOasisProvider {
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1694,7 +1694,8 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       })
       .join("");
 
-    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    const isReactNative =
+      this.injectedOWallet.version === "0.0.1" || checkIsMobile();
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
@@ -1775,7 +1776,7 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
 
 class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1804,7 +1805,8 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       })
       .join("");
 
-    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    const isReactNative =
+      this.injectedOWallet.version === "0.0.1" || checkIsMobile();
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
@@ -1882,7 +1884,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
   isOwallet = true;
 
   constructor(
-    protected readonly injectedOWallet: () => InjectedOWallet,
+    protected readonly injectedOWallet: InjectedOWallet,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1911,7 +1913,8 @@ class TronProvider extends EventEmitter implements ITronProvider {
       })
       .join("");
 
-    const isReactNative = this.injectedOWallet().version.includes("mobile");
+    const isReactNative =
+      this.injectedOWallet.version === "0.0.1" || checkIsMobile();
     // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
     const typeProxy: any = !isReactNative
       ? `${NAMESPACE}-proxy-request`
