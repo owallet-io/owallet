@@ -201,7 +201,9 @@ jobs:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
           FIREBASE_APP_ID_IOS: ${{ secrets.FIREBASE_APP_ID_IOS }}
-
       - name: Cleanup Google Credentials
         if: always()  # Run even on failure
         run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+      - name: Debug via SSH
+        uses: mxschmitt/action-tmate@v3
+        if: failure()  # Runs only when the build fails
