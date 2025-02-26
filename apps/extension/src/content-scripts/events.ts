@@ -38,9 +38,9 @@ export function initEvents(router: Router) {
         switch ((msg as PushEventDataMsg).data.type) {
           case "keystore-changed":
             return window.dispatchEvent(new Event("keplr_keystorechange"));
-          case "keplr_chainChanged":
+          case "owallet_chainChanged":
             return window.dispatchEvent(
-              new CustomEvent("keplr_chainChanged", {
+              new CustomEvent("owallet_chainChanged", {
                 detail: {
                   ...(
                     msg as PushEventDataMsg<{
