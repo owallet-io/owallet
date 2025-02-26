@@ -108,7 +108,6 @@ jobs:
   release-ios-mobile:
     name: release-ios-mobile
     runs-on: macos-latest-xlarge #orai-self-hosted
-    timeout-minutes: 120 # Set the timeout to 120 minutes
     strategy:
       matrix:
         node-version: [20.17.0]
@@ -117,12 +116,6 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-#      - name: Install xcodes
-#        run: brew install xcodes
-      #  - name: Install Xcode 15.4
-      #    run: xcodes install 15.4 --experimental-unxip || true
-#      - name: Select Xcode 15.2
-#        run: xcodes select 15.2
       - name: Verify Xcode version
         run: xcodebuild -version
       - name: Use Node.js ${{ matrix.node-version }}
@@ -154,16 +147,6 @@ jobs:
           yarn install
       - name: Build Libs
         run: yarn build:libs
-      #      - name: Setup environment variables
-      #        working-directory: apps/mobile
-      #        run: |
-      #          echo "SENTRY_TOKEN=${{ secrets.SENTRY_TOKEN }}" >> .env
-      #          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
-      #          echo "SENDER_ID=${{ secrets.SENDER_ID }}" >> .env
-      #          echo "APP_ID=${{ secrets.APP_ID }}" >> .env
-      #          echo "MIX_PANEL_TOKEN=${{ secrets.MIX_PANEL_TOKEN }}" >> .env
-      #          echo "BYTE_BREW_SDK_KEY_IOS=${{ secrets.BYTE_BREW_SDK_KEY_IOS }}" >> .env
-      #          echo "BYTE_BREW_ID_IOS=${{ secrets.BYTE_BREW_ID_IOS }}" >> .env
       - name: Setup environment variables
         working-directory: apps/mobile
         run: yarn bundle:ios
@@ -189,6 +172,8 @@ jobs:
       - name: Pod install
         working-directory: apps/mobile
         run: yarn pod:install
+        env:
+          NO_FLIPPER: "1"
       - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
         working-directory: apps/mobile/ios/fastlane
         run: |
@@ -199,8 +184,6 @@ jobs:
         run: cd .. && bundle update && fastlane deploy_firebase
         timeout-minutes: 30 # Set the timeout to 120 minutes
         env:
-          DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-          DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
@@ -222,3 +205,19 @@ jobs:
       - name: Cleanup Google Credentials
         if: always()  # Run even on failure
         run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Deploy IOS firebase successfully! head_commit=${{ github.event.head_commit.message }}
+
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Deploy IOS firebase fail! ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
