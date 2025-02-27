@@ -1,6 +1,6 @@
 import { PlainObject, Vault } from "../vault";
-import { PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
-import { ChainInfo, TransactionType } from "@owallet/types";
+import { PubKeySecp256k1 } from "@owallet/crypto";
+import { ChainInfo } from "@owallet/types";
 import { types } from "@oasisprotocol/client";
 import { PublicKey } from "@solana/web3.js";
 
