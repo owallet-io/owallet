@@ -165,7 +165,7 @@ jobs:
           NO_FLIPPER: "1"
       - name: Setup environment variables
         working-directory: apps/mobile
-        run: yarn bundle:ios
+        run: yarn hermes:ios
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
@@ -174,9 +174,6 @@ jobs:
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
           BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
           BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
-      - name: Setup environment variables
-        working-directory: apps/mobile
-        run: yarn hermes:ios
       - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
         working-directory: apps/mobile/ios/fastlane
         run: |
