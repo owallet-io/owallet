@@ -147,17 +147,6 @@ jobs:
           yarn install
       - name: Build Libs
         run: yarn build:libs
-      - name: Setup environment variables
-        working-directory: apps/mobile
-        run: yarn bundle:ios
-        env:
-          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
-          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -174,16 +163,25 @@ jobs:
         run: yarn pod:install
         env:
           NO_FLIPPER: "1"
+      - name: Setup environment variables
+        working-directory: apps/mobile
+        run: yarn bundle:ios && yarn hermes:ios
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
       - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
         working-directory: apps/mobile/ios/fastlane
         run: |
           echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
           echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
-      - name: Set NODE_OPTIONS
-        run: echo "NODE_OPTIONS=--max-old-space-size=8192" >> $GITHUB_ENV
       - name: Setup Fastlane ios
-        working-directory: apps/mobile/ios/fastlane
-        run: cd .. && bundle update && fastlane deploy_firebase
+        working-directory: apps/mobile/ios
+        run: bundle update && fastlane deploy_firebase
         timeout-minutes: 30 # Set the timeout to 120 minutes
         env:
           APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
