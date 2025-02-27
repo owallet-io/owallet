@@ -165,7 +165,7 @@ jobs:
           NO_FLIPPER: "1"
       - name: Setup environment variables
         working-directory: apps/mobile
-        run: yarn hermes:ios
+        run: yarn build:ios
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}

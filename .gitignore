@@ -25,5 +25,5 @@ coverage
 .npmrc
 .env
 .env.*
-
+*.map
 
