@@ -2169,10 +2169,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chain-registry/types@npm:^0.50.81":
-  version: 0.50.81
-  resolution: "@chain-registry/types@npm:0.50.81"
-  checksum: cc613eaa88b8c56b3be367f08bd31b32dc0138bad0211dea75f589b2201bf7af18ef9a4b7363626dc25c63cd73b2eaf1177a93df05ff199eb58f0a6a8e2798c0
+"@chain-registry/types@npm:^0.50.83":
+  version: 0.50.83
+  resolution: "@chain-registry/types@npm:0.50.83"
+  checksum: e3b2165e3118a47e604f0e84d1b235eb7b695bbe47ea7c696be06eaa1531bed1d26f7eca12125241634d4b09c0bc7a6b97ed37ad0115d7768fe566f1dad1864e
   languageName: node
   linkType: hard
 
@@ -12945,11 +12945,11 @@ __metadata:
   linkType: hard
 
 "appcenter-analytics@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "appcenter-analytics@npm:5.0.2"
+  version: 5.0.3
+  resolution: "appcenter-analytics@npm:5.0.3"
   dependencies:
-    appcenter: 5.0.2
-  checksum: edeeaac1fece59238d2ff527d1a2f638569213f513e27d2f6b98b615ccbe483b980e1407f334b81b12877e49a9be1185ab44c8171aad3189ce6f6a27c7052f8c
+    appcenter: 5.0.3
+  checksum: 903ea6e5711bc9b39f7d9f9e14fb67298410bded21aaeba64b24f5e0a1b39575eb12a0e19814e1c8553bd11e3998e63cebf2e0d0c3b65a0b30710fbd589b801d
   languageName: node
   linkType: hard
 
@@ -13013,11 +13013,11 @@ __metadata:
   linkType: hard
 
 "appcenter-crashes@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "appcenter-crashes@npm:5.0.2"
+  version: 5.0.3
+  resolution: "appcenter-crashes@npm:5.0.3"
   dependencies:
-    appcenter: 5.0.2
-  checksum: c5e8e691cebb2f791d67cb0a23e1fdbbb6d182d56079a4697cfac1202d017d534c139931deb9e5124bbbf12eb0f68dfd5be100c9a2efe2c7454e097b20233bed
+    appcenter: 5.0.3
+  checksum: 4a35667d9af2acabe5a404330d41a9491a029ce3f3f962167fc471916448b2443b7bc4402aff5a45e86d834679af1882f8b92a0cc2d6a5a13a534e1e400bb6d0
   languageName: node
   linkType: hard
 
@@ -13043,9 +13043,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"appcenter-link-scripts@npm:5.0.2":
-  version: 5.0.2
-  resolution: "appcenter-link-scripts@npm:5.0.2"
+"appcenter-link-scripts@npm:5.0.3":
+  version: 5.0.3
+  resolution: "appcenter-link-scripts@npm:5.0.3"
   dependencies:
     debug: 4.3.1
     glob: 5.0.15
@@ -13053,16 +13053,16 @@ __metadata:
     plist: ^3.0.2
     which: 1.2.11
     xcode: 2.0.0
-  checksum: 1c2816f016e01107eba578fb361c04e0d93dcf3e16501cade24c9075fa88f0e7ed96e4faef2ce550195cdf26a110a0c4bfd32bae4d2c82137471e7c482fe6f16
+  checksum: e791b17a03b4292b5468529b0fe242574d180552b102bd0acd765aa24e62c5408643603dd726b8e0dc0551a61a11fc6ab6d07e1fb46fb6721b730cd930da1b22
   languageName: node
   linkType: hard
 
-"appcenter@npm:5.0.2, appcenter@npm:^5.0.1":
-  version: 5.0.2
-  resolution: "appcenter@npm:5.0.2"
+"appcenter@npm:5.0.3, appcenter@npm:^5.0.1":
+  version: 5.0.3
+  resolution: "appcenter@npm:5.0.3"
   dependencies:
-    appcenter-link-scripts: 5.0.2
-  checksum: b3127c24e6c6071c2b0da89dd010a4002f4e0acda6398f19266d854feafc27cb8ff8444d2f2f71d94d8da977da61f0419edc25abb77200db90ba9540cf4f8baf
+    appcenter-link-scripts: 5.0.3
+  checksum: f604e2a27b95e3002b2f1def93cb5eb78e2af7cf36ea09796d29fcc89e182eb75b16b9497e3cbd557e66e81b5bd473c139c98951619e2a94339f05be9a15fffe
   languageName: node
   linkType: hard
 
@@ -14901,9 +14901,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001688":
-  version: 1.0.30001700
-  resolution: "caniuse-lite@npm:1.0.30001700"
-  checksum: 0e5e1c8648efeae1a2bcf371c872a4e41d9508d58b47133558f78b99c3d58c4b6ce7688068ea872deffbfc7c3c2a117e756fc48e1de7ae6c5540f3c3a4441c7a
+  version: 1.0.30001701
+  resolution: "caniuse-lite@npm:1.0.30001701"
+  checksum: 1abcb27ea3296dacdaa669cfe8e094432165f0541bf49ef7a88c2758d0cec5f9a839ea948f7f48c0c63c633d98f6f6c55ccf97ffebea2caaf465389500df5422
   languageName: node
   linkType: hard
 
@@ -14952,11 +14952,11 @@ __metadata:
   linkType: hard
 
 "chain-registry@npm:^1.63.24":
-  version: 1.69.135
-  resolution: "chain-registry@npm:1.69.135"
+  version: 1.69.137
+  resolution: "chain-registry@npm:1.69.137"
   dependencies:
-    "@chain-registry/types": ^0.50.81
-  checksum: 4bbe057e7e89187ba37304d934d75dfd3a7dae25a5419834ff963f60813df108d5e97fda3926fa25afda79551549a6a246a90339bbaac228764d8900c3153a23
+    "@chain-registry/types": ^0.50.83
+  checksum: b99750bd89b853a8d30171430dc0452a5c6c74d067730fb86130c1e012d566fc65e14dfaf777d4b0c6cb1544a42c5bef4963b66862a9d0542676847af04872fe
   languageName: node
   linkType: hard
 
@@ -17512,9 +17512,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.73":
-  version: 1.5.104
-  resolution: "electron-to-chromium@npm:1.5.104"
-  checksum: 5b8b22c0ae0cb1d38f154c9303d7621fefc4963d139aa0d708bee5f87d1953b709e184abccc7ee098afb0481945ac308d8c487919b66ea588b9ee45b91eb8956
+  version: 1.5.107
+  resolution: "electron-to-chromium@npm:1.5.107"
+  checksum: a76ab714041e180dd2a90cbd2fbbe13ae73d0a54e5ba15a9b308f847192aae797d0ff58aedc8c256e302084d7a6d13820aeb96a0db480c16a44eecf50eb26ccf
   languageName: node
   linkType: hard
 
@@ -19988,9 +19988,9 @@ __metadata:
   linkType: hard
 
 "flow-parser@npm:0.*":
-  version: 0.261.2
-  resolution: "flow-parser@npm:0.261.2"
-  checksum: 9f44991ddcc5870cec657546cc7e32582945ffde2e54fa7b786ece6c76a7e345b9ad584763375d00b147cc499d41ec5696e5f851b420b0d8d618b0f876354ab7
+  version: 0.262.0
+  resolution: "flow-parser@npm:0.262.0"
+  checksum: 22ae984eb2474029f2ca7a2304411dcc0e6f0d34dd2075fb181fe17d57cdddd500bc8008f3749799163951a9fd0b281ab3de386c06960e710acf687a3c2fa155
   languageName: node
   linkType: hard
 
@@ -23831,7 +23831,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-validate@npm:^29.2.1, jest-validate@npm:^29.6.3, jest-validate@npm:^29.7.0":
+"jest-validate@npm:^29.2.1, jest-validate@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-validate@npm:29.7.0"
   dependencies:
@@ -23872,7 +23872,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-worker@npm:^29.6.3, jest-worker@npm:^29.7.0":
+"jest-worker@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-worker@npm:29.7.0"
   dependencies:
@@ -25713,15 +25713,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-babel-transformer@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-babel-transformer@npm:0.81.1"
+"metro-babel-transformer@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-babel-transformer@npm:0.81.2"
   dependencies:
     "@babel/core": ^7.25.2
     flow-enums-runtime: ^0.0.6
     hermes-parser: 0.25.1
     nullthrows: ^1.1.1
-  checksum: 9ddb40958d3bbd0d0128277e23508936823e2c18bc73f95ef8076a3c47b8b8d16e2bc67c8b6e31bad81b80c8eb58eab5306953e967ad0a8605b4e32d59a96427
+  checksum: dee3af8dc4c68d103cb4ffbb58b03c050d4b47284a9629ec6209247228bdd7975928352355f282353c713c66bbfd16f3a70f6855b73eca02fb140fcb70ec6211
   languageName: node
   linkType: hard
 
@@ -25732,12 +25732,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-cache-key@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-cache-key@npm:0.81.1"
+"metro-cache-key@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-cache-key@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
-  checksum: e209badae33f32122e6b4d0c5b027f343172408cc6683210f84cb747ee24947c2b2fe0bca13042fb06e02d324620fddeb65b34e8ac5c95551b3284d9d3d1da1e
+  checksum: 4a9fb8a6f612867eef859fd01e6bc985cddc07062529455ec97f92deb42cad427f6f216ad503852193707174879b6f9f80fd8d410bae5a4ebc662ba923d8189b
   languageName: node
   linkType: hard
 
@@ -25751,30 +25751,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-cache@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-cache@npm:0.81.1"
+"metro-cache@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-cache@npm:0.81.2"
   dependencies:
     exponential-backoff: ^3.1.1
     flow-enums-runtime: ^0.0.6
-    metro-core: 0.81.1
-  checksum: 54f6335eef4d3402964b19aa022f18df990cf53f20c8e37319f654192994bc0cc600fe62703c557d5cc63d1be8cf629785c6e7997ae3dfa0ffd298854f4f9be9
+    metro-core: 0.81.2
+  checksum: 49efb3424c8d8bc93f18457cfeb66dc30bb4a57cc05c22b787173f5a0cff841cb9b4e4b1f828775bfd02fe283d7f532d7e4fd51ffc5d77dd3b3f7a9457ff6c3c
   languageName: node
   linkType: hard
 
-"metro-config@npm:*, metro-config@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-config@npm:0.81.1"
+"metro-config@npm:*, metro-config@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-config@npm:0.81.2"
   dependencies:
     connect: ^3.6.5
     cosmiconfig: ^5.0.5
     flow-enums-runtime: ^0.0.6
-    jest-validate: ^29.6.3
-    metro: 0.81.1
-    metro-cache: 0.81.1
-    metro-core: 0.81.1
-    metro-runtime: 0.81.1
-  checksum: 2162d58406982cc2f8112d675d47ef554671634b0b6b3de296cce7f3b3390a1e38abfcdc9da13aa815b463b403cec1d0ddce2fe2b97eb4183e713582a8115cc6
+    jest-validate: ^29.7.0
+    metro: 0.81.2
+    metro-cache: 0.81.2
+    metro-core: 0.81.2
+    metro-runtime: 0.81.2
+  checksum: b8a8ca14d6ed613ca0adce7861155e0d9a3ad04196cf6f1136f5c34ba3542931c3858039af612f333096d0f5025383204944cc75e6a0954cbf7c66025652a78b
   languageName: node
   linkType: hard
 
@@ -25803,14 +25803,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-core@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-core@npm:0.81.1"
+"metro-core@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-core@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
     lodash.throttle: ^4.1.1
-    metro-resolver: 0.81.1
-  checksum: ad3536fbbff26c89e4553b313b9eb60d7f95f603e9e3bf4c4349d35814b03ce684cb8a2d329c92d2db3a490c00a83ffdf84d154503eecff7deb8bb3ef5e5b44b
+    metro-resolver: 0.81.2
+  checksum: 530fe7b6ec3710105d4cb9f0745238938607674c873e16bab82e06a636fb7edd2577a49112cf6a116c20a85aafa86c6096d57531e39b6a61e041aba00f774d16
   languageName: node
   linkType: hard
 
@@ -25838,20 +25838,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-file-map@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-file-map@npm:0.81.1"
+"metro-file-map@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-file-map@npm:0.81.2"
   dependencies:
     debug: ^2.2.0
     fb-watchman: ^2.0.0
     flow-enums-runtime: ^0.0.6
     graceful-fs: ^4.2.4
     invariant: ^2.2.4
-    jest-worker: ^29.6.3
+    jest-worker: ^29.7.0
     micromatch: ^4.0.4
     nullthrows: ^1.1.1
     walker: ^1.0.7
-  checksum: 9ec3cc9a84a1c29303fe4e137a2e48eedb54ff69cbf7a5071524a84da0bf21c5b73ca7be6165a5ebc3738dc967bc209d0b9cf0af65bbe766aa76b6029e258bc0
+  checksum: e64defaaa4b72299ea9aa29216dae7599a70cd015e25c4c39c6abbe744a73391a1450c9d70343c56b4f6df5e66b98719d9682c906d4a7c1d666e3c8f309fe40f
   languageName: node
   linkType: hard
 
@@ -25888,13 +25888,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-minify-terser@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-minify-terser@npm:0.81.1"
+"metro-minify-terser@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-minify-terser@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
     terser: ^5.15.0
-  checksum: 9d58e34571aaef0d42e5439a09e5bd975aa8b734de5beae325d89ce54d00d6bac23b51ab36aef4ff2ab70894dfab60d79a709f317403817bf6b2e1ed0eb3b118
+  checksum: 19e61a2ccb4c0a1757f4e658d3dabc3f81f31c38d476915c61745c30bce24fe935ee781f97755a0062d5b9fc830c80aabcb0ea844fe78df1f9c38392c7313d1c
   languageName: node
   linkType: hard
 
@@ -25978,12 +25978,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-resolver@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-resolver@npm:0.81.1"
+"metro-resolver@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-resolver@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
-  checksum: e8b6e826e09ecf5aa64d5ffa58200afb5b86b621e1ae748b013405dfb47076cad0f19ff4e6d62dbd337e70fbd9337fb0c6a30aa175c344ab66ae24f4f622aebc
+  checksum: cf2f36dd2e9fcaceab63345e1ad6e62ff8bf572844f41ba9d7661ffe4b45e3fed272d2567b907fc2d7ef7af297d356dde7fc943f306a5b1a2f1c07f84e5fd302
   languageName: node
   linkType: hard
 
@@ -25997,13 +25997,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-runtime@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-runtime@npm:0.81.1"
+"metro-runtime@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-runtime@npm:0.81.2"
   dependencies:
     "@babel/runtime": ^7.25.0
     flow-enums-runtime: ^0.0.6
-  checksum: f45d97f2b5bebc15e107c6a3fa033a7e241df3f56503884e8ee8eefb483d554558ebac1b6820d9f7f17ace7b1465c4287959a1d06bc922513661b51f2d025ad9
+  checksum: 0899d6aad18e0e6f550274484ae31004b2a54c477a7cdb6cab832352ae24ded0c91bb8dae2644baa2b15669a05e872c649b69e0b2cd3a56542541be1710fcc3b
   languageName: node
   linkType: hard
 
@@ -26023,21 +26023,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-source-map@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-source-map@npm:0.81.1"
+"metro-source-map@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-source-map@npm:0.81.2"
   dependencies:
     "@babel/traverse": ^7.25.3
     "@babel/traverse--for-generate-function-map": "npm:@babel/traverse@^7.25.3"
     "@babel/types": ^7.25.2
     flow-enums-runtime: ^0.0.6
     invariant: ^2.2.4
-    metro-symbolicate: 0.81.1
+    metro-symbolicate: 0.81.2
     nullthrows: ^1.1.1
-    ob1: 0.81.1
+    ob1: 0.81.2
     source-map: ^0.5.6
     vlq: ^1.0.0
-  checksum: 59a1dc68ebdd1c8183a486312a474aa1c5d9670111f324e1d0532311f04f4e0c1b6e79c9be3c79cdb4bc8d3e13b33cc08e02ed5233c8fe635ec4b6b0d96e2b17
+  checksum: 38781f35028e9620a05efa7b1b9a76947cd6e80e423f36536e45651af59ed0ac786fc2297135e75e97a5d211386325a539791c5ecd734443c70de407b0a539ef
   languageName: node
   linkType: hard
 
@@ -26057,19 +26057,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-symbolicate@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-symbolicate@npm:0.81.1"
+"metro-symbolicate@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-symbolicate@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
     invariant: ^2.2.4
-    metro-source-map: 0.81.1
+    metro-source-map: 0.81.2
     nullthrows: ^1.1.1
     source-map: ^0.5.6
     vlq: ^1.0.0
   bin:
     metro-symbolicate: src/index.js
-  checksum: 179879cf07cf5b599ffd376e6a1bfefb911e0038fd01afe478252cadbafaacd55fef203d3857f1d06de220c9ade9b79e33a01a1545b6774a6a740ba9d1e6fe3f
+  checksum: 0d260b1f8c122d4a70765086aa3674e6e76f35c345db5658f02da07afe86584657d74fb05c59aa1e04f3449462eee587d13e37e9349fd5cd72ff292586c8438b
   languageName: node
   linkType: hard
 
@@ -26086,9 +26086,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-transform-plugins@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-transform-plugins@npm:0.81.1"
+"metro-transform-plugins@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-transform-plugins@npm:0.81.2"
   dependencies:
     "@babel/core": ^7.25.2
     "@babel/generator": ^7.25.0
@@ -26096,7 +26096,7 @@ __metadata:
     "@babel/traverse": ^7.25.3
     flow-enums-runtime: ^0.0.6
     nullthrows: ^1.1.1
-  checksum: bfeca230488afb3a7464c1effefa850b6a70acc0f6a7f1dba762024ee8a2ce5ea92fdbf430b867f3607b243e9043acdc463ca752a912bda2502b63a88b998601
+  checksum: 98f9b73fe1e37899cc817cc29ac8f76b6c3a18d0a999c630877f2654a5a777e74afce6f1d1eec9d7c4ea1fcb0915a671e63f27876d113448baf9f00147ad06b8
   languageName: node
   linkType: hard
 
@@ -26121,24 +26121,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro-transform-worker@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro-transform-worker@npm:0.81.1"
+"metro-transform-worker@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro-transform-worker@npm:0.81.2"
   dependencies:
     "@babel/core": ^7.25.2
     "@babel/generator": ^7.25.0
     "@babel/parser": ^7.25.3
     "@babel/types": ^7.25.2
     flow-enums-runtime: ^0.0.6
-    metro: 0.81.1
-    metro-babel-transformer: 0.81.1
-    metro-cache: 0.81.1
-    metro-cache-key: 0.81.1
-    metro-minify-terser: 0.81.1
-    metro-source-map: 0.81.1
-    metro-transform-plugins: 0.81.1
+    metro: 0.81.2
+    metro-babel-transformer: 0.81.2
+    metro-cache: 0.81.2
+    metro-cache-key: 0.81.2
+    metro-minify-terser: 0.81.2
+    metro-source-map: 0.81.2
+    metro-transform-plugins: 0.81.2
     nullthrows: ^1.1.1
-  checksum: 75438b0f7641f22219d6d52448784d39b7b858fb648bfead5a6ffc4844b13beb6af71e32c30db20b0ae94b9eb186e4d4151eec727525bf401c5f065fbd765f5d
+  checksum: 3af5ff269edb933e17e1540fdb8482ba705eaf2b097c47b32547da134e62564e278b457a217399c948d1c69cfd4569442c1c554385cd11f3a9e546ed148d6569
   languageName: node
   linkType: hard
 
@@ -26199,9 +26199,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"metro@npm:0.81.1":
-  version: 0.81.1
-  resolution: "metro@npm:0.81.1"
+"metro@npm:0.81.2":
+  version: 0.81.2
+  resolution: "metro@npm:0.81.2"
   dependencies:
     "@babel/code-frame": ^7.24.7
     "@babel/core": ^7.25.2
@@ -26221,21 +26221,21 @@ __metadata:
     hermes-parser: 0.25.1
     image-size: ^1.0.2
     invariant: ^2.2.4
-    jest-worker: ^29.6.3
+    jest-worker: ^29.7.0
     jsc-safe-url: ^0.2.2
     lodash.throttle: ^4.1.1
-    metro-babel-transformer: 0.81.1
-    metro-cache: 0.81.1
-    metro-cache-key: 0.81.1
-    metro-config: 0.81.1
-    metro-core: 0.81.1
-    metro-file-map: 0.81.1
-    metro-resolver: 0.81.1
-    metro-runtime: 0.81.1
-    metro-source-map: 0.81.1
-    metro-symbolicate: 0.81.1
-    metro-transform-plugins: 0.81.1
-    metro-transform-worker: 0.81.1
+    metro-babel-transformer: 0.81.2
+    metro-cache: 0.81.2
+    metro-cache-key: 0.81.2
+    metro-config: 0.81.2
+    metro-core: 0.81.2
+    metro-file-map: 0.81.2
+    metro-resolver: 0.81.2
+    metro-runtime: 0.81.2
+    metro-source-map: 0.81.2
+    metro-symbolicate: 0.81.2
+    metro-transform-plugins: 0.81.2
+    metro-transform-worker: 0.81.2
     mime-types: ^2.1.27
     nullthrows: ^1.1.1
     serialize-error: ^2.1.0
@@ -26245,7 +26245,7 @@ __metadata:
     yargs: ^17.6.2
   bin:
     metro: src/cli.js
-  checksum: 24342be8238157c926883915f5b30d421943a8bab92159cb96200a1e1f588a0119de7c3d4e27710d68177051956408ae1da52e89c449de71d08ff7953f864d45
+  checksum: 5d48e1465b91050ecf55a2a3c0bec5ed61b2310c940de644be8d09c0234f5c57da459ae63250bbd1d01fe5e749ed2b70b20bd5c03a051294602ff2de5ede93b2
   languageName: node
   linkType: hard
 
@@ -26760,7 +26760,7 @@ __metadata:
     "@sentry/react-native": ^5.33.1
     "@shopify/flash-list": 1.7.2
     "@shopify/react-native-skia": ^1.3.0
-    "@tanstack/react-query": 5.59.0
+    "@tanstack/react-query": ^5.14.6
     "@tatumio/tatum": ^4.2.24
     "@testing-library/react-hooks": ^8.0.1
     "@ton/core": 0.56.3
@@ -27923,12 +27923,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ob1@npm:0.81.1":
-  version: 0.81.1
-  resolution: "ob1@npm:0.81.1"
+"ob1@npm:0.81.2":
+  version: 0.81.2
+  resolution: "ob1@npm:0.81.2"
   dependencies:
     flow-enums-runtime: ^0.0.6
-  checksum: 0b0fa64ecb1d91b2fbdc8c365e845d6231be404f1c97f43d6ad4a0d6aaf75817108b3b7641784e7b727f75a754fe07fdf6212b2540be4f7f0ae0f0a7128b0847
+  checksum: 9e45ea85abced925640411f1cd384e716e2cb6b98fa35c261aa758a603954c5dd8588fd8924b7659d7f6a4c472cc4a90f0f05a36ab8444a69a786001d8c2d6c7
   languageName: node
   linkType: hard
 
@@ -31001,15 +31001,15 @@ __metadata:
   linkType: hard
 
 "react-native-webview@npm:^13.10.5":
-  version: 13.12.3
-  resolution: "react-native-webview@npm:13.12.3"
+  version: 13.13.2
+  resolution: "react-native-webview@npm:13.13.2"
   dependencies:
     escape-string-regexp: ^4.0.0
     invariant: 2.2.4
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 94d824fedc6b5c0402926b99a96f71f4752416e4f038be827552015c0bf6d595d71ba656079618402662aec5e2c539018b0bff2906b6f95261f70893e5dd5d80
+  checksum: 034b1ac22b32f3c9c66c1be96ec71078657b569ddd0970639a90ddf2f3849fa31bc010cff19e5b9b315ce836b9061926b196a156a72b9438f5cee24512ebc33a
   languageName: node
   linkType: hard
 
@@ -33826,9 +33826,9 @@ __metadata:
   linkType: hard
 
 "strnum@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "strnum@npm:1.1.1"
-  checksum: 1be70c6ec3793a43d6cd7c58180377fad8b7cf6356276b4dfa22164c2b2105fe0be50624266769230006331dc0058618fbc03de0d4ad9443e99377cc286580f4
+  version: 1.1.2
+  resolution: "strnum@npm:1.1.2"
+  checksum: a85219eda13e97151c95e343a9e5960eacfb0a0ff98104b4c9cb7a212e3008bddf0c9714c9c37c2e508be78e741a04afc80027c2dc18509d1b5ffd4c37191fc2
   languageName: node
   linkType: hard
 
@@ -35649,8 +35649,8 @@ __metadata:
   linkType: hard
 
 "update-browserslist-db@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "update-browserslist-db@npm:1.1.2"
+  version: 1.1.3
+  resolution: "update-browserslist-db@npm:1.1.3"
   dependencies:
     escalade: ^3.2.0
     picocolors: ^1.1.1
@@ -35658,7 +35658,7 @@ __metadata:
     browserslist: ">= 4.21.0"
   bin:
     update-browserslist-db: cli.js
-  checksum: 088d2bad8ddeaeccd82d87d3f6d736d5256d697b725ffaa2b601dfd0ec16ba5fad20db8dcdccf55396e1a36194236feb69e3f5cce772e5be15a5e4261ff2815d
+  checksum: 7b6d8d08c34af25ee435bccac542bedcb9e57c710f3c42421615631a80aa6dd28b0a81c9d2afbef53799d482fb41453f714b8a7a0a8003e3b4ec8fb1abb819af
   languageName: node
   linkType: hard
 
