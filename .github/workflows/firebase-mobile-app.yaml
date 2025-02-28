@@ -6,202 +6,195 @@ on:
   workflow_dispatch:
 
 jobs:
-  # release-android-mobile:
-  #   name: release-android-mobile
-  #   runs-on: macos-13 #orai-self-hosted
-  #   timeout-minutes: 120 # Set the timeout to 120 minutes
-  #   strategy:
-  #     matrix:
-  #       node-version: [20.17.0]
-  #   steps:
-  #     - name: Check tag name
-  #       if: contains(github.ref, 'cp')
-  #       run: |
-  #         exit 1
-  #     - name: Cancel Previous Runs
-  #       uses: styfle/cancel-workflow-action@0.8.0
-  #       with:
-  #         access_token: ${{ github.token }}
-  #     - name: Use Node.js ${{ matrix.node-version }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ matrix.node-version }}
-  #     - name: Increase Node.js memory limit to 7GB
-  #       run: |
-  #         export NODE_OPTIONS="--max-old-space-size=7168"
-  #     - name: Get yarn cache directory path
-  #       id: yarn-cache-dir-path
-  #       run: echo "::set-output name=dir::$(yarn cache dir)"
-  #     - name: Restore node_modules from cache
-  #       uses: actions/cache@v2
-  #       id: yarn-cache
-  #       with:
-  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-yarn-
-  #     - name: Checkout submodule repo
-  #       uses: actions/checkout@v3
-  #     - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
-  #       run: yarn install --frozen-lockfile
-  #     - name: Install mobile packages
-  #       working-directory: apps/mobile
-  #       run: yarn --silent
-  #     - name: Build mobile images
-  #       working-directory: apps/mobile
-  #       run: yarn images
-  #     - name: restore lerna
-  #       uses: actions/cache@v3
-  #       with:
-  #         path: "**/node_modules"
-  #         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-  #     - name: Build Libs
-  #       run: yarn build:libs
-  #     #      - name: Build provider
-  #     #        working-directory: apps/mobile
-  #     #        run: yarn build:provider
+  firebase-android-mobile:
+  name: firebase-android-mobile
+  runs-on: macos-latest-xlarge #orai-self-hosted
+  strategy:
+    matrix:
+      node-version: [ 20.17.0 ]
+  steps:
+    - name: Cancel Previous Runs
+      uses: styfle/cancel-workflow-action@0.8.0
+      with:
+        access_token: ${{ github.token }}
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Checkout Repository with Submodules
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+        fetch-depth: 0
+        ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+    - name: Get Yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+    - name: Cache Yarn dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          .yarn/cache
+          .yarn/install-state.gz
+          !.eslintcache # Exclude eslint cache
+        key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Install dependencies
+      run: |
+        yarn install
+    - name: Build Libs
+      run: yarn build:libs
+    - name: Setup environment variables
+      working-directory: apps/mobile
+      run: yarn build:android
+      env:
+        SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+        API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+        SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+        APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+        MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+        BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+        BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.6.10
+        bundler-cache: true
+    - name: Setup JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: "11"
+        distribution: "temurin"
+        cache: gradle
+    - name: Grant execute permission for gradlew
+      working-directory: apps/mobile/android
+      run: chmod +x gradlew
+    - name: Decode Keystore File
+      uses: timheuer/base64-to-file@v1
+      id: android_keystore
+      with:
+        fileName: "OWalletKeystore"
+        encodedString: ${{ secrets.KEYSTORE_FILE }}
+        fileDir: "apps/mobile/android/fastlane"
+    - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
+      working-directory: apps/mobile/android/fastlane
+      run: |
+        echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
+    - name: Setup Fastlane
+      working-directory: apps/mobile/android
+      run: bundle update && fastlane deploy_firebase
+      timeout-minutes: 30 # Set the timeout to 120 minutes
+      env:
+        ALIAS: ${{ secrets.ALIAS }}
+        PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+        PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+        SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+        FILE_PATH: "/OWalletKeystore"
+        FIREBASE_APP_ID_ANDROID: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+    - name: Cleanup Google Credentials
+      if: always()  # Run even on failure
+      run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
 
-  #     - name: Bundle mobile
-  #       working-directory: apps/mobile
-  #       run: yarn build:ios
-  #       env:
-  #         SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-  #         API_KEY_ETH_SCAN: ${{ secrets.API_KEY_ETH_SCAN }}
-  #         API_KEY_BSC_SCAN: ${{ secrets.API_KEY_BSC_SCAN }}
-  #         API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-  #         SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-  #         APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-  #         API_KEY_KADO: ${{ secrets.API_KEY_KADO }}
-  #         MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-  #         BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
-  #         BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
-  #     - name: Setup Ruby
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: 3.2
-  #         bundler-cache: true
-  #     - name: Pod install
-  #       working-directory: apps/mobile
-  #       run: yarn pod:install
-  #     - name: Setup Fastlane ios
-  # working-directory: apps/mobile/ios/fastlane
-  # run: cd .. && bundle update && fastlane release
-  # env:
-  # DISCORD_HOOK_ID: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-  # DISCORD_HOOK_TOKEN: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-  # APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-  # APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-  # APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-  # APP_STORE_CONNECT_API_KEY_DURATION: 1200
-  # APP_STORE_CONNECT_API_KEY_IN_HOUSE: false
-  # APP_IDENTIFIER: io.orai.owallet
-  # APPLE_ID: ${{ secrets.APPLE_ID }}
-  # ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
-  # TEAM_ID: ${{ secrets.TEAM_ID }}
-  # MATCH_GIT_URL: "https://github.com/oraichain/fastlane.git"
-  # KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-  # MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-  # KEYCHAIN_NAME: "login"
-  # MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-  # SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-  # FILE_PATH: "/OWalletKeystore"
-  release-ios-mobile:
-    name: release-ios-mobile
-    runs-on: macos-latest-xlarge #orai-self-hosted
-    strategy:
-      matrix:
-        node-version: [20.17.0]
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
-        with:
-          access_token: ${{ github.token }}
-      - name: Verify Xcode version
-        run: xcodebuild -version
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Checkout Repository with Submodules
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-          fetch-depth: 0
-          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install dependencies
-        run: |
-          yarn install
-      - name: Build Libs
-        run: yarn build:libs
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2
-          bundler-cache: true
-      - name: Cache Pods
-        uses: actions/cache@v3
-        id: pods-cache
-        with:
-          path: ./apps/mobile/ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
-      - name: Pod install
-        working-directory: apps/mobile
-        run: yarn pod:install
-        env:
-          NO_FLIPPER: "1"
-      - name: Setup environment variables
-        working-directory: apps/mobile
-        run: yarn build:ios
-        env:
-          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
-          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
-          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
-          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
-      - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
-        working-directory: apps/mobile/ios/fastlane
-        run: |
-          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
-      - name: Setup Fastlane ios
-        working-directory: apps/mobile/ios
-        run: bundle update && fastlane deploy_firebase
-        timeout-minutes: 30 # Set the timeout to 120 minutes
-        env:
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
-          APP_STORE_CONNECT_API_KEY_DURATION: 1200
-          APP_STORE_CONNECT_API_KEY_IN_HOUSE: false
-          APP_IDENTIFIER: io.orai.owallet
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          MATCH_GIT_URL: "https://github.com/oraichain/fastlane.git"
-          KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-          MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
-          KEYCHAIN_NAME: "login"
-          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-          FIREBASE_APP_ID_IOS: ${{ secrets.FIREBASE_APP_ID_IOS }}
-
-      - name: Cleanup Google Credentials
-        if: always()  # Run even on failure
-        run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+#  firebase-ios-mobile:
+#    name: firebase-ios-mobile
+#    runs-on: macos-latest-xlarge #orai-self-hosted
+#    strategy:
+#      matrix:
+#        node-version: [ 20.17.0 ]
+#    steps:
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.8.0
+#        with:
+#          access_token: ${{ github.token }}
+#      - name: Verify Xcode version
+#        run: xcodebuild -version
+#      - name: Use Node.js ${{ matrix.node-version }}
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: ${{ matrix.node-version }}
+#      - name: Checkout Repository with Submodules
+#        uses: actions/checkout@v4
+#        with:
+#          submodules: true
+#          fetch-depth: 0
+#          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+#      - name: Get Yarn cache directory path
+#        id: yarn-cache-dir-path
+#        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+#      - name: Cache Yarn dependencies
+#        uses: actions/cache@v4
+#        with:
+#          path: |
+#            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+#            .yarn/cache
+#            .yarn/install-state.gz
+#            !.eslintcache # Exclude eslint cache
+#          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+#          restore-keys: |
+#            ${{ runner.os }}-yarn-
+#      - name: Install dependencies
+#        run: |
+#          yarn install
+#      - name: Build Libs
+#        run: yarn build:libs
+#      - name: Setup Ruby
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: 3.2
+#          bundler-cache: true
+#      - name: Cache Pods
+#        uses: actions/cache@v3
+#        id: pods-cache
+#        with:
+#          path: .local_derived_data
+#          key: ${{ runner.os }}-pods-derived-data-${{ hashFiles('**/Podfile.lock') }}
+#      - name: Pod install
+#        working-directory: apps/mobile
+#        run: yarn pod:install
+#        env:
+#          NO_FLIPPER: "1"
+#      - name: Setup environment variables
+#        working-directory: apps/mobile
+#        run: yarn build:ios
+#        env:
+#          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+#          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+#          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+#          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+#          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+#          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+#          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+#      - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
+#        working-directory: apps/mobile/ios/fastlane
+#        run: |
+#          echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_B64 }}" | base64 -d > $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
+#          echo "GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json" >> $GITHUB_ENV
+#      - name: Setup Fastlane ios
+#        working-directory: apps/mobile/ios
+#        run: bundle update && fastlane deploy_firebase
+#        timeout-minutes: 30 # Set the timeout to 120 minutes
+#        env:
+#          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+#          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+#          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+#          APP_STORE_CONNECT_API_KEY_DURATION: 1200
+#          APP_STORE_CONNECT_API_KEY_IN_HOUSE: false
+#          APP_IDENTIFIER: io.orai.owallet
+#          APPLE_ID: ${{ secrets.APPLE_ID }}
+#          ITC_TEAM_ID: ${{ secrets.ITC_TEAM_ID }}
+#          TEAM_ID: ${{ secrets.TEAM_ID }}
+#          MATCH_GIT_URL: "https://github.com/oraichain/fastlane.git"
+#          KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
+#          MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
+#          KEYCHAIN_NAME: "login"
+#          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+#          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+#          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+#          FIREBASE_APP_ID_IOS: ${{ secrets.FIREBASE_APP_ID_IOS }}
+#
+#      - name: Cleanup Google Credentials
+#        if: always()  # Run even on failure
+#        run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
