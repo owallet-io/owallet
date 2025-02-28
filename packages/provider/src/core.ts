@@ -54,11 +54,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-// import {
-//     confirmTransaction,
-//     deserializeTransaction,
-//     isVersionedTransaction,
-// } from "@owallet/common";
+
 import { encode, decode } from "bs58";
 import { SolanaSignInInput } from "@solana/wallet-standard-features";
 import {

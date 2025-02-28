@@ -60,10 +60,16 @@ import {
   SolanaSignInInput,
   SolanaSignInOutput,
 } from "@solana/wallet-standard-features";
-import { isReactNative as checkIsMobile } from "@owallet/common";
 import { NAMESPACE } from "./constants";
 
-// initialize(owallet.solana as any);
+export const isWeb = typeof document !== "undefined";
+export const checkIsMobile = (): boolean => {
+  if (typeof navigator !== "undefined" && navigator.product === "ReactNative") {
+    return true;
+  }
+  return false;
+};
+
 export interface ProxyRequest {
   type: "proxy-request" | "owallet-proxy-request";
   id: string;
