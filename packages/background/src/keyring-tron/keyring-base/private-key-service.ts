@@ -55,7 +55,6 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
       parsedData = data;
     }
 
-    // Check if parsedData is still a string and convert it to an object
     if (typeof parsedData === "string") {
       parsedData = JSON.parse(parsedData);
     }
