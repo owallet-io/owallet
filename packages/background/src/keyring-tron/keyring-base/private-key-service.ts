@@ -48,8 +48,17 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
     if (!chainInfo?.features.includes("tron")) {
       throw new Error(`${chainInfo.chainId} not support sign from base`);
     }
-    const parsedData = JSON.parse(JSON.parse(data));
-    console.log("parsedData priv", parsedData);
+    let parsedData;
+    if (typeof data === "string") {
+      parsedData = JSON.parse(data);
+    } else {
+      parsedData = data;
+    }
+
+    // Check if parsedData is still a string and convert it to an object
+    if (typeof parsedData === "string") {
+      parsedData = JSON.parse(parsedData);
+    }
 
     const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
       "privateKey"
