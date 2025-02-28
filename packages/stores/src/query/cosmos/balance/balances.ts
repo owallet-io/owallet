@@ -63,15 +63,21 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         if (res?.length > 0) {
           const tokens = res.map((item, index) => {
             const { name, decimals, coinGeckoId, icon, denom } = item || {};
-            return {
-              coinImageUrl: icon,
-              coinDenom: name,
-              coinGeckoId: coinGeckoId,
-              coinDecimals: decimals,
-              coinMinimalDenom: denom,
-            };
+            if (name && decimals && coinGeckoId && icon && denom) {
+              return {
+                coinImageUrl: icon,
+                coinDenom: name,
+                coinGeckoId: coinGeckoId,
+                coinDecimals: decimals,
+                coinMinimalDenom: denom,
+              };
+            } else {
+              return;
+            }
           });
-          chainInfo.addCurrencies(...tokens);
+          chainInfo.addCurrencies(
+            ...tokens.filter((value) => value !== undefined)
+          );
         }
       });
     } else {
