@@ -54,11 +54,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-// import {
-//     confirmTransaction,
-//     deserializeTransaction,
-//     isVersionedTransaction,
-// } from "@owallet/common";
+
 import { encode, decode } from "bs58";
 import { SolanaSignInInput } from "@solana/wallet-standard-features";
 import {
@@ -1298,9 +1294,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    console.log("method request", method);
-
-    if (method !== "keplr_initProviderState") {
+    if (method !== "owallet_initProviderState") {
       await this.protectedEnableAccess();
     }
 
@@ -2120,7 +2114,6 @@ class TronProvider extends EventEmitter implements ITronProvider {
         "request-send-raw-transaction",
         {
           data: JSON.stringify(transaction),
-          chainId: ChainIdEVM.TRON,
         }
       )
         .then(resolve)
@@ -2211,7 +2204,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (method !== "keplr_initProviderState") {
+    if (method !== "owallet_initProviderState") {
       await this.protectedEnableAccess();
     }
 
