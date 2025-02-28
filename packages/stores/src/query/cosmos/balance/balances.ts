@@ -75,7 +75,9 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
               return;
             }
           });
-          chainInfo.addCurrencies(...tokens.filter((e) => e));
+          chainInfo.addCurrencies(
+            ...tokens.filter((value) => value !== undefined)
+          );
         }
       });
     } else {
