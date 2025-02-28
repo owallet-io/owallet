@@ -66,6 +66,14 @@ jobs:
         working-directory: packages/hooks
         run: yarn build
 
+      - name: Build @owallet/stores-internal
+        working-directory: apps/stores-internal
+        run: yarn build
+
+      - name: Build @owallet/hooks-internal
+        working-directory: apps/hooks-internal
+        run: yarn build
+
       - name: Build extension
         working-directory: apps/extension
         run: yarn build
