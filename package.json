@@ -33,7 +33,7 @@
     "lint-fix": "lerna run lint-fix",
     "ci": "yarn install --frozen-lockfile && yarn build && yarn workspace mobile typecheck && yarn test",
     "ci-lint": "yarn install --frozen-lockfile && yarn lint-test",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "Oraichain",
@@ -78,7 +78,7 @@
     "firebase-tools": "^10.2.2",
     "folder-hash": "^4.0.2",
     "human-standard-token-abi": "2.0.0",
-    "husky": "^8.0.0",
+    "husky": "^9.1.7",
     "is-valid-domain": "0.1.6",
     "jest": "29.6.1",
     "lerna": "^7.1.5",
