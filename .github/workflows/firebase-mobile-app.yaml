@@ -71,13 +71,6 @@ jobs:
       - name: Grant execute permission for gradlew
         working-directory: apps/mobile/android
         run: chmod +x gradlew
-      - name: Decode Keystore File
-        uses: timheuer/base64-to-file@v1
-        id: android_keystore
-        with:
-          fileName: "OWalletKeystore"
-          encodedString: ${{ secrets.KEYSTORE_FILE }}
-          fileDir: "apps/mobile/android/fastlane"
       - name: Decode and Set GOOGLE_APPLICATION_CREDENTIALS
         working-directory: apps/mobile/android/fastlane
         run: |
