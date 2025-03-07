@@ -1896,10 +1896,9 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
 }
 
 class TronProvider extends EventEmitter implements ITronProvider {
-  isOwallet = true;
-
   constructor(
     protected readonly injectedOWallet: InjectedOWallet,
+
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -2029,6 +2028,8 @@ class TronProvider extends EventEmitter implements ITronProvider {
       ]);
     },
   };
+
+  isOwallet: boolean = true;
 
   async getKey(chainId: string): Promise<Key> {
     return await this._requestMethod("getKey", [chainId]);
