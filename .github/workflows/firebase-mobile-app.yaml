@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest-xlarge #orai-self-hosted
     strategy:
       matrix:
-        node-version: [ 20.17.0 ]
+        node-version: [20.17.0]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
@@ -38,7 +38,7 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install dependencies
@@ -88,14 +88,14 @@ jobs:
           FILE_PATH: "/OWalletKeystore"
           FIREBASE_APP_ID_ANDROID: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
       - name: Cleanup Google Credentials
-        if: always()  # Run even on failure
+        if: always() # Run even on failure
         run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json
   firebase-ios-mobile:
     name: firebase-ios-mobile
     runs-on: macos-latest-xlarge #orai-self-hosted
     strategy:
       matrix:
-        node-version: [ 20.17.0 ]
+        node-version: [20.17.0]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
@@ -124,7 +124,7 @@ jobs:
             .yarn/cache
             .yarn/install-state.gz
             !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }}  # Cache per commit
+          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install dependencies
@@ -188,5 +188,5 @@ jobs:
           FIREBASE_APP_ID_IOS: ${{ secrets.FIREBASE_APP_ID_IOS }}
 
       - name: Cleanup Google Credentials
-        if: always()  # Run even on failure
+        if: always() # Run even on failure
         run: rm -f $GITHUB_WORKSPACE/owallet-829a1-3cfff653dc5e.json

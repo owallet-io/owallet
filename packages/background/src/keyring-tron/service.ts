@@ -69,6 +69,7 @@ export class KeyRingTronService {
     const vaultId = this.keyRingService.selectedVaultId;
     const key = await this.getKey(vaultId, ChainIdEVM.TRON);
     const res = {
+      code: 200,
       name: key.name,
       hex: key.ethereumHexAddress,
       base58: getBase58Address(key.ethereumHexAddress),
