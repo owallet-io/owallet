@@ -213,8 +213,8 @@ export class KeyRingStore {
     bip44HDPath: BIP44HDPath,
     name: string,
     password: string | undefined,
-    meta?: PlainObject,
-    parentVaultId?: string
+    parentVaultId?: string,
+    meta?: PlainObject
   ) {
     const msg = new NewMnemonicKeyMsg(
       mnemonic,
