@@ -28,12 +28,21 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-
+import { Keypair } from "@solana/web3.js";
 export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
   return validate(address);
 };
-
+export function validateSolanaPrivateKey(base58String: string): boolean {
+  try {
+    const privateKey = bs58.decode(base58String);
+    return (
+      privateKey.length === 64 && Keypair.fromSecretKey(privateKey) !== null
+    );
+  } catch (error) {
+    return false;
+  }
+}
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
