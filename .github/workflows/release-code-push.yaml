@@ -17,7 +17,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Checkout Repository
@@ -35,7 +35,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: |
@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Checkout to repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
