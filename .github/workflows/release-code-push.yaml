@@ -16,13 +16,17 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-
-      - uses: actions/checkout@v3
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: owallet-io/code-push-server
+      - name: Install Global Package (npm)
+        working-directory: cli
+        run: npm install && npm run build && npm install -g && code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
       # - uses: sonarsource/sonarqube-scan-action@master
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -53,24 +57,13 @@ jobs:
         run: yarn --silent
 
       - name: Build Libs Codepush
-        run: yarn build:codepush
+        run: yarn build:libs
 
-      - name: Build @owallet/hooks
-        run: yarn build
-
-      - name: Build @owallet/hooks-internal
-        run: yarn build
-
-      - name: Build provider
-        working-directory: apps/mobile
-        run: yarn build:provider
-        env:
-          CI: false
-      - name: Deploy on AppCenter
+      - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
-          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+          yarn cp-android --description "${{ github.event.head_commit.message }}"
+          yarn cp-ios --description "${{ github.event.head_commit.message }}"
 
       - name: Send discord message
         uses: appleboy/discord-action@master
