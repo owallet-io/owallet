@@ -58,15 +58,14 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Check if code-push-standalone is installed
-        run: |
-          which code-push-standalone || echo "code-push-standalone not found"
-          echo "Current PATH: $PATH"
       - name: Install dependencies
         run: |
           yarn install
       - name: Build Libs Codepush
         run: yarn build:libs
+      - name: Check if code-push-standalone is installed
+        run: |
+          export PATH="$PATH:/opt/hostedtoolcache/node/18.17.0/x64/bin/code-push-standalone"
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
