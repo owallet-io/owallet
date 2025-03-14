@@ -20,23 +20,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          repository: owallet-io/code-push-server
-      - name: Install Global Package (npm)
-        working-directory: cli
-        run: |
-          npm install
-          npm run build
-          npm install -g
-          code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
       - name: Checkout Repository with Submodules
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: owallet-io/code-push-server
+          path: code-push-server
+      - name: Install Global Package (npm)
+        working-directory: code-push-server/cli
+        run: |
+          npm install
+          npm run build
+          npm install -g
+          code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
+
       - name: Check code push (npm)
         run: |
           ls /opt/hostedtoolcache/node/18.17.0/x64/bin
