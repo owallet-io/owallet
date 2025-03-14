@@ -38,12 +38,6 @@ jobs:
           npm run build
           npm install -g
           code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
-
-      - name: Check code push (npm)
-        run: |
-          ls /opt/hostedtoolcache/node/18.17.0/x64/bin
-          echo $PATH
-          which code-push-standalone
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -58,27 +52,11 @@ jobs:
           key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
-      - name: Check code push (npm)
-        run: |
-          ls /opt/hostedtoolcache/node/18.17.0/x64/bin
-          which code-push-standalone
       - name: Install dependencies
         run: |
           yarn install
-      - name: Check code push (npm)
-        run: |
-          ls /opt/hostedtoolcache/node/18.17.0/x64/bin
-          which code-push-standalone
       - name: Build Libs Codepush
         run: yarn build:libs
-      - name: Check code push (npm)
-        run: |
-          ls /opt/hostedtoolcache/node/18.17.0/x64/bin
-          which code-push-standalone
-#      - name: Check if code-push-standalone
-#        run: |
-#          export PATH="$PATH:/opt/hostedtoolcache/node/18.17.0/x64/bin"
-#          echo $PATH
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
@@ -94,20 +72,19 @@ jobs:
           BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
           BYTE_BREW_SDK_KEY_ANDROID: ${{ secrets.BYTE_BREW_SDK_KEY_ANDROID }}
           BYTE_BREW_ID_ANDROID: ${{ secrets.BYTE_BREW_ID_ANDROID }}
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed successfully! head_commit=${{ github.event.head_commit.message }}
 
-#      - name: Send discord message
-#        uses: appleboy/discord-action@master
-#        with:
-#          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-#          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-#          username: "GitBot"
-#          message: Code pushed successfully! head_commit=${{ github.event.head_commit.message }}
-#
-#      - name: Send discord message
-#        if: ${{ failure() }}
-#        uses: appleboy/discord-action@master
-#        with:
-#          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-#          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-#          username: "GitBot"
-#          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
