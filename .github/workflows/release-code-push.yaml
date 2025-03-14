@@ -26,7 +26,12 @@ jobs:
           repository: owallet-io/code-push-server
       - name: Install Global Package (npm)
         working-directory: cli
-        run: npm install && npm run build && npm install -g && code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
+        run: |
+          npm install
+          npm run build
+          npm install -g
+          echo "$(npm bin -g)" >> $GITHUB_PATH
+          code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
       # - uses: sonarsource/sonarqube-scan-action@master
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -37,6 +42,8 @@ jobs:
           submodules: true
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+      - name: Restore Global Path
+        run: echo "$(npm bin -g)" >> $GITHUB_PATH
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
@@ -56,6 +63,8 @@ jobs:
           yarn install
       - name: Build Libs Codepush
         run: yarn build:libs
+      - name: Check if code-push-standalone is installed
+        run: which code-push-standalone
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
