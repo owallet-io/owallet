@@ -31,16 +31,16 @@ jobs:
           npm run build
           npm install -g
           code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
+      - name: Checkout Repository with Submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Check code push (npm)
         run: |
           ls /opt/hostedtoolcache/node/18.17.0/x64/bin
           which code-push-standalone
-#      - name: Checkout Repository with Submodules
-#        uses: actions/checkout@v4
-#        with:
-#          submodules: true
-#          fetch-depth: 0
-#          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
 #      - name: Get Yarn cache directory path
 #        id: yarn-cache-dir-path
 #        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
