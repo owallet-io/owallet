@@ -40,6 +40,7 @@ jobs:
       - name: Check code push (npm)
         run: |
           ls /opt/hostedtoolcache/node/18.17.0/x64/bin
+          echo $PATH
           which code-push-standalone
       - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
