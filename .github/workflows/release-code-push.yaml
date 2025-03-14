@@ -30,7 +30,7 @@ jobs:
           npm install
           npm run build
           npm install -g
-          echo "$(npm bin -g)" >> $GITHUB_PATH
+          which code-push-standalone
           code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
       # - uses: sonarsource/sonarqube-scan-action@master
       #   env:
@@ -67,10 +67,6 @@ jobs:
           yarn install
       - name: Build Libs Codepush
         run: yarn build:libs
-      - name: Check if code-push-standalone is installed
-        run: |
-          which code-push-standalone || echo "code-push-standalone not found"
-          echo "Current PATH: $PATH"
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
