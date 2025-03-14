@@ -63,7 +63,8 @@ jobs:
         run: yarn build:libs
       - name: Check if code-push-standalone
         run: |
-          export PATH="$PATH:/opt/hostedtoolcache/node/18.17.0/x64/bin/code-push-standalone"
+          export PATH="$PATH:/opt/hostedtoolcache/node/18.17.0/x64/bin"
+          echo $PATH
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
