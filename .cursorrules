@@ -1,0 +1,32 @@
+// React Native .cursorrules
+
+// React Native best practices
+
+const reactNativeExpoBestPractices = [
+  "Use functional components with hooks",
+  "Implement proper navigation using React Navigation",
+  "Implement proper error handling and crash reporting",
+];
+
+// Folder structure
+
+const folderStructure = `
+assets/
+src/
+  components/
+  screens/
+  navigation/
+  hooks/
+  utils/
+App.js
+app.json
+`;
+
+// Additional instructions
+
+const additionalInstructions = `
+1. Use TypeScript for type safety
+2. Implement proper styling using StyleSheet
+5. Implement proper offline support
+6. Follow React Native best practices for performance
+`;

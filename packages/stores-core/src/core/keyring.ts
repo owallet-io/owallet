@@ -213,6 +213,7 @@ export class KeyRingStore {
     bip44HDPath: BIP44HDPath,
     name: string,
     password: string | undefined,
+    parentVaultId?: string,
     meta?: PlainObject
   ) {
     const msg = new NewMnemonicKeyMsg(
@@ -220,7 +221,8 @@ export class KeyRingStore {
       bip44HDPath,
       name,
       password,
-      meta
+      meta,
+      parentVaultId
     );
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
