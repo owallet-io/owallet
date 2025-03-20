@@ -467,7 +467,7 @@ async function loadEvmEntries(
   multicallCustomContractAddress?: string,
   retryCount?: number
   // ): Promise<[string, string][]> {
-): Promise<Object> {
+): Promise<Record<string, unknown>> {
   try {
     const tokensEVM = customEvmTokens ?? evmTokens;
     const tokens = tokensEVM.filter((t) => {
@@ -520,7 +520,7 @@ async function loadEvmEntries(
     const nativeBalance = nativeEvmToken
       ? await loadNativeEvmBalance(address, chain)
       : 0;
-    let entries: [string, string][] = tokens.map((token) => {
+    const entries: [string, string][] = tokens.map((token) => {
       const amount =
         results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
       return [token.denom, amount];
@@ -531,7 +531,7 @@ async function loadEvmEntries(
     return Object.fromEntries(entries);
   } catch (error) {
     console.log("error querying EVM balance: ", error);
-    let retry = retryCount ? retryCount + 1 : 1;
+    const retry = retryCount ? retryCount + 1 : 1;
     if (retry >= EVM_BALANCE_RETRY_COUNT) {
       console.error(`Cannot query EVM balance with error: ${error}`);
       return;
