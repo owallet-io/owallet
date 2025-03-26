@@ -16,6 +16,7 @@ apps/extension/src/config.ui.var.tsx
 apps
 
 .cache
+.turbo
 .parcel-cache
 
 coverage
