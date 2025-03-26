@@ -1,4 +1,10 @@
-import { AppCurrency, FeeCurrency, StdBtcFee, StdFee } from "@owallet/types";
+import {
+  AppCurrency,
+  Currency,
+  FeeCurrency,
+  StdBtcFee,
+  StdFee,
+} from "@owallet/types";
 import { CoinPretty, Dec } from "@owallet/unit";
 
 export interface ITxChainSetter {
@@ -93,8 +99,13 @@ export interface IFeeConfig extends ITxChainSetter {
     currency: FeeCurrency,
     feeType: FeeType
   ): CoinPretty;
-
+  getFeePrimitive(): {
+    amount: string;
+    currency: FeeCurrency;
+  }[];
   l1DataFee: Dec | undefined;
+  setExchangeRate(rate: number): void;
+  currencyExchangeRate: number;
   setL1DataFee(fee: Dec): void;
 
   uiProperties: UIProperties;

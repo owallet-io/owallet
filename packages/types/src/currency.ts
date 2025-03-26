@@ -100,6 +100,11 @@ export type WithGasPriceStep<T> = T & {
     readonly average: number;
     readonly high: number;
   };
+  /**
+   * Optional exchange rate for this fee currency relative to the default fee currency.
+   * If provided, fees will be multiplied by this value when this currency is selected.
+   */
+  readonly exchangeRate?: number;
 };
 
 export type FeeCurrency = WithGasPriceStep<AppCurrency>;

@@ -48,6 +48,10 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
     super.onReceiveResponse(response);
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
+    const denoms = response.data?.balances?.map((coin) => coin.denom) ?? [];
+
+    chainInfo.addUnknownDenoms(...denoms);
+    return;
     if (this.chainId === "Oraichain") {
       const allTokensAddress = response.data.balances
         .filter((token) => !!chainInfo.findCurrency(token.denom) === false)
@@ -81,7 +85,8 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         }
       });
     } else {
-      const denoms = response.data.balances.map((coin) => coin.denom);
+      const denoms = response.data?.balances?.map((coin) => coin.denom) ?? [];
+
       chainInfo.addUnknownDenoms(...denoms);
     }
   }

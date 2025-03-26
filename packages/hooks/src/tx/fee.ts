@@ -48,6 +48,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   protected _l1DataFee: Dec | undefined = undefined;
 
   @observable
+  protected exchangeRate: number | undefined = undefined;
+
+  @observable
   protected _manualFee:
     | {
         amount: string;
@@ -549,6 +552,15 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     this._l1DataFee = fee;
   }
 
+  get currencyExchangeRate(): number | undefined {
+    return this.exchangeRate;
+  }
+
+  @action
+  setExchangeRate(rate: number) {
+    this.exchangeRate = rate;
+  }
+
   readonly getFeeTypePrettyForFeeCurrency = computedFn(
     (feeCurrency: FeeCurrency, feeType: FeeType) => {
       const gas = this.gasConfig.gas;
@@ -556,9 +568,17 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       console.log("gasPrice222", gas, gasPrice.toString());
 
-      const feeAmount = gasPrice
+      let feeAmount = gasPrice
         .mul(new Dec(gas))
         .add(this.l1DataFee ?? new Dec(0));
+
+      // Apply exchange rate if present
+      if (this.exchangeRate) {
+        console.log("Applying exchange rate:", this.exchangeRate);
+        console.log("Before exchange rate:", feeAmount.toString());
+        feeAmount = feeAmount.mul(new Dec(this.exchangeRate));
+        console.log("After exchange rate:", feeAmount.toString());
+      }
 
       console.log(
         "feeAmount 2",
