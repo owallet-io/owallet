@@ -1,19 +1,32 @@
-import { PubKeySecp256k1 } from "@owallet/crypto";
 import { KeyRingPrivateKeyService } from "../../keyring-private-key";
 import { Vault, VaultService } from "../../vault";
 import { KeyRingSvm } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
-import { PublicKey } from "@solana/web3.js";
+import { KeyRingVaultData, PrivateKeyCreateData } from "../../keyring/types";
+import * as bs58 from "bs58";
+import { PublicKey, Keypair } from "@solana/web3.js";
+
 export class KeyRingSvmPrivateKeyService implements KeyRingSvm {
   constructor(
     protected readonly vaultService: VaultService,
     protected readonly baseKeyringService: KeyRingPrivateKeyService
   ) {}
   supportedKeyRingType(): string {
-    return this.baseKeyringService.supportedKeyRingType();
+    return "solana-private-key";
   }
-  createKeyRingVault(privateKey: Uint8Array) {
-    return this.baseKeyringService.createKeyRingVault(privateKey);
+  createKeyRingVault(data: PrivateKeyCreateData): any {
+    const keypair = Keypair.fromSecretKey(data.privateKey);
+
+    return {
+      insensitive: {
+        publicKey: keypair.publicKey.toBase58(),
+        chainType: "solana",
+        format: data.format,
+      },
+      sensitive: {
+        privateKey: bs58.encode(data.privateKey),
+      },
+    };
   }
 
   getPubKey(vault: Vault, _coinType: number, chainInfo: ChainInfo): PublicKey {

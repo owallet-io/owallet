@@ -10,7 +10,7 @@ import {
 import { KeyRingTron } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import TronWeb from "tronweb";
-
+import { KeyRingVaultData, PrivateKeyCreateData } from "../../keyring/types";
 export class KeyRingTronPrivateKeyService implements KeyRingTron {
   constructor(
     protected readonly vaultService: VaultService,
@@ -21,11 +21,8 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
     return this.baseKeyringService.supportedKeyRingType();
   }
 
-  createKeyRingVault(privateKey: Uint8Array): Promise<{
-    insensitive: PlainObject;
-    sensitive: PlainObject;
-  }> {
-    return this.baseKeyringService.createKeyRingVault(privateKey);
+  createKeyRingVault(data: PrivateKeyCreateData) {
+    return this.baseKeyringService.createKeyRingVault(data);
   }
 
   async getPubKey(

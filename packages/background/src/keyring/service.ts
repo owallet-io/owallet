@@ -371,8 +371,12 @@ export class KeyRingService {
             };
           }
           const vaultId = await this.createPrivateKeyKeyRing(
-            privateKey,
-            meta,
+            {
+              privateKey: privateKey,
+              format: "hex",
+              chainType: "evm",
+              meta: meta,
+            },
             keyStore.meta?.["name"] ?? "OWallet Account",
             password
           );
@@ -828,8 +832,12 @@ export class KeyRingService {
   }
 
   async createPrivateKeyKeyRing(
-    privateKey: Uint8Array,
-    meta: PlainObject,
+    privateKeyData: {
+      privateKey: Uint8Array;
+      format: "hex" | "base58";
+      chainType: string;
+      meta?: PlainObject;
+    },
     name: string,
     password?: string
   ): Promise<string> {
@@ -837,12 +845,17 @@ export class KeyRingService {
       if (!password) {
         throw new Error("Must provide password to sign in to vault");
       }
-
       await this.vaultService.signUp(password);
     }
 
-    const keyRing = this.getKeyRing("private-key");
-    const vaultData = await keyRing.createKeyRingVault(privateKey);
+    // Get appropriate keyring based on chain type
+    const keyRing = this.getKeyRingForChain(privateKeyData.chainType);
+
+    const vaultData = await keyRing.createKeyRingVault({
+      privateKey: privateKeyData.privateKey,
+      format: privateKeyData.format,
+      chainType: privateKeyData.chainType,
+    });
 
     const id = this.vaultService.addVault(
       "keyRing",
@@ -850,7 +863,11 @@ export class KeyRingService {
         ...vaultData.insensitive,
         keyRingName: name,
         keyRingType: keyRing.supportedKeyRingType(),
-        keyRingMeta: meta,
+        keyRingMeta: {
+          ...privateKeyData.meta,
+          chainType: privateKeyData.chainType,
+          format: privateKeyData.format,
+        },
       },
       vaultData.sensitive
     );
@@ -862,6 +879,15 @@ export class KeyRingService {
     this.interactionService.dispatchEvent(WEBPAGE_PORT, "keystore-changed", {});
 
     return id;
+  }
+
+  protected getKeyRingForChain(chainType: string): KeyRing {
+    switch (chainType) {
+      case "solana":
+        return this.getKeyRing("solana-private-key");
+      default:
+        return this.getKeyRing("private-key");
+    }
   }
 
   appendLedgerKeyRing(id: string, pubKey: Uint8Array, app: string) {

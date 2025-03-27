@@ -3,6 +3,7 @@ import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainInfo } from "@owallet/types";
 import TronWeb from "tronweb";
+import { PrivateKeyCreateData } from "../keyring/types";
 
 export class KeyRingPrivateKeyService {
   constructor(protected readonly vaultService: VaultService) {}
@@ -15,10 +16,11 @@ export class KeyRingPrivateKeyService {
     return "private-key";
   }
 
-  createKeyRingVault(privateKey: Uint8Array): Promise<{
+  createKeyRingVault(privateKeyData: PrivateKeyCreateData): Promise<{
     insensitive: PlainObject;
     sensitive: PlainObject;
   }> {
+    const { privateKey, chainType, format } = privateKeyData;
     if (!privateKey || privateKey.length === 0) {
       throw new Error("Invalid arguments");
     }
@@ -30,6 +32,8 @@ export class KeyRingPrivateKeyService {
     return Promise.resolve({
       insensitive: {
         publicKey,
+        chainType: chainType,
+        format: format,
       },
       sensitive: {
         privateKey: Buffer.from(privateKey).toString("hex"),

@@ -164,3 +164,28 @@ export interface ExportedKeyRingVault {
     addressIndex: number;
   };
 }
+
+export interface PrivateKeyData {
+  privateKey: Uint8Array;
+  format: "hex" | "base58";
+  chainType: string;
+  meta?: Record<string, any>;
+}
+
+export interface PrivateKeyVault {
+  type: "hex" | "base58";
+  chainType: string;
+  value: string;
+  meta?: PlainObject;
+}
+
+export interface KeyRingVaultData {
+  insensitive: PlainObject;
+  sensitive: PlainObject;
+}
+export interface PrivateKeyCreateData {
+  privateKey: Uint8Array;
+  format: "hex" | "base58";
+  chainType: string;
+  meta?: Record<string, any>;
+}

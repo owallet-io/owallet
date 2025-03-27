@@ -6,6 +6,7 @@ import { compileMemo, HDKey, signSignatureBtc } from "@owallet/common";
 import { KeyRing, KeyRingBtc } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import * as bitcoin from "bitcoinjs-lib";
+import { KeyRingVaultData, PrivateKeyCreateData } from "../../keyring/types";
 export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
   constructor(
     protected readonly vaultService: VaultService,
@@ -14,8 +15,8 @@ export class KeyRingBtcPrivateKeyService implements KeyRingBtc {
   supportedKeyRingType(): string {
     return this.baseKeyringService.supportedKeyRingType();
   }
-  createKeyRingVault(privateKey: Uint8Array) {
-    return this.baseKeyringService.createKeyRingVault(privateKey);
+  createKeyRingVault(data: PrivateKeyCreateData) {
+    return this.baseKeyringService.createKeyRingVault(data);
   }
 
   getPubKey(

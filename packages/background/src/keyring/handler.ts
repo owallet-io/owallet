@@ -290,8 +290,7 @@ const handleNewPrivateKeyKeyMsg: (
 ) => InternalHandler<NewPrivateKeyKeyMsg> = (service) => {
   return async (_, msg) => {
     const vaultId = await service.createPrivateKeyKeyRing(
-      msg.privateKey,
-      msg.meta,
+      msg.privateKeyData,
       msg.name,
       msg.password
     );

@@ -7,6 +7,7 @@ import {
   BIP44HDPath,
   KeyInfo,
   ExportedKeyRingVault,
+  PrivateKeyData,
 } from "./types";
 import { PlainObject } from "../vault";
 import * as Legacy from "./legacy";
@@ -313,34 +314,37 @@ export class NewKeystoneKeyMsg extends Message<{
 }
 
 export class NewPrivateKeyKeyMsg extends Message<{
-  vaultId: string;
   status: KeyRingStatus;
   keyInfos: KeyInfo[];
+  vaultId: string;
 }> {
   public static type() {
     return "new-private-key-key";
   }
 
   constructor(
-    public readonly privateKey: Uint8Array,
-    public readonly meta: PlainObject,
+    public readonly privateKeyData: PrivateKeyData,
     public readonly name: string,
-    public readonly password?: string
+    public readonly password: string | undefined
   ) {
     super();
   }
 
   validateBasic(): void {
-    if (!this.privateKey || this.privateKey.length === 0) {
-      throw new Error("priv key not set");
+    if (!this.privateKeyData.privateKey) {
+      throw new Error("Private key is empty");
     }
 
-    if (!this.meta) {
-      throw new Error("meta not set");
+    if (!this.privateKeyData.format) {
+      throw new Error("Private key format is required");
+    }
+
+    if (!this.privateKeyData.chainType) {
+      throw new Error("Chain type is required");
     }
 
     if (!this.name) {
-      throw new Error("name not set");
+      throw new Error("Name is required");
     }
   }
 

@@ -38,6 +38,7 @@ import {
 // import type { MultiAccounts } from "@owallet/background";
 import { ChainInfo } from "@owallet/types";
 import { ChainIdHelper } from "@owallet/cosmos";
+import bs58 from "bs58";
 
 export class KeyRingStore {
   @observable
@@ -285,15 +286,38 @@ export class KeyRingStore {
 
   @flow
   *newPrivateKeyKey(
-    privateKey: Uint8Array,
-    meta: PlainObject,
+    privateKeyData: {
+      value: string;
+      format: "hex" | "base58";
+      chainType: string;
+      meta?: PlainObject;
+    },
     name: string,
     password: string | undefined
   ) {
-    const msg = new NewPrivateKeyKeyMsg(privateKey, meta, name, password);
+    let privateKeyBytes: Uint8Array;
+
+    if (privateKeyData.format === "base58") {
+      privateKeyBytes = bs58.decode(privateKeyData.value);
+    } else {
+      privateKeyBytes = Buffer.from(privateKeyData.value, "hex");
+    }
+
+    const msg = new NewPrivateKeyKeyMsg(
+      {
+        privateKey: privateKeyBytes,
+        format: privateKeyData.format,
+        chainType: privateKeyData.chainType,
+        meta: privateKeyData.meta || {},
+      },
+      name,
+      password
+    );
+
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
+
     this._status = result.status;
     this._keyInfos = result.keyInfos;
 

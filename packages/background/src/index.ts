@@ -232,6 +232,10 @@ export function init(
   );
   const keyringBaseLedger = new KeyRingLedger.KeyRingLedgerService();
   const keyringBaseKeystone = new KeyRingKeystone.KeyRingKeystoneService();
+  const keyringBaseSvmPrivateKey = new KeyRingSvmPrivateKeyService(
+    vaultService,
+    keyringBasePrivateKey
+  );
   const keyRingV2Service = new KeyRingV2.KeyRingService(
     storeCreator("keyring-v2"),
     {
@@ -251,6 +255,7 @@ export function init(
       keyringBasePrivateKey,
       keyringBaseLedger,
       keyringBaseKeystone,
+      keyringBaseSvmPrivateKey as any,
     ]
   );
   const keyRingCosmosService = new KeyRingCosmos.KeyRingCosmosService(
@@ -281,7 +286,7 @@ export function init(
     msgPrivilegedOrigins,
     new KeyRingSvmBaseService(chainsService, vaultService, [
       new KeyRingSvmMnemonicService(vaultService, keyringBaseMnemonic),
-      new KeyRingSvmPrivateKeyService(vaultService, keyringBasePrivateKey),
+      keyringBaseSvmPrivateKey,
     ])
   );
   const keyRingTronService = new KeyRingTron.KeyRingTronService(
