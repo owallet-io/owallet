@@ -582,43 +582,6 @@ export const EmbedChainInfos: ChainInfo[] = [
     ],
     features: ["not-support-staking"],
   },
-  {
-    rpc: "https://testnet-v2.evm.orai.io",
-    rest: "https://testnet-v2.evm.orai.io",
-    evm: {
-      chainId: 4143398064,
-      rpc: "https://testnet-v2.evm.orai.io",
-    },
-    chainId: "eip155:4143398064",
-    chainName: "Oraichain EVM Testnet",
-    chainSymbolImageUrl:
-      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
-    bip44: {
-      coinType: 60,
-    },
-    currencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "ORAI",
-        coinDecimals: 18,
-        coinGeckoId: "oraichain-token",
-        coinImageUrl:
-          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "ORAI",
-        coinDecimals: 18,
-        coinGeckoId: "oraichain-token",
-        coinImageUrl:
-          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:1/chain.png",
-      },
-    ],
-    bech32Config: defaultBech32Config("orai"),
-    features: ["not-support-staking", "eth-address-gen", "eth-key-sign"],
-  },
   // {
   //   rpc: "https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ",
   //   rest: "https://solana-mainnet.phantom.app/YBPpkkN4g91xDiAnTE9r0RcMkjg0sKUIWvAfoFVJ",
