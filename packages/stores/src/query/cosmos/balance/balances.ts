@@ -61,7 +61,7 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         `https://oraicommon.oraidex.io/api/v1/tokens/list/${allTokensAddress}`
       ).then((res) => {
         if (res?.length > 0) {
-          const tokens = res.map((item, index) => {
+          const tokens = res.map((item) => {
             const { name, decimals, coinGeckoId, icon, denom } = item || {};
             if (name && decimals && coinGeckoId && icon && denom) {
               return {
@@ -81,7 +81,7 @@ export class ObservableQueryCosmosBalancesImplParent extends ObservableChainQuer
         }
       });
     } else {
-      const denoms = response.data.balances.map((coin) => coin.denom);
+      const denoms = response.data?.balances?.map((coin) => coin.denom) ?? [];
       chainInfo.addUnknownDenoms(...denoms);
     }
   }
