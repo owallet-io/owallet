@@ -38,12 +38,11 @@ export class KeyRingSvmMnemonicService implements KeyRingSvm {
     const bip44Path = this.getBIP44PathFromVault(vault);
 
     const tag = `pubKey-m/44'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`;
-
     if (vault.insensitive[tag]) {
       const pubKey = vault.insensitive[tag] as string;
       return new PublicKey(pubKey);
     }
-    const keypair = this.getKeyPair(vault);
+    const keypair = this.getKeyPair(vault, coinType);
     const pubKey = keypair.publicKey;
     const pubKeyText = pubKey.toBase58();
     this.vaultService.setAndMergeInsensitiveToVault("keyRing", vault.id, {
@@ -55,31 +54,10 @@ export class KeyRingSvmMnemonicService implements KeyRingSvm {
 
   sign(vault: Vault, coinType: number, txMsg: string): string {
     if (!txMsg) throw Error("tx Not Empty");
-    const keypair = this.getKeyPair(vault);
+    const keypair = this.getKeyPair(vault, coinType);
     const tx = Buffer.from(decode(txMsg));
     return encode(nacl.sign.detached(new Uint8Array(tx), keypair.secretKey));
   }
-  // protected getPrivKey(
-  //   vault: Vault,
-  //   coinType: number,
-  //   keyDerivation: number = 84
-  // ): PrivKeySecp256k1 {
-  //   const bip44Path = this.getBIP44PathFromVault(vault);
-  //
-  //   const decrypted = this.vaultService.decrypt(vault.sensitive);
-  //   const masterSeedText = decrypted["masterSeedText"] as string | undefined;
-  //   if (!masterSeedText) {
-  //     throw new Error("masterSeedText is null");
-  //   }
-  //
-  //   const masterSeed = Buffer.from(masterSeedText, "hex");
-  //   return new PrivKeySecp256k1(
-  //     Mnemonic.generatePrivateKeyFromMasterSeed(
-  //       masterSeed,
-  //       `m/${keyDerivation}'/${coinType}'/${bip44Path.account}'/${bip44Path.change}/${bip44Path.addressIndex}`
-  //     )
-  //   );
-  // }
 
   protected getBIP44PathFromVault(vault: Vault): {
     account: number;
@@ -92,12 +70,15 @@ export class KeyRingSvmMnemonicService implements KeyRingSvm {
       addressIndex: number;
     };
   }
-  protected getKeyPair(vault: Vault) {
+  protected getKeyPair(vault: Vault, coinType: number) {
+    const bip44Path = this.getBIP44PathFromVault(vault);
+
+    const hdPath = `m/44'/${coinType}'/${bip44Path.addressIndex}'/${bip44Path.account}'`;
     const decrypted = this.vaultService.decrypt(vault.sensitive);
     const mnemonic = decrypted["mnemonic"] as string | undefined;
-    if (!mnemonic) {
+    if (!mnemonic || !coinType) {
       throw new Error("mnemonic is null");
     }
-    return Mnemonic.generateWalletSolanaFromSeed(mnemonic);
+    return Mnemonic.generateWalletSolanaFromSeed(mnemonic, hdPath);
   }
 }
