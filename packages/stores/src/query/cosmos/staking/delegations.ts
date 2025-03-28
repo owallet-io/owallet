@@ -50,7 +50,10 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<Delega
     }
 
     let totalBalance = new Int(0);
-    for (const delegation of this.response.data.delegation_responses) {
+    if (!this.response.data) {
+      return new CoinPretty(stakeCurrency, totalBalance);
+    }
+    for (const delegation of this.response.data?.delegation_responses ?? []) {
       const amount = new Int(delegation.balance.amount);
       if (amount.gt(new Int(0))) {
         totalBalance = totalBalance.add(amount);
@@ -76,8 +79,11 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<Delega
     }
 
     const result = [];
+    if (!this.response.data) {
+      return result;
+    }
 
-    for (const delegation of this.response.data.delegation_responses) {
+    for (const delegation of this.response.data?.delegation_responses ?? []) {
       const balance = new CoinPretty(
         stakeCurrency,
         new Int(delegation.balance.amount)

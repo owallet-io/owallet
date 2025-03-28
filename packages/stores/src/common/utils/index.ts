@@ -34,12 +34,14 @@ export class StoreUtils {
     bals: CoinPrimitive[]
   ): CoinPretty[] {
     const result: CoinPretty[] = [];
-    for (const bal of bals) {
-      const currency = currenciesMap[bal.denom];
-      if (currency) {
-        const amount = new Dec(bal.amount);
-        if (amount.truncate().gt(new Int(0))) {
-          result.push(new CoinPretty(currency, amount));
+    if (bals) {
+      for (const bal of bals) {
+        const currency = currenciesMap[bal.denom];
+        if (currency) {
+          const amount = new Dec(bal.amount);
+          if (amount.truncate().gt(new Int(0))) {
+            result.push(new CoinPretty(currency, amount));
+          }
         }
       }
     }

@@ -16,62 +16,62 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-
-      - uses: actions/checkout@v3
-
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      # - uses: sonarsource/sonarqube-scan-action@master
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      - name: Get yarn cache directory path
+      - name: Checkout Repository with Submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          repository: owallet-io/code-push-server
+          path: code-push-server
+      - name: Install Global Package (npm)
+        working-directory: code-push-server/cli
+        run: |
+          npm install
+          npm run build
+          npm install -g
+          code-push-standalone login https://code-push.orai.network --accessKey ${{ secrets.CODEPUSH_ACCESS_KEY }}
+      - name: Get Yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v2
-        id: yarn-cache
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
         with:
           path: |
             ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            ./node_modules/
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
           restore-keys: |
             ${{ runner.os }}-yarn-
-
-      - name: Checkout to repo
-        uses: actions/checkout@v3
-
-      - name: Install Dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn
-
-      - name: Install mobile packages
-        working-directory: apps/mobile
-        run: yarn --silent
-
+      - name: Install dependencies
+        run: |
+          yarn install
       - name: Build Libs Codepush
-        run: yarn build:codepush
-
-      - name: Build @owallet/hooks
-        run: yarn build
-
-      - name: Build @owallet/hooks-internal
-        run: yarn build
-
-      - name: Build provider
-        working-directory: apps/mobile
-        run: yarn build:provider
-        env:
-          CI: false
-      - name: Deploy on AppCenter
+        run: yarn build:libs
+      - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
-          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-
+          yarn cp-android --description "${{ github.event.head_commit.message }}"
+          yarn cp-ios --description "${{ github.event.head_commit.message }}"
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
+          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+          BYTE_BREW_SDK_KEY_ANDROID: ${{ secrets.BYTE_BREW_SDK_KEY_ANDROID }}
+          BYTE_BREW_ID_ANDROID: ${{ secrets.BYTE_BREW_ID_ANDROID }}
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
