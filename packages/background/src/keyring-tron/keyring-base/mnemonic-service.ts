@@ -1,11 +1,6 @@
-import { Buffer } from "buffer/";
 import { KeyRingMnemonicService } from "../../keyring-mnemonic";
 import { Vault, VaultService } from "../../vault";
-import {
-  DEFAULT_FEE_LIMIT_TRON,
-  HDKey,
-  TronWebProvider,
-} from "@owallet/common";
+import { DEFAULT_FEE_LIMIT_TRON, TronWebProvider } from "@owallet/common";
 import { KeyRingTron } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
 import TronWeb from "tronweb";

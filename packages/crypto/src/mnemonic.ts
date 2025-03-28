@@ -111,9 +111,12 @@ export class Mnemonic {
     }
     return keyPair;
   }
-  static generateWalletSolanaFromSeed(mnemonic: string): Keypair {
+  static generateWalletSolanaFromSeed(
+    mnemonic: string,
+    hdPath: string
+  ): Keypair {
     const seed = bip39.mnemonicToSeedSync(mnemonic, "");
     const hd = HDKey.fromMasterSeed(seed.toString("hex"));
-    return Keypair.fromSeed(hd.derive(`m/44'/501'/0'/0'`).privateKey);
+    return Keypair.fromSeed(hd.derive(hdPath).privateKey);
   }
 }
