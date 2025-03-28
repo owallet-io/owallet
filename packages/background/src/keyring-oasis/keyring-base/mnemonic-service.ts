@@ -60,7 +60,10 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     if (!mnemonicText) {
       throw new Error("mnemonicText is null");
     }
-    const keyPair = await HDKey.getAccountSigner(mnemonicText as string);
+    const keyPair = await HDKey.getAccountSigner(
+      mnemonicText as string,
+      bip44Path.addressIndex
+    );
     const pubKeyText = Buffer.from(keyPair.publicKey).toString("hex");
     this.vaultService.setAndMergeInsensitiveToVault("keyRing", vault.id, {
       [tag]: pubKeyText,
@@ -78,7 +81,7 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     const privKey = await this.getPrivKey(vault);
     const signer = signerFromPrivateKey(privKey);
     const bigIntAmount = BigInt(parseRoseStringToBigNumber(amount).toString());
-    console.log(bigIntAmount, to, "bigIntAmount");
+
     if (!chainInfo.grpc || !chainInfo.features.includes("oasis"))
       throw Error("Not found Oasis chain");
     const nic = getOasisNic(chainInfo.grpc);
@@ -99,12 +102,16 @@ export class KeyRingOasisMnemonicService implements KeyRingOasis {
     vault: Vault
     // coinType: number
   ): Promise<Uint8Array> {
+    const bip44Path = this.getBIP44PathFromVault(vault);
     const decrypted = this.vaultService.decrypt(vault.sensitive);
     const mnemonicText = decrypted["mnemonic"] as string | undefined;
     if (!mnemonicText) {
       throw new Error("mnemonicText is null");
     }
-    const keyPair = await HDKey.getAccountSigner(mnemonicText as string);
+    const keyPair = await HDKey.getAccountSigner(
+      mnemonicText as string,
+      bip44Path.addressIndex
+    );
     return keyPair.secretKey;
   }
 
