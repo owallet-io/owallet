@@ -55,8 +55,8 @@ jobs:
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
           MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
-          BYTE_BREW_SDK_KEY_IOS: ${{ secrets.BYTE_BREW_SDK_KEY_IOS }}
-          BYTE_BREW_ID_IOS: ${{ secrets.BYTE_BREW_ID_IOS }}
+          BYTE_BREW_SDK_KEY_ANDROID: ${{ secrets.BYTE_BREW_SDK_KEY_ANDROID }}
+          BYTE_BREW_ID_ANDROID: ${{ secrets.BYTE_BREW_ID_ANDROID }}
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
