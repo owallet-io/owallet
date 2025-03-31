@@ -578,6 +578,7 @@ export class KeyRingService {
         type: vault.insensitive["keyRingType"] as string,
         isSelected: this._selectedVaultId === vault.id,
         insensitive: vault.insensitive,
+        parentVaultId: vault.insensitive["parentVaultId"] as string,
       };
     });
   }
@@ -681,7 +682,8 @@ export class KeyRingService {
     bip44Path: BIP44HDPath,
     name: string,
     password?: string,
-    meta?: PlainObject
+    meta?: PlainObject,
+    parentVaultId?: string
   ): Promise<string> {
     if (!this.vaultService.isSignedUp) {
       if (!password) {
@@ -719,6 +721,7 @@ export class KeyRingService {
         keyRingName: name,
         keyRingType: keyRing.supportedKeyRingType(),
         keyRingMeta: meta,
+        parentVaultId,
       },
       vaultData.sensitive
     );
@@ -831,6 +834,7 @@ export class KeyRingService {
     privateKey: Uint8Array,
     meta: PlainObject,
     name: string,
+
     password?: string
   ): Promise<string> {
     if (!this.vaultService.isSignedUp) {
