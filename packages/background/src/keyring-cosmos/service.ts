@@ -20,7 +20,12 @@ import {
   serializeSignDoc,
   verifyADR36AminoSignDoc,
 } from "@owallet/cosmos";
-import { escapeHTML, sortObjectByKey } from "@owallet/common";
+import {
+  escapeHTML,
+  isOraichainEvm,
+  sortObjectByKey,
+  pubkeyToBech32,
+} from "@owallet/common";
 import { trimAminoSignDoc } from "./amino-sign-doc";
 import { InteractionService } from "../interaction";
 import { Buffer } from "buffer/";
@@ -95,6 +100,7 @@ export class KeyRingCosmosService {
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
+    console.log(chainId, "chainInfo from getKey");
     if (chainInfo.features.includes("gen-address")) {
       throw new Error(
         `${chainInfo.chainId} not support getKey from keyring cosmos base`
@@ -131,9 +137,11 @@ export class KeyRingCosmosService {
       algo: isEthermintLike ? "ethsecp256k1" : "secp256k1",
       pubKey: pubKey.toBytes(),
       address,
-      bech32Address: bech32Address.toBech32(
-        chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
-      ),
+      bech32Address: isOraichainEvm(chainId)
+        ? pubkeyToBech32(pubKey.toBytes())
+        : bech32Address.toBech32(
+            chainInfo.bech32Config?.bech32PrefixAccAddr ?? ""
+          ),
       ethereumHexAddress: bech32Address.toHex(true),
       isNanoLedger: keyInfo.type === "ledger",
       isKeystone: keyInfo.type === "keystone",

@@ -7,7 +7,7 @@ import {
   ChainInfoWithoutEndpoints,
   ChainIdEVM,
 } from "@owallet/types";
-
+import { ripemd160, sha256 } from "@cosmjs/crypto";
 import { ChainIdEnum, Network, TRON_ID } from "./constants";
 import { EmbedChainInfos } from "../config";
 import { IntPretty } from "@keplr-wallet/unit";
@@ -28,12 +28,38 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-
+import bech32 from "bech32";
 export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
   return validate(address);
 };
+const oraichainEvmMainnet = "108160679";
+const oraichainEvmTestnet = "4143398064";
 
+// Constants
+const EIP155_PREFIX = "eip155:";
+
+/**
+ * Checks if the given chain ID corresponds to an Oraichain EVM network
+ * @param chainId - The blockchain network identifier
+ * @returns boolean indicating if the chain is an Oraichain EVM network
+ */
+export const isOraichainEvm = (chainId: string): boolean => {
+  if (!chainId) return false;
+
+  const expectedMainnet = `${EIP155_PREFIX}${oraichainEvmMainnet}`;
+  const expectedTestnet = `${EIP155_PREFIX}${oraichainEvmTestnet}`;
+
+  return chainId === expectedMainnet || chainId === expectedTestnet;
+};
+
+export function pubkeyToBech32(pubkey, prefix = "orai") {
+  // Step 1: Hash the public key using SHA-256, then RIPEMD-160
+  const hashedPubkey = ripemd160(sha256(pubkey));
+
+  // Step 2: Encode the hashed address in Bech32 format
+  return bech32.encode(prefix, bech32.toWords(hashedPubkey));
+}
 export const getFavicon = (url) => {
   const serviceGG =
     "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&size=32&url=";
