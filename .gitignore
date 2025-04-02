@@ -17,6 +17,7 @@ apps
 
 .cache
 .turbo
+.cursorrules
 .parcel-cache
 
 coverage

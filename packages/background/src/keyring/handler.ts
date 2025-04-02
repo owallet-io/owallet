@@ -239,7 +239,8 @@ const handleNewMnemonicKeyMsg: (
       msg.bip44HDPath,
       msg.name,
       msg.password,
-      msg.meta
+      msg.meta,
+      msg.parentVaultId
     );
     return {
       vaultId,
