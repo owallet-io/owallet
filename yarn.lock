@@ -6777,6 +6777,7 @@ __metadata:
     "@sentry/react": =7.80.0
     "@sentry/tracing": =7.80.0
     "@storybook/react": ^7.6.18
+    "@tanstack/react-query": ^5.14.6
     "@tatumio/tatum": ^4.2.32
     "@types/amplitude-js": ^8.0.1
     "@types/chrome": 0.0.268
