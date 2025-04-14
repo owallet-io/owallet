@@ -57,20 +57,8 @@ jobs:
         working-directory: apps/extension
         run: yarn --silent
 
-      - name: Build Libs Extension
-        run: yarn build:codepush
-
-      - name: Build @owallet/hooks
-        working-directory: packages/hooks
-        run: yarn build
-
-      - name: Build @owallet/stores-internal
-        working-directory: apps/stores-internal
-        run: yarn build
-
-      - name: Build @owallet/hooks-internal
-        working-directory: apps/hooks-internal
-        run: yarn build
+      - name: Build Libs
+      - run: yarn build:libs
 
       - name: Build extension
         working-directory: apps/extension

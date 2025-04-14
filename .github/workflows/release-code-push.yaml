@@ -26,6 +26,8 @@ jobs:
           submodules: true
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+      - name: Update Git Submodules
+        run: git submodule update --remote --merge
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
