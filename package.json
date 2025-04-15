@@ -165,5 +165,12 @@
       "prettier --write \"packages/**/*.tsx\""
     ]
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.4.1",
+  "dependencies": {
+    "@tamagui/animations-react-native": "^1.125.35",
+    "@tamagui/config": "^1.125.35",
+    "@tamagui/core": "^1.125.35",
+    "@tamagui/theme-base": "^1.125.35",
+    "tamagui": "^1.125.35"
+  }
 }
