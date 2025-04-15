@@ -165,5 +165,9 @@
       "prettier --write \"packages/**/*.tsx\""
     ]
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.4.1",
+  "dependencies": {
+    "detox-cli": "^20.0.0",
+    "global": "^4.4.0"
+  }
 }
