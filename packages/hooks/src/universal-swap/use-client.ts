@@ -14,7 +14,8 @@ export const useClient = (accountOrai: any, oraichainNetwork, network) => {
       accountOrai,
       ChainIdEnum.Oraichain,
       oraichainNetwork.rpc,
-      network
+      network,
+      oraichainNetwork.gasPrice || ""
     );
     setClient(cwClient);
   };
