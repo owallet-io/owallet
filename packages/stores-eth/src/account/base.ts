@@ -39,7 +39,7 @@ export class EthereumAccountBase {
   constructor(
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly getKeplr: () => Promise<OWallet | undefined>
+    protected readonly getOWallet: () => Promise<OWallet | undefined>
   ) {
     makeObservable(this);
   }
@@ -63,7 +63,7 @@ export class EthereumAccountBase {
     const { to, value, data } = unsignedTx;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const owallet = (await this.getKeplr())!;
+    const owallet = (await this.getOWallet())!;
     const gasEstimated = await owallet.ethereum.request<string>({
       method: "eth_estimateGas",
       params: [
@@ -137,7 +137,7 @@ export class EthereumAccountBase {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const owallet = (await this.getKeplr())!;
+    const owallet = (await this.getOWallet())!;
 
     const l1Fee = await owallet.ethereum.request<string>({
       method: "eth_call",
@@ -265,7 +265,7 @@ export class EthereumAccountBase {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const owallet = (await this.getKeplr())!;
+      const owallet = (await this.getOWallet())!;
 
       const transactionCount = await owallet.ethereum.request<string>({
         method: "eth_getTransactionCount",

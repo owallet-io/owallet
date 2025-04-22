@@ -1,6 +1,7 @@
 import {
   CosmosQueriesImpl,
   IQueriesStore,
+  NobleQueries,
   OsmosisQueries,
 } from "@owallet/stores";
 import { OWalletETCQueriesImpl } from "@owallet/stores-etc";
@@ -23,5 +24,6 @@ export type QueriesStore = IQueriesStore<
       >;
     } & Partial<BtcQueries> &
     Partial<OasisQueries> &
-    Partial<TrxQueries>
+    Partial<TrxQueries> &
+    Partial<NobleQueries>
 >;
