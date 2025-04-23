@@ -3,8 +3,8 @@ import { _TypedDataEncoder as TypedDataEncoder } from "@ethersproject/hash";
 
 // https://eips.ethereum.org/EIPS/eip-712
 
-// XXX: ledger의 서명을 frontend에서 다루게 되면서 밑의 함수들은 사실 frontend에서 사용된다.
-//      뭔가 이상해진 부분임
+// XXX: Since Ledger signatures are now handled in the frontend, the functions below are actually used in the frontend.
+//      This is a bit of an unusual arrangement.
 
 export const EIP712PropertyFieldValidator = Joi.object<{
   name: string;
