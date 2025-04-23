@@ -27,21 +27,21 @@ export class SidePanelService {
       });
 
       autorun(() => {
-        // XXX: setPanelBehavior() 안에서 this._isEnabled를 사용하고 this._isEnabled는 observable이기 때문에
-        //      알아서 반응해서 처리된다는 점을 참고...
+        // XXX: Note that setPanelBehavior() uses this._isEnabled, which is observable,
+        //      so it will automatically react to changes.
         this.setPanelBehavior().catch(console.log);
       });
     }
 
     autorun(() => {
-      // _enabled가 observed되어야 하기 때문에 꼭 여기서 호출해야한다.
+      // Must be called here because _enabled needs to be observed.
       const enabled = this.getIsEnabled();
 
       (async () => {
         let skip = false;
 
-        // service worker에서는 background가 active/inactive 상태가 반복될 수 있으므로
-        // 이런 처리를 안해주면 계속해서 요청을 발생시킬 수 있다.
+        // In service worker, background can repeatedly go through active/inactive states,
+        // so without this handling, it could generate constant requests.
         if (isServiceWorker()) {
           const saved = await browser.storage.session.get(
             "side_panel_analytics"
@@ -79,21 +79,21 @@ export class SidePanelService {
   }
 
   isSidePanelSupported(): boolean {
-    // manifest v3가 아니면 side panel은 작동하지 않음
+    // Side panel doesn't work without manifest v3
     if (!isServiceWorker()) {
       return false;
     }
 
     try {
-      // navigator.userAgentData가 experimental이라서 any로 캐스팅해서 사용
+      // Cast to any because navigator.userAgentData is experimental
       const anyNavigator = navigator as any;
       if ("userAgentData" in anyNavigator) {
         const brandNames: string[] = anyNavigator.userAgentData.brands.map(
           (brand: { brand: string; version: string }) => brand.brand
         );
 
-        // side panel이 API가 있더라도 모든 웹브라우저에서 작동하는게 아니다...
-        // 일단 사용 가능한게 확인된 브라우저만 허용
+        // Even if the side panel API exists, it doesn't work in all web browsers...
+        // For now, only allow browsers that have been confirmed to support it
         if (
           !brandNames.includes("Google Chrome") &&
           !brandNames.includes("Microsoft Edge") &&
