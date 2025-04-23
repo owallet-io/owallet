@@ -277,7 +277,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
   @action
   setGasAdjustmentValue(gasAdjustment: string | number) {
     if (typeof gasAdjustment === "number") {
-      if (gasAdjustment < 0 || gasAdjustment > 2) {
+      if (gasAdjustment < 0 || gasAdjustment > 3) {
         return;
       }
 
@@ -295,7 +295,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
     }
 
     const num = parseFloat(gasAdjustment);
-    if (Number.isNaN(num) || num < 0 || num > 2) {
+    if (Number.isNaN(num) || num < 0 || num > 3) {
       return;
     }
 
@@ -329,7 +329,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
     // Even though the implementation is not intuitive, the goals are
     // - Every time the observable used in simulateGasFn is updated, the simulation is refreshed.
     // - The simulation is refreshed only when changing from zero fee to paying fee or vice versa.
-    // - It's been modified to refresh when the currency of the fee itself changes due to problems in feemarket, etc. In this case, for ease of handling, it's applied in the storeKey setter.
+    // - feemarket 등에서 문제를 일으켜서 fee의 currency 자체가 바뀔때도 refresh 하도록 수정되었다. 이 경우 원활한 처리를 위해서 (귀찮아서) storeKey setter에서 적용된다.
     this._disposers.push(
       autorun(() => {
         if (!this.enabled) {
@@ -457,7 +457,11 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
 
     this._disposers.push(
       autorun(() => {
-        if (this.enabled && this.gasEstimated != null) {
+        if (
+          this.enabled &&
+          this.gasEstimated != null &&
+          !Number.isNaN(this.gasEstimated)
+        ) {
           this.gasConfig.setValue(this.gasEstimated * this.gasAdjustment);
         }
       })
