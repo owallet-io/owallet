@@ -69,8 +69,8 @@ export class SignDocAmountConfig
 
     for (const msg of msgs) {
       try {
-        // TODO: msg.type이 다른 체인들이 몇개 있다. 이런 얘들에 대해서 좀 더 편리하게 처리해줄 방법을 찾아본다.
-        //       이 기능이 사용자의 자산을 잃게 만들리는 없기 때문에 나중에 처리해준다.
+        // TODO: There are several chains with different msg.types. We'll look for a more convenient way to handle these.
+        //       Since this functionality won't cause users to lose assets, we'll address it later.
         switch (msg.type) {
           case "cosmos-sdk/MsgSend":
             if (

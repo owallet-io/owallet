@@ -380,7 +380,6 @@ export class OWalletWalletConnectV2 implements OWallet {
 
     await this.sendCustomRequest<void>(param);
 
-    // session의 정보가 업데이트 되기 전에 다음로직이 실행되면 안되기 때문에 namespace가 업데이트 될때까지 기다린다.
     // We wait for the namespace to be updated because we don't want the next logic to run before the session's information is updated.
     return new Promise(async (resolve) => {
       while (true) {

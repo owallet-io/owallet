@@ -12,8 +12,8 @@ export type FnRequestInteractionOptions = {
   // In the case of a detached popup, it is not guaranteed that any logic will be executed when it is closed.
   // To solve this problem, the callback below is used.
   unstableOnClose?: () => void;
-  // extension에서 window가 이미 열려있다면 uri를 env 단에서 바꾸지 않는다.
-  // side panel 기능이 추가되면서 popup/side panel에서의 interaction system을 최대한 동일하게 가져가기 위해서 추가됨.
+  // If a window is already open in the extension, don't change the URI at the env level.
+  // Added to maintain the interaction system between popup/side panel as similarly as possible after the side panel feature was added.
   ignoreURIReplacement?: boolean;
 };
 
