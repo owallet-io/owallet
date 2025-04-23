@@ -1,30 +1,32 @@
 import { SimpleFetchRequestOptions, SimpleFetchResponse } from "./types";
 import { SimpleFetchError } from "./error";
 
-function isValidURL(string) {
-  try {
-    new URL(string);
-    return true; // If no error is thrown, the URL is valid
-  } catch (_) {
-    return false; // Invalid URL
-  }
-}
-
 export function makeURL(baseURL: string, url: string): string {
-  if (isValidURL(baseURL)) {
-    const baseURLInstance = new URL(baseURL);
-    baseURL = removeLastSlashIfIs(baseURLInstance.origin);
-    url =
-      removeLastSlashIfIs(baseURLInstance.pathname) +
-      "/" +
-      removeFirstSlashIfIs(url);
+  const baseURLInstance = new URL(baseURL);
+  baseURL = removeLastSlashIfIs(baseURLInstance.origin);
+  url =
+    removeLastSlashIfIs(baseURLInstance.pathname) +
+    "/" +
+    removeFirstSlashIfIs(url);
 
-    return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
-  }
+  url =
+    url +
+    (() => {
+      if (Array.from(baseURLInstance.searchParams.keys()).length > 0) {
+        if (url.includes("?")) {
+          return "&" + baseURLInstance.searchParams.toString();
+        } else {
+          return "?" + baseURLInstance.searchParams.toString();
+        }
+      }
+      return "";
+    })();
+
+  return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
 }
 
 function removeFirstSlashIfIs(str: string): string {
-  if (str?.length > 0 && str[0] === "/") {
+  if (str.length > 0 && str[0] === "/") {
     return str.slice(1);
   }
 
@@ -32,13 +34,11 @@ function removeFirstSlashIfIs(str: string): string {
 }
 
 function removeLastSlashIfIs(str: string): string {
-  if (str) {
-    if (str.length > 0 && str[str.length - 1] === "/") {
-      return str.slice(0, str.length - 1);
-    }
-
-    return str;
+  if (str.length > 0 && str[str.length - 1] === "/") {
+    return str.slice(0, str.length - 1);
   }
+
+  return str;
 }
 
 export async function simpleFetch<R>(
@@ -81,6 +81,8 @@ export async function simpleFetch<R>(
     ...otherOptions,
   });
 
+  const isGETMethod = (otherOptions?.method || "GET").toUpperCase() === "GET";
+
   let data: R;
 
   if (fetched.status === 204) {
@@ -105,12 +107,13 @@ export async function simpleFetch<R>(
     url: actualURL,
     data,
     headers: fetched.headers,
-    status: fetched.status,
+    // GET이면서 204인 경우는 404로 처리
+    status: isGETMethod && fetched.status === 204 ? 404 : fetched.status,
     statusText: fetched.statusText,
   };
 
   const validateStatusFn = options?.validateStatus || defaultValidateStatusFn;
-  if (!validateStatusFn(fetched.status)) {
+  if (!validateStatusFn(res.status)) {
     throw new SimpleFetchError(baseURL, url, res);
   }
 
