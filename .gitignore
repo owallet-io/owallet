@@ -25,6 +25,15 @@ coverage
 .yarn/cache
 .yarn/install-state.gz
 .yarnrc
+ 
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 .npmrc
 .env
 .env.*

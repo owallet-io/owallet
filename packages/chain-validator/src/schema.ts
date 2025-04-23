@@ -361,83 +361,8 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
     );
   }
 
-  // if (!EIP155ChainIdSchema.validate(value.chainId).error) {
-  //   if (value.bip44.coinType !== 60) {
-  //     throw new Error(
-  //       "if chainId is EIP-155 chain id defined in CAIP-2, coin type should be 60"
-  //     );
-  //   }
-  //
-  //   // if (!value.evm) {
-  //   //   throw new Error(
-  //   //     "if chainId is EIP-155 chain id defined in CAIP-2, evm should be provided"
-  //   //   );
-  //   // }
-  //
-  //   if (value.bech32Config != null) {
-  //     throw new Error(
-  //       "if chainId is EIP-155 chain id defined in CAIP-2, bech32Config should be undefined"
-  //     );
-  //   }
-  // }
-
-  // if (!value.bech32Config) {
-  //   // if (value.bip44.coinType !== 60) {
-  //   //   throw new Error("if bech32Config is undefined, coin type should be 60");
-  //   // }
-  //
-  //   // if (!value.evm) {
-  //   //   throw new Error("if bech32Config is undefined, evm should be provided");
-  //   // }
-  //
-  //   if (EIP155ChainIdSchema.validate(value.chainId).error) {
-  //     throw new Error(
-  //       "if bech32Config is undefined, chainId should be EIP-155 chain id defined in CAIP-2"
-  //     );
-  //   }
-  //   if (SolanaChainIdSchema.validate(value.chainId).error) {
-  //     throw new Error(
-  //         "if bech32Config is undefined, chainId should be Solana chain id defined in CAIP-2"
-  //     );
-  //   }
-  // }
-
-  // evm only chain이 아닌 ethermint같은 경우에만 위의 밸리데이션을 수행한다.
+  // Only perform the validation above for hybrid chains like ethermint, not for EVM-only chains.
   // if (EIP155ChainIdSchema.validate(value.chainId).error) {
-  //   if (value.evm) {
-  //     const firstCurrency = value.currencies[0];
-  //     if (firstCurrency.coinDecimals !== 18) {
-  //       throw new Error(
-  //         "The first currency's coin decimals should be 18 for EVM chain"
-  //       );
-  //     }
-  //     if (value.stakeCurrency) {
-  //       if (value.stakeCurrency.coinDecimals !== 18) {
-  //         throw new Error(
-  //           "The stake currency's coin decimals should be 18 for EVM chain"
-  //         );
-  //       }
-  //       const cur = value.currencies.find(
-  //         (cur) =>
-  //           cur.coinMinimalDenom === value.stakeCurrency?.coinMinimalDenom
-  //       );
-  //       if (cur) {
-  //         if (cur.coinDecimals !== 18) {
-  //           throw new Error(
-  //             "The stake currency's coin decimals should be 18 for EVM chain"
-  //           );
-  //         }
-  //       }
-  //     }
-  //
-  //     const firstFeeCurrency = value.feeCurrencies[0];
-  //     if (firstFeeCurrency.coinDecimals !== 18) {
-  //       throw new Error(
-  //         "The first fee currency's coin decimals should be 18 for EVM chain"
-  //       );
-  //     }
-  //   }
-  // }
 
   return value;
 });

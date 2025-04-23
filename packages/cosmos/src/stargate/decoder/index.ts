@@ -43,8 +43,8 @@ export class ProtoSignDocDecoder {
       if ("authInfoBytes" in this.signDoc) {
         this._authInfo = AuthInfo.decode(this.signDoc.authInfoBytes);
       } else {
-        // 사실 direct aux에서 auth info를 만들어내는 것은 불가능하다.
-        // 하지만 기존 코드를 재활용하기 위해서 필요하니 일단 적당히 만들어준다.
+        // Actually it's impossible to create auth info from direct aux.
+        // But we need it to reuse existing code, so we create it approximately.
         const directAux = this.signDoc;
         this._authInfo = AuthInfo.fromPartial({
           signerInfos: [
@@ -104,8 +104,8 @@ export class ProtoSignDocDecoder {
     }
 
     const directAuxJSON = SignDocDirectAux.toJSON(this.signDoc) as any;
-    // bodyBytes는 어차피 json으로 보여줘도 못 알아먹는다.
-    // 더 밑에서 txBody를 보여주기 때문에 bodyBytes는 삭제한다.
+    // The bodyBytes are unreadable in JSON format anyway.
+    // Since we show txBody below, we remove bodyBytes.
     if (directAuxJSON.bodyBytes) {
       delete directAuxJSON.bodyBytes;
     }

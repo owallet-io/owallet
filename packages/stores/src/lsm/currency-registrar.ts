@@ -145,7 +145,7 @@ export class LSMCurrencyRegistrar {
         if (val) {
           return {
             moniker: val.description.moniker,
-            // query에서는 thumbnail이 없으면 빈 문자열이 반환되는데, 밑의 로직에서는 없을 경우 명시적으로 undefined 여야 함.
+            // In the query, if there's no thumbnail, an empty string is returned, but in the logic below, it should be explicitly undefined if it doesn't exist.
             thumbnail:
               thumbnail && thumbnail.thumbnail
                 ? thumbnail.thumbnail

@@ -63,12 +63,12 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /*
-   * 해당되는 denom의 currency를 모를 때 이 메소드를 사용해서 등록을 요청할 수 있다.
-   * 이미 등록되어 있거나 등록을 시도 중이면 아무 행동도 하지 않는.
-   * 예를들어 네이티브 balance 쿼리에서 모르는 denom이 나오거나
-   * IBC denom의 등록을 요청할 때 쓸 수 있다.
-   * action 안에서는 autorun이 immediate로 실행되지 않으므로, 일단 @action 데코레이터는 사용하지 않는다.
-   * 하지만 이 메소드를 action 안에서 호출하면 여전히 immediate로 실행되지 않으므로, 이 경우도 고려해야한다.
+   * When the currency for a specific denom is unknown, this method can be used to request registration.
+   * If it's already registered or registration is in progress, no action is taken.
+   * For example, it can be used when an unknown denom appears in a native balance query,
+   * or when requesting registration of an IBC denom.
+   * Since autorun is not executed immediately inside an action, the @action decorator is not used for now.
+   * However, when calling this method from within an action, it still won't execute immediately, so this case must be considered.
    */
   addUnknownDenoms(...coinMinimalDenoms: string[]) {
     this.addUnknownDenomsImpl(coinMinimalDenoms, true);
@@ -90,8 +90,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           continue;
         } else if (reaction) {
           found = true;
-          // 로직상 reaction은 reactive할 필요가 없기 때문에
-          // 그냥 여기서 바꾼다.
+          // Since the reaction doesn't need to be reactive in the logic,
+          // we just change it here.
           prior.reaction = reaction;
         }
       }
@@ -294,8 +294,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * Currency를 반환한다.
-   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
+   * Returns the Currency.
+   * If the Currency doesn't exist, adds it to unknown currency.
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -366,7 +366,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
+   * Similar to findCurrency but returns a raw currency if the corresponding currency doesn't exist.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
@@ -805,8 +805,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
       .filter((chainInfo) => "currencies" in chainInfo || "cosmos" in chainInfo)
       .map((chainInfo) => {
         if ("cosmos" in chainInfo) {
-          // TODO: 이거 타이핑이 불가능한데 일단 대충 넘어가도록 처리한 것임.
-          //       chainInfo.cosmos는 ChainInfo 타입이기 때문에 C를 만족할 수 없다.
+          // TODO: This is a workaround for a typing issue; we're proceeding roughly for now.
+          //       chainInfo.cosmos is of ChainInfo type, so it can't satisfy C.
           chainInfo = chainInfo.cosmos as C;
         }
         if (!("currencies" in chainInfo)) {

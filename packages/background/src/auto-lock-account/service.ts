@@ -5,10 +5,10 @@ import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 export class AutoLockAccountService {
   // Unit: ms
   // Zero means disabled
-  // auto lock duration이 설정되면 컴퓨터가 sleep 모드가 되면 lock된다.
+  // When auto lock duration is set, the account will be locked when the computer goes into sleep mode.
   @observable
   protected autoLockDuration: number = 0;
-  // auto lock duration이 설정되어 있지 않더라도 sleep 모드가 되면 lock된다.
+  // Even if the auto lock duration is not set, the account will be locked when the computer goes into sleep mode.
   @observable
   protected lockOnSleep: boolean = false;
 

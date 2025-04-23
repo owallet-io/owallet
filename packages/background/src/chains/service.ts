@@ -77,7 +77,7 @@ export class ChainsService {
       kvStore: KVStore;
       updaterKVStore: KVStore;
     },
-    // embedChainInfos는 실행 이후에 변경되어서는 안된다.
+    // embedChainInfos should not be modified after initialization.
     embedModularChainInfos: ReadonlyArray<
       ModularChainInfo | ChainInfoWithCoreTypes
     >,
@@ -314,8 +314,8 @@ export class ChainsService {
   }
 
   /**
-   * 이 서비스 자체를 포함한 다른 모든 서비스들이 init된 이후에 실행된다. (message를 받을 수 있는 상태 직전)
-   * 모든 서비스가 init이 된 이후에 실행될 추가적인 로직을 여기에 작성할 수 있다.
+   * This executes after all services (including this service itself) have been initialized (just before messages can be received).
+   * Additional logic that should run after all services have been initialized can be written here.
    */
   async afterInit(): Promise<void> {
     const lastEmbedChainInfos = await this.kvStore.get<
@@ -556,7 +556,7 @@ export class ChainsService {
     const chainInfo = this.getChainInfoOrThrow(chainId);
 
     if (this.isEvmOnlyChain(chainInfo.chainId)) {
-      // TODO: evm 체인에서의 chain info 업데이트 로직에 대해서는 나중에 구현한다.
+      // TODO: Logic for updating chain info for EVM chains will be implemented later.
       return false;
     }
 
@@ -668,7 +668,7 @@ export class ChainsService {
     const onApprove = async (
       receivedChainInfo: ChainInfoWithSuggestedOptions
     ) => {
-      // approve 이후에 이미 등록되어있으면 아무것도 하지 않는다...
+      // If it's already registered after approval, do nothing...
       if (this.hasChainInfo(receivedChainInfo.chainId)) {
         return;
       }
@@ -1076,7 +1076,7 @@ export class ChainsService {
   onChainRemoved(chainInfo: ChainInfo): void {
     const chainIdentifier = ChainIdHelper.parse(chainInfo.chainId).identifier;
 
-    // 이 이후로 updated 정보를 다 지워버리기 때문에 먼저 chain info를 얻어놔야한다.
+    // We need to get chain info first because we'll clear all updated information afterwards.
     const updated = this.mergeChainInfosWithDynamics([chainInfo])[0];
 
     {
@@ -1174,7 +1174,7 @@ export class ChainsService {
             };
           }
 
-          // TODO: `mergeModularChainInfosWithDynamics` 같은 메소드로 빼기
+          // TODO: Extract to a method like `mergeModularChainInfosWithDynamics`
           if ("starknet" in modularChainInfo) {
             const endpoint = this.getEndpoint(modularChainInfo.chainId);
             return {

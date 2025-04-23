@@ -45,16 +45,16 @@ export type IBCHistory = {
         counterpartyChainId: string;
 
         sequence?: string;
-        // 위의 channel id는 src channel id이고
-        // 얘는 dst channel id이다
-        // 각 tracking이 완료될때마다 events에서 찾아서 추가된다.
+        // The channel id above is the src channel id
+        // This is the dst channel id
+        // It's added from events each time tracking is completed.
         dstChannelId?: string;
 
         completed: boolean;
         error?: string;
         rewound?: boolean;
-        // swap 이후에는 rewind가 불가능하기 때문에
-        // swap 등에서는 이 값이 true일 수 있음
+        // Since rewinding is not possible after a swap,
+        // this value may be true in swap operations
         rewoundButNextRewindingBlocked?: boolean;
       }[];
 
