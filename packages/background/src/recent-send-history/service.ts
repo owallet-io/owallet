@@ -1225,7 +1225,7 @@ export class RecentSendHistoryService {
           : amountAttr.value;
         const split = amount.split(/^([0-9]+)(\s)*([a-zA-Z][a-zA-Z0-9/-]*)$/);
 
-        // 이 if 문을 만족 못하면 이미 망한건데... 머 따로 오류 처리할 마땅한 방법이 없으니 일단 패스...
+        // If this if statement fails, we're already in trouble... there's no good way to handle this error, so just continue
         if (split.length === 5) {
           const amount = split[1];
           const denom = split[3];
