@@ -407,10 +407,10 @@ export class RecentSendHistoryService {
             },
             () => {
               // reject if ws closed before fulfilled
-              // 하지만 로직상 fulfill 되기 전에 ws가 닫히는게 되기 때문에
-              // delay를 좀 준다.
-              // 현재 trackIBCPacketForwardingRecursiveInternal에 ws close 이후에는 동기적인 로직밖에 없으므로
-              // 문제될게 없다.
+              // However, due to the logic, the websocket might close before fulfillment
+              // so we add a slight delay.
+              // Since there are only synchronous operations after websocket close in trackIBCPacketForwardingRecursiveInternal,
+              // this shouldn't cause any issues.
               setTimeout(() => {
                 reject();
               }, 500);
@@ -1339,7 +1339,7 @@ export class RecentSendHistoryService {
                   });
               }, 2000);
             } else {
-              // tx가 실패한거면 종료
+              // If the transaction failed, terminate
               this.removeRecentSkipHistory(history.id);
               onFulfill(false);
             }
@@ -1348,7 +1348,7 @@ export class RecentSendHistoryService {
           }
         })
         .catch(() => {
-          // 오류가 발생하면 종료
+          // If an error occurs, terminate
           onFulfill(false);
         });
     } else {
@@ -1412,13 +1412,13 @@ export class RecentSendHistoryService {
                 });
             }, 2000);
           } else {
-            // tx가 실패한거면 종료
+            // If the transaction failed, terminate
             this.removeRecentSkipHistory(history.id);
             onFulfill(false);
           }
         })
         .catch(() => {
-          // 오류가 발생하면 종료
+          // If an error occurs, terminate
           onFulfill(false);
         });
     }
@@ -1438,29 +1438,29 @@ export class RecentSendHistoryService {
     const { txHash, chainId, trackStatus, trackDone, routeIndex, simpleRoute } =
       history;
 
-    // 실행이 필요한지 판별
+    // Determine if execution is necessary
     const needRun = (() => {
-      // 1) 상태가 COMPLETED인데 아직 다음 라우트가 남아 있는 경우
+      // 1) If status is COMPLETED but there are still routes remaining
       if (
         trackStatus?.includes("COMPLETED") &&
         routeIndex !== simpleRoute.length - 1
       ) {
         return true;
       }
-      // 2) status가 없거나, track이 완료되지 않은 경우
+      // 2) If status doesn't exist or tracking is not complete
       if (!trackStatus || !trackDone) {
         return true;
       }
       return false;
     })();
 
-    // 더 이상 진행할 필요가 없다면 종료
+    // If no further progress is needed, terminate
     if (!needRun) {
       onFulfill();
       return;
     }
 
-    // Skip API에 보낼 request 정보
+    // Request information to send to Skip API
     const request: StatusRequest = {
       tx_hash: txHash,
       chain_id: chainId.replace("eip155:", ""),
@@ -1493,10 +1493,10 @@ export class RecentSendHistoryService {
           transfer_asset_release,
         } = res.data;
 
-        // 상태 갱신
+        // Update status
         history.trackStatus = state;
 
-        // 트래킹이 불확실하거나 미완료 상태에 해당하면 에러 처리 후 재시도
+        // If tracking is uncertain or incomplete, handle error and retry
         if (
           [
             "STATE_SUBMITTED",
@@ -1509,7 +1509,7 @@ export class RecentSendHistoryService {
           return;
         }
 
-        // 정상적인 트래킹 진행으로 가정
+        // Assume normal tracking progress
         history.trackError = undefined;
 
         const currentRouteIndex =
@@ -1517,20 +1517,18 @@ export class RecentSendHistoryService {
         let nextRouteIndex = currentRouteIndex;
         let errorMsg: string | undefined = error?.message;
 
-        // 언락된 자산 정보가 있으면 저장
+        // If there is unlocked asset information, save it
         if (transfer_asset_release) {
           history.transferAssetRelease = transfer_asset_release;
         }
 
-        // 다음 blocking transfer의 인덱스
+        // Index of the next blocking transfer
         const nextBlockingTransferIndex =
           next_blocking_transfer?.transfer_sequence_index ??
           transfer_sequence.length - 1;
         const transfer = transfer_sequence[nextBlockingTransferIndex];
 
-        // -------------------------
-        // 어떤 타입의 transfer인지 확인하여 targetChainId / errorMsg / receiveTxHash 결정 (if-else 체인)
-        // -------------------------
+        // Determine the transfer type to decide targetChainId / errorMsg / receiveTxHash (if-else chain)
         let targetChainId: string | undefined;
         let receiveTxHash: string | undefined;
 
@@ -1738,14 +1736,12 @@ export class RecentSendHistoryService {
             }
           }
         } else {
-          // 아마 EVM 체인 위에서만 발생하는 경우 transfer가 없는 것으로 처리되는 것 같음
+          // This probably only occurs on EVM chains, where it seems to be processed as if there's no transfer
           targetChainId = history.destinationChainId;
           receiveTxHash = history.txHash;
         }
 
-        // -------------------------
-        // 찾은 targetChainId로 다음 라우트 인덱스를 갱신
-        // -------------------------
+        // Update next route index based on the found targetChainId
         if (targetChainId) {
           for (let i = currentRouteIndex; i < simpleRoute.length; i++) {
             const routeChain = simpleRoute[i].chainId.replace("eip155:", "");
@@ -1758,20 +1754,20 @@ export class RecentSendHistoryService {
             }
           }
 
-          // 찾지못하더라도 optimistic하게 다음 트라이로 이동
+          // Even if not found, optimistically move to the next try
         }
 
-        // 에러 메시지 갱신
+        // Update error message
         history.trackError = errorMsg;
-        // 최종 routeIndex 갱신
+        // Final routeIndex update
         history.routeIndex = nextRouteIndex;
 
-        // state에 따라 트래킹 완료/재시도 결정
+        // Decide whether to complete tracking or retry based on state
         switch (state) {
           case "STATE_ABANDONED":
           case "STATE_COMPLETED_ERROR":
           case "STATE_COMPLETED_SUCCESS":
-            // 성공 상태인데 라우트가 남았다면 마지막 라우트로 이동
+            // If successful but routes remain, move to the last route
             if (
               state === "STATE_COMPLETED_SUCCESS" &&
               nextRouteIndex !== simpleRoute.length - 1
@@ -1789,7 +1785,7 @@ export class RecentSendHistoryService {
 
           case "STATE_PENDING":
           case "STATE_PENDING_ERROR":
-            // 아직 트래킹 중이거나 에러 상태 전파 중 => 재시도
+            // Still tracking or propagating error state => retry
             onError();
             break;
         }
@@ -1957,8 +1953,8 @@ export class RecentSendHistoryService {
                     const to = "0x" + log.topics[2].slice(26);
                     if (to.toLowerCase() === history.recipient.toLowerCase()) {
                       const amount = BigInt(log.data).toString(10);
-                      // Hyperlane을 통해 Forma로 TIA를 받는 경우 토큰 수량이 decimal 6으로 기록되는데,
-                      // Forma에서는 decimal 18이기 때문에 12자리 만큼 0을 붙여준다.
+                      // When receiving TIA via Hyperlane to Forma, the token amount is recorded with decimal 6,
+                      // but in Forma it's decimal 18, so we need to add 12 zeros.
                       history.resAmount.push([
                         {
                           amount:
