@@ -104,12 +104,12 @@ export type SkipHistory = {
   amount: {
     amount: string;
     denom: string;
-  }[]; // [sourceChain asset, destinationChain asset] 형태로 저장
+  }[]; // Stored in the format [sourceChain asset, destinationChain asset]
   txHash: string; // hex string
 
-  trackDone?: boolean; // status tracking이 완료되었는지 여부
-  trackError?: string; // status tracking 중 에러가 발생했는지 여부
-  trackStatus?: StatusState; // status tracking의 현재 상태
+  trackDone?: boolean; // Whether the status tracking is completed
+  trackError?: string; // Whether an error occurred during status tracking
+  trackStatus?: StatusState; // Current state of status tracking
 
   notified?: boolean;
   notificationInfo?: {
@@ -120,15 +120,15 @@ export type SkipHistory = {
     isOnlyEvm: boolean;
     chainId: string;
     receiver: string;
-  }[]; // 세부적인 채널 정보를 제외, 덩어리 경로 정보만 저장
-  routeIndex: number; // 현재까지 진행된 라우팅 인덱스
-  routeDurationSeconds: number; // 라우팅에 걸리는 예상 시간
+  }[]; // Stores only chunk path information excluding detailed channel information
+  routeIndex: number; // Current routing index progress
+  routeDurationSeconds: number; // Estimated time for routing
 
   destinationAsset: {
     chainId: string;
     denom: string;
     expectedAmount?: string;
-  }; // 최종 목적지의 asset 정보
+  }; // Final destination asset information
 
   resAmount: {
     amount: string;
@@ -143,8 +143,8 @@ export type SkipHistory = {
     }[];
   };
 
-  transferAssetRelease?: TransferAssetRelease; // 라우팅 중간에 실패한 경우, 사용자의 자산이 어디에서 릴리즈 되었는지 정보
-  isOnlyUseBridge?: boolean; // send bridge 페이지에서 swap코드를 사용 하고 있기 때문에 브릿지만 사용했는지 여부 필요함
+  transferAssetRelease?: TransferAssetRelease; // If routing fails midway, information about where the user's assets were released
+  isOnlyUseBridge?: boolean; // Need to know if only bridge was used because send bridge page is using swap code
 };
 
 /**

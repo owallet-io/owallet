@@ -79,7 +79,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<
       rawPathChunks.push(rawPaths.slice(i, i + 2));
     }
 
-    // 기존 ibc-go랑 ibc v2랑 섞이면 base denom 안에 path가 포함되어 버린다...;;
+    // When mixing ibc-go and ibc v2, the path gets included in the base denom...
     const rawPathsInBaseDenom =
       this.response.data.denom_trace.base_denom.split("/");
     if (rawPathsInBaseDenom.length % 2 === 1) {
@@ -110,7 +110,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<
       return this.response.data.denom.base;
     }
 
-    // 기존 ibc-go랑 ibc v2랑 섞이면 base denom 안에 path가 포함되어 버린다...;;
+    // When mixing ibc-go and ibc v2, the path gets included in the base denom...
     const rawPathsInBaseDenom =
       this.response.data.denom_trace.base_denom.split("/");
     if (rawPathsInBaseDenom.length % 2 === 1) {

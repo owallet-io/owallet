@@ -31286,7 +31286,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "react-virtualized-auto-sizer@npm:^1.0.26":
   version: 1.0.26
   resolution: "react-virtualized-auto-sizer@npm:1.0.26"
@@ -31313,11 +31312,6 @@ __metadata:
 "react@npm:18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
-=======
-"react@npm:18.3.1":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
->>>>>>> c0fe170e8ad042cde8b3247f0b94e905bd6853fc
   dependencies:
     loose-envify: ^1.1.0
   checksum: a27bcfa8ff7c15a1e50244ad0d0c1cb2ad4375eeffefd266a64889beea6f6b64c4966c9b37d14ee32d6c9fcd5aa6ba183b6988167ab4d127d13e7cb5b386a376

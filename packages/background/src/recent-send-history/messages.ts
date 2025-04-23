@@ -425,7 +425,7 @@ export class RecordTxWithSkipSwapMsg extends Message<string> {
     public readonly sender: string,
     public readonly recipient: string,
 
-    // amount 대신 amountIn, amountOut을 사용하도록 변경
+    // Changed to use amountIn, amountOut instead of amount
 
     public readonly amount: {
       readonly amount: string;
