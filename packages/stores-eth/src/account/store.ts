@@ -5,10 +5,10 @@ import { OWallet } from "@owallet/types";
 export class EthereumAccountStore extends HasMapStore<EthereumAccountBase> {
   constructor(
     protected readonly chainGetter: ChainGetter,
-    protected readonly getKeplr: () => Promise<OWallet | undefined>
+    protected readonly getOWallet: () => Promise<OWallet | undefined>
   ) {
     super((chainId: string) => {
-      return new EthereumAccountBase(chainGetter, chainId, getKeplr);
+      return new EthereumAccountBase(chainGetter, chainId, getOWallet);
     });
   }
 
