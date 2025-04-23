@@ -5,8 +5,8 @@ export const runIfOnlyAppStart = async (
   fn: () => Promise<void>
 ): Promise<void> => {
   let skip = false;
-  // service worker의 경우 active/inactive가 될 수 있다
-  // 이 경우 session이 값을 저장함으로써 최초 한번만 실행되도록 보장한다.
+  // Service worker can switch between active and inactive states
+  // In this case, we ensure the function runs only once by storing the value in the session
   if (isServiceWorker()) {
     try {
       const v = await browser.storage.session.get(key);

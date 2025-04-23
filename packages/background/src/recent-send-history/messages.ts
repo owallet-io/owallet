@@ -257,7 +257,7 @@ export class SendTxAndRecordWithIBCSwapMsg extends Message<Uint8Array> {
       throw new Error("tx is empty");
     }
 
-    // XXX: swap chain 안에서만 이루어지는 경우 ibc channel이 필요 없을 수도 있음
+    // XXX: IBC channel might not be needed if the swap happens within the same chain
     // if (this.channels.length === 0) {
     //   throw new Error("channels is empty");
     // }

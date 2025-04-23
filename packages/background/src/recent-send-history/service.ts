@@ -62,10 +62,10 @@ export class RecentSendHistoryService {
       );
     });
 
-    // 밑의 storage의 key들이 ibc transfer를 포함하는데
-    // 이 이유는 이전에 transfer history만 지원되었을때
-    // key를 그렇게 정했었기 때문이다
-    // 이전 버전과의 호환성을 위해서 key는 그대로 냅뒀다.
+    // The storage keys below include "ibc transfer" because
+    // when only transfer history was supported previously,
+    // the keys were named that way.
+    // The keys were kept for backward compatibility.
     const recentIBCHistorySeqSaved = await this.kvStore.get<number>(
       "recentIBCTransferHistorySeq"
     );
@@ -352,11 +352,11 @@ export class RecentSendHistoryService {
     );
   }
 
-  // ibc packet forwarding을 위한 recursive function이면서
-  // 실패시 retry를 수행하기 위해서 분리되어 있음
-  // trackIBCPacketForwardingRecursive도 참고
-  // trackIBCPacketForwardingRecursive의 주석을 보면 알겠지만
-  // tx tracer가 close된 이후에는 동기적인 로직만 있어야함.
+  // This is a recursive function for IBC packet forwarding
+  // It's separated to perform retries when failures occur
+  // Also see trackIBCPacketForwardingRecursive
+  // As noted in the comments of trackIBCPacketForwardingRecursive,
+  // only synchronous logic should be present after the tx tracer is closed.
   protected trackIBCPacketForwardingRecursiveInternal = (
     id: string,
     onFulfill: () => void,
@@ -476,7 +476,7 @@ export class RecentSendHistoryService {
                               targetChannel.sequence
                             );
                         if (index >= 0) {
-                          // 좀 빡치게 timeout packet은 refund 로직이 실행되고 나서 "timeout_packet" event가 발생한다.
+                          // Annoyingly, the "timeout_packet" event occurs after the refund logic is executed.
                           const refunded = isTimeoutPacket
                             ? this.getIBCSwapResAmountFromTx(
                                 tx,
@@ -541,7 +541,7 @@ export class RecentSendHistoryService {
               history.txError = tx.log || tx.raw_log || "Unknown error";
 
               // TODO: In this case, it is not currently displayed in the UI. So, delete it for now.
-              //       어차피 tx 자체의 실패는 notification으로 알 수 있기 때문에 여기서 지우더라도 유저는 실패를 인지할 수 있다.
+              //       The user can still be aware of the tx failure through notifications, so deleting it here won't prevent them from knowing about the failure.
               this.removeRecentIBCHistory(id);
             } else {
               if ("swapReceiver" in history) {
@@ -682,15 +682,15 @@ export class RecentSendHistoryService {
                         const decoded = JSON.parse(str.toString());
                         if (decoded.error) {
                           // XXX: {key: 'packet_ack', value: '{"error":"ABCI code: 6: error handling packet: see events for details"}'}
-                          //      오류가 있을 경우 이딴식으로 오류가 나오기 때문에 뭐 유저에게 보여줄 방법이 없다...
+                          //      There's no way to show this kind of error to users because it appears in this format
                           targetChannel.error = "Packet processing failed";
                           onFulfillOnce();
                           this.trackIBCPacketForwardingRecursive(id);
                           break;
                         }
                       } catch (e) {
-                        // decode가 실패한 경우 사실 방법이 없다.
-                        // 일단 packet이 성공했다고 치고 진행한다.
+                        // There's really no way to handle decode failures.
+                        // Let's just assume the packet was successful and proceed.
                         console.log(e);
                       }
                     }
@@ -841,10 +841,10 @@ export class RecentSendHistoryService {
           const prevChainInfo = this.chainsService.getChainInfo(prevChainId);
           if (prevChainInfo) {
             const queryEvents: any = {
-              // acknowledge_packet과는 다르게 timeout_packet은 이전의 체인의 이벤트로부터만 알 수 있다.
-              // 방법이 없기 때문에 여기서 이전의 체인으로부터 subscribe를 해서 이벤트를 받아야 한다.
-              // 하지만 이 경우 ibc error tracking 로직에서 이것과 똑같은 subscription을 한번 더 하게 된다.
-              // 이미 로직이 많이 복잡하기 때문에 로직을 덜 복잡하게 하기 위해서 이러한 비효율성(?)을 감수한다.
+              // Unlike acknowledge_packet, timeout_packet can only be detected from events in the previous chain.
+              // So we have no choice but to subscribe to events from the previous chain.
+              // However, this means we'll be making the same subscription again in the IBC error tracking logic.
+              // Since the logic is already complex, we accept this inefficiency to keep the code less complicated.
               // "timeout_packet.packet_src_port": targetChannel.portId,
               "timeout_packet.packet_src_channel": targetChannel.channelId,
               "timeout_packet.packet_sequence": targetChannel.sequence,
@@ -864,9 +864,9 @@ export class RecentSendHistoryService {
                 return;
               }
 
-              // 이 event가 발생한 시점에서 이미 timeout packet은 받은 상태이고
-              // 이 경우 따로 정보를 얻을 필요는 없으므로 이후에 res를 쓰지는 않는다.
-              // 위에 res null check는 사실 필요 없지만 혹시나 해서 넣어둔다.
+              // At this point, the timeout packet has already been received
+              // so we don't need to extract any additional information from res.
+              // The res null check above is technically unnecessary but included just in case.
               runInAction(() => {
                 targetChannel.error = "Packet timeout";
                 history.packetTimeout = true;
@@ -1162,9 +1162,9 @@ export class RecentSendHistoryService {
     amount: string;
     denom: string;
   }[] {
-    // Skip의 contract에서 편리하게 쓸 events를 발생시켜주지 않는 것 같다.
-    // 그래서 엄밀하게 여기서 멀 하기가 힘들다.
-    // 적당한 추론으로 99%의 케이스에서는 문제가 없는 방법을 시도한다...
+    // The Skip contract doesn't seem to emit convenient events that we can use.
+    // So it's difficult to do anything precise here.
+    // We'll try a reasonable approach that should work in 99% of cases...
     const events = tx.events.slice(
       startEventsIndex,
       endEventsIndex >= 0 ? endEventsIndex : undefined
@@ -1193,8 +1193,8 @@ export class RecentSendHistoryService {
       return [false, false];
     };
 
-    // 일단 마지막으로 받은 events가 tx의 결과에 가장 가까이 있을 것이다...
-    // 단순하게 그냥 마지막 coin_received를 찾는다.
+    // The events closest to the end of the tx are likely to be most relevant to the result...
+    // Simply find the last coin_received event.
     const receiveEvent = events.reverse().find((event) => {
       if (event.type === "coin_received") {
         const attr = event.attributes.find((attr) => {

@@ -20,13 +20,13 @@ type ChainUIEnabledChangedHandler = (
 ) => void;
 
 export class ChainsUIService {
-  // @observable.deep을 안쓴 이유가 있는데...
-  // value가 빈값이 나올 경우에는 첫번째 chain info를 하나 가진 배열을 반환한다.
-  // (무조건 최소한 하나는 enable되어 있어야하기 때문)
-  // 하지만 이 경우는 메소드의 반환값이 내부에서 저렇게 처리되었을 뿐이지
-  // 실제 저장된 state가 아니기 때문에
-  // enable/disable 등에서 state를 처리할때 실수하기가 쉽다.
-  // 이 문제를 완하하기 위해서 얇은 맵으로 다룬다.
+  // There's a reason for not using @observable.deep...
+  // If the value is empty, it returns an array containing just the first chain info.
+  // (Because at least one chain must always be enabled)
+  // However, in this case, the return value is just handled internally in the method,
+  // not the actual stored state.
+  // This makes it easy to make mistakes when handling state in enable/disable operations.
+  // To mitigate this issue, we use a shallow map.
   // Key: vault id
   @observable.shallow
   protected enabledChainIdentifiersMap = new Map<
