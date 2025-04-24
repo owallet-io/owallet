@@ -276,76 +276,30 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
 
   @action
   setGasAdjustmentValue(gasAdjustment: string | number) {
-    console.log("Setting gas adjustment:", {
-      currentValue: this._gasAdjustmentValue,
-      newValue: gasAdjustment,
-    });
-
-    // If the value is nearly the same, don't update to prevent infinite loops
     if (typeof gasAdjustment === "number") {
       if (gasAdjustment < 0 || gasAdjustment > 3) {
-        console.log("Gas adjustment out of range (0-3):", gasAdjustment);
         return;
       }
 
-      const currentValue = parseFloat(this._gasAdjustmentValue || "0");
-      // Skip update if values are very close to avoid infinite loops
-      if (Math.abs(currentValue - gasAdjustment) < 0.001) {
-        console.log("Skipping gas adjustment update - values too similar:", {
-          current: currentValue,
-          new: gasAdjustment,
-        });
-        return;
-      }
-
-      console.log("Setting gas adjustment to:", gasAdjustment.toString());
       this._gasAdjustmentValue = gasAdjustment.toString();
       return;
     }
 
     if (gasAdjustment === "") {
-      console.log("Setting gas adjustment to empty string");
       this._gasAdjustmentValue = "";
       return;
     }
 
-    // If strings are identical, don't update
-    if (gasAdjustment === this._gasAdjustmentValue) {
-      console.log("Skipping gas adjustment update - string values identical");
-      return;
-    }
-
-    let adjustedValue = gasAdjustment;
     if (gasAdjustment.startsWith(".")) {
-      console.log("Correcting gas adjustment format:", {
-        from: gasAdjustment,
-        to: "0" + gasAdjustment,
-      });
-      adjustedValue = "0" + gasAdjustment;
+      this._gasAdjustmentValue = "0" + gasAdjustment;
     }
 
-    const num = parseFloat(adjustedValue);
+    const num = parseFloat(gasAdjustment);
     if (Number.isNaN(num) || num < 0 || num > 3) {
-      console.log("Invalid gas adjustment:", {
-        value: adjustedValue,
-        parsed: num,
-        isNaN: Number.isNaN(num),
-      });
       return;
     }
 
-    // Skip update if values are very close to avoid infinite loops
-    const currentValue = parseFloat(this._gasAdjustmentValue || "0");
-    if (Math.abs(currentValue - num) < 0.001) {
-      console.log("Skipping gas adjustment update - values too similar:", {
-        current: currentValue,
-        new: num,
-      });
-      return;
-    }
-
-    console.log("Setting gas adjustment to:", adjustedValue);
-    this._gasAdjustmentValue = adjustedValue;
+    this._gasAdjustmentValue = gasAdjustment;
   }
 
   protected init() {
@@ -414,6 +368,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
             error: e?.message || String(e),
             stack: e?.stack,
           });
+          console.log(e);
           return;
         }
       })
@@ -455,19 +410,11 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
             state.setError(undefined);
 
             this.kvStore.set(key, gasUsed).catch((e) => {
-              console.error("Error saving gas estimation to kvStore:", e);
+              console.log(e);
             });
           })
           .catch((e) => {
-            console.error("Gas simulation error:", e);
-            console.error("Gas simulation error details:", {
-              chainId: this.chainId,
-              key: this.key,
-              storeKey: key,
-              gasAdjustment: this.gasAdjustment,
-              error: e?.message || String(e),
-              stack: e?.stack,
-            });
+            console.log(e);
 
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
@@ -525,23 +472,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
           this.gasEstimated != null &&
           !Number.isNaN(this.gasEstimated)
         ) {
-          try {
-            const newGasValue = this.gasEstimated * this.gasAdjustment;
-            console.log("Setting gas value:", {
-              gasEstimated: this.gasEstimated,
-              gasAdjustment: this.gasAdjustment,
-              newGasValue: newGasValue,
-              currentValue: this.gasConfig.value,
-            });
-            this.gasConfig.setValue(newGasValue);
-          } catch (e) {
-            console.error("Error setting gas value:", e);
-            console.error("Context:", {
-              gasEstimated: this.gasEstimated,
-              gasAdjustment: this.gasAdjustment,
-              error: e?.message || String(e),
-            });
-          }
+          this.gasConfig.setValue(this.gasEstimated * this.gasAdjustment);
         }
       })
     );
@@ -603,9 +534,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
       .toStdFee()
       .amount.map((coin) => coin.denom)
       .join("/");
-    const key = `${chainIdentifier.identifier}/${fees}/${this.key}`;
-    console.log("Computing storeKey:", key);
-    return key;
+    return `${chainIdentifier.identifier}/${fees}/${this.key}}`;
   }
 }
 

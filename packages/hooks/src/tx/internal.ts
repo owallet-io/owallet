@@ -20,7 +20,9 @@ export type QueriesStore = IQueriesStore<
     } & {
       owalletETC?: Pick<
         OWalletETCQueriesImpl,
-        "queryTerraClassicTaxRate" | "queryTerraClassicTaxCaps"
+        | "queryTerraClassicTaxRate"
+        | "queryTerraClassicTaxCaps"
+        | "queryInitiaDynamicFee"
       >;
     } & Partial<BtcQueries> &
     Partial<OasisQueries> &

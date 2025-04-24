@@ -2,27 +2,38 @@ import { SimpleFetchRequestOptions, SimpleFetchResponse } from "./types";
 import { SimpleFetchError } from "./error";
 
 export function makeURL(baseURL: string, url: string): string {
-  const baseURLInstance = new URL(baseURL);
-  baseURL = removeLastSlashIfIs(baseURLInstance.origin);
-  url =
-    removeLastSlashIfIs(baseURLInstance.pathname) +
-    "/" +
-    removeFirstSlashIfIs(url);
+  try {
+    // Ensure baseURL has a protocol
+    if (!baseURL.startsWith("http://") && !baseURL.startsWith("https://")) {
+      baseURL = "https://" + baseURL;
+    }
 
-  url =
-    url +
-    (() => {
-      if (Array.from(baseURLInstance.searchParams.keys()).length > 0) {
-        if (url.includes("?")) {
-          return "&" + baseURLInstance.searchParams.toString();
-        } else {
-          return "?" + baseURLInstance.searchParams.toString();
+    const baseURLInstance = new URL(baseURL);
+    baseURL = removeLastSlashIfIs(baseURLInstance.origin);
+    url =
+      removeLastSlashIfIs(baseURLInstance.pathname) +
+      "/" +
+      removeFirstSlashIfIs(url);
+
+    url =
+      url +
+      (() => {
+        if (Array.from(baseURLInstance.searchParams.keys()).length > 0) {
+          if (url.includes("?")) {
+            return "&" + baseURLInstance.searchParams.toString();
+          } else {
+            return "?" + baseURLInstance.searchParams.toString();
+          }
         }
-      }
-      return "";
-    })();
+        return "";
+      })();
 
-  return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
+    return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
+  } catch (error) {
+    throw new Error(
+      `Failed to create URL from baseURL: "${baseURL}" and url: "${url}". Please ensure the baseURL is a valid URL.`
+    );
+  }
 }
 
 function removeFirstSlashIfIs(str: string): string {

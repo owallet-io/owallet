@@ -28,6 +28,8 @@ import { ChainIdHelper } from "@owallet/cosmos";
 import { keepAlive } from "mobx-utils";
 import { sortedJsonByKeyStringify } from "@owallet/common";
 
+const forceFindCurrencyCache: Map<string, AppCurrency> = new Map();
+
 export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   implements IChainInfoImpl<C>
 {
@@ -63,12 +65,12 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /*
-   * When the currency for a specific denom is unknown, this method can be used to request registration.
-   * If it's already registered or registration is in progress, no action is taken.
-   * For example, it can be used when an unknown denom appears in a native balance query,
-   * or when requesting registration of an IBC denom.
-   * Since autorun is not executed immediately inside an action, the @action decorator is not used for now.
-   * However, when calling this method from within an action, it still won't execute immediately, so this case must be considered.
+   * 해당되는 denom의 currency를 모를 때 이 메소드를 사용해서 등록을 요청할 수 있다.
+   * 이미 등록되어 있거나 등록을 시도 중이면 아무 행동도 하지 않는.
+   * 예를들어 네이티브 balance 쿼리에서 모르는 denom이 나오거나
+   * IBC denom의 등록을 요청할 때 쓸 수 있다.
+   * action 안에서는 autorun이 immediate로 실행되지 않으므로, 일단 @action 데코레이터는 사용하지 않는다.
+   * 하지만 이 메소드를 action 안에서 호출하면 여전히 immediate로 실행되지 않으므로, 이 경우도 고려해야한다.
    */
   addUnknownDenoms(...coinMinimalDenoms: string[]) {
     this.addUnknownDenomsImpl(coinMinimalDenoms, true);
@@ -90,8 +92,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           continue;
         } else if (reaction) {
           found = true;
-          // Since the reaction doesn't need to be reactive in the logic,
-          // we just change it here.
+          // 로직상 reaction은 reactive할 필요가 없기 때문에
+          // 그냥 여기서 바꾼다.
           prior.reaction = reaction;
         }
       }
@@ -110,6 +112,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
             denom: coinMinimalDenom,
             reaction,
           });
+          this.unknownDenoms = this.unknownDenoms.slice();
           this.registrationInProgressCurrencyMap.set(coinMinimalDenom, true);
         });
       }
@@ -166,6 +169,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
                 prev = this.unknownDenoms[index];
                 if (generator.done) {
                   this.unknownDenoms.splice(index, 1);
+                  this.unknownDenoms = this.unknownDenoms.slice();
                 }
               }
 
@@ -241,7 +245,10 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     if (index >= 0) {
       const currency = this.registeredCurrenciesNoReaction[index];
       this.registeredCurrenciesNoReaction.splice(index, 1);
+      this.registeredCurrenciesNoReaction =
+        this.registeredCurrenciesNoReaction.slice();
       this.registeredCurrencies.push(currency);
+      this.registeredCurrencies = this.registeredCurrencies.slice();
     }
   }
 
@@ -273,6 +280,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
     for (const currency of currencies) {
       if (!currencyMap.has(currency.coinMinimalDenom)) {
         this.registeredCurrencies.push(currency);
+        this.registeredCurrencies = this.registeredCurrencies.slice();
       }
     }
   }
@@ -294,8 +302,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * Returns the Currency.
-   * If the Currency doesn't exist, adds it to unknown currency.
+   * Currency를 반환한다.
+   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -366,17 +374,23 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * Similar to findCurrency but returns a raw currency if the corresponding currency doesn't exist.
+   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
     const currency = this.findCurrency(coinMinimalDenom);
     if (!currency) {
-      return {
+      // ref을 유지하기 위해서 cache를 사용한다.
+      if (forceFindCurrencyCache.has(coinMinimalDenom)) {
+        return forceFindCurrencyCache.get(coinMinimalDenom)!;
+      }
+      const cur = {
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
         coinDecimals: 0,
       };
+      forceFindCurrencyCache.set(coinMinimalDenom, cur);
+      return cur;
     }
     return currency;
   }
@@ -384,11 +398,17 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   forceFindCurrencyWithoutReaction(coinMinimalDenom: string): AppCurrency {
     const currency = this.findCurrencyWithoutReaction(coinMinimalDenom);
     if (!currency) {
-      return {
+      // ref을 유지하기 위해서 cache를 사용한다.
+      if (forceFindCurrencyCache.has(coinMinimalDenom)) {
+        return forceFindCurrencyCache.get(coinMinimalDenom)!;
+      }
+      const cur = {
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
         coinDecimals: 0,
       };
+      forceFindCurrencyCache.set(coinMinimalDenom, cur);
+      return cur;
     }
     return currency;
   }
@@ -406,10 +426,12 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           sortedJsonByKeyStringify(prev) !== sortedJsonByKeyStringify(currency)
         ) {
           this.registeredCurrencies.splice(index, 1, currency);
+          this.registeredCurrencies = this.registeredCurrencies.slice();
         }
       }
     } else {
       this.registeredCurrencies.push(currency);
+      this.registeredCurrencies = this.registeredCurrencies.slice();
     }
   }
 
@@ -426,10 +448,14 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           sortedJsonByKeyStringify(prev) !== sortedJsonByKeyStringify(currency)
         ) {
           this.registeredCurrenciesNoReaction.splice(index, 1, currency);
+          this.registeredCurrenciesNoReaction =
+            this.registeredCurrenciesNoReaction.slice();
         }
       }
     } else {
       this.registeredCurrenciesNoReaction.push(currency);
+      this.registeredCurrenciesNoReaction =
+        this.registeredCurrenciesNoReaction.slice();
     }
   }
 
@@ -467,13 +493,6 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
 
   get rest(): string {
     return this._embedded.rest;
-  }
-
-  get grpc(): string {
-    return this._embedded.grpc;
-  }
-  get txExplorer(): ChainInfo["txExplorer"] {
-    return this._embedded.txExplorer;
   }
 
   get rpc(): string {
@@ -528,6 +547,8 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
   protected registeredCosmosCurrencies: AppCurrency[] = [];
   @observable.shallow
   protected registeredStarkentCurrencies: ERC20Currency[] = [];
+  @observable.shallow
+  protected registeredBitcoinCurrencies: AppCurrency[] = [];
 
   constructor(
     embedded: M,
@@ -541,6 +562,7 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
 
     keepAlive(this, "cosmosCurrencyMap");
     keepAlive(this, "starknetCurrencyMap");
+    keepAlive(this, "bitcoinCurrencyMap");
   }
 
   get embedded(): M {
@@ -574,6 +596,15 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
         return this._embedded.starknet.currencies.concat(
           this.registeredStarkentCurrencies
         );
+      case "bitcoin":
+        if (!("bitcoin" in this._embedded)) {
+          throw new Error(`No bitcoin module for this chain: ${this.chainId}`);
+        }
+
+        return (
+          this._embedded.bitcoin as { currencies: AppCurrency[] }
+        ).currencies.concat(this.registeredBitcoinCurrencies);
+
       default:
         throw new Error(`Unknown module: ${module}`);
     }
@@ -609,6 +640,17 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
             currency.type === "erc20"
           ) {
             this.registeredStarkentCurrencies.push(currency);
+          }
+        }
+        break;
+      case "bitcoin":
+        if (!("bitcoin" in this._embedded)) {
+          throw new Error(`No bitcoin module for this chain: ${this.chainId}`);
+        }
+
+        for (const currency of currencies) {
+          if (!this.bitcoinCurrencyMap.has(currency.coinMinimalDenom)) {
+            this.registeredBitcoinCurrencies.push(currency);
           }
         }
         break;
@@ -649,6 +691,16 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
             (currency) => !map.get(currency.coinMinimalDenom)
           );
         break;
+      case "bitcoin":
+        if (!("bitcoin" in this._embedded)) {
+          throw new Error(`No bitcoin module for this chain: ${this.chainId}`);
+        }
+
+        this.registeredBitcoinCurrencies =
+          this.registeredBitcoinCurrencies.filter(
+            (currency) => !map.get(currency.coinMinimalDenom)
+          );
+        break;
       default:
         throw new Error(`Unknown module: ${module}`);
     }
@@ -671,6 +723,20 @@ export class ModularChainInfoImpl<M extends ModularChainInfo = ModularChainInfo>
     const result: Map<string, AppCurrency> = new Map();
     if ("starknet" in this._embedded) {
       for (const currency of this._embedded.starknet.currencies) {
+        result.set(currency.coinMinimalDenom, currency);
+      }
+    }
+
+    return result;
+  }
+
+  @computed
+  protected get bitcoinCurrencyMap(): Map<string, AppCurrency> {
+    const result: Map<string, AppCurrency> = new Map();
+    if ("bitcoin" in this._embedded) {
+      for (const currency of (
+        this._embedded.bitcoin as { currencies: AppCurrency[] }
+      ).currencies) {
         result.set(currency.coinMinimalDenom, currency);
       }
     }
@@ -805,8 +871,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
       .filter((chainInfo) => "currencies" in chainInfo || "cosmos" in chainInfo)
       .map((chainInfo) => {
         if ("cosmos" in chainInfo) {
-          // TODO: This is a workaround for a typing issue; we're proceeding roughly for now.
-          //       chainInfo.cosmos is of ChainInfo type, so it can't satisfy C.
+          // TODO: 이거 타이핑이 불가능한데 일단 대충 넘어가도록 처리한 것임.
+          //       chainInfo.cosmos는 ChainInfo 타입이기 때문에 C를 만족할 수 없다.
           chainInfo = chainInfo.cosmos as C;
         }
         if (!("currencies" in chainInfo)) {

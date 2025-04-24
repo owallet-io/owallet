@@ -100,7 +100,7 @@ export class NobleAccountImpl {
               ...msg.value,
               routes: msg.value.routes.map((route) => {
                 if (route.pool_id === "0") {
-                  // If pool id is 0, the field should be removed entirely due to omit empty.
+                  // pool id가 0일 경우 omit empty에 의해서 아예 field를 없애야한다.
                   return {
                     denom_to: route.denom_to,
                   };
