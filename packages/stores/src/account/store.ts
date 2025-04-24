@@ -73,18 +73,18 @@ export class AccountStore<
   }
 
   getAccount(chainId: string): AccountSetReturn {
-    // XXX: 이렇게 쪼개진건 modular chain info가 추가되면서 이 경우도 따로 처리하기 위함임...
+    // XXX: This split is to handle this case separately as modular chain info was added...
     if (this.chainGetter.hasChain(chainId)) {
-      // chain identifier를 통한 접근도 허용하기 위해서 chainGetter를 통해 접근하도록 함.
+      // Access through chainGetter to allow access via chain identifier as well.
       return this.get(this.chainGetter.getChain(chainId).chainId);
     }
     return this.get(chainId);
   }
 
   hasAccount(chainId: string): boolean {
-    // XXX: 이렇게 쪼개진건 modular chain info가 추가되면서 이 경우도 따로 처리하기 위함임...
+    // XXX: This split is to handle this case separately as modular chain info was added...
     if (this.chainGetter.hasChain(chainId)) {
-      // chain identifier를 통한 접근도 허용하기 위해서 chainGetter를 통해 접근하도록 함.
+      // Access through chainGetter to allow access via chain identifier as well.
       return this.has(this.chainGetter.getChain(chainId).chainId);
     }
     return this.has(chainId);

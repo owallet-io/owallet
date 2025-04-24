@@ -1921,9 +1921,9 @@ export class RecentSendHistoryService {
                         ]);
                       } else {
                         console.log("refunded", log.address);
-                        // Transfer 토픽인 경우엔 ERC20의 tranfer 호출일텐데
-                        // 받을 토큰의 컨트랙트가 아닌 다른 컨트랙트에서 호출된 경우는 Swap을 실패한 것으로 추측
-                        // 고로 실제로 받은 토큰의 컨트랙트 주소로 환불 정보에 저장한다.
+                        // In case of Transfer topic, it would be an ERC20 transfer call
+                        // If called from a contract other than the token contract to be received, we assume the Swap failed
+                        // Therefore, save the refund information with the contract address of the token actually received
                         history.trackError = "Swap failed";
                         history.swapRefundInfo = {
                           chainId: history.destinationChainId,

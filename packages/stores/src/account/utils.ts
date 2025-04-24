@@ -130,7 +130,7 @@ export const getEip712TypedDataBasedOnChainInfo = (
     domain: {
       name: "Cosmos Web3",
       version: "1.0.0",
-      // signPlainJSON일때 밑의 값은 사실 사용되지 않으므로 대강 처리
+      // When using signPlainJSON, the values below aren't actually used, so rough handling is fine.
       chainId: signPlainJSON
         ? 9999
         : EthermintChainIdHelper.parse(chainId).ethChainId.toString(),

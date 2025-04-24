@@ -118,7 +118,7 @@ export async function simpleFetch<R>(
     url: actualURL,
     data,
     headers: fetched.headers,
-    // GET이면서 204인 경우는 404로 처리
+    // Treat as 404 if it's a GET request with 204 status
     status: isGETMethod && fetched.status === 204 ? 404 : fetched.status,
     statusText: fetched.statusText,
   };

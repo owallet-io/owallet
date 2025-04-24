@@ -461,7 +461,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       for (let i = 0; i < queryFeeMarketGasPrices.gasPrices.length; i++) {
         const gasPrice = queryFeeMarketGasPrices.gasPrices[i];
-        // 일단 모든 currency에 대해서 find를 시도한다.
+        // First attempt to find for all currencies.
         this.chainInfo.findCurrency(gasPrice.denom);
       }
 
@@ -844,7 +844,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         return maxFeePerGas ?? gasPrice;
       }
 
-      // TODO: Handle terra classic fee
+      // TODO: There's some Terra Classic related processing needed here but let's do it later...
 
       return this.populateGasPriceStep(feeCurrency, feeType);
     }
@@ -1207,7 +1207,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       }
     }
 
-    // TODO: 여기서 terra classic 관련 무슨 처리를 해야하는데 나중에 하자...
+    // TODO: There's some Terra Classic related processing needed here but let's do it later...
 
     const amount = this.amountConfig.amount;
 

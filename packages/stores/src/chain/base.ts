@@ -92,8 +92,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
           continue;
         } else if (reaction) {
           found = true;
-          // 로직상 reaction은 reactive할 필요가 없기 때문에
-          // 그냥 여기서 바꾼다.
+          // Logically, reaction doesn't need to be reactive, so
+          // just change it here.
           prior.reaction = reaction;
         }
       }
@@ -380,7 +380,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
     const currency = this.findCurrency(coinMinimalDenom);
     if (!currency) {
-      // ref을 유지하기 위해서 cache를 사용한다.
+      // Using cache to maintain the reference.
       if (forceFindCurrencyCache.has(coinMinimalDenom)) {
         return forceFindCurrencyCache.get(coinMinimalDenom)!;
       }
@@ -398,7 +398,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   forceFindCurrencyWithoutReaction(coinMinimalDenom: string): AppCurrency {
     const currency = this.findCurrencyWithoutReaction(coinMinimalDenom);
     if (!currency) {
-      // ref을 유지하기 위해서 cache를 사용한다.
+      // Using cache to maintain the reference.
       if (forceFindCurrencyCache.has(coinMinimalDenom)) {
         return forceFindCurrencyCache.get(coinMinimalDenom)!;
       }
@@ -871,8 +871,8 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
       .filter((chainInfo) => "currencies" in chainInfo || "cosmos" in chainInfo)
       .map((chainInfo) => {
         if ("cosmos" in chainInfo) {
-          // TODO: 이거 타이핑이 불가능한데 일단 대충 넘어가도록 처리한 것임.
-          //       chainInfo.cosmos는 ChainInfo 타입이기 때문에 C를 만족할 수 없다.
+          // TODO: This typing is impossible but handled roughly for now.
+          // chainInfo.cosmos is a ChainInfo type so it can't satisfy C.
           chainInfo = chainInfo.cosmos as C;
         }
         if (!("currencies" in chainInfo)) {
