@@ -1,6 +1,7 @@
 import {
   CosmosQueriesImpl,
   IQueriesStore,
+  NobleQueries,
   OsmosisQueries,
 } from "@owallet/stores";
 import { OWalletETCQueriesImpl } from "@owallet/stores-etc";
@@ -19,9 +20,12 @@ export type QueriesStore = IQueriesStore<
     } & {
       owalletETC?: Pick<
         OWalletETCQueriesImpl,
-        "queryTerraClassicTaxRate" | "queryTerraClassicTaxCaps"
+        | "queryTerraClassicTaxRate"
+        | "queryTerraClassicTaxCaps"
+        | "queryInitiaDynamicFee"
       >;
     } & Partial<BtcQueries> &
     Partial<OasisQueries> &
-    Partial<TrxQueries>
+    Partial<TrxQueries> &
+    Partial<NobleQueries>
 >;

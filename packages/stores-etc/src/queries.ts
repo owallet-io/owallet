@@ -10,6 +10,8 @@ import {
   ObservableQueryTaxCaps,
   ObservableQueryTaxRate,
 } from "./terra-classic/treasury";
+import { ObservableQuerySkipTokenInfo } from "./token-info";
+import { ObservableQueryInitiaDynamicFee } from "./initia/dynamicfee";
 
 export interface OWalletETCQueries {
   owalletETC: OWalletETCQueriesImpl;
@@ -18,6 +20,8 @@ export interface OWalletETCQueries {
 export const OWalletETCQueries = {
   use(options: {
     ethereumURL: string;
+    skipTokenInfoBaseURL: string;
+    skipTokenInfoAPIURI: string;
   }): (
     queriesSetBase: QueriesSetBase,
     sharedContext: QuerySharedContext,
@@ -36,7 +40,9 @@ export const OWalletETCQueries = {
           sharedContext,
           chainId,
           chainGetter,
-          options.ethereumURL
+          options.ethereumURL,
+          options.skipTokenInfoBaseURL,
+          options.skipTokenInfoAPIURI
         ),
       };
     };
@@ -46,16 +52,21 @@ export const OWalletETCQueries = {
 export class OWalletETCQueriesImpl {
   public readonly queryERC20Metadata: DeepReadonly<ObservableQueryERC20Metadata>;
   public readonly queryEVMTokenInfo: DeepReadonly<ObservableQueryEVMTokenInfo>;
+  public readonly querySkipTokenInfo: DeepReadonly<ObservableQuerySkipTokenInfo>;
 
   public readonly queryTerraClassicTaxRate: DeepReadonly<ObservableQueryTaxRate>;
   public readonly queryTerraClassicTaxCaps: DeepReadonly<ObservableQueryTaxCaps>;
+
+  public readonly queryInitiaDynamicFee: DeepReadonly<ObservableQueryInitiaDynamicFee>;
 
   constructor(
     _base: QueriesSetBase,
     sharedContext: QuerySharedContext,
     chainId: string,
     chainGetter: ChainGetter,
-    ethereumURL: string
+    ethereumURL: string,
+    skipTokenInfoBaseURL: string,
+    skipTokenInfoAPIURI: string
   ) {
     this.queryERC20Metadata = new ObservableQueryERC20Metadata(
       sharedContext,
@@ -66,6 +77,13 @@ export class OWalletETCQueriesImpl {
       chainId,
       chainGetter
     );
+    this.querySkipTokenInfo = new ObservableQuerySkipTokenInfo(
+      sharedContext,
+      chainId,
+      chainGetter,
+      skipTokenInfoBaseURL,
+      skipTokenInfoAPIURI
+    );
 
     this.queryTerraClassicTaxRate = new ObservableQueryTaxRate(
       sharedContext,
@@ -73,6 +91,12 @@ export class OWalletETCQueriesImpl {
       chainGetter
     );
     this.queryTerraClassicTaxCaps = new ObservableQueryTaxCaps(
+      sharedContext,
+      chainId,
+      chainGetter
+    );
+
+    this.queryInitiaDynamicFee = new ObservableQueryInitiaDynamicFee(
       sharedContext,
       chainId,
       chainGetter

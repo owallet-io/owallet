@@ -3,11 +3,13 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { ChainGetter } from "../../../chain";
-import { DenomTraceResponse } from "./types";
+import { DenomTraceResponse, DenomTraceV2Response } from "./types";
 import { autorun, computed } from "mobx";
 import { QuerySharedContext } from "../../../common";
 
-export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTraceResponse> {
+export class ObservableChainQueryDenomTrace extends ObservableChainQuery<
+  DenomTraceResponse | DenomTraceV2Response
+> {
   protected disposer?: () => void;
 
   constructor(
@@ -29,8 +31,12 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
 
     this.disposer = autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.features && chainInfo.features.includes("ibc-go")) {
-        this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${this.hash}`);
+      if (chainInfo.features) {
+        if (chainInfo.features.includes("ibc-v2")) {
+          this.setUrl(`/ibc/apps/transfer/v1/denoms/${this.hash}`);
+        } else if (chainInfo.features.includes("ibc-go")) {
+          this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${this.hash}`);
+        }
       }
     });
   }
@@ -52,6 +58,15 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
       return [];
     }
 
+    if ("denom" in this.response.data) {
+      return this.response.data.denom.trace.map((t) => {
+        return {
+          portId: t.port_id,
+          channelId: t.channel_id,
+        };
+      });
+    }
+
     const rawPaths = this.response.data.denom_trace.path.split("/");
 
     if (rawPaths.length % 2 !== 0) {
@@ -62,6 +77,20 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
     const rawPathChunks: string[][] = [];
     for (let i = 0; i < rawPaths.length; i += 2) {
       rawPathChunks.push(rawPaths.slice(i, i + 2));
+    }
+
+    // When mixing ibc-go and ibc v2, the path gets included in the base denom...
+    const rawPathsInBaseDenom =
+      this.response.data.denom_trace.base_denom.split("/");
+    if (rawPathsInBaseDenom.length % 2 === 1) {
+      for (let i = 0; i < rawPathsInBaseDenom.length; i += 2) {
+        if (
+          rawPathsInBaseDenom[i] === "transfer" &&
+          i + 1 < rawPathsInBaseDenom.length
+        ) {
+          rawPathChunks.push(rawPathsInBaseDenom.slice(i, i + 2));
+        }
+      }
     }
 
     return rawPathChunks.map((chunk) => {
@@ -75,6 +104,28 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
   get denom(): string | undefined {
     if (!this.response) {
       return undefined;
+    }
+
+    if ("denom" in this.response.data) {
+      return this.response.data.denom.base;
+    }
+
+    // When mixing ibc-go and ibc v2, the path gets included in the base denom...
+    const rawPathsInBaseDenom =
+      this.response.data.denom_trace.base_denom.split("/");
+    if (rawPathsInBaseDenom.length % 2 === 1) {
+      for (let i = 0; i < rawPathsInBaseDenom.length; i += 2) {
+        if (
+          rawPathsInBaseDenom[i] === "transfer" &&
+          i + 1 < rawPathsInBaseDenom.length
+        ) {
+          rawPathsInBaseDenom.shift();
+          rawPathsInBaseDenom.shift();
+        }
+      }
+      if (rawPathsInBaseDenom.length === 1 && rawPathsInBaseDenom[0]) {
+        return rawPathsInBaseDenom[0];
+      }
     }
 
     return this.response.data.denom_trace.base_denom;
@@ -101,7 +152,9 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
   }
 }
 
-export class ObservableQueryDenomTrace extends ObservableChainQueryMap<DenomTraceResponse> {
+export class ObservableQueryDenomTrace extends ObservableChainQueryMap<
+  DenomTraceResponse | DenomTraceV2Response
+> {
   constructor(
     sharedContext: QuerySharedContext,
     chainId: string,

@@ -1,7 +1,8 @@
 import { ChainGetter } from "@owallet/stores";
 import {
   AppCurrency,
-  // EthSignType,
+  ERC20Currency,
+  EthSignType,
   EthTxReceipt,
   OWallet,
 } from "@owallet/types";
@@ -18,30 +19,9 @@ import { getAddress as getEthAddress } from "@ethersproject/address";
 import { action, makeObservable, observable } from "mobx";
 import { Interface } from "@ethersproject/abi";
 
-const EthSignType = {
-  MESSAGE: "message",
-  TRANSACTION: "transaction",
-  EIP712: "eip-712",
-};
-
 const opStackGasPriceOracleProxyAddress =
   "0x420000000000000000000000000000000000000F";
-const opStackGasPriceOracleProxyABI = new Interface([
-  {
-    constant: true,
-    inputs: [],
-    name: "implementation",
-    outputs: [
-      {
-        name: "",
-        type: "address",
-      },
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-]);
+
 const opStackGasPriceOracleABI = new Interface([
   {
     inputs: [{ internalType: "bytes", name: "_data", type: "bytes" }],
@@ -158,30 +138,17 @@ export class EthereumAccountBase {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const owallet = (await this.getOWallet())!;
-    const implementationAddress = await owallet.ethereum.request<string>({
-      method: "eth_call",
-      params: [
-        {
-          to: opStackGasPriceOracleProxyAddress,
-          data: opStackGasPriceOracleProxyABI.encodeFunctionData(
-            "implementation"
-          ),
-        },
-      ],
-      chainId: this.chainId,
-    });
-    const gasPriceOracleContractAddress =
-      "0x" + implementationAddress.slice(26);
 
     const l1Fee = await owallet.ethereum.request<string>({
       method: "eth_call",
       params: [
         {
-          to: gasPriceOracleContractAddress,
+          to: opStackGasPriceOracleProxyAddress,
           data: opStackGasPriceOracleABI.encodeFunctionData("getL1Fee", [
             serialize(unsignedTx),
           ]),
         },
+        "latest",
       ],
       chainId: this.chainId,
     });
@@ -206,11 +173,6 @@ export class EthereumAccountBase {
     maxPriorityFeePerGas?: string;
     gasPrice?: string;
   }): UnsignedTransaction {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-    const evmInfo = chainInfo.evm;
-    if (!evmInfo) {
-      throw new Error("No EVM chain info provided");
-    }
     const parsedAmount = parseUnits(amount, currency.coinDecimals);
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
     const feeObject =
@@ -230,26 +192,57 @@ export class EthereumAccountBase {
       switch (denomHelper.type) {
         case "erc20":
           return {
-            chainId: evmInfo.chainId,
-            to: denomHelper.contractAddress,
-            value: "0x0",
-            data: erc20ContractInterface.encodeFunctionData("transfer", [
-              to,
-              hexValue(parsedAmount),
-            ]),
+            ...this.makeTx(
+              denomHelper.contractAddress,
+              "0x0",
+              erc20ContractInterface.encodeFunctionData("transfer", [
+                to,
+                hexValue(parsedAmount),
+              ])
+            ),
             ...feeObject,
           };
         default:
           return {
-            chainId: evmInfo.chainId,
-            to,
-            value: hexValue(parsedAmount),
+            ...this.makeTx(to, hexValue(parsedAmount)),
             ...feeObject,
           };
       }
     })();
 
     return unsignedTx;
+  }
+
+  makeErc20ApprovalTx(
+    currency: ERC20Currency,
+    spender: string,
+    amount: string
+  ): UnsignedTransaction {
+    const parsedAmount = parseUnits(amount, currency.coinDecimals);
+
+    return this.makeTx(
+      currency.contractAddress,
+      "0x0",
+      erc20ContractInterface.encodeFunctionData("approve", [
+        spender,
+        hexValue(parsedAmount),
+      ])
+    );
+  }
+
+  makeTx(to: string, value: string, data?: string): UnsignedTransaction {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const evmInfo = chainInfo.evm;
+    if (!evmInfo) {
+      throw new Error("No EVM chain info provided");
+    }
+
+    return {
+      chainId: evmInfo.chainId,
+      to,
+      value,
+      data,
+    };
   }
 
   async sendEthereumTx(
@@ -259,6 +252,9 @@ export class EthereumAccountBase {
       onBroadcastFailed?: (e?: Error) => void;
       onBroadcasted?: (txHash: string) => void;
       onFulfill?: (txReceipt: EthTxReceipt) => void;
+    },
+    options?: {
+      sendTx?: (chainId: string, signedTx: Buffer) => Promise<string>;
     }
   ) {
     try {
@@ -302,7 +298,10 @@ export class EthereumAccountBase {
       );
 
       const sendEthereumTx = owallet.sendEthereumTx.bind(owallet);
-      const txHash = await sendEthereumTx(this.chainId, signedTx);
+      const txHash = options?.sendTx
+        ? await options.sendTx(this.chainId, signedTx)
+        : await sendEthereumTx(this.chainId, signedTx);
+
       if (!txHash) {
         throw new Error("No tx hash responded");
       }
