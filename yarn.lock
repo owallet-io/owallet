@@ -8412,6 +8412,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/hooks@npm:^100.1.0":
+  version: 100.1.0
+  resolution: "@react-native-community/hooks@npm:100.1.0"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-native: ">=0.70"
+  checksum: 98df4f57af6ff2b1de72c8e1615daea9baccac412d9c0d9ad321977d3e465db7af8599a51ad14f05b3e99f6172e9e3a58774ed85dc108addd351cc1860bbcbe9
+  languageName: node
+  linkType: hard
+
 "@react-native-community/netinfo@npm:9.4.1":
   version: 9.4.1
   resolution: "@react-native-community/netinfo@npm:9.4.1"
@@ -26775,6 +26785,7 @@ __metadata:
     "@owallet/stores-trx": "*"
     "@react-native-async-storage/async-storage": 1.24.0
     "@react-native-community/blur": 4.3.2
+    "@react-native-community/hooks": ^100.1.0
     "@react-native-community/netinfo": 9.4.1
     "@react-native-firebase/analytics": 18.6.1
     "@react-native-firebase/app": 18.6.1
@@ -26881,6 +26892,7 @@ __metadata:
     react-native-haptic-feedback: ^2.2.0
     react-native-icomoon: 0.1.1
     react-native-inappbrowser-reborn: 3.7.0
+    react-native-keyboard-accessory: ^0.1.16
     react-native-keyboard-aware-scroll-view: 0.9.5
     react-native-keychain: 8.1.1
     react-native-linear-gradient: 2.7.3
@@ -30759,6 +30771,17 @@ __metadata:
     react: ">=18.2.0"
     react-native: ">=0.73.0"
   checksum: 4e07c1e34c01c8d50fd7c1d0460db06f6f0515197405230386a8ffb950cb724b10743af032310d1384df0a90059bfb8992ba2d93344ce86315315f0493feccc2
+  languageName: node
+  linkType: hard
+
+"react-native-keyboard-accessory@npm:^0.1.16":
+  version: 0.1.16
+  resolution: "react-native-keyboard-accessory@npm:0.1.16"
+  peerDependencies:
+    prop-types: ">= 15"
+    react: ">= 16"
+    react-native: ">= 0.46"
+  checksum: fa10bb4e460a21adf0dfccab0597b47ff67f1cb466fae937dd73934c5ee193d2474246cd3ed7786bb1aabf5cb24d210f2f9add9ce4bf209dd03f2260c922d933
   languageName: node
   linkType: hard
 

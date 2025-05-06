@@ -87,52 +87,20 @@ export class ObservableQuerySvmAccountBalanceImpl
       (item, index) => item.node.tokenListEntry.address !== tokenNative
     );
     if (!allTokenAddress?.length) return;
-    const tokenAddresses = allTokenAddress
-      .map((item, index) => {
-        return `${Network.SOLANA}%2B${item.node.tokenListEntry.address}`;
-      })
-      .join(",");
-    API.getMultipleTokenInfo({
-      tokenAddresses: tokenAddresses,
-    })
-      .then((tokenInfosAll) => {
-        const currencyInfo = allTokenAddress.map((item) => {
-          const coinGeckoId = tokenInfosAll.find(
-            (token) => token.contractAddress == item.node.tokenListEntry.address
-          );
-          return {
-            coinImageUrl: item.node.tokenListEntry.logo,
-            coinDenom: item.node.tokenListEntry.symbol,
-            coinGeckoId:
-              coinGeckoId?.coingeckoId || item.node.tokenListEntry.coingeckoId,
-            coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom:
-              item.node.solana?.tokenProgram ===
-              TOKEN_2022_PROGRAM_ID.toBase58()
-                ? `spl20:${item.node.tokenListEntry.address}`
-                : `spl:${item.node.tokenListEntry.address}`,
-          };
-        });
-        // // 6. Update chain info with currencies
-        chainInfo.addCurrencies(...currencyInfo);
-      })
-      .catch((e) => {
-        const currencyInfo = allTokenAddress.map((item) => {
-          return {
-            coinImageUrl: item.node.tokenListEntry.logo,
-            coinDenom: item.node.tokenListEntry.symbol,
-            coinGeckoId: item.node.tokenListEntry.coingeckoId,
-            coinDecimals: item.node.tokenListEntry.decimals,
-            coinMinimalDenom:
-              item.node.solana?.tokenProgram ===
-              TOKEN_2022_PROGRAM_ID.toBase58()
-                ? `spl20:${item.node.tokenListEntry.address}`
-                : `spl:${item.node.tokenListEntry.address}`,
-          };
-        });
-        // // 6. Update chain info with currencies
-        chainInfo.addCurrencies(...currencyInfo);
-      });
+    const currencyInfo = allTokenAddress.map((item) => {
+      return {
+        coinImageUrl: item.node.tokenListEntry.logo,
+        coinDenom: item.node.tokenListEntry.symbol,
+        coinGeckoId: item.node.tokenListEntry.coingeckoId,
+        coinDecimals: item.node.tokenListEntry.decimals,
+        coinMinimalDenom:
+          item.node.solana?.tokenProgram === TOKEN_2022_PROGRAM_ID.toBase58()
+            ? `spl20:${item.node.tokenListEntry.address}`
+            : `spl:${item.node.tokenListEntry.address}`,
+      };
+    });
+    // // 6. Update chain info with currencies
+    chainInfo.addCurrencies(...currencyInfo);
   }
 
   async fetchSplBalances() {
