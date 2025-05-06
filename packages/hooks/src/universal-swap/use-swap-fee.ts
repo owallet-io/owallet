@@ -31,12 +31,15 @@ const checkIsPairOfPool = ({
   fromName: string;
   toName: string;
 }) => {
-  const check = PAIRS_CHART.find((p) => {
-    const symbols = p.symbols.map((symbol) => symbol?.toUpperCase());
+  // TODO: check a pair is v2
+  const check = [].find((p) => {
+    const symbols = p.symbols.map((symbol) => symbol.toUpperCase());
     return symbols.includes(fromName) && symbols.includes(toName);
   });
 
-  return !!check;
+  // return !!check;
+  // TODO: check a pair is v2
+  return true;
 };
 
 export const useSwapFee = ({ fromToken, toToken }) => {
@@ -45,17 +48,13 @@ export const useSwapFee = ({ fromToken, toToken }) => {
   const SWAP_FEE_PER_ROUTE = 0.003;
 
   const isDependOnNetwork =
-    fromToken.chainId !== "Oraichain" || toToken.chainId !== "Oraichain";
+    fromToken?.chainId !== "Oraichain" || toToken?.chainId !== "Oraichain";
 
   useEffect(() => {
     if (!fromToken || !toToken) return;
 
-    const {
-      denom: fromDenom,
-      name: fromName = "",
-      chainId: fromChainId,
-    } = fromToken;
-    const { denom: toDenom, name: toName = "", chainId: toChainId } = toToken;
+    const { name: fromName = "", chainId: fromChainId } = fromToken;
+    const { name: toName = "", chainId: toChainId } = toToken;
 
     // case: same chainId as evm, or bnb => swap fee = 0
     // case: same Token Name and !== chainId => bridge token => swap fee = 0
@@ -63,15 +62,15 @@ export const useSwapFee = ({ fromToken, toToken }) => {
     if (fromChainId === "Oraichain" && toChainId === "Oraichain") {
       if (
         checkIsPairOfPool({
-          fromName: fromName?.toUpperCase(),
-          toName: toName?.toUpperCase(),
+          fromName: fromName.toUpperCase(),
+          toName: toName.toUpperCase(),
         })
       ) {
         setFee(SWAP_FEE_PER_ROUTE);
         return;
       }
 
-      setFee(() => SWAP_FEE_PER_ROUTE * 2);
+      setFee(SWAP_FEE_PER_ROUTE * 2);
       return;
     }
 
