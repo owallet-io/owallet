@@ -7,7 +7,9 @@ export function makeURL(baseURL: string, url: string): string {
     if (!baseURL.startsWith("http://") && !baseURL.startsWith("https://")) {
       baseURL = "https://" + baseURL;
     }
-
+    if (!url || url === "") {
+      return baseURL;
+    }
     const baseURLInstance = new URL(baseURL);
     baseURL = removeLastSlashIfIs(baseURLInstance.origin);
     url =
