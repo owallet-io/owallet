@@ -1,4 +1,3 @@
-//@ts-nocheck
 import {
   ChainedFunctionifyTuple,
   HasMapStore,
@@ -74,12 +73,20 @@ export class AccountStore<
   }
 
   getAccount(chainId: string): AccountSetReturn {
-    // Allow access through chain identifier by accessing via chainGetter.
-    return this.get(this.chainGetter.getChain(chainId).chainId);
+    // XXX: This split is to handle this case separately as modular chain info was added...
+    if (this.chainGetter.hasChain(chainId)) {
+      // Access through chainGetter to allow access via chain identifier as well.
+      return this.get(this.chainGetter.getChain(chainId).chainId);
+    }
+    return this.get(chainId);
   }
 
   hasAccount(chainId: string): boolean {
-    // Allow access through chain identifier by accessing via chainGetter.
-    return this.has(this.chainGetter.getChain(chainId).chainId);
+    // XXX: This split is to handle this case separately as modular chain info was added...
+    if (this.chainGetter.hasChain(chainId)) {
+      // Access through chainGetter to allow access via chain identifier as well.
+      return this.has(this.chainGetter.getChain(chainId).chainId);
+    }
+    return this.has(chainId);
   }
 }

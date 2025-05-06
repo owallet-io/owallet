@@ -19,6 +19,7 @@ export type Functionify<Params extends Array<any>, Return> = (
  * Make the tuple of functions that accept `Base` tuple `Params` as parameter and return `Injects` respectively.
  * The passed `Base` parameter is merged from `Base` by chaining.
  *
+ * KR: `Base`부터 시작해서 다음 Inject에는 이전 Inject의 결과가 merge된 값이 파라미터에 전달된다.
  *
  * ChainedFunctionifyTuple<{base: boolean}, [number, string], [{test1: number}, {test2: number}, {test3: string}]> =
  *  [
@@ -51,6 +52,7 @@ export type ChainedFunctionifyTuple<
  * AFAIK, `variadic tuple types` and `recursive conditional types` features are introduced in typescript 4,
  * thus, this only works on typescript 4+.
  *
+
  *
  * @param baseStore The base store on top.
  * @param parameters Tuple to pass to fns as parameters.
@@ -78,6 +80,34 @@ export const mergeStores = <
       // @ts-ignore
       baseStore[key] = r[key];
     }
+  }
+
+  return baseStore as any;
+};
+
+/**
+ * A variant of mergeStores that accepts a single function instead of a spread of functions.
+ * This is useful when working with arrays of functions directly.
+ */
+export const mergeStoresSingle = <
+  Base extends IObject,
+  Params extends Array<any>,
+  Inject extends IObject,
+  Return = Base & Inject
+>(
+  baseStore: Base,
+  parameters: Params,
+  fn: Functionify<[Base, ...Params], Inject>
+): Return => {
+  const r = fn(baseStore, ...parameters);
+
+  for (const key of Object.keys(r)) {
+    if (baseStore[key]) {
+      throw new Error(`${key} is already merged`);
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    baseStore[key] = r[key];
   }
 
   return baseStore as any;

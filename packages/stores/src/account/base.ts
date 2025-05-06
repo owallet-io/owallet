@@ -1,5 +1,5 @@
-import { action, computed, flow, makeObservable, observable } from "mobx";
-import { AppCurrency, OWallet } from "@owallet/types";
+import { action, computed, flow, get, makeObservable, observable } from "mobx";
+import { AppCurrency, OWallet, SupportedPaymentType } from "@owallet/types";
 import { ChainGetter } from "../chain";
 import { DenomHelper, getBase58Address, toGenerator } from "@owallet/common";
 import { MakeTxResponse } from "./types";
@@ -39,12 +39,25 @@ export class AccountSetBase {
 
   @observable
   protected _name: string = "";
+
   @observable
   protected _btcLegacyAddress: string = "";
+
   @observable
   protected _bech32Address: string = "";
   @observable
   protected _ethereumHexAddress: string = "";
+  @observable
+  protected _starknetHexAddress: string = "";
+  @observable
+  protected _bitcoinAddress:
+    | {
+        bech32Address: string;
+        paymentType: SupportedPaymentType;
+        masterFingerprintHex?: string;
+        derivationPath?: string;
+      }
+    | undefined = undefined;
   @observable
   protected _isNanoLedger: boolean = false;
   @observable
@@ -97,22 +110,29 @@ export class AccountSetBase {
   }
 
   protected async enable(chainId: string): Promise<void> {
-    const chainInfo = this.chainGetter.getChain(chainId);
+    const modularChainInfo = this.chainGetter.getModularChain(chainId);
 
-    if (this.opts.suggestChain) {
-      const owallet = await this.sharedContext.getOWallet();
-      if (this.opts.suggestChainFn) {
-        await this.sharedContext.suggestChain(async () => {
-          if (owallet && this.opts.suggestChainFn) {
-            await this.opts.suggestChainFn(owallet, chainInfo);
-          }
-        });
-      } else {
-        await this.sharedContext.suggestChain(async () => {
-          if (owallet) {
-            await owallet.experimentalSuggestChain(chainInfo.embedded);
-          }
-        });
+    if ("cosmos" in modularChainInfo) {
+      if (this.opts.suggestChain) {
+        const owallet = await this.sharedContext.getOWallet();
+        if (this.opts.suggestChainFn) {
+          await this.sharedContext.suggestChain(async () => {
+            if (owallet && this.opts.suggestChainFn) {
+              await this.opts.suggestChainFn(
+                owallet,
+                this.chainGetter.getChain(chainId)
+              );
+            }
+          });
+        } else {
+          await this.sharedContext.suggestChain(async () => {
+            if (owallet) {
+              await owallet.experimentalSuggestChain(
+                this.chainGetter.getChain(chainId).embedded
+              );
+            }
+          });
+        }
       }
     }
     await this.sharedContext.enable(chainId);
@@ -157,38 +177,72 @@ export class AccountSetBase {
       return;
     }
 
-    yield this.sharedContext.getKey(this.chainId, (res) => {
-      if (res.status === "fulfilled") {
-        const key = res.value;
-        this._bech32Address = key.bech32Address;
-        this._ethereumHexAddress = key.ethereumHexAddress;
-        this._isNanoLedger = key.isNanoLedger;
-        this._isKeystone = key.isKeystone;
-        this._name = key.name;
-        this._pubKey = key.pubKey;
-        this._btcLegacyAddress = "";
-        // Set the wallet status as loaded after getting all necessary infos.
-        this._walletStatus = WalletStatus.Loaded;
-      } else {
-        // Caught error loading key
-        // Reset properties, and set status to Rejected
-        this._bech32Address = "";
-        this._ethereumHexAddress = "";
-        this._isNanoLedger = false;
-        this._isKeystone = false;
-        this._name = "";
-        this._pubKey = new Uint8Array(0);
-        this._btcLegacyAddress = "";
+    const isBitcoin =
+      "bitcoin" in this.chainGetter.getModularChain(this.chainId);
 
-        this._walletStatus = WalletStatus.Rejected;
-        this._rejectionReason = res.reason;
-      }
+    yield this.sharedContext.getKeyMixed(
+      this.chainId,
+      false,
+      isBitcoin,
+      (res) => {
+        if (res.status === "fulfilled") {
+          const key = res.value;
+          if ("bech32Address" in key) {
+            this._bech32Address = key.bech32Address;
+            this._ethereumHexAddress = key.ethereumHexAddress;
+            this._starknetHexAddress = "";
+            this._isNanoLedger = key.isNanoLedger;
+            this._isKeystone = key.isKeystone;
+            this._name = key.name;
+            this._pubKey = key.pubKey;
+          } else if ("paymentType" in key) {
+            this._bech32Address = "";
+            this._ethereumHexAddress = "";
+            this._starknetHexAddress = "";
+            this._btcLegacyAddress = "";
+            this._bitcoinAddress = {
+              bech32Address: key.address,
+              paymentType: key.paymentType,
+              masterFingerprintHex: key.masterFingerprintHex,
+              derivationPath: key.derivationPath,
+            };
+            this._isNanoLedger = key.isNanoLedger;
+            this._isKeystone = false;
+            this._name = key.name;
+            this._pubKey = key.pubKey;
+          } else {
+            this._bech32Address = "";
+            this._ethereumHexAddress = "";
+            this._starknetHexAddress = key.hexAddress;
+            this._isNanoLedger = key.isNanoLedger;
+            this._isKeystone = false;
+            this._name = key.name;
+            this._pubKey = key.pubKey;
+          }
 
-      if (this._walletStatus !== WalletStatus.Rejected) {
-        // Reset previous rejection error message
-        this._rejectionReason = undefined;
+          // Set the wallet status as loaded after getting all necessary infos.
+          this._walletStatus = WalletStatus.Loaded;
+        } else {
+          // Caught error loading key
+          // Reset properties, and set status to Rejected
+          this._bech32Address = "";
+          this._ethereumHexAddress = "";
+          this._starknetHexAddress = "";
+          this._isNanoLedger = false;
+          this._isKeystone = false;
+          this._name = "";
+          this._pubKey = new Uint8Array(0);
+
+          this._walletStatus = WalletStatus.Rejected;
+          this._rejectionReason = res.reason;
+        }
+
+        if (this._walletStatus !== WalletStatus.Rejected) {
+          // Reset previous rejection error message
+          this._rejectionReason = undefined;
+        }
       }
-    });
+    );
   }
 
   @action
@@ -201,6 +255,7 @@ export class AccountSetBase {
     );
     this._bech32Address = "";
     this._ethereumHexAddress = "";
+    this._starknetHexAddress = "";
     this._isNanoLedger = false;
     this._isKeystone = false;
     this._name = "";
@@ -218,9 +273,11 @@ export class AccountSetBase {
       this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ""
     );
   }
+
   get btcLegacyAddress(): string {
     return this._btcLegacyAddress;
   }
+
   /**
    * @deprecated Use `isReadyToSendTx`
    */
@@ -265,6 +322,15 @@ export class AccountSetBase {
   get bech32Address(): string {
     return this._bech32Address;
   }
+
+  get base58Address(): string {
+    return getBase58Address(this._ethereumHexAddress);
+  }
+
+  get pubKey(): Uint8Array {
+    return this._pubKey.slice();
+  }
+
   get addressDisplay(): string {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     if (
@@ -276,10 +342,6 @@ export class AccountSetBase {
       return this.base58Address;
     }
     return this._bech32Address;
-  }
-
-  get pubKey(): Uint8Array {
-    return this._pubKey.slice();
   }
 
   get isNanoLedger(): boolean {
@@ -318,8 +380,20 @@ export class AccountSetBase {
   get ethereumHexAddress(): string {
     return this._ethereumHexAddress;
   }
-  get base58Address(): string {
-    return getBase58Address(this._ethereumHexAddress);
+
+  get starknetHexAddress(): string {
+    return this._starknetHexAddress;
+  }
+
+  get bitcoinAddress():
+    | {
+        bech32Address: string;
+        paymentType: SupportedPaymentType;
+        masterFingerprintHex?: string;
+        derivationPath?: string;
+      }
+    | undefined {
+    return this._bitcoinAddress;
   }
 }
 

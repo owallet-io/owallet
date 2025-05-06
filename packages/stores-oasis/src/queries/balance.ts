@@ -63,6 +63,7 @@ export class ObservableQueryOasisAccountBalanceImpl
     abortController: AbortController
   ): Promise<{ headers: any; data: any }> {
     const chainInfo = this.chainGetter.getChain(this.chainId);
+    //@ts-ignore
     const nic = new oasis.client.NodeInternal(chainInfo.grpc);
     const publicKey = await staking.addressFromBech32(this.bech32Address);
     const account = await nic.stakingAccount({ owner: publicKey, height: 0 });

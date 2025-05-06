@@ -175,6 +175,10 @@ export const useGetFeeTron = (
       }));
     } catch (err) {
       console.log("err on estimateForTrigger", err);
+      setData((prevState) => ({
+        ...prevState,
+      }));
+      return;
     }
   };
   const simulateSignTron = async (vaultId, coinType) => {

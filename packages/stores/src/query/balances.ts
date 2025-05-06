@@ -82,6 +82,9 @@ export class ObservableQueryBalancesImplMap {
     return this.getBalanceInner(chainInfo.stakeCurrency);
   }
 
+  /**
+   * 알려진 모든 Currency들의 balance를 반환환다.
+   */
   @computed
   get balances(): IObservableQueryBalanceImpl[] {
     const chainInfo = this.chainGetter.getChain(this.chainId);
@@ -90,7 +93,6 @@ export class ObservableQueryBalancesImplMap {
 
     for (let i = 0; i < chainInfo.currencies.length; i++) {
       const currency = chainInfo.currencies[i];
-
       const balanceInner = this.getBalanceInner(currency);
       if (balanceInner) {
         result.push(balanceInner);
@@ -100,6 +102,9 @@ export class ObservableQueryBalancesImplMap {
     return result;
   }
 
+  /**
+   * 알려진 모든 Currency들 중 0 이상의 잔고를 가진 balance를 반환환다.
+   */
   @computed
   get positiveBalances(): IObservableQueryBalanceImpl[] {
     const balances = this.balances;
@@ -214,14 +219,17 @@ export class ObservableQueryBalances extends HasMapStore<ObservableQueryBalances
   getQueryBech32Address(bech32Address: string): ObservableQueryBalancesImplMap {
     return this.get(bech32Address) as ObservableQueryBalancesImplMap;
   }
+
   getQueryByAddress(walletAddress: string): ObservableQueryBalancesImplMap {
     return this.get(walletAddress) as ObservableQueryBalancesImplMap;
   }
+
   getQueryEthereumHexAddress(
     ethereumHexAddress: string
   ): ObservableQueryBalancesImplMap {
     return this.get(ethereumHexAddress) as ObservableQueryBalancesImplMap;
   }
+
   getQueryBtcLegacyAddress(
     btcLegacyAddress: string
   ): ObservableQueryBalancesImplMap {

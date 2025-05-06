@@ -13,6 +13,7 @@ export class EthereumAccountStore extends HasMapStore<EthereumAccountBase> {
   }
 
   getAccount(chainId: string): EthereumAccountBase {
+    // Allow access through chain identifier by accessing through chainGetter.
     return this.get(this.chainGetter.getChain(chainId).chainId);
   }
 }
