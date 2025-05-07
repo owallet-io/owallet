@@ -690,6 +690,57 @@ export const EmbedChainInfos: ChainInfo[] = [
     features: ["not-support-staking"],
   },
   {
+    rpc: "https://public-node.rsk.co",
+    rest: "https://public-node.rsk.co",
+    evm: {
+      chainId: 30,
+      rpc: "https://public-node.rsk.co",
+      websocket: "wss://rootstock.drpc.org",
+    },
+    chainId: "eip155:30",
+    chainName: "Rootstock",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/rsksmart/rsk-contract-metadata/master/images/rootstock-orange.png",
+    bip44: {
+      coinType: 137,
+    },
+    currencies: [
+      {
+        coinDenom: "RBTC",
+        coinMinimalDenom: "rootstock-native",
+        coinDecimals: 18,
+        coinGeckoId: "rootstock",
+        coinImageUrl:
+          "https://coin-images.coingecko.com/coins/images/5070/large/RBTC-logo.png",
+      },
+      {
+        type: "erc20",
+        coinDenom: "RIF",
+        coinMinimalDenom: "erc20:0x2acc95758f8b5f583470ba265eb685a8f45fc9d5",
+        coinDecimals: 18,
+        coinGeckoId: "rif-token",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/rsksmart/rsk-contract-metadata/refs/heads/master/images/rif.png",
+      }
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "RBTC",
+        coinMinimalDenom: "rootstock-native",
+        coinDecimals: 18,
+        coinGeckoId: "rootstock",
+        coinImageUrl:
+          "https://coin-images.coingecko.com/coins/images/5070/large/RBTC-logo.png",
+      },
+    ],
+    features: ["not-support-staking"],
+    txExplorer: {
+      name: "Rootstock Explorer",
+      txUrl: "https://explorer.rootstock.io/tx/{txHash}",
+      accountUrl: "https://explorer.rootstock.io/address/{address}",
+    },
+  },
+  {
     rpc: "https://cosmos-rpc.owallet.io",
     rest: "https://cosmos-rest.owallet.io",
     chainId: "cosmoshub-4",
