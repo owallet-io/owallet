@@ -17677,6 +17677,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"emoji-datasource@npm:^6.0.0":
+  version: 6.1.1
+  resolution: "emoji-datasource@npm:6.1.1"
+  checksum: e7e48f6303448ee5fa2e761f24c7df35080319d41049e7c8d8a3d57103d2f0ae5dfcb859a19e3fc34d70a69b024fe9a40924f5376820d623fd865641b0b98517
+  languageName: node
+  linkType: hard
+
 "emoji-regex@npm:^8.0.0":
   version: 8.0.0
   resolution: "emoji-regex@npm:8.0.0"
@@ -26910,6 +26917,7 @@ __metadata:
     react-native-device-info: 10.7.0
     react-native-dotenv: ^3.3.1
     react-native-draggable-flatlist: 4.0.1
+    react-native-emoji-selector: ^0.2.0
     react-native-error-boundary: ^1.2.4
     react-native-fast-image: 8.6.3
     react-native-flash-message: 0.4.2
@@ -30638,6 +30646,15 @@ __metadata:
     react-native-gesture-handler: ">=2.0.0"
     react-native-reanimated: ">=2.8.0"
   checksum: f904e3f30737a883b683e12e119856188e81d7b6cd8811e38124353630391326385bec040a3c200a06535bcd4bbbe973e504c2e0546f7aa4cc96aa573787813d
+  languageName: node
+  linkType: hard
+
+"react-native-emoji-selector@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "react-native-emoji-selector@npm:0.2.0"
+  dependencies:
+    emoji-datasource: ^6.0.0
+  checksum: 682dfa91a0d1d81e4af38994346c80713bd7075c1459633b3204d08d33227c59d3a93a995bd3a32a893e734429662795b8b3566471ad81b67e500508748e0129
   languageName: node
   linkType: hard
 
