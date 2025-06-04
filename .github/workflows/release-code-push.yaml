@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04 #orai-self-hosted
+    runs-on: ubuntu-latest #orai-self-hosted
     strategy:
       matrix:
         node-version: [18.17.0]

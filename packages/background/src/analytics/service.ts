@@ -104,7 +104,7 @@ export class AnalyticsService {
           if (typeof navigator === "undefined") {
             return false;
           }
-          // 타이핑은 boolean인데 실제로는 nullable해서 무조건 boolean으로 반환하게 하기 위해서 이렇게 한거임.
+          // The typing is boolean but it's actually nullable, so we use !! to ensure it always returns a boolean.
           return !!navigator.webdriver;
         })(),
       })

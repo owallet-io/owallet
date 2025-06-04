@@ -87,7 +87,7 @@ const createMockServer = (
   };
 };
 
-describe("The chain server supports all features(체인 서버가 모든 기능을 지원할 때)", () => {
+describe("The chain server supports all features", () => {
   let port: number = -1;
   let closeServer: (() => void) | undefined;
   let getQueryCount: (() => number) | undefined;
@@ -296,7 +296,7 @@ describe("The chain server supports all features(체인 서버가 모든 기능�
    * @When When you input that there are no supported features
    * @Then return "ibc-go", "ibc-transfer", "query:/cosmos/bank/v1beta1/spendable_balances", features
    */
-  test("When you input that there are no supported features(지원하는 기능이 없다고 입력했을 때)", async () => {
+  test("When you input that there are no supported features", async () => {
     const mockChainInfoForCheck: ChainInfoForCheck = {
       rpc: "noop",
       rest: `http://127.0.0.1:${port}`,
@@ -356,7 +356,7 @@ describe("The chain server supports all features(체인 서버가 모든 기능�
   });
 });
 
-describe("The chain server doesn't support all features(체인 서버가 모든 기능을 지원하지 않을 때)", () => {
+describe("The chain server doesn't support all features", () => {
   let port: number = -1;
   let closeServer: (() => void) | undefined;
 
