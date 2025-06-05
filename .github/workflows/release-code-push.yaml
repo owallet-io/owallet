@@ -59,6 +59,10 @@ jobs:
           yarn install
       - name: Build Libs Codepush
         run: yarn build:libs
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
