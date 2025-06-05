@@ -24,6 +24,7 @@
     "build:codepush": "lerna run build --ignore @owallet/extension --ignore @owallet/hooks --ignore @owallet/hooks-internal --ignore @owallet/proto-types --ignore @owallet/wc-client-example --include-dependencies --stream",
     "build:hooks": "lerna run build --scope @owallet/hooks",
     "build:hooks-internal": "lerna run build --scope @owallet/hooks-internal",
+    "build:stores-internal": "lerna run build --scope @owallet/stores-internal",
     "postinstall": "yarn update:libs && patch-package && rimraf node_modules/crypto && yarn workspace mobile postinstall",
     "update:libs": "node ./scripts/update-inj.js",
     "update-new-submodule": "git submodule update --remote --merge",
