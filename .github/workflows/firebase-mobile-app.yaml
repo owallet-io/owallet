@@ -46,6 +46,10 @@ jobs:
           yarn install
       - name: Build Libs
         run: yarn build:libs
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
       - name: Setup environment variables
         working-directory: apps/mobile
         run: yarn build:android
