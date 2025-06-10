@@ -314,9 +314,9 @@ export class TokenCW20Service {
     // Should be hex encoded. (not bech32)
     associatedAccountAddress: string
   ) {
-    // 얘는 associatedAccountAddress가 empty string이더라도 허용된다.
-    // tokenInfo 안에 contract address와 associatedAccountAddress가 존재하므로
-    // 프론트에서 계정 초기화없이 token info만 보고 remove를 가능하게 하도록 하기 위함임.
+    // This allows associatedAccountAddress to be an empty string.
+    // Since the tokenInfo contains both contract address and associatedAccountAddress,
+    // this enables the frontend to remove tokens based on token info alone without initializing an account.
 
     const chainIdentifier = ChainIdHelper.parse(chainId).identifier;
     const tokens = this.tokenMap.get(chainIdentifier);

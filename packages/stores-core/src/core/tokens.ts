@@ -53,7 +53,7 @@ export class TokensStore {
     });
 
     autorun(() => {
-      // Account가 변경되었을때, 체인 정보가 변경되었을때 등에 반응해야하기 때문에 autorun 안에 넣는다.
+      // We put this in autorun because it should react to changes in account, chain info, etc.
       this.updateChainInfos();
     });
 

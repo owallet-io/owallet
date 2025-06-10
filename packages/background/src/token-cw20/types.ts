@@ -2,10 +2,10 @@ import { AppCurrency } from "@owallet/types";
 
 export interface TokenInfo {
   // Hex encoded
-  // Token은 계정당이 아니라 글로벌하게 다뤄짐.
-  // 근데 secret20은 viewing key때메 계정에 귀속되어야 함;
-  // secret20 때메 어쩔 수 없기 로직이 좀 괴랄해짐.
-  // cw20일때는 associatedAccountAddress는 넣으면 안됨.
+  // Tokens are handled globally, not per account.
+  // But secret20 must be tied to the account because of the viewing key;
+  // The logic gets a bit messy because of secret20.
+  // For cw20, associatedAccountAddress should not be included.
   associatedAccountAddress?: string;
   currency: AppCurrency;
 }

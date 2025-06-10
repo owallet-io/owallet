@@ -71,7 +71,7 @@ export class SignDocHelper {
 
     if (this._signDocWrapper.isDirectAux) {
       const protoSignDoc = this._signDocWrapper.protoSignDoc;
-      // aux의 경우 어차피 수수료 정보가 없으니 memo만 고려한다.
+      // For aux, since there's no fee information anyway, only the memo needs to be considered.
       const newSignDoc: SignDocDirectAux = {
         ...(protoSignDoc.signDoc as SignDocDirectAux),
         bodyBytes: TxBody.encode({

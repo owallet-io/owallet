@@ -109,7 +109,7 @@ export class TokenScanService {
       .getKeyInfos()
       .map((keyInfo) => keyInfo.id)
       .sort((a, b) => {
-        // 현재 선택된 계정에게 우선권을 준다.
+        // Give priority to the currently selected account
         const aIsSelected = this.keyRingService.selectedVaultId === a;
         const bIsSelected = this.keyRingService.selectedVaultId === b;
 
@@ -122,7 +122,7 @@ export class TokenScanService {
         return 0;
       });
     for (const vaultId of vaultIds) {
-      // 얘는 계정 수를 예상하기 힘드니까 그냥 순차적으로 한다...
+      // Since it's hard to predict the number of accounts, we just process them sequentially...
       await this.scan(vaultId, chainId);
     }
   }
