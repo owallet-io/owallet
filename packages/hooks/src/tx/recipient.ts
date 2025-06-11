@@ -18,11 +18,13 @@ import {
   ICNSFailedToFetchError,
   InvalidBech32Error,
   InvalidHexError,
+  InvalidTronAddressError,
 } from "./errors";
 import { Bech32Address, ChainIdHelper } from "@owallet/cosmos";
 import { useState } from "react";
 import { Buffer } from "buffer/";
 import { isBase58Address, validateICNSName } from "@owallet/common";
+import { isTronAddress } from "@owallet/common/src/utils/utils";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { BtcAccountBase } from "@owallet/stores-btc";
 
@@ -419,7 +421,18 @@ export class RecipientConfig
         return {};
       } else {
         return {
-          error: new InvalidBech32Error(`Invalid bech32}`),
+          error: new InvalidBech32Error(`Invalid bech32`),
+        };
+      }
+    }
+
+    const isTronChain = chainInfo.features.includes("tron");
+    if (isTronChain) {
+      if (isTronAddress(rawRecipient)) {
+        return {};
+      } else {
+        return {
+          error: new InvalidTronAddressError(`Invalid Tron address`),
         };
       }
     }
