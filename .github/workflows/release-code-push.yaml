@@ -26,6 +26,8 @@ jobs:
           submodules: true
           fetch-depth: 0
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+      - name: Update Git Submodules
+        run: git submodule update --remote --merge
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -57,6 +59,10 @@ jobs:
           yarn install
       - name: Build Libs Codepush
         run: yarn build:libs
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
@@ -80,11 +86,11 @@ jobs:
           username: "GitBot"
           message: Code pushed successfully! head_commit=${{ github.event.head_commit.message }}
 
-      - name: Send discord message
-        if: ${{ failure() }}
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      # - name: Send discord message
+      #   if: ${{ failure() }}
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
