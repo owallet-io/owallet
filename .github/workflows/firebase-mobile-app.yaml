@@ -5,6 +5,9 @@ on:
       - mobile/v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   firebase-android-mobile:
     name: firebase-android-mobile
