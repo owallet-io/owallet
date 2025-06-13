@@ -1,10 +1,10 @@
-//@ts-nocheck
 import { makeObservable, observable, runInAction } from "mobx";
 import { DeepReadonly, UnionToIntersection } from "utility-types";
 import { ObservableQueryBalances } from "./balances";
 import {
   IObject,
   mergeStores,
+  mergeStoresSingle,
   ChainedFunctionifyTuple,
   QuerySharedContext,
 } from "../common";
@@ -92,13 +92,27 @@ export class QueriesStore<Injects extends Array<IObject>> {
         this.chainGetter
       );
       runInAction(() => {
-        const merged = mergeStores(
-          queriesSetBase,
-          [this.sharedContext, chainId, this.chainGetter],
-          ...this.queriesCreators
-        );
+        // Apply type assertion to the base store
+        let merged = queriesSetBase as QueriesSetBase & IObject;
+        const params = [this.sharedContext, chainId, this.chainGetter] as [
+          QuerySharedContext,
+          string,
+          ChainGetter
+        ];
 
-        this.queriesMap.set(chainId, merged);
+        // Iterate through each creator and apply it individually
+        for (let i = 0; i < this.queriesCreators.length; i++) {
+          merged = mergeStoresSingle(
+            merged,
+            params,
+            this.queriesCreators[i] as any
+          );
+        }
+
+        this.queriesMap.set(
+          chainId,
+          merged as QueriesSetBase & UnionToIntersection<Injects[number]>
+        );
       });
     }
 

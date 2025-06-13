@@ -80,7 +80,7 @@ export interface StarknetChainInfo {
   readonly strkContractAddress: string;
 }
 
-export type ChainInfoModule = "cosmos" | "starknet";
+export type ChainInfoModule = "cosmos" | "starknet" | "bitcoin";
 
 export type ModularChainInfo =
   | {

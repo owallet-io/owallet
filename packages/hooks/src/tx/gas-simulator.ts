@@ -277,7 +277,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
   @action
   setGasAdjustmentValue(gasAdjustment: string | number) {
     if (typeof gasAdjustment === "number") {
-      if (gasAdjustment < 0 || gasAdjustment > 2) {
+      if (gasAdjustment < 0 || gasAdjustment > 3) {
         return;
       }
 
@@ -295,7 +295,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
     }
 
     const num = parseFloat(gasAdjustment);
-    if (Number.isNaN(num) || num < 0 || num > 2) {
+    if (Number.isNaN(num) || num < 0 || num > 3) {
       return;
     }
 
@@ -329,7 +329,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
     // Even though the implementation is not intuitive, the goals are
     // - Every time the observable used in simulateGasFn is updated, the simulation is refreshed.
     // - The simulation is refreshed only when changing from zero fee to paying fee or vice versa.
-    // - It's been modified to refresh when the currency of the fee itself changes due to problems in feemarket, etc. In this case, for ease of handling, it's applied in the storeKey setter.
+    // Modified to refresh when the fee currency itself changes due to issues in feemarket, etc. For smooth handling (and out of laziness), this is applied in the storeKey setter.
     this._disposers.push(
       autorun(() => {
         if (!this.enabled) {
@@ -359,6 +359,15 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
             }
           });
         } catch (e) {
+          console.error("Error in gas simulator autorun:", e);
+          console.error("Context:", {
+            chainId: this.chainId,
+            key: this.key,
+            enabled: this.enabled,
+            gasAdjustment: this.gasAdjustment,
+            error: e?.message || String(e),
+            stack: e?.stack,
+          });
           console.log(e);
           return;
         }
@@ -406,6 +415,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
           })
           .catch((e) => {
             console.log(e);
+
             if (isSimpleFetchError(e) && e.response) {
               const response = e.response;
               if (
@@ -457,7 +467,11 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
 
     this._disposers.push(
       autorun(() => {
-        if (this.enabled && this.gasEstimated != null) {
+        if (
+          this.enabled &&
+          this.gasEstimated != null &&
+          !Number.isNaN(this.gasEstimated)
+        ) {
           this.gasConfig.setValue(this.gasEstimated * this.gasAdjustment);
         }
       })

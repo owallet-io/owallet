@@ -1,14 +1,24 @@
+import { Network } from "@owallet/common";
 import {
   ChainGetter,
   HasMapStore,
   ObservableQuery,
-  QueryResponse,
   QuerySharedContext,
 } from "@owallet/stores";
 import { makeObservable } from "mobx";
-import { ITokenInfoRes } from "@owallet/types";
-import { Network } from "@owallet/common";
-export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITokenInfoRes> {
+export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<{
+  id: string;
+  symbol: string;
+  image: {
+    small: string;
+  };
+  detail_platforms: Record<
+    string,
+    {
+      decimal_place: number;
+    }
+  >;
+}> {
   constructor(
     sharedContext: QuerySharedContext,
     coingeckoAPIBaseURL: string,
@@ -28,19 +38,20 @@ export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<ITok
   }
 
   get symbol(): string | undefined {
-    return this.response?.data?.data?.abbr?.toUpperCase();
+    return this.response?.data?.symbol.toUpperCase();
   }
 
   get decimals(): number | undefined {
-    return this.response?.data?.data?.decimal;
+    return this.response?.data?.detail_platforms[this.coingeckoChainId]
+      ?.decimal_place;
   }
 
   get coingeckoId(): string | undefined {
-    return this.response?.data?.data?.coingeckoId;
+    return this.response?.data?.id;
   }
 
   get logoURI(): string | undefined {
-    return this.response?.data?.data?.imgUrl;
+    return this.response?.data?.image.small;
   }
 }
 

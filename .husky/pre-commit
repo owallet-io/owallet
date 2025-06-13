@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
-npx --no-install lint-staged --allow-empty
+# Use absolute path to yarn and specify full node environment
+export NVM_DIR="$HOME/.nvm"
+export PATH="/Users/user/.nvm/versions/node/v22.1.0/bin:$PATH"
+
+yarn lint-staged --allow-empty

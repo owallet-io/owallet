@@ -56,7 +56,7 @@ import {
   ProtoMsgsOrWithAminoMsgs,
 } from "./types";
 import {
-  getEip712TypedDataBasedOnChainId,
+  getEip712TypedDataBasedOnChainInfo,
   txEventsWithPreOnFulfill,
 } from "./utils";
 import { ExtensionOptionsWeb3Tx } from "@owallet/proto-types/ethermint/types/v1/web3";
@@ -65,6 +65,8 @@ import { simpleFetch } from "@owallet/simple-fetch";
 import Long from "long";
 import { IAccountStore } from "./store";
 import { autorun } from "mobx";
+import { MsgDepositForBurnWithCaller } from "@owallet/proto-types/circle/cctp/v1/tx";
+import { MsgSend as ThorMsgSend } from "@owallet/proto-types/thorchain/v1/types/msg_send";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;
@@ -208,6 +210,8 @@ export class CosmosAccountImpl {
           ?.bech32PrefixAccAddr
       );
 
+      const isThorchain = this.chainId.startsWith("thorchain-");
+
       const msg = {
         type: this.msgOpts.send.native.type,
         value: {
@@ -228,12 +232,23 @@ export class CosmosAccountImpl {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-              value: MsgSend.encode({
-                fromAddress: msg.value.from_address,
-                toAddress: msg.value.to_address,
-                amount: msg.value.amount,
-              }).finish(),
+              typeUrl: isThorchain
+                ? "/types.MsgSend"
+                : "/cosmos.bank.v1beta1.MsgSend",
+              value: isThorchain
+                ? ThorMsgSend.encode({
+                    fromAddress: Bech32Address.fromBech32(
+                      msg.value.from_address
+                    ).address,
+                    toAddress: Bech32Address.fromBech32(msg.value.to_address)
+                      .address,
+                    amount: msg.value.amount,
+                  }).finish()
+                : MsgSend.encode({
+                    fromAddress: msg.value.from_address,
+                    toAddress: msg.value.to_address,
+                    amount: msg.value.amount,
+                  }).finish(),
             },
           ],
           rlpTypes: {
@@ -332,6 +347,7 @@ export class CosmosAccountImpl {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
+
     if (
       (this.chainId?.includes("Oraichain") ||
         this.chainId?.includes("oraibridge-subnet-2")) &&
@@ -405,6 +421,7 @@ export class CosmosAccountImpl {
         }
       );
     }
+
     const txTracer = new TendermintTxTracer(
       this.chainGetter.getChain(this.chainId).rpc,
       "/websocket",
@@ -528,8 +545,12 @@ export class CosmosAccountImpl {
           memo: escapeHTML(memo),
         };
 
+        const chainInfo = this.chainGetter.getChain(this.chainId);
         const chainIsInjective = this.chainId.startsWith("injective");
         const chainIsStratos = this.chainId.startsWith("stratos");
+        const ethSignPlainJson: boolean =
+          chainInfo.features &&
+          chainInfo.features.includes("evm-ledger-sign-plain-json");
 
         if (eip712Signing) {
           if (chainIsInjective) {
@@ -543,7 +564,14 @@ export class CosmosAccountImpl {
             //      That means this part is not standard.
             (signDocRaw as Mutable<StdSignDoc>).fee = {
               ...signDocRaw.fee,
-              feePayer: this.base.bech32Address,
+              ...(() => {
+                if (ethSignPlainJson) {
+                  return {};
+                }
+                return {
+                  feePayer: this.base.bech32Address,
+                };
+              })(),
             };
           }
         }
@@ -577,7 +605,10 @@ export class CosmosAccountImpl {
           return await experimentalSignEIP712CosmosTx_v0(
             this.chainId,
             this.base.bech32Address,
-            getEip712TypedDataBasedOnChainId(this.chainId, msgs),
+            getEip712TypedDataBasedOnChainInfo(
+              this.chainGetter.getChain(this.chainId),
+              msgs
+            ),
             signDoc,
             signOptions
           );
@@ -590,35 +621,36 @@ export class CosmosAccountImpl {
                 messages: protoMsgs,
                 timeoutHeight: signResponse.signed.timeout_height,
                 memo: signResponse.signed.memo,
-                extensionOptions: eip712Signing
-                  ? [
-                      {
-                        typeUrl: (() => {
-                          if (chainIsInjective) {
-                            return "/injective.types.v1beta1.ExtensionOptionsWeb3Tx";
-                          }
+                extensionOptions:
+                  eip712Signing && !ethSignPlainJson
+                    ? [
+                        {
+                          typeUrl: (() => {
+                            if (chainIsInjective) {
+                              return "/injective.types.v1beta1.ExtensionOptionsWeb3Tx";
+                            }
 
-                          return "/ethermint.types.v1.ExtensionOptionsWeb3Tx";
-                        })(),
-                        value: ExtensionOptionsWeb3Tx.encode(
-                          ExtensionOptionsWeb3Tx.fromPartial({
-                            typedDataChainId: EthermintChainIdHelper.parse(
-                              this.chainId
-                            ).ethChainId.toString(),
-                            feePayer: !chainIsInjective
-                              ? signResponse.signed.fee.feePayer
-                              : undefined,
-                            feePayerSig: !chainIsInjective
-                              ? Buffer.from(
-                                  signResponse.signature.signature,
-                                  "base64"
-                                )
-                              : undefined,
-                          })
-                        ).finish(),
-                      },
-                    ]
-                  : undefined,
+                            return "/ethermint.types.v1.ExtensionOptionsWeb3Tx";
+                          })(),
+                          value: ExtensionOptionsWeb3Tx.encode(
+                            ExtensionOptionsWeb3Tx.fromPartial({
+                              typedDataChainId: EthermintChainIdHelper.parse(
+                                this.chainId
+                              ).ethChainId.toString(),
+                              feePayer: !chainIsInjective
+                                ? signResponse.signed.fee.feePayer
+                                : undefined,
+                              feePayerSig: !chainIsInjective
+                                ? Buffer.from(
+                                    signResponse.signature.signature,
+                                    "base64"
+                                  )
+                                : undefined,
+                            })
+                          ).finish(),
+                        },
+                      ]
+                    : undefined,
               })
             ).finish(),
             authInfoBytes: AuthInfo.encode({
@@ -638,6 +670,9 @@ export class CosmosAccountImpl {
                         return "/stratos.crypto.v1.ethsecp256k1.PubKey";
                       }
 
+                      if (chainInfo.hasFeature("eth-secp256k1-initia")) {
+                        return "/initia.crypto.v1beta1.ethsecp256k1.PubKey";
+                      }
                       return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
                     })(),
                     value: PubKey.encode({
@@ -649,7 +684,9 @@ export class CosmosAccountImpl {
                   },
                   modeInfo: {
                     single: {
-                      mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+                      mode: !ethSignPlainJson
+                        ? SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+                        : SignMode.SIGN_MODE_EIP_191,
                     },
                     multi: undefined,
                   },
@@ -660,7 +697,7 @@ export class CosmosAccountImpl {
                 amount: signResponse.signed.fee.amount as Coin[],
                 gasLimit: signResponse.signed.fee.gas,
                 payer:
-                  eip712Signing && !chainIsInjective
+                  eip712Signing && !chainIsInjective && !ethSignPlainJson
                     ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
                       signResponse.signed.fee.feePayer
                     : undefined,
@@ -668,7 +705,7 @@ export class CosmosAccountImpl {
             }).finish(),
             signatures:
               // Injective needs the signature in the signatures list even if eip712
-              !eip712Signing || chainIsInjective
+              !eip712Signing || chainIsInjective || ethSignPlainJson
                 ? [Buffer.from(signResponse.signature.signature, "base64")]
                 : [new Uint8Array(0)],
           }).finish(),
@@ -741,6 +778,13 @@ export class CosmosAccountImpl {
                     return "/stratos.crypto.v1.ethsecp256k1.PubKey";
                   }
 
+                  if (
+                    this.chainGetter
+                      .getChain(this.chainId)
+                      .hasFeature("eth-secp256k1-initia")
+                  ) {
+                    return "/initia.crypto.v1beta1.ethsecp256k1.PubKey";
+                  }
                   return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
                 })(),
                 value: PubKey.encode({
@@ -1064,59 +1108,130 @@ export class CosmosAccountImpl {
       channels[0],
       amount,
       currency,
-      Bech32Address.fromBech32(recipient).toBech32(
-        counterpartyChainBech32Config.bech32PrefixAccAddr
-      ),
+      async () => {
+        if (channels.length === 1) {
+          const chainInfo = this.chainGetter.getChain(
+            channels[0].counterpartyChainId
+          );
+          if (!chainInfo.bech32Config) {
+            throw new Error("Bech32 config is not set");
+          }
+          return Bech32Address.fromBech32(recipient).toBech32(
+            chainInfo.bech32Config.bech32PrefixAccAddr
+          );
+        }
+        const channel = channels[0];
+        const destChainInfo = this.chainGetter.getChain(
+          channel.counterpartyChainId
+        );
+
+        const account = accountStore.getAccount(destChainInfo.chainId);
+        if (account.walletStatus !== WalletStatus.Loaded) {
+          account.init();
+        }
+        if (account.walletStatus === WalletStatus.Loading) {
+          await (() => {
+            return new Promise<void>((resolve) => {
+              if (account.walletStatus === WalletStatus.Loaded) {
+                resolve();
+                return;
+              }
+              autorun(() => {
+                if (account.walletStatus === WalletStatus.Loaded) {
+                  resolve();
+                }
+              });
+            });
+          })();
+        }
+        if (account.walletStatus !== WalletStatus.Loaded) {
+          throw new Error(
+            `The account of ${destChainInfo.chainId} is not loaded: ${account.walletStatus}`
+          );
+        }
+        return account.bech32Address;
+      },
       async () => {
         const memo: any = {};
         let lastForward: any = undefined;
         if (channels.length > 1) {
-          for (const channel of channels.slice(1)) {
-            const destChainInfo = this.chainGetter.getChain(
-              channel.counterpartyChainId
-            );
+          const loopChannels = channels.slice(1);
+          for (let i = 0; i < loopChannels.length; i++) {
+            const channel = loopChannels[i];
+            if (i === loopChannels.length - 1) {
+              const chainInfo = this.chainGetter.getChain(
+                channel.counterpartyChainId
+              );
+              if (!chainInfo.bech32Config) {
+                throw new Error("Bech32 config is not set");
+              }
+              Bech32Address.validate(
+                recipient,
+                chainInfo.bech32Config.bech32PrefixAccAddr
+              );
+              const forward = {
+                receiver: recipient,
+                port: channel.portId,
+                channel: channel.channelId,
+                // TODO: Support timeout
+              };
 
-            const account = accountStore.getAccount(destChainInfo.chainId);
-            if (account.walletStatus !== WalletStatus.Loaded) {
-              account.init();
-            }
-            if (account.walletStatus === WalletStatus.Loading) {
-              await (() => {
-                return new Promise<void>((resolve) => {
-                  if (account.walletStatus === WalletStatus.Loaded) {
-                    resolve();
-                    return;
-                  }
-                  autorun(() => {
+              if (!lastForward) {
+                memo["forward"] = forward;
+              } else {
+                lastForward["next"] = {
+                  forward: forward,
+                };
+              }
+
+              lastForward = forward;
+            } else {
+              const destChainInfo = this.chainGetter.getChain(
+                channel.counterpartyChainId
+              );
+
+              const account = accountStore.getAccount(destChainInfo.chainId);
+              if (account.walletStatus !== WalletStatus.Loaded) {
+                account.init();
+              }
+              if (account.walletStatus === WalletStatus.Loading) {
+                await (() => {
+                  return new Promise<void>((resolve) => {
                     if (account.walletStatus === WalletStatus.Loaded) {
                       resolve();
+                      return;
                     }
+                    autorun(() => {
+                      if (account.walletStatus === WalletStatus.Loaded) {
+                        resolve();
+                      }
+                    });
                   });
-                });
-              })();
-            }
-            if (account.walletStatus !== WalletStatus.Loaded) {
-              throw new Error(
-                `The account of ${destChainInfo.chainId} is not loaded: ${account.walletStatus}`
-              );
-            }
+                })();
+              }
+              if (account.walletStatus !== WalletStatus.Loaded) {
+                throw new Error(
+                  `The account of ${destChainInfo.chainId} is not loaded: ${account.walletStatus}`
+                );
+              }
 
-            const forward = {
-              receiver: account.bech32Address,
-              port: channel.portId,
-              channel: channel.channelId,
-              // TODO: Support timeout
-            };
-
-            if (!lastForward) {
-              memo["forward"] = forward;
-            } else {
-              lastForward["next"] = {
-                forward: forward,
+              const forward = {
+                receiver: account.bech32Address,
+                port: channel.portId,
+                channel: channel.channelId,
+                // TODO: Support timeout
               };
-            }
 
-            lastForward = forward;
+              if (!lastForward) {
+                memo["forward"] = forward;
+              } else {
+                lastForward["next"] = {
+                  forward: forward,
+                };
+              }
+
+              lastForward = forward;
+            }
           }
         }
 
@@ -1153,7 +1268,7 @@ export class CosmosAccountImpl {
     },
     amount: string,
     currency: AppCurrency,
-    recipient: string,
+    recipient: string | (() => Promise<string>),
     memoConstructor: () => Promise<string | undefined>
   ) {
     if (new DenomHelper(currency.coinMinimalDenom).type !== "native") {
@@ -1208,6 +1323,9 @@ export class CosmosAccountImpl {
         const chainIsInjective = this.chainId.startsWith("injective");
 
         let memo = await memoConstructor();
+        if (typeof recipient === "function") {
+          recipient = await recipient();
+        }
 
         if (eip712Signing && chainIsInjective) {
           // I don't know why, but memo is required when injective and eip712
@@ -1969,6 +2087,66 @@ export class CosmosAccountImpl {
           this.queries.cosmos.queryRewards
             .getQueryBech32Address(this.base.bech32Address)
             .fetch();
+        }
+      }
+    );
+  }
+
+  makeCCTPTx(rawCCTPMsgValue: string, rawSendMsg: string) {
+    const cctpMsgValue = JSON.parse(rawCCTPMsgValue);
+    const cctpMsg = {
+      type: "cctp/DepositForBurnWithCaller",
+      value: {
+        from: cctpMsgValue.from,
+        amount: cctpMsgValue.amount,
+        destination_domain: cctpMsgValue.destination_domain,
+        mint_recipient: cctpMsgValue.mint_recipient,
+        burn_token: cctpMsgValue.burn_token,
+        destination_caller: cctpMsgValue.destination_caller,
+      },
+    };
+
+    const sendMsgValue = JSON.parse(rawSendMsg);
+    const sendMsg = {
+      type: this.msgOpts.send.native.type,
+      value: {
+        from_address: sendMsgValue.from_address,
+        to_address: sendMsgValue.to_address,
+        amount: sendMsgValue.amount,
+      },
+    };
+
+    return this.makeTx(
+      "cctp",
+      {
+        aminoMsgs: [cctpMsg, sendMsg],
+        protoMsgs: [
+          {
+            typeUrl: "/circle.cctp.v1.MsgDepositForBurnWithCaller",
+            value: MsgDepositForBurnWithCaller.encode({
+              from: cctpMsg.value.from,
+              amount: cctpMsg.value.amount,
+              destinationDomain: cctpMsg.value.destination_domain,
+              mintRecipient: cctpMsg.value.mint_recipient,
+              burnToken: cctpMsg.value.burn_token,
+              destinationCaller: cctpMsg.value.destination_caller,
+            }).finish(),
+          },
+          {
+            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+            value: MsgSend.encode({
+              fromAddress: sendMsg.value.from_address,
+              toAddress: sendMsg.value.to_address,
+              amount: sendMsg.value.amount,
+            }).finish(),
+          },
+        ],
+      },
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          this.queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.forEach((queryBalance) => queryBalance.fetch());
         }
       }
     );

@@ -178,6 +178,7 @@ export class OasisAccountBase {
   ) {
     try {
       const chainInfo = this.chainGetter.getChain(this.chainId);
+      //@ts-ignore
       const oasisInfo = chainInfo.grpc;
       if (!oasisInfo || !chainInfo.features.includes("oasis")) {
         throw new Error("No Oasis info provided");

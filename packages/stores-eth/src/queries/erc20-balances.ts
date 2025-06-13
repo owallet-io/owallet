@@ -17,6 +17,10 @@ import { ObservableQuery } from "@owallet/stores";
 const thirdparySupportedChainIdMap: Record<string, string> = {
   "eip155:1": Network.ETHEREUM,
   "eip155:56": Network.BINANCE_SMART_CHAIN,
+  "eip155:10": "opt",
+  "eip155:137": "polygon",
+  "eip155:8453": "base",
+  "eip155:42161": "arb",
 };
 
 // interface ThirdpartyERC20TokenBalance {
