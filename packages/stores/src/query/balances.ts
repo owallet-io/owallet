@@ -83,7 +83,7 @@ export class ObservableQueryBalancesImplMap {
   }
 
   /**
-   * 알려진 모든 Currency들의 balance를 반환환다.
+   * Returns the balances of all known currencies.
    */
   @computed
   get balances(): IObservableQueryBalanceImpl[] {
@@ -103,7 +103,7 @@ export class ObservableQueryBalancesImplMap {
   }
 
   /**
-   * 알려진 모든 Currency들 중 0 이상의 잔고를 가진 balance를 반환환다.
+   * Returns the balances among all known currencies that have a balance greater than 0.
    */
   @computed
   get positiveBalances(): IObservableQueryBalanceImpl[] {

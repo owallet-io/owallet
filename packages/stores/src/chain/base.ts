@@ -65,12 +65,12 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /*
-   * 해당되는 denom의 currency를 모를 때 이 메소드를 사용해서 등록을 요청할 수 있다.
-   * 이미 등록되어 있거나 등록을 시도 중이면 아무 행동도 하지 않는.
-   * 예를들어 네이티브 balance 쿼리에서 모르는 denom이 나오거나
-   * IBC denom의 등록을 요청할 때 쓸 수 있다.
-   * action 안에서는 autorun이 immediate로 실행되지 않으므로, 일단 @action 데코레이터는 사용하지 않는다.
-   * 하지만 이 메소드를 action 안에서 호출하면 여전히 immediate로 실행되지 않으므로, 이 경우도 고려해야한다.
+   * When you don't know the currency for the given denom, you can use this method to request registration.
+   * If it is already registered or registration is in progress, it does nothing.
+   * For example, use this when an unknown denom appears in a native balance query,
+   * or when requesting registration of an IBC denom.
+   * The @action decorator is not used because autorun does not execute immediately inside an action.
+   * However, if you call this method inside an action, it still does not execute immediately, so consider this case as well.
    */
   addUnknownDenoms(...coinMinimalDenoms: string[]) {
     this.addUnknownDenomsImpl(coinMinimalDenoms, true);
@@ -302,8 +302,8 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * Currency를 반환한다.
-   * 만약 해당 Currency가 없다면 unknown currency에 추가한다.
+   * Returns the currency.
+   * If the currency does not exist, adds it to the unknown currency list.
    * @param coinMinimalDenom
    */
   findCurrency(coinMinimalDenom: string): AppCurrency | undefined {
@@ -374,7 +374,7 @@ export class ChainInfoImpl<C extends ChainInfo = ChainInfo>
   }
 
   /**
-   * findCurrency와 비슷하지만 해당하는 currency가 존재하지 않을 경우 raw currency를 반환한다.
+   * Similar to findCurrency, but returns a raw currency if the corresponding currency does not exist.
    * @param coinMinimalDenom
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
