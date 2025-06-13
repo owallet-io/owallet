@@ -2,8 +2,6 @@ import { AppCurrency, ERC20Currency } from "@owallet/types";
 import { ChainStore, IQueriesStore } from "@owallet/stores";
 import { DenomHelper, KVStore } from "@owallet/common";
 import { makeObservable, observable, runInAction } from "mobx";
-import { EthereumQueries } from "./queries";
-import { OWalletETCQueries } from "@owallet/stores-etc";
 
 type CurrencyCache =
   | {
@@ -42,9 +40,7 @@ export class ERC20CurrencyRegistrar {
     protected readonly cacheDuration: number = 24 * 3600 * 1000, // 1 days
     protected readonly failedCacheDuration: number = 1 * 3600 * 1000, // 1 hours
     protected readonly chainStore: ChainStore,
-    protected readonly queriesStore: IQueriesStore<
-      EthereumQueries & OWalletETCQueries
-    >
+    protected readonly queriesStore: IQueriesStore<any>
   ) {
     this.chainStore.registerCurrencyRegistrar(
       this.currencyRegistrar.bind(this)
