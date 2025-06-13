@@ -1,14 +1,11 @@
 name: Deploy to Release
 permissions:
-  contents: read
+  contents: write
 on:
   push:
     tags:
       - mobile/v[0-9]+.[0-9]+.[0-9]+
-  workflow_dispatch:
-
-permissions:
-  contents: read
+  workflow_dispatch:  
 
 jobs:
   release-android-mobile:
