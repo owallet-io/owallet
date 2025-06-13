@@ -1,3 +1,4 @@
+import { Network } from "@owallet/common";
 import {
   ChainGetter,
   HasMapStore,
@@ -87,7 +88,8 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
 }
 
 const coingeckoChainIdMap: Record<string, string> = {
-  "eip155:1": "ethereum",
+  "eip155:1": Network.ETHEREUM,
+  "eip155:56": Network.BINANCE_SMART_CHAIN,
   "eip155:10": "optimistic-ethereum",
   "eip155:137": "polygon-pos",
   "eip155:8453": "base",
