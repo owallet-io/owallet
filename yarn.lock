@@ -8303,6 +8303,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-clipboard/clipboard@npm:^1.16.2":
+  version: 1.16.2
+  resolution: "@react-native-clipboard/clipboard@npm:1.16.2"
+  peerDependencies:
+    react: ">= 16.9.0"
+    react-native: ">= 0.61.5"
+    react-native-macos: ">= 0.61.0"
+    react-native-windows: ">= 0.61.0"
+  peerDependenciesMeta:
+    react-native-macos:
+      optional: true
+    react-native-windows:
+      optional: true
+  checksum: 4b5b2d9cdd3f1540af6cd8d1596a2e4acc85cb6bcad5778dd1b1eeb78265e326aec1f624efc8e1113cf36293902a84c5c6afa155a1e1434916c79eef6d09da3d
+  languageName: node
+  linkType: hard
+
 "@react-native-community/blur@npm:4.3.2":
   version: 4.3.2
   resolution: "@react-native-community/blur@npm:4.3.2"
@@ -28493,6 +28510,7 @@ __metadata:
     "@oraichain/owallet-wallet-standard": 0.1.1
     "@oraichain/tonbridge-sdk": ^1.4.2
     "@orbs-network/ton-access": ^2.3.3
+    "@react-native-clipboard/clipboard": ^1.16.2
     "@solana/spl-memo": 0.2.5
     "@solana/spl-token": 0.3.5
     "@solana/wallet-standard-chains": 1.1.0
@@ -28531,6 +28549,7 @@ __metadata:
     punycode: ^1.4.1
     react: ^16.8.0 || ^17 || ^18
     react-dom: ^16.8.0 || ^17 || ^18
+    react-native-toast-message: ^2.3.0
     rimraf: ^6.0.1
     semver: ^7.3.5
     ts-jest: 29.1.1
@@ -31193,6 +31212,16 @@ __metadata:
     react-native: "*"
     react-native-pager-view: "*"
   checksum: bd287e5543881aa662ee55418a3bd5dacb25033425a9fcb0fff21c3a3b96f956af1a77cd9bab4e7a8e94590080a5d8e3cb99cfa8613b19bf6da24bfc9b4942d4
+  languageName: node
+  linkType: hard
+
+"react-native-toast-message@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "react-native-toast-message@npm:2.3.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: f62e6959545ad2193432d6dbe7a2d02c5ce9e546fba1e70dd3fca026a8766c5a34a3f57492ba012c626e284add7c439a6dfec39f273c3fbf05e9bddb59527e72
   languageName: node
   linkType: hard
 

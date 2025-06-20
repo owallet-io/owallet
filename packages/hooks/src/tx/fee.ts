@@ -8,7 +8,7 @@ import {
   UIProperties,
 } from "./types";
 import { TxChainSetter } from "./chain";
-import { ChainGetter, CoinPrimitive } from "@owallet/stores";
+import { ChainGetter } from "@owallet/stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { CoinPretty, Dec, DecUtils, Int } from "@owallet/unit";
 import { Currency, FeeCurrency, StdFee } from "@owallet/types";
@@ -328,6 +328,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     if (this._manualFee) {
       return this._manualFee;
     }
+
     if (!this.fee) {
       res = [];
     } else if ("type" in this.fee) {
@@ -440,6 +441,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   }
 
   protected canFeeMarketTxFeesAndReady(): boolean {
+    if (this.chainInfo.chainId.startsWith("cheqd-mainnet-")) {
+      return false;
+    }
     if (this.chainInfo.hasFeature("feemarket")) {
       const queries = this.queriesStore.get(this.chainId);
       if (!queries.cosmos) {
@@ -457,6 +461,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       for (let i = 0; i < queryFeeMarketGasPrices.gasPrices.length; i++) {
         const gasPrice = queryFeeMarketGasPrices.gasPrices[i];
+        // First attempt to find for all currencies.
         this.chainInfo.findCurrency(gasPrice.denom);
       }
 
@@ -465,6 +470,23 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           this.chainInfo.findCurrency(gasPrice.denom)
         ) != null
       );
+    }
+    if (this.chainInfo.hasFeature("initia-dynamicfee")) {
+      const queries = this.queriesStore.get(this.chainId);
+      if (!queries.owalletETC) {
+        console.log(
+          "Chain has initia-dynamicfee feature. But no initia queries provided."
+        );
+        return false;
+      }
+
+      const queryInitiaDynamicFee = queries.owalletETC.queryInitiaDynamicFee;
+
+      if (!queryInitiaDynamicFee.baseGasPrice) {
+        return false;
+      }
+
+      return true;
     }
 
     return false;
@@ -552,19 +574,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     (feeCurrency: FeeCurrency, feeType: FeeType) => {
       const gas = this.gasConfig.gas;
       const gasPrice = this.getGasPriceForFeeCurrency(feeCurrency, feeType);
-
-      console.log("gasPrice222", gas, gasPrice.toString());
-
       const feeAmount = gasPrice
         .mul(new Dec(gas))
         .add(this.l1DataFee ?? new Dec(0));
-
-      console.log(
-        "feeAmount 2",
-        feeAmount.toString(),
-        feeAmount.roundUp().toString(),
-        this.l1DataFee
-      );
 
       return new CoinPretty(feeCurrency, feeAmount.roundUp()).maxDecimals(
         feeCurrency.coinDecimals
@@ -673,80 +685,154 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           }
         }
       } else if (this.canFeeMarketTxFeesAndReady()) {
-        const queryCosmos = this.queriesStore.get(this.chainId).cosmos;
-        if (queryCosmos) {
-          const gasPrices = queryCosmos.queryFeeMarketGasPrices.gasPrices;
+        if (this.chainInfo.hasFeature("initia-dynamicfee")) {
+          const queryEtc = this.queriesStore.get(this.chainId).owalletETC;
+          if (queryEtc) {
+            const gasPrice = queryEtc.queryInitiaDynamicFee.baseGasPrice;
+            if (gasPrice) {
+              let multiplication = {
+                low: 1.1,
+                average: 1.2,
+                high: 1.3,
+              };
 
-          const gasPrice = gasPrices.find(
-            (gasPrice) => gasPrice.denom === feeCurrency.coinMinimalDenom
-          );
+              const multificationConfig =
+                this.queriesStore.simpleQuery.queryGet<{
+                  [str: string]:
+                    | {
+                        low: number;
+                        average: number;
+                        high: number;
+                      }
+                    | undefined;
+                }>(
+                  "https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws",
+                  "/feemarket/info.json"
+                );
 
-          console.log("gasPrice111 ", gasPrice);
-
-          if (gasPrice) {
-            let multiplication = {
-              low: 1.1,
-              average: 1.2,
-              high: 1.3,
-            };
-
-            const multificationConfig = this.queriesStore.simpleQuery.queryGet<{
-              [str: string]:
-                | {
-                    low: number;
-                    average: number;
-                    high: number;
-                  }
-                | undefined;
-            }>(
-              "https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws",
-              "/feemarket/info.json"
-            );
-
-            if (multificationConfig.response) {
-              const _default = multificationConfig.response.data["__default__"];
-              if (
-                _default &&
-                _default.low != null &&
-                typeof _default.low === "number" &&
-                _default.average != null &&
-                typeof _default.average === "number" &&
-                _default.high != null &&
-                typeof _default.high === "number"
-              ) {
-                multiplication = {
-                  low: _default.low,
-                  average: _default.average,
-                  high: _default.high,
-                };
+              if (multificationConfig.response) {
+                const _default =
+                  multificationConfig.response.data["__default__"];
+                if (
+                  _default &&
+                  _default.low != null &&
+                  typeof _default.low === "number" &&
+                  _default.average != null &&
+                  typeof _default.average === "number" &&
+                  _default.high != null &&
+                  typeof _default.high === "number"
+                ) {
+                  multiplication = {
+                    low: _default.low,
+                    average: _default.average,
+                    high: _default.high,
+                  };
+                }
+                const specific =
+                  multificationConfig.response.data[
+                    this.chainInfo.chainIdentifier
+                  ];
+                if (
+                  specific &&
+                  specific.low != null &&
+                  typeof specific.low === "number" &&
+                  specific.average != null &&
+                  typeof specific.average === "number" &&
+                  specific.high != null &&
+                  typeof specific.high === "number"
+                ) {
+                  multiplication = {
+                    low: specific.low,
+                    average: specific.average,
+                    high: specific.high,
+                  };
+                }
               }
-              const specific =
-                multificationConfig.response.data[
-                  this.chainInfo.chainIdentifier
-                ];
-              if (
-                specific &&
-                specific.low != null &&
-                typeof specific.low === "number" &&
-                specific.average != null &&
-                typeof specific.average === "number" &&
-                specific.high != null &&
-                typeof specific.high === "number"
-              ) {
-                multiplication = {
-                  low: specific.low,
-                  average: specific.average,
-                  high: specific.high,
-                };
+              switch (feeType) {
+                case "low":
+                  return new Dec(multiplication.low).mul(new Dec(gasPrice));
+                case "average":
+                  return new Dec(multiplication.average).mul(new Dec(gasPrice));
+                case "high":
+                  return new Dec(multiplication.high).mul(new Dec(gasPrice));
               }
             }
-            switch (feeType) {
-              case "low":
-                return new Dec(multiplication.low).mul(gasPrice.amount);
-              case "average":
-                return new Dec(multiplication.average).mul(gasPrice.amount);
-              case "high":
-                return new Dec(multiplication.high).mul(gasPrice.amount);
+          }
+        } else {
+          const queryCosmos = this.queriesStore.get(this.chainId).cosmos;
+          if (queryCosmos) {
+            const gasPrices = queryCosmos.queryFeeMarketGasPrices.gasPrices;
+
+            const gasPrice = gasPrices.find(
+              (gasPrice) => gasPrice.denom === feeCurrency.coinMinimalDenom
+            );
+            if (gasPrice) {
+              let multiplication = {
+                low: 1.1,
+                average: 1.2,
+                high: 1.3,
+              };
+
+              const multificationConfig =
+                this.queriesStore.simpleQuery.queryGet<{
+                  [str: string]:
+                    | {
+                        low: number;
+                        average: number;
+                        high: number;
+                      }
+                    | undefined;
+                }>(
+                  "https://gjsttg7mkgtqhjpt3mv5aeuszi0zblbb.lambda-url.us-west-2.on.aws",
+                  "/feemarket/info.json"
+                );
+
+              if (multificationConfig.response) {
+                const _default =
+                  multificationConfig.response.data["__default__"];
+                if (
+                  _default &&
+                  _default.low != null &&
+                  typeof _default.low === "number" &&
+                  _default.average != null &&
+                  typeof _default.average === "number" &&
+                  _default.high != null &&
+                  typeof _default.high === "number"
+                ) {
+                  multiplication = {
+                    low: _default.low,
+                    average: _default.average,
+                    high: _default.high,
+                  };
+                }
+                const specific =
+                  multificationConfig.response.data[
+                    this.chainInfo.chainIdentifier
+                  ];
+                if (
+                  specific &&
+                  specific.low != null &&
+                  typeof specific.low === "number" &&
+                  specific.average != null &&
+                  typeof specific.average === "number" &&
+                  specific.high != null &&
+                  typeof specific.high === "number"
+                ) {
+                  multiplication = {
+                    low: specific.low,
+                    average: specific.average,
+                    high: specific.high,
+                  };
+                }
+              }
+              switch (feeType) {
+                case "low":
+                  return new Dec(multiplication.low).mul(gasPrice.amount);
+                case "average":
+                  return new Dec(multiplication.average).mul(gasPrice.amount);
+                case "high":
+                  return new Dec(multiplication.high).mul(gasPrice.amount);
+              }
             }
           }
         }
@@ -758,7 +844,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         return maxFeePerGas ?? gasPrice;
       }
 
-      // TODO: Handle terra classic fee
+      // TODO: There's some Terra Classic related processing needed here but let's do it later...
 
       return this.populateGasPriceStep(feeCurrency, feeType);
     }
@@ -772,10 +858,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     (feeTypeOrManual: FeeType | "manual") => {
       const feeType =
         feeTypeOrManual === "manual" ? "average" : feeTypeOrManual;
-      console.log("feeType", feeType);
 
       const ethereumQueries = this.queriesStore.get(this.chainId).ethereum;
-
       if (ethereumQueries && this.canEIP1559TxFeesAndReady()) {
         const feeHistory =
           ethereumQueries.queryEthereumFeeHistory.getQueryByFeeHistoryParams(
@@ -783,29 +867,28 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             ETH_FEE_HISTORY_NEWEST_BLOCK,
             ETH_FEE_HISTORY_REWARD_PERCENTILES
           ).feeHistory;
-        console.log("feeHistory", feeHistory);
-
         const latestBaseFeePerGas = parseInt(
           feeHistory?.baseFeePerGas?.[feeHistory?.baseFeePerGas.length - 1] ??
             "0"
         );
-
-        console.log("latestBaseFeePerGas", latestBaseFeePerGas);
-
         if (feeHistory != null && latestBaseFeePerGas !== 0) {
           const baseFeePerGasDec = new Dec(latestBaseFeePerGas).mul(
             ETH_FEE_SETTINGS_BY_FEE_TYPE[feeType].baseFeePercentageMultiplier
           );
-          const priorityFeesPerGas = feeHistory.reward?.map(
-            (priorityFeeByRewardPercentileIndex) =>
-              priorityFeeByRewardPercentileIndex[
-                ETH_FEE_HISTORY_REWARD_PERCENTILES.findIndex(
-                  (percentile) =>
-                    percentile ===
-                    ETH_FEE_SETTINGS_BY_FEE_TYPE[feeType].percentile
-                )
-              ]
-          );
+          const priorityFeesPerGas = feeHistory.reward
+            ?.map(
+              (priorityFeeByRewardPercentileIndex) =>
+                priorityFeeByRewardPercentileIndex[
+                  ETH_FEE_HISTORY_REWARD_PERCENTILES.findIndex(
+                    (percentile) =>
+                      percentile ===
+                      ETH_FEE_SETTINGS_BY_FEE_TYPE[feeType].percentile
+                  )
+                ]
+            )
+            .map((priorityFee) =>
+              priorityFee.startsWith("-") ? "0x0" : priorityFee
+            );
           const medianOfPriorityFeesPerGas =
             priorityFeesPerGas?.sort((a, b) => Number(BigInt(a) - BigInt(b)))?.[
               Math.floor((priorityFeesPerGas.length - 1) / 2)
@@ -987,23 +1070,45 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         }
       }
     } else if (this.canFeeMarketTxFeesAndReady()) {
-      const queryCosmos = this.queriesStore.get(this.chainId).cosmos;
-      if (queryCosmos) {
-        const queryFeeMarketGasPrices = queryCosmos.queryFeeMarketGasPrices;
-        if (queryFeeMarketGasPrices.error) {
-          return {
-            warning: new Error("Failed to fetch gas prices"),
-          };
+      if (this.chainInfo.hasFeature("initia-dynamicfee")) {
+        const queryEtc = this.queriesStore.get(this.chainId).owalletETC;
+        if (queryEtc) {
+          const queryInitiaDynamicFee = queryEtc.queryInitiaDynamicFee;
+          if (queryInitiaDynamicFee.error) {
+            return {
+              warning: new Error("Failed to fetch gas prices"),
+            };
+          }
+          if (!queryInitiaDynamicFee.response) {
+            return {
+              loadingState: "loading-block",
+            };
+          }
+          if (queryInitiaDynamicFee.isFetching) {
+            return {
+              loadingState: "loading",
+            };
+          }
         }
-        if (!queryFeeMarketGasPrices.response) {
-          return {
-            loadingState: "loading-block",
-          };
-        }
-        if (queryFeeMarketGasPrices.isFetching) {
-          return {
-            loadingState: "loading",
-          };
+      } else {
+        const queryCosmos = this.queriesStore.get(this.chainId).cosmos;
+        if (queryCosmos) {
+          const queryFeeMarketGasPrices = queryCosmos.queryFeeMarketGasPrices;
+          if (queryFeeMarketGasPrices.error) {
+            return {
+              warning: new Error("Failed to fetch gas prices"),
+            };
+          }
+          if (!queryFeeMarketGasPrices.response) {
+            return {
+              loadingState: "loading-block",
+            };
+          }
+          if (queryFeeMarketGasPrices.isFetching) {
+            return {
+              loadingState: "loading",
+            };
+          }
         }
       }
     }
@@ -1101,6 +1206,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         }
       }
     }
+
+    // TODO: There's some Terra Classic related processing needed here but let's do it later...
 
     const amount = this.amountConfig.amount;
 

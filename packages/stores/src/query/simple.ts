@@ -11,6 +11,13 @@ export class ObservableSimpleQueryImpl<
   constructor(sharedContext: QuerySharedContext, baseURL: string, url: string) {
     super(sharedContext, baseURL, url);
   }
+
+  override canFetch(): boolean {
+    if (!this.baseURL) {
+      return false;
+    }
+    return true;
+  }
 }
 
 export class ObservableSimpleQuery extends ObservableQueryMap<ObservableQuery> {
@@ -44,7 +51,7 @@ function removeLastSlashIfIs(str: string): string {
     if (str.length > 0 && str[str.length - 1] === "/") {
       return str.slice(0, str.length - 1);
     }
-
     return str;
   }
+  return str;
 }

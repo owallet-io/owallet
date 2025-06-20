@@ -35,6 +35,13 @@ export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
   return validate(address);
 };
+
+export const isTronAddress = (address: string): boolean => {
+  if (!address) return false;
+  // TRON addresses start with T and are 34 characters long, base58 encoded
+  return /^T[A-Za-z0-9]{33}$/.test(address);
+};
+
 const oraichainEvmMainnet = "108160679";
 const oraichainEvmTestnet = "4143398064";
 

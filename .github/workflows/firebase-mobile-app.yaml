@@ -1,4 +1,6 @@
 name: Deploy to Firebase
+permissions:
+  contents: write
 on:
   push:
     tags:
@@ -12,6 +14,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.17.0]
+        
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
@@ -46,6 +49,10 @@ jobs:
           yarn install
       - name: Build Libs
         run: yarn build:libs
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
       - name: Setup environment variables
         working-directory: apps/mobile
         run: yarn build:android
@@ -62,10 +69,10 @@ jobs:
         with:
           ruby-version: 2.6.10
           bundler-cache: true
-      - name: Setup JDK 11
+      - name: Setup JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: "11"
+          java-version: "17"
           distribution: "temurin"
           cache: gradle
       - name: Grant execute permission for gradlew
@@ -132,6 +139,10 @@ jobs:
           yarn install
       - name: Build Libs
         run: yarn build:libs
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

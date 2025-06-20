@@ -1,5 +1,10 @@
 import { OraidexCommon } from "@oraichain/oraidex-common";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// Cache for storing token prices to avoid unnecessary API calls
+let priceCache: Record<string, number | null> = {};
+let lastFetchTime = 0;
+const CACHE_EXPIRY_TIME = 60000; // 1 minute cache
 
 /**
  * Constructs the URL to retrieve prices from CoinGecko.
@@ -24,9 +29,26 @@ export type CoinGeckoPrices<T extends string> = {
  * @returns The CoinGecko prices.
  */
 export const useCoinGeckoPrices = () => {
-  const [data, setData] = useState<CoinGeckoPrices<string>>({});
+  const [data, setData] = useState<CoinGeckoPrices<string>>(priceCache);
+  const fetchingRef = useRef(false);
 
-  const getCoingeckoPrices = async () => {
+  const getCoingeckoPrices = useCallback(async (forceUpdate = false) => {
+    // Check if we have fresh cache and not forcing update
+    const now = Date.now();
+    if (
+      !forceUpdate &&
+      lastFetchTime > 0 &&
+      now - lastFetchTime < CACHE_EXPIRY_TIME &&
+      Object.keys(priceCache).length > 0
+    ) {
+      setData(priceCache);
+      return;
+    }
+
+    // Prevent multiple simultaneous fetches
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+
     try {
       const { cosmosTokens, evmTokens } = await OraidexCommon.load();
 
@@ -35,9 +57,8 @@ export const useCoinGeckoPrices = () => {
       ];
       tokens.sort();
       const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
-      console.log("coingeckoPricesURL", coingeckoPricesURL);
 
-      const prices = {};
+      const prices: Record<string, number | null> = {};
 
       const resp = await fetch(coingeckoPricesURL, {});
       const rawData = await resp.json();
@@ -46,16 +67,37 @@ export const useCoinGeckoPrices = () => {
         prices[key] = rawData[key].usd;
       }
 
-      setData(
-        Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
+      const result = Object.fromEntries(
+        tokens.map((token: any) => [token, prices[token]])
       );
+
+      // Update the global cache
+      priceCache = result;
+      lastFetchTime = now;
+
+      setData(result);
     } catch (err) {
       console.log("error on getCoingeckoPrices", err);
+    } finally {
+      fetchingRef.current = false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     getCoingeckoPrices();
-  }, []);
-  return { data };
+
+    // Set up interval to refresh prices
+    const intervalId = setInterval(() => {
+      getCoingeckoPrices(true);
+    }, CACHE_EXPIRY_TIME);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [getCoingeckoPrices]);
+
+  return {
+    data,
+    refreshPrices: () => getCoingeckoPrices(true),
+  };
 };

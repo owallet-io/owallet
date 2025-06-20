@@ -3,10 +3,10 @@ import {
   Bech32Config,
   BIP44,
   ChainInfo,
-  ChainInfoModule,
   Currency,
   FeeCurrency,
   ModularChainInfo,
+  ChainInfoModule,
 } from "@owallet/types";
 
 export type CurrencyRegistrar = (
@@ -22,11 +22,18 @@ export type CurrencyRegistrar = (
 export interface ChainGetter<C extends ChainInfo = ChainInfo> {
   getChain(chainId: string): IChainInfoImpl<C>;
   hasChain(chainId: string): boolean;
+
+  getModularChain(chainId: string): ModularChainInfo;
+  hasModularChain(chainId: string): boolean;
+
+  getModularChainInfoImpl(chainId: string): IModularChainInfoImpl;
 }
 
 export interface IChainStore<C extends ChainInfo = ChainInfo>
   extends ChainGetter<C> {
   readonly chainInfos: IChainInfoImpl<C>[];
+  readonly modularChainInfos: ModularChainInfo[];
+  readonly modularChainInfoImpls: IModularChainInfoImpl[];
 }
 
 export interface IChainInfoImpl<C extends ChainInfo = ChainInfo> {

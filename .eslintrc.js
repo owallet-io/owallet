@@ -23,6 +23,7 @@ module.exports = {
     "@typescript-eslint/no-empty-function": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/camelcase": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "unicorn/filename-case": [
@@ -42,7 +43,7 @@ module.exports = {
       },
     ],
     "import/no-default-export": "error",
-    "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
+    "no-unused-vars": "on", // or "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "warn",
