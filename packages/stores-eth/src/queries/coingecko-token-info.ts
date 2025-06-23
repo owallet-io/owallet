@@ -92,6 +92,7 @@ const coingeckoChainIdMap: Record<string, string> = {
   "eip155:56": Network.BINANCE_SMART_CHAIN,
   "eip155:10": "optimistic-ethereum",
   "eip155:137": "polygon-pos",
+  "eip155:30": "rootstock",
   "eip155:8453": "base",
   "eip155:42161": "arbitrum-one",
 };
