@@ -1,6 +1,5 @@
 import {
   IBaseAmountConfig,
-  IBtcFeeConfig,
   IFeeConfig,
   IGasConfig,
   IGasSimulator,
@@ -16,12 +15,69 @@ export const useTxConfigsValidate = (configs: {
   recipientConfig?: IRecipientConfig;
   gasConfig?: IGasConfig;
   amountConfig?: IBaseAmountConfig;
-  feeConfig?: IFeeConfig | IBtcFeeConfig;
+  feeConfig?: IFeeConfig;
   memoConfig?: IMemoConfig;
   channelConfig?: IIBCChannelConfig;
   gasSimulator?: IGasSimulator;
+  isIgnoringModularChain?: boolean;
 }) => {
   const interactionBlocked = (() => {
+    if (configs.isIgnoringModularChain) {
+      console.log("[skip] Ignoring modular chain, interaction not blocked");
+      return false;
+    }
+
+    // Check for errors
+    if (configs.senderConfig?.uiProperties.error) {
+      console.log(
+        "[skip] senderConfig error:",
+        configs.senderConfig.uiProperties.error
+      );
+    }
+    if (configs.recipientConfig?.uiProperties.error) {
+      console.log(
+        "[skip] recipientConfig error:",
+        configs.recipientConfig.uiProperties.error
+      );
+    }
+    if (configs.gasConfig?.uiProperties.error) {
+      console.log(
+        "[skip] gasConfig error:",
+        configs.gasConfig.uiProperties.error
+      );
+    }
+    if (configs.amountConfig?.uiProperties.error) {
+      console.log(
+        "[skip] amountConfig error:",
+        configs.amountConfig.amount[0].toDec().toString(),
+        configs.amountConfig.uiProperties.error
+      );
+    }
+    if (configs.feeConfig?.uiProperties.error) {
+      console.log(
+        "[skip] feeConfig error:",
+        configs.feeConfig.uiProperties.error
+      );
+    }
+    if (configs.memoConfig?.uiProperties.error) {
+      console.log(
+        "[skip] memoConfig error:",
+        configs.memoConfig.uiProperties.error
+      );
+    }
+    if (configs.channelConfig?.uiProperties.error) {
+      console.log(
+        "[skip] channelConfig error:",
+        configs.channelConfig.uiProperties.error
+      );
+    }
+    if (configs.gasSimulator?.uiProperties.error) {
+      console.log(
+        "[skip] gasSimulator error:",
+        configs.gasSimulator.uiProperties.error
+      );
+    }
+
     if (
       configs.senderConfig?.uiProperties.error ||
       configs.recipientConfig?.uiProperties.error ||
@@ -32,7 +88,36 @@ export const useTxConfigsValidate = (configs: {
       configs.channelConfig?.uiProperties.error ||
       configs.gasSimulator?.uiProperties.error
     ) {
+      console.log("[skip] Interaction blocked due to errors");
       return true;
+    }
+
+    // Check for loading states
+    if (configs.senderConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] senderConfig loading state: loading-block");
+    }
+    if (
+      configs.recipientConfig?.uiProperties.loadingState === "loading-block"
+    ) {
+      console.log("[skip] recipientConfig loading state: loading-block");
+    }
+    if (configs.gasConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] gasConfig loading state: loading-block");
+    }
+    if (configs.amountConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] amountConfig loading state: loading-block");
+    }
+    if (configs.feeConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] feeConfig loading state: loading-block");
+    }
+    if (configs.memoConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] memoConfig loading state: loading-block");
+    }
+    if (configs.channelConfig?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] channelConfig loading state: loading-block");
+    }
+    if (configs.gasSimulator?.uiProperties.loadingState === "loading-block") {
+      console.log("[skip] gasSimulator loading state: loading-block");
     }
 
     if (
@@ -45,9 +130,13 @@ export const useTxConfigsValidate = (configs: {
       configs.channelConfig?.uiProperties.loadingState === "loading-block" ||
       configs.gasSimulator?.uiProperties.loadingState === "loading-block"
     ) {
+      console.log("[skip] Interaction blocked due to loading states");
       return true;
     }
 
+    console.log(
+      "[skip] No errors or blocking loading states found, interaction not blocked"
+    );
     return false;
   })();
 
