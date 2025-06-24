@@ -9,6 +9,11 @@ import {
 } from "./types";
 import { IIBCChannelConfig } from "../ibc";
 
+export interface TxConfigsValidateResult {
+  interactionBlocked: boolean;
+  error?: Error | string;
+}
+
 // CONTRACT: Use with `observer`
 export const useTxConfigsValidate = (configs: {
   senderConfig?: ISenderConfig;
@@ -20,11 +25,11 @@ export const useTxConfigsValidate = (configs: {
   channelConfig?: IIBCChannelConfig;
   gasSimulator?: IGasSimulator;
   isIgnoringModularChain?: boolean;
-}) => {
-  const interactionBlocked = (() => {
+}): TxConfigsValidateResult => {
+  const error = (() => {
     if (configs.isIgnoringModularChain) {
-      console.log("[skip] Ignoring modular chain, interaction not blocked");
-      return false;
+      console.log("[skip] Ignoring modular chain, no validation error");
+      return;
     }
 
     // Check for errors
@@ -33,62 +38,68 @@ export const useTxConfigsValidate = (configs: {
         "[skip] senderConfig error:",
         configs.senderConfig.uiProperties.error
       );
+      return configs.senderConfig.uiProperties.error;
     }
     if (configs.recipientConfig?.uiProperties.error) {
       console.log(
         "[skip] recipientConfig error:",
         configs.recipientConfig.uiProperties.error
       );
+      return configs.recipientConfig.uiProperties.error;
     }
     if (configs.gasConfig?.uiProperties.error) {
       console.log(
         "[skip] gasConfig error:",
         configs.gasConfig.uiProperties.error
       );
+      return configs.gasConfig.uiProperties.error;
     }
     if (configs.amountConfig?.uiProperties.error) {
       console.log(
         "[skip] amountConfig error:",
-        configs.amountConfig.amount[0].toDec().toString(),
+        configs.amountConfig.amount[0]?.toDec().toString(),
         configs.amountConfig.uiProperties.error
       );
+      return configs.amountConfig.uiProperties.error;
     }
     if (configs.feeConfig?.uiProperties.error) {
       console.log(
         "[skip] feeConfig error:",
         configs.feeConfig.uiProperties.error
       );
+      return configs.feeConfig.uiProperties.error;
     }
     if (configs.memoConfig?.uiProperties.error) {
       console.log(
         "[skip] memoConfig error:",
         configs.memoConfig.uiProperties.error
       );
+      return configs.memoConfig.uiProperties.error;
     }
     if (configs.channelConfig?.uiProperties.error) {
       console.log(
         "[skip] channelConfig error:",
         configs.channelConfig.uiProperties.error
       );
+      return configs.channelConfig.uiProperties.error;
     }
     if (configs.gasSimulator?.uiProperties.error) {
       console.log(
         "[skip] gasSimulator error:",
         configs.gasSimulator.uiProperties.error
       );
+      return configs.gasSimulator.uiProperties.error;
+    }
+  })();
+
+  const interactionBlocked = (() => {
+    if (configs.isIgnoringModularChain) {
+      console.log("[skip] Ignoring modular chain, interaction not blocked");
+      return false;
     }
 
-    if (
-      configs.senderConfig?.uiProperties.error ||
-      configs.recipientConfig?.uiProperties.error ||
-      configs.gasConfig?.uiProperties.error ||
-      configs.amountConfig?.uiProperties.error ||
-      configs.feeConfig?.uiProperties.error ||
-      configs.memoConfig?.uiProperties.error ||
-      configs.channelConfig?.uiProperties.error ||
-      configs.gasSimulator?.uiProperties.error
-    ) {
-      console.log("[skip] Interaction blocked due to errors");
+    if (error) {
+      console.log("[skip] Interaction blocked due to validation error");
       return true;
     }
 
@@ -142,5 +153,6 @@ export const useTxConfigsValidate = (configs: {
 
   return {
     interactionBlocked,
+    error,
   };
 };
