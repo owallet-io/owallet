@@ -29,6 +29,8 @@ import {
   VersionedTransaction,
 } from "@solana/web3.js";
 import bech32 from "bech32";
+import crypto from "crypto";
+
 export const isBtcAddress = (address: string): boolean => {
   if (!address) return false;
   return validate(address);
@@ -504,7 +506,24 @@ export function isBase58Address(address) {
     return false;
   }
 }
+export function isValidTronAddress(address) {
+  try {
+    const decoded = bs58.decode(address);
+    if (decoded.length !== 25) return false;
 
+    const prefix = decoded.slice(0, 1);
+    const payload = decoded.slice(0, 21); // prefix + address
+    const checksum = decoded.slice(21); // last 4 bytes
+
+    const hash1 = crypto.createHash("sha256").update(payload).digest();
+    const hash2 = crypto.createHash("sha256").update(hash1).digest();
+
+    const validChecksum = hash2.slice(0, 4);
+    return checksum.equals(validChecksum) && prefix[0] === 0x41;
+  } catch (e) {
+    return false;
+  }
+}
 export const getBase58Address = (address) => {
   if (!address) return "";
   const evmAddress = Buffer.from("41" + address.slice(2), "hex");
