@@ -33,7 +33,7 @@ export const unknownToken: Currency = {
   coinMinimalDenom: "unknown",
   coinDenom: "UNKNOWN",
 };
-export const SkipBaseUrl = "https://go.skip.build";
+export const SkipBaseUrl = "https://api.skip.build";
 export const CoinGeckoGetPrice = "/simple/price";
 export const CoinGeckoTerminalGetPrice = "networks/solana/tokens/multi";
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
