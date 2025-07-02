@@ -8,6 +8,7 @@ import {
   ISenderConfig,
 } from "./types";
 import { IIBCChannelConfig } from "../ibc";
+import { BtcFeeConfig } from "./btc";
 
 export interface TxConfigsValidateResult {
   interactionBlocked: boolean;
@@ -20,7 +21,7 @@ export const useTxConfigsValidate = (configs: {
   recipientConfig?: IRecipientConfig;
   gasConfig?: IGasConfig;
   amountConfig?: IBaseAmountConfig;
-  feeConfig?: IFeeConfig;
+  feeConfig?: IFeeConfig | BtcFeeConfig;
   memoConfig?: IMemoConfig;
   channelConfig?: IIBCChannelConfig;
   gasSimulator?: IGasSimulator;
