@@ -182,9 +182,33 @@ export const SwapVenue: {
 };
 export const SwapFeeBps = {
   value: 75,
-  receiver: "osmo1my4tk420gjmhggqwvvha6ey9390gqwfree2p4u",
+  receivers: [
+    {
+      chainId: "osmosis-1",
+      address: "osmo1hvr9d72r5um9lvt0rpkd4r75vrsqtw6y86jn8t",
+    },
+    {
+      chainId: "cosmoshub-4",
+      address: "cosmos1hvr9d72r5um9lvt0rpkd4r75vrsqtw6y0ppr3e",
+    },
+    {
+      chainId: "injective-1",
+      address: "inj133lq4pqjdxspcz4n388glv70z59ffeuh3ktnaj",
+    },
+    {
+      chainId: "neutron-1",
+      address: "neutron1hvr9d72r5um9lvt0rpkd4r75vrsqtw6yt7gpt7",
+    },
+    {
+      chainId: "eip155:1",
+      address: "0x8c7E0A841269a01c0Ab389Ce8Fb3Cf150A94E797",
+    },
+    {
+      chainId: "eip155:56",
+      address: "0x8c7E0A841269a01c0Ab389Ce8Fb3Cf150A94E797",
+    },
+  ],
 };
-
 export const EmbedChainInfos: ChainInfo[] = [
   {
     rpc: "https://orai-rpc.owallet.io",

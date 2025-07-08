@@ -10,6 +10,26 @@ import {
 import { IIBCChannelConfig } from "../ibc";
 import { BtcFeeConfig } from "./btc";
 
+// Helper to consistently log detailed validation errors.
+const logValidationError = (
+  configName: string,
+  context: Record<string, unknown> | undefined,
+  err: Error | string
+): void => {
+  if (err instanceof Error) {
+    console.error(
+      `[skip] ${configName} validation error:`,
+      context,
+      "\nMessage:",
+      err.message,
+      "\nStack trace:\n",
+      err.stack
+    );
+  } else {
+    console.error(`[skip] ${configName} validation error:`, context, err);
+  }
+};
+
 export interface TxConfigsValidateResult {
   interactionBlocked: boolean;
   error?: Error | string;
@@ -35,58 +55,67 @@ export const useTxConfigsValidate = (configs: {
 
     // Check for errors
     if (configs.senderConfig?.uiProperties.error) {
-      console.log(
-        "[skip] senderConfig error:",
+      logValidationError(
+        "senderConfig",
+        { sender: configs.senderConfig.sender },
         configs.senderConfig.uiProperties.error
       );
       return configs.senderConfig.uiProperties.error;
     }
     if (configs.recipientConfig?.uiProperties.error) {
-      console.log(
-        "[skip] recipientConfig error:",
+      logValidationError(
+        "recipientConfig",
+        { recipient: configs.recipientConfig.recipient },
         configs.recipientConfig.uiProperties.error
       );
       return configs.recipientConfig.uiProperties.error;
     }
     if (configs.gasConfig?.uiProperties.error) {
-      console.log(
-        "[skip] gasConfig error:",
+      logValidationError(
+        "gasConfig",
+        { gas: configs.gasConfig.gas },
         configs.gasConfig.uiProperties.error
       );
       return configs.gasConfig.uiProperties.error;
     }
     if (configs.amountConfig?.uiProperties.error) {
-      console.log(
-        "[skip] amountConfig error:",
-        configs.amountConfig.amount[0]?.toDec().toString(),
+      logValidationError(
+        "amountConfig",
+        {
+          amount: configs.amountConfig.amount?.map((a) => a.toString()),
+        },
         configs.amountConfig.uiProperties.error
       );
       return configs.amountConfig.uiProperties.error;
     }
     if (configs.feeConfig?.uiProperties.error) {
-      console.log(
-        "[skip] feeConfig error:",
+      logValidationError(
+        "feeConfig",
+        { type: (configs.feeConfig as any)?.type },
         configs.feeConfig.uiProperties.error
       );
       return configs.feeConfig.uiProperties.error;
     }
     if (configs.memoConfig?.uiProperties.error) {
-      console.log(
-        "[skip] memoConfig error:",
+      logValidationError(
+        "memoConfig",
+        { memo: configs.memoConfig.memo },
         configs.memoConfig.uiProperties.error
       );
       return configs.memoConfig.uiProperties.error;
     }
     if (configs.channelConfig?.uiProperties.error) {
-      console.log(
-        "[skip] channelConfig error:",
+      logValidationError(
+        "channelConfig",
+        undefined,
         configs.channelConfig.uiProperties.error
       );
       return configs.channelConfig.uiProperties.error;
     }
     if (configs.gasSimulator?.uiProperties.error) {
-      console.log(
-        "[skip] gasSimulator error:",
+      logValidationError(
+        "gasSimulator",
+        { gasEstimated: configs.gasSimulator.gasEstimated },
         configs.gasSimulator.uiProperties.error
       );
       return configs.gasSimulator.uiProperties.error;
