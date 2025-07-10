@@ -20,7 +20,7 @@
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
     "rebuild": "lerna run rebuild",
-    "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/proto-types --ignore @owallet/wc-client-example --include-dependencies --stream && yarn build:hooks-internal && yarn build:stores-internal",
+    "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/proto-types --ignore @owallet/wc-client-example --include-dependencies --stream && yarn build:stores-internal && yarn build:hooks-internal",
     "build:codepush": "lerna run build --ignore @owallet/extension --ignore @owallet/hooks --ignore @owallet/hooks-internal --ignore @owallet/proto-types --ignore @owallet/wc-client-example --include-dependencies --stream",
     "build:hooks": "lerna run build --scope @owallet/hooks",
     "build:hooks-internal": "cd apps/hooks-internal && yarn build",
