@@ -5,7 +5,7 @@ on:
   push:
     tags:
       - mobile/v[0-9]+.[0-9]+.[0-9]+
-  workflow_dispatch:  
+  workflow_dispatch:
 
 jobs:
   release-android-mobile:
@@ -111,6 +111,8 @@ jobs:
        uses: styfle/cancel-workflow-action@0.8.0
        with:
          access_token: ${{ github.token }}
+     - name: Select Xcode 16
+       run: sudo xcode-select -s /Applications/Xcode_16.0.app
      - name: Verify Xcode version
        run: xcodebuild -version
      - name: Use Node.js ${{ matrix.node-version }}
