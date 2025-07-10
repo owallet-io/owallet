@@ -19,7 +19,7 @@ export type Functionify<Params extends Array<any>, Return> = (
  * Make the tuple of functions that accept `Base` tuple `Params` as parameter and return `Injects` respectively.
  * The passed `Base` parameter is merged from `Base` by chaining.
  *
- * KR: `Base`부터 시작해서 다음 Inject에는 이전 Inject의 결과가 merge된 값이 파라미터에 전달된다.
+ * The sequence starts with `Base`; for each subsequent Inject, the function receives parameters where the result of the previous Inject has been merged.
  *
  * ChainedFunctionifyTuple<{base: boolean}, [number, string], [{test1: number}, {test2: number}, {test3: string}]> =
  *  [

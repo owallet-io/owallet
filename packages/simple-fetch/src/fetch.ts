@@ -30,7 +30,7 @@ export function makeURL(baseURL: string, url: string): string {
 
     return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
   } catch (error) {
-    throw new Error(
+    console.error(
       `Failed to create URL from baseURL: "${baseURL}" and url: "${url}". Please ensure the baseURL is a valid URL.`
     );
   }
