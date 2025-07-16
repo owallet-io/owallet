@@ -316,8 +316,6 @@ export class KeyRingEthereumService {
     providerId?: string,
     chainId?: string
   ): Promise<T> {
-    console.log("request with params", method, params, providerId, chainId);
-
     if (chainId == null) {
       chainId = this.chainId;
     }
@@ -495,8 +493,6 @@ export class KeyRingEthereumService {
 
           const signingTx = JSON.parse(Buffer.from(signingData).toString());
 
-          console.log("signingTx", signingTx);
-
           const isEIP1559 =
             !!signingTx.maxFeePerGas || !!signingTx.maxPriorityFeePerGas;
           if (isEIP1559) {
@@ -513,8 +509,6 @@ export class KeyRingEthereumService {
             signedTx,
             {}
           );
-
-          console.log("txHash", txHash);
 
           return txHash;
         }
@@ -800,8 +794,6 @@ export class KeyRingEthereumService {
           const param =
             (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
             undefined;
-
-          console.log("param wallet_switchEthereumChain", param);
 
           if (!param?.chainId) {
             throw new Error("Invalid parameters: must provide a chain id.");
