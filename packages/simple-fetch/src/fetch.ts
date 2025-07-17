@@ -10,25 +10,41 @@ export function makeURL(baseURL: string, url: string): string {
 
     const baseURLInstance = new URL(baseURL);
     baseURL = removeLastSlashIfIs(baseURLInstance.origin);
-    url =
-      removeLastSlashIfIs(baseURLInstance.pathname) +
-      "/" +
-      removeFirstSlashIfIs(url);
 
-    url =
-      url +
-      (() => {
-        if (Array.from(baseURLInstance.searchParams.keys()).length > 0) {
-          if (url.includes("?")) {
-            return "&" + baseURLInstance.searchParams.toString();
-          } else {
-            return "?" + baseURLInstance.searchParams.toString();
-          }
-        }
-        return "";
-      })();
+    // Extract pathname and search parts from url to preserve query parameters
+    let urlPath = "";
+    let urlSearch = "";
 
-    return removeLastSlashIfIs(baseURL + "/" + removeFirstSlashIfIs(url));
+    if (url) {
+      // Check if the url has search parameters
+      const questionMarkIndex = url.indexOf("?");
+      if (questionMarkIndex >= 0) {
+        urlPath = url.slice(0, questionMarkIndex);
+        urlSearch = url.slice(questionMarkIndex);
+      } else {
+        urlPath = url;
+      }
+
+      // Remove leading slash for path combination
+      urlPath = removeFirstSlashIfIs(urlPath);
+    }
+
+    // Combine base pathname with url path
+    let combinedPath = removeLastSlashIfIs(baseURLInstance.pathname);
+    if (urlPath) {
+      combinedPath = combinedPath + "/" + urlPath;
+    }
+
+    // Handle search parameters from both baseURL and url
+    let searchParams = urlSearch;
+    if (Array.from(baseURLInstance.searchParams.keys()).length > 0) {
+      const separator = searchParams ? "&" : "?";
+      searchParams =
+        searchParams + separator + baseURLInstance.searchParams.toString();
+    }
+
+    // Construct final URL
+    return removeLastSlashIfIs(baseURL + combinedPath) + searchParams;
   } catch (error) {
     console.error(
       `Failed to create URL from baseURL: "${baseURL}" and url: "${url}". Please ensure the baseURL is a valid URL.`
