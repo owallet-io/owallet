@@ -3,7 +3,7 @@ import { KeyRingService } from "../keyring";
 import { InteractionService } from "../interaction";
 import { AnalyticsService } from "../analytics";
 import { Env, EthereumProviderRpcError, WEBPAGE_PORT } from "@owallet/router";
-import { ChainInfo, EthereumSignResponse } from "@owallet/types";
+import { ChainIdEVM, ChainInfo, EthereumSignResponse } from "@owallet/types";
 import { Bech32Address } from "@owallet/cosmos";
 import { Buffer } from "buffer/";
 import {
@@ -33,6 +33,7 @@ const EthSignType = {
 
 export class KeyRingEthereumService {
   protected websocketSubscriptionMap = new Map<string, WebSocket>();
+  protected chainId: string = ChainIdEVM.Ethereum;
 
   constructor(
     protected readonly chainsService: ChainsService,
@@ -315,6 +316,12 @@ export class KeyRingEthereumService {
     providerId?: string,
     chainId?: string
   ): Promise<T> {
+    console.log("request with params", method, params, providerId, chainId);
+
+    if (chainId == null) {
+      chainId = this.chainId;
+    }
+
     if (env.isInternalMsg && chainId == null) {
       throw new Error(
         "The chain id must be provided for the internal message."
@@ -419,6 +426,10 @@ export class KeyRingEthereumService {
         }
         case "eth_accounts":
         case "eth_requestAccounts": {
+          // Reset and update chainId when eth_requestAccounts is executed
+          if (method === "eth_requestAccounts" && chainId) {
+            this.chainId = chainId;
+          }
           return [selectedAddress];
         }
         case "eth_sendTransaction": {

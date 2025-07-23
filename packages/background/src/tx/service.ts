@@ -73,6 +73,15 @@ export class BackgroundTxService {
         };
 
     try {
+      console.log(
+        `🔍 BackgroundTxService.sendTx - Using LCD endpoint: ${chainInfo.rest} for chain: ${chainId}`
+      );
+      console.log(
+        `🔍 Chain config updateFromRepoDisabled: ${
+          (chainInfo as any).updateFromRepoDisabled
+        }`
+      );
+
       const result = await simpleFetch<any>(
         chainInfo.rest,
         isProtoTx ? "/cosmos/tx/v1beta1/txs" : "/txs",
