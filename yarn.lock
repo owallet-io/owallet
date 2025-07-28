@@ -7221,6 +7221,7 @@ __metadata:
     "@sentry/integrations": ^7.114.0
     "@sentry/react": =7.80.0
     "@sentry/tracing": =7.80.0
+    "@skip-go/client": ^1.4.0
     "@storybook/react": ^7.6.18
     "@tanstack/react-query": ^5.14.6
     "@tatumio/tatum": ^4.2.32
@@ -7304,6 +7305,7 @@ __metadata:
     tronweb: ^5.3.2
     ts-loader: ^9.4.2
     utility-types: ^3.10.0
+    viem: ^2.33.0
     vm: ^0.1.0
     vm-browserify: ^1.1.2
     web3-utils: 4.11.1
@@ -10061,6 +10063,29 @@ __metadata:
     "@solana/web3.js": ^1.95.8
     viem: 2.x
   checksum: c1a55428227f8f41d387ad07aea0c3d78d5f5d85d4a55576847b9fe4bfa3a550464ba5523cbd35851bf71047c23db02fb37f369a9622ec908652c34e3e4bd210
+  languageName: node
+  linkType: hard
+
+"@skip-go/client@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@skip-go/client@npm:1.4.0"
+  dependencies:
+    "@cosmjs/amino": 0.33.1
+    "@cosmjs/cosmwasm-stargate": 0.33.1
+    "@cosmjs/encoding": 0.33.1
+    "@cosmjs/math": 0.33.1
+    "@cosmjs/proto-signing": 0.33.1
+    "@cosmjs/stargate": 0.33.1
+    "@keplr-wallet/unit": ^0.12.143
+    "@solana/wallet-adapter-base": ^0.9.23
+    bech32: ^2.0.0
+    cosmjs-types: ^0.9.0
+    keccak: 3.0.4
+    uuid: ^11.1.0
+  peerDependencies:
+    "@solana/web3.js": ^1.95.8
+    viem: 2.x
+  checksum: 1349d05741819d48cee21b65846acb9a02c49fc69c084a5a56a235c0776a555843045fa5f35b3adedbf27e189f0fafa629c9394046d59016d900d399ddc688af
   languageName: node
   linkType: hard
 
@@ -36827,6 +36852,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"uuid@npm:^11.1.0":
+  version: 11.1.0
+  resolution: "uuid@npm:11.1.0"
+  bin:
+    uuid: dist/esm/bin/uuid
+  checksum: 840f19758543c4631e58a29439e51b5b669d5f34b4dd2700b6a1d15c5708c7a6e0c3e2c8c4a2eae761a3a7caa7e9884d00c86c02622ba91137bd3deade6b4b4a
+  languageName: node
+  linkType: hard
+
 "uuid@npm:^3.0.1, uuid@npm:^3.3.2, uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
@@ -36990,6 +37024,27 @@ __metadata:
     typescript:
       optional: true
   checksum: dd12f82464917cb19ef751656e9a9c32604f6df9d4c2067901e67f34ebd5a479e5493cb2483cdbf452c7f00e24d39e026ff3148d445fa65f79bfedf20aebeb19
+  languageName: node
+  linkType: hard
+
+"viem@npm:^2.33.0":
+  version: 2.33.0
+  resolution: "viem@npm:2.33.0"
+  dependencies:
+    "@noble/curves": 1.9.2
+    "@noble/hashes": 1.8.0
+    "@scure/bip32": 1.7.0
+    "@scure/bip39": 1.6.0
+    abitype: 1.0.8
+    isows: 1.0.7
+    ox: 0.8.1
+    ws: 8.18.2
+  peerDependencies:
+    typescript: ">=5.0.4"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: b104967ac1da74d946b7179d9ecb15514915acbec1a6e4598ab8a6a2583a17fb04419f4f607405033f3e0a79c435e5759896dafcc0b59e347770944f159eae44
   languageName: node
   linkType: hard
 
