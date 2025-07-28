@@ -7287,7 +7287,7 @@ __metadata:
     react-router-dom: =6.8.1
     react-sliding-pane: ^7.3.0
     react-switch: ^7.0.0
-    react-toastify: ^10.0.5
+    react-toastify: ^11.0.5
     react-virtualized-auto-sizer: ^1.0.26
     react-window: ^1.8.11
     reactstrap: ^8.4.1
@@ -16116,7 +16116,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clsx@npm:^2.1.0":
+"clsx@npm:^2.1.1":
   version: 2.1.1
   resolution: "clsx@npm:2.1.1"
   checksum: acd3e1ab9d8a433ecb3cc2f6a05ab95fe50b4a3cfc5ba47abb6cbf3754585fcb87b84e90c822a1f256c4198e3b41c7f6c391577ffc8678ad587fc0976b24fd57
@@ -32051,15 +32051,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toastify@npm:^10.0.5":
-  version: 10.0.6
-  resolution: "react-toastify@npm:10.0.6"
+"react-toastify@npm:^11.0.5":
+  version: 11.0.5
+  resolution: "react-toastify@npm:11.0.5"
   dependencies:
-    clsx: ^2.1.0
+    clsx: ^2.1.1
   peerDependencies:
-    react: ">=18"
-    react-dom: ">=18"
-  checksum: 89fa24718eba0800e2bc1f88121a6e119efd87df26344d5b3c86442d4a13fbd65b67932e01bd6442758f4fe3f5eca6c8fc80c1dfb51c8dc2a4ec06bdaf9762da
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: e2150aabe6a2b70d1d06bd6d4ef14d14e7ff38703980339660a34ef2251df206c4850dbf52a483aacf22265b41a8af0e27210ce20bf10ea7df4600e492a58352
   languageName: node
   linkType: hard
 
