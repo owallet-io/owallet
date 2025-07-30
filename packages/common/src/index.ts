@@ -14,4 +14,3 @@ export * from "./config";
 export * from "./api";
 export * from "./oasis";
 export * from "./bitcoin";
-export * from "./universal-swap";
