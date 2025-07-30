@@ -350,40 +350,40 @@ export const SwapVenues: {
   },
 ];
 
-export const SwapFeeBps = {
-  value: 75,
-  receivers: [
-    {
-      chainId: "osmosis-1",
-      address: "osmo1h8rg7zknhxmffp3ut5ztsn8zcaytckfeq9njsj",
-    },
-    {
-      chainId: "cosmoshub-4",
-      address: "cosmos1h8rg7zknhxmffp3ut5ztsn8zcaytckfeg7qzxq",
-    },
-    {
-      chainId: "noble-1",
-      address: "noble1h8rg7zknhxmffp3ut5ztsn8zcaytckfeqa427w",
-    },
-    {
-      chainId: "eip155:1",
-      address: "0x8cF81131B8144f1b6D957E79B757A6643aBAf74C",
-    },
-    {
-      chainId: "eip155:56",
-      address: "0x8cF81131B8144f1b6D957E79B757A6643aBAf74C",
-    },
-  ],
-};
+// export const SwapFeeBps = {
+//   value: 75,
+//   receivers: [
+//     {
+//       chainId: "osmosis-1",
+//       address: "osmo1h8rg7zknhxmffp3ut5ztsn8zcaytckfeq9njsj",
+//     },
+//     {
+//       chainId: "cosmoshub-4",
+//       address: "cosmos1h8rg7zknhxmffp3ut5ztsn8zcaytckfeg7qzxq",
+//     },
+//     {
+//       chainId: "noble-1",
+//       address: "noble1h8rg7zknhxmffp3ut5ztsn8zcaytckfeqa427w",
+//     },
+//     {
+//       chainId: "eip155:1",
+//       address: "0x8cF81131B8144f1b6D957E79B757A6643aBAf74C",
+//     },
+//     {
+//       chainId: "eip155:56",
+//       address: "0x8cF81131B8144f1b6D957E79B757A6643aBAf74C",
+//     },
+//   ],
+// };
 
 // export const SwapFeeBps = {
 //   value: 75,
 //   receiver: "osmo1hvr9d72r5um9lvt0rpkd4r75vrsqtw6y86jn8t",
 // };
-export const SwapVenue: {
-  name: string;
-  chainId: string;
-} = {
-  name: "osmosis-poolmanager",
-  chainId: "osmosis-1",
-};
+// export const SwapVenue: {
+//   name: string;
+//   chainId: string;
+// } = {
+//   name: "osmosis-poolmanager",
+//   chainId: "osmosis-1",
+// };

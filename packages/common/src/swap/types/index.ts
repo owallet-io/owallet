@@ -1,3 +1,5 @@
+export * from "./v2";
+
 // Chain types
 export interface NativeToken {
   symbol: string;
@@ -82,7 +84,7 @@ export type BalancesResponse = ApiResponse<{ balances: BalanceItem[] }>;
 // Keeping original Token interface for compatibility
 export interface Token {
   id?: string;
-  chainId: number;
+  chainId: number | string;
   address: string;
   symbol: string;
   name: string;

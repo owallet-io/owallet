@@ -389,7 +389,11 @@ export const fetchMultiChainTokenInfo = async (
     };
   }
 };
-
+export * from "./adapters/BaseAdapter";
+export * from "./adapters/jupiter";
+export * from "./adapters/kyberswap";
+export * from "./adapters/obridge";
+export * from "./adapters/skip";
 // Search tokens API with query parameter
 export const searchTokens = async (
   chainId: string,
