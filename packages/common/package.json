@@ -20,12 +20,10 @@
     "@keplr-wallet/unit": "0.12.159",
     "@owallet/crypto": "*",
     "@owallet/types": "*",
-    "axios": "^1.7.9",
     "bitcoin-address-validation": "2.2.3",
     "bitcoinjs-lib": "5.2.0",
     "buffer": "^6.0.3",
     "coinselect": "3.1.13",
-    "delay": "^4.4.0",
-    "viem": "^2.33.0"
+    "delay": "^4.4.0"
   }
 }
