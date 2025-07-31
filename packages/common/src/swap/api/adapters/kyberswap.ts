@@ -294,7 +294,6 @@ export class KyberSwapAdapter extends BaseAdapter {
   }
   private async fetchPrices(ids: string[]) {
     try {
-      console.log(ids, "ids");
       if (ids.length === 0) return;
 
       const endpoint = `https://price.market.orai.io/simple/price?ids=${ids.join(
@@ -314,8 +313,6 @@ export class KyberSwapAdapter extends BaseAdapter {
   ): Promise<Transaction> {
     const chainId = route.chainId.replace("eip155:", "");
     const chainName = this.getChainName(chainId);
-    console.log(chainName, "chainName");
-    console.log(chainId, "chainId");
     try {
       if (!route.routeSummary) throw new Error("Route summary not found");
       if (!userAddress) throw new Error("User address not found");
@@ -349,7 +346,6 @@ export class KyberSwapAdapter extends BaseAdapter {
       }
 
       const txData = response.data.data;
-      console.log(route, txData, "route,txData");
       // Format transaction data
       const transaction: Transaction = {
         to: route.routerAddress,
@@ -359,7 +355,6 @@ export class KyberSwapAdapter extends BaseAdapter {
         chainId: chainId,
         provider: this.provider,
       };
-      console.log(transaction, "transaction");
 
       return transaction;
     } catch (error) {
@@ -378,7 +373,6 @@ export class KyberSwapAdapter extends BaseAdapter {
     _userAddress: string = ""
   ): Promise<string> {
     try {
-      console.log(tx, "signAndSendTransaction");
       const { chainId, provider, ...rest } = tx;
       const txResponse = await this.executeTransaction(
         rest,

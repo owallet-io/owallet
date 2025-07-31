@@ -742,7 +742,6 @@ export class ObridgeAdapter extends BaseAdapter {
     }
   }
   private getProtocols = (routesObj: any): string[] => {
-    console.log(routesObj, "routesObj");
     return (
       routesObj?.routes?.flatMap(
         (r) =>
@@ -810,7 +809,6 @@ export class ObridgeAdapter extends BaseAdapter {
     slippageTolerance: number
   ): Promise<Transaction> {
     try {
-      console.log(slippageTolerance, "slippageTolerance");
       const { tokenIn, tokenOut, amountIn } = route;
 
       // Check if common data hasn't been loaded yet
@@ -903,9 +901,7 @@ export class ObridgeAdapter extends BaseAdapter {
         "tron:0x2b6653dc",
         cosmosChainId,
       ]);
-      console.log(addressesData, "addresses Data1");
 
-      //   console.log(addressesData[0], "addressesData");
       // Get addresses - assuming these are provided via userAddress or extracted
       // In real implementation, these might come from wallet connections
       const addresses: {
@@ -917,7 +913,6 @@ export class ObridgeAdapter extends BaseAdapter {
         evmAddress: addressesData?.["eip155:1"] || "",
         tronAddress: addressesData?.["tron:0x2b6653dc"] || "",
       };
-      console.log(addresses, "addresses Data2");
       // Perform simulation and fetch amounts balance in parallel with retry logic
       const [simulateData, ratioData, amountsBalance] = await Promise.all([
         this.retrySimulation(() =>
@@ -960,7 +955,6 @@ export class ObridgeAdapter extends BaseAdapter {
           addressesData?.["cosmos:Oraichain"]
         ),
       ]);
-      console.log(amountsBalance, "amountsBalance");
       if (!simulateData?.amount || Number(simulateData?.amount) === 0) {
         throw new Error("Simulation failed: No valid swap route found");
       }
@@ -973,7 +967,6 @@ export class ObridgeAdapter extends BaseAdapter {
         oraichainTokens: this.oraichainTokens,
         flattenTokens: this.flattenTokens,
       });
-      console.log(relayerFeeAmount, "relayerFeeAmount");
       // Prepare swap transaction data
       const swapTransactionData: SwapTransactionData = {
         cosmosAddress: addresses.cosmosAddress,
@@ -1005,7 +998,6 @@ export class ObridgeAdapter extends BaseAdapter {
         chainId: route.chainId,
         provider: this.provider,
       };
-      console.log(transaction, "transaction");
       return transaction;
     } catch (error) {
       console.error("OBridge buildTransaction error:", error);
@@ -1018,8 +1010,6 @@ export class ObridgeAdapter extends BaseAdapter {
     userAddress: string,
     destinationChainCurrencies?: AppCurrency[]
   ): Promise<string> {
-    console.log(userAddress, "userAddress signAndSendTransaction");
-
     try {
       // Parse swap data from transaction
       //@ts-ignore
@@ -1121,14 +1111,6 @@ export class ObridgeAdapter extends BaseAdapter {
 
       // Create universal swap handler with type assertion to avoid incompatibility
       try {
-        console.log(
-          universalSwapData,
-          "universalSwapData signAndSendTransaction"
-        );
-        console.log(cosmosWallet, "cosmosWallet signAndSendTransaction");
-        console.log(evmWallet, "evmWallet signAndSendTransaction");
-        console.log(useAlphaIbcWasm, "useAlphaIbcWasm signAndSendTransaction");
-        console.log(useIbcWasm, "useIbcWasm signAndSendTransaction");
         const universalSwapHandler = new UniversalSwapHandler(
           universalSwapData,
           {

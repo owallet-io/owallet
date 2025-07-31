@@ -446,7 +446,6 @@ export class JupiterAdapter extends BaseAdapter {
         addressLookupTableAddresses,
         otherInstructions,
       } = instructions;
-      console.log(instructions, "instructions");
       const deserializeInstruction = (instruction) => {
         return new TransactionInstruction({
           programId: new PublicKey(instruction.programId),
@@ -494,12 +493,10 @@ export class JupiterAdapter extends BaseAdapter {
         ))
       );
       const blockhash = (await connection.getLatestBlockhash()).blockhash;
-      console.log(blockhash, userAddress, "blockhash");
       // Process Jupiter response
       // const jupiterData = response.data;
 
       const getFeeUsdc = await (async () => {
-        console.log(amountUsdcFee.round().toString(), "amountUsdcFee");
         if (amountUsdcFee.lte(new Dec(0))) {
           return null;
         }
@@ -542,7 +539,6 @@ export class JupiterAdapter extends BaseAdapter {
         ...(computeBudgetInstructions || []).map(deserializeInstruction),
         tokenOut === USDC_TOKENS ? getFeeUsdc : null,
       ].filter(Boolean);
-      console.log(instructionsData, "instructionsData");
       const messageV0 = new TransactionMessage({
         payerKey: new PublicKey(userAddress),
         recentBlockhash: blockhash,
@@ -577,10 +573,8 @@ export class JupiterAdapter extends BaseAdapter {
     tx: Transaction,
     userAddress: string
   ): Promise<string> {
-    console.log(userAddress, "userAddress signAndSendTransaction");
     //@ts-ignore
     const buffer = Buffer.from(tx.data, "base64");
-    console.log(buffer, "buffer");
     const txDecoded = VersionedTransaction.deserialize(buffer);
     // const deserializedTx = VersionedTransaction.deserialize(
     //   bs58.decode(tx.data),
