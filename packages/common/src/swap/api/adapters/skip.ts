@@ -1,4 +1,5 @@
-import { BaseAdapter } from "./BaseAdapter";
+// Import Route, RouteParams and Transaction directly from types to avoid circular dependencies
+// We're not extending BaseAdapter anymore so we don't need to import it
 import { Route, RouteParams, Transaction } from "../../types/v2";
 import axios, { AxiosInstance } from "axios";
 import { Dec, DecUtils } from "@owallet/unit";
@@ -200,10 +201,10 @@ interface SkipMsgsDirectResponse {
   route: SkipRouteResponse;
 }
 
-export class SkipAdapter extends BaseAdapter {
+export class SkipAdapter {
   readonly provider = "skip";
   readonly logo =
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABcCAMAAADUMSJqAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAD5UExURUdwTKKdu66owqGcu5SKsJSKr5SKr5+au5ePsqievamdvK+pwaacvKCcu6OdvJeMsJaMsJyXuJeNsZeOsZiOsZqTtZmQspmQs5mPspmPspmQs5mPspmPsZyVtpqRtJqRtJqRs5mQspmQspmQs5mQspmPs5mQs5mQs5mQspmQs5mQs5mQspmQs5mQspmQs5mQs5mQs5mQs5mQs5mQs5mQs5qRtJmQs5mQs5mQs5qRs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQsxalwpkAAACTdFJOUMD6iU0CBgj3/Tw4AdSOLk+HzHAg7M9DDJ27CrLzHY9F4y81gIis6zJBoN35JhKy87aPWhmDS/vcKdf+Q3iV3LyYp+i4u8CnkduuWq1olqXJxZ+7eUiAvbBoHIl9+mpw6L6MWOVY3IIq6qg/NHRx4b9XpCzw1EPL1UBkzjfSOiyFNuA9x5OqfCT+7LFC9xYfkoTMoLpX3/JVLlHuAAACdUlEQVRYw+2Y13LaMBSGhdgYxwVDiUMCgXTSJCXd6b333vf7v0YP2AZLuF7ZXORizv9fUL7ROYcj2YgYJmKQFq1INkQmDZFEWdPUosUcVgQ6SBVkVQHqAOHEcQwLMtGiKJJOIGBBvbK6ti7Jm1s+7Gw7nUCnDjG5u7e9H8DBoScm1Q+oBI4x+fDR4XE7cO+JTw7xU07+7Oz5i8MHTglhbnHei7OXr84P/dIdng/LPee9efvuvK4nUF6EfXj/4VOzOVBOCpjy6fPFxaF+5RDDrWnMjCNGdvH+y+Xl1VROApjys7OvrduEcM9vXF9fP3c5jTXlN41G41YJE+e39/f3jzwna47kz53f+eR3Vrn2GI0+NpttR4z03vMHrH7slYPWFKmhxuhzs9Gom9F791+w+5e+13OlQe00Rt+Gw2Gz41DZ59FSuWDuM9cXrZ8rPqKDdqHfaEzm8V26Xx0Tueh7bNPpD/wIN24eXVGWngcYz+7tgBh7w9HU6/eIX1bJgB/brNEoW0fj8bgHhjBR/PRqP7aneYUceiOYGdOJEAQ+ZScZkj2A7Cx2CvX2cDwdzRbQ6TTKJ4+reCDUgK7aAOXxyPPHPTfvhFqBLxfhRK2x7rruyPUYJfMmfxqizp0pcYu3m+59KicFDBPz3VGXiZxOJmJSMPytDya+Vb8v/EbuV94XOjKrfF/oG1mp7ws9ajfJ/cmVelcArBACBAm8N2pV+YMo3b8iPrj/gTrKH2+c/KdkvP9B/6uTT/33/9hPvXz/ay+f+Skn/5WTT/23q3z/SyX+RNVfwOz/yqJ/G1d+Y1R+q6qyyVYd67/k/gVzeaSuuIR45gAAAABJRU5ErkJggg==";
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABcCAMAAADUMSJqAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAD5UExURUdwTKKdu66owqGcu5SKsJSKr5SKr5+au5ePsqievamdvK+pwaacvKCcu6OdvJeMsJaMsJyXuJeNsZeOsZiOsZqTtZmQspmQs5mPspmPspmQs5mPspmPsZyVtpqRtJqRtJqRs5mQspmQspmQs5mQspmPs5mQs5mQs5mQspmQs5mQs5mQspmQs5mQspmQs5mQs5mQs5mQs5mQs5mQs5mQs5qRtJmQs5mQs5mQs5qRs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQsxalwpkAAACTdFJOUMD6iU0CBgj3/Tw4AdSOLk+HzHAg7M9DDJ27CrLzHY9F4y81gIis6zJBoN35JhKy87aPWhmDS/vcKdf+Q3iV3LyYp+i4u8CnkduuWq1olqXJxZ+7eUiAvbBoHIl9+mpw6L6MWOVY3IIq6qg/NHRx4b9XpCzw1EPL1UBkzjfSOiyFNuA9x5OqfCT+7LFC9xYfkoTMoLpX3/JVLlHuAAACdUlEQVRYw+2Y13LaMBSGhdgYxwVDiUMCgXTSJCXd6b333vf7v0YP2AZLuF7ZXORizv9fUL7ROYcj2YgYJmKQFq1INkQmDZFEWdPUosUcVgQ6SBVkVQHqAOHEcQwLMtGiKJJOIGBBvbK6ti7Jm1s+7Gw7nUCnDjG5u7e9H8DBoScm1Q+oBI4x+fDR4XE7cO+JTw7xU07+7Oz5i8MHTglhbnHei7OXr84P/dIdng/LPee9efvuvK4nUF6EfXj/4VOzOVBOCpjy6fPFxaF+5RDDrWnMjCNGdvH+y+Xl1VROApjys7OvrduEcM9vXF9fP3c5jTXlN41G41YJE+e39/f3jzwna47kz53f+eR3Vrn2GI0+NpttR4z03vMHrH7slYPWFKmhxuhzs9Gom9F791+w+5e+13OlQe00Rt+Gw2Gz41DZ59FSuWDuM9cXrZ8rPqKDdqHfaEzm8V26Xx0Tueh7bNPpD/wIN24eXVGWngcYz+7tgBh7w9HU6/eIX1bJgB/brNEoW0fj8bgHhjBR/PRqP7aneYUceiOYGdOJEAQ+ZScZkj2A7Cx2CvX2cDwdzRbQ6TTKJ4+reCDUgK7aAOXxyPPHPTfvhFqBLxfhRK2x7rruyPUYJfMmfxqizp0pcYu3m+59KicFDBPz3VGXiZxOJmJSMPytDya+Vb8v/EbuV94XOjKrfF/oG1mp7ws9ajfJ/cmVelcArBACBAm8N2pV+YMo3b8iPrj/gTrKH2+c/KdkvP9B/6uTT/33/9hPvXz/ay+f+Skn/5WTT/23q3z/SyX+RNVfwOz/yqJ/G1d+Y1R+q6qyyVYd67/k/gVzeaSuuIR45gAAAABJRU5ErkJggg==";
 
   // Skip supports cross-chain operations, so we include major Cosmos chains
   readonly supportedChains = [
@@ -237,7 +238,6 @@ export class SkipAdapter extends BaseAdapter {
   private swapStore: any;
 
   constructor(swapStore: any) {
-    super();
     this.apiClient = axios.create({
       baseURL: SkipBaseUrl,
       timeout: 30000, // 30 seconds timeout for cross-chain operations
@@ -249,7 +249,8 @@ export class SkipAdapter extends BaseAdapter {
   }
 
   /**
-   * Override supportsChain to handle both cosmos: prefixed and raw chain IDs
+   * Check if the provider supports a specific chain
+   * Handles both cosmos: prefixed and raw chain IDs
    */
   supportsChain(chainId: string): boolean {
     // Remove cosmos: prefix if present for checking
@@ -259,9 +260,14 @@ export class SkipAdapter extends BaseAdapter {
     return isSupported;
   }
 
+  /**
+   * Check if this adapter supports AbortController
+   */
   supportsAbortController(): boolean {
-    return true;
+    return true; // Default to true for most adapters
   }
+
+  /* SkipAdapter now implements this method directly */
 
   async getRoutes(params: RouteParams, signal?: AbortSignal): Promise<Route[]> {
     const {

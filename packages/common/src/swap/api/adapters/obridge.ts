@@ -1005,7 +1005,7 @@ export class ObridgeAdapter extends BaseAdapter {
         chainId: route.chainId,
         provider: this.provider,
       };
-
+      console.log(transaction, "transaction");
       return transaction;
     } catch (error) {
       console.error("OBridge buildTransaction error:", error);
