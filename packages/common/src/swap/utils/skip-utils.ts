@@ -1,8 +1,6 @@
 import {
-  SKIP_CONFIG,
   CHAIN_ID_MAPPING,
   TOKEN_DENOM_MAPPING,
-  getSwapVenuesForChain,
   normalizeChainIdForSkip,
 } from "../constants/skip-config";
 import { Route, RouteParams } from "../types/v2";

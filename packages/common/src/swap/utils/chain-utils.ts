@@ -1,8 +1,7 @@
 import { ethers } from "ethers"; // ethers v6
-// import { bech32 } from "bech32";
-// import bs58 from "bs58";
 import { PublicKey } from "@solana/web3.js";
 import { isValidTronAddress } from "../../utils";
+
 // Default chain order if no balances are available
 // Prioritizes Skip-supported chains for better cross-chain routing
 const DEFAULT_CHAIN_ORDER = [

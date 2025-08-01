@@ -17,7 +17,7 @@ import {
 } from "@skip-go/client/cjs";
 import { OfflineAminoSigner, OfflineDirectSigner } from "@owallet/types";
 import { createWalletClient, custom, Account } from "viem";
-import { fetchChainById } from "..";
+import { BaseAdapter, fetchChainById } from "..";
 
 // Toast notification function
 const showToastBackpack = (
@@ -201,7 +201,7 @@ interface SkipMsgsDirectResponse {
   route: SkipRouteResponse;
 }
 
-export class SkipAdapter {
+export class SkipAdapter extends BaseAdapter {
   readonly provider = "skip";
   readonly logo =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFwAAABcCAMAAADUMSJqAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAD5UExURUdwTKKdu66owqGcu5SKsJSKr5SKr5+au5ePsqievamdvK+pwaacvKCcu6OdvJeMsJaMsJyXuJeNsZeOsZiOsZqTtZmQspmQs5mPspmPspmQs5mPspmPsZyVtpqRtJqRtJqRs5mQspmQspmQs5mQspmPs5mQs5mQs5mQspmQs5mQs5mQspmQs5mQspmQs5mQs5mQs5mQs5mQs5mQs5mQs5qRtJmQs5mQs5mQs5qRs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQs5mQsxalwpkAAACTdFJOUMD6iU0CBgj3/Tw4AdSOLk+HzHAg7M9DDJ27CrLzHY9F4y81gIis6zJBoN35JhKy87aPWhmDS/vcKdf+Q3iV3LyYp+i4u8CnkduuWq1olqXJxZ+7eUiAvbBoHIl9+mpw6L6MWOVY3IIq6qg/NHRx4b9XpCzw1EPL1UBkzjfSOiyFNuA9x5OqfCT+7LFC9xYfkoTMoLpX3/JVLlHuAAACdUlEQVRYw+2Y13LaMBSGhdgYxwVDiUMCgXTSJCXd6b333vf7v0YP2AZLuF7ZXORizv9fUL7ROYcj2YgYJmKQFq1INkQmDZFEWdPUosUcVgQ6SBVkVQHqAOHEcQwLMtGiKJJOIGBBvbK6ti7Jm1s+7Gw7nUCnDjG5u7e9H8DBoScm1Q+oBI4x+fDR4XE7cO+JTw7xU07+7Oz5i8MHTglhbnHei7OXr84P/dIdng/LPee9efvuvK4nUF6EfXj/4VOzOVBOCpjy6fPFxaF+5RDDrWnMjCNGdvH+y+Xl1VROApjys7OvrduEcM9vXF9fP3c5jTXlN41G41YJE+e39/f3jzwna47kz53f+eR3Vrn2GI0+NpttR4z03vMHrH7slYPWFKmhxuhzs9Gom9F791+w+5e+13OlQe00Rt+Gw2Gz41DZ59FSuWDuM9cXrZ8rPqKDdqHfaEzm8V26Xx0Tueh7bNPpD/wIN24eXVGWngcYz+7tgBh7w9HU6/eIX1bJgB/brNEoW0fj8bgHhjBR/PRqP7aneYUceiOYGdOJEAQ+ZScZkj2A7Cx2CvX2cDwdzRbQ6TTKJ4+reCDUgK7aAOXxyPPHPTfvhFqBLxfhRK2x7rruyPUYJfMmfxqizp0pcYu3m+59KicFDBPz3VGXiZxOJmJSMPytDya+Vb8v/EbuV94XOjKrfF/oG1mp7ws9ajfJ/cmVelcArBACBAm8N2pV+YMo3b8iPrj/gTrKH2+c/KdkvP9B/6uTT/33/9hPvXz/ay+f+Skn/5WTT/23q3z/SyX+RNVfwOz/yqJ/G1d+Y1R+q6qyyVYd67/k/gVzeaSuuIR45gAAAABJRU5ErkJggg==";
@@ -308,7 +308,6 @@ export class SkipAdapter {
       ? this.getNativeTokenDenom(chainIdOut)
       : tokenOut;
 
-    // Build request similar to Keplr's implementation
     const skipRequest: SkipRouteRequest = {
       amount_in: amount,
       source_asset_denom: sourceAssetDenom,
@@ -347,7 +346,6 @@ export class SkipAdapter {
           signal: signal || abortController.signal,
           headers: {
             "Content-Type": "application/json",
-            // Add API key if available (similar to Keplr's implementation)
             ...(process.env.SKIP_API_KEY && {
               authorization: process.env.SKIP_API_KEY,
             }),
@@ -359,7 +357,6 @@ export class SkipAdapter {
         throw new Error("Skip API returned empty response");
       }
 
-      // Enhanced response validation similar to Keplr's approach
       if (!this.validateSkipResponse(response.data)) {
         throw new Error("Skip API returned invalid response format");
       }
@@ -417,7 +414,6 @@ export class SkipAdapter {
       // Extract route path from operations
       const routePath = this.extractRoutePath(routeData.operations);
 
-      // Calculate additional fees similar to Keplr's implementation
       const { swapFees, otherFees } = this.calculateFees(routeData);
       const totalFeesUsd = this.calculateTotalFeesUsd(swapFees, otherFees);
       const route: Route = {
@@ -813,7 +809,6 @@ export class SkipAdapter {
     const otherFees: Array<{ amount: string; denom: string; chainId: string }> =
       [];
 
-    // Extract swap fees from operations (similar to Keplr's swapFee computed property)
     for (const operation of routeData.operations) {
       if (operation.swap && operation.swap.estimated_affiliate_fee) {
         const fee = operation.swap.estimated_affiliate_fee;
@@ -859,7 +854,6 @@ export class SkipAdapter {
   }
 
   private validateSkipResponse(data: any): data is SkipRouteResponse {
-    // Basic validation of essential properties (simplified version of Keplr's Joi validation)
     return (
       data &&
       typeof data === "object" &&
