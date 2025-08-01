@@ -215,6 +215,7 @@ export class KyberSwapAdapter extends BaseAdapter {
             .toString();
         }
       }
+
       console.log(
         {
           minimumReceivedFormatted: minimumReceivedFormatted?.toString(),

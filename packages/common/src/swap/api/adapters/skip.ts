@@ -836,7 +836,6 @@ export class SkipAdapter {
       }
     }
 
-    // Extract other fees from estimated_fees (similar to Keplr's otherFees computed property)
     if (routeData.estimated_fees) {
       for (const fee of routeData.estimated_fees) {
         otherFees.push({
