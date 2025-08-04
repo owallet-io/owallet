@@ -557,10 +557,6 @@ export class SkipAdapter {
       // Generate chainIdsToAffiliates configuration for affiliate fees
       const chainIdsToAffiliates = generateChainIdsToAffiliates();
 
-      console.log(
-        "[signAndSendTransaction] Generated chainIdsToAffiliates:",
-        chainIdsToAffiliates
-      );
       let txHashData = "";
       const executeRouteParams = {
         route: camelCaseSkipRouteData as any,
