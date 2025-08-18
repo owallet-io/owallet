@@ -1,0 +1,8 @@
+---
+description: Do this before you run
+globs:
+alwaysApply: true
+---
+
+- Before executing the user prompt, rewrite it to be clear, structured, and actionable. Expand with a short scenario if needed, and list specific actions step-by-step. Ensure it's concise but detailed enough for correct execution, and then show it to me.
+- Execute the improved prompt, without asking me to execute it or not. After applying changes, automatically run linting and fix all lint errors/warnings in the file.

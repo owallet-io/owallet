@@ -118,6 +118,9 @@ export class ObservableQuerySvmAccountBalanceImpl
       console.log(
         `Loaded ${COINGECKO_CACHE.tokenAddressToCoingeckoIdMap.size} Solana tokens from CoinGecko`
       );
+
+      // After CoinGecko list is ready, update currencies to include coinGeckoId
+      this.registerCurrenciesFromCurrentResponse({ updateExisting: true });
     } catch (error) {
       console.error("Error fetching CoinGecko token list:", error);
     } finally {
@@ -176,39 +179,50 @@ export class ObservableQuerySvmAccountBalanceImpl
     }`;
   }
 
-  protected onReceiveResponse(_: Readonly<QueryResponse<string>>) {
-    super.onReceiveResponse(_);
+  private registerCurrenciesFromCurrentResponse({
+    updateExisting,
+  }: {
+    updateExisting: boolean;
+  }) {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    const tokenInfos = (_.data as any)?.wallet.balances.tokens.edges;
+    const tokenInfos = (this.response?.data as any)?.wallet?.balances?.tokens
+      ?.edges;
     if (!tokenInfos?.length) return;
 
-    // 5. Map token metadata to currencies
     const allTokenAddress = tokenInfos.filter(
-      (item, index) => item.node.tokenListEntry.address !== tokenNative
+      (item: any) => item.node.tokenListEntry.address !== tokenNative
     );
     if (!allTokenAddress?.length) return;
-    const currencyInfo = allTokenAddress.map((item) => {
+
+    const currencyInfo = allTokenAddress.map((item: any) => {
       const tokenAddress = item.node.tokenListEntry.address;
-      // Get CoinGecko ID from our map
       const coinGeckoId =
         this.getCoingeckoIdForTokenAddress(tokenAddress) ||
         item.node.tokenListEntry.coingeckoId;
-      console.log("coinGeckoId", coinGeckoId);
+
       return {
         coinImageUrl: item.node.tokenListEntry.logo,
         coinDenom: item.node.tokenListEntry.symbol,
-        coinGeckoId: coinGeckoId, // Use the one from our map or fallback to existing
+        coinGeckoId: coinGeckoId,
         coinDecimals: item.node.tokenListEntry.decimals,
         coinMinimalDenom:
           item.node.solana?.tokenProgram === TOKEN_2022_PROGRAM_ID.toBase58()
             ? `spl20:${item.node.tokenListEntry.address}`
             : `spl:${item.node.tokenListEntry.address}`,
-      };
+      } as AppCurrency;
     });
 
-    console.log("currencyInfo", currencyInfo);
-    // 6. Update chain info with currencies
+    if (updateExisting) {
+      const denoms = currencyInfo.map((c) => c.coinMinimalDenom);
+      chainInfo.removeCurrencies(...denoms);
+    }
+
     chainInfo.addCurrencies(...currencyInfo);
+  }
+
+  protected onReceiveResponse(_: Readonly<QueryResponse<string>>) {
+    super.onReceiveResponse(_);
+    this.registerCurrenciesFromCurrentResponse({ updateExisting: false });
   }
 
   async fetchSplBalances() {
