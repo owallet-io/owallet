@@ -317,14 +317,112 @@ export class CoinGeckoTerminalPriceStore extends ObservableQuery<CoinGeckoTermin
   protected override async fetchResponse(
     abortController: AbortController
   ): Promise<{ headers: any; data: CoinGeckoTerminalPrice }> {
-    const { data, headers } = await super.fetchResponse(abortController);
-    // Because this store only queries the price of the tokens that have been requested from start,
-    // it will remove the prior prices that have not been requested to just return the fetching result.
-    // So, to prevent this problem, merge the prior response and current response with retaining the prior response's price.
-    return {
+    // If there are more than 30 tokens, we need to batch the requests
+    const tokenIds = this._coinIds.values;
+
+    if (tokenIds.length <= 30) {
+      // If we have 30 or fewer tokens, just do a normal request
+      const url = makeURL(
+        this.baseURL,
+        `${this._optionUri}/${tokenIds.join(",")}?include=top_pools`
+      );
+      const { data, headers } = await this.fetchBatch(url, abortController);
+      return {
+        headers,
+        data,
+      };
+    } else {
+      // We need to batch the requests in chunks of 30
+      return this.fetchBatchedPrices(tokenIds, abortController);
+    }
+  }
+
+  // Helper method to fetch a single batch of tokens
+  private async fetchBatch(
+    url: string,
+    abortController: AbortController
+  ): Promise<{ headers: any; data: CoinGeckoTerminalPrice }> {
+    // Safely get headers if they exist in options
+    let headers: HeadersInit | undefined = undefined;
+    if (
+      this.options &&
+      typeof this.options === "object" &&
+      "headers" in this.options
+    ) {
+      headers = this.options.headers as HeadersInit;
+    }
+
+    const result = await fetch(url, {
+      signal: abortController.signal,
       headers,
-      data: data,
+    });
+
+    const responseHeaders = this.flattenHeaders(result.headers);
+    const data = await result.json();
+
+    return { headers: responseHeaders, data };
+  }
+
+  // Helper method to fetch prices in batches of 30 tokens
+  private async fetchBatchedPrices(
+    tokenIds: string[],
+    abortController: AbortController
+  ): Promise<{ headers: any; data: CoinGeckoTerminalPrice }> {
+    const batchSize = 30; // GeckoTerminal API limit
+    const batches: string[][] = [];
+
+    // Split tokens into batches of 30
+    for (let i = 0; i < tokenIds.length; i += batchSize) {
+      batches.push(tokenIds.slice(i, i + batchSize));
+    }
+
+    let mergedData: CoinGeckoTerminalPrice = {
+      data: [],
+      included: [],
     };
+    let lastHeaders = {};
+
+    // Process each batch sequentially to avoid rate limiting
+    for (const batch of batches) {
+      const batchUrl = makeURL(
+        this.baseURL,
+        `${this._optionUri}/${batch.join(",")}?include=top_pools`
+      );
+
+      try {
+        const { headers, data } = await this.fetchBatch(
+          batchUrl,
+          abortController
+        );
+
+        // Merge the results
+        if (data.data) {
+          mergedData.data = [...mergedData.data, ...data.data];
+        }
+
+        if (data.included) {
+          mergedData.included = [...mergedData.included, ...data.included];
+        }
+
+        lastHeaders = headers;
+      } catch (error) {
+        console.error(`Failed to fetch batch of tokens:`, error);
+        // Continue with other batches even if one fails
+      }
+    }
+
+    return {
+      headers: lastHeaders,
+      data: mergedData,
+    };
+  }
+
+  private flattenHeaders(headers: Headers): Record<string, string> {
+    const result: Record<string, string> = {};
+    headers.forEach((value, key) => {
+      result[key] = value;
+    });
+    return result;
   }
 
   protected updateURL(
@@ -336,9 +434,10 @@ export class CoinGeckoTerminalPriceStore extends ObservableQuery<CoinGeckoTermin
     const vsCurrenciesUpdated = this._vsCurrencies.add(...vsCurrencies, "usd");
 
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
-      const url = `${this._optionUri}/${this._coinIds.values.join(
-        ","
-      )}?include=top_pools`;
+      // GeckoTerminal API has a 30 token address limit
+      // Instead of setting a URL with all tokens, we'll batch them in fetchResponse
+      // Just set a basic URL to indicate we need to fetch
+      const url = `${this._optionUri}`;
       if (!this._isInitialized) {
         this.setUrl(url);
       } else {
