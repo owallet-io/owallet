@@ -49,10 +49,16 @@ export class TokenScanService {
         }
       });
     }
+    let persistTimer: any;
     autorun(() => {
       const js = toJS(this.vaultToMap);
       const obj = Object.fromEntries(js);
-      this.kvStore.set("vaultToMap", obj);
+      if (persistTimer) {
+        clearTimeout(persistTimer);
+      }
+      persistTimer = setTimeout(() => {
+        this.kvStore.set("vaultToMap", obj);
+      }, 500);
     });
 
     this.vaultService.addVaultRemovedHandler(
@@ -313,44 +319,51 @@ export class TokenScanService {
         }
       })();
 
-      for (const bech32Address of bech32Addresses) {
-        const res = await simpleFetch<{
-          balances: { denom: string; amount: string }[];
-        }>(
-          chainInfo.rest,
-          `/cosmos/bank/v1beta1/balances/${bech32Address.value}?pagination.limit=1000`
-        );
+      // Fetch balances for all addresses in parallel to reduce latency
+      const balanceResults = await Promise.allSettled(
+        bech32Addresses.map((bech32Address) =>
+          simpleFetch<{
+            balances: { denom: string; amount: string }[];
+          }>(
+            chainInfo.rest,
+            `/cosmos/bank/v1beta1/balances/${bech32Address.value}?pagination.limit=1000`
+          ).then((res) => ({ res, bech32Address }))
+        )
+      );
 
-        if (res.status === 200) {
-          const assets: TokenScan["infos"][number]["assets"] = [];
+      for (const result of balanceResults) {
+        if (result.status === "fulfilled") {
+          const { res, bech32Address } = result.value;
+          if (res.status === 200) {
+            const assets: TokenScan["infos"][number]["assets"] = [];
 
-          const balances = res.data?.balances ?? [];
-          for (const bal of balances) {
-            const currency = chainInfo.currencies.find(
-              (cur) => cur.coinMinimalDenom === bal.denom
-            );
-            if (currency) {
-              // validate
-              if (typeof bal.amount !== "string") {
-                throw new Error("Invalid amount");
-              }
+            const balances = res.data?.balances ?? [];
+            for (const bal of balances) {
+              const currency = chainInfo.currencies.find(
+                (cur) => cur.coinMinimalDenom === bal.denom
+              );
+              if (currency) {
+                if (typeof bal.amount !== "string") {
+                  throw new Error("Invalid amount");
+                }
 
-              const dec = new Dec(bal.amount);
-              if (dec.gt(new Dec(0))) {
-                assets.push({
-                  currency,
-                  amount: bal.amount,
-                });
+                const dec = new Dec(bal.amount);
+                if (dec.gt(new Dec(0))) {
+                  assets.push({
+                    currency,
+                    amount: bal.amount,
+                  });
+                }
               }
             }
-          }
 
-          if (assets.length > 0) {
-            tokenScan.infos.push({
-              bech32Address: bech32Address.value,
-              coinType: bech32Address.coinType,
-              assets,
-            });
+            if (assets.length > 0) {
+              tokenScan.infos.push({
+                bech32Address: bech32Address.value,
+                coinType: bech32Address.coinType,
+                assets,
+              });
+            }
           }
         }
       }
