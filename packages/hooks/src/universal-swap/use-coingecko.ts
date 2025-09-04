@@ -56,19 +56,34 @@ export const useCoinGeckoPrices = () => {
         ...new Set([...cosmosTokens, ...evmTokens].map((t) => t.coinGeckoId)),
       ];
       tokens.sort();
-      const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
 
-      const prices: Record<string, number | null> = {};
+      const MAX_IDS_PER_REQUEST = 40;
+      const allPrices: Record<string, number | null> = {};
 
-      const resp = await fetch(coingeckoPricesURL, {});
-      const rawData = await resp.json();
-      // update cached
-      for (const key in rawData) {
-        prices[key] = rawData[key].usd;
+      // Split tokens into chunks of maximum 40
+      for (let i = 0; i < tokens.length; i += MAX_IDS_PER_REQUEST) {
+        const chunk = tokens.slice(i, i + MAX_IDS_PER_REQUEST);
+        const coingeckoPricesURL = buildCoinGeckoPricesURL(chunk);
+
+        try {
+          const resp = await fetch(coingeckoPricesURL, {});
+          const rawData = await resp.json();
+
+          // Update cached prices for this chunk
+          for (const key in rawData) {
+            allPrices[key] = rawData[key].usd;
+          }
+        } catch (chunkError) {
+          console.error(
+            `Failed to fetch prices for chunk ${i / MAX_IDS_PER_REQUEST + 1}:`,
+            chunkError
+          );
+          // Continue with other chunks even if one fails
+        }
       }
 
       const result = Object.fromEntries(
-        tokens.map((token: any) => [token, prices[token]])
+        tokens.map((token: any) => [token, allPrices[token]])
       );
 
       // Update the global cache
