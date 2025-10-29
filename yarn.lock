@@ -27154,7 +27154,7 @@ __metadata:
     react-native-rate: ^1.2.12
     react-native-reanimated: =3.17.1
     react-native-safe-area-context: 5.3.0
-    react-native-screens: 3.27.0
+    react-native-screens: 3.31.1
     react-native-scrypt: ^1.2.1
     react-native-skeleton-placeholder: ^5.2.4
     react-native-smooth-pincode-input: ^1.0.9
@@ -31166,16 +31166,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-screens@npm:3.27.0":
-  version: 3.27.0
-  resolution: "react-native-screens@npm:3.27.0"
+"react-native-screens@npm:3.31.1":
+  version: 3.31.1
+  resolution: "react-native-screens@npm:3.31.1"
   dependencies:
     react-freeze: ^1.0.0
     warn-once: ^0.1.0
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 3a6f54bd755ba8c7909beb4888f96d159639221cbcdb56fccd460cd129ff9b144c7c20dc4c0b7eec23aa38698bbd0cf21bb9b6c99833e9d1399ee75da52f18ed
+  checksum: 1fc61cf7a223b3ef1c8000e74416c8953561c5fa0861557da43659db62a640e37fb51fbdc35dae810a665881a7aa9eeaf1873e90f67404b4dda53a672464a7fe
   languageName: node
   linkType: hard
 
