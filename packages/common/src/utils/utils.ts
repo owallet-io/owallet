@@ -19,7 +19,6 @@ import { ethers } from "ethers";
 import TronWeb from "tronweb";
 import isValidDomain from "is-valid-domain";
 import { Bech32Config } from "@owallet/types";
-import "dotenv/config";
 import { validate } from "bitcoin-address-validation";
 import {
   Connection,
