@@ -9,7 +9,7 @@ import {
 } from "@owallet/common";
 import { KeyRingTron } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
-import TronWeb from "tronweb";
+import { TronWeb, utils as TronWebUtils } from "tronweb";
 
 export class KeyRingTronPrivateKeyService implements KeyRingTron {
   constructor(
@@ -74,8 +74,6 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
           {
             callValue: 0,
             feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
-            userFeePercentage: 100,
-            shouldPollResponse: false,
           },
           [
             { type: "address", value: parsedData.recipient },
@@ -94,7 +92,7 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
       transaction = parsedData;
     }
 
-    const transactionSign = TronWeb.utils.crypto.signTransaction(
+    const transactionSign = TronWebUtils.crypto.signTransaction(
       privateKey.toBytes(),
       {
         txID: transaction.txID,
@@ -108,7 +106,7 @@ export class KeyRingTronPrivateKeyService implements KeyRingTron {
     if (receipt.result) {
       return receipt;
     } else {
-      throw new Error(receipt.code);
+      throw new Error(String(receipt.code));
     }
   }
 

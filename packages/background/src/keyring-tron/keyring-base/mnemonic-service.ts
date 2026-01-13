@@ -3,7 +3,7 @@ import { Vault, VaultService } from "../../vault";
 import { DEFAULT_FEE_LIMIT_TRON, TronWebProvider } from "@owallet/common";
 import { KeyRingTron } from "../../keyring";
 import { ChainInfo } from "@owallet/types";
-import TronWeb from "tronweb";
+import { TronWeb, utils as TronWebUtils } from "tronweb";
 import { Mnemonic, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -72,8 +72,6 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
           {
             callValue: 0,
             feeLimit: parsedData?.feeLimit ?? DEFAULT_FEE_LIMIT_TRON,
-            userFeePercentage: 100,
-            shouldPollResponse: false,
           },
           [
             { type: "address", value: parsedData.recipient },
@@ -94,7 +92,7 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
       transaction = parsedData;
     }
 
-    const transactionSign = TronWeb.utils.crypto.signTransaction(
+    const transactionSign = TronWebUtils.crypto.signTransaction(
       privKey.toBytes(),
       {
         txID: transaction.txID,
@@ -108,7 +106,7 @@ export class KeyRingTronMnemonicService implements KeyRingTron {
     if (receipt.result) {
       return receipt;
     } else {
-      throw new Error(receipt.code);
+      throw new Error(String(receipt.code));
     }
   }
 

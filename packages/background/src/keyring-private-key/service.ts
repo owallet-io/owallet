@@ -2,7 +2,7 @@ import { VaultService, PlainObject, Vault } from "../vault";
 import { Buffer } from "buffer/";
 import { Hash, PrivKeySecp256k1, PubKeySecp256k1 } from "@owallet/crypto";
 import { ChainInfo } from "@owallet/types";
-import TronWeb from "tronweb";
+import { TronWeb, utils as TronWebUtils } from "tronweb";
 
 export class KeyRingPrivateKeyService {
   constructor(protected readonly vaultService: VaultService) {}
@@ -53,17 +53,17 @@ export class KeyRingPrivateKeyService {
     return new PubKeySecp256k1(publicKeyBytes);
   }
 
-  simulateSignTron(transaction: any, vault: Vault, coinType: number) {
+  simulateSignTron(transaction: any, vault: Vault, coinType: number): string {
     const privateKeyText = this.vaultService.decrypt(vault.sensitive)[
       "privateKey"
     ] as string;
     const privKey = new PrivKeySecp256k1(Buffer.from(privateKeyText, "hex"));
 
-    const signedTxn = TronWeb.utils.crypto.signTransaction(
+    const signedTxn = TronWebUtils.crypto.signTransaction(
       privKey.toBytes(),
       transaction
     );
-    return signedTxn;
+    return JSON.stringify(signedTxn);
   }
 
   sign(

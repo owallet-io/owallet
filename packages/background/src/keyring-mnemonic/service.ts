@@ -7,7 +7,7 @@ import {
   PubKeySecp256k1,
 } from "@owallet/crypto";
 import { ChainInfo } from "@owallet/types";
-import TronWeb from "tronweb";
+import { TronWeb, utils as TronWebUtils } from "tronweb";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require("bip39");
@@ -118,13 +118,13 @@ export class KeyRingMnemonicService {
     return privKey.signDigest32(digest);
   }
 
-  simulateSignTron(transaction: any, vault: Vault, coinType: number) {
+  simulateSignTron(transaction: any, vault: Vault, coinType: number): string {
     const privKey = this.getPrivKey(vault, coinType);
-    const signedTxn = TronWeb.utils.crypto.signTransaction(
+    const signedTxn = TronWebUtils.crypto.signTransaction(
       privKey.toBytes(),
       transaction
     );
-    return signedTxn;
+    return JSON.stringify(signedTxn);
   }
 
   protected getPrivKey(vault: Vault, coinType: number): PrivKeySecp256k1 {

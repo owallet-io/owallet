@@ -127,7 +127,7 @@ export class KeyRingTronService {
           data.functionSelector,
           {
             ...data.options,
-            feeLimit: feeLimit?.toString(),
+            feeLimit: parseInt(feeLimit?.toString() || "0"),
             callValue: 0,
           },
           data.parameters,
@@ -149,12 +149,20 @@ export class KeyRingTronService {
       raw_data_hex: string;
       txID: string;
       visible?: boolean;
+      signature?: string[];
     }
   ) {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
       const tronWeb = TronWebProvider(chainInfo.rpc);
-      const res = await tronWeb.trx.sendRawTransaction(transaction);
+      // Ensure signature is present for v6.x
+      const signedTransaction = {
+        ...transaction,
+        signature: transaction.signature || [],
+      };
+      const res = await tronWeb.trx.sendRawTransaction(
+        signedTransaction as any
+      );
       console.log("requestSendRawTransaction res", res);
 
       return res;
