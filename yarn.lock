@@ -13105,13 +13105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^14.14.35":
-  version: 14.18.63
-  resolution: "@types/node@npm:14.18.63"
-  checksum: be909061a54931778c71c49dc562586c32f909c4b6197e3d71e6dac726d8bd9fccb9f599c0df99f52742b68153712b5097c0f00cac4e279fa894b0ea6719a8fd
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^16.6, @types/node@npm:^16.6.2":
   version: 16.18.126
   resolution: "@types/node@npm:16.18.126"
@@ -28313,7 +28306,7 @@ __metadata:
     react-native-flash-message: 0.4.2
     react-native-fresh-refresh: ^2.1.1
     react-native-fs: ^2.20.0
-    react-native-gesture-handler: 2.29.1
+    react-native-gesture-handler: 2.30.0
     react-native-get-random-values: 1.11.0
     react-native-graph: ^1.1.0
     react-native-haptic-feedback: ^2.3.3
@@ -28336,7 +28329,6 @@ __metadata:
     react-native-reanimated: ^4.2.1
     react-native-safe-area-context: ^5.5.2
     react-native-screens: 4.18.0
-    react-native-scrypt: ^1.2.1
     react-native-skeleton-placeholder: ^5.2.4
     react-native-smooth-pincode-input: ^1.0.9
     react-native-svg: ^15.14.0
@@ -28348,6 +28340,7 @@ __metadata:
     react-native-worklets: ^0.7.1
     react-test-renderer: 18.3.1
     reactotron-react-native: 5.1.18
+    scrypt-js: ^3.0.1
     secretjs: ^1.12.5
     sha.js: ^2.4.11
     stream-browserify: ^3.0.0
@@ -32157,9 +32150,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:2.29.1":
-  version: 2.29.1
-  resolution: "react-native-gesture-handler@npm:2.29.1"
+"react-native-gesture-handler@npm:2.30.0":
+  version: 2.30.0
+  resolution: "react-native-gesture-handler@npm:2.30.0"
   dependencies:
     "@egjs/hammerjs": ^2.0.17
     hoist-non-react-statics: ^3.3.0
@@ -32167,7 +32160,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: dddabdb12ce31d68ef71796e8fcaa57acd4608cca14412f36ce36fee14911fb629f325f0ced86bea1336a64673a434e34cde32a63be8d33f29d9a7bed292c5b2
+  checksum: 130a1cc04879ea11808472dbe2f4e346baca0cb52713279f3d4b5fbd397324bef2379f1f60bf0ce1763e12a8656267abb0e879418fb37c81fc6bbdcdb7fc797d
   languageName: node
   linkType: hard
 
@@ -32430,18 +32423,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: b7942efe7bf316ad66aabf6e3b8b999268d3b88b3d23affb0f90f627d8dd980172f79b48abf476d10c3466ba5123240ee3f18f8d0ff7db5b79b9772cb520afa0
-  languageName: node
-  linkType: hard
-
-"react-native-scrypt@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "react-native-scrypt@npm:1.2.1"
-  dependencies:
-    "@types/node": ^14.14.35
-    buffer: ^5.6.0
-  peerDependencies:
-    react-native: "*"
-  checksum: 8d6a785bbdefbec74da4884cdec23320d4e20d640021ec51babd145b0c538d99791fc25c58641f73c0b39a930d4c5f17c9461e8629aa4e3b481fa1a18499a274
   languageName: node
   linkType: hard
 
