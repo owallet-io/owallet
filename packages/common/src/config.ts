@@ -418,6 +418,82 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
   },
   {
+    rpc: "https://rpc.lfg.land",
+    rest: "https://lcd.lfg.land",
+    chainId: "lfg-mainnet-1",
+    chainName: "LFG",
+    chainSymbolImageUrl:
+      "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/8e/c1/fd8ec168-d048-b72a-7036-c81cab12c455/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/230x0w.webp",
+    stakeCurrency: {
+      coinDenom: "LFG",
+      coinDecimals: 18,
+      coinMinimalDenom: "alfg",
+      coinImageUrl:
+        "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/8e/c1/fd8ec168-d048-b72a-7036-c81cab12c455/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/230x0w.webp",
+      coinGeckoId: "lfg",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: {
+      bech32PrefixAccAddr: "lfg",
+      bech32PrefixAccPub: "lfgpub",
+      bech32PrefixValAddr: "lfgvaloper",
+      bech32PrefixValPub: "lfgvaloperpub",
+      bech32PrefixConsAddr: "lfgvalcons",
+      bech32PrefixConsPub: "lfgvalconspub",
+    },
+    currencies: [
+      {
+        coinDenom: "LFG",
+        coinDecimals: 18,
+        coinMinimalDenom: "alfg",
+        coinImageUrl:
+          "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/8e/c1/fd8ec168-d048-b72a-7036-c81cab12c455/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/230x0w.webp",
+        coinGeckoId: "lfg-chain",
+      },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "uwusdc",
+        coinDecimals: 6,
+        coinImageUrl:
+          "https://assets.coingecko.com/coins/images/6319/standard/usdc.png?1696506694",
+        coinGeckoId: "usd-coin",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "LFG",
+        coinDecimals: 18,
+        coinMinimalDenom: "alfg",
+        coinImageUrl:
+          "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/fd/8e/c1/fd8ec168-d048-b72a-7036-c81cab12c455/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/230x0w.webp",
+        coinGeckoId: "lfg-chain",
+        gasPriceStep: {
+          low: 12500000000,
+          average: 25000000000,
+          high: 50000000000,
+        },
+      },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "uwusdc",
+        coinDecimals: 6,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    txExplorer: {
+      name: "LFG Scanium",
+      txUrl: "https://scanium.io/LFG/tx/{txHash}",
+      accountUrl: "https://scanium.io/account/{address}",
+    },
+  },
+  {
     rpc: "https://swr.xnftdata.com/rpc-proxy/",
     rest: "https://swr.xnftdata.com/rpc-proxy/",
     chainId: "solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp",
@@ -538,7 +614,51 @@ export const EmbedChainInfos: ChainInfo[] = [
       accountUrl: "https://tronscan.org/#/address/{address}",
     },
   },
-
+  {
+    rpc: "https://evm-42161.keplr.app",
+    evm: {
+      chainId: 42161,
+      rpc: "https://evm-42161.keplr.app",
+      websocket: "wss://evm-42161.keplr.app/websocket",
+    },
+    rest: "https://evm-42161.keplr.app",
+    chainId: "eip155:42161",
+    chainName: "Arbitrum",
+    chainSymbolImageUrl:
+      "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:42161/chain.png",
+    bip44: {
+      coinType: 60,
+    },
+    currencies: [
+      {
+        coinDenom: "ETH",
+        coinMinimalDenom: "arbitrum-native",
+        coinDecimals: 18,
+        coinGeckoId: "ethereum",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:42161/arbitrum-native.png",
+      },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "erc20:0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:42161/erc20/0xaf88d065e77c8cc2239327c5edb3a432268e5831.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "ETH",
+        coinMinimalDenom: "arbitrum-native",
+        coinDecimals: 18,
+        coinGeckoId: "ethereum",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/eip155:42161/arbitrum-native.png",
+      },
+    ],
+    features: ["not-support-staking"],
+  },
   {
     rpc: "https://evm-1.keplr.app",
     rest: "https://evm-1.keplr.app",
