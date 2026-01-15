@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest #orai-self-hosted
     strategy:
       matrix:
-        node-version: [18.17.0]
+        node-version: [20.x]
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.8.0
@@ -66,9 +66,10 @@ jobs:
       - name: Deploy on Code Push Server
         working-directory: apps/mobile
         run: |
-          yarn cp-android --description "${{ github.event.head_commit.message }}"
-          yarn cp-ios --description "${{ github.event.head_commit.message }}"
+          yarn cp-android --description "$COMMIT_MESSAGE"
+          yarn cp-ios --description "$COMMIT_MESSAGE"
         env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
