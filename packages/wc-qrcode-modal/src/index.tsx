@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDom from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Modal, ModalUIOptions } from "./modal";
 import SignClient from "@walletconnect/sign-client";
 import { ProposalTypes } from "@walletconnect/types";
@@ -53,12 +53,15 @@ export class OWalletQRCodeModalV2 {
     }
   }
 
+  private root: ReturnType<typeof ReactDOM.createRoot> | null = null;
+
   open(uri: string, cb: any) {
     const wrapper = document.createElement("div");
     wrapper.setAttribute("id", "owallet-qrcode-modal-v2");
     document.body.appendChild(wrapper);
 
-    ReactDom.render(
+    this.root = ReactDOM.createRoot(wrapper);
+    this.root.render(
       <Modal
         uri={uri}
         close={() => {
@@ -66,12 +69,15 @@ export class OWalletQRCodeModalV2 {
           cb();
         }}
         uiOptions={this.uiOptions}
-      />,
-      wrapper
+      />
     );
   }
 
   close() {
+    if (this.root) {
+      this.root.unmount();
+      this.root = null;
+    }
     const wrapper = document.getElementById("owallet-qrcode-modal-v2");
     if (wrapper) {
       document.body.removeChild(wrapper);
