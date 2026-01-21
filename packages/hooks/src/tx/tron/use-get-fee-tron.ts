@@ -226,9 +226,8 @@ export const useGetFeeTron = (
       ) {
         const transaction = await tronWeb.transactionBuilder.sendTrx(
           recipientConfig.recipient,
-          amountConfig.amount[0].toDec().toString(),
-          addressTronBase58,
-          1
+          Number(amountConfig.amount[0].toDec().toString()),
+          addressTronBase58
         );
         const signedTx = await keyringStore.simulateSignTron(
           transaction,

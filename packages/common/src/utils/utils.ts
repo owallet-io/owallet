@@ -16,10 +16,9 @@ import { Hash } from "@owallet/crypto";
 import bs58 from "bs58";
 import { ethers } from "ethers";
 // import Web3 from "web3";
-import TronWeb from "tronweb";
+import { TronWeb } from "tronweb";
 import isValidDomain from "is-valid-domain";
 import { Bech32Config } from "@owallet/types";
-import "dotenv/config";
 import { validate } from "bitcoin-address-validation";
 import {
   Connection,

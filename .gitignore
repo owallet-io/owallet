@@ -15,7 +15,6 @@ build/*
 apps/extension/src/config.ui.var.tsx
 apps/stores-internal/build/
 apps/hooks-internal/build/
-apps
 
 .cache
 .turbo

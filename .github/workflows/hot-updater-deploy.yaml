@@ -1,0 +1,124 @@
+name: Mobile Hot Updater Deploy Workflow
+
+permissions:
+  contents: write
+
+on:
+  push:
+    tags:
+      - mobile/v*.*.*-cp.*
+  workflow_dispatch:
+
+jobs:
+  hot-updater-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.17.0]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Checkout Repository with Submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
+
+      - name: Update Git Submodules
+        run: git submodule update --remote --merge
+
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            .yarn/cache
+            .yarn/install-state.gz
+            !.eslintcache # Exclude eslint cache
+          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build Libs
+        run: yarn build:libs
+
+      - name: Build Stores Internal
+        run: yarn build:stores-internal
+
+      - name: Build Hooks Internal
+        run: yarn build:hooks-internal
+
+      - name: Deploy Hot Updater for Android
+        working-directory: apps/mobile
+        run: yarn hot-updater:deploy:android
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ vars.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          HOT_UPDATER_CLOUDFLARE_R2_BUCKET_NAME: ${{ vars.HOT_UPDATER_CLOUDFLARE_R2_BUCKET_NAME }}
+          HOT_UPDATER_CLOUDFLARE_D1_DATABASE_ID: ${{ vars.HOT_UPDATER_CLOUDFLARE_D1_DATABASE_ID }}
+          HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID: ${{ vars.HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID }}
+          HOT_UPDATER_CLOUDFLARE_API_TOKEN: ${{ secrets.HOT_UPDATER_CLOUDFLARE_API_TOKEN }}
+
+      - name: Deploy Hot Updater for iOS
+        working-directory: apps/mobile
+        run: yarn hot-updater:deploy:ios
+        env:
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY_FIREBASE }}
+          SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
+          APP_ID: ${{ secrets.APP_ID_FIREBASE }}
+          MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ vars.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          HOT_UPDATER_CLOUDFLARE_R2_BUCKET_NAME: ${{ vars.HOT_UPDATER_CLOUDFLARE_R2_BUCKET_NAME }}
+          HOT_UPDATER_CLOUDFLARE_D1_DATABASE_ID: ${{ vars.HOT_UPDATER_CLOUDFLARE_D1_DATABASE_ID }}
+          HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID: ${{ vars.HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID }}
+          HOT_UPDATER_CLOUDFLARE_API_TOKEN: ${{ secrets.HOT_UPDATER_CLOUDFLARE_API_TOKEN }}
+
+      - name: Send Discord notification on success
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: |
+            ✅ Hot Updater deployed successfully!
+            📦 Tag: ${{ github.ref_name }}
+            💬 Commit: ${{ github.event.head_commit.message }}
+            🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Send Discord notification on failure
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: |
+            ❌ Hot Updater deployment failed!
+            📦 Tag: ${{ github.ref_name }}
+            💬 Commit: ${{ github.event.head_commit.message }}
+            🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
