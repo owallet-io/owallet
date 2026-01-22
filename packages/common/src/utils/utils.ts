@@ -27,6 +27,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
+import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import bech32 from "bech32";
 import crypto from "crypto";
 
@@ -195,56 +196,94 @@ export async function _getBalancesSolana(
   chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
 ): Promise<any> {
   try {
-    const resp = await fetch(
-      `https://wallet-api.jup.ag/v2/portfolio/holdings/${address}`,
-      {
+    // Fetch both APIs in parallel
+    const [portfolioResp, holdingsResp] = await Promise.all([
+      fetch(`https://wallet-api.jup.ag/v2/portfolio/holdings/${address}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-      }
-    );
+      }),
+      fetch(`https://ultra-api.jup.ag/holdings/${address}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+    ]);
 
-    if (!resp.ok) {
-      throw new Error(`Failed to fetch balances: ${resp.status}`);
+    if (!portfolioResp.ok) {
+      throw new Error(`Failed to fetch portfolio: ${portfolioResp.status}`);
     }
 
-    const json = await resp.json();
+    const portfolioJson = await portfolioResp.json();
+    let holdingsJson = null;
+
+    // Holdings API might fail, but we can still proceed with portfolio data
+    if (holdingsResp.ok) {
+      try {
+        holdingsJson = await holdingsResp.json();
+      } catch (e) {
+        console.warn("Failed to parse holdings response:", e);
+      }
+    }
+
+    // Create a map of token address to programId from holdings API
+    const tokenProgramMap: Record<string, string> = {};
+    if (holdingsJson?.tokens) {
+      Object.entries(holdingsJson.tokens).forEach(
+        ([tokenAddress, accounts]) => {
+          if (Array.isArray(accounts) && accounts.length > 0) {
+            // Use the programId from the first account (all accounts for same token should have same programId)
+            const programId = accounts[0].programId;
+            if (programId) {
+              tokenProgramMap[tokenAddress] = programId;
+            }
+          }
+        }
+      );
+    }
 
     // Transform Jupiter API response to match the expected GraphQL format
-    const edges = json.tokens.map((token) => ({
-      node: {
-        token: token.id,
-        amount: token.rawAmount || "0",
-        decimals: token.decimals,
-        displayAmount: token.amount.toString(),
-        tokenListEntry: {
-          id: token.id,
-          address: token.id,
+    const edges = portfolioJson.tokens.map((token) => {
+      const programId = tokenProgramMap[token.id] || null;
+      const isToken2022 = programId === TOKEN_2022_PROGRAM_ID.toBase58();
+
+      return {
+        node: {
+          token: token.id,
+          amount: token.rawAmount || "0",
           decimals: token.decimals,
-          logo: token.icon,
-          name: token.symbol,
-          symbol: token.symbol,
-          coingeckoId: null, // Jupiter API doesn't provide coingeckoId
+          displayAmount: token.amount.toString(),
+          tokenListEntry: {
+            id: token.id,
+            address: token.id,
+            decimals: token.decimals,
+            logo: token.icon,
+            name: token.symbol,
+            symbol: token.symbol,
+            coingeckoId: null, // Jupiter API doesn't provide coingeckoId
+          },
+          marketData: {
+            id: token.id,
+            marketUrl: null,
+            percentChange: token.priceChange || 0,
+            price: token.price || 0,
+            value: token.value || 0,
+            valueChange: 0,
+          },
+          solana: {
+            id: token.id,
+            compressed: false,
+            extensions: null,
+            spl20: isToken2022, // true if TOKEN_2022, false otherwise
+            tokenProgram: programId, // Use programId from ultra-api to identify TOKEN_2022
+          },
         },
-        marketData: {
-          id: token.id,
-          marketUrl: null,
-          percentChange: token.priceChange || 0,
-          price: token.price || 0,
-          value: token.value || 0,
-          valueChange: 0,
-        },
-        solana: {
-          id: token.id,
-          compressed: false,
-          extensions: null,
-          spl20: null,
-          tokenProgram: null, // Jupiter API doesn't provide tokenProgram info
-        },
-      },
-    }));
+      };
+    });
 
     return {
       wallet: {
@@ -254,7 +293,7 @@ export async function _getBalancesSolana(
           aggregate: {
             id: address,
             percentChange: 0,
-            value: json.totalValue || 0,
+            value: portfolioJson.totalValue || 0,
             valueChange: 0,
           },
           tokens: {
