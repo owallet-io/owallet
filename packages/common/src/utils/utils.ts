@@ -193,129 +193,95 @@ export const isVersionedTransaction = (
 export async function _getBalancesSolana(
   address: string,
   chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
-): Promise<number> {
+): Promise<any> {
   try {
-    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "apollographql-client-name": "backpack-secure-ui",
-      },
-      body: JSON.stringify({
-        query: `query GetTokenBalances($address: String!, $caip2: Caip2!, $providerId: ProviderID!) {
-  wallet(address: $address, caip2: $caip2, providerId: $providerId) {
-    id
-    balances {
-      id
-      aggregate {
-        ...BalanceAggregateItem
-        __typename
-      }
-      tokens {
-        edges {
-          node {
-            ...TokenBalanceItem
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}
-
-fragment TokenMarketDataItem on MarketData {
-  id
-  marketUrl
-  percentChange
-  price
-  value
-  valueChange
-  __typename
-}
-
-fragment TokenSolanaInfoItem on SolanaTokenInfo {
-  id
-  compressed
-  extensions {
-    id
-    currentInterestRate
-    group
-    permanentDelegate
-    transferFeePercentage
-    transferHook
-    __typename
-  }
-  spl20 {
-    id
-    amount
-    ticker
-    __typename
-  }
-  tokenProgram
-  __typename
-}
-
-fragment TokenMetadataItem on TokenListEntry {
-  id
-  address
-  decimals
-  logo
-  name
-  symbol
-  coingeckoId
-  __typename
-}
-
-fragment BalanceAggregateItem on BalanceAggregate {
-  id
-  percentChange
-  value
-  valueChange
-  __typename
-}
-
-fragment TokenBalanceItem on TokenBalance {
-  id
-  address
-  amount
-  decimals
-  displayAmount
-  marketData {
-    ...TokenMarketDataItem
-    __typename
-  }
-  solana {
-    ...TokenSolanaInfoItem
-    __typename
-  }
-  token
-  tokenListEntry {
-    ...TokenMetadataItem
-    __typename
-  }
-  __typename
-}`,
-        variables: {
-          caip2: {
-            namespace: "solana",
-            reference: chainId,
-          },
-          address,
-          providerId: "SOLANA",
+    const resp = await fetch(
+      `https://wallet-api.jup.ag/v2/portfolio/holdings/${address}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        operationName: "GetTokenBalances",
-      }),
-    });
+      }
+    );
+
+    if (!resp.ok) {
+      throw new Error(`Failed to fetch balances: ${resp.status}`);
+    }
 
     const json = await resp.json();
-    return json.data;
-  } catch {
-    return 0;
+
+    // Transform Jupiter API response to match the expected GraphQL format
+    const edges = json.tokens.map((token) => ({
+      node: {
+        token: token.id,
+        amount: token.rawAmount || "0",
+        decimals: token.decimals,
+        displayAmount: token.amount.toString(),
+        tokenListEntry: {
+          id: token.id,
+          address: token.id,
+          decimals: token.decimals,
+          logo: token.icon,
+          name: token.symbol,
+          symbol: token.symbol,
+          coingeckoId: null, // Jupiter API doesn't provide coingeckoId
+        },
+        marketData: {
+          id: token.id,
+          marketUrl: null,
+          percentChange: token.priceChange || 0,
+          price: token.price || 0,
+          value: token.value || 0,
+          valueChange: 0,
+        },
+        solana: {
+          id: token.id,
+          compressed: false,
+          extensions: null,
+          spl20: null,
+          tokenProgram: null, // Jupiter API doesn't provide tokenProgram info
+        },
+      },
+    }));
+
+    return {
+      wallet: {
+        id: address,
+        balances: {
+          id: address,
+          aggregate: {
+            id: address,
+            percentChange: 0,
+            value: json.totalValue || 0,
+            valueChange: 0,
+          },
+          tokens: {
+            edges: edges,
+          },
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching Solana balances from Jupiter API:", error);
+    return {
+      wallet: {
+        id: address,
+        balances: {
+          id: address,
+          aggregate: {
+            id: address,
+            percentChange: 0,
+            value: 0,
+            valueChange: 0,
+          },
+          tokens: {
+            edges: [],
+          },
+        },
+      },
+    };
   }
 }
 
