@@ -48,7 +48,9 @@ export class ObservableQuerySvmAccountBalanceImpl
     }
     const tokenInfos = (this.response.data as any)?.wallet.balances.tokens
       .edges;
-    if (!tokenInfos?.length) return;
+    if (!tokenInfos?.length) {
+      return new CoinPretty(currency, new Int(0)).ready(false);
+    }
 
     const token = tokenInfos.find((item, index) => {
       if (!contractAddress) {
