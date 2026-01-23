@@ -17,7 +17,7 @@ import { AppCurrency, ChainInfo } from "@owallet/types";
 import { CoinPretty, Int } from "@owallet/unit";
 import { computed, makeObservable } from "mobx";
 import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
-const tokenNative = "11111111111111111111111111111111";
+const tokenNative = "So11111111111111111111111111111111111111112";
 export class ObservableQuerySvmAccountBalanceImpl
   extends ObservableQuery<string, any>
   implements IObservableQueryBalanceImpl
@@ -48,7 +48,9 @@ export class ObservableQuerySvmAccountBalanceImpl
     }
     const tokenInfos = (this.response.data as any)?.wallet.balances.tokens
       .edges;
-    if (!tokenInfos?.length) return;
+    if (!tokenInfos?.length) {
+      return new CoinPretty(currency, new Int(0)).ready(false);
+    }
 
     const token = tokenInfos.find((item, index) => {
       if (!contractAddress) {

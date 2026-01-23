@@ -27,6 +27,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
+import { TOKEN_2022_PROGRAM_ID } from "@solana/spl-token";
 import bech32 from "bech32";
 import crypto from "crypto";
 
@@ -193,129 +194,133 @@ export const isVersionedTransaction = (
 export async function _getBalancesSolana(
   address: string,
   chainId: string = "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp"
-): Promise<number> {
+): Promise<any> {
   try {
-    const resp = await fetch(`https://backpack-api.xnfts.dev/v3/graphql`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "apollographql-client-name": "backpack-secure-ui",
-      },
-      body: JSON.stringify({
-        query: `query GetTokenBalances($address: String!, $caip2: Caip2!, $providerId: ProviderID!) {
-  wallet(address: $address, caip2: $caip2, providerId: $providerId) {
-    id
-    balances {
-      id
-      aggregate {
-        ...BalanceAggregateItem
-        __typename
-      }
-      tokens {
-        edges {
-          node {
-            ...TokenBalanceItem
-            __typename
-          }
-          __typename
-        }
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}
-
-fragment TokenMarketDataItem on MarketData {
-  id
-  marketUrl
-  percentChange
-  price
-  value
-  valueChange
-  __typename
-}
-
-fragment TokenSolanaInfoItem on SolanaTokenInfo {
-  id
-  compressed
-  extensions {
-    id
-    currentInterestRate
-    group
-    permanentDelegate
-    transferFeePercentage
-    transferHook
-    __typename
-  }
-  spl20 {
-    id
-    amount
-    ticker
-    __typename
-  }
-  tokenProgram
-  __typename
-}
-
-fragment TokenMetadataItem on TokenListEntry {
-  id
-  address
-  decimals
-  logo
-  name
-  symbol
-  coingeckoId
-  __typename
-}
-
-fragment BalanceAggregateItem on BalanceAggregate {
-  id
-  percentChange
-  value
-  valueChange
-  __typename
-}
-
-fragment TokenBalanceItem on TokenBalance {
-  id
-  address
-  amount
-  decimals
-  displayAmount
-  marketData {
-    ...TokenMarketDataItem
-    __typename
-  }
-  solana {
-    ...TokenSolanaInfoItem
-    __typename
-  }
-  token
-  tokenListEntry {
-    ...TokenMetadataItem
-    __typename
-  }
-  __typename
-}`,
-        variables: {
-          caip2: {
-            namespace: "solana",
-            reference: chainId,
-          },
-          address,
-          providerId: "SOLANA",
+    // Fetch both APIs in parallel
+    const [portfolioResp, holdingsResp] = await Promise.all([
+      fetch(`https://wallet-api.jup.ag/v2/portfolio/holdings/${address}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        operationName: "GetTokenBalances",
       }),
+      fetch(`https://ultra-api.jup.ag/holdings/${address}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }),
+    ]);
+
+    if (!portfolioResp.ok) {
+      throw new Error(`Failed to fetch portfolio: ${portfolioResp.status}`);
+    }
+
+    const portfolioJson = await portfolioResp.json();
+    let holdingsJson = null;
+
+    // Holdings API might fail, but we can still proceed with portfolio data
+    if (holdingsResp.ok) {
+      try {
+        holdingsJson = await holdingsResp.json();
+      } catch (e) {
+        console.warn("Failed to parse holdings response:", e);
+      }
+    }
+
+    // Create a map of token address to programId from holdings API
+    const tokenProgramMap: Record<string, string> = {};
+    if (holdingsJson?.tokens) {
+      Object.entries(holdingsJson.tokens).forEach(
+        ([tokenAddress, accounts]) => {
+          if (Array.isArray(accounts) && accounts.length > 0) {
+            // Use the programId from the first account (all accounts for same token should have same programId)
+            const programId = accounts[0].programId;
+            if (programId) {
+              tokenProgramMap[tokenAddress] = programId;
+            }
+          }
+        }
+      );
+    }
+
+    // Transform Jupiter API response to match the expected GraphQL format
+    const edges = portfolioJson.tokens.map((token) => {
+      const programId = tokenProgramMap[token.id] || null;
+      const isToken2022 = programId === TOKEN_2022_PROGRAM_ID.toBase58();
+
+      return {
+        node: {
+          token: token.id,
+          amount: token.rawAmount || "0",
+          decimals: token.decimals,
+          displayAmount: token.amount.toString(),
+          tokenListEntry: {
+            id: token.id,
+            address: token.id,
+            decimals: token.decimals,
+            logo: token.icon,
+            name: token.symbol,
+            symbol: token.symbol,
+            coingeckoId: null, // Jupiter API doesn't provide coingeckoId
+          },
+          marketData: {
+            id: token.id,
+            marketUrl: null,
+            percentChange: token.priceChange || 0,
+            price: token.price || 0,
+            value: token.value || 0,
+            valueChange: 0,
+          },
+          solana: {
+            id: token.id,
+            compressed: false,
+            extensions: null,
+            spl20: isToken2022, // true if TOKEN_2022, false otherwise
+            tokenProgram: programId, // Use programId from ultra-api to identify TOKEN_2022
+          },
+        },
+      };
     });
 
-    const json = await resp.json();
-    return json.data;
-  } catch {
-    return 0;
+    return {
+      wallet: {
+        id: address,
+        balances: {
+          id: address,
+          aggregate: {
+            id: address,
+            percentChange: 0,
+            value: portfolioJson.totalValue || 0,
+            valueChange: 0,
+          },
+          tokens: {
+            edges: edges,
+          },
+        },
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching Solana balances from Jupiter API:", error);
+    return {
+      wallet: {
+        id: address,
+        balances: {
+          id: address,
+          aggregate: {
+            id: address,
+            percentChange: 0,
+            value: 0,
+            valueChange: 0,
+          },
+          tokens: {
+            edges: [],
+          },
+        },
+      },
+    };
   }
 }
 
