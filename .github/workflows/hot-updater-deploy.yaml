@@ -98,27 +98,27 @@ jobs:
           HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID: ${{ vars.HOT_UPDATER_CLOUDFLARE_ACCOUNT_ID }}
           HOT_UPDATER_CLOUDFLARE_API_TOKEN: ${{ secrets.HOT_UPDATER_CLOUDFLARE_API_TOKEN }}
 
-      - name: Send Discord notification on success
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: |
-            ✅ Hot Updater deployed successfully!
-            📦 Tag: ${{ github.ref_name }}
-            💬 Commit: ${{ github.event.head_commit.message }}
-            🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      # - name: Send Discord notification on success
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: |
+      #       ✅ Hot Updater deployed successfully!
+      #       📦 Tag: ${{ github.ref_name }}
+      #       💬 Commit: ${{ github.event.head_commit.message }}
+      #       🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
-      - name: Send Discord notification on failure
-        if: ${{ failure() }}
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: |
-            ❌ Hot Updater deployment failed!
-            📦 Tag: ${{ github.ref_name }}
-            💬 Commit: ${{ github.event.head_commit.message }}
-            🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+      # - name: Send Discord notification on failure
+      #   if: ${{ failure() }}
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_MOBILE_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_MOBILE_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: |
+      #       ❌ Hot Updater deployment failed!
+      #       📦 Tag: ${{ github.ref_name }}
+      #       💬 Commit: ${{ github.event.head_commit.message }}
+      #       🔗 [View Workflow Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
