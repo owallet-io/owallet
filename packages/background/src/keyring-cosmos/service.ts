@@ -100,7 +100,6 @@ export class KeyRingCosmosService {
 
   async getKey(vaultId: string, chainId: string): Promise<Key> {
     const chainInfo = this.chainsService.getChainInfoOrThrow(chainId);
-    console.log(chainId, "chainInfo from getKey");
     if (chainInfo.features.includes("gen-address")) {
       throw new Error(
         `${chainInfo.chainId} not support getKey from keyring cosmos base`
