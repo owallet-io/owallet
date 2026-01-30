@@ -69,7 +69,7 @@ const handleRequestJsonRpcToEvmMsg: (
   permissionInteractionService
 ) => {
   return async (env, msg) => {
-    if (msg.method !== "owallet_initProviderState") {
+    if (msg.method === "eth_requestAccounts") {
       await permissionInteractionService.ensureEnabledForEVM(env, msg.origin);
     }
 

@@ -1294,7 +1294,8 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (method !== "owallet_initProviderState") {
+    // Only request permission for eth_requestAccounts, not for all methods
+    if (method === "eth_requestAccounts") {
       await this.protectedEnableAccess();
     }
 
@@ -2204,7 +2205,8 @@ class TronProvider extends EventEmitter implements ITronProvider {
       throw new Error("Invalid paramater: `method` must be a string");
     }
 
-    if (method !== "owallet_initProviderState") {
+    // Only request permission for eth_requestAccounts, not for all methods
+    if (method === "eth_requestAccounts") {
       await this.protectedEnableAccess();
     }
 

@@ -338,54 +338,54 @@ export class KeyRingEthereumService {
           currentChainId: null,
           selectedAddress: null,
         } as T;
-      } else {
-        if (method !== "wallet_switchEthereumChain") {
-          await this.permissionService.removeAllSpecificTypePermission(
-            [origin],
-            getBasicAccessPermissionType()
-          );
+      } else if (method === "eth_requestAccounts") {
+        // Only show popup for explicit connection requests
+        await this.permissionInteractiveService.ensureEnabledForEVM(
+          env,
+          origin
+        );
 
-          await this.permissionInteractiveService.ensureEnabledForEVM(
-            env,
-            origin
-          );
+        return this.request<T>(
+          env,
+          origin,
+          method,
+          params,
+          providerId,
+          chainId
+        );
+      } else if (method === "wallet_switchEthereumChain") {
+        const param =
+          (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
+          undefined;
 
-          return this.request<T>(
-            env,
-            origin,
-            method,
-            params,
-            providerId,
-            chainId
-          );
-        } else {
-          const param =
-            (Array.isArray(params) && (params?.[0] as { chainId: string })) ||
-            undefined;
-
-          if (!param?.chainId) {
-            throw new Error("Invalid parameters: must provide a chain id.");
-          }
-
-          const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
-
-          const newCurrentChainInfo =
-            this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
-          if (!newCurrentChainInfo) {
-            throw new EthereumProviderRpcError(
-              4902,
-              `Unrecognized chain ID "${param.chainId}". Try adding the chain using wallet_addEthereumChain first.`
-            );
-          }
-
-          await this.permissionService.updateCurrentChainIdForEVM(
-            env,
-            origin,
-            newCurrentChainInfo.chainId
-          );
-
-          return null;
+        if (!param?.chainId) {
+          throw new Error("Invalid parameters: must provide a chain id.");
         }
+
+        const newEvmChainId = validateEVMChainId(parseInt(param.chainId, 16));
+
+        const newCurrentChainInfo =
+          this.chainsService.getChainInfoByEVMChainId(newEvmChainId);
+        if (!newCurrentChainInfo) {
+          throw new EthereumProviderRpcError(
+            4902,
+            `Unrecognized chain ID "${param.chainId}". Try adding the chain using wallet_addEthereumChain first.`
+          );
+        }
+
+        await this.permissionService.updateCurrentChainIdForEVM(
+          env,
+          origin,
+          newCurrentChainInfo.chainId
+        );
+
+        return null;
+      } else {
+        // For all other methods when not connected, throw error
+        throw new EthereumProviderRpcError(
+          4100,
+          "The provider is not connected to the requested chain. Please call eth_requestAccounts first."
+        );
       }
     }
 
