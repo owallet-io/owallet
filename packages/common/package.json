@@ -18,8 +18,8 @@
   "dependencies": {
     "@keplr-wallet/cosmos": "0.12.159",
     "@keplr-wallet/unit": "0.12.159",
-    "@owallet/crypto": "*",
-    "@owallet/types": "*",
+    "@owallet/crypto": "workspace:*",
+    "@owallet/types": "workspace:*",
     "bitcoin-address-validation": "2.2.3",
     "bitcoinjs-lib": "5.2.0",
     "buffer": "^6.0.3",

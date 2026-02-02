@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@ensdomains/eth-ens-namehash": "^2.0.15",
-    "@owallet/common": "0.9.10",
+    "@owallet/common": "workspace:*",
     "axios": "^1.7.2",
     "buffer": "^6.0.3",
     "ethereumjs-abi": "^0.6.8",

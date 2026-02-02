@@ -17,7 +17,7 @@
     "version": "zx ./scripts/lerna-lifecyle-version.mjs"
   },
   "dependencies": {
-    "@owallet/types": "*",
+    "@owallet/types": "workspace:*",
     "deepmerge": "^4.2.2",
     "long": "^4.0.0"
   }

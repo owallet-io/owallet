@@ -9,6 +9,7 @@ prod
 apps/extension/src/config.var.tsx
 
 yarn-error.log
+pnpm-debug.log
 
 build
 build/*
@@ -23,6 +24,11 @@ apps/hooks-internal/build/
 
 coverage
 
+# pnpm
+.pnpm-store
+node_modules/.pnpm
+
+# Yarn (legacy - can be removed after full migration)
 .yarn/cache
 .yarn/install-state.gz
 .yarnrc

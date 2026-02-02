@@ -1,0 +1,16 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+deleted file mode 100644
+index a4e1eb7dda99d1f0b89bfdab38729e7a4ec4af96..0000000000000000000000000000000000000000
+diff --git a/src/address.js b/src/address.js
+index e15c55e69b54b52b3c8e550ae2e39df95cb99d2f..2f014cb82e1b1320baba63e922a5c12429658b03 100644
+--- a/src/address.js
++++ b/src/address.js
+@@ -12,7 +12,7 @@ function fromBase58Check(address) {
+   // TODO: 4.0.0, move to "toOutputScript"
+   if (payload.length < 21) throw new TypeError(address + ' is too short');
+   if (payload.length > 21) throw new TypeError(address + ' is too long');
+-  const version = payload.readUInt8(0);
++  const version = payload.slice(0,1)[0];
+   const hash = payload.slice(1);
+   return { version, hash };
+ }

@@ -17,11 +17,11 @@
   },
   "dependencies": {
     "@ethersproject/abi": "^5.6.0",
-    "@owallet/common": "*",
-    "@owallet/simple-fetch": "*",
-    "@owallet/stores": "*",
-    "@owallet/types": "*",
-    "@owallet/unit": "*",
+    "@owallet/common": "workspace:*",
+    "@owallet/simple-fetch": "workspace:*",
+    "@owallet/stores": "workspace:*",
+    "@owallet/types": "workspace:*",
+    "@owallet/unit": "workspace:*",
     "utility-types": "^3.10.0"
   },
   "peerDependencies": {

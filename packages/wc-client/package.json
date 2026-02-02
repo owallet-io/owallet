@@ -16,8 +16,8 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/provider": "*",
-    "@owallet/types": "*",
+    "@owallet/provider": "workspace:*",
+    "@owallet/types": "workspace:*",
     "@walletconnect/sign-client": "2.15.1",
     "@walletconnect/types": "2.15.1",
     "buffer": "^6.0.3",

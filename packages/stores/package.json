@@ -16,17 +16,17 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "devDependencies": {
-    "@owallet/provider-mock": "*"
+    "@owallet/provider-mock": "workspace:*"
   },
   "dependencies": {
-    "@owallet/common": "*",
-    "@owallet/cosmos": "*",
-    "@owallet/crypto": "*",
-    "@owallet/mobx-utils": "*",
-    "@owallet/proto-types": "*",
-    "@owallet/simple-fetch": "*",
-    "@owallet/types": "*",
-    "@owallet/unit": "*",
+    "@owallet/common": "workspace:*",
+    "@owallet/cosmos": "workspace:*",
+    "@owallet/crypto": "workspace:*",
+    "@owallet/mobx-utils": "workspace:*",
+    "@owallet/proto-types": "workspace:*",
+    "@owallet/simple-fetch": "workspace:*",
+    "@owallet/types": "workspace:*",
+    "@owallet/unit": "workspace:*",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",

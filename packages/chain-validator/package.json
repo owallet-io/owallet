@@ -17,9 +17,9 @@
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
-    "@owallet/cosmos": "*",
-    "@owallet/simple-fetch": "*",
-    "@owallet/types": "*",
+    "@owallet/cosmos": "workspace:*",
+    "@owallet/simple-fetch": "workspace:*",
+    "@owallet/types": "workspace:*",
     "joi": "^17.5.0",
     "utility-types": "^3.10.0"
   }

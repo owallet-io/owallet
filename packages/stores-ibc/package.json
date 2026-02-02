@@ -16,11 +16,11 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/common": "*",
-    "@owallet/cosmos": "*",
-    "@owallet/stores": "*",
-    "@owallet/stores-eth": "*",
-    "@owallet/types": "*"
+    "@owallet/common": "workspace:*",
+    "@owallet/cosmos": "workspace:*",
+    "@owallet/stores": "workspace:*",
+    "@owallet/stores-eth": "workspace:*",
+    "@owallet/types": "workspace:*"
   },
   "peerDependencies": {
     "mobx": "^6",

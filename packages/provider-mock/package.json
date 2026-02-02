@@ -16,12 +16,12 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/cosmos": "*",
-    "@owallet/crypto": "*",
-    "@owallet/proto-types": "*",
-    "@owallet/provider": "*",
-    "@owallet/router": "*",
-    "@owallet/types": "*",
+    "@owallet/cosmos": "workspace:*",
+    "@owallet/crypto": "workspace:*",
+    "@owallet/proto-types": "workspace:*",
+    "@owallet/provider": "workspace:*",
+    "@owallet/router": "workspace:*",
+    "@owallet/types": "workspace:*",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
     "long": "^4.0.0"

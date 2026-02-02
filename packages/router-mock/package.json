@@ -15,7 +15,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/router": "^0.9.6",
-    "@owallet/router-extension": "^0.9.6"
+    "@owallet/router": "workspace:*",
+    "@owallet/router-extension": "workspace:*"
   }
 }

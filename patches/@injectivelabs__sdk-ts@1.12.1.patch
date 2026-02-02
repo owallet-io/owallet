@@ -1,0 +1,96 @@
+diff --git a/dist/cjs/utils/crypto.js b/dist/cjs/utils/crypto.js
+index ae2e5e17aa772d65aa695dfa756063e5704f33c2..d7b8171ebc7569a82961a3c67d07bd02587e2995 100644
+--- a/dist/cjs/utils/crypto.js
++++ b/dist/cjs/utils/crypto.js
+@@ -24,22 +24,36 @@ var __importStar = (this && this.__importStar) || function (mod) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.messageHash = exports.domainHash = exports.privateKeyHashToPublicKeyBase64 = exports.privateKeyToPublicKeyBase64 = exports.privateKeyHashToPublicKey = exports.privateKeyToPublicKey = exports.ripemd160 = exports.sha256 = exports.hashToHex = void 0;
+-const SHA256_1 = require("jscrypto/SHA256");
+-const RIPEMD160_1 = require("jscrypto/RIPEMD160");
+-const Base64_1 = require("jscrypto/Base64");
+-const jscrypto_1 = require("jscrypto");
++const SHA256_1 = require("crypto-js/sha256");
++const RIPEMD160_1 = require("crypto-js/ripemd160");
++const Base64_1 = require("crypto-js/enc-base64");
++const jscrypto_1 = require("crypto-js");
+ const secp256k1 = __importStar(require("secp256k1"));
+ const eth_sig_util_1 = require("@metamask/eth-sig-util");
+ const hashToHex = (data) => {
+-    return SHA256_1.SHA256.hash(Base64_1.Base64.parse(data)).toString().toUpperCase();
++    return SHA256_1(Base64_1.parse(data)).toString().toUpperCase();
+ };
+ exports.hashToHex = hashToHex;
+ const sha256 = (data) => {
+-    return SHA256_1.SHA256.hash(new jscrypto_1.Word32Array(data)).toUint8Array();
++    const wordArray = jscrypto_1.lib.WordArray.create(data);
++    const hash = SHA256_1(wordArray);
++    return Uint8Array.from(hash.words.map(word => [
++        (word >> 24) & 0xFF,
++        (word >> 16) & 0xFF,
++        (word >> 8) & 0xFF,
++        word & 0xFF
++    ]).flat());
+ };
+ exports.sha256 = sha256;
+ const ripemd160 = (data) => {
+-    return RIPEMD160_1.RIPEMD160.hash(new jscrypto_1.Word32Array(data)).toUint8Array();
++    const wordArray = jscrypto_1.lib.WordArray.create(data);
++    const hash = RIPEMD160_1(wordArray);
++    return Uint8Array.from(hash.words.map(word => [
++        (word >> 24) & 0xFF,
++        (word >> 16) & 0xFF,
++        (word >> 8) & 0xFF,
++        word & 0xFF
++    ]).flat());
+ };
+ exports.ripemd160 = ripemd160;
+ const privateKeyToPublicKey = (privateKey) => {
+diff --git a/dist/esm/utils/crypto.js b/dist/esm/utils/crypto.js
+index 5bff1642d1139e521e7c1e829df488213c1c488c..49640549395d3b02230e323a4b5a1b56a8eefb58 100644
+--- a/dist/esm/utils/crypto.js
++++ b/dist/esm/utils/crypto.js
+@@ -1,17 +1,36 @@
+-import { SHA256 } from 'jscrypto/SHA256';
+-import { RIPEMD160 } from 'jscrypto/RIPEMD160';
+-import { Base64 } from 'jscrypto/Base64';
+-import { Word32Array } from 'jscrypto';
++import SHA256 from 'crypto-js/sha256';
++import RIPEMD160 from 'crypto-js/ripemd160';
++import Base64 from 'crypto-js/enc-base64';
++import WordArray from 'crypto-js/lib-typedarrays';
++
+ import * as secp256k1 from 'secp256k1';
+ import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
++const convertToWordArray = (data) => {
++    return WordArray.create(data);
++  }
++  
+ export const hashToHex = (data) => {
+-    return SHA256.hash(Base64.parse(data)).toString().toUpperCase();
++    return SHA256(Base64.parse(data)).toString().toUpperCase();
+ };
+ export const sha256 = (data) => {
+-    return SHA256.hash(new Word32Array(data)).toUint8Array();
++    const wordArray = convertToWordArray(data);
++    const hash = SHA256(wordArray);
++    return Uint8Array.from(hash.words.map(word => [
++      (word >> 24) & 0xFF,
++      (word >> 16) & 0xFF,
++      (word >> 8) & 0xFF,
++      word & 0xFF
++    ]).flat());
+ };
+ export const ripemd160 = (data) => {
+-    return RIPEMD160.hash(new Word32Array(data)).toUint8Array();
++    const wordArray = convertToWordArray(data);
++    const hash = RIPEMD160(wordArray);
++    return Uint8Array.from(hash.words.map(word => [
++      (word >> 24) & 0xFF,
++      (word >> 16) & 0xFF,
++      (word >> 8) & 0xFF,
++      word & 0xFF
++    ]).flat());
+ };
+ export const privateKeyToPublicKey = (privateKey) => {
+     return secp256k1.publicKeyCreate(privateKey, true);

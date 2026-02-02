@@ -33,32 +33,30 @@ jobs:
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Update Git Submodules
         run: git submodule update --remote --merge
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache Yarn dependencies
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
 
       - name: Install dependencies
-        run: |
-          yarn install
+        run: pnpm install
 
       - name: Install extension packages
         working-directory: apps/extension
-        run: yarn --silent
+        run: pnpm --silent
 
       - name: Build Libs
-        run: yarn build:libs
+        run: pnpm build:libs
 
       # - name: Build Stores Internal
       #   run: yarn build:stores-internal
@@ -67,7 +65,7 @@ jobs:
 
       - name: Build extension
         working-directory: apps/extension
-        run: yarn build
+        run: pnpm build
         env:
           REACT_APP_MIX_PANEL_TOKEN: ${{ secrets.MIX_PANEL_TOKEN }}
 

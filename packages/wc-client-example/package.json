@@ -10,12 +10,12 @@
     "clean:example": "parcel clean"
   },
   "dependencies": {
-    "@owallet/common": "*",
-    "@owallet/cosmos": "*",
-    "@owallet/stores": "*",
-    "@owallet/types": "*",
-    "@owallet/wc-client": "*",
-    "@owallet/wc-qrcode-modal": "*",
+    "@owallet/common": "workspace:*",
+    "@owallet/cosmos": "workspace:*",
+    "@owallet/stores": "workspace:*",
+    "@owallet/types": "workspace:*",
+    "@owallet/wc-client": "workspace:*",
+    "@owallet/wc-qrcode-modal": "workspace:*",
     "@walletconnect/sign-client": "2.15.1",
     "@walletconnect/types": "2.15.1",
     "buffer": "^6.0.3"

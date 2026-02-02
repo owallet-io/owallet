@@ -31,32 +31,31 @@ jobs:
           ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
       - name: Update Git Submodules
         run: git submodule update --remote --merge
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-      - name: Cache Yarn dependencies
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ${{ steps.yarn-cache-dir-path.outputs.dir }}
-            .yarn/cache
-            .yarn/install-state.gz
-            !.eslintcache # Exclude eslint cache
-          key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
       - name: Install dependencies
-        run: |
-          yarn install
+        run: pnpm install
       - name: Build Libs
-        run: yarn build:libs
+        run: pnpm build:libs
       - name: Build Stores Internal
-        run: yarn build:stores-internal
+        run: pnpm build:stores-internal
       - name: Build Hooks Internal
-        run: yarn build:hooks-internal
+        run: pnpm build:hooks-internal
       - name: Setup environment variables
         working-directory: apps/mobile
-        run: yarn build:android
+        run: pnpm build:android
         env:
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
@@ -129,29 +128,29 @@ jobs:
          ssh-key: ${{ secrets.SSH_DEPLOY_KEY_MAIN }}
      - name: Update Git Submodules
        run: git submodule update --remote --merge
-     - name: Get Yarn cache directory path
-       id: yarn-cache-dir-path
-       run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-     - name: Cache Yarn dependencies
-       uses: actions/cache@v4
-       with:
-         path: |
-           ${{ steps.yarn-cache-dir-path.outputs.dir }}
-           .yarn/cache
-           .yarn/install-state.gz
-           !.eslintcache # Exclude eslint cache
-         key: ${{ runner.os }}-yarn-${{ github.sha }} # Cache per commit
-         restore-keys: |
-           ${{ runner.os }}-yarn-
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Cache pnpm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
      - name: Install dependencies
        run: |
-         yarn install
+         pnpm install
      - name: Build Libs
-       run: yarn build:libs
+       run: pnpm build:libs
      - name: Build Stores Internal
-       run: yarn build:stores-internal
+       run: pnpm build:stores-internal
      - name: Build Hooks Internal
-       run: yarn build:hooks-internal
+       run: pnpm build:hooks-internal
      - name: Setup Ruby
        uses: ruby/setup-ruby@v1
        with:
@@ -165,12 +164,12 @@ jobs:
          key: ${{ runner.os }}-pods-${{ hashFiles('apps/mobile/ios/Podfile.lock') }}
      - name: Pod install
        working-directory: apps/mobile
-       run: yarn pod:install
+       run: pnpm pod:install
        env:
          NO_FLIPPER: "1"
      - name: Setup environment variables
        working-directory: apps/mobile
-       run: yarn build:ios
+       run: pnpm build:ios
        env:
          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
          API_KEY: ${{ secrets.API_KEY_FIREBASE }}

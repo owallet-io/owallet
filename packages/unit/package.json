@@ -16,7 +16,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet/types": "*",
+    "@owallet/types": "workspace:*",
     "big-integer": "^1.6.48",
     "utility-types": "^3.10.0"
   }
