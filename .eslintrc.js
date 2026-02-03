@@ -32,18 +32,10 @@ module.exports = {
         cases: { kebabCase: true, pascalCase: true, camelCase: true },
       },
     ],
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        devDependencies: [
-          "**/*.spec.ts",
-          "**/*.spec.js",
-          "**/webpack.config.js",
-        ],
-      },
-    ],
+    "import/no-extraneous-dependencies": "off",
     "import/no-default-export": "error",
-    "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "warn",
@@ -54,12 +46,23 @@ module.exports = {
         argsIgnorePattern: "^_",
       },
     ],
-    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-require-imports": "warn",
+    "@typescript-eslint/no-empty-object-type": "off",
   },
   settings: {
     react: {
       version: "detect",
     },
   },
+  overrides: [
+    {
+      files: ["**/background/**/*", "**/node/**/*", "**/*.worker.ts"],
+      rules: {
+        "react-hooks/rules-of-hooks": "off",
+        "react-hooks/exhaustive-deps": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/display-name": "off",
+      },
+    },
+  ],
 };
