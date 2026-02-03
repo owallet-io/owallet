@@ -5,7 +5,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:import/typescript",
   ],
-  plugins: ["react-hooks", "unicorn", "import"],
+  plugins: ["react-hooks", "unicorn", "import", "unused-imports"],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: "module",
@@ -43,7 +43,7 @@ module.exports = {
       },
     ],
     "import/no-default-export": "error",
-    "no-unused-vars": "on", // or "@typescript-eslint/no-unused-vars": "off",
+    "no-unused-vars": "off", // or "@typescript-eslint/no-unused-vars": "off",
     "unused-imports/no-unused-imports": "error",
     "unused-imports/no-unused-vars": [
       "warn",
@@ -54,7 +54,8 @@ module.exports = {
         argsIgnorePattern: "^_",
       },
     ],
-    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-require-imports": "warn",
   },
   settings: {
     react: {
