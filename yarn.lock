@@ -28664,7 +28664,7 @@ __metadata:
     react-native-app-intro-slider: 4.0.4
     react-native-ble-plx: 2.0.3
     react-native-bootsplash: ^6.3.11
-    react-native-camera: 4.2.1
+    react-native-camera-kit: ^17.0.1
     react-native-chart-kit: 6.12.0
     react-native-check-box: 2.1.7
     react-native-collapsible: ^1.6.0
@@ -31973,12 +31973,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-camera@npm:4.2.1":
-  version: 4.2.1
-  resolution: "react-native-camera@npm:4.2.1"
-  dependencies:
-    prop-types: ^15.6.2
-  checksum: 0e84ce657774694d1cc49395c43a8f2caabc03df36aa77aacfb5c797ad8cfe0368f4807deccc54e82ff2b193e8c2d1ce7ad504eedf7a9fc4719b38e39958a804
+"react-native-camera-kit@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "react-native-camera-kit@npm:17.0.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 40940bbbbd24192f7e8ee4826d77662e7a21b18ad4cfcb77bb860dd75594da33793b3835050de65b2a82f4e0b356e662d6a1ef54e030b34da96975157cff4502
   languageName: node
   linkType: hard
 
