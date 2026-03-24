@@ -7,7 +7,7 @@ export function defaultBech32Config(
   validatorPrefix: string = "val",
   consensusPrefix: string = "cons",
   publicPrefix: string = "pub",
-  operatorPrefix: string = "oper"
+  operatorPrefix: string = "oper",
 ) {
   return {
     bech32PrefixAccAddr: mainPrefix,
@@ -23,6 +23,7 @@ export function defaultBech32Config(
 
 export const MarketAPIEndPoint = "https://price.market.orai.io";
 export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
+export const KeplrSatellitePriceEndPoint = "https://satellite.keplr.app/price";
 export const CoinGeckoTerminalAPIEndPoint =
   "https://api.geckoterminal.com/api/v2";
 
