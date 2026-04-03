@@ -17,10 +17,6 @@ import { ObservableQuery } from "@owallet/stores";
 const thirdparySupportedChainIdMap: Record<string, string> = {
   "eip155:1": Network.ETHEREUM,
   "eip155:56": Network.BINANCE_SMART_CHAIN,
-  "eip155:10": "opt",
-  "eip155:137": "polygon",
-  "eip155:8453": "base",
-  "eip155:42161": "arb",
 };
 
 // interface ThirdpartyERC20TokenBalance {
@@ -47,12 +43,12 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
     sharedContext: QuerySharedContext,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    protected readonly ethereumHexAddress: string
+    protected readonly ethereumHexAddress: string,
   ) {
     super(
       sharedContext,
       urlTxHistory,
-      `raw-tx-history/all/balances?network=${thirdparySupportedChainIdMap[chainId]}&address=${ethereumHexAddress}`
+      `raw-tx-history/all/balances?network=${thirdparySupportedChainIdMap[chainId]}&address=${ethereumHexAddress}`,
     );
 
     makeObservable(this);
@@ -67,7 +63,7 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
   }
 
   protected override onReceiveResponse(
-    response: Readonly<QueryResponse<ResBalanceEvm>>
+    response: Readonly<QueryResponse<ResBalanceEvm>>,
   ) {
     super.onReceiveResponse(response);
     const chainInfo = this.chainGetter.getChain(this.chainId);
@@ -77,14 +73,14 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
       (tokenBalance) =>
         tokenBalance.balance != null &&
         Number(tokenBalance.balance) > 0 &&
-        tokenBalance.tokenAddress !== contractWeth
+        tokenBalance.tokenAddress !== contractWeth,
     );
     if (!erc20Denoms) return;
 
     const tokenAddresses = erc20Denoms
       .map(
         ({ tokenAddress }) =>
-          `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`
+          `${thirdparySupportedChainIdMap[this.chainId]}%2B${tokenAddress}`,
       )
       .join(",");
     if (!tokenAddresses) return;
@@ -95,7 +91,7 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
         // 5. Map token metadata to currencies
         const currencyInfo = tokenInfos
           .filter(
-            ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null
+            ({ coingeckoId, denom }) => coingeckoId !== null && denom !== null,
           )
           .map((item) => ({
             coinImageUrl: item.imgUrl,
@@ -112,14 +108,12 @@ export class ObservableQueryThirdpartyERC20BalancesImplParent extends Observable
   }
 }
 
-export class ObservableQueryThirdpartyERC20BalancesImpl
-  implements IObservableQueryBalanceImpl
-{
+export class ObservableQueryThirdpartyERC20BalancesImpl implements IObservableQueryBalanceImpl {
   constructor(
     protected readonly parent: ObservableQueryThirdpartyERC20BalancesImplParent,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    protected readonly denomHelper: DenomHelper
+    protected readonly denomHelper: DenomHelper,
   ) {
     makeObservable(this);
   }
@@ -134,7 +128,7 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
 
     const contractAddress = this.denomHelper.denom.replace("erc20:", "");
     const tokenBalance = this.response.data.result.find(
-      (bal) => bal.tokenAddress === contractAddress
+      (bal) => bal.tokenAddress === contractAddress,
     );
     if (tokenBalance?.balance == null) {
       return new CoinPretty(currency, new Int(0)).ready(false);
@@ -142,8 +136,8 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
     return new CoinPretty(
       currency,
       new Dec(tokenBalance.balance).mul(
-        DecUtils.getTenExponentN(currency.coinDecimals)
-      )
+        DecUtils.getTenExponentN(currency.coinDecimals),
+      ),
     );
   }
 
@@ -197,7 +191,7 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
               reject(e);
             }
           })();
-        }
+        },
       );
       return this.parent.duplicatedFetchResolver;
     }
@@ -216,9 +210,7 @@ export class ObservableQueryThirdpartyERC20BalancesImpl
   }
 }
 
-export class ObservableQueryThirdpartyERC20BalanceRegistry
-  implements BalanceRegistry
-{
+export class ObservableQueryThirdpartyERC20BalanceRegistry implements BalanceRegistry {
   protected parentMap: Map<
     string,
     ObservableQueryThirdpartyERC20BalancesImplParent
@@ -230,7 +222,7 @@ export class ObservableQueryThirdpartyERC20BalanceRegistry
     chainId: string,
     chainGetter: ChainGetter,
     address: string,
-    minimalDenom: string
+    minimalDenom: string,
   ): ObservableQueryThirdpartyERC20BalancesImpl | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
     const chainInfo = chainGetter.getChain(chainId);
@@ -254,8 +246,8 @@ export class ObservableQueryThirdpartyERC20BalanceRegistry
           this.sharedContext,
           chainId,
           chainGetter,
-          address
-        )
+          address,
+        ),
       );
     }
 
@@ -263,7 +255,7 @@ export class ObservableQueryThirdpartyERC20BalanceRegistry
       this.parentMap.get(key)!,
       chainId,
       chainGetter,
-      denomHelper
+      denomHelper,
     );
   }
 }

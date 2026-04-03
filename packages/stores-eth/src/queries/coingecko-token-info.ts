@@ -24,14 +24,14 @@ export class ObservableQueryCoingeckoTokenInfoInner extends ObservableQuery<{
     coingeckoAPIBaseURL: string,
     coingeckoAPIURI: string,
     protected readonly coingeckoChainId: string,
-    contractAddress: string
+    contractAddress: string,
   ) {
     super(
       sharedContext,
       coingeckoAPIBaseURL,
       coingeckoAPIURI
         .replace("{coingeckoChainId}", coingeckoChainId)
-        .replace("{contractAddress}", contractAddress)
+        .replace("{contractAddress}", contractAddress),
     );
 
     makeObservable(this);
@@ -63,7 +63,7 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly coingeckoAPIBaseURL: string,
-    protected readonly coingeckoAPIURI: string
+    protected readonly coingeckoAPIURI: string,
   ) {
     const coingeckoChainId = coingeckoChainIdMap[chainId];
 
@@ -74,14 +74,14 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
           coingeckoAPIBaseURL,
           coingeckoAPIURI,
           coingeckoChainId,
-          contractAddress
+          contractAddress,
         );
       }
     });
   }
 
   getQueryContract(
-    contractAddress: string
+    contractAddress: string,
   ): ObservableQueryCoingeckoTokenInfoInner | undefined {
     return this.get(contractAddress) as ObservableQueryCoingeckoTokenInfoInner;
   }
@@ -90,8 +90,4 @@ export class ObservableQueryCoingeckoTokenInfo extends HasMapStore<
 const coingeckoChainIdMap: Record<string, string> = {
   "eip155:1": Network.ETHEREUM,
   "eip155:56": Network.BINANCE_SMART_CHAIN,
-  "eip155:10": "optimistic-ethereum",
-  "eip155:137": "polygon-pos",
-  "eip155:8453": "base",
-  "eip155:42161": "arbitrum-one",
 };
