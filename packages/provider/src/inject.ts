@@ -104,7 +104,7 @@ function defineUnwritablePropertyIfPossible(o: any, p: string, value: any) {
     }
   } else {
     console.warn(
-      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`
+      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`,
     );
   }
 }
@@ -123,7 +123,7 @@ function defineWritablePropertyIfPossible(o: any, p: string, value: any) {
     }
   } else {
     console.warn(
-      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`
+      `Failed to inject ${p} from OWallet. Probably, other wallet is trying to intercept OWallet`,
     );
   }
 }
@@ -136,7 +136,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
     .catch((error) => {
       console.error(
         "Failed to load @oraichain/owallet-wallet-standard:",
-        error
+        error,
       );
     });
   defineUnwritablePropertyIfPossible(window, "owallet", owallet);
@@ -146,11 +146,7 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   }
   defineUnwritablePropertyIfPossible(window, "owalletSolana", owallet.solana);
   defineUnwritablePropertyIfPossible(window, "bitcoin", owallet.bitcoin);
-  const descriptor = Object.getOwnPropertyDescriptor(window, "ethereum");
 
-  if (!descriptor) {
-    defineWritablePropertyIfPossible(window, "ethereum", owallet.ethereum);
-  }
   defineUnwritablePropertyIfPossible(window, "eth_owallet", owallet.ethereum);
   defineUnwritablePropertyIfPossible(window, "tronWeb", owallet.tron);
   defineUnwritablePropertyIfPossible(window, "tronLink", owallet.tron);
@@ -159,22 +155,22 @@ export function injectOWalletToWindow(owallet: IOWallet): void {
   defineWritablePropertyIfPossible(
     window,
     "getOfflineSigner",
-    owallet.getOfflineSigner
+    owallet.getOfflineSigner,
   );
   defineWritablePropertyIfPossible(
     window,
     "getOfflineSignerOnlyAmino",
-    owallet.getOfflineSignerOnlyAmino
+    owallet.getOfflineSignerOnlyAmino,
   );
   defineWritablePropertyIfPossible(
     window,
     "getOfflineSignerAuto",
-    owallet.getOfflineSignerAuto
+    owallet.getOfflineSignerAuto,
   );
   defineWritablePropertyIfPossible(
     window,
     "getEnigmaUtils",
-    owallet.getEnigmaUtils
+    owallet.getEnigmaUtils,
   );
 }
 
@@ -199,7 +195,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       postMessage: (message) =>
         window.postMessage(message, window.location.origin),
     },
-    parseMessage?: (message: any) => any
+    parseMessage?: (message: any) => any,
   ): () => void {
     const fn = async (e: any) => {
       const message: ProxyRequest = parseMessage
@@ -262,7 +258,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
         if (message.method === "getOfflineSignerOnlyAmino") {
           throw new Error(
-            "GetOfflineSignerOnlyAmino method can't be proxy request"
+            "GetOfflineSignerOnlyAmino method can't be proxy request",
           );
         }
 
@@ -296,7 +292,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                     ? Long.fromString(receivedSignDoc.accountNumber)
                     : null,
                 },
-                message.args[3]
+                message.args[3],
               );
 
               return {
@@ -338,7 +334,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                     ? Long.fromString(receivedSignDoc.sequence)
                     : null,
                 },
-                message.args[3]
+                message.args[3],
               );
 
               return {
@@ -388,7 +384,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             ) {
               throw new Error(
                 //@ts-ignore
-                `${message?.ethereumProviderMethod} is not function or invalid Ethereum provider method`
+                `${message?.ethereumProviderMethod} is not function or invalid Ethereum provider method`,
               );
             }
 
@@ -397,7 +393,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               return await owallet.ethereum.request(
                 typeof messageArgs === "string"
                   ? JSON.parse(messageArgs)
-                  : messageArgs
+                  : messageArgs,
               );
             }
 
@@ -406,7 +402,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               // @ts-ignore
               ...(typeof messageArgs === "string"
                 ? JSON.parse(messageArgs)
-                : messageArgs)
+                : messageArgs),
             );
           } else if (method === "oasis") {
             const oasisProviderMethod = message.oasisProviderMethod;
@@ -421,7 +417,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             ) {
               throw new Error(
                 //@ts-ignore
-                `${message?.oasisProviderMethod} is not function or invalid Oasis provider method`
+                `${message?.oasisProviderMethod} is not function or invalid Oasis provider method`,
               );
             }
 
@@ -432,7 +428,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               // @ts-ignore
               ...(typeof messageArgs === "string"
                 ? JSON.parse(messageArgs)
-                : messageArgs)
+                : messageArgs),
             );
           } else if (method === "bitcoin") {
             const bitcoinProviderMethod = message.bitcoinProviderMethod;
@@ -447,7 +443,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             ) {
               throw new Error(
                 //@ts-ignore
-                `${message?.bitcoinProviderMethod} is not function or invalid Oasis provider method`
+                `${message?.bitcoinProviderMethod} is not function or invalid Oasis provider method`,
               );
             }
 
@@ -458,7 +454,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               // @ts-ignore
               ...(typeof messageArgs === "string"
                 ? JSON.parse(messageArgs)
-                : messageArgs)
+                : messageArgs),
             );
           } else if (method === "solana") {
             const solanaProviderMethod = message.solanaProviderMethod;
@@ -473,7 +469,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             ) {
               throw new Error(
                 //@ts-ignore
-                `${message?.solanaProviderMethod} is not function or invalid Oasis provider method`
+                `${message?.solanaProviderMethod} is not function or invalid Oasis provider method`,
               );
             }
 
@@ -485,7 +481,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               // @ts-ignore
               ...(typeof messageArgs === "string"
                 ? JSON.parse(messageArgs)
-                : messageArgs)
+                : messageArgs),
             );
           } else if (method === "tron") {
             const tronProviderMethod = message.tronProviderMethod;
@@ -503,12 +499,12 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               console.log(
                 "tronProviderMethod",
                 tronProviderMethod,
-                typeof owallet.tron[tronProviderMethod]
+                typeof owallet.tron[tronProviderMethod],
               );
 
               throw new Error(
                 //@ts-ignore
-                `${message?.tronProviderMethod} is not function or invalid Tron provider method`
+                `${message?.tronProviderMethod} is not function or invalid Tron provider method`,
               );
             }
 
@@ -520,7 +516,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               // @ts-ignore
               ...(typeof messageArgs === "string"
                 ? JSON.parse(messageArgs)
-                : messageArgs)
+                : messageArgs),
             );
           }
 
@@ -529,7 +525,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
           return await owallet[method](
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            ...JSONUint8Array.unwrap(message.args)
+            ...JSONUint8Array.unwrap(message.args),
           );
         })();
 
@@ -573,7 +569,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
   protected requestMethod(
     method: keyof (IOWallet & OWalletCoreTypes),
-    args: any[]
+    args: any[],
   ): Promise<any> {
     try {
       const bytes = new Uint8Array(8);
@@ -662,7 +658,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         window.postMessage(message, window.location.origin),
     },
     protected readonly parseMessage?: (message: any) => any,
-    protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo
+    protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo,
   ) {
     // Freeze fields/method except for "defaultOptions"
     // Intentionally, "defaultOptions" can be mutated to allow a webpage to change the options with cosmjs usage.
@@ -724,7 +720,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       chainInfo.features?.includes("no-legacy-stdTx")
     ) {
       console.warn(
-        "“stargate”, “no-legacy-stdTx” feature has been deprecated. The launchpad is no longer supported, thus works without the two features. We would keep the aforementioned two feature for a while, but the upcoming update would potentially cause errors. Remove the two feature."
+        "“stargate”, “no-legacy-stdTx” feature has been deprecated. The launchpad is no longer supported, thus works without the two features. We would keep the aforementioned two feature for a while, but the upcoming update would potentially cause errors. Remove the two feature.",
       );
     }
 
@@ -742,11 +738,11 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   async sendTx(
     chainId: string,
     tx: StdTx | Uint8Array,
-    mode: BroadcastMode
+    mode: BroadcastMode,
   ): Promise<Uint8Array> {
     if (!("length" in tx)) {
       console.warn(
-        "Do not send legacy std tx via `sendTx` API. We now only support protobuf tx. The usage of legeacy std tx would throw an error in the near future."
+        "Do not send legacy std tx via `sendTx` API. We now only support protobuf tx. The usage of legeacy std tx would throw an error in the near future.",
       );
     }
 
@@ -757,7 +753,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     chainId: string,
     signer: string,
     signDoc: StdSignDoc,
-    signOptions: OWalletSignOptions = {}
+    signOptions: OWalletSignOptions = {},
   ): Promise<AminoSignResponse> {
     return await this.requestMethod("signAmino", [
       chainId,
@@ -776,7 +772,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       chainId?: string | null;
       accountNumber?: Long | null;
     },
-    signOptions: OWalletSignOptions = {}
+    signOptions: OWalletSignOptions = {},
   ): Promise<DirectSignResponse> {
     const result = await this.requestMethod("signDirect", [
       chainId,
@@ -830,7 +826,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     signOptions: Exclude<
       OWalletSignOptions,
       "preferNoSetFee" | "disableBalanceCheck"
-    > = {}
+    > = {},
   ): Promise<DirectAuxSignResponse> {
     const result = await this.requestMethod("signDirectAux", [
       chainId,
@@ -850,7 +846,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         {
           preferNoSetMemo: this.defaultOptions.sign?.preferNoSetMemo,
         },
-        signOptions
+        signOptions,
       ),
     ]);
 
@@ -882,7 +878,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   async signArbitrary(
     chainId: string,
     signer: string,
-    data: string | Uint8Array
+    data: string | Uint8Array,
   ): Promise<StdSignature> {
     return await this.requestMethod("signArbitrary", [chainId, signer, data]);
   }
@@ -892,7 +888,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     contractAddress: string,
     owner: string,
     username: string,
-    addressChainIds: string[]
+    addressChainIds: string[],
   ): Promise<ICNSAdr36Signatures> {
     return this.requestMethod("signICNSAdr36", [
       chainId,
@@ -907,7 +903,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     chainId: string,
     signer: string,
     data: string | Uint8Array,
-    signature: StdSignature
+    signature: StdSignature,
   ): Promise<boolean> {
     return await this.requestMethod("verifyArbitrary", [
       chainId,
@@ -919,21 +915,21 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
   getOfflineSigner(
     chainId: string,
-    signOptions?: OWalletSignOptions
+    signOptions?: OWalletSignOptions,
   ): OfflineAminoSigner & OfflineDirectSigner {
     return new CosmJSOfflineSigner(chainId, this, signOptions);
   }
 
   getOfflineSignerOnlyAmino(
     chainId: string,
-    signOptions?: OWalletSignOptions
+    signOptions?: OWalletSignOptions,
   ): OfflineAminoSigner {
     return new CosmJSOfflineSignerOnlyAmino(chainId, this, signOptions);
   }
 
   async getOfflineSignerAuto(
     chainId: string,
-    signOptions?: OWalletSignOptions
+    signOptions?: OWalletSignOptions,
   ): Promise<OfflineAminoSigner | OfflineDirectSigner> {
     const key = await this.getKey(chainId);
     if (key.isNanoLedger) {
@@ -945,7 +941,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   async suggestToken(
     chainId: string,
     contractAddress: string,
-    viewingKey?: string
+    viewingKey?: string,
   ): Promise<void> {
     return await this.requestMethod("suggestToken", [
       chainId,
@@ -956,7 +952,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
   async getSecret20ViewingKey(
     chainId: string,
-    contractAddress: string
+    contractAddress: string,
   ): Promise<string> {
     return await this.requestMethod("getSecret20ViewingKey", [
       chainId,
@@ -970,7 +966,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
 
   async getEnigmaTxEncryptionKey(
     chainId: string,
-    nonce: Uint8Array
+    nonce: Uint8Array,
   ): Promise<Uint8Array> {
     return await this.requestMethod("getEnigmaTxEncryptionKey", [
       chainId,
@@ -982,7 +978,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     chainId: string,
     contractCodeHash: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    msg: object
+    msg: object,
   ): Promise<Uint8Array> {
     return await this.requestMethod("enigmaEncrypt", [
       chainId,
@@ -994,7 +990,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   async enigmaDecrypt(
     chainId: string,
     ciphertext: Uint8Array,
-    nonce: Uint8Array
+    nonce: Uint8Array,
   ): Promise<Uint8Array> {
     return await this.requestMethod("enigmaDecrypt", [
       chainId,
@@ -1023,7 +1019,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
       primaryType: string;
     },
     signDoc: StdSignDoc,
-    signOptions: OWalletSignOptions = {}
+    signOptions: OWalletSignOptions = {},
   ): Promise<AminoSignResponse> {
     return await this.requestMethod("experimentalSignEIP712CosmosTx_v0", [
       chainId,
@@ -1039,7 +1035,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   }
 
   async getChainInfoWithoutEndpoints(
-    chainId: string
+    chainId: string,
   ): Promise<ChainInfoWithoutEndpoints> {
     return await this.requestMethod("getChainInfoWithoutEndpoints", [chainId]);
   }
@@ -1063,18 +1059,18 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
   async __core__privilageSignAminoWithdrawRewards(
     chainId: string,
     signer: string,
-    signDoc: StdSignDoc
+    signDoc: StdSignDoc,
   ): Promise<AminoSignResponse> {
     return await this.requestMethod(
       "__core__privilageSignAminoWithdrawRewards",
-      [chainId, signer, signDoc]
+      [chainId, signer, signDoc],
     );
   }
 
   async __core__privilageSignAminoDelegate(
     chainId: string,
     signer: string,
-    signDoc: StdSignDoc
+    signDoc: StdSignDoc,
   ): Promise<AminoSignResponse> {
     return await this.requestMethod("__core__privilageSignAminoDelegate", [
       chainId,
@@ -1087,7 +1083,7 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     chainId: string,
     signer: string,
     data: string | Uint8Array,
-    type: EthSignType
+    type: EthSignType,
   ): Promise<Uint8Array> {
     return await this.requestMethod("signEthereum", [
       chainId,
@@ -1113,27 +1109,27 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
     this,
     this.eventListener,
     this.parseMessage,
-    this.eip6963ProviderInfo
+    this.eip6963ProviderInfo,
   );
   public readonly oasis = new OasisProvider(
     this,
     this.eventListener,
-    this.parseMessage
+    this.parseMessage,
   );
   public readonly solana = new SolanaProvider(
     this,
     this.eventListener,
-    this.parseMessage
+    this.parseMessage,
   );
   public readonly bitcoin = new BitcoinProvider(
     this,
     this.eventListener,
-    this.parseMessage
+    this.parseMessage,
   );
   public readonly tron = new TronProvider(
     this,
     this.eventListener,
-    this.parseMessage
+    this.parseMessage,
   );
 }
 
@@ -1168,7 +1164,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
         window.postMessage(message, window.location.origin),
     },
     protected readonly parseMessage?: (message: any) => any,
-    protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo
+    protected readonly eip6963ProviderInfo?: EIP6963ProviderInfo,
   ) {
     super();
 
@@ -1222,10 +1218,10 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
             info: this.eip6963ProviderInfo,
             provider: this,
           }),
-        }
+        },
       );
       window.addEventListener(EIP6963EventNames.Request, () =>
-        window.dispatchEvent(announceEvent)
+        window.dispatchEvent(announceEvent),
       );
       window.dispatchEvent(announceEvent);
     }
@@ -1233,7 +1229,7 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
 
   protected _requestMethod = async (
     method: keyof IEthereumProvider,
-    args: Record<string, any>
+    args: Record<string, any>,
   ): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -1290,9 +1286,9 @@ class EthereumProvider extends EventEmitter implements IEthereumProvider {
               ? new EthereumProviderRpcError(
                   error.code,
                   error.message,
-                  error.data
+                  error.data,
                 )
-              : new Error(error)
+              : new Error(error),
           );
           return;
         }
@@ -1440,7 +1436,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       postMessage: (message) =>
         window.postMessage(message, window.location.origin),
     },
-    protected readonly parseMessage?: (message: any) => any
+    protected readonly parseMessage?: (message: any) => any,
   ) {
     super();
     window.addEventListener("keplr_keystorechange", async () => {
@@ -1450,7 +1446,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
 
   protected _requestMethod = async (
     method: keyof ISolanaProvider,
-    args: Record<string, any>
+    args: Record<string, any>,
   ): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -1553,7 +1549,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   signTransaction = async <T extends Transaction | VersionedTransaction>(
     tx: T,
     publicKey?: PublicKey,
-    connection?: Connection
+    connection?: Connection,
   ): Promise<T> => {
     if (!this.publicKey) {
       await this.connect();
@@ -1571,7 +1567,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       },
     ]);
     const solanaRes = VersionedTransaction.deserialize(
-      decode(result.signedTx)
+      decode(result.signedTx),
     ) as T;
     console.warn(solanaRes);
     return solanaRes;
@@ -1581,9 +1577,8 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     try {
       const response = await this._requestMethod("signIn", [input ?? {}]);
       this._connectWallet(response.publicKey);
-      const { OWalletSolanaWalletAccount } = await import(
-        "@oraichain/owallet-wallet-standard"
-      );
+      const { OWalletSolanaWalletAccount } =
+        await import("@oraichain/owallet-wallet-standard");
       return {
         account: new OWalletSolanaWalletAccount({
           address: response.publicKey,
@@ -1599,7 +1594,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
 
   signAndSendTransaction = async <T extends Transaction | VersionedTransaction>(
     transaction: T,
-    options?: SendOptions
+    options?: SendOptions,
   ): Promise<{ signature: TransactionSignature }> => {
     return this.sendAndConfirm(transaction, [], options);
   };
@@ -1609,7 +1604,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
     signers?: Signer[],
     options?: ConfirmOptions,
     connection?: Connection,
-    publicKey?: PublicKey
+    publicKey?: PublicKey,
   ): Promise<{ signature: TransactionSignature }> => {
     if (!this.publicKey) {
       await this.connect();
@@ -1633,7 +1628,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
 
   signMessage = async (
     msg: Uint8Array,
-    publicKey?: PublicKey
+    publicKey?: PublicKey,
   ): Promise<{ signature: Uint8Array }> => {
     if (!this.publicKey) {
       await this.connect();
@@ -1653,7 +1648,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
   signAllTransactions = async <T extends Transaction | VersionedTransaction>(
     txs: Array<T>,
     publicKey?: PublicKey,
-    connection?: Connection
+    connection?: Connection,
   ): Promise<Array<T>> => {
     if (!this.publicKey) {
       await this.connect();
@@ -1662,7 +1657,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       throw new Error("wallet not connected");
     }
     const txsStrs = txs.map((tx) =>
-      encode(tx.serialize({ requireAllSignatures: false }))
+      encode(tx.serialize({ requireAllSignatures: false })),
     );
     const signatures = await this._requestMethod("signAllTransactions", [
       {
@@ -1672,7 +1667,7 @@ class SolanaProvider extends EventEmitter implements ISolanaProvider {
       },
     ]);
     const txsRs = signatures.map(({ signedTx }, i) =>
-      VersionedTransaction.deserialize(decode(signedTx))
+      VersionedTransaction.deserialize(decode(signedTx)),
     );
     return txsRs as T[];
   };
@@ -1693,14 +1688,14 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
       postMessage: (message) =>
         window.postMessage(message, window.location.origin),
     },
-    protected readonly parseMessage?: (message: any) => any
+    protected readonly parseMessage?: (message: any) => any,
   ) {
     super();
   }
 
   protected _requestMethod = async (
     method: keyof IOasisProvider,
-    args: Record<string, any>
+    args: Record<string, any>,
   ): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -1776,14 +1771,14 @@ class OasisProvider extends EventEmitter implements IOasisProvider {
     chainId: string,
     signer: string,
     data: string | Uint8Array,
-    type: TransactionType
+    type: TransactionType,
   ): Promise<types.SignatureSigned> {
     return await this._requestMethod("sign", [chainId, signer, data, type]);
   }
 
   async sendTx(
     chainId: string,
-    signedTx: types.SignatureSigned
+    signedTx: types.SignatureSigned,
   ): Promise<string> {
     return await this._requestMethod("sendTx", [chainId, signedTx]);
   }
@@ -1804,14 +1799,14 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
       postMessage: (message) =>
         window.postMessage(message, window.location.origin),
     },
-    protected readonly parseMessage?: (message: any) => any
+    protected readonly parseMessage?: (message: any) => any,
   ) {
     super();
   }
 
   protected _requestMethod = async (
     method: keyof IBitcoinProvider,
-    args: Record<string, any>
+    args: Record<string, any>,
   ): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -1886,7 +1881,7 @@ class BitcoinProvider extends EventEmitter implements IBitcoinProvider {
     chainId: string,
     signer: string,
     data: string | Uint8Array,
-    type: TransactionBtcType
+    type: TransactionBtcType,
   ): Promise<string> => {
     return await this._requestMethod("sign", [chainId, signer, data, type]);
   };
@@ -1911,14 +1906,14 @@ class TronProvider extends EventEmitter implements ITronProvider {
       postMessage: (message) =>
         window.postMessage(message, window.location.origin),
     },
-    protected readonly parseMessage?: (message: any) => any
+    protected readonly parseMessage?: (message: any) => any,
   ) {
     super();
   }
 
   protected _requestMethod = async (
     method: keyof ITronProvider,
-    args: Record<string, any>
+    args: Record<string, any>,
   ): Promise<any> => {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
@@ -2005,18 +2000,18 @@ class TronProvider extends EventEmitter implements ITronProvider {
       functionSelector: string,
       options: object,
       parameters: any[],
-      issuerAddress: string
+      issuerAddress: string,
     ): Promise<any> => {
       if (!address || !functionSelector || !issuerAddress) {
         throw new Error(
-          "You need to provide enough data address,functionSelector and issuerAddress"
+          "You need to provide enough data address,functionSelector and issuerAddress",
         );
       }
 
       const parametersConvert = parameters.map((par) =>
         par.type === "uint256"
           ? { type: "uint256", value: par.value && par.value.toString() }
-          : par
+          : par,
       );
 
       return await this._requestMethod("triggerSmartContract", [
@@ -2055,7 +2050,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
     functionSelector: string,
     options: object,
     parameters: any[],
-    issuerAddress: string
+    issuerAddress: string,
   ): Promise<any> {
     return this._requestMethod("triggerSmartContract", [
       address,
@@ -2072,7 +2067,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
 
   async sendTx(
     chainId: string,
-    signedTx: types.SignatureSigned
+    signedTx: types.SignatureSigned,
   ): Promise<string> {
     return await this._requestMethod("sendTx", [chainId, signedTx]);
   }
@@ -2086,7 +2081,7 @@ class TronProvider extends EventEmitter implements ITronProvider {
   async request(args: RequestArguments): Promise<any> {
     return await this._requestMethod(
       args.method as keyof ITronProvider,
-      args.params ? [args.params, args.chainId] : [[]]
+      args.params ? [args.params, args.chainId] : [[]],
     );
   }
 }
