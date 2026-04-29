@@ -8,6 +8,7 @@ import deepmerge from "deepmerge";
 import { action, autorun, makeObservable, observable } from "mobx";
 import { makeURL } from "@owallet/simple-fetch";
 import { CoinGeckoTerminalPriceStore } from "./coingecko-terminal";
+import { VaultPriceStore } from "./vault";
 
 class Throttler {
   protected fns: (() => void)[] = [];
@@ -61,7 +62,7 @@ class SortedSetStorage {
   constructor(
     kvStore: KVStore,
     storeKey: string,
-    throttleDuration: number = 0
+    throttleDuration: number = 0,
   ) {
     if (!storeKey) {
       throw new Error("Empty store key");
@@ -129,7 +130,7 @@ class SortedSetStorage {
   async save(): Promise<void> {
     await this.kvStore.set(
       this.storeKey,
-      this.array.filter((value) => !this.restored[value])
+      this.array.filter((value) => !this.restored[value]),
     );
   }
 
@@ -182,14 +183,15 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       // Default is 250ms
       readonly throttleDuration?: number;
     } = {},
-    protected readonly geckoTerminalStore: CoinGeckoTerminalPriceStore
+    protected readonly geckoTerminalStore: CoinGeckoTerminalPriceStore,
+    protected readonly vaultPriceStore?: VaultPriceStore,
   ) {
     super(
       new QuerySharedContext(kvStore, {
         responseDebounceMs: 0,
       }),
       options.baseURL || "https://api.coingecko.com/api/v3",
-      options.uri || "/simple/price"
+      options.uri || "/simple/price",
     );
     this._optionUri = options.uri || "/simple/price";
 
@@ -200,12 +202,12 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     this._coinIds = new SortedSetStorage(
       kvStore,
       "__coin_ids",
-      throttleDuration
+      throttleDuration,
     );
     this._vsCurrencies = new SortedSetStorage(
       kvStore,
       "__vs_currencies",
-      throttleDuration
+      throttleDuration,
     );
     this._defaultVsCurrency = defaultVsCurrency;
 
@@ -244,7 +246,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
   getPrice24hChange(
     currency: AppCurrency,
-    vsCurrency?: string
+    vsCurrency?: string,
   ): number | undefined {
     const { coinMinimalDenom, coinGeckoId } = currency || {};
     const formatContract =
@@ -259,7 +261,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       // price = this.geckoTerminalStore.getPrice(contractAddress || coinMinimalDenom.replace(formatContract,""), vsCurrrency);
       return this.geckoTerminalStore.getPrice24hChange(
         contractAddress || coinMinimalDenom.replace(formatContract, ""),
-        vsCurrency
+        vsCurrency,
       );
     }
     if (!coinGeckoId) return undefined;
@@ -332,7 +334,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
 
   protected override async fetchResponse(
-    abortController: AbortController
+    abortController: AbortController,
   ): Promise<{ headers: any; data: CoinGeckoSimplePrice }> {
     const { data, headers } = await super.fetchResponse(abortController);
     // Because this store only queries the price of the tokens that have been requested from start,
@@ -347,16 +349,16 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   protected updateURL(
     coinIds: string[],
     vsCurrencies: string[],
-    forceSetUrl: boolean = false
+    forceSetUrl: boolean = false,
   ) {
     const coinIdsUpdated = this._coinIds.add(...coinIds);
     const vsCurrenciesUpdated = this._vsCurrencies.add(...vsCurrencies, "usd");
 
     if (coinIdsUpdated || vsCurrenciesUpdated || forceSetUrl) {
       const url = `${this._optionUri}?ids=${this._coinIds.values.join(
-        ","
+        ",",
       )}&vs_currencies=${this._vsCurrencies.values.join(
-        ","
+        ",",
       )}&include_24hr_change=true`;
 
       if (!this._isInitialized) {
@@ -397,7 +399,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   calculatePrice(
     coin: CoinPretty,
-    vsCurrrency?: string
+    vsCurrrency?: string,
   ): PricePretty | undefined {
     if (!coin?.currency.coinMinimalDenom) {
       return undefined;
@@ -416,6 +418,15 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return new PricePretty(fiatCurrency, 0);
     }
     let price = this.getPrice(coin.currency.coinGeckoId, vsCurrrency);
+
+    if (coin.currency.coinGeckoId === "vault-quant" && this.vaultPriceStore) {
+      console.log(coin.currency.coinGeckoId, "coin.currency.coinGeckoId");
+      const { coinMinimalDenom } = coin.currency;
+      if (coinMinimalDenom.startsWith("erc20:")) {
+        const address = coinMinimalDenom.replace("erc20:", "");
+        price = this.vaultPriceStore.getPrice(address);
+      }
+    }
     const { coinMinimalDenom } = coin.currency;
     const formatContract =
       "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/";
@@ -428,7 +439,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       // console.log(contractAddress,"contractAddress");
       price = this.geckoTerminalStore.getPrice(
         contractAddress || coinMinimalDenom.replace(formatContract, ""),
-        vsCurrrency
+        vsCurrrency,
       );
     }
 
@@ -444,7 +455,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   async waitPrice(
     coinId: string,
-    vsCurrency?: string
+    vsCurrency?: string,
   ): Promise<number | undefined> {
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
@@ -471,7 +482,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   async waitFreshPrice(
     coinId: string,
-    vsCurrency?: string
+    vsCurrency?: string,
   ): Promise<number | undefined> {
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
@@ -494,7 +505,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   async waitCalculatePrice(
     coin: CoinPretty,
-    vsCurrrency?: string
+    vsCurrrency?: string,
   ): Promise<PricePretty | undefined> {
     if (!coin.currency.coinMinimalDenom) {
       return undefined;
@@ -514,6 +525,14 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     }
 
     let price = await this.waitPrice(coin.currency.coinGeckoId, vsCurrrency);
+
+    if (coin.currency.coinGeckoId === "vault-quant" && this.vaultPriceStore) {
+      const { coinMinimalDenom } = coin.currency;
+      if (coinMinimalDenom.startsWith("erc20:")) {
+        const address = coinMinimalDenom.replace("erc20:", "");
+        price = this.vaultPriceStore.getPrice(address);
+      }
+    }
     const { coinMinimalDenom } = coin.currency;
     const formatContract =
       "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/";
@@ -526,7 +545,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       // console.log(contractAddress,"contractAddress");
       price = await this.waitPrice(
         contractAddress || coinMinimalDenom.replace(formatContract, ""),
-        vsCurrrency
+        vsCurrrency,
       );
     }
     if (price === undefined) {
@@ -541,7 +560,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
   async waitFreshCalculatePrice(
     coin: CoinPretty,
-    vsCurrrency?: string
+    vsCurrrency?: string,
   ): Promise<PricePretty | undefined> {
     if (!coin.currency.coinMinimalDenom) {
       return undefined;
@@ -562,8 +581,16 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
 
     let price = await this.waitFreshPrice(
       coin.currency.coinGeckoId,
-      vsCurrrency
+      vsCurrrency,
     );
+
+    if (coin.currency.coinGeckoId === "vault-quant" && this.vaultPriceStore) {
+      const { coinMinimalDenom } = coin.currency;
+      if (coinMinimalDenom.startsWith("erc20:")) {
+        const address = coinMinimalDenom.replace("erc20:", "");
+        price = this.vaultPriceStore.getPrice(address);
+      }
+    }
     const { coinMinimalDenom } = coin.currency;
     const formatContract =
       "factory/orai1wuvhex9xqs3r539mvc6mtm7n20fcj3qr2m0y9khx6n5vtlngfzes3k0rq9/";
@@ -576,7 +603,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       // console.log(contractAddress,"contractAddress");
       price = await this.waitFreshPrice(
         contractAddress || coinMinimalDenom.replace(formatContract, ""),
-        vsCurrrency
+        vsCurrrency,
       );
     }
     if (price === undefined) {

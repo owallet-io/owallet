@@ -651,6 +651,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "G-USDC",
         coinMinimalDenom: "erc20:0xd3a1c2bd6e1d163a7380d701c946adcd82dd95b1",
         coinDecimals: 6,
+        coinGeckoId: "vault-quant",
         coinImageUrl:
           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
@@ -658,6 +659,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "xauUSDC",
         coinMinimalDenom: "erc20:0x5424293637cc59ad7580ad1cac46e28d4801a587",
         coinDecimals: 6,
+        coinGeckoId: "vault-quant",
         coinImageUrl:
           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
@@ -665,6 +667,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: "polymarketUSDC",
         coinMinimalDenom: "erc20:0xf90e1b849bfb17d57abdb07438d68ac787b5c587",
         coinDecimals: 6,
+        coinGeckoId: "vault-quant",
         coinImageUrl:
           "https://raw.githubusercontent.com/cosmos/chain-registry/master/oraichain/images/orai-token.png",
       },
