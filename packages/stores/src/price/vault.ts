@@ -57,4 +57,10 @@ export class VaultPriceStore extends ObservableJsonRPCQueryMap<string> {
     }
     return undefined;
   }
+
+  async waitPrice(address: string): Promise<number | undefined> {
+    const query = this.get(address);
+    await query.waitResponse();
+    return this.getPrice(address);
+  }
 }

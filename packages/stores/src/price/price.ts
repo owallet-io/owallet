@@ -184,7 +184,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       readonly throttleDuration?: number;
     } = {},
     protected readonly geckoTerminalStore: CoinGeckoTerminalPriceStore,
-    protected readonly vaultPriceStore?: VaultPriceStore,
+    public readonly vaultPriceStore?: VaultPriceStore,
   ) {
     super(
       new QuerySharedContext(kvStore, {
