@@ -9240,6 +9240,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@owallet/stores@workspace:packages/stores"
   dependencies:
+    "@ethersproject/keccak256": ^5.7.0
+    "@ethersproject/strings": ^5.7.0
+    "@ethersproject/units": ^5.7.0
     "@owallet/common": "*"
     "@owallet/cosmos": "*"
     "@owallet/crypto": "*"
