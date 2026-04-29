@@ -19,6 +19,9 @@
     "@owallet/provider-mock": "*"
   },
   "dependencies": {
+    "@ethersproject/keccak256": "^5.7.0",
+    "@ethersproject/strings": "^5.7.0",
+    "@ethersproject/units": "^5.7.0",
     "@owallet/common": "*",
     "@owallet/cosmos": "*",
     "@owallet/crypto": "*",
@@ -27,9 +30,6 @@
     "@owallet/simple-fetch": "*",
     "@owallet/types": "*",
     "@owallet/unit": "*",
-    "@ethersproject/units": "^5.7.0",
-    "@ethersproject/keccak256": "^5.7.0",
-    "@ethersproject/strings": "^5.7.0",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",
