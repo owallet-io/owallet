@@ -215,8 +215,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
         return;
       }
 
-      console.log("message", message);
-
       try {
         if (!message.id) {
           throw new Error("Empty id");
@@ -247,8 +245,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
             message.method !== "solana" &&
             typeof owallet[message.method] !== "function")
         ) {
-          console.log(`Invalid method: ${message.method}`);
-
           throw new Error(`Invalid method: ${message.method}`);
         }
 
@@ -486,8 +482,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
           } else if (method === "tron") {
             const tronProviderMethod = message.tronProviderMethod;
 
-            console.log("tronProviderMethod", tronProviderMethod);
-
             //@ts-ignore
             if (tronProviderMethod?.startsWith("protected")) {
               throw new Error("Rejected");
@@ -496,12 +490,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
               tronProviderMethod === undefined ||
               typeof owallet.tron[tronProviderMethod] !== "function"
             ) {
-              console.log(
-                "tronProviderMethod",
-                tronProviderMethod,
-                typeof owallet.tron[tronProviderMethod],
-              );
-
               throw new Error(
                 //@ts-ignore
                 `${message?.tronProviderMethod} is not function or invalid Tron provider method`,
@@ -519,8 +507,6 @@ export class InjectedOWallet implements IOWallet, OWalletCoreTypes {
                 : messageArgs),
             );
           }
-
-          console.log("owallet[method]", method);
 
           return await owallet[method](
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
