@@ -127,7 +127,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
   protected _key: string;
 
   @observable
-  protected _gasAdjustmentValue: string = "1.3";
+  protected _gasAdjustmentValue: string = "1.4";
 
   @observable
   protected _enabled: boolean = false;
@@ -155,7 +155,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
     protected readonly feeConfig: IFeeConfig,
     protected readonly initialKey: string,
     // TODO: Add comment about the reason why simulateGasFn field is not observable.
-    protected simulateGasFn: SimulateGasFn
+    protected simulateGasFn: SimulateGasFn,
   ) {
     super(chainGetter, initialChainId);
 
@@ -199,7 +199,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
   setEnabled(value: boolean) {
     if (this._forceDisabled && value) {
       console.log(
-        "Gas simulator is disabled by force. You can not enable the gas simulator"
+        "Gas simulator is disabled by force. You can not enable the gas simulator",
       );
       return;
     }
@@ -319,7 +319,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
 
           state.setIsInitialized(true);
         });
-      })
+      }),
     );
 
     // autorun is intentionally split.
@@ -371,7 +371,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
           console.log(e);
           return;
         }
-      })
+      }),
     );
 
     this._disposers.push(
@@ -462,7 +462,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
               this._isSimulating = false;
             });
           });
-      })
+      }),
     );
 
     this._disposers.push(
@@ -474,7 +474,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
         ) {
           this.gasConfig.setValue(this.gasEstimated * this.gasAdjustment);
         }
-      })
+      }),
     );
   }
 
@@ -547,7 +547,7 @@ export const useGasSimulator = (
   feeConfig: IFeeConfig,
   key: string,
   simulateGasFn: SimulateGasFn,
-  initialDisabled?: boolean
+  initialDisabled?: boolean,
 ) => {
   const [gasSimulator] = useState(() => {
     const gasSimulator = new GasSimulator(
@@ -557,7 +557,7 @@ export const useGasSimulator = (
       gasConfig,
       feeConfig,
       key,
-      simulateGasFn
+      simulateGasFn,
     );
     if (initialDisabled) {
       gasSimulator.setEnabled(false);
