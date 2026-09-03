@@ -864,10 +864,18 @@ export class CosmosAccountImpl {
     const chainIsInjective = this.chainId.startsWith("injective");
     const chainIsStratos = this.chainId.startsWith("stratos");
 
+    // Note: If the account public key is not yet loaded or available, fallback to the official
+    // simulation compressed secp256k1 public key defined in Cosmos SDK (x/auth/ante/sigverify.go -> simSecp256k1Pubkey).
+    // In Cosmos SDK v0.50+, SetPubKeyDecorator panics with a nil pointer dereference if publicKey is omitted
+    // in SignerInfo during simulation. Using this valid compressed 33-byte secp256k1 key ensures compatibility
+    // across all Cosmos chains without triggering cryptographic format validation errors.
     const pubKeyBytes =
       this.base.pubKey && this.base.pubKey.length > 0
         ? this.base.pubKey
-        : new Uint8Array(33);
+        : Buffer.from(
+            "035ad6810a47f073553ff30d2fcc7e0d3b1c0b74b61a1aaa2582344037151e143a",
+            "hex",
+          );
 
     const unsignedTx = TxRaw.encode({
       bodyBytes: TxBody.encode(
